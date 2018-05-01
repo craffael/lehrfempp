@@ -17,7 +17,7 @@
  */
 #define LF_VERIFY_MSG(expr, msg) { \
   BOOST_VERIFY_MSG(expr, msg); \
-  if(!(expr)) throw std::exception("This exception should never throw."); \
+  if(!(expr)) throw std::runtime_error("This exception should never throw."); \
   }
 
 
@@ -25,7 +25,7 @@
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
 #else
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) {\
-  if(!(expr)) throw std::exception(msg); \
+  if(!(expr)) throw std::runtime_error(msg); \
   }
 #endif
 
