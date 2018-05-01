@@ -16,18 +16,15 @@ branches:
     
 matrix:
   include:
-    # Linux C++17 GCC builds
-    - os: linux
-      compiler: gcc
-      addons: 
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: 
-            - 'g++-7'
-            - doxygen
-            - doxygen-doc
-            - graphviz
-      env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+    # # Linux C++17 GCC builds
+    # - os: linux
+      # compiler: gcc
+      # addons: 
+        # apt:
+          # sources: ['ubuntu-toolchain-r-test']
+          # packages: 
+            # - 'g++-7'
+      # env: COMPILER='g++-7' BUILD_TYPE='Release'
 
     # - os: linux
       # compiler: gcc
@@ -38,13 +35,13 @@ matrix:
       # env: COMPILER='g++-7' BUILD_TYPE='Debug'
       
      # # Linux C++17 Clang builds
-    # - os: linux
-      # compiler: clang
-      # addons: 
-        # apt:
-          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-5.0', 'g++-7']
-      # env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
+    - os: linux
+      compiler: clang
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      env: COMPILER='clang++-5.0' BUILD_TYPE='Release' DOXYGEN='true'
       
     # - os: linux
       # compiler: clang
