@@ -28,41 +28,41 @@ matrix:
             - graphviz
       env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
 
-    # - os: linux
-      # compiler: gcc
-      # addons: 
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: ['g++-7']
-      # env: COMPILER='g++-7' BUILD_TYPE='Debug'
+    - os: linux
+      compiler: gcc
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
+      env: COMPILER='g++-7' BUILD_TYPE='Debug'
       
-     # # Linux C++17 Clang builds
-    # - os: linux
-      # compiler: clang
-      # addons: 
-        # apt:
-          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-5.0', 'g++-7']
-      # env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
+     # Linux C++17 Clang builds
+    - os: linux
+      compiler: clang
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
       
-    # - os: linux
-      # compiler: clang
-      # addons: 
-        # apt:
-          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-5.0', 'g++-7']
-      # env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
+    - os: linux
+      compiler: clang
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
        
-    # # OSX C++17 Clang builds
-    # - os: osx
-      # osx_image: xcode8.3
-      # compiler: clang
-      # env: COMPILER='clang++' BUILD_TYPE='Release'
+    # OSX C++17 Clang builds
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Release'
     
-    # - os: osx
-      # osx_image: xcode8.3
-      # compiler: clang
-      # env: COMPILER='clang++' BUILD_TYPE='Debug'
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Debug'
             
       
 install:
@@ -87,17 +87,16 @@ install:
     # fi
   
   
-# before_script:
-  # - ${COMPILER} --version
-  # - export CXX=${COMPILER}
-  # - cd ${TRAVIS_BUILD_DIR}
-  # - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
-  # - cd Build
+before_script:
+  - ${COMPILER} --version
+  - export CXX=${COMPILER}
+  - cd ${TRAVIS_BUILD_DIR}
+  - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
+  - cd Build
   
 script:
-  - echo "hello"
-  # - make -j2
-  # - ctest -V
+  - make -j2
+  - ctest -V
   
 # Deploy doxygen documentation using builtin GitHub Pages support
 before_deploy:

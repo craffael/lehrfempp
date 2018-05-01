@@ -3,3 +3,5 @@
 
 # HyDiLight 
 Simplistic Finite Element Framework for research and eduction
+
+[Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
