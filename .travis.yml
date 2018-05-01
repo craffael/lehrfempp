@@ -68,6 +68,7 @@ install:
   
   
 before_script:
+  - ls ${DEPS_DIR}/cmake/bin
   - ${COMPILER} --version
   - export CXX=${COMPILER}
   - cd ${TRAVIS_BUILD_DIR}
