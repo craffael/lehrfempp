@@ -106,6 +106,8 @@ before_deploy:
     if [[ "${DOXYGEN}" == "true" ]]; then
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       doxygen Doxyfile
+    else
+      mkdir -p $TRAVIS_BUILD_DIR/doc/doxygen/html
     fi
 
 
@@ -114,6 +116,5 @@ deploy:
   skip_cleanup: true
   local_dir: ./doc/doxygen/html
   github_token: $GITHUB_API_KEY
-  env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
   on:
     branch: master
