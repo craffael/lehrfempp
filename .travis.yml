@@ -13,13 +13,13 @@ cache:
 matrix:
   include:
     # Linux C++17 GCC builds
-    - os: linux
-      compiler: gcc
-      addons: &gcc7
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-7']
-      env: COMPILER='g++-7' BUILD_TYPE='Release'
+    # - os: linux
+      # compiler: gcc
+      # addons: &gcc7
+        # apt:
+          # sources: ['ubuntu-toolchain-r-test']
+          # packages: ['g++-7']
+      # env: COMPILER='g++-7' BUILD_TYPE='Release'
 
     - os: linux
       compiler: gcc
@@ -27,7 +27,7 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-7']
-      env: COMPILER='g++-7' BUILD_TYPE='Debug'
+      env: COMPILER='g++-7' BUILD_TYPE='Release'
       
       # Linux C++17 Clang builds
     # - os: linux
@@ -58,6 +58,7 @@ install:
   
   
 before_script:
+  - gcc --version
   - export CXX=${COMPILER}
   - cd ${TRAVIS_BUILD_DIR}
   - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
