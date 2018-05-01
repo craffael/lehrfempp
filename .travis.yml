@@ -15,16 +15,16 @@ matrix:
     # Linux C++17 GCC builds
     - os: linux
       compiler: gcc
-      addons: &gcc6
+      addons: &gcc7
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-7']
       env: COMPILER='g++-7' BUILD_TYPE='Release'
 
-    # - os: linux
-      # compiler: gcc
-      # addons: *gcc6
-      # env: COMPILER='g++-6' BUILD_TYPE='Debug'
+    - os: linux
+      compiler: gcc
+      addons: *gcc7
+      env: COMPILER='g++-7' BUILD_TYPE='Debug'
       
       # # Linux C++14 Clang builds
     # - os: linux
@@ -56,7 +56,6 @@ install:
   
 before_script:
   - export CXX=${COMPILER}
-  - echo ${HUNTER_ROOT}
   - cd ${TRAVIS_BUILD_DIR}
   - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
   - cd Build
