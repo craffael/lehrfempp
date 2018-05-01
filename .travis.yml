@@ -2,12 +2,13 @@ language: cpp
 sudo: true
 
 env:
-  - HUNTER_ROOT="${TRAVIS_BUILD_DIR}/hunter"
+  global:
+    - HUNTER_ROOT="${TRAVIS_BUILD_DIR}/hunter"
 
 cache:
   directories:
-    - "$TRAVIS_BUILD_DIR/deps"
-    - $HUNTER_ROOT
+    - $TRAVIS_BUILD_DIR/deps
+    - $TRAVIS_BUILD_DIR/hunter
 
 matrix:
   include:
@@ -55,6 +56,7 @@ install:
   
 before_script:
   - export CXX=${COMPILER}
+  - export CXX=${HUNTER_ROOT}
   - cd ${TRAVIS_BUILD_DIR}
   - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
   - cd Build
