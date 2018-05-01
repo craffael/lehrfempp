@@ -17,14 +17,16 @@ branches:
 matrix:
   include:
     # # Linux C++17 GCC builds
-    # - os: linux
-      # compiler: gcc
-      # addons: 
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - 'g++-7'
-      # env: COMPILER='g++-7' BUILD_TYPE='Release'
+    - os: linux
+      compiler: gcc
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - 'g++-7'
+            - doxygen
+            - graphviz
+      env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
 
     # - os: linux
       # compiler: gcc
@@ -61,13 +63,6 @@ matrix:
       # osx_image: xcode8.3
       # compiler: clang
       # env: COMPILER='clang++' BUILD_TYPE='Debug'
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: 'llvm-toolchain-trusty-6.0'
-          packages: ['clang-6.0']
-        env: DOXYGEN='true'
             
       
 install:
