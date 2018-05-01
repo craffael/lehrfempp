@@ -13,13 +13,13 @@ cache:
 matrix:
   include:
     # Linux C++17 GCC builds
-    # - os: linux
-      # compiler: gcc
-      # addons: &gcc7
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: ['g++-7']
-      # env: COMPILER='g++-7' BUILD_TYPE='Release'
+    - os: linux
+      compiler: gcc
+      addons: &gcc7
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
+      env: COMPILER='g++-7' BUILD_TYPE='Release'
 
     - os: linux
       compiler: gcc
@@ -65,5 +65,5 @@ before_script:
   - cd Build
   
 script:
-  - make -j2
+  - make VERBOSE=1 #-j2
   - ctest -V
