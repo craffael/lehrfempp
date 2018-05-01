@@ -195,7 +195,7 @@ public:
         return 4;
       default:
         throw std::
-          exception("RefEl::NumNodes() not implemented for this RefEl type.");
+          runtime_error("RefEl::NumNodes() not implemented for this RefEl type.");
     }
   }
 
