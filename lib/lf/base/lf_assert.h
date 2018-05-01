@@ -3,8 +3,8 @@
 #ifndef __c3c605c9e48646758bf03fab65d52836
 #define __c3c605c9e48646758bf03fab65d52836
 
+#include <stdexcept>
 #include"boost/assert.hpp"
-#include <exception>
 
 /**
  * @brief HL_VERIFY_MSG(expr, msg) aborts execution of the code if 
@@ -25,7 +25,7 @@
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
 #else
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) {\
-  if (!(expr)) throw std::exception(); \
+  if (!(expr)) throw std::runtime_error(msg); \
   }
 #endif
 
