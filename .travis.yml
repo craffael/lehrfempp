@@ -108,14 +108,12 @@ before_deploy:
       doxygen Doxyfile
     fi
 
-jobs:
-  include:
-    - stage: deploy
-      script: echo "deploy doxygen"
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        local_dir: ./doc/doxygen/html
-        github_token: $GITHUB_API_KEY
-        on:
-          branch: master
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: ./doc/doxygen/html
+  github_token: $GITHUB_API_KEY
+  env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+  on:
+    branch: master
