@@ -13,7 +13,8 @@ cache:
 branches:
   except:
     - gh-pages
-    
+      
+
 matrix:
   include:
     # # Linux C++17 GCC builds
@@ -101,10 +102,10 @@ script:
 # Deploy doxygen documentation using builtin GitHub Pages support
 before_deploy:
   - |
-    if [[ "${DOXYGEN}" == "true" ]]; then
+    #if [[ "${DOXYGEN}" == "true" ]]; then
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       doxygen Doxyfile
-    fi
+    #fi
 
 deploy:
   provider: pages
