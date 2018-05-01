@@ -1,6 +1,9 @@
 # version string format -- This will be overwritten later anyway
 version: "{build}"
 
+cache:
+  - C:\.hunter
+
 os:
   - Visual Studio 2017
 
