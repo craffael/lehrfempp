@@ -2,7 +2,7 @@
 
 #ifndef __96e6ff0ee0034f4584fcdfc7e9c53f82
 #define __96e6ff0ee0034f4584fcdfc7e9c53f82
-#include <exception>
+
 #include <vector>
 #include <array>
 
@@ -286,7 +286,7 @@ public:
       case RefElType::kQuad:
         return 4; // sub_codim=1,2
       default:
-      LF_VERIFY_MSG(false,
+      LF_ASSERT_MSG_CONSTEXPR(false,
           "RefEl::NumSubEntities() not implemented for this RefElType.");
     }
   }
@@ -321,7 +321,7 @@ public:
     if (sub_codim == 0) return *this;
     if (sub_codim == Dimension()) return RefElType::kPoint;
     if (Dimension() - sub_codim == 1) return RefElType::kSegment;
-    LF_VERIFY_MSG(false, "This code should never be reached.");
+    LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
   }
 
 
@@ -372,9 +372,9 @@ public:
         return sub_sub_entity_index_tria_[sub_index][sub_sub_index];
       case RefElType::kQuad:
         return sub_sub_entity_index_quad_[sub_index][sub_sub_index];
-    }
-
-    LF_VERIFY_MSG(false, "This code should never be reached.");
+      default:
+        LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
+    }   
   }
 
 
