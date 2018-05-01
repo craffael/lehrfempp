@@ -104,6 +104,7 @@ before_deploy:
   - |
     if [[ "${DOXYGEN}" == "true" ]]; then
       cd $TRAVIS_BUILD_DIR/doc/doxygen
+      which doxygen
       doxygen Doxyfile
       ls -la .
       pwd
