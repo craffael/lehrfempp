@@ -9,27 +9,27 @@ matrix:
       addons: &gcc6
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6']
-      env: COMPILER='g++-6' BUILD_TYPE='Release'
+          packages: ['g++-7']
+      env: COMPILER='g++-7' BUILD_TYPE='Release'
 
-    - os: linux
-      compiler: gcc
-      addons: *gcc6
-      env: COMPILER='g++-6' BUILD_TYPE='Debug'
+    # - os: linux
+      # compiler: gcc
+      # addons: *gcc6
+      # env: COMPILER='g++-6' BUILD_TYPE='Debug'
       
-      # Linux C++14 Clang builds
-    - os: linux
-      compiler: clang
-      addons: &clang38
-        apt:
-          sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.8']
-      env: COMPILER='clang++-3.8' BUILD_TYPE='Release'
+      # # Linux C++14 Clang builds
+    # - os: linux
+      # compiler: clang
+      # addons: &clang38
+        # apt:
+          # sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-3.8']
+      # env: COMPILER='clang++-3.8' BUILD_TYPE='Release'
       
-    - os: linux
-      compiler: clang
-      addons: *clang38
-      env: COMPILER='clang++-3.8' BUILD_TYPE='Debug'
+    # - os: linux
+      # compiler: clang
+      # addons: *clang38
+      # env: COMPILER='clang++-3.8' BUILD_TYPE='Debug'
       
 install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"

@@ -107,7 +107,7 @@ private:
         return 2;
       default:
         throw std::
-          exception("RefEl::Dimension() not implemented for this RefEl type.");
+          runtime_error("RefEl::Dimension() not implemented for this RefEl type.");
     }
   }
 
