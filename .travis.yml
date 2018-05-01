@@ -12,7 +12,7 @@ cache:
 
 matrix:
   include:
-    # Linux C++14 GCC builds
+    # Linux C++17 GCC builds
     - os: linux
       compiler: gcc
       addons: &gcc6
