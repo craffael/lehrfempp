@@ -34,9 +34,9 @@ matrix:
        compiler: clang
        addons: 
          apt:
-           sources: ['llvm-toolchain-trusty-4.0']
-           packages: ['clang-4.0']
-       env: COMPILER='clang++-4.0' BUILD_TYPE='Release'
+           sources: ['llvm-toolchain-trusty-5.0']
+           packages: ['clang-5.0']
+       env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
       
     # - os: linux
       # compiler: clang
