@@ -14,6 +14,9 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
    message(SEND_ERROR "In-source builds are not allowed.")
 endif()
 
+# Enable testing
+enable_testing()
+
 # Get boost
 hunter_add_package(Boost)
 find_package(Boost CONFIG REQUIRED)
@@ -21,6 +24,10 @@ find_package(Boost CONFIG REQUIRED)
 # Get Eigen
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
+
+# Get Google Test
+hunter_add_package(GTest)
+find_package(GTest CONFIG REQUIRED)
 
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen/snippets)
