@@ -97,9 +97,10 @@ script:
 before_deploy:
   - |
     if [[ "${DOXYGEN}" == "true" ]]; then
-      cd doc/doxygen
+      cd $TRAVIS_BUILD_DIR/doc/doxygen
       doxygen Doxyfile
       ls -la .
+      pwd
     fi
 
 deploy:
