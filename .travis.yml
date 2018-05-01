@@ -1,9 +1,13 @@
 language: cpp
 sudo: true
 
+env:
+  - HUNTER_ROOT="${TRAVIS_BUILD_DIR}/hunter"
+
 cache:
   directories:
-    - $TRAVIS_BUILD_DIR/deps
+    - "$TRAVIS_BUILD_DIR/deps"
+    - $HUNTER_ROOT
 
 matrix:
   include:
@@ -36,7 +40,6 @@ matrix:
       # env: COMPILER='clang++-3.8' BUILD_TYPE='Debug'
       
 install:
-  - echo "${TRAVIS_BUILD_DIR}"
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
   - |
