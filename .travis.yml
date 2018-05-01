@@ -79,12 +79,12 @@ install:
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     fi
-  - |
-    if [[ "${DOXYGEN}" == "true" ]]; then
-      DOXYGEN_URL="http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.14.linux.bin.tar.gz"
-      mkdir doxygen && travis_retry wget --no-check-certificate --quiet -O - ${DOXYGEN_URL} | tar --strip-components=1 -xz -C doxygen
-      export PATH=${DEPS_DIR}/doxygen/bin:${PATH}
-    fi
+  # - |
+    # if [[ "${DOXYGEN}" == "true" ]]; then
+      # DOXYGEN_URL="http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.14.linux.bin.tar.gz"
+      # mkdir doxygen && travis_retry wget --no-check-certificate --quiet -O - ${DOXYGEN_URL} | tar --strip-components=1 -xz -C doxygen
+      # export PATH=${DEPS_DIR}/doxygen/bin:${PATH}
+    # fi
   
   
 # before_script:
@@ -104,10 +104,7 @@ before_deploy:
   - |
     if [[ "${DOXYGEN}" == "true" ]]; then
       cd $TRAVIS_BUILD_DIR/doc/doxygen
-      which doxygen
       doxygen Doxyfile
-      ls -la .
-      pwd
     fi
 
 deploy:
