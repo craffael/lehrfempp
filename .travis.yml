@@ -46,8 +46,9 @@ matrix:
            # packages: ['clang-5.0', 'g++-7']
        # env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
     - os: osx
-      osx_image: xcode8
-      env: COMPILER='g++-5' BUILD_TYPE='Debug'
+      osx_image: xcode8.3
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Debug'
       
 install:
   - mkdir -p ${HUNTER_ROOT}
