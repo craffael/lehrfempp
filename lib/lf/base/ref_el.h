@@ -274,9 +274,9 @@ public:
    *   `RefEl::kTria.NumSubEntities(2) == 3`
    */
   constexpr char NumSubEntities(char sub_codim) const {
-    LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
-    LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()"
-    );
+    if constexpr (!(sub_codim >=0)) throw std::runtime_error("blabla");
+    //LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
+    //LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()");
     if (sub_codim == 0) return 1;
     switch (type_) {
       case RefElType::kSegment:
