@@ -61,7 +61,6 @@ install:
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       which cmake || brew install cmake
-      brew install gcc5
     fi
   
   
