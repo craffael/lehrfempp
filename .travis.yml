@@ -29,41 +29,41 @@ matrix:
             - graphviz
       env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
 
-    - os: linux
-      compiler: gcc
-      addons: 
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-7']
-      env: COMPILER='g++-7' BUILD_TYPE='Debug'
+    # - os: linux
+      # compiler: gcc
+      # addons: 
+        # apt:
+          # sources: ['ubuntu-toolchain-r-test']
+          # packages: ['g++-7']
+      # env: COMPILER='g++-7' BUILD_TYPE='Debug'
       
-     # Linux C++17 Clang builds
-    - os: linux
-      compiler: clang
-      addons: 
-        apt:
-          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          packages: ['clang-5.0', 'g++-7']
-      env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
+     # # Linux C++17 Clang builds
+    # - os: linux
+      # compiler: clang
+      # addons: 
+        # apt:
+          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-5.0', 'g++-7']
+      # env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
       
-    - os: linux
-      compiler: clang
-      addons: 
-        apt:
-          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          packages: ['clang-5.0', 'g++-7']
-      env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
+    # - os: linux
+      # compiler: clang
+      # addons: 
+        # apt:
+          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-5.0', 'g++-7']
+      # env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
        
-    # OSX C++17 Clang builds
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      env: COMPILER='clang++' BUILD_TYPE='Release'
+    # # OSX C++17 Clang builds
+    # - os: osx
+      # osx_image: xcode8.3
+      # compiler: clang
+      # env: COMPILER='clang++' BUILD_TYPE='Release'
     
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      env: COMPILER='clang++' BUILD_TYPE='Debug'
+    # - os: osx
+      # osx_image: xcode8.3
+      # compiler: clang
+      # env: COMPILER='clang++' BUILD_TYPE='Debug'
       
 install:
   - mkdir -p ${HUNTER_ROOT}
@@ -95,17 +95,17 @@ script:
   - ctest -V
   
 # Deploy doxygen documentation using builtin GitHub Pages support
-# before_deploy:
-  # - |
-    # if [[ "${DOXYGEN}" == "true" ]]; then
-      # cd doc/doxygen
-      # doxygen Doxyfile
-    # fi
+before_deploy:
+  - |
+    if [[ "${DOXYGEN}" == "true" ]]; then
+      cd doc/doxygen
+      doxygen Doxyfile
+    fi
 
-# deploy:
-  # provider: pages
-  # skip_cleanup: true
-  # local_dir: $TRAVIS_BUILD_DIR/docs/html
-  # github_token: $GITHUB_API_KEY
-  # on:
-    # branch: master
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: $TRAVIS_BUILD_DIR/doc/doxygen/html
+  github_token: $GITHUB_API_KEY
+  on:
+    branch: master
