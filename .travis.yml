@@ -1,6 +1,10 @@
 language: cpp
 sudo: true
 
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/deps
+
 matrix:
   include:
     # Linux C++14 GCC builds
@@ -32,6 +36,7 @@ matrix:
       # env: COMPILER='clang++-3.8' BUILD_TYPE='Debug'
       
 install:
+  - echo "${TRAVIS_BUILD_DIR}"
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
   - |
