@@ -106,7 +106,7 @@ before_deploy:
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: $TRAVIS_BUILD_DIR/doc/doxygen
+  local_dir: /doc/doxygen/html
   github_token: $GITHUB_API_KEY
   on:
     branch: master
