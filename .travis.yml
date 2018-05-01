@@ -62,8 +62,11 @@ install:
     elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       #which cmake || brew install cmake
       CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
+      echo "a"
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      echo "b"
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      echo "c"
     fi
   
   
