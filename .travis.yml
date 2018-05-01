@@ -89,7 +89,8 @@ matrix:
   # - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
   # - cd Build
   
-# script:
+script:
+  - echo "hello"
   # - make -j2
   # - ctest -V
   
