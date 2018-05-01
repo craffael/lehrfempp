@@ -65,5 +65,5 @@ before_script:
   - cd Build
   
 script:
-  - make VERBOSE=1 #-j2
+  - make -j2
   - ctest -V

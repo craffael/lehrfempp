@@ -25,7 +25,7 @@
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
 #else
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) {\
-  if constexpr (!(expr)) throw std::runtime_error(msg); \
+  if (!(expr)) throw std::runtime_error(msg); \
   }
 #endif
 
