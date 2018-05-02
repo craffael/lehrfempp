@@ -16,55 +16,21 @@ branches:
     - gh-pages
      
 stages:
-  - install
-  - pre_deploy
   - deploy  
-
-# Deploy doxygen documentation using builtin GitHub Pages support
-jobs:
-  include:
-    - stage: install
-      script: |
-        mkdir -p ${HUNTER_ROOT}
-        mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-        if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
-          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-        elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
-          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
-          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-        fi
-        
-    - stage: pre_deploy
-      script: |
-        cd $TRAVIS_BUILD_DIR/doc/doxygen
-        doxygen Doxyfile
-        
-    - stage: deploy
-      script: skip
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        local_dir: ./doc/doxygen/html
-        github_token: $GITHUB_API_KEY
-        on:
-          branch: master
       
-# matrix:
-  # include:
-    # # Linux C++17 GCC builds
-    # - os: linux
-      # compiler: gcc
-      # addons: 
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - 'g++-7'
-            # - doxygen
-            # - graphviz
-      # env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+matrix:
+  include:
+    # Linux C++17 GCC builds
+    - os: linux
+      compiler: gcc
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - 'g++-7'
+            - doxygen
+            - graphviz
+      env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
 
     # - os: linux
       # compiler: gcc
@@ -102,7 +68,37 @@ jobs:
       # compiler: clang
       # env: COMPILER='clang++' BUILD_TYPE='Debug'
             
-      
+  
+# Deploy doxygen documentation using builtin GitHub Pages support
+jobs:
+  include:
+    # - stage: install
+      # script: |
+        # mkdir -p ${HUNTER_ROOT}
+        # mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+        # if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+          # CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
+          # mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+          # export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+        # elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+          # CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
+          # mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
+          # export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+        # fi
+        
+    - stage: deploy
+      script: |
+        cd $TRAVIS_BUILD_DIR/doc/doxygen
+        doxygen Doxyfile
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: ./doc/doxygen/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: master
+
+  
 # install:
   # - mkdir -p ${HUNTER_ROOT}
   # - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
