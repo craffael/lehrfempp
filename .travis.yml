@@ -17,7 +17,7 @@ branches:
      
 stages:
   - setup
-  - test_compile
+  - compile_test
   - doxygen 
   
 # matrix:
@@ -77,24 +77,12 @@ stages:
 # Deploy doxygen documentation using builtin GitHub Pages support
 jobs:
   include:
-    - stage: setup
-      os: linux
-      script: |
-        mkdir -p ${HUNTER_ROOT}
-        mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-        if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
-          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-        elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
-          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
-          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-        fi
       
     - stage: compile_test
       os: linux 
       compiler: gcc
+      env:
+        - COMPILER=g++-7
       addons: 
         apt:
           sources: ['ubuntu-toolchain-r-test']
@@ -102,12 +90,7 @@ jobs:
             - g++-7
             - doxygen
             - graphviz
-      script: |
-        export CXX=g++-7
-        cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
-        cd Build
-        make -j2
-        ctest -V
+      script: ./compile_test.sh
         
     - stage: doxygen
       os: linux 
