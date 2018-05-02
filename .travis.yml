@@ -6,10 +6,10 @@ env:
     - HUNTER_ROOT="${TRAVIS_BUILD_DIR}/hunter"
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
 
-# cache:
-  # directories:
-    # - $TRAVIS_BUILD_DIR/deps
-    # - $TRAVIS_BUILD_DIR/hunter
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/deps
+    - $TRAVIS_BUILD_DIR/hunter
 
 branches:
   except:
