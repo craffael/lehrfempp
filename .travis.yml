@@ -4,6 +4,7 @@ sudo: true
 env:
   global:
     - HUNTER_ROOT="${TRAVIS_BUILD_DIR}/hunter"
+    - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
 
 cache:
   directories:
@@ -14,95 +15,28 @@ branches:
   except:
     - gh-pages
      
-      
-      
-matrix:
-  include:
-    # # Linux C++17 GCC builds
-    - os: linux
-      compiler: gcc
-      addons: 
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: 
-            - 'g++-7'
-            - doxygen
-            - graphviz
-      env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+stages:
+  - install
+  - pre_deploy
+  - deploy  
 
-    - os: linux
-      compiler: gcc
-      addons: 
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-7']
-      env: COMPILER='g++-7' BUILD_TYPE='Debug'
-      
-     # Linux C++17 Clang builds
-    - os: linux
-      compiler: clang
-      addons: 
-        apt:
-          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          packages: ['clang-5.0', 'g++-7']
-      env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
-      
-    - os: linux
-      compiler: clang
-      addons: 
-        apt:
-          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          packages: ['clang-5.0', 'g++-7']
-      env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
-       
-    # OSX C++17 Clang builds
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      env: COMPILER='clang++' BUILD_TYPE='Release'
-    
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      env: COMPILER='clang++' BUILD_TYPE='Debug'
-            
-      
-install:
-  - mkdir -p ${HUNTER_ROOT}
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    fi
-  # - |
-    # if [[ "${DOXYGEN}" == "true" ]]; then
-      # DOXYGEN_URL="http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.14.linux.bin.tar.gz"
-      # mkdir doxygen && travis_retry wget --no-check-certificate --quiet -O - ${DOXYGEN_URL} | tar --strip-components=1 -xz -C doxygen
-      # export PATH=${DEPS_DIR}/doxygen/bin:${PATH}
-    # fi
-  
-  
-before_script:
-  - ${COMPILER} --version
-  - export CXX=${COMPILER}
-  - cd ${TRAVIS_BUILD_DIR}
-  - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
-  - cd Build
-  
-script:
-  - make -j2
-  - ctest -V
-  
 # Deploy doxygen documentation using builtin GitHub Pages support
 jobs:
   include:
+    - stage: install
+      script: |
+        mkdir -p ${HUNTER_ROOT}
+        mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+        if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
+          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+        elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+          CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
+          mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
+          export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+        fi
+        
     - stage: pre_deploy
       script: |
         cd $TRAVIS_BUILD_DIR/doc/doxygen
@@ -117,6 +51,92 @@ jobs:
         github_token: $GITHUB_API_KEY
         on:
           branch: master
+      
+# matrix:
+  # include:
+    # # Linux C++17 GCC builds
+    # - os: linux
+      # compiler: gcc
+      # addons: 
+        # apt:
+          # sources: ['ubuntu-toolchain-r-test']
+          # packages: 
+            # - 'g++-7'
+            # - doxygen
+            # - graphviz
+      # env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+
+    # - os: linux
+      # compiler: gcc
+      # addons: 
+        # apt:
+          # sources: ['ubuntu-toolchain-r-test']
+          # packages: ['g++-7']
+      # env: COMPILER='g++-7' BUILD_TYPE='Debug'
+      
+     # # Linux C++17 Clang builds
+    # - os: linux
+      # compiler: clang
+      # addons: 
+        # apt:
+          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-5.0', 'g++-7']
+      # env: COMPILER='clang++-5.0' BUILD_TYPE='Release'
+      
+    # - os: linux
+      # compiler: clang
+      # addons: 
+        # apt:
+          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-5.0', 'g++-7']
+      # env: COMPILER='clang++-5.0' BUILD_TYPE='Debug'
+       
+    # # OSX C++17 Clang builds
+    # - os: osx
+      # osx_image: xcode8.3
+      # compiler: clang
+      # env: COMPILER='clang++' BUILD_TYPE='Release'
+    
+    # - os: osx
+      # osx_image: xcode8.3
+      # compiler: clang
+      # env: COMPILER='clang++' BUILD_TYPE='Debug'
+            
+      
+# install:
+  # - mkdir -p ${HUNTER_ROOT}
+  # - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  # - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  # - |
+    # if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      # CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
+      # mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      # export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    # elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      # CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
+      # mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=3 -xz -C cmake
+      # export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    # fi
+  # # - |
+    # # if [[ "${DOXYGEN}" == "true" ]]; then
+      # # DOXYGEN_URL="http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.14.linux.bin.tar.gz"
+      # # mkdir doxygen && travis_retry wget --no-check-certificate --quiet -O - ${DOXYGEN_URL} | tar --strip-components=1 -xz -C doxygen
+      # # export PATH=${DEPS_DIR}/doxygen/bin:${PATH}
+    # # fi
+  
+  
+# before_script:
+  # - ${COMPILER} --version
+  # - export CXX=${COMPILER}
+  # - cd ${TRAVIS_BUILD_DIR}
+  # - cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
+  # - cd Build
+  
+# script:
+  # - make -j2
+  # - ctest -V
+  
+
     
 # before_deploy:
   # - |
