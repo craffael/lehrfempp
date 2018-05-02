@@ -6,6 +6,8 @@
 # 
 # It builds and tests Lehrfempp using the provided compiler + cmake configuration.
 
+# Exit immediately from this script upon error
+set -e
 
 # install new version of cmake:
 mkdir -p ${HUNTER_ROOT}
