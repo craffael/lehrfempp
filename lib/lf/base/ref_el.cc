@@ -8,7 +8,7 @@ const std::vector<Eigen::VectorXd> RefEl::ncoords_point_dynamic_ =
 const std::vector<Eigen::VectorXd> RefEl::ncoords_segment_dynamic_ =
   std::vector<Eigen::VectorXd>{
     Eigen::VectorXd::Zero(1), Eigen::VectorXd::Constant(1, 1.)
-  };
+  }
 
 const std::vector<Eigen::VectorXd> RefEl::ncoords_tria_dynamic_ =
   std::vector<Eigen::VectorXd>{
