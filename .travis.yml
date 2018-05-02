@@ -105,10 +105,9 @@ jobs:
   include:
     - stage: pre_deploy
       script: |
-        if [[ "${DOXYGEN}" == "true" ]]; then
-          cd $TRAVIS_BUILD_DIR/doc/doxygen
-          doxygen Doxyfile
-        fi
+        cd $TRAVIS_BUILD_DIR/doc/doxygen
+        doxygen Doxyfile
+        
     - stage: deploy
       script: skip
       deploy:
