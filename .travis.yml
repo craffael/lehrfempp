@@ -87,6 +87,7 @@ jobs:
       osx_image: xcode8.3
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Release'
+      script: ./compile_test.sh
         
     # Deploy doxygen documentation using builtin GitHub Pages support
     - stage: doxygen
