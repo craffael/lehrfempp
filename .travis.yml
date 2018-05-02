@@ -16,6 +16,7 @@ branches:
     - gh-pages
      
 stages:
+  - test
   - doxygen 
 
 compiler: gcc
