@@ -101,20 +101,36 @@ script:
   - ctest -V
   
 # Deploy doxygen documentation using builtin GitHub Pages support
-before_deploy:
-  - |
-    if [[ "${DOXYGEN}" == "true" ]]; then
-      cd $TRAVIS_BUILD_DIR/doc/doxygen
-      doxygen Doxyfile
-    else
-      mkdir -p $TRAVIS_BUILD_DIR/doc/doxygen/html
-    fi
+jobs:
+  include:
+    - stage: pre_deploy
+      script: |
+        if [[ "${DOXYGEN}" == "true" ]]; then
+          cd $TRAVIS_BUILD_DIR/doc/doxygen
+          doxygen Doxyfile
+        fi
+    - stage: deploy
+      script: skip
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: ./doc/doxygen/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: master
+    
+# before_deploy:
+  # - |
+    # if [[ "${DOXYGEN}" == "true" ]]; then
+      # cd $TRAVIS_BUILD_DIR/doc/doxygen
+      # doxygen Doxyfile
+    # fi
 
 
-deploy:
-  provider: pages
-  skip_cleanup: true
-  local_dir: ./doc/doxygen/html
-  github_token: $GITHUB_API_KEY
-  on:
-    branch: master
+# deploy:
+  # provider: pages
+  # skip_cleanup: true
+  # local_dir: ./doc/doxygen/html
+  # github_token: $GITHUB_API_KEY
+  # on:
+    # branch: master
