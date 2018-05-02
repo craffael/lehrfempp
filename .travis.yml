@@ -33,7 +33,10 @@ matrix:
             - 'g++-7'
             - doxygen
             - graphviz
-      env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
+      env: 
+        - COMPILER='g++-7' 
+        - BUILD_TYPE='Release'
+        - DOXYGEN='true'
 
     - os: linux
       compiler: gcc
