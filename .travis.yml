@@ -104,6 +104,30 @@ jobs:
             - g++-7
       script: ./compile_test.sh
         
+    - stage: compile_test
+      os: linux
+      compiler: clang
+      env: 
+        - COMPILER='clang++-5.0'
+        - BUILD_TYPE='Debug'
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      script: ./compile_test.sh   
+     
+    - stage: compile_test
+      os: linux
+      compiler: clang
+      env: 
+        - COMPILER='clang++-5.0'
+        - BUILD_TYPE='Release'
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      script: ./compile_test.sh   
+        
     - stage: doxygen
       os: linux 
       compiler: gcc
