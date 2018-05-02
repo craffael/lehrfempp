@@ -34,13 +34,13 @@ matrix:
             - graphviz
       env: COMPILER='g++-7' BUILD_TYPE='Release' DOXYGEN='true'
 
-    # - os: linux
-      # compiler: gcc
-      # addons: 
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: ['g++-7']
-      # env: COMPILER='g++-7' BUILD_TYPE='Debug'
+    - os: linux
+      compiler: gcc
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
+      env: COMPILER='g++-7' BUILD_TYPE='Debug'
       
      # # Linux C++17 Clang builds
     # - os: linux
