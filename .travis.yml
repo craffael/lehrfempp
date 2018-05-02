@@ -90,6 +90,19 @@ jobs:
           packages: 
             - g++-7
       script: ./compile_test.sh
+      
+    - stage: compile_test
+      os: linux 
+      compiler: gcc
+      env:
+        - COMPILER=g++-7
+        - BUILD_TYPE='Release'
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-7
+      script: ./compile_test.sh
         
     - stage: doxygen
       os: linux 
