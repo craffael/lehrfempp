@@ -83,13 +83,12 @@ jobs:
       compiler: gcc
       env:
         - COMPILER=g++-7
+        - BUILD_TYPE='Debug'
       addons: 
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: 
             - g++-7
-            - doxygen
-            - graphviz
       script: ./compile_test.sh
         
     - stage: doxygen
