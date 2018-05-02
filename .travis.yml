@@ -74,10 +74,9 @@ stages:
       # env: COMPILER='clang++' BUILD_TYPE='Debug'
             
   
-# Deploy doxygen documentation using builtin GitHub Pages support
 jobs:
   include:
-      
+    # Linux gcc
     - stage: compile_test
       os: linux 
       compiler: gcc
@@ -104,6 +103,7 @@ jobs:
             - g++-7
       script: ./compile_test.sh
         
+    # Linux Clang
     - stage: compile_test
       os: linux
       compiler: clang
@@ -127,7 +127,21 @@ jobs:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-5.0', 'g++-7']
       script: ./compile_test.sh   
+    
+    # OSX Builds
+    - stage: compile_test
+      os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Debug'
+    
+    - stage: compile_test
+      os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Release'
         
+    # Deploy doxygen documentation using builtin GitHub Pages support
     - stage: doxygen
       os: linux 
       compiler: gcc
