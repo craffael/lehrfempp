@@ -9,12 +9,15 @@ void foo() {
   RefElType type = RefEl::kTria;
   //! [convert_to_enum]
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-comparison"
   //! [oneToOneRelation]
   RefElType::kPoint == RefEl::kPoint;
   RefElType::kSegment == RefEl::kSegment;
   RefElType::kTria == RefEl::kTria;
   RefElType::kQuad == RefEl::kQuad;
   //! [oneToOneRelation]
+#pragma clang diagnostic pop
 
   //! [enumConversion]
   RefElType point = RefEl::kPoint;
