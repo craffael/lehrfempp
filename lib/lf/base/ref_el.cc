@@ -2,6 +2,13 @@
 
 
 namespace lf::base {
+
+constexpr RefEl RefEl::kPoint = RefEl(RefElType::kPoint);
+constexpr RefEl RefEl::kSegment = RefEl(RefElType::kSegment);
+constexpr RefEl RefEl::kTria = RefEl(RefElType::kTria);
+constexpr RefEl RefEl::kQuad = RefEl(RefElType::kQuad);
+
+
 const std::vector<Eigen::VectorXd> RefEl::ncoords_point_dynamic_ =
   std::vector<Eigen::VectorXd>{Eigen::VectorXd::Zero(0)};
 

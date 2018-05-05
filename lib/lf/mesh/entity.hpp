@@ -1,23 +1,18 @@
-#ifndef 0b1f1ef63abc49b1806e09cc848c37d5
-#define 0b1f1ef63abc49b1806e09cc848c37d5
+#ifndef __37e385afbd3b4b1dba8611fb71787822
+#define __37e385afbd3b4b1dba8611fb71787822
 
 
+namespace hl::mesh {
 
-namespace hl::mesh
-{
-	
-	template<int DIM_WORLD, int DIM_MESH, int CODIM>
-	class Entity
-	{
-		
+class Entity {
 
+public:
 
+  virtual int Codim() = 0;
 
-	};
+};
 
 
 }
 
-
-
-#endif // 0b1f1ef63abc49b1806e09cc848c37d5
+#endif // __37e385afbd3b4b1dba8611fb71787822

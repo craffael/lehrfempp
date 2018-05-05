@@ -29,5 +29,7 @@
   }
 #endif
 
+#define LF_ASSERT_MSG(expr, msg) BOOST_ASSERT_MSG(expr, msg)
+
 
 #endif // __c3c605c9e48646758bf03fab65d52836

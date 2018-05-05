@@ -12,6 +12,8 @@ namespace lf::base {}
 
 
 // public header files that make up the base library:
+#include "forward_iterator.h"
+#include "range.h"
 #include "ref_el.h"
 
 #endif // __986f32316282425d9be137cb399482f3

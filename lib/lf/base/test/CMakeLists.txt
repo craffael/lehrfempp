@@ -1,7 +1,9 @@
 
 include(GoogleTest)
 
-set(sources 
+set(sources
+  forward_iterator.cc
+  range.cc
   ref_el.cc
 )
 

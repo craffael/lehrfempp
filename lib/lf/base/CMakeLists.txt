@@ -1,9 +1,13 @@
 set(sources 
   base.h
+  forward_iterator.h
+  lf_assert.h
+  range.h
   ref_el.cc
   ref_el.h
-  lf_assert.h
 )
+
+
 
 add_library(base ${sources})
 target_link_libraries(base PUBLIC Eigen3::Eigen Boost::boost)

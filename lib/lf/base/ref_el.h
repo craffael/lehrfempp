@@ -412,11 +412,6 @@ public:
   }
 };
 
-constexpr RefEl RefEl::kPoint = RefEl(RefElType::kPoint);
-constexpr RefEl RefEl::kSegment = RefEl(RefElType::kSegment);
-constexpr RefEl RefEl::kTria = RefEl(RefElType::kTria);
-constexpr RefEl RefEl::kQuad = RefEl(RefElType::kQuad);
-
 
 /**
  * @brief Operator overload to print a `RefEl` to a stream, such as `std::cout`
