@@ -26,7 +26,10 @@ TEST(Range, useInForLoop)
     EXPECT_EQ(i, count++);
   }
 
-  // std:: algorithms work
-  //EXPECT_EQ(std::find(range.begin(), range.end(), 2), 2);
-
+  // try a few std:: algorithms
+  EXPECT_EQ(*std::find(range.begin(), range.end(), 2), 2);
+  EXPECT_EQ(std::count(range.begin(), range.end(), 2), 1);
+  EXPECT_EQ(std::distance(range.begin(), range.end()), 4);
+  bool result = std::all_of(range.begin(), range.end(), [](int a) {return true;});
+  EXPECT_EQ(result, true);
 }

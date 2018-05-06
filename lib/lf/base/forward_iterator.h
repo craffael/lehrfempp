@@ -100,13 +100,13 @@ class ForwardIterator {
 
 public:
 
-  template <class IteratorImpl>
+  template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>>
   ForwardIterator(const IteratorImpl& iterator)
     : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {
   }
 
-  template <class IteratorImpl, typename = std::enable_if_t<!std::
-              is_convertible_v<IteratorImpl, ForwardIterator&>>>
+  template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>,
+  typename = std::enable_if_t<!std::is_convertible_v<IteratorImpl, ForwardIterator&>>>
   ForwardIterator(IteratorImpl&& iterator)
     : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {
   }

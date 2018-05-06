@@ -28,13 +28,13 @@ namespace lf::base {
  */
 enum class RefElType : char {
   kPoint,
-  //!< @copydoc RefEl::kPoint
+  //!< @copydoc RefEl::kPoint()
   kSegment,
-  //!< @copydoc RefEl::kSegment
+  //!< @copydoc RefEl::kSegment()
   kTria,
-  //!< @copydoc RefEl::kTria
+  //!< @copydoc RefEl::kTria()
   kQuad,
-  //!< @copydoc RefEl::kQuad
+  //!< @copydoc RefEl::kQuad()
 };
 
 /** @class RefEl lf/base/base.h
@@ -47,14 +47,14 @@ enum class RefElType : char {
  * 
  * There is a fixed number of reference elements. This class has a static
  * member field for every type of reference element:
- * - `RefEl::kPoint` is the Reference element of every point/node in a mesh.
+ * - `RefEl::kPoint()` is the Reference element of every point/node in a mesh.
  *   The point itself doesn't have any sub-entities.
- * - `RefEl::kSegment` is the reference element of every edge in a mesh.
+ * - `RefEl::kSegment()` is the reference element of every edge in a mesh.
  *   It connects two points with each other.
- * - `RefEl::kTria` is the reference element of every triangular element in the
+ * - `RefEl::kTria()` is the reference element of every triangular element in the
  *   mesh. It has three segments (codim=1) and three points (codim=2) as 
  *   sub-entities.
- * - `RefEl::kQuad` is the reference element of every quadrilateral element in
+ * - `RefEl::kQuad()` is the reference element of every quadrilateral element in
  *   the mesh. It has four segments (codim=1) and four points (codim=2) as 
  *   sub-entities.
  *   
@@ -121,35 +121,35 @@ public:
   using NodeCoordVector = Eigen::Matrix<double, DimensionImpl(type), 1>;
 
   /**
-   * @brief The (0-dimensional) reference point.
+   * @brief Returns the (0-dimensional) reference point.
    */
-  static const RefEl kPoint;
+  static constexpr RefEl kPoint() {return RefElType::kPoint; }
 
   /**
-   * @brief The (1-dimensional) reference segment.
+   * @brief Returns the (1-dimensional) reference segment.
    *
    * #### Node numbering with (1D) node coordinates
    * @image html segment.png
    */
-  static const RefEl kSegment;
+  static constexpr RefEl kSegment() {return RefElType::kSegment; }
 
 
   /**
-   * @brief The reference triangle
+   * @brief Returns the reference triangle
    *
    * #### Node numbering with (2D) node coordinates and segment orientation.
    * @image html tria.png
    */
-  static const RefEl kTria;
+  static constexpr RefEl kTria() {return RefElType::kTria; }
 
 
   /**
-   * @brief The reference quadrilateral
+   * @brief Returns the reference quadrilateral
    *
    * #### Node numbering with (2D) node coordinates and segment orientation
    * @image html quad.png
    */
-  static const RefEl kQuad;
+  static constexpr RefEl kQuad() {return RefElType::kQuad; }
 
   /**
    * @brief Create a RefEl from a lf::base::RefElType enum.
@@ -168,10 +168,10 @@ public:
   /**
    * @brief Return the dimension of this reference element.
    *
-   * - 0 for a RefEl::kPoint
-   * - 1 for a RefEl::kSegment
-   * - 2 for a RefEl::kTria
-   * - 2 for a RefEl::kQuad
+   * - 0 for a RefEl::kPoint()
+   * - 1 for a RefEl::kSegment()
+   * - 2 for a RefEl::kTria()
+   * - 2 for a RefEl::kQuad()
    */
   constexpr char Dimension() const {
     return DimensionImpl(type_);
@@ -267,11 +267,11 @@ public:
    * 
    * #### Examples
    * - a segment has two points as `codim=1` sub-entities, therefore 
-   *   `RefEl::kSegment.NumSubEntities(1) == 2`
+   *   `RefEl::kSegment().NumSubEntities(1) == 2`
    * - a Triangle has three subentities of `codim=1` (all Segments), therefore
-   *  `RefEl::kTria.NumSubEntities(1) == 3`
+   *  `RefEl::kTria().NumSubEntities(1) == 3`
    * - a Triangle has three subEntities of `codim=2` (all Points), therefore
-   *   `RefEl::kTria.NumSubEntities(2) == 3`
+   *   `RefEl::kTria().NumSubEntities(2) == 3`
    */
   constexpr char NumSubEntities(char sub_codim) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
@@ -301,11 +301,11 @@ public:
    * 
    * #### Examples:
    * - A triangle has three codim=2 entities which are all points, therefore
-   *   `RefEl::kTria.SubType(2,i) == RefEl::kPoint` for i=0,1,2.
+   *   `RefEl::kTria().SubType(2,i) == RefEl::kPoint()` for i=0,1,2.
    * - A quadrilateral has four codim=1 entities which are all segments, 
-   *   therefore `RefEl::kQuad.SubType(1,i) == RefEl::kSegment` for i=0,1,2,3.
+   *   therefore `RefEl::kQuad().SubType(1,i) == RefEl::kSegment()` for i=0,1,2,3.
    * - The codim=0 subEntity of a triangle is the triangle itself, therefore
-   *   `RefEl::kTria.SubType(0,0) == RefEl::kTria`.
+   *   `RefEl::kTria().SubType(0,0) == RefEl::kTria()`.
    *   
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
@@ -321,7 +321,7 @@ public:
     if (sub_codim == 0) return *this;
     if (sub_codim == Dimension()) return RefElType::kPoint;
     if (Dimension() - sub_codim == 1) return RefElType::kSegment;
-    else LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
+    LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
 
     return RefElType::kPoint; // prevent warnings from compiler
   }
@@ -340,8 +340,8 @@ public:
    * @return The index of the sub-sub-entity w.r.t. this RefEl.
    * 
    * #### Examples
-   * - The sub-entity of a `RefEl::kTria` with `sub_codim=1`, `sub_index=1` 
-   *   is a `RefEl::kSegment` that connects node 1 with node 2. The 
+   * - The sub-entity of a `RefEl::kTria()` with `sub_codim=1`, `sub_index=1` 
+   *   is a `RefEl::kSegment()` that connects node 1 with node 2. The 
    *   (sub-)sub-entity of this segment with codim `sub_sub_codim=1` and sub-index 
    *   `sub_sub_index=0` (both w.r.t. to the segment) is the first point of the 
    *   segment, i.e. node 1. Therefore
@@ -411,7 +411,6 @@ public:
     return type_;
   }
 };
-
 
 /**
  * @brief Operator overload to print a `RefEl` to a stream, such as `std::cout`
