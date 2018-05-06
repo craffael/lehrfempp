@@ -321,7 +321,7 @@ public:
     if (sub_codim == 0) return *this;
     if (sub_codim == Dimension()) return RefElType::kPoint;
     if (Dimension() - sub_codim == 1) return RefElType::kSegment;
-    LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
+    else LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
 
     return RefElType::kPoint; // prevent warnings from compiler
   }

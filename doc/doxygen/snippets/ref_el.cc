@@ -33,7 +33,7 @@ void foo() {
   //! [nodeCoordStatic]
 
   //![streamOutput]
-  std::cout << RefEl::kSegment; // prints "kSegment"
+  std::cout << RefEl::kSegment(); // prints "kSegment"
   //![streamOutput]
   {
   //![refElUsage]
