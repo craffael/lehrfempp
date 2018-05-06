@@ -106,7 +106,7 @@ public:
   }
 
   template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>,
-  typename = std::enable_if_t<!std::is_convertible_v<IteratorImpl, ForwardIterator&>>>
+  typename = std::enable_if_t<!std::is_convertible<IteratorImpl, ForwardIterator&>::value>>
   ForwardIterator(IteratorImpl&& iterator)
     : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {
   }
