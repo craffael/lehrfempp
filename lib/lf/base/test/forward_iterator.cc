@@ -29,11 +29,11 @@ TEST(ForwardIterator, nonConst) {
 
   *fi = 3;
   EXPECT_EQ( *fi3, 3);
-  *std::as_const(fi) = 4; // the value of a const iterator can be modified.
-  EXPECT_EQ(*fi, 4);
 
-  ForwardIterator<const int> fiConst = fi;
-  EXPECT_EQ(*fiConst, 4);
+  // the value of a const iterator can be modified.
+  *static_cast<const ForwardIterator<int>>(fi) = 4;
+
+  EXPECT_EQ(*fi, 4);
 }
 
 TEST(ForwardIterator, constEntities) {
@@ -48,7 +48,7 @@ TEST(ForwardIterator, constEntities) {
 }
 
 TEST(ForwardIterator, DefaultConstructible) {
-  std::vector<int> numbers{0,1,2};
+  std::vector<int> numbers{0, 1, 2};
 
   ForwardIterator<int> fi0 = numbers.begin();
   ForwardIterator<int> defaultFi;
