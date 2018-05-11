@@ -5,6 +5,10 @@
 
 namespace lf::base {
 
+/**
+ * @brief A pair of ForwardIterator
+ * @tparam T 
+ */
 template <class T>
 class Range {
   ForwardIterator<T> begin_;

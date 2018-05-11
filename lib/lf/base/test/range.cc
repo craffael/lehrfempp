@@ -12,7 +12,7 @@ struct S {
 TEST(Range, useInForLoop)
 {
   std::list<int> list = {0,1,2,3};
-  auto range = Range<int>(list.begin(),list.end());
+  auto range = ForwardRange<int>(list.begin(),list.end());
 
   int count = 0;
   for(auto i : range) {
@@ -20,7 +20,7 @@ TEST(Range, useInForLoop)
   }
 
 
-  // Range can be traversed twice
+  // ForwardRange can be traversed twice
   count = 0;
   for(auto& i : range) {
     EXPECT_EQ(i, count++);

@@ -2,6 +2,7 @@
 
 set(sources 
   ref_el.cc
+  forward_iterator.cc
 )
 
 add_library(docsnippets ${sources})
