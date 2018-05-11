@@ -12,6 +12,7 @@ struct S {
 TEST(Range, useInForLoop)
 {
   std::list<int> list = {0,1,2,3};
+ 
   auto range = ForwardRange<int>(list.begin(),list.end());
 
   int count = 0;

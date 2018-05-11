@@ -3,7 +3,7 @@ include(GoogleTest)
 
 set(sources
   forward_iterator.cc
-  range.cc
+  forward_range.cc
   ref_el.cc
 )
 

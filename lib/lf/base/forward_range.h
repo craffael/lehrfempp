@@ -10,18 +10,18 @@ namespace lf::base {
  * @tparam T 
  */
 template <class T>
-class Range {
+class ForwardRange {
   ForwardIterator<T> begin_;
   ForwardIterator<T> end_;
 
 public:
 
-  Range(const Range& ) = default;
-  Range(Range&&) = default;
-  Range& operator=(const Range&) = default;
-  Range& operator=(Range&&) = default;
+  ForwardRange(const ForwardRange& ) = default;
+  ForwardRange(ForwardRange&&) = default;
+  ForwardRange& operator=(const ForwardRange&) = default;
+  ForwardRange& operator=(ForwardRange&&) = default;
 
-  Range(ForwardIterator<T> begin, ForwardIterator<T> end)
+  ForwardRange(ForwardIterator<T> begin, ForwardIterator<T> end)
     : begin_(begin),
       end_(end) {
   }
