@@ -50,9 +50,10 @@ void foo() {
 
   //! [equality]
   std::vector<int> numbers{0,1,2};
-  const std::vector<int>& constNumbers{0,1,2};
+  std::vector<int>::iterator it = numbers.begin();
+  std::vector<int>::const_iterator const_it = numbers.begin();
 
-  assert(ForwardIterator<int>(numbers.begin()) != ForwardIterator<int>(constNumbers.begin()));
+  assert(ForwardIterator<const int>(it) != ForwardIterator<const int>(const_it));
   //! [equality]
 
 
