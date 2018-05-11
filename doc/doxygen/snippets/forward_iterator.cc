@@ -43,7 +43,7 @@ void foo() {
   ++fi;
 
   // compare it to another iterator:
-  ForwardIterator<int> fi2 = list.end();
+  ForwardIterator<std::string> fi2 = list.end();
   assert(fi == fi2);
   //! [usage]
 
