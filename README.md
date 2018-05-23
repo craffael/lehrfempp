@@ -14,4 +14,8 @@ Simplistic Finite Element Framework for research and eduction optimzed for clari
 * Macros are all uppercase.
 * Variables declared constexpr or const, and whose value is fixed for the duration of the program, are named with a leading "k" followed by mixed case.
 
+## Comments
+* Use /* */ only outside of classes and functions for Doxygen documentation, inside use //
+* short variable names may be used, but then the variable has to be explained by a comment at the site of declaration.
+
 [Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
