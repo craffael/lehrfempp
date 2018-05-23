@@ -4,7 +4,7 @@
 # LehreFEM++
 Simplistic Finite Element Framework for research and eduction optimzed for clarity and flexibility with some trade-off concerning performance.
 
-## Naming conventions
+## Naming conventions from [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Naming)
 * Filenames should be all lowercase and can include underscores (_) or dashes (-).
 * Type names start with a capital letter and have a capital letter for each new word, with no underscores.
 * The names of variables (including function parameters) and data members are all lowercase, with underscores between words.
