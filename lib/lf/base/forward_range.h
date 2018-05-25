@@ -22,6 +22,7 @@ public:
   ForwardRange(ForwardRange&&) = default;
   ForwardRange& operator=(const ForwardRange&) = default;
   ForwardRange& operator=(ForwardRange&&) = default;
+  ~ForwardRange() = default;
 
   ForwardRange(ForwardIterator<T> begin, ForwardIterator<T> end)
     : begin_(begin),

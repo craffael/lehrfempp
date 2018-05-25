@@ -15,6 +15,8 @@ namespace lf::base {}
 #include "forward_iterator.h"
 #include "forward_range.h"
 #include "invalid_type_exception.h"
+#include "random_access_iterator.h"
+#include "random_access_range.h"
 #include "ref_el.h"
 
 #endif // __986f32316282425d9be137cb399482f3

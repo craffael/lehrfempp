@@ -1,28 +1,38 @@
 
+#ifndef __b86b0c9cb0fd48da931a1f24421b8842
+#define __b86b0c9cb0fd48da931a1f24421b8842
 
-#ifndef 969d7bbbb7bc427f9813bb0bfc7e0abe
-#define 969d7bbbb7bc427f9813bb0bfc7e0abe
-#include "entity.hpp"
 
-namespace hl::mesh
+
+#include <lf/base/base.h>
+
+#include "entity.h"
+
+namespace lf::mesh
 {
-	template<int DIM_WORLD, int DIM_MESH>
-	class Mesh
-	{
-	public:
-		static constexpr int dimWorld = DIM_WORLD;
-		static constexpr int dimMesh = DIM_MESH;
-	
-		template<int CODIM>
-		using entityIterator_t = Entity<dimWorld, dimMesh, CODIM>*;
+  class Mesh {
+  public:
 
+    using size_t = int;
 
-	};
+    virtual char DimMesh() const = 0;
+
+    virtual char DimWorld() const = 0;
+
+    virtual base::ForwardRange<Entity> Entities(char codim) const = 0;
+
+    virtual size_t Size(char codim) const = 0;
+
+    // Move this method over to the entity?
+    virtual size_t Index(const Entity& e) const = 0;
+
+    virtual ~Mesh() {}
+  };
 }
 
 
+#endif // __b86b0c9cb0fd48da931a1f24421b8842
 
 
-#endif // 969d7bbbb7bc427f9813bb0bfc7e0abe
 
 
