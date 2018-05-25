@@ -71,7 +71,8 @@ class ForwardIterator {
     }
   };
 
-  template <class InnerIterator>
+  template <class InnerIterator, typename =
+            typename std::enable_if<!std::is_reference_v<InnerIterator>>::type>
   class WrapperImpl : public WrapperInterface {
   private:
     InnerIterator iterator_;
@@ -79,6 +80,10 @@ class ForwardIterator {
   public:
 
     WrapperImpl(const InnerIterator& iterator)
+      : iterator_(iterator) {
+    }
+
+    WrapperImpl(InnerIterator&& iterator)
       : iterator_(iterator) {
     }
 
@@ -105,7 +110,7 @@ class ForwardIterator {
     }
 
     std::unique_ptr<WrapperInterface> operator++(int) override {
-      return std::make_unique<WrapperImpl>(iterator_++);
+      return std::unique_ptr<WrapperInterface>(new WrapperImpl(iterator_++));
     }
 
   };
@@ -166,12 +171,17 @@ public:
    * @param iterator The iterator that should be wrapped.
    */
   template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>,
-  typename = std::enable_if_t<!std::is_convertible<IteratorImpl, ForwardIterator&>::value>>
+            typename = std::enable_if_t<!std::is_convertible<
+                                          IteratorImpl, ForwardIterator&>::value
+                                        &&
+                                        !std::is_reference<IteratorImpl>::value>
+  >
   ForwardIterator(IteratorImpl&& iterator)
-    : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {
+    : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>
+               >(std::forward<IteratorImpl>(iterator))) {
   }
 
-  
+
   /**
    * @brief Default constructor of the Forward iterator.
    * 
@@ -274,15 +284,16 @@ public:
 
 /// \cond
 namespace std {
-  template<class T>
-  struct iterator_traits<lf::base::ForwardIterator<T>> {
-    using difference_type = std::ptrdiff_t;
-    using value_type = T;
-    using pointer = T*;
-    using reference = T&;
-    using iterator_category = std::forward_iterator_tag;
-  };
+template <class T>
+struct iterator_traits<lf::base::ForwardIterator<T>> {
+  using difference_type = std::ptrdiff_t;
+  using value_type = T;
+  using pointer = T*;
+  using reference = T&;
+  using iterator_category = std::forward_iterator_tag;
+};
 }
+
 /// \endcond
 
 

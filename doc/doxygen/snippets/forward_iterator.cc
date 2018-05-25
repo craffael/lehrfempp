@@ -47,7 +47,6 @@ void foo() {
   assert(fi == fi2);
   //! [usage]
 
-
   //! [equality]
   std::vector<int> numbers{0,1,2};
   std::vector<int>::iterator it = numbers.begin();

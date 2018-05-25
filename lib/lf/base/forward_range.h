@@ -6,8 +6,10 @@
 namespace lf::base {
 
 /**
- * @brief A pair of ForwardIterator
- * @tparam T 
+ * @brief A pair of ForwardIterator's that make up a set of elements of type T
+ * @tparam T The type of elements contained in the range.
+ * 
+ * ### Motivation
  */
 template <class T>
 class ForwardRange {

@@ -34,4 +34,5 @@
 # Specific folders:
 .vs/
 bin/
+bin_clang/
 doc/doxygen/html
