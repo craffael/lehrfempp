@@ -72,7 +72,7 @@ class ForwardIterator {
   };
 
   template <class InnerIterator, typename =
-            typename std::enable_if<!std::is_reference_v<InnerIterator>>::type>
+           std::enable_if<!std::is_reference<InnerIterator>::value>>
   class WrapperImpl : public WrapperInterface {
   private:
     InnerIterator iterator_;
