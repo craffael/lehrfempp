@@ -1,7 +1,8 @@
 set(sources
-  entity.hpp 
-  mesh.cpp
-  mesh.hpp
+  entity.h
+  geometry.h
+  mesh.cc
+  mesh.h
 )
 
 add_library(mesh ${sources})

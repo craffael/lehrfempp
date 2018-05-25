@@ -4,6 +4,7 @@ include(GoogleTest)
 set(sources
   forward_iterator.cc
   forward_range.cc
+  random_access_iterator.cc
   ref_el.cc
 )
 

@@ -1,6 +1,7 @@
 set(sources 
   base.h
   forward_iterator.h
+  invalid_type_exception.h
   lf_assert.h
   forward_range.h
   ref_el.cc

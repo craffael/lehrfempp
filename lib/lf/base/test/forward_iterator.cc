@@ -44,6 +44,7 @@ TEST(ForwardIterator, constEntities) {
   EXPECT_EQ(*fi++, "hello");
   EXPECT_EQ(*fi, "world");
   ++fi;
+
   EXPECT_EQ(fi, strings.end());
 }
 

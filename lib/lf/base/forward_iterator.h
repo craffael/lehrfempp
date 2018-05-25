@@ -6,6 +6,10 @@
 
 namespace lf::base {
 
+// Forward declarations:
+template <class T>
+class RandomAccessIterator;
+
 /**
  * @brief A wrapper around any <a href="http://en.cppreference.com/w/cpp/concept/ForwardIterator">Forward Iterator</a>
  * @tparam T The type to which the Iterator points.
@@ -57,7 +61,7 @@ namespace lf::base {
  */
 template <class T>
 class ForwardIterator {
-
+protected:
   class WrapperInterface {
   public:
     virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
@@ -71,10 +75,12 @@ class ForwardIterator {
     }
   };
 
-  template <class InnerIterator, typename =
-           std::enable_if<!std::is_reference<InnerIterator>::value>>
-  class WrapperImpl : public WrapperInterface {
-  private:
+  template <class InnerIterator, typename = typename std::iterator_traits<
+              InnerIterator>::difference_type,
+            typename = typename std::enable_if<!std::is_reference<InnerIterator>
+              ::value>::type>
+  class WrapperImpl : public virtual WrapperInterface {
+  protected:
     InnerIterator iterator_;
 
   public:
@@ -84,7 +90,7 @@ class ForwardIterator {
     }
 
     WrapperImpl(InnerIterator&& iterator)
-      : iterator_(iterator) {
+      : iterator_(std::move(iterator)) {
     }
 
     std::unique_ptr<WrapperInterface> Clone() const override {
@@ -113,6 +119,7 @@ class ForwardIterator {
       return std::unique_ptr<WrapperInterface>(new WrapperImpl(iterator_++));
     }
 
+    friend class RandomAccessIterator<T>;
   };
 
   class WrapperNull : public WrapperInterface {
@@ -128,19 +135,19 @@ class ForwardIterator {
 
     T& Dereference() const override {
       LF_VERIFY_MSG(false,
-        "Cannot dereference a ForwardIterator that has been default constructed."
+        "Cannot dereference an Iterator that has been default constructed."
       );
     }
 
     WrapperInterface* operator++() override {
       LF_VERIFY_MSG(false,
-        "Cannot increment a ForwardIterator that has been default constructed."
+        "Cannot increment an Iterator that has been default constructed."
       );
     }
 
     std::unique_ptr<WrapperInterface> operator++(int) override {
       LF_VERIFY_MSG(false,
-        "Cannot increment a ForwardIterator that has been default constructed."
+        "Cannot increment an Iterator that has been default constructed."
       );
     }
   };
@@ -159,7 +166,11 @@ public:
    * @tparam IteratorImpl The type of the forward iterator.
    * @param iterator The iterator that should be wrapped.
    */
-  template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>>
+  template <class IteratorImpl, typename = typename std::iterator_traits<IteratorImpl>::iterator_category,
+            typename = std::enable_if_t<!std::is_base_of<ForwardIterator, IteratorImpl>::value
+               &&
+                                        !std::is_reference<IteratorImpl>::value>
+  >
   ForwardIterator(const IteratorImpl& iterator)
     : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {
   }
@@ -170,7 +181,8 @@ public:
    * @tparam IteratorImpl  The type of the forward iterator.
    * @param iterator The iterator that should be wrapped.
    */
-  template <class IteratorImpl, typename = std::iterator_traits<IteratorImpl>,
+  template <class IteratorImpl, typename = typename std::iterator_traits<
+              IteratorImpl>::difference_type,
             typename = std::enable_if_t<!std::is_convertible<
                                           IteratorImpl, ForwardIterator&>::value
                                         &&
