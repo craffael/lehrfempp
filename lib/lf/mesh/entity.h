@@ -38,7 +38,10 @@ public:
    */
   virtual base::RefEl RefEl() const = 0;
 
-  virtual ~Entity() {}
+  /**
+   * @brief Virtual Destructor.
+   */
+  virtual ~Entity() = default;
 };
 
 

@@ -70,7 +70,6 @@ protected:
     virtual WrapperInterface* operator++() = 0;
     virtual std::unique_ptr<WrapperInterface> operator++(int) = 0;
 
-
     virtual ~WrapperInterface() = default;
   };
 
