@@ -71,8 +71,7 @@ protected:
     virtual std::unique_ptr<WrapperInterface> operator++(int) = 0;
 
 
-    virtual ~WrapperInterface() {
-    }
+    virtual ~WrapperInterface() = default;
   };
 
   template <class InnerIterator, typename = typename std::iterator_traits<
@@ -289,6 +288,9 @@ public:
   ForwardIterator operator++(int) {
     return ForwardIterator(wrapper_->operator++(0));
   }
+
+  /// Destructor
+  ~ForwardIterator() = default;
 
 };
 
