@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include"boost/assert.hpp"
+#include <string>
 
 /**
  * @brief HL_VERIFY_MSG(expr, msg) aborts execution of the code if 
@@ -16,7 +17,7 @@
  * `BOOST_VERIFY_MSG(false, "message")` always aborts execution.
  */
 #define LF_VERIFY_MSG(expr, msg) { \
-  BOOST_VERIFY_MSG(expr, msg); \
+  BOOST_VERIFY_MSG(expr, std::string(msg).c_str()); \
   if(!(expr)) throw std::runtime_error("This exception should never throw."); \
   }
 

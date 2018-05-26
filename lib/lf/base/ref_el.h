@@ -26,7 +26,7 @@ namespace lf::base {
  * @snippet ref_el.cc enumConversion
  *
  */
-enum class RefElType : char {
+enum class RefElType : unsigned char {
   kPoint,
   //!< @copydoc RefEl::kPoint()
   kSegment,
@@ -73,6 +73,8 @@ enum class RefElType : char {
  */
 class RefEl {
 private:
+  using index_t = unsigned char;
+
   // Member variable
   RefElType type_;
 
@@ -89,13 +91,13 @@ private:
   static const std::vector<Eigen::Vector2d> ncoords_quad_static_;
 
   // subSubEntities, used by SubSubEntity2SubEntity
-  static constexpr std::array<std::array<char, 2>, 3> sub_sub_entity_index_tria_
+  static constexpr std::array<std::array<index_t, 2>, 3> sub_sub_entity_index_tria_
     = {{{0, 1}, {1, 2}, {2, 3}}};
-  static constexpr std::array<std::array<char, 2>, 4> sub_sub_entity_index_quad_
+  static constexpr std::array<std::array<index_t, 2>, 4> sub_sub_entity_index_quad_
     = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 
   // Some utility methods that are needed to deduce compile time return types:
-  static constexpr char DimensionImpl(RefElType type) {
+  static constexpr index_t DimensionImpl(RefElType type) {
     switch (type) {
       case RefElType::kPoint:
         return 0;
@@ -173,7 +175,7 @@ public:
    * - 2 for a RefEl::kTria()
    * - 2 for a RefEl::kQuad()
    */
-  constexpr char Dimension() const {
+  constexpr index_t Dimension() const {
     return DimensionImpl(type_);
   }
 
@@ -183,7 +185,7 @@ public:
    * 
    * @remark This is a shortcut for calling `NumSubEntities(Dimension())`
    */
-  constexpr char NumNodes() const {
+  constexpr index_t NumNodes() const {
     switch (type_) {
       case RefElType::kPoint:
         return 1;
@@ -273,7 +275,7 @@ public:
    * - a Triangle has three subEntities of `codim=2` (all Points), therefore
    *   `RefEl::kTria().NumSubEntities(2) == 3`
    */
-  constexpr char NumSubEntities(char sub_codim) const {
+  constexpr index_t NumSubEntities(index_t sub_codim) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()");
     if (sub_codim == 0) return 1;
@@ -310,7 +312,7 @@ public:
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
    */
-  constexpr RefEl SubType(char sub_codim, char sub_index) const {
+  constexpr RefEl SubType(index_t sub_codim, index_t sub_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()"
     );
@@ -349,9 +351,9 @@ public:
    * - Similarly, for `sub_sub_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
-  constexpr char SubSubEntity2SubEntity(char sub_codim, char sub_index,
-                                        char sub_sub_codim,
-                                        char sub_sub_index) const {
+  constexpr index_t SubSubEntity2SubEntity(index_t sub_codim, index_t sub_index,
+                                        index_t sub_sub_codim,
+                                        index_t sub_sub_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");

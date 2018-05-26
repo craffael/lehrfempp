@@ -23,7 +23,7 @@ public:
    * @param codim The codim w.r.t. this entity
    * @return 
    */
-  virtual base::RandomAccessRange<Entity> SubEntities(char codim) const = 0;
+  virtual base::RandomAccessRange<const Entity> SubEntities(char codim) const = 0;
 
   /**
    * @brief Describes the geometry of this entity.

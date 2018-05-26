@@ -1,5 +1,6 @@
 set(sources 
   base.h
+  dereference_random_access_iterator.h
   forward_iterator.h
   forward_range.h
   invalid_type_exception.h
@@ -12,15 +13,12 @@ set(sources
 
 
 
-add_library(base ${sources})
-target_link_libraries(base PUBLIC Eigen3::Eigen Boost::boost)
-target_compile_features(base PUBLIC cxx_std_17)
-target_include_directories(base PUBLIC
+add_library(lf.base ${sources})
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost)
+target_compile_features(lf.base PUBLIC cxx_std_17)
+target_include_directories(lf.base PUBLIC
   "$<BUILD_INTERFACE:${LOCAL_INCLUDE_DIRECTORY}>"
   "$<BUILD_INTERFACE:${LOCAL_GENERATED_INCLUDE_DIRECTORY}>"
 )
-
-
-
 
 add_subdirectory(test)
