@@ -5,10 +5,13 @@
 #include "lf/mesh/entity.h"
 #include "lf/mesh/mesh_interface.h"
 
+namespace lf::mesh {
+  class Geometry;
+}
+
 namespace lf::mesh::hybrid2d {
 
 class Mesh;
-class Geometry;
 
 template <char CODIM>
 class Entity : public mesh::Entity {
