@@ -5,7 +5,7 @@
 #include <lf/base/ref_el.h>
 #include <Eigen/Eigen>
 
-namespace lf::mesh {
+namespace lf::geometry {
 
 class Geometry {
  public:

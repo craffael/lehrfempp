@@ -5,10 +5,6 @@
 #include "lf/mesh/entity.h"
 #include "lf/mesh/mesh_interface.h"
 
-namespace lf::mesh {
-  class Geometry;
-}
-
 namespace lf::mesh::hybrid2d {
 
 class Mesh;
@@ -29,7 +25,7 @@ public:
     char codim) const override;
 
 
-  mesh::Geometry* Geometry() const override { return geometry_.get(); }
+  geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
   base::RefEl RefEl() const override {
     switch (CODIM) {
@@ -52,7 +48,7 @@ public:
 
   // constructor, is called from Mesh
   Entity(Mesh* mesh, size_type index,
-         std::unique_ptr<mesh::Geometry>&& geometry,
+         std::unique_ptr<geometry::Geometry>&& geometry,
          std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
     : mesh_(mesh),
       index_(index),
@@ -63,7 +59,7 @@ public:
 private:
   Mesh* mesh_;
   size_type index_; // zero-based index of this entity.
-  std::unique_ptr<mesh::Geometry> geometry_;
+  std::unique_ptr<geometry::Geometry> geometry_;
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
 
   friend class Mesh;

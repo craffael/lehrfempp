@@ -14,7 +14,7 @@ TEST(hybrid2d, directMeshConstruction) {
   std::vector<Eigen::VectorXd> nodes{Eigen::Vector2d(0,0), Eigen::Vector2d(1,0),
     Eigen::Vector2d(2,0), Eigen::Vector2d(1,1), Eigen::Vector2d(0,1)};
 
-  std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<Geometry>>> elements;
+  std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<lf::geometry::Geometry>>> elements;
   elements.emplace_back(std::vector<size_type>{0,1,3,4}, nullptr);
   elements.emplace_back(std::vector<size_type>{1,2,3}, nullptr);
   

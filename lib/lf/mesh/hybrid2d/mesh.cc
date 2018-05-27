@@ -5,7 +5,7 @@ namespace lf::mesh::hybrid2d {
 
 Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
            std::vector<std::tuple<
-             std::vector<size_type>, std::unique_ptr<Geometry>>>
+             std::vector<size_type>, std::unique_ptr<geometry::Geometry>>>
            elements)
   : dim_world_(dim_world),
     entities0_(),

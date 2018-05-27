@@ -31,7 +31,7 @@ class Mesh : public mesh::Mesh {
    */
   Mesh(
       char dim_world, std::vector<Eigen::VectorXd> nodes,
-      std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<Geometry>>>
+      std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<geometry::Geometry>>>
           elements);
 
   char DimMesh() const override { return 2; }

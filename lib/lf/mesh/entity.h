@@ -3,7 +3,6 @@
 #include <lf/base/base.h>
 #include "geometry.h"
 
-
 namespace lf::mesh {
 
 class Entity {
@@ -27,10 +26,10 @@ public:
 
   /**
    * @brief Describes the geometry of this entity.
-   * @return A point to a Geometry object that will remain valid for as long
+   * @return A pointer to a Geometry object that will remain valid for as long
    *         as the Mesh remains valid.
    */
-  virtual Geometry* Geometry() const = 0;
+  virtual lf::geometry::Geometry* Geometry() const = 0;
 
   /**
    * @brief Describes the reference element type of this entity.
