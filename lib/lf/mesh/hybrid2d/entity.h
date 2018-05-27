@@ -8,6 +8,7 @@
 namespace lf::mesh::hybrid2d {
 
 class Mesh;
+class Geometry;
 
 template <char CODIM>
 class Entity : public mesh::Entity {
