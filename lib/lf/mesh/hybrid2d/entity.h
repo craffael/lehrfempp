@@ -13,7 +13,7 @@ template <char CODIM>
 class Entity : public mesh::Entity {
   using size_type = mesh::Mesh::size_type;
 
- public:
+public:
   // needed by std::vector
   Entity() = default;
   Entity(Entity&&) = default;
@@ -26,7 +26,21 @@ class Entity : public mesh::Entity {
 
 
   mesh::Geometry* Geometry() const override { return geometry_.get(); }
-  base::RefEl RefEl() const override { return geometry_->RefEl(); }
+
+  base::RefEl RefEl() const override {
+    switch (CODIM) {
+      case 0:
+        return sub_entities_[0].size() == 3
+                 ? base::RefEl::kTria()
+                 : base::RefEl::kQuad();
+      case 1:
+        return base::RefEl::kSegment();
+      case 2:
+        return base::RefEl::kPoint();
+      default:
+        LF_VERIFY_MSG(false, "codim out of range.");
+    }
+  }
 
   bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
@@ -36,14 +50,15 @@ class Entity : public mesh::Entity {
   Entity(Mesh* mesh, size_type index,
          std::unique_ptr<mesh::Geometry>&& geometry,
          std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
-      : mesh_(mesh),
-        index_(index),
-        geometry_(std::move(geometry)),
-        sub_entities_(std::move(sub_entities)) {}
+    : mesh_(mesh),
+      index_(index),
+      geometry_(std::move(geometry)),
+      sub_entities_(std::move(sub_entities)) {
+  }
 
- private:
+private:
   Mesh* mesh_;
-  size_type index_;  // zero-based index of this entity.
+  size_type index_; // zero-based index of this entity.
   std::unique_ptr<mesh::Geometry> geometry_;
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
 
@@ -59,7 +74,7 @@ namespace lf::mesh::hybrid2d {
 template <char CODIM>
 base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
   char codim) const {
-  switch (2-CODIM - codim) {
+  switch (2 - CODIM - codim) {
     case 2:
       // return ourselves as the only element:
       return {this, this + 1};
@@ -68,14 +83,18 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
         base::DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
-                                                    [&](auto i) -> const mesh::Entity& {
-                                                      return mesh_->entities1_[*i];
+                                                    [&](auto i) -> const mesh::
+                                                  Entity& {
+                                                      return mesh_->entities1_[*
+                                                        i];
                                                     }),
         base::DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
-                                                    [&](auto i) -> const mesh::Entity& {
-                                                      return mesh_->entities1_[*i];
+                                                    [&](auto i) -> const mesh::
+                                                  Entity& {
+                                                      return mesh_->entities1_[*
+                                                        i];
                                                     })
       };
     case 0:
@@ -83,14 +102,18 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
         base::DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
-                                                    [&](auto i) -> const mesh::Entity& {
-                                                      return mesh_->entities2_[*i];
+                                                    [&](auto i) -> const mesh::
+                                                  Entity& {
+                                                      return mesh_->entities2_[*
+                                                        i];
                                                     }),
         base::DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
-                                                    [&](auto i) -> const mesh::Entity& {
-                                                      return mesh_->entities2_[*i];
+                                                    [&](auto i) -> const mesh::
+                                                  Entity& {
+                                                      return mesh_->entities2_[*
+                                                        i];
                                                     })
       };
     default:
@@ -98,6 +121,6 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
   }
 }
 
-}  // namespace lf::mesh::hybrid2d
+} // namespace lf::mesh::hybrid2d
 
 #endif  // __7a3f1903d42141a3b1135e8e5ad72c1c

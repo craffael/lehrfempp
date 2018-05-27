@@ -60,8 +60,11 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
     if(begin == end) {
       // add edge
       std::array<std::vector<size_type>, 1> sub_entities;
-      sub_entities[0].push_back(std::get<0>(element_edges[begin])[0]);
-      sub_entities[0].push_back(std::get<0>(element_edges[begin])[1]);
+      // orient the edge always so it agrees with the first (lower) element's sub-entity
+      auto& element = entities0_[std::get<1>(element_edges[begin])];
+     
+      sub_entities[0].push_back(element.sub_entities_[1][element.RefEl().SubSubEntity2SubEntity(1, std::get<2>(element_edges[begin]), 1, 0)]);
+      sub_entities[0].push_back(element.sub_entities_[1][element.RefEl().SubSubEntity2SubEntity(1, std::get<2>(element_edges[begin]), 1, 1)]);
       entities1_.emplace_back(this, entities1_.size(), nullptr, sub_entities);
     }
 
