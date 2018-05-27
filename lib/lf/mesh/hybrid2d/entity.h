@@ -74,13 +74,14 @@ namespace lf::mesh::hybrid2d {
 template <char CODIM>
 base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
   char codim) const {
+
   switch (2 - CODIM - codim) {
     case 2:
       // return ourselves as the only element:
       return {this, this + 1};
     case 1:
       return {
-        base::DereferenceLambdaRandomAccessIterator(
+        base::make_DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
@@ -88,7 +89,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                                                       return mesh_->entities1_[*
                                                         i];
                                                     }),
-        base::DereferenceLambdaRandomAccessIterator(
+        base::make_DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
@@ -99,7 +100,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
       };
     case 0:
       return {
-        base::DereferenceLambdaRandomAccessIterator(
+        base::make_DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
@@ -107,7 +108,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                                                       return mesh_->entities2_[*
                                                         i];
                                                     }),
-        base::DereferenceLambdaRandomAccessIterator(
+        base::make_DereferenceLambdaRandomAccessIterator(
                                                     sub_entities_[codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::

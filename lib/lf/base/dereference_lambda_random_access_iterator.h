@@ -108,6 +108,11 @@ private:
 
 };
 
+template<class Iterator, class Lambda>
+DereferenceLambdaRandomAccessIterator<Iterator, Lambda> make_DereferenceLambdaRandomAccessIterator(Iterator&& i, Lambda l) {
+  return {std::move(i), l};
+}
+
 }
 
 namespace std {
