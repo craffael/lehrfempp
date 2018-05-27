@@ -13,7 +13,7 @@ namespace lf::mesh
   class Mesh {
   public:
 
-    using size_t = unsigned int;
+    using size_type = unsigned int;
 
 
     /**
@@ -46,10 +46,10 @@ namespace lf::mesh
      * @param codim The codimension of the entities that should be counted.
      * @return That number of entities that have the given codimension.
      */
-    virtual size_t Size(char codim) const = 0;
+    virtual size_type Size(char codim) const = 0;
 
     // Move this method over to the entity?
-    virtual size_t Index(const Entity& e) const = 0;
+    virtual size_type Index(const Entity& e) const = 0;
 
     
     /**

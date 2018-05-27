@@ -25,6 +25,10 @@ public:
   RandomAccessIterator<T> begin() const { return begin_; }
   RandomAccessIterator<T> end() const { return end_; }
 
+  T& operator[](size_t i) const {
+    return begin_[i];
+  }
+
   operator ForwardRange<T>() const {
     return new ForwardRange<T>(begin_, end_);
   }

@@ -38,6 +38,23 @@ public:
    */
   virtual base::RefEl RefEl() const = 0;
 
+
+  /**
+   * @brief Check if two entities are the same
+   * @param rhs Check if this entity is the same as the rhs entity.
+   * 
+   * @note The behavior of this method is undefined if the rhs entity belongs to a different Mesh.
+   */
+  virtual bool operator==(const Entity& rhs) const = 0;
+
+
+  /**
+   * @brief Check if two entities are different.
+   */
+  bool operator!=(const Entity& rhs) const {
+    return !operator==(rhs);
+  }
+
   /**
    * @brief Virtual Destructor.
    */

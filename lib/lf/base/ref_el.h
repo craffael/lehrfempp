@@ -92,7 +92,7 @@ private:
 
   // subSubEntities, used by SubSubEntity2SubEntity
   static constexpr std::array<std::array<index_t, 2>, 3> sub_sub_entity_index_tria_
-    = {{{0, 1}, {1, 2}, {2, 3}}};
+    = {{{0, 1}, {1, 2}, {2, 0}}};
   static constexpr std::array<std::array<index_t, 2>, 4> sub_sub_entity_index_quad_
     = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 

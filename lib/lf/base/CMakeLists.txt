@@ -1,6 +1,6 @@
 set(sources 
   base.h
-  dereference_random_access_iterator.h
+  dereference_lambda_random_access_iterator.h
   forward_iterator.h
   forward_range.h
   invalid_type_exception.h
