@@ -5,7 +5,7 @@
 
 namespace lf::mesh::hybrid2d {
 
-  class Geometry
+  //class Geometry
 
 }
 

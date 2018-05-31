@@ -1,8 +1,8 @@
 set(sources
   entity.h
-  geometry.h
   mesh.cc
   mesh.h
+  mesh_builder.h
   mesh_interface.h
 )
 

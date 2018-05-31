@@ -1,6 +1,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
+#include <lf/mesh/geometry/geometry.h>
 
 using namespace lf::mesh;
 

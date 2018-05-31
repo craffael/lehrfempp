@@ -1,7 +1,7 @@
 #ifndef __37e385afbd3b4b1dba8611fb71787822
 #define __37e385afbd3b4b1dba8611fb71787822
 #include <lf/base/base.h>
-#include "geometry.h"
+#include <lf/mesh/geometry/geometry.h>
 
 namespace lf::mesh {
 

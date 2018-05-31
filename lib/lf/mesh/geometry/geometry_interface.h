@@ -10,6 +10,7 @@ namespace lf::geometry {
 class Geometry {
  public:
 
+  using coord_t = Eigen::VectorXd;
 
   /**
    * @brief Dimension of the domain of this mapping.
