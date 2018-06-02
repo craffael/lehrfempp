@@ -72,8 +72,9 @@ enum class RefElType : unsigned char {
  * @snippet ref_el.cc refElUsage
  */
 class RefEl {
-private:
+public:
   using dim_t = unsigned char;
+private:
 
   // Member variable
   RefElType type_;

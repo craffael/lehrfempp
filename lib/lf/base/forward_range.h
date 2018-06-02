@@ -13,6 +13,7 @@ namespace lf::base {
  */
 template <class T>
 class ForwardRange {
+protected:
   ForwardIterator<T> begin_;
   ForwardIterator<T> end_;
 

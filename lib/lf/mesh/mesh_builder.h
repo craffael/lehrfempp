@@ -2,7 +2,7 @@
 #define __5ac8f981f27e45d3b9d15fc9d52f7136
 
 #include <lf/base/base.h>
-#include <lf/mesh/geometry/geometry.h>
+#include <lf/geometry/geometry.h>
 #include "mesh_interface.h"
 
 namespace lf::mesh {
@@ -58,7 +58,7 @@ public:
 
   /**
    * @brief Construct a mesh out of the specified nodes and elements.
-   * @return The create mesh.
+   * @return The created mesh.
    */
   virtual std::unique_ptr<Mesh> build() = 0;
 

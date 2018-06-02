@@ -1,7 +1,7 @@
 #ifndef __37e385afbd3b4b1dba8611fb71787822
 #define __37e385afbd3b4b1dba8611fb71787822
 #include <lf/base/base.h>
-#include <lf/mesh/geometry/geometry.h>
+#include <lf/geometry/geometry.h>
 
 namespace lf::mesh {
 
@@ -29,7 +29,7 @@ public:
    * @return A pointer to a Geometry object that will remain valid for as long
    *         as the Mesh remains valid.
    */
-  virtual lf::geometry::Geometry* Geometry() const = 0;
+  virtual geometry::Geometry* Geometry() const = 0;
 
   /**
    * @brief Describes the reference element type of this entity.

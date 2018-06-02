@@ -19,6 +19,16 @@ public:
   Entity(Entity&&) = default;
   Entity& operator=(Entity&&) = default;
 
+  // constructor, is called from Mesh
+  Entity(Mesh* mesh, size_type index,
+         std::unique_ptr<geometry::Geometry>&& geometry,
+         std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
+    : mesh_(mesh),
+      index_(index),
+      geometry_(std::move(geometry)),
+      sub_entities_(std::move(sub_entities)) {
+  }
+
   char Codim() const override { return CODIM; }
 
   base::RandomAccessRange<const mesh::Entity> SubEntities(
@@ -44,16 +54,6 @@ public:
 
   bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
-  }
-
-  // constructor, is called from Mesh
-  Entity(Mesh* mesh, size_type index,
-         std::unique_ptr<geometry::Geometry>&& geometry,
-         std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
-    : mesh_(mesh),
-      index_(index),
-      geometry_(std::move(geometry)),
-      sub_entities_(std::move(sub_entities)) {
   }
 
 private:
