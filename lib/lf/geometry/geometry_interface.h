@@ -18,41 +18,52 @@ public:
    */
   virtual dim_t DimLocal() const = 0;
 
-
   /**
    * @brief Dimension of the image of this mapping.
    */
   virtual dim_t DimGlobal() const = 0;
-
 
   /**
    * @brief The Reference element that defines the domain of this mapping.
    */
   virtual base::RefEl RefEl() const = 0;
 
-
   /**
    * @brief Map a number of points in local coordinates into the global 
    *        coordinate system.
    * @param local A Matrix of size `DimLocal() x numPoints` that contains
-   *              the points at which the mapping function should be evaluated
-   *              as column vectors.
+   *              in its columns the coordinates of the points at which the 
+   *              mapping function should be evaluated.
    * @return A Matrix of size `DimGlobal() x numPoints` that contains the mapped
-   *         points as column vectors.
+   *         points as column vectors. Here `numPoints` is the number of columns
+   *         of the matrix passed in the `local` argument.
+   *
+   * This method provides a complete description of the shape of an entity 
+   * through a parameterization over the corresponding reference element = 
+   * parameter domain. The method takes as arguments a number of coordinate
+   * vectors of points in the reference element. For the sake of efficiency, 
+   * these coordinate vectors are passed as the columns of a dynamic matrix type
+   * as supplied by Eigen. 
    */
   virtual Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const = 0;
-
 
   /**
    * @brief Evaluate the jacobian of the mapping simultaneously at `numPoints`
    *        points.
-   * @param local A Matrix of size `DimFrom() x numPoints` that contains the 
+   * @param local A Matrix of size `DimLocal x numPoints` that contains the 
    *              evaluation points as column vectors
    * @return A Matrix of size `DimGlobal() x (DimLocal() * numPoints)` that contains
    *         the jacobians at the evaluation points.
+   *
+   * This method allows access to the derivative of the parametrization mapping 
+   * in a number of points, passed as the columns of a dynamic matrix. The derivative 
+   * of the parametrization in a point is a Jacobian matrix of size 
+   * `DimGlobal() x DimLocal()'. For the sake of efficiency, these matrices are 
+   * stacked horizontally and returned as one big dynamic matrix. Use Eigen's 
+   * `block()' method of `Eigen::MatrixXd` to extract the individual Jacobians from
+   * the returned matrix. 
    */
   virtual Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const = 0;
-
 
   /**
    * @brief Evaluate the Jacobian * Inverse Gramian (\f$ J (J^T J)^{-1}\f$)
@@ -66,8 +77,8 @@ public:
    * @note If `DimLocal() == DimGlobal()` then \f$ J (J^T J)^{-1} = J^{-T} \f$,
    *       i.e. this method returns the inverse of the transposed jacobian.
    */
-  virtual Eigen::MatrixXd JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const = 0;
+  virtual Eigen::MatrixXd
+    JacobianInverseGramian(const ::Eigen::MatrixXd& local) const = 0;
 
   /**
    * @brief The integration element (factor appearing in integral transformation
@@ -85,8 +96,8 @@ public:
    * g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
    * \f]
    */
-  virtual Eigen::VectorXd IntegrationElement(const Eigen::MatrixXd& local) const
-  = 0;
+  virtual Eigen::VectorXd
+    IntegrationElement(const Eigen::MatrixXd& local) const = 0;
 
 
   /**
