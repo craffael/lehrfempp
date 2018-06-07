@@ -36,7 +36,7 @@ public:
    *         The first call to this method will return 0, the second call 1,
    *         ...
    */
-  virtual size_type AddPoint(const coord_t& coord) = 0;
+  virtual size_type AddPoint(coord_t coord) = 0;
 
 
   /**
@@ -51,7 +51,7 @@ public:
    * @note The node indices passed with the parameter `nodes` must be added
    *       with AddPoint() before calling this method.
    */
-  virtual size_type AddElement(const base::ForwardRange<size_type>& nodes,
+  virtual size_type AddElement(const base::ForwardRange<const size_type>& nodes,
                                   std::unique_ptr<geometry::Geometry>&&
                                   geometry) = 0;
 
@@ -59,8 +59,11 @@ public:
   /**
    * @brief Construct a mesh out of the specified nodes and elements.
    * @return The created mesh.
+   * 
+   * @note After calling Build() you are not allowed to call AddPoint or 
+   *       AddElement() anymore.
    */
-  virtual std::unique_ptr<Mesh> build() = 0;
+  virtual std::unique_ptr<Mesh> Build() = 0;
 
   /// @brief Virtual destructor.
   virtual ~MeshBuilder() = default;

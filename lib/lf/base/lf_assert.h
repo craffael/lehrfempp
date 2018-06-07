@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include"boost/assert.hpp"
 #include <string>
+#include <sstream>
 
 /**
  * @brief HL_VERIFY_MSG(expr, msg) aborts execution of the code if 
@@ -30,7 +31,14 @@
   }
 #endif
 
-#define LF_ASSERT_MSG(expr, msg) BOOST_ASSERT_MSG(expr, msg)
+#define LF_ASSERT_MSG(expr, msg) {\
+  if(!(expr)) { \
+    std::stringstream ss; \
+    ss << msg;\
+    BOOST_ASSERT_MSG(expr, ss.str().c_str()); \
+  }\
+}
+  
 
 
 #endif // __c3c605c9e48646758bf03fab65d52836

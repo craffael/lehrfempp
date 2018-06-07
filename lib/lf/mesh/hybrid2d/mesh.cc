@@ -106,6 +106,23 @@ base::ForwardRange<const mesh::Entity> Mesh::Entities(char codim) const {
   }
 }
 
+Mesh::size_type Mesh::Size(char codim) const {
+  LF_ASSERT_MSG(codim >= 0, "codim negative.");
+  LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
+
+  switch (codim) {
+    case 0:
+      return entities0_.size();
+    case 1:
+      return entities1_.size();
+    case 2:
+      return entities2_.size();
+    default:
+    LF_VERIFY_MSG(false, "Something is horribyl wrong, codim = " +
+        std::to_string(codim) + " is out of bounds.");
+  }
+}
+
 Mesh::size_type Mesh::Index(const mesh::Entity& e) const {
   switch (e.Codim()) {
     case 0:
