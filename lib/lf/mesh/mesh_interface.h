@@ -48,7 +48,15 @@ namespace lf::mesh
      */
     virtual size_type Size(char codim) const = 0;
 
-    // Move this method over to the entity?
+    /**
+     * @brief Acess to the index of a mesh entity of any co-dimension
+     * @param Entity whose index is requested
+     * @return index ranging from 0 to no. of entities of the same co-dimension-1
+     *
+     * It is a strict convention in LehrFEM++ that all entities of the same co-dimension 
+     * belonging to a mesh are endowed with an integer index. These indices are guaranteed
+     * to be contiguous and to range from 0 to `Size(codim)-1`. 
+     */
     virtual size_type Index(const Entity& e) const = 0;
 
     
