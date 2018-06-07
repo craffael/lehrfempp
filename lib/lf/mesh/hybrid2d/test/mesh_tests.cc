@@ -2,11 +2,12 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/geometry/geometry.h>
 
-using namespace lf::mesh;
+
 using namespace lf::geometry;
 
 using size_type = unsigned int;
 
+namespace lf::mesh::hybrid2d::test {
 TEST(hybrid2d, directMeshConstruction) {
 
   // construct a very simple mesh with two elements (tria, quad)
@@ -66,4 +67,5 @@ TEST(hybrid2d, directMeshConstruction) {
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[0].Codim(), 2);
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[0], *node1);
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[1], *node3);
+}
 }

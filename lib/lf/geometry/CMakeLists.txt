@@ -14,3 +14,5 @@ set(sources
 add_library(lf.geometry ${sources})
 target_link_libraries(lf.geometry PUBLIC Eigen3::Eigen lf.base)
 target_compile_features(lf.geometry PUBLIC cxx_std_17)
+
+add_subdirectory(test)
