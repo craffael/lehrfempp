@@ -7,5 +7,9 @@ flexibility with some trade-off concerning performance.
 
 * LehrFEM++ follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html#Naming).
-* Adhere to the LehrFEM [coding style guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
+* Adhere to the LehrFEM [coding style
+  guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
+* Whenever adding core functionality, thorough testing is mandatory, following the
+  instructions in the [testing
+  guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
 * [Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
