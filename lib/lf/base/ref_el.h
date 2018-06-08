@@ -3,18 +3,16 @@
 #ifndef __96e6ff0ee0034f4584fcdfc7e9c53f82
 #define __96e6ff0ee0034f4584fcdfc7e9c53f82
 
-#include <vector>
 #include <array>
+#include <vector>
 
 //#include <boost/range.hpp>
 #include <Eigen/Eigen>
 #include "lf_assert.h"
 
-
 namespace lf::base {
 
-
-/*! 
+/*!
  * @brief An enum that defines all possible RefEl types.
  *
  * This enum is only rarely used direcly because there is a one-to-one relation
@@ -39,43 +37,43 @@ enum class RefElType : unsigned char {
 
 /** @class RefEl lf/base/base.h
  * @brief Represents a reference element with all its properties.
- * 
+ *
  * Every Entity of a mesh in LehrFEM++ is the image of a reference element
  * under an entity-specific (smooth) transformation (which is described by the
  * lf::mesh::Geometry class). This transformation describes the shape of the
  * actual entity, but also the algebraic relations between its sub-entities.
- * 
+ *
  * There is a fixed number of reference elements. This class has a static
  * member field for every type of reference element:
  * - `RefEl::kPoint()` is the Reference element of every point/node in a mesh.
  *   The point itself doesn't have any sub-entities.
  * - `RefEl::kSegment()` is the reference element of every edge in a mesh.
  *   It connects two points with each other.
- * - `RefEl::kTria()` is the reference element of every triangular element in the
- *   mesh. It has three segments (codim=1) and three points (codim=2) as 
+ * - `RefEl::kTria()` is the reference element of every triangular element in
+ * the mesh. It has three segments (codim=1) and three points (codim=2) as
  *   sub-entities.
  * - `RefEl::kQuad()` is the reference element of every quadrilateral element in
- *   the mesh. It has four segments (codim=1) and four points (codim=2) as 
+ *   the mesh. It has four segments (codim=1) and four points (codim=2) as
  *   sub-entities.
- *   
- *   
+ *
+ *
  * #### Usage of this class
  * - You can create arbitrary many instances of this class, but every instance
- *   is equal to one of the four types of reference elements that are exposed 
+ *   is equal to one of the four types of reference elements that are exposed
  *   as static member fields (see above).
- * - Instances of this class are copyable, moveable, assignable and have a 
+ * - Instances of this class are copyable, moveable, assignable and have a
  *   number of member functions that give information about the reference
  *   element they represent.
  * - This class is very lightweight, in fact `sizeof(RefEl) == sizeof(char)`.
  *   It can be copied around as needed.
- * 
+ *
  * @snippet ref_el.cc refElUsage
  */
 class RefEl {
-public:
+ public:
   using dim_t = unsigned char;
-private:
 
+ private:
   // Member variable
   RefElType type_;
 
@@ -92,10 +90,10 @@ private:
   static const std::vector<Eigen::Vector2d> ncoords_quad_static_;
 
   // subSubEntities, used by SubSubEntity2SubEntity
-  static constexpr std::array<std::array<dim_t, 2>, 3> sub_sub_entity_index_tria_
-    = {{{0, 1}, {1, 2}, {2, 0}}};
-  static constexpr std::array<std::array<dim_t, 2>, 4> sub_sub_entity_index_quad_
-    = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
+  static constexpr std::array<std::array<dim_t, 2>, 3>
+      sub_sub_entity_index_tria_ = {{{0, 1}, {1, 2}, {2, 0}}};
+  static constexpr std::array<std::array<dim_t, 2>, 4>
+      sub_sub_entity_index_quad_ = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 
   // Some utility methods that are needed to deduce compile time return types:
   static constexpr dim_t DimensionImpl(RefElType type) {
@@ -109,13 +107,12 @@ private:
       case RefElType::kQuad:
         return 2;
       default:
-        throw std::
-          runtime_error("RefEl::Dimension() not implemented for this RefEl type.");
+        throw std::runtime_error(
+            "RefEl::Dimension() not implemented for this RefEl type.");
     }
   }
 
-public:
-
+ public:
   /**
    * @brief Type of the node coordinate iterator that is returned from
    * NodeCoords()
@@ -126,7 +123,7 @@ public:
   /**
    * @brief Returns the (0-dimensional) reference point.
    */
-  static constexpr RefEl kPoint() {return RefElType::kPoint; }
+  static constexpr RefEl kPoint() { return RefElType::kPoint; }
 
   /**
    * @brief Returns the (1-dimensional) reference segment.
@@ -134,8 +131,7 @@ public:
    * #### Node numbering with (1D) node coordinates
    * @image html segment.png
    */
-  static constexpr RefEl kSegment() {return RefElType::kSegment; }
-
+  static constexpr RefEl kSegment() { return RefElType::kSegment; }
 
   /**
    * @brief Returns the reference triangle
@@ -143,8 +139,7 @@ public:
    * #### Node numbering with (2D) node coordinates and segment orientation.
    * @image html tria.png
    */
-  static constexpr RefEl kTria() {return RefElType::kTria; }
-
+  static constexpr RefEl kTria() { return RefElType::kTria; }
 
   /**
    * @brief Returns the reference quadrilateral
@@ -152,15 +147,13 @@ public:
    * #### Node numbering with (2D) node coordinates and segment orientation
    * @image html quad.png
    */
-  static constexpr RefEl kQuad() {return RefElType::kQuad; }
+  static constexpr RefEl kQuad() { return RefElType::kQuad; }
 
   /**
    * @brief Create a RefEl from a lf::base::RefElType enum.
    * @param type The type of the Reference Element
    */
-  constexpr RefEl(RefElType type)
-    : type_(type) {
-  }
+  constexpr RefEl(RefElType type) : type_(type) {}
 
   /** @brief Default copy constructor */
   constexpr RefEl(const RefEl&) = default;
@@ -176,14 +169,11 @@ public:
    * - 2 for a RefEl::kTria()
    * - 2 for a RefEl::kQuad()
    */
-  constexpr dim_t Dimension() const {
-    return DimensionImpl(type_);
-  }
-
+  constexpr dim_t Dimension() const { return DimensionImpl(type_); }
 
   /**
    * @brief The number of nodes of this reference element.
-   * 
+   *
    * @remark This is a shortcut for calling `NumSubEntities(Dimension())`
    */
   constexpr dim_t NumNodes() const {
@@ -197,22 +187,21 @@ public:
       case RefElType::kQuad:
         return 4;
       default:
-        throw std::
-          runtime_error("RefEl::NumNodes() not implemented for this RefEl type.");
+        throw std::runtime_error(
+            "RefEl::NumNodes() not implemented for this RefEl type.");
     }
   }
-
 
   /**
    * @brief Get the coordinates of the nodes of this reference element.
    * @return a `std::vector` with `NumNodes()` elements.
    * Every element is a `Eigen::VectorXd` with `Dimension()` rows.
-   *   
+   *
    * @remark This method is not optimal from a performance point of view
    * because the vector and the Eigen matrices are allocated on the heap.
    * If the type of the RefEl is known at compile time, use the
    * static NodeCoords() function instead.
-   * 
+   *
    * @snippet ref_el.cc nodeCoordStatic
    */
   const std::vector<Eigen::VectorXd>& NodeCoords() const {
@@ -226,8 +215,8 @@ public:
       case RefElType::kQuad:
         return ncoords_quad_dynamic_;
       default:
-      LF_VERIFY_MSG(false,
-          "RefEl::NodeCoords() not implemented for this RefEl type.");
+        LF_VERIFY_MSG(
+            false, "RefEl::NodeCoords() not implemented for this RefEl type.");
     }
   }
 
@@ -236,15 +225,15 @@ public:
    * @tparam type The `RefElType` of the reference element for which the node
    * coordinates should be returned, see usage below.
    * @return a `std::vector` with `NumNodes()` elements. Every
-   * Element is a fixed-size column vector (e.g. `Eigen::Matrix<double,1,1>` 
+   * Element is a fixed-size column vector (e.g. `Eigen::Matrix<double,1,1>`
    * for a segment or `Eigen::Matrix<double,2,1>` for a triangle/quadrilateral)
-   * 
+   *
    * #### Usage example:
    * @snippet ref_el.cc nodeCoordStatic
-   * 
+   *
    * @remark This function template can only be called if the type of the
    * reference element is known at compile time. The advantage of this method
-   * over NodeCoords() const is, that it returns a vector of fixed-size 
+   * over NodeCoords() const is, that it returns a vector of fixed-size
    * vectors that are allocated on the stack.
    */
   template <RefElType type>
@@ -258,8 +247,8 @@ public:
     } else if constexpr (type == RefElType::kQuad) {
       return ncoords_quad_static_;
     } else {
-      LF_VERIFY_MSG(false,
-        "RefEl::NodeCoords<>() not implemented for this RefEl type.");
+      LF_VERIFY_MSG(
+          false, "RefEl::NodeCoords<>() not implemented for this RefEl type.");
     }
   }
 
@@ -267,9 +256,9 @@ public:
    * @brief Get the number of sub-entities of this RefEl with the given
    *        codimension.
    * @param sub_codim The codimension of the subEntities that should be counted.
-   * 
+   *
    * #### Examples
-   * - a segment has two points as `codim=1` sub-entities, therefore 
+   * - a segment has two points as `codim=1` sub-entities, therefore
    *   `RefEl::kSegment().NumSubEntities(1) == 2`
    * - a Triangle has three subentities of `codim=1` (all Segments), therefore
    *  `RefEl::kTria().NumSubEntities(1) == 3`
@@ -278,94 +267,100 @@ public:
    */
   constexpr dim_t NumSubEntities(dim_t sub_codim) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
-    LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()");
+    LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(),
+                            "sub_codim > Dimension()");
     if (sub_codim == 0) return 1;
     switch (type_) {
       case RefElType::kSegment:
-        return 2; // sub_codim=1
+        return 2;  // sub_codim=1
       case RefElType::kTria:
-        return 3; // sub_codim=1,2
+        return 3;  // sub_codim=1,2
       case RefElType::kQuad:
-        return 4; // sub_codim=1,2
+        return 4;  // sub_codim=1,2
       default:
-      LF_ASSERT_MSG_CONSTEXPR(false,
-          "RefEl::NumSubEntities() not implemented for this RefElType.");
+        LF_ASSERT_MSG_CONSTEXPR(
+            false,
+            "RefEl::NumSubEntities() not implemented for this RefElType.");
     }
-    return 0; // prevent warnings from compilers
+    return 0;  // prevent warnings from compilers
   }
 
   /**
-   * @brief Return the RefEl of the sub-entity with codim `sub_codim` 
+   * @brief Return the RefEl of the sub-entity with codim `sub_codim`
    * and index `sub_index`.
    * @param sub_codim The codimension of the sub-entity (w.r.t. `Dimension()`).
    *        Should be `<= Dimension()`.
-   * @param sub_index The zero-based index of the sub-entity. 
+   * @param sub_index The zero-based index of the sub-entity.
    *        `sub_index` should be smaller than `NumSumEntities(sub_codim)`
-   * 
+   *
    * #### Examples:
    * - A triangle has three codim=2 entities which are all points, therefore
    *   `RefEl::kTria().SubType(2,i) == RefEl::kPoint()` for i=0,1,2.
-   * - A quadrilateral has four codim=1 entities which are all segments, 
-   *   therefore `RefEl::kQuad().SubType(1,i) == RefEl::kSegment()` for i=0,1,2,3.
+   * - A quadrilateral has four codim=1 entities which are all segments,
+   *   therefore `RefEl::kQuad().SubType(1,i) == RefEl::kSegment()` for
+   * i=0,1,2,3.
    * - The codim=0 subEntity of a triangle is the triangle itself, therefore
    *   `RefEl::kTria().SubType(0,0) == RefEl::kTria()`.
-   *   
+   *
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
    */
   constexpr RefEl SubType(dim_t sub_codim, dim_t sub_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
-    LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension()"
-    );
+    LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(),
+                            "sub_codim > Dimension()");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_index < NumSubEntities(sub_codim),
-      "sub_index >= NumSubEntities");
+                            "sub_index >= NumSubEntities");
 
     if (sub_codim == 0) return *this;
     if (sub_codim == Dimension()) return RefElType::kPoint;
-    if (Dimension() - sub_codim == 1) return RefElType::kSegment;
-    else LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
+    if (Dimension() - sub_codim == 1)
+      return RefElType::kSegment;
+    else
+      LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
 
-    return RefElType::kPoint; // prevent warnings from compiler
+    return RefElType::kPoint;  // prevent warnings from compiler
   }
-
 
   /**
    * @brief Identifies sub-entities of sub-entities (so-called sub-sub-entities)
    *        with sub-entities.
-   *  
+   *
    * @param sub_codim The codimension of the sub-entity.
    * @param sub_index  The zero-based index of the sub-entity.
-   * @param sub_sub_codim The codimension of the sub-sub-entity w.r.t. the 
+   * @param sub_sub_codim The codimension of the sub-sub-entity w.r.t. the
    *        sub-entity identified by `sub_codim` and `sub_index`.
    * @param sub_sub_index The codimension of the sub-sub-entity w.r.t. the
    *        sub-entity identified by `sub_codim` and `sub_index`.
    * @return The index of the sub-sub-entity w.r.t. this RefEl.
-   * 
+   *
    * #### Examples
-   * - The sub-entity of a `RefEl::kTria()` with `sub_codim=1`, `sub_index=1` 
-   *   is a `RefEl::kSegment()` that connects node 1 with node 2. The 
-   *   (sub-)sub-entity of this segment with codim `sub_sub_codim=1` and sub-index 
-   *   `sub_sub_index=0` (both w.r.t. to the segment) is the first point of the 
-   *   segment, i.e. node 1. Therefore
-   *   `SubSubEntity2SubEntity(1,1,1,0) == 1`
+   * - The sub-entity of a `RefEl::kTria()` with `sub_codim=1`, `sub_index=1`
+   *   is a `RefEl::kSegment()` that connects node 1 with node 2. The
+   *   (sub-)sub-entity of this segment with codim `sub_sub_codim=1` and
+   * sub-index `sub_sub_index=0` (both w.r.t. to the segment) is the first point
+   * of the segment, i.e. node 1. Therefore `SubSubEntity2SubEntity(1,1,1,0) ==
+   * 1`
    * - Similarly, for `sub_sub_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
   constexpr dim_t SubSubEntity2SubEntity(dim_t sub_codim, dim_t sub_index,
-                                        dim_t sub_sub_codim,
-                                        dim_t sub_sub_index) const {
+                                         dim_t sub_sub_codim,
+                                         dim_t sub_sub_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_index <= NumSubEntities(sub_codim),
-      "sub_index >= NumSubEntities");
+                            "sub_index >= NumSubEntities");
     LF_ASSERT_MSG_CONSTEXPR(sub_sub_codim >= 0, "sub_sub_codim negative.");
     LF_ASSERT_MSG_CONSTEXPR(sub_sub_codim <= Dimension() - sub_codim,
-      "subSubCodim out of bounds.");
+                            "subSubCodim out of bounds.");
     LF_ASSERT_MSG_CONSTEXPR(sub_sub_index >= 0, "sub_sub_index negative.");
-    LF_ASSERT_MSG_CONSTEXPR(sub_sub_index < SubType(sub_codim, sub_index).
-      NumSubEntities(sub_sub_codim), "sub_sub_index out of bounds.");
+    LF_ASSERT_MSG_CONSTEXPR(
+        sub_sub_index <
+            SubType(sub_codim, sub_index).NumSubEntities(sub_sub_codim),
+        "sub_sub_index out of bounds.");
 
     if (type_ == RefElType::kPoint) return 0;
     if (sub_codim == 0) return sub_sub_index;
@@ -381,9 +376,8 @@ public:
         LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
     }
 
-    return 0; // Prevent warnings from compiler...
+    return 0;  // Prevent warnings from compiler...
   }
-
 
   /**
    * @brief Return a string representation of this Reference element
@@ -399,7 +393,7 @@ public:
       case RefElType::kQuad:
         return "kQuad";
       default:
-      LF_VERIFY_MSG(false, "ToString() not implemented for this RefElType");
+        LF_VERIFY_MSG(false, "ToString() not implemented for this RefElType");
     }
   }
 
@@ -410,9 +404,7 @@ public:
    * #### Usage example
    * @snippet ref_el.cc convert_to_enum
    */
-  constexpr operator RefElType() const {
-    return type_;
-  }
+  constexpr operator RefElType() const { return type_; }
 };
 
 /**
@@ -420,7 +412,7 @@ public:
  * @param stream The stream to which this function should output
  * @param ref_el The reference element to write to `stream`.
  * @return The stream itself.
- * 
+ *
  * #### Usage example
  * @snippet ref_el.cc streamOutput
  */
@@ -428,6 +420,6 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
   return stream << ref_el.ToString();
 }
 
-}
+}  // namespace lf::base
 
-#endif // __96e6ff0ee0034f4584fcdfc7e9c53f82
+#endif  // __96e6ff0ee0034f4584fcdfc7e9c53f82

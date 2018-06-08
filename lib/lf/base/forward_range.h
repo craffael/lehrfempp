@@ -32,9 +32,7 @@ class ForwardRange {
   ForwardRange(std::initializer_list<T> initializer_list)
       : begin_(initializer_list.begin()), end_(initializer_list.end()) {}
 
-            ForwardRange
-        &
-        operator=(const ForwardRange&) = default;
+  ForwardRange& operator=(const ForwardRange&) = default;
   ForwardRange& operator=(ForwardRange&&) = default;
 
   ~ForwardRange() = default;

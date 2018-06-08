@@ -7,7 +7,7 @@
 
 namespace lf::base::test {
 TEST(RandomAccessIterator, nonConst) {
-  std::vector<int> numbers{0,1,2,3};
+  std::vector<int> numbers{0, 1, 2, 3};
   RandomAccessIterator<int> ri = numbers.begin();
 
   EXPECT_EQ(*ri, 0);
@@ -25,13 +25,13 @@ TEST(RandomAccessIterator, nonConst) {
   EXPECT_EQ(ri, ri2);
   EXPECT_EQ(*ri2, 2);
   EXPECT_EQ(*ri, 2);
-  EXPECT_NE(ri==ri2, ri != ri2);
+  EXPECT_NE(ri == ri2, ri != ri2);
 
   auto ri3 = std::move(ri2);
   EXPECT_EQ(ri3, ri);
 
   *ri = 3;
-  EXPECT_EQ( *ri3, 3);
+  EXPECT_EQ(*ri3, 3);
 
   // the value of a const iterator can be modified.
   *static_cast<const RandomAccessIterator<int>>(ri) = 4;
@@ -40,7 +40,7 @@ TEST(RandomAccessIterator, nonConst) {
 }
 
 TEST(RandomAccessIterator, InteractWithForwardIterators) {
-  std::vector<int> numbers{0,1,2,3};
+  std::vector<int> numbers{0, 1, 2, 3};
 
   RandomAccessIterator<int> ri = numbers.begin();
   ForwardIterator<int> fi = ri;
@@ -61,13 +61,13 @@ TEST(RandomAccessIterator, InteractWithForwardIterators) {
 }
 
 TEST(RandomAccessIterator, RandomAccessFunctionality) {
-  std::vector<int> numbers{0,1,2,3};
+  std::vector<int> numbers{0, 1, 2, 3};
   RandomAccessIterator<int> ri0 = numbers.begin();
   auto ri1 = ri0 + 1;
   EXPECT_EQ(*ri1, 1);
-  EXPECT_EQ(ri1-1, ri0);
-  EXPECT_EQ(ri1-ri0, 1);
-  EXPECT_EQ(ri0+1,ri1);
+  EXPECT_EQ(ri1 - 1, ri0);
+  EXPECT_EQ(ri1 - ri0, 1);
+  EXPECT_EQ(ri0 + 1, ri1);
   EXPECT_TRUE(ri0 < ri1);
   EXPECT_FALSE(ri0 > ri1);
   EXPECT_TRUE(ri0 <= ri0);
@@ -78,4 +78,4 @@ TEST(RandomAccessIterator, RandomAccessFunctionality) {
   ri0 -= 1;
   EXPECT_EQ(*ri0, 0);
 }
-}
+}  // namespace lf::base::test
