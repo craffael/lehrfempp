@@ -17,7 +17,7 @@ public:
   // needed by std::vector
   Entity() = default;
   Entity(Entity&&) = default;
-b  Entity& operator=(Entity&&) = default;
+  Entity& operator=(Entity&&) = default;
 
   // constructor, is called from Mesh
   Entity(Mesh* mesh, size_type index,
