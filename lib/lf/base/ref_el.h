@@ -45,6 +45,13 @@ enum class RefElType : unsigned char {
  * lf::mesh::Geometry class). This transformation describes the shape of the
  * actual entity, but also the algebraic relations between its sub-entities.
  * 
+ * The reference element serves two main purposes:
+ * - it defines the _local topology_ of the mesh in terms of incidence relations
+ *   of the entities. For instance the reference element defines the number of 
+ *   edges of a cell. 
+ * - it fixes the parameter domain for the mapping describing the _shape_ of the 
+ *   entitiy.
+ *
  * There is a fixed number of reference elements. This class has a static
  * member field for every type of reference element:
  * - `RefEl::kPoint()` is the Reference element of every point/node in a mesh.
