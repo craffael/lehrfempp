@@ -1,5 +1,5 @@
 language: cpp
-sudo: true
+#sudo: true
 
 env:
   global:
