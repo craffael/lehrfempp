@@ -21,12 +21,12 @@ void foo() {
 
   //! [enumConversion]
   RefElType point = RefEl::kPoint();
-  RefEl segment = RefElType::kSegment;
+  RefEl segment = RefEl(RefElType::kSegment);
   //! [enumConversion]
 
   //! [nodeCoordStatic]
   // If RefEl not known at compile time:
-  std::vector<Eigen::VectorXd> nodeCoordsDynamic = RefEl::kTria().NodeCoords();
+  std::vector<Eigen::VectorXd> nodeCoordsDynamic(RefEl::kTria().NodeCoords());
 
   // If RefEl known at compile time:
   std::vector<Eigen::Vector2d> nodeCoordsCompiletime =

@@ -431,7 +431,6 @@ class RefEl {
    * #### Usage example
    * @snippet ref_el.cc convert_to_enum
    */
-  // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
   constexpr operator RefElType() const { return type_; }
 
   ~RefEl() = default;
@@ -446,6 +445,7 @@ class RefEl {
  * #### Usage example
  * @snippet ref_el.cc streamOutput
  */
+// NOLINTNEXTLINE
 inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
   return stream << ref_el.ToString();
 }

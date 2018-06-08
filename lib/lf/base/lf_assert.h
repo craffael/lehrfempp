@@ -6,7 +6,13 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include "boost/assert.hpp"
+
+namespace lf::base {
+
+void AssertionFailed(const std::string& expr, const std::string& file, int line,
+                     const std::string& msg);
+
+}  // namespace lf::base
 
 /**
  * @brief HL_VERIFY_MSG(expr, msg) aborts execution of the code if
@@ -17,15 +23,20 @@
  * in order to help IDE tools detect that
  * `BOOST_VERIFY_MSG(false, "message")` always aborts execution.
  */
-#define LF_VERIFY_MSG(expr, msg)                                      \
-  {                                                                   \
-    BOOST_VERIFY_MSG(expr, std::string(msg).c_str());                 \
-    if (!(expr))                                                      \
-      throw std::runtime_error("This exception should never throw."); \
+#define LF_VERIFY_MSG(expr, msg)                                        \
+  {                                                                     \
+    if (!(expr)) {                                                      \
+      std::stringstream ss;                                             \
+      ss << msg;                                                        \
+      ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
+      std::abort();                                                     \
+      throw std::runtime_error("this code should not be reached");      \
+    }                                                                   \
   }
 
 #ifdef NDEBUG
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
+#define LF_ASSERT_MSG(expr, msg) ((void)0)
 #else
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg)      \
   {                                             \
@@ -33,13 +44,15 @@
   }
 #endif
 
-#define LF_ASSERT_MSG(expr, msg)                \
-  {                                             \
-    if (!(expr)) {                              \
-      std::stringstream ss;                     \
-      ss << msg;                                \
-      BOOST_ASSERT_MSG(expr, ss.str().c_str()); \
-    }                                           \
+#define LF_ASSERT_MSG(expr, msg)                                        \
+  {                                                                     \
+    if (!(expr)) {                                                      \
+      std::stringstream ss;                                             \
+      ss << msg;                                                        \
+      ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
+      std::abort();                                                     \
+      throw std::runtime_error("this code should not be reached");      \
+    }                                                                   \
   }
 
 #endif  // __c3c605c9e48646758bf03fab65d52836
