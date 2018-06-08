@@ -17,34 +17,34 @@ branches:
      
 stages:
   - lint
-  #- compile_test
+  - compile_test
   #- doxygen 
             
   
 jobs:
   include:
-    - stage: lint
-      os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          packages: ['clang-format-6.0']
-        script: clang-format-6.0 --help
-    # # Linux gcc
-    # - stage: compile_test
-      # os: linux 
-      # compiler: gcc
-      # env:
-        # - COMPILER=g++-7
-        # - BUILD_TYPE='Debug'
-      # addons: 
+    # - stage: lint
+      # os: linux
+      # compiler: clang
+      # addons:
         # apt:
-          # update: true
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - g++-7
-      # script: ./compile_test.sh
+          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          # packages: ['clang-format-6.0']
+        # script: clang-format-6.0 --help
+    # # Linux gcc
+    - stage: compile_test
+      os: linux 
+      compiler: gcc
+      env:
+        - COMPILER=g++-7
+        - BUILD_TYPE='Debug'
+      addons: 
+        apt:
+          update: true
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-7
+      script: ./compile_test.sh
       
     # - stage: compile_test
       # os: linux 
