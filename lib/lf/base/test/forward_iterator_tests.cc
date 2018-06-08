@@ -2,9 +2,9 @@
 #include <lf/base/base.h>
 #include <utility>
 
-using namespace lf::base;
+namespace lf::base::test {
 
-TEST(ForwardIterator, nonConst) {
+TEST(ForwardIteratorTest, nonConst) {
   std::vector<int> numbers{0, 1, 2, 3};
   ForwardIterator<int> fi = numbers.begin();
   EXPECT_EQ(*fi, 0);
@@ -60,3 +60,6 @@ TEST(ForwardIterator, DefaultConstructible) {
   defaultFi = numbers.end();
   EXPECT_NE(defaultFi, fi0);
 }
+}
+
+

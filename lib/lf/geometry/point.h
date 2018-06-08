@@ -18,7 +18,7 @@ public:
 
   dim_t DimGlobal() const override {return coord_.rows(); }
 
-  base::RefEl RefEl() const override {return RefEl().kPoint(); }
+  base::RefEl RefEl() const override {return base::RefEl::kPoint(); }
 
   Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
 

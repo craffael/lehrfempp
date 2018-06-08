@@ -5,8 +5,7 @@
 #include <utility>
 #include "lf/base/random_access_iterator.h"
 
-using namespace lf::base;
-
+namespace lf::base::test {
 TEST(RandomAccessIterator, nonConst) {
   std::vector<int> numbers{0,1,2,3};
   RandomAccessIterator<int> ri = numbers.begin();
@@ -78,4 +77,5 @@ TEST(RandomAccessIterator, RandomAccessFunctionality) {
   EXPECT_EQ(ri0, ri1);
   ri0 -= 1;
   EXPECT_EQ(*ri0, 0);
+}
 }

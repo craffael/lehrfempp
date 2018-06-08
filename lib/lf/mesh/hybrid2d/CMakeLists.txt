@@ -1,8 +1,11 @@
 set(sources
   entity.h
   entity.cc
+  hybrid2d.h
   mesh.cc
   mesh.h
+  mesh_builder.cc
+  mesh_builder.h
 )
 
 add_library(lf.mesh.hybrid2d ${sources})

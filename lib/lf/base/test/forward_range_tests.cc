@@ -2,8 +2,7 @@
 #include <lf/base/base.h>
 #include <algorithm>
 
-using namespace lf::base;
-
+namespace lf::base::test {
 template<class T>
 struct S {
   S(const std::list<T>& a) {}
@@ -33,4 +32,5 @@ TEST(Range, useInForLoop)
   EXPECT_EQ(std::distance(range.begin(), range.end()), 4);
   bool result = std::all_of(range.begin(), range.end(), [](int a) {return true;});
   EXPECT_EQ(result, true);
+}
 }
