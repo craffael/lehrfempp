@@ -1,7 +1,7 @@
-#include "mesh.h"
+#include <lf/mesh/mesh.h>
 #include <iostream>
 
-namespace lf::mesh
+namespace lf::mesh::test_utils
 {
   bool testEntityIndexing(const Mesh &mesh) {
     using size_type = Mesh::size_type; // type for indices
