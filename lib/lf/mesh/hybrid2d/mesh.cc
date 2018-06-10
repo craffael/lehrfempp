@@ -11,17 +11,22 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
   : dim_world_(dim_world) {
 
   // 1) Add all nodes:
-  entities2_.reserve(nodes.size());
+  entities2_.reserve(nodes.size()); // allocated memory for all vertex objects
   for (auto& nodeCoord : nodes) {
+    // A vertex does not have any sub-entities; dummy argument
     std::array<std::vector<size_type>, 0> sub_entities;
-    entities2_.emplace_back(this, entities2_.size(),
-                            std::make_unique<geometry::Point>(nodeCoord),
-                            sub_entities);
+    // The geometry information for a vertex consists of its coordinates only.
+    // Add another vertex to the array of vertices setting its index to the
+    // position in the array.
+     entities2_.emplace_back(this, entities2_.size(),
+			     std::make_unique<geometry::Point>(nodeCoord),
+			     sub_entities);
   }
 
+  // Initialize 
+  entities0_.reserve(elements.size());
   // 2) put all edges of all elements into a vector (so there are duplicates)
   // + initialize entities of codim0 with nodes (but don't set edges yet)
-  entities0_.reserve(elements.size());
   std::vector<std::tuple<std::array<size_type, 2>, size_type, char>>
     element_edges{};
   element_edges.reserve(4 * elements.size());

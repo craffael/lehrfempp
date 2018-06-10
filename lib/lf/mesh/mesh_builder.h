@@ -9,10 +9,10 @@ namespace lf::mesh {
 
 class MeshBuilder {
 public:
-  /// @copydoc Mesh::size_type
+  /** @copydoc Mesh::size_type */
   using size_type = unsigned int;
 
-  ///@copydoc Geometry::coord_t
+  /** @copydoc Geometry::coord_t */
   using coord_t = Eigen::VectorXd;
 
   using dim_t = unsigned char;
