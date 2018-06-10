@@ -17,7 +17,8 @@ class MeshBuilder : public mesh::MeshBuilder {
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
    */
-  MeshBuilder(dim_t dim_world) : dim_world_(dim_world), built_(false) {}
+  explicit MeshBuilder(dim_t dim_world)
+      : dim_world_(dim_world), built_(false) {}
 
   dim_t DimWorld() const override { return dim_world_; }
   dim_t DimMesh() const override { return 2; }

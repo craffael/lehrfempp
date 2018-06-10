@@ -19,11 +19,10 @@ Eigen::MatrixXd SegmentO1::JacobianInverseGramian(
     return (coords_.col(1) - coords_.col(0))
         .cwiseInverse()
         .replicate(1, local.cols());
-  } else {
-    return ((coords_.col(1) - coords_.col(0)) /
-            (coords_.col(1) - coords_.col(0)).squaredNorm())
-        .replicate(1, local.cols());
   }
+  return ((coords_.col(1) - coords_.col(0)) /
+          (coords_.col(1) - coords_.col(0)).squaredNorm())
+      .replicate(1, local.cols());
 }
 
 Eigen::VectorXd SegmentO1::IntegrationElement(
@@ -36,12 +35,12 @@ std::unique_ptr<Geometry> SegmentO1::subGeometry(dim_t codim, dim_t i) const {
   if (codim == 0) {
     LF_ASSERT_MSG(i == 0, "i is out of bounds.");
     return std::make_unique<SegmentO1>(coords_);
-  } else if (codim == 1) {
+  }
+  if (codim == 1) {
     LF_ASSERT_MSG(i >= 0 && i < 2, "i is out of bounds.");
     return std::make_unique<Point>(coords_.col(i));
-  } else {
-    LF_VERIFY_MSG(false, "codim is out of bounds.");
   }
+  LF_VERIFY_MSG(false, "codim is out of bounds.");
 }
 
 }  // namespace lf::geometry

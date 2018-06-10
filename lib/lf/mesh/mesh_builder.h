@@ -8,6 +8,13 @@
 namespace lf::mesh {
 
 class MeshBuilder {
+ protected:
+  MeshBuilder() = default;
+  MeshBuilder(const MeshBuilder&) = default;
+  MeshBuilder(MeshBuilder&&) = default;
+  MeshBuilder& operator=(const MeshBuilder&) = default;
+  MeshBuilder& operator=(MeshBuilder&&) = default;
+
  public:
   /// @copydoc Mesh::size_type
   using size_type = unsigned int;

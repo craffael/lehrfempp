@@ -15,8 +15,8 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
     jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
     integrationElement_ = jacobian_.determinant();
   } else {
-    jacobian_inverse_gramian_ =
-        jacobian_ * (jacobian_.transpose() * jacobian_).inverse();
+    jacobian_inverse_gramian_ = Eigen::MatrixXd(
+        jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
     integrationElement_ =
         std::sqrt((jacobian_.transpose() * jacobian_).determinant());
   }

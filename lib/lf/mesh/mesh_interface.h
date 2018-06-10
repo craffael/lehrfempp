@@ -8,6 +8,13 @@
 
 namespace lf::mesh {
 class Mesh {
+ protected:
+  Mesh() = default;
+  Mesh(const Mesh&) = default;
+  Mesh(Mesh&&) = default;
+  Mesh& operator=(const Mesh&) = default;
+  Mesh& operator=(Mesh&&) = default;
+
  public:
   using size_type = unsigned int;
 
@@ -42,7 +49,7 @@ class Mesh {
 
   /**
    * @brief Acess to the index of a mesh entity of any co-dimension
-   * @param Entity whose index is requested
+   * @param e Entity whose index is requested
    * @return index ranging from 0 to no. of entities of the same co-dimension-1
    *
    * It is a strict convention in LehrFEM++ that all entities of the same

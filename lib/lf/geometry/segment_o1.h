@@ -7,7 +7,7 @@ namespace lf::geometry {
 
 class SegmentO1 : public Geometry {
  public:
-  SegmentO1(Eigen::Matrix<double, Eigen::Dynamic, 2> coords)
+  explicit SegmentO1(Eigen::Matrix<double, Eigen::Dynamic, 2> coords)
       : coords_(std::move(coords)) {}
 
   dim_t DimLocal() const override { return 1; }

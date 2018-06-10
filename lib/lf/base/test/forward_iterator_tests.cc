@@ -45,7 +45,7 @@ TEST(ForwardIterator, constEntities) {
   EXPECT_EQ(*fi, "world");
   ++fi;
 
-  EXPECT_EQ(fi, strings.end());
+  EXPECT_EQ(fi, ForwardIterator<const std::string>(strings.end()));
 }
 
 TEST(ForwardIterator, DefaultConstructible) {

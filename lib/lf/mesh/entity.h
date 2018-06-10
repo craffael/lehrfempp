@@ -6,6 +6,13 @@
 namespace lf::mesh {
 
 class Entity {
+ protected:
+  Entity() = default;
+  Entity(const Entity&) = default;
+  Entity(Entity&&) = default;
+  Entity& operator=(const Entity&) = default;
+  Entity& operator=(Entity&&) = default;
+
  public:
   /**
    * @brief The codimension of this entity w.r.t. the Mesh.dimMesh()

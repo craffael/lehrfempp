@@ -10,19 +10,23 @@ namespace lf::mesh::hybrid2d {
 class Mesh;
 
 template <char CODIM>
+// NOLINTNEXTLINE(hicpp-member-init)
 class Entity : public mesh::Entity {
   using size_type = mesh::Mesh::size_type;
 
  public:
   // needed by std::vector
   Entity() = default;
-  Entity(Entity&&) = default;
-  Entity& operator=(Entity&&) = default;
+
+  Entity(const Entity&) = delete;
+  Entity(Entity&&) noexcept = default;
+  Entity& operator=(const Entity&) = delete;
+  Entity& operator=(Entity&&) noexcept = default;
 
   // constructor, is called from Mesh
-  Entity(Mesh* mesh, size_type index,
-         std::unique_ptr<geometry::Geometry>&& geometry,
-         std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
+  explicit Entity(Mesh* mesh, size_type index,
+                  std::unique_ptr<geometry::Geometry>&& geometry,
+                  std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
       : mesh_(mesh),
         index_(index),
         geometry_(std::move(geometry)),
@@ -52,6 +56,8 @@ class Entity : public mesh::Entity {
   bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
   }
+
+  ~Entity() override = default;
 
  private:
   Mesh* mesh_;

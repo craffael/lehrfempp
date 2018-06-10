@@ -12,7 +12,7 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
   // 1) Add all nodes:
   entities2_.reserve(nodes.size());
   for (auto& nodeCoord : nodes) {
-    std::array<std::vector<size_type>, 0> sub_entities;
+    std::array<std::vector<size_type>, 0> sub_entities{};
     entities2_.emplace_back(this, entities2_.size(),
                             std::make_unique<geometry::Point>(nodeCoord),
                             sub_entities);
@@ -35,7 +35,9 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
           element_nodes[ref_el.SubSubEntity2SubEntity(1, i, 1, 0)];
       size_type end = element_nodes[ref_el.SubSubEntity2SubEntity(1, i, 1, 1)];
       std::array<size_type, 2> nodes_ordered = {start, end};
-      if (start > end) std::swap(nodes_ordered[0], nodes_ordered[1]);
+      if (start > end) {
+        std::swap(nodes_ordered[0], nodes_ordered[1]);
+      }
       element_edges.emplace_back(nodes_ordered, entities0_.size(), i);
     }
 

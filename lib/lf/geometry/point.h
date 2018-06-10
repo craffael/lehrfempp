@@ -9,7 +9,7 @@ namespace lf::geometry {
 
 class Point : public Geometry {
  public:
-  Point(Eigen::VectorXd coord) : coord_(std::move(coord)) {}
+  explicit Point(Eigen::VectorXd coord) : coord_(std::move(coord)) {}
 
   dim_t DimLocal() const override { return 0; }
 

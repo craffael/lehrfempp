@@ -6,7 +6,7 @@
 namespace lf::geometry {
 class TriaO1 : public Geometry {
  public:
-  TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);
+  explicit TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);
 
   dim_t DimLocal() const override { return 2; }
   dim_t DimGlobal() const override { return coords_.rows(); }

@@ -20,9 +20,9 @@ class DereferenceLambdaRandomAccessIterator {
   DereferenceLambdaRandomAccessIterator& operator=(
       const DereferenceLambdaRandomAccessIterator&) = default;
   DereferenceLambdaRandomAccessIterator(
-      DereferenceLambdaRandomAccessIterator&&) = default;
+      DereferenceLambdaRandomAccessIterator&&) noexcept = default;
   DereferenceLambdaRandomAccessIterator& operator=(
-      DereferenceLambdaRandomAccessIterator&&) = default;
+      DereferenceLambdaRandomAccessIterator&&) noexcept = default;
   ~DereferenceLambdaRandomAccessIterator() = default;
 
   auto& operator*() const { return lambda_(iterator_); }
@@ -101,7 +101,7 @@ class DereferenceLambdaRandomAccessIterator {
 template <class Iterator, class Lambda>
 DereferenceLambdaRandomAccessIterator<Iterator, Lambda>
 make_DereferenceLambdaRandomAccessIterator(Iterator&& i, Lambda l) {
-  return {std::move(i), l};
+  return {std::forward<Iterator>(i), l};
 }
 
 }  // namespace lf::base

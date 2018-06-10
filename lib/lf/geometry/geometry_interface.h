@@ -8,6 +8,13 @@
 namespace lf::geometry {
 
 class Geometry {
+ protected:
+  Geometry() = default;
+  Geometry(const Geometry&) = default;
+  Geometry(Geometry&&) = default;
+  Geometry& operator=(const Geometry&) = default;
+  Geometry& operator=(Geometry&&) = default;
+
  public:
   using coord_t = Eigen::VectorXd;
   using dim_t = base::RefEl::dim_t;

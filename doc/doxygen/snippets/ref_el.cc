@@ -2,8 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-using namespace lf::base;
-
+namespace lf::base {
 void foo() {
   //! [convert_to_enum]
   RefElType type = RefEl::kTria();
@@ -21,7 +20,7 @@ void foo() {
 
   //! [enumConversion]
   RefElType point = RefEl::kPoint();
-  RefEl segment = RefEl(RefElType::kSegment);
+  auto segment = RefEl(RefElType::kSegment);
   //! [enumConversion]
 
   //! [nodeCoordStatic]
@@ -52,3 +51,6 @@ void foo() {
     //![refElUsage]
   }
 }
+}
+
+

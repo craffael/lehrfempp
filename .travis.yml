@@ -31,6 +31,13 @@ jobs:
           sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-format-6.0']
       script: './run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
+    - stage: clang-tidy
+      os: linux
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-format-6.0']
+      script: "./run-clang-tidy.py -j 4 -p bin_clang -header-filter=lib/ '^((?!snippets).)*(?<!_tests\.cc)$'"
     # # Linux gcc
     # - stage: compile_test
       # os: linux 

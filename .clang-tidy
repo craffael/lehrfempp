@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-llvm-*,-misc-macro-parentheses'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false

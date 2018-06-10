@@ -7,7 +7,7 @@ namespace lf::geometry {
 
 class QuadO1 : public Geometry {
  public:
-  QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
+  explicit QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
       : coords_(std::move(coords)) {}
 
   dim_t DimLocal() const override { return 2; }

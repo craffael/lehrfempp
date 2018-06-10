@@ -67,7 +67,15 @@ template <class T>
 class ForwardIterator {
  protected:
   class WrapperInterface {
+   protected:
+    WrapperInterface() = default;
+
    public:
+    WrapperInterface(const WrapperInterface&) = delete;
+    WrapperInterface(WrapperInterface&&) = delete;
+    WrapperInterface& operator=(const WrapperInterface&) = delete;
+    WrapperInterface& operator=(WrapperInterface&&) = delete;
+
     virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
     virtual bool Compare(const WrapperInterface* other) const = 0;
     virtual T& Dereference() const = 0;
@@ -87,21 +95,21 @@ class ForwardIterator {
     InnerIterator iterator_;
 
    public:
-    WrapperImpl(const InnerIterator& iterator) : iterator_(iterator) {}
+    explicit WrapperImpl(const InnerIterator& iterator) : iterator_(iterator) {}
 
-    WrapperImpl(InnerIterator&& iterator) : iterator_(std::move(iterator)) {}
+    explicit WrapperImpl(InnerIterator&& iterator)
+        : iterator_(std::move(iterator)) {}
 
     std::unique_ptr<WrapperInterface> Clone() const override {
       return std::make_unique<WrapperImpl>(iterator_);
     }
 
     bool Compare(const WrapperInterface* other) const override {
-      const WrapperImpl* other_casted = dynamic_cast<const WrapperImpl*>(other);
+      const auto* other_casted = dynamic_cast<const WrapperImpl*>(other);
       if (other_casted) {
         return other_casted->iterator_ == iterator_;
-      } else {
-        return false;
       }
+      return false;
     }
 
     T& Dereference() const override { return *iterator_; }
@@ -149,7 +157,7 @@ class ForwardIterator {
 
   std::unique_ptr<WrapperInterface> wrapper_;
   // needed by operator++()
-  ForwardIterator(std::unique_ptr<WrapperInterface>&& ptr)
+  explicit ForwardIterator(std::unique_ptr<WrapperInterface>&& ptr)
       : wrapper_(std::move(ptr)) {}
 
  public:
@@ -164,6 +172,7 @@ class ForwardIterator {
       typename = std::enable_if_t<
           !std::is_base_of<ForwardIterator, IteratorImpl>::value &&
           !std::is_reference<IteratorImpl>::value>>
+  // NOLINTNEXTLINE(hicpp-explicit-conversions, google-explicit-constructor)
   ForwardIterator(const IteratorImpl& iterator)
       : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(iterator)) {}
 
@@ -178,6 +187,7 @@ class ForwardIterator {
       typename = std::enable_if_t<
           !std::is_convertible<IteratorImpl, ForwardIterator&>::value &&
           !std::is_reference<IteratorImpl>::value>>
+  // NOLINTNEXTLINE(hicpp-explicit-conversions, google-explicit-constructor)
   ForwardIterator(IteratorImpl&& iterator)
       : wrapper_(std::make_unique<WrapperImpl<IteratorImpl>>(
             std::forward<IteratorImpl>(iterator))) {}
@@ -199,12 +209,12 @@ class ForwardIterator {
   /**
    * @brief Move constructor
    */
-  ForwardIterator(ForwardIterator&&) = default;
+  ForwardIterator(ForwardIterator&&) noexcept = default;
 
   /**
    * @brief Move-assignment operator
    */
-  ForwardIterator& operator=(ForwardIterator&&) = default;
+  ForwardIterator& operator=(ForwardIterator&&) noexcept = default;
 
   /**
    * @brief Standard assignment operator
