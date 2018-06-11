@@ -9,7 +9,7 @@
 #include <sstream>
 
 /**
- * @brief HL_VERIFY_MSG(expr, msg) aborts execution of the code if 
+ * @brief LF_VERIFY_MSG(expr, msg) aborts execution of the code if 
  * `expr` evaluates to false. 
  * 
  * @Remark At the moment this macro just forwards everything to 

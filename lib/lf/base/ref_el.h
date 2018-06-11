@@ -343,47 +343,51 @@ public:
    *  
    * @param sub_codim The codimension of the sub-entity.
    * @param sub_index  The zero-based index of the sub-entity.
-   * @param sub_sub_codim The codimension of the sub-sub-entity w.r.t. the 
+   * @param sub_rel_codim The codimension of the sub-sub-entity w.r.t. the 
    *        sub-entity identified by `sub_codim` and `sub_index`.
-   * @param sub_sub_index The codimension of the sub-sub-entity w.r.t. the
+   * @param sub_rel_index The index of the sub-sub-entity w.r.t. the
    *        sub-entity identified by `sub_codim` and `sub_index`.
    * @return The index of the sub-sub-entity w.r.t. this RefEl.
    * 
+   * @note the argument `sub_rel_codim` is a **relative co-dimension**.
+   *
+   * @notes the argument `sub_rel_index` is a local index in the sub-entity.
+   *
    * #### Examples
    * - The sub-entity of a `RefEl::kTria()` with `sub_codim=1`, `sub_index=1` 
    *   is a `RefEl::kSegment()` that connects node 1 with node 2. The 
-   *   (sub-)sub-entity of this segment with codim `sub_sub_codim=1` and sub-index 
-   *   `sub_sub_index=0` (both w.r.t. to the segment) is the first point of the 
+   *   (sub-)sub-entity of this segment with codim `sub_rel_codim=1` and sub-index 
+   *   `sub_rel_index=0` (both w.r.t. to the segment) is the first point of the 
    *   segment, i.e. node 1. Therefore
    *   `SubSubEntity2SubEntity(1,1,1,0) == 1`
-   * - Similarly, for `sub_sub_index=1`:
+   * - Similarly, for `sub_rel_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
   constexpr dim_t SubSubEntity2SubEntity(dim_t sub_codim, dim_t sub_index,
-                                        dim_t sub_sub_codim,
-                                        dim_t sub_sub_index) const {
+                                        dim_t sub_rel_codim,
+                                        dim_t sub_rel_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_index <= NumSubEntities(sub_codim),
       "sub_index >= NumSubEntities");
-    LF_ASSERT_MSG_CONSTEXPR(sub_sub_codim >= 0, "sub_sub_codim negative.");
-    LF_ASSERT_MSG_CONSTEXPR(sub_sub_codim <= Dimension() - sub_codim,
+    LF_ASSERT_MSG_CONSTEXPR(sub_rel_codim >= 0, "sub_rel_codim negative.");
+    LF_ASSERT_MSG_CONSTEXPR(sub_rel_codim <= Dimension() - sub_codim,
       "subSubCodim out of bounds.");
-    LF_ASSERT_MSG_CONSTEXPR(sub_sub_index >= 0, "sub_sub_index negative.");
-    LF_ASSERT_MSG_CONSTEXPR(sub_sub_index < SubType(sub_codim, sub_index).
-      NumSubEntities(sub_sub_codim), "sub_sub_index out of bounds.");
+    LF_ASSERT_MSG_CONSTEXPR(sub_rel_index >= 0, "sub_rel_index negative.");
+    LF_ASSERT_MSG_CONSTEXPR(sub_rel_index < SubType(sub_codim, sub_index).
+      NumSubEntities(sub_rel_codim), "sub_rel_index out of bounds.");
 
     if (type_ == RefElType::kPoint) return 0;
-    if (sub_codim == 0) return sub_sub_index;
+    if (sub_codim == 0) return sub_rel_index;
     if (sub_codim == Dimension()) return sub_index;
 
     // from here on, it must be a segment
     switch (type_) {
       case RefElType::kTria:
-        return sub_sub_entity_index_tria_[sub_index][sub_sub_index];
+        return sub_sub_entity_index_tria_[sub_index][sub_rel_index];
       case RefElType::kQuad:
-        return sub_sub_entity_index_quad_[sub_index][sub_sub_index];
+        return sub_sub_entity_index_quad_[sub_index][sub_rel_index];
       default:
         LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
     }

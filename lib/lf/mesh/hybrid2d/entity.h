@@ -9,17 +9,36 @@ namespace lf::mesh::hybrid2d {
 
 class Mesh;
 
+/** 
+ * @brief classes for topological entities in a 2D hybrid mesh
+ * @tparam CODIM the co-dimension of the entity object \f$\in\{0,1,2\}\f$
+ *
+ * This class template can be used to instantiate the four different topological 
+ * entities occurring in 2D hybrid meshes: Points, Edges, Triangles, and Quadrilaterals.
+ * @note Every `Entity` object owns a smart pointer to an associated geometry object.
+ *             
+ */
 template <char CODIM>
 class Entity : public mesh::Entity {
   using size_type = mesh::Mesh::size_type;
 
 public:
-  // needed by std::vector
+  /** @brief default constructors, needed by std::vector */
   Entity() = default;
   Entity(Entity&&) = default;
   Entity& operator=(Entity&&) = default;
 
-  // constructor, is called from Mesh
+  /**
+   * @brief constructor, is called from MeshBuilder
+   * @param mesh pointer to global hybrid mesh object
+   * @param index index of the entity to be created; will usually be retrieved via
+   *              the `Index()` method of `Mesh`  
+   * @param geometry pointer to a geometry object providing the shape of the entity
+   * @param sub_entities indices of the sub-entities in the entity arrays of the global mesh
+   *
+   * @note Note that you need to create a suitable geometry object for the entity before 
+   * you can initialize the entity object itseld.
+   */
   Entity(Mesh* mesh, size_type index,
          std::unique_ptr<geometry::Geometry>&& geometry,
          std::array<std::vector<size_type>, 2 - CODIM> sub_entities)
@@ -31,9 +50,8 @@ public:
 
   char Codim() const override { return CODIM; }
 
-  base::RandomAccessRange<const mesh::Entity> SubEntities(
-    char codim) const override;
-
+  base::RandomAccessRange<const mesh::Entity>
+    SubEntities(char rel_codim) const override;
 
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
@@ -57,7 +75,7 @@ public:
   }
 
 private:
-  Mesh* mesh_;
+  Mesh* mesh_;      // pointer to global hybrid 2D mesh object
   size_type index_; // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
@@ -72,17 +90,19 @@ private:
 namespace lf::mesh::hybrid2d {
 
 template <char CODIM>
-base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
-  char codim) const {
-
-  switch (2 - CODIM - codim) {
+base::RandomAccessRange<const mesh::Entity>
+  Entity<CODIM>::SubEntities(char rel_codim) const {
+  switch (2 - CODIM - rel_codim) {
     case 2:
-      // return ourselves as the only element:
+      // This case is relevant only for CODIM = 0 and codim =0,
+      // that is for cells; return ourselves as the only element of the range
       return {this, this + 1};
     case 1:
+      // This case is visited, if
+      // (i) either the entity is an edge (CODIM = 1) 
       return {
         base::make_DereferenceLambdaRandomAccessIterator(
-                                                    sub_entities_[codim - 1].
+                                                    sub_entities_[rel_codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
                                                   Entity& {
@@ -90,7 +110,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                                                         i];
                                                     }),
         base::make_DereferenceLambdaRandomAccessIterator(
-                                                    sub_entities_[codim - 1].
+                                                    sub_entities_[rel_codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
                                                   Entity& {
@@ -101,7 +121,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
     case 0:
       return {
         base::make_DereferenceLambdaRandomAccessIterator(
-                                                    sub_entities_[codim - 1].
+                                                    sub_entities_[rel_codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
                                                   Entity& {
@@ -109,7 +129,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                                                         i];
                                                     }),
         base::make_DereferenceLambdaRandomAccessIterator(
-                                                    sub_entities_[codim - 1].
+                                                    sub_entities_[rel_codim - 1].
                                                     begin(),
                                                     [&](auto i) -> const mesh::
                                                   Entity& {
