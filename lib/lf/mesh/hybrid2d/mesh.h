@@ -3,7 +3,7 @@
 
 #include <tuple>
 
-#include <lf/mesh/mesh.h><lf/geeometry/
+#include <lf/mesh/mesh.h>
 
 namespace lf::mesh::hybrid2d {
 
@@ -12,6 +12,11 @@ class Entity;
 
 class Mesh : public mesh::Mesh {
  public:
+  /**
+   * @brief Default constructor: create "empty" mesh
+   */
+  Mesh(char dim_world):dim_world_(dim_world) {}
+  
   /**
    * @brief Create a new instance of this mesh by directly specifying the
    *        nodes and elements. Note that it is preferred to use the
@@ -33,7 +38,7 @@ class Mesh : public mesh::Mesh {
        std::vector<Eigen::VectorXd> nodes,
        std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<geometry::Geometry>>>
        elements);
-
+  
   char DimMesh() const override { return 2; }
 
   char DimWorld() const override { return dim_world_; }
@@ -44,14 +49,14 @@ class Mesh : public mesh::Mesh {
 
   size_type Index(const mesh::Entity& e) const override;
 
- private:
-  char dim_world_;
   std::vector<Entity<0>> entities0_;
   std::vector<Entity<1>> entities1_;
   std::vector<Entity<2>> entities2_;
 
-  template <char CODIM>
-  friend class Entity;
+ private:
+  char dim_world_;
+
+  template <char CODIM> friend class Entity;
 };
 
 }  // namespace lf::mesh::hybrid2d

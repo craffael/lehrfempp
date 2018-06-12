@@ -68,6 +68,8 @@ private:
  *
  * Mesh generator for a triangular tensor product mesh covering a rectangle.
  *
+ * The design of the class compliees with the builder pattern.
+ *
  * A triangular tensor product mesh of a rectangular domain is built by
  * subdividing the domain into equal squares and splitting each of them
  * along the diagonal.
@@ -82,7 +84,7 @@ private:
 class TPTriagMeshBuilder: public mesh::MeshBuilder {
 public:
   /**
-   * @brief Consrtructor
+   * @brief Constructor: does nothing
    *
    */
   TPTriagMeshBuilder():no_of_x_cells_(0),no_of_y_cells_(0) {} 
@@ -98,7 +100,7 @@ public:
 
   /**
    * @brief Initialization methods
-   *
+   * @{
    */
   template <typename VECTOR>
   TPTriagMeshBuilder &setBottomLeftCorner(const VECTOR &&blc) {
@@ -106,14 +108,15 @@ public:
   }
   template <typename VECTOR>
   TPTriagMeshBuilder &setTopRightCorner(const VECTOR &&trc) {
-    bottom_left_corner_ << trc[0],trc[1]; return *this;
+    top_right_corner_ << trc[0],trc[1]; return *this;
   }
   TPTriagMeshBuilder &setNoXCells(size_type nxc) { 
     no_of_x_cells_ = nxc; return *this;
   }
   TPTriagMeshBuilder &setNoYCells(size_type nyc) { 
-    no_of_x_cells_ = nyc; return *this;
+    no_of_y_cells_ = nyc; return *this;
   }
+  /** @} */
   
   /** 
    * @brief actual construction of the mesh 
@@ -131,7 +134,6 @@ private:
 private:
   Eigen::Vector2d bottom_left_corner_,top_right_corner_;
   size_type no_of_x_cells_,no_of_y_cells_;
-  
 };
 
 }
