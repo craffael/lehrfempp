@@ -16,29 +16,29 @@ branches:
     - gh-pages
      
 stages:
-  #- clang-format
-  #- clang-tidy
+  - clang-format
+  - clang-tidy
   - compile_test
-  #- doxygen 
+  - doxygen 
             
   
 jobs:
   include:
-    # - stage: lint
-      # os: linux
-      # addons:
-        # apt:
-          # sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-format-6.0']
-      # script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
-    # - stage: clang-tidy
-      # os: linux
-      # addons:
-        # apt:
-          # sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-tidy-6.0']
-      # script: "./travis/run_clang_tidy.sh"
-    # # Linux gcc
+    - stage: lint
+      os: linux
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-format-6.0']
+      script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
+    - stage: clang-tidy
+      os: linux
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-tidy-6.0']
+      script: "./travis/run_clang_tidy.sh"
+    # Linux gcc
     - stage: compile_test
       os: linux 
       compiler: gcc

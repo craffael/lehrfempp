@@ -42,7 +42,6 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
   {                                             \
     if (!(expr)) throw std::runtime_error(msg); \
   }
-#endif
 
 #define LF_ASSERT_MSG(expr, msg)                                        \
   {                                                                     \
@@ -54,5 +53,6 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
+#endif
 
 #endif  // __c3c605c9e48646758bf03fab65d52836
