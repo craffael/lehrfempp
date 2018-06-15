@@ -18,7 +18,7 @@ source $(dirname $0)/install_cmake.sh
 # compile
 cd ${TRAVIS_BUILD_DIR}
 export CXX=clang++-6.0
-cmake -H. -BBuild -DCMAKE_BUILD_TYPE=Debug -Wdev
+cmake -H. -BBuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=On -Wdev
 
 # run clang-tidy
 $(dirname $0)/run-clang-tidy.py -j2 -p ${TRAVIS_BUILD_DIR}/Build -header-filter=lib/ '^((?!snippets).)*(?<!_tests\.cc)$'
