@@ -342,8 +342,9 @@ class RefEl {
     }
     if (Dimension() - sub_codim == 1) {
       return kSegment();
+    } else { //NOLINT(readability-else-after-return)
+      LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
     }
-    LF_ASSERT_MSG_CONSTEXPR(false, "This code should never be reached.");
 
     return kPoint();  // prevent warnings from compiler
   }

@@ -24,7 +24,7 @@ stages:
   
 jobs:
   include:
-    - stage: lint
+    - stage: clang-format
       os: linux
       addons:
         apt:
