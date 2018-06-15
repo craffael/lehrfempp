@@ -251,15 +251,19 @@ class RefEl {
    */
   template <RefElType type>
   static const std::vector<NodeCoordVector<type>>& NodeCoords() {
+    // NOLINTNEXTLINE
     if constexpr (type == RefElType::kPoint) {
       return ncoords_point_static_;
     }
+    // NOLINTNEXTLINE
     if constexpr (type == RefElType::kSegment) {
       return ncoords_segment_static_;
     }
+    // NOLINTNEXTLINE
     if constexpr (type == RefElType::kTria) {
       return ncoords_tria_static_;
     }
+    // NOLINTNEXTLINE
     if constexpr (type == RefElType::kQuad) {
       return ncoords_quad_static_;
     }

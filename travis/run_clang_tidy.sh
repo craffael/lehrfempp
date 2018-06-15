@@ -9,7 +9,6 @@
 # Exit immediately from this script upon error
 set -e
 
-# install new version of cmake:
 mkdir -p ${HUNTER_ROOT}
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
@@ -18,10 +17,8 @@ source $(dirname $0)/install_cmake.sh
 
 # compile
 cd ${TRAVIS_BUILD_DIR}
-export CXX=${COMPILER}
-cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
-cd Build
-make -j2
+export CXX=clang++-6.0
+cmake -H. -BBuild -DCMAKE_BUILD_TYPE=Debug -D -Wdev
 
-# test
-ctest -V
+# run clang-tidy
+$(dirname $0)/run-clang-tidy.py -j2 -p ${TRAVIS_BUILD_DIR} -header-filter=lib/ '^((?!snippets).)*(?<!_tests\.cc)$'
