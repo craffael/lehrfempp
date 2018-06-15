@@ -2,8 +2,8 @@
 #define __b58a30690f684a2b9422606fd526d0f4
 
 #include <exception>
-#include <utility>
 #include <string>
+#include <utility>
 
 namespace lf::base {
 
@@ -17,11 +17,16 @@ class InvalidTypeException : public std::exception {
 
  public:
   InvalidTypeException() = default;
+  InvalidTypeException(const InvalidTypeException&) = default;
+  InvalidTypeException(InvalidTypeException&&) = default;
 
   explicit InvalidTypeException(std::string message)
       : what_(std::move(message)) {}
 
-  InvalidTypeException(const InvalidTypeException& other) = default;
+  InvalidTypeException& operator=(const InvalidTypeException&) = delete;
+  InvalidTypeException& operator=(InvalidTypeException&&) = delete;
+
+  ~InvalidTypeException() override = default;
 };
 
 }  // namespace lf::base

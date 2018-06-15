@@ -8,8 +8,7 @@ class Ingredient {};
 
 //! [recipe]
 class Recipe {
-public:
-
+ public:
   /* The preparation time of the recipe */
   virtual std::chrono::duration<long> prepTime() = 0;
 
@@ -25,7 +24,6 @@ public:
 //! [recipe]
 
 void foo() {
-  
   //! [usage]
   std::vector<std::string> vector{"hello", "world"};
   std::list<std::string> list{"Gugus"};
@@ -48,12 +46,11 @@ void foo() {
   //! [usage]
 
   //! [equality]
-  std::vector<int> numbers{0,1,2};
+  std::vector<int> numbers{0, 1, 2};
   std::vector<int>::iterator it = numbers.begin();
   std::vector<int>::const_iterator const_it = numbers.begin();
 
-  assert(ForwardIterator<const int>(it) != ForwardIterator<const int>(const_it));
+  assert(ForwardIterator<const int>(it) !=
+         ForwardIterator<const int>(const_it));
   //! [equality]
-
-
 }

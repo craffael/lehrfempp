@@ -1,19 +1,12 @@
-# This script is called from .travis.yml
-#
-# It takes two inputs as environment variables:
-#   COMPILER specifies the compiler to use (e.g. g++-7)
-#   BUILD_TYPE specifies the CMAKE_BUILD_TYPE.
-# 
-# It builds and tests Lehrfempp using the provided compiler + cmake configuration.
+# This script installs an up-2-date version of cmake on the travis build server.
 
 # Exit immediately from this script upon error
 set -e
 
-# install new version of cmake:
-mkdir -p ${HUNTER_ROOT}
+# save current directory
+dir=$(pwd)
+
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
-
 
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [ ! -d "cmake" ]; then
   CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
@@ -24,12 +17,5 @@ elif [[ "${TRAVIS_OS_NAME}" == "osx" ]] && [ ! -d "cmake" ]; then
 fi
 export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 
-# compile
-cd ${TRAVIS_BUILD_DIR}
-export CXX=${COMPILER}
-cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
-cd Build
-make -j2
-
-# test
-ctest -V
+#Change back to where we left off.
+cd $dir

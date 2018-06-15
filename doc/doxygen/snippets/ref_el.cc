@@ -1,9 +1,8 @@
 #include "lf/base/ref_el.h"
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
-using namespace lf::base;
-
+namespace lf::base {
 void foo() {
   //! [convert_to_enum]
   RefElType type = RefEl::kTria();
@@ -21,31 +20,37 @@ void foo() {
 
   //! [enumConversion]
   RefElType point = RefEl::kPoint();
-  RefEl segment = RefElType::kSegment;
+  auto segment = RefEl(RefElType::kSegment);
   //! [enumConversion]
 
   //! [nodeCoordStatic]
   // If RefEl not known at compile time:
-  std::vector<Eigen::VectorXd> nodeCoordsDynamic = RefEl::kTria().NodeCoords();
+  std::vector<Eigen::VectorXd> nodeCoordsDynamic(RefEl::kTria().NodeCoords());
 
   // If RefEl known at compile time:
-  std::vector<Eigen::Vector2d> nodeCoordsCompiletime = RefEl::NodeCoords<RefEl::kTria()>();
+  std::vector<Eigen::Vector2d> nodeCoordsCompiletime =
+      RefEl::NodeCoords<RefEl::kTria()>();
   //! [nodeCoordStatic]
 
   //![streamOutput]
-  std::cout << RefEl::kSegment(); // prints "kSegment"
+  std::cout << RefEl::kSegment();  // prints "kSegment"
   //![streamOutput]
   {
-  //![refElUsage]
-  // Example usage
-  auto triangle = RefEl::kTria();
-  assert(triangle.Dimension() == 2);
-  assert(triangle.NumNodes() == 3);
-  assert(triangle.NodeCoords()[0] == Eigen::Vector2d(0,0));
-  assert(triangle.NumSubEntities(1) == 3); // Triangle has 3 sub-entities with codim=1 (all segments)
+    //![refElUsage]
+    // Example usage
+    auto triangle = RefEl::kTria();
+    assert(triangle.Dimension() == 2);
+    assert(triangle.NumNodes() == 3);
+    assert(triangle.NodeCoords()[0] == Eigen::Vector2d(0, 0));
+    assert(triangle.NumSubEntities(1) ==
+           3);  // Triangle has 3 sub-entities with codim=1 (all segments)
 
-  auto point = triangle.SubType(2,0); // RefEl of sub-entity with codim=2, index=0
-  assert(point == RefEl::kPoint());
-  //![refElUsage]
+    auto point =
+        triangle.SubType(2, 0);  // RefEl of sub-entity with codim=2, index=0
+    assert(point == RefEl::kPoint());
+    //![refElUsage]
   }
 }
+}
+
+
