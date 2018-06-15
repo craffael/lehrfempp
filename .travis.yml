@@ -16,9 +16,9 @@ branches:
     - gh-pages
      
 stages:
-  - clang-format
+  #- clang-format
   - clang-tidy
-  - compile_test
+  #- compile_test
   #- doxygen 
             
   
