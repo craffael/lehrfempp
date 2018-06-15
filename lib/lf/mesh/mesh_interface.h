@@ -7,6 +7,18 @@
 #include "entity.h"
 
 namespace lf::mesh {
+/**
+ * @brief Abstract interface for objects representing a single mesh
+ *
+ * This abstract base class desccribes the basic functionality of objects
+ * that manage single-level conforming finite element meshes. These objects
+ * essentially boil down to containers for mesh entities of different
+ * co-dimensions. Thus they allow sequential traversal of these entities.
+ *
+ * Another important functionality concerns the management of entity indices,
+ * which have to provide a consecutive numbering of entities of a specific
+ * co-dimension starting from zero.
+ */
 class Mesh {
  protected:
   Mesh() = default;
@@ -17,7 +29,6 @@ class Mesh {
 
  public:
   using size_type = unsigned int;
-
   /**
    * @brief The dimension of the manifold described by the mesh, or
    *        equivalently the maximum dimension of the reference elements
@@ -37,6 +48,10 @@ class Mesh {
    * @return A base::ForwardRange that can be used to traverse the entities.
    *
    * @sa Entity
+   *
+   * Principal access method for entities distinguished only by their
+   * co-dimension Hence, all cells of a mesh are covered by the range returned
+   * when giving co-dimension 0, regardless of their concrete shape.
    */
   virtual base::ForwardRange<const Entity> Entities(char codim) const = 0;
 
@@ -56,6 +71,8 @@ class Mesh {
    * co-dimension belonging to a mesh are endowed with an integer index. These
    * indices are guaranteed to be contiguous and to range from 0 to
    * `Size(codim)-1`.
+   * @note The index of a mesh entity is NOT related to its position in the
+   * range returned by the Entities() method.
    */
   virtual size_type Index(const Entity& e) const = 0;
 
