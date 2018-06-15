@@ -51,7 +51,7 @@ jobs:
           sources: ['ubuntu-toolchain-r-test']
           packages: 
             - g++-7
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
       
     - stage: compile_test
       os: linux 
@@ -65,7 +65,7 @@ jobs:
           sources: ['ubuntu-toolchain-r-test']
           packages: 
             - g++-7
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
         
     # Linux Clang
     - stage: compile_test
@@ -78,7 +78,7 @@ jobs:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-5.0', 'g++-7']
-      script: ./compile_test.sh   
+      script: ./travis/compile_test.sh   
      
     - stage: compile_test
       os: linux
@@ -90,7 +90,7 @@ jobs:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-5.0', 'g++-7']
-      script: ./compile_test.sh   
+      script: ./travis/compile_test.sh   
     
     # OSX Builds
     - stage: compile_test
@@ -98,33 +98,33 @@ jobs:
       osx_image: xcode8.3
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Debug'
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
     
     - stage: compile_test
       os: osx
       osx_image: xcode8.3
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Release'
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
         
-    # # Deploy doxygen documentation using builtin GitHub Pages support
-    # - stage: doxygen
-      # os: linux 
-      # compiler: gcc
-      # addons: 
-        # apt:
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - doxygen
-            # - graphviz
-      # script: |
-        # cd $TRAVIS_BUILD_DIR/doc/doxygen
-        # doxygen --version
-        # doxygen Doxyfile
-      # deploy:
-        # provider: pages
-        # skip_cleanup: true
-        # local_dir: ./doc/doxygen/html
-        # github_token: $GITHUB_API_KEY
-        # on:
-          # branch: master
+    # Deploy doxygen documentation using builtin GitHub Pages support
+    - stage: doxygen
+      os: linux 
+      compiler: gcc
+      addons: 
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - doxygen
+            - graphviz
+      script: |
+        cd $TRAVIS_BUILD_DIR/doc/doxygen
+        doxygen --version
+        doxygen Doxyfile
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: ./doc/doxygen/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: master
