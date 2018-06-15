@@ -13,6 +13,7 @@ mkdir -p ${HUNTER_ROOT}
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
 # Install cmake
+pwd
 source ./install_cmake.sh
 
 # compile
