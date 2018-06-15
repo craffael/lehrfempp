@@ -11,7 +11,6 @@ set -e
 
 # install new version of cmake:
 mkdir -p ${HUNTER_ROOT}
-mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
 # Install cmake
 source $(dirname $0)/install_cmake.sh

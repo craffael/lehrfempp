@@ -12,8 +12,8 @@ set -e
 mkdir -p ${HUNTER_ROOT}
 
 # Install cmake
-pwd
-source ./install_cmake.sh
+echo pwd
+source $(dirname $0)/install_cmake.sh
 
 # compile
 cd ${TRAVIS_BUILD_DIR}
