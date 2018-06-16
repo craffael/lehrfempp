@@ -4,6 +4,7 @@ set(sources
   forward_iterator.h
   forward_range.h
   invalid_type_exception.h
+  lf_assert.cc
   lf_assert.h
   random_access_iterator.h
   random_access_range.h

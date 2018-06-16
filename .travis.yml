@@ -16,12 +16,28 @@ branches:
     - gh-pages
      
 stages:
+  - clang-format
+  - clang-tidy
   - compile_test
   - doxygen 
             
   
 jobs:
   include:
+    - stage: clang-format
+      os: linux
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-format-6.0']
+      script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
+    - stage: clang-tidy
+      os: linux
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-tidy-6.0']
+      script: "./travis/run_clang_tidy.sh"
     # Linux gcc
     - stage: compile_test
       os: linux 
@@ -35,7 +51,7 @@ jobs:
           sources: ['ubuntu-toolchain-r-test']
           packages: 
             - g++-7
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
       
     - stage: compile_test
       os: linux 
@@ -49,7 +65,7 @@ jobs:
           sources: ['ubuntu-toolchain-r-test']
           packages: 
             - g++-7
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
         
     # Linux Clang
     - stage: compile_test
@@ -62,7 +78,7 @@ jobs:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-5.0', 'g++-7']
-      script: ./compile_test.sh   
+      script: ./travis/compile_test.sh   
      
     - stage: compile_test
       os: linux
@@ -74,7 +90,7 @@ jobs:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-5.0', 'g++-7']
-      script: ./compile_test.sh   
+      script: ./travis/compile_test.sh   
     
     # OSX Builds
     - stage: compile_test
@@ -82,14 +98,14 @@ jobs:
       osx_image: xcode8.3
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Debug'
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
     
     - stage: compile_test
       os: osx
       osx_image: xcode8.3
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Release'
-      script: ./compile_test.sh
+      script: ./travis/compile_test.sh
         
     # Deploy doxygen documentation using builtin GitHub Pages support
     - stage: doxygen

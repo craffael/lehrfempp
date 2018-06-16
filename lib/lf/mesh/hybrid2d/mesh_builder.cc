@@ -8,7 +8,8 @@
 
 namespace lf::mesh::hybrid2d {
 
-  MeshBuilder::size_type MeshBuilder::AddPoint(coord_t coord) {
+  MeshBuilder::size_type
+  MeshBuilder::AddPoint(coord_t coord) {
     LF_ASSERT_MSG(!built_, "Build() already called.");
     LF_ASSERT_MSG(coord.rows() == dim_world_,
 		  "coord has incompatible number of rows.");

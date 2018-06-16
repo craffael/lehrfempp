@@ -20,27 +20,25 @@ class ForwardRange {
 
  public:
   ForwardRange(const ForwardRange&) = default;
-  ForwardRange(ForwardRange&&) = default;
+  ForwardRange(ForwardRange&&) noexcept = default;
 
   template <class C, typename = typename std::enable_if<std::is_same<
                          typename std::iterator_traits<decltype(
                              std::declval<C>().begin())>::iterator_category,
                          std::forward_iterator_tag>::value>::type>
-  ForwardRange(const C& forward_range)
+  explicit ForwardRange(const C& forward_range)
       : begin_(forward_range.begin()), end_(forward_range.end()) {}
 
   ForwardRange(std::initializer_list<T> initializer_list)
       : begin_(initializer_list.begin()), end_(initializer_list.end()) {}
 
-            ForwardRange
-        &
-        operator=(const ForwardRange&) = default;
-  ForwardRange& operator=(ForwardRange&&) = default;
+  ForwardRange& operator=(const ForwardRange&) = default;
+  ForwardRange& operator=(ForwardRange&&) noexcept = default;
 
   ~ForwardRange() = default;
 
   ForwardRange(ForwardIterator<T> begin, ForwardIterator<T> end)
-      : begin_(begin), end_(end) {}
+      : begin_(std::move(begin)), end_(std::move(end)) {}
 
   ForwardIterator<T> begin() const { return begin_; }
   ForwardIterator<T> end() const { return end_; }

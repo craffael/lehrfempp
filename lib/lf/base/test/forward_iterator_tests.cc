@@ -22,13 +22,13 @@ TEST(ForwardIteratorTest, nonConst) {
   EXPECT_EQ(fi, fi2);
   EXPECT_EQ(*fi2, 2);
   EXPECT_EQ(*fi, 2);
-  EXPECT_NE(fi==fi2, fi != fi2);
+  EXPECT_NE(fi == fi2, fi != fi2);
 
   auto fi3 = std::move(fi2);
   EXPECT_EQ(fi3, fi);
 
   *fi = 3;
-  EXPECT_EQ( *fi3, 3);
+  EXPECT_EQ(*fi3, 3);
 
   // the value of a const iterator can be modified.
   *static_cast<const ForwardIterator<int>>(fi) = 4;
@@ -45,7 +45,7 @@ TEST(ForwardIterator, constEntities) {
   EXPECT_EQ(*fi, "world");
   ++fi;
 
-  EXPECT_EQ(fi, strings.end());
+  EXPECT_EQ(fi, ForwardIterator<const std::string>(strings.end()));
 }
 
 TEST(ForwardIterator, DefaultConstructible) {
@@ -60,6 +60,4 @@ TEST(ForwardIterator, DefaultConstructible) {
   defaultFi = numbers.end();
   EXPECT_NE(defaultFi, fi0);
 }
-}
-
-
+}  // namespace lf::base::test

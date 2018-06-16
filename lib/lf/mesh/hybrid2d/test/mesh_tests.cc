@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/geometry/geometry.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/test_utils/test_entity_indexing.h>
 
 using namespace lf::geometry;
@@ -9,28 +9,25 @@ using size_type = unsigned int;
 
 namespace lf::mesh::hybrid2d::test {
 TEST(hybrid2d, directMeshConstruction) {
-
   // construct a very simple mesh with two elements (tria, quad)
   // manually.
   hybrid2d::MeshBuilder builder(2);
 
-  builder.AddPoint(Eigen::Vector2d{0,0});
-  builder.AddPoint(Eigen::Vector2d{1,0});
-  builder.AddPoint(Eigen::Vector2d{2,0});
-  builder.AddPoint(Eigen::Vector2d{1,1});
-  builder.AddPoint(Eigen::Vector2d{0,1});
+  builder.AddPoint(Eigen::Vector2d{0, 0});
+  builder.AddPoint(Eigen::Vector2d{1, 0});
+  builder.AddPoint(Eigen::Vector2d{2, 0});
+  builder.AddPoint(Eigen::Vector2d{1, 1});
+  builder.AddPoint(Eigen::Vector2d{0, 1});
 
+  std::vector<std::tuple<std::vector<size_type>,
+                         std::unique_ptr<lf::geometry::Geometry>>>
+      elements;
+  Eigen::MatrixXd nodesQuad(2, 4), nodesTria(2, 3);
+  nodesQuad << 0, 1, 1, 0, 0, 0, 1, 1;
+  builder.AddElement({0, 1, 3, 4}, std::make_unique<QuadO1>(nodesQuad));
 
-  std::vector<std::tuple<std::vector<size_type>, std::unique_ptr<lf::geometry::
-                           Geometry>>> elements;
-  Eigen::MatrixXd nodesQuad(2,4), nodesTria(2,3);
-  nodesQuad << 0, 1, 1, 0,
-    0, 0, 1, 1;
-  builder.AddElement({0,1,3,4}, std::make_unique<QuadO1>(nodesQuad));
-  
-  nodesTria << 0, 1, 0,
-    0, 0, 1;
-  builder.AddElement({1,2,3}, std::make_unique<TriaO1>(nodesTria));
+  nodesTria << 0, 1, 0, 0, 0, 1;
+  builder.AddElement({1, 2, 3}, std::make_unique<TriaO1>(nodesTria));
 
   auto mesh = builder.Build();
 
@@ -70,4 +67,4 @@ TEST(hybrid2d, directMeshConstruction) {
 
   mesh::test_utils::testEntityIndexing(*mesh);
 }
-}
+}  // namespace lf::mesh::hybrid2d::test
