@@ -71,7 +71,7 @@ Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
   return result;
 }
 
-std::unique_ptr<Geometry> QuadO1::subGeometry(dim_t codim, dim_t i) const {
+std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
   using std::make_unique;
   switch (codim) {
     case 0:

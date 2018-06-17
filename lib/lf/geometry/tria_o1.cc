@@ -28,7 +28,7 @@ Eigen::MatrixXd TriaO1::Global(const Eigen::MatrixXd& local) const {
          coords_.col(1) * local.row(0) + coords_.col(2) * local.row(1);
 }
 
-std::unique_ptr<Geometry> TriaO1::subGeometry(dim_t codim, dim_t i) const {
+std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
   using std::make_unique;
   switch (codim) {
     case 0:

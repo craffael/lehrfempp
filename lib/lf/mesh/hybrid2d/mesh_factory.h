@@ -6,14 +6,14 @@
 namespace lf::mesh::hybrid2d {
 
 /**
- * @brief Implements mesh::MeshBuilder interface and can be used to construct
+ * @brief Implements mesh::MeshFactory interface and can be used to construct
  *        a hybrid mesh with `dimMesh=2`.
  *
  * A planar triangular mesh with affine triangles as cells can be completely
  * specified by giving the list of vertex coordinates and a list of triangles in
  * the form of a 3-tuple of vertex indices.
  */
-class MeshBuilder : public mesh::MeshBuilder {
+class MeshFactory : public mesh::MeshFactory {
  public:
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
@@ -21,39 +21,24 @@ class MeshBuilder : public mesh::MeshBuilder {
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
    */
-  explicit MeshBuilder(dim_t dim_world)
+  explicit MeshFactory(dim_t dim_world)
       : dim_world_(dim_world), built_(false) {}
 
-  /** @copydoc Mesh::DimWorld */
+  /** @copydoc MeshFactory::DimWorld() */
   dim_t DimWorld() const override { return dim_world_; }
 
-  /**
-   * @brief 2D hybrid meshes are meant to model 2D manifolds
-   *
-   */
+  /** @copydoc Mesh::DimMesh() */
   dim_t DimMesh() const override { return 2; }
 
-  /**
-   * @brief register the coordinates of another point
-   * @param coord a dynamic Eigen vector of size DimWorld containing node
-   * coordinates
-   *
-   */
+  /** @copydoc MeshFactory::AddPoint() */
   size_type AddPoint(coord_t coord) override;
 
-  /*
-   * @brief register another triangle
-   * @param nodes a 3-tuple of node *indices*
-   * @param geometry a description of the shape of a cell
-   *
-   */
-  size_type AddElement(const base::ForwardRange<const size_type>& nodes,
-                       std::unique_ptr<geometry::Geometry>&& geometry) override;
+  /** @copydoc MeshFactory::AddEntity() */
+  size_type AddEntity(base::RefEl ref_el,
+                      const base::ForwardRange<const size_type>& nodes,
+                      std::unique_ptr<geometry::Geometry>&& geometry) override;
 
-  /**
-   * @brief actual construction of the mesh
-   *
-   */
+  /** @copydoc MeshFactory::Build() */
   std::unique_ptr<mesh::Mesh> Build() override;
 
  private:
@@ -61,7 +46,10 @@ class MeshBuilder : public mesh::MeshBuilder {
   bool built_;
   std::vector<Eigen::VectorXd> nodes_;
   std::vector<
-      std::tuple<std::vector<size_type>, std::unique_ptr<geometry::Geometry>>>
+      std::tuple<std::array<size_type, 2>, std::unique_ptr<geometry::Geometry>>>
+      edges_;
+  std::vector<
+      std::tuple<std::array<size_type, 4>, std::unique_ptr<geometry::Geometry>>>
       elements_;
 };
 

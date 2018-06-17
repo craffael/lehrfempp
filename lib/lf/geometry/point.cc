@@ -21,7 +21,7 @@ Eigen::VectorXd Point::IntegrationElement(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG(false, "integrationElement() undefined for points.");
 }
 
-std::unique_ptr<Geometry> Point::subGeometry(dim_t codim, dim_t i) const {
+std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
   if (codim == 0 && i == 0) {
     return std::make_unique<Point>(coord_);
   }

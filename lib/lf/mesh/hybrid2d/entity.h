@@ -39,7 +39,7 @@ class Entity : public mesh::Entity {
       Mesh* mesh, size_type index,
 
       /**
-       * @brief constructor, is called from MeshBuilder
+       * @brief constructor, is called from MeshFactory
        * @param mesh pointer to global hybrid mesh object
        * @param index index of the entity to be created; will usually be
        * retrieved via the `Index()` method of `Mesh`
@@ -86,8 +86,8 @@ class Entity : public mesh::Entity {
   ~Entity() override = default;
 
  private:
-  Mesh* mesh_;       // pointer to global hybrid 2D mesh object
-  size_type index_;  // zero-based index of this entity.
+  Mesh* mesh_ = nullptr;  // pointer to global hybrid 2D mesh object
+  size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
 

@@ -25,7 +25,7 @@ void foo() {
 
   //! [nodeCoordStatic]
   // If RefEl not known at compile time:
-  std::vector<Eigen::VectorXd> nodeCoordsDynamic(RefEl::kTria().NodeCoords());
+  auto nodeCoordsDynamic = RefEl::kTria().NodeCoords();
 
   // If RefEl known at compile time:
   std::vector<Eigen::Vector2d> nodeCoordsCompiletime =
@@ -41,7 +41,7 @@ void foo() {
     auto triangle = RefEl::kTria();
     assert(triangle.Dimension() == 2);
     assert(triangle.NumNodes() == 3);
-    assert(triangle.NodeCoords()[0] == Eigen::Vector2d(0, 0));
+    assert(triangle.NodeCoords().col(0) == Eigen::Vector2d(0, 0));
     assert(triangle.NumSubEntities(1) ==
            3);  // Triangle has 3 sub-entities with codim=1 (all segments)
 
@@ -51,6 +51,4 @@ void foo() {
     //![refElUsage]
   }
 }
-}
-
-
+}  // namespace lf::base

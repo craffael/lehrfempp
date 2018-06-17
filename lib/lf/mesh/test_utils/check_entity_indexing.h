@@ -11,7 +11,7 @@ namespace lf::mesh::test_utils {
  * This function tests whether all entities of a mesh are indexed
  * consecutively
  */
-void testEntityIndexing(const Mesh& mesh);
+void checkEntityIndexing(const Mesh& mesh);
 
 }  // namespace lf::mesh::test_utils
 

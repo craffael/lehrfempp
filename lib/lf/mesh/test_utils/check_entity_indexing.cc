@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace lf::mesh::test_utils {
-void testEntityIndexing(const Mesh& mesh) {
+void checkEntityIndexing(const Mesh& mesh) {
   using size_type = Mesh::size_type;     // type for indices
   const auto dim_mesh = mesh.DimMesh();  // dimension of meshed manifold
   // Now run over all co-dimensions to check indexing
@@ -29,5 +29,5 @@ void testEntityIndexing(const Mesh& mesh) {
           << "Index " << idx_cnt << " occurs " << idx_use[idx_cnt] << " times!";
     }
   }  // end for
-}  // end testEntityIndexing()
+}  // end checkEntityIndexing()
 }  // namespace lf::mesh::test_utils
