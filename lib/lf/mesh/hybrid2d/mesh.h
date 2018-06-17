@@ -15,7 +15,7 @@ class Mesh : public mesh::Mesh {
   /**
    * @brief Create a new instance of this mesh by directly specifying the
    *        nodes and elements. Note that it is preferred to use the
-   *        MeshBuilder interface instead.
+   *        MeshFactory interface instead.
    * @param dim_world The dimension of the euclidean space in which the mesh
    *                  is embedded.
    * @param nodes     The coordinates of the nodes.

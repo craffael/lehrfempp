@@ -39,7 +39,7 @@ class Entity : public mesh::Entity {
       Mesh* mesh, size_type index,
 
       /**
-       * @brief constructor, is called from MeshBuilder
+       * @brief constructor, is called from MeshFactory
        * @param mesh pointer to global hybrid mesh object
        * @param index index of the entity to be created; will usually be
        * retrieved via the `Index()` method of `Mesh`

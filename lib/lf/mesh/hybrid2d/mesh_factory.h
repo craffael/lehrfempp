@@ -6,14 +6,14 @@
 namespace lf::mesh::hybrid2d {
 
 /**
- * @brief Implements mesh::MeshBuilder interface and can be used to construct
+ * @brief Implements mesh::MeshFactory interface and can be used to construct
  *        a hybrid mesh with `dimMesh=2`.
  *
  * A planar triangular mesh with affine triangles as cells can be completely
  * specified by giving the list of vertex coordinates and a list of triangles in
  * the form of a 3-tuple of vertex indices.
  */
-class MeshBuilder : public mesh::MeshBuilder {
+class MeshFactory : public mesh::MeshFactory {
  public:
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
@@ -21,7 +21,7 @@ class MeshBuilder : public mesh::MeshBuilder {
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
    */
-  explicit MeshBuilder(dim_t dim_world)
+  explicit MeshFactory(dim_t dim_world)
       : dim_world_(dim_world), built_(false) {}
 
   /** @copydoc Mesh::DimWorld */

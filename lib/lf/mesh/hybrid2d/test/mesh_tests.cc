@@ -11,7 +11,7 @@ namespace lf::mesh::hybrid2d::test {
 TEST(hybrid2d, directMeshConstruction) {
   // construct a very simple mesh with two elements (tria, quad)
   // manually.
-  hybrid2d::MeshBuilder builder(2);
+  hybrid2d::MeshFactory builder(2);
 
   builder.AddPoint(Eigen::Vector2d{0, 0});
   builder.AddPoint(Eigen::Vector2d{1, 0});

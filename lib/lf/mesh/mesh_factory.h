@@ -7,13 +7,13 @@
 
 namespace lf::mesh {
 
-class MeshBuilder {
+class MeshFactory {
  protected:
-  MeshBuilder() = default;
-  MeshBuilder(const MeshBuilder&) = default;
-  MeshBuilder(MeshBuilder&&) = default;
-  MeshBuilder& operator=(const MeshBuilder&) = default;
-  MeshBuilder& operator=(MeshBuilder&&) = default;
+  MeshFactory() = default;
+  MeshFactory(const MeshFactory&) = default;
+  MeshFactory(MeshFactory&&) = default;
+  MeshFactory& operator=(const MeshFactory&) = default;
+  MeshFactory& operator=(MeshFactory&&) = default;
 
  public:
   /** @copydoc Mesh::size_type */
@@ -69,7 +69,7 @@ class MeshBuilder {
   virtual std::unique_ptr<Mesh> Build() = 0;
 
   /// @brief Virtual destructor.
-  virtual ~MeshBuilder() = default;
+  virtual ~MeshFactory() = default;
 };
 
 }  // namespace lf::mesh

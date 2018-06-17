@@ -2,7 +2,7 @@ set(sources
   entity.h
   mesh.h
   mesh.cc
-  mesh_builder.h
+  mesh_factory.h
   mesh_interface.h
 )
 

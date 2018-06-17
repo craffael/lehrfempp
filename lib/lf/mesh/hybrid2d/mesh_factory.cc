@@ -1,9 +1,9 @@
-#include "mesh_builder.h"
+#include "mesh_factory.h"
 #include "entity.h"
 
 namespace lf::mesh::hybrid2d {
 
-MeshBuilder::size_type MeshBuilder::AddPoint(coord_t coord) {
+MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(!built_, "Build() already called.");
   LF_ASSERT_MSG(coord.rows() == dim_world_,
                 "coord has incompatible number of rows.");
@@ -11,7 +11,7 @@ MeshBuilder::size_type MeshBuilder::AddPoint(coord_t coord) {
   return nodes_.size() - 1;
 }
 
-MeshBuilder::size_type MeshBuilder::AddElement(
+MeshFactory::size_type MeshFactory::AddElement(
     const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
   LF_ASSERT_MSG(!built_, "Build() already called.");
@@ -35,7 +35,7 @@ MeshBuilder::size_type MeshBuilder::AddElement(
   return elements_.size() - 1;
 }
 
-std::unique_ptr<mesh::Mesh> MeshBuilder::Build() {
+std::unique_ptr<mesh::Mesh> MeshFactory::Build() {
   built_ = true;
   return std::make_unique<Mesh>(dim_world_, std::move(nodes_),
                                 std::move(elements_));
