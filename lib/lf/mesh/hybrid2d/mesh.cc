@@ -47,7 +47,8 @@ namespace lf::mesh::hybrid2d {
    * @return TBD
    * @note the position of node information the `nodes` array and of cell 
    *        information in the `cells` array, respectively,
-   *        determines the interpretation of the index numbers,				 *        that is the n-th node in the container has index n-1.
+   *        determines the interpretation of the index numbers,	
+   *        that is the n-th node in the container has index n-1.
    * 
    */
   void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
