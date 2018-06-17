@@ -85,10 +85,10 @@ class RefEl {
   RefElType type_;
 
   // Node coordinates as dynamic eigen matrices:
-  static const Eigen::MatrixXd ncoords_point_dynamic_;
-  static const Eigen::MatrixXd ncoords_segment_dynamic_;
-  static const Eigen::MatrixXd ncoords_tria_dynamic_;
-  static const Eigen::MatrixXd ncoords_quad_dynamic_;
+  static const std::vector<Eigen::VectorXd> ncoords_point_dynamic_;
+  static const std::vector<Eigen::VectorXd> ncoords_segment_dynamic_;
+  static const std::vector<Eigen::VectorXd> ncoords_tria_dynamic_;
+  static const std::vector<Eigen::VectorXd> ncoords_quad_dynamic_;
 
   // Node coordinates as fixed eigen matrices:
   static const std::vector<Eigen::Matrix<double, 0, 1>> ncoords_point_static_;
@@ -218,7 +218,7 @@ class RefEl {
    *         the coordinates of every node as a column vector.
    *
    * @remark This method is not optimal from a performance point of view
-   * because the matrix is allocated on the heap.
+   * because the vector and the Eigen matrices are allocated on the heap.
    * If the type of the RefEl is known at compile time, use the
    * static NodeCoords() function instead.
    *

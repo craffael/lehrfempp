@@ -1,7 +1,9 @@
 
 set(sources
-  test_entity_indexing.cc
-  test_entity_indexing.h
+  check_entity_indexing.cc
+  check_entity_indexing.h
+  check_geometry_orientation.cc
+  check_geometry_orientation.h
 )
 
 add_library(lf.mesh.test_utils ${sources})

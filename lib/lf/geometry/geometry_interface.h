@@ -16,7 +16,6 @@ class Geometry {
   Geometry& operator=(Geometry&&) = default;
 
  public:
-  using coord_t = Eigen::VectorXd;
   using dim_t = base::RefEl::dim_t;
 
   /**
@@ -124,7 +123,7 @@ class Geometry {
    * Then the geometry element returned by this method describes exactly the
    * mapping \f$ \mathbf{\Phi} \circ \mathbf{\xi} \f$
    */
-  virtual std::unique_ptr<Geometry> subGeometry(dim_t codim, dim_t i) const = 0;
+  virtual std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const = 0;
 
   /**
    * @brief Virtual destructor

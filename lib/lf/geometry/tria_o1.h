@@ -24,7 +24,7 @@ class TriaO1 : public Geometry {
       const Eigen::MatrixXd& local) const override {
     return Eigen::VectorXd::Constant(local.cols(), integrationElement_);
   }
-  std::unique_ptr<Geometry> subGeometry(dim_t codim, dim_t i) const override;
+  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;

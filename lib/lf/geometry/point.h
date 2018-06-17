@@ -24,7 +24,7 @@ class Point : public Geometry {
       const ::Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
-  std::unique_ptr<Geometry> subGeometry(dim_t codim, dim_t i) const override;
+  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
  private:
   Eigen::VectorXd coord_;
