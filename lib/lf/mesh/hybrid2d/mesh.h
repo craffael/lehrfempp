@@ -38,14 +38,7 @@ class Mesh : public mesh::Mesh {
    * @note This method will deduce the geometries of the segments and nodes
    *       from the element Geometry objects.
    */
-<<<<<<< HEAD
 
-  Mesh(char dim_world,
-       std::vector<Eigen::VectorXd> nodes,
-       std::vector<std::tuple<std::vector<size_type>,
-       std::unique_ptr<geometry::Geometry>>>
-       elements);
-=======
   Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
        std::vector<std::tuple<std::array<size_type, 2>,
                               std::unique_ptr<geometry::Geometry>>>
@@ -53,8 +46,6 @@ class Mesh : public mesh::Mesh {
        std::vector<std::tuple<std::array<size_type, 4>,
                               std::unique_ptr<geometry::Geometry>>>
            elements);
->>>>>>> 9210cf39f4fc885d85fff4532ef69e618099fd67
-
  public:
   char DimMesh() const override { return 2; }
 
@@ -70,17 +61,10 @@ class Mesh : public mesh::Mesh {
   std::vector<Entity<1>> entities1_;
   std::vector<Entity<2>> entities2_;
 
-<<<<<<< HEAD
- private:
-  char dim_world_;
-
-  template <char CODIM> friend class Entity;
-=======
   template <char CODIM>
   friend class Entity;
 
   friend class MeshFactory;
->>>>>>> 9210cf39f4fc885d85fff4532ef69e618099fd67
 };
 
 }  // namespace lf::mesh::hybrid2d
