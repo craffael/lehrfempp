@@ -108,8 +108,8 @@ TEST(hybrid2d, buildMeshWithExplicitEdges) {
   // edge0
   auto iterator = mesh->Entities(1).begin();
   EXPECT_EQ(mesh->Index(*iterator), 0);
-  EXPECT_EQ(mesh->Index(iterator->SubEntities(1)[0]), 3);
-  EXPECT_EQ(mesh->Index(iterator->SubEntities(1)[1]), 1);
+  EXPECT_EQ(mesh->Index(iterator->SubEntities(1)[0]), 1);
+  EXPECT_EQ(mesh->Index(iterator->SubEntities(1)[1]), 3);
   test_utils::checkGeometryOrientation(*iterator);
 
   // edge1

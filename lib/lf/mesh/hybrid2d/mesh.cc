@@ -370,6 +370,11 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
                           << std::get<0>(original_edge)[0] << ", "
                           << std::get<0>(original_edge)[1]
                           << " doesn't belong to an element.");
+        LF_ASSERT_MSG(std::get<1>(element_edges[begin + 1]),
+                      "The explictly added entity with codim=1 and nodes "
+                          << std::get<0>(original_edge)[0] << ", "
+                          << std::get<0>(original_edge)[1]
+                          << "has been added twice.");
         auto node_index = std::get<0>(original_edge)[0];
         sub_entities[0].push_back(node_index);
         node_index = std::get<0>(original_edge)[1];
@@ -380,34 +385,21 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
           geom = std::move(std::get<1>(original_edge));
         } else {
           // The user didn't specify a geometry object
-          // 1) first we try to determine if a super entity exists that has
-          //    the same orientation so we can use SubGeometry.
-          // 2) if this is not possible, we construct the geometry object
-          //    by using composition.
+          // -> We get find the super entity that contains this entity and
+          // construct the geometry object from it.
 
-          geom = nullptr;
-
-          // 1) try to find super entity:
-          for (size_type i = 1; begin + i < element_edges.size() &&
-                                std::get<0>(element_edges[begin]) ==
-                                    std::get<0>(element_edges[begin + i]);
-               ++i) {
-            auto& other_edge = element_edges[begin + i];
-            auto& super_element = entities0_[std::get<2>(other_edge)];
-            auto iise = std::get<3>(other_edge);
-            auto sub_index =
-                super_element.RefEl().SubSubEntity2SubEntity(1, iise, 1, 0);
-            auto first_node_index = super_element.sub_entities_[1][sub_index];
-            if (first_node_index == std::get<0>(original_edge)[0]) {
-              // the edge in the super_element has the same orientation as the
-              // edge that was specified by the user -> construct geomtery obj
-              geom = super_element.Geometry()->SubGeometry(1, iise);
-              break;
-            }
+          auto& other_edge = element_edges[begin + 1];
+          auto& super_element = entities0_[std::get<2>(other_edge)];
+          auto iise = std::get<3>(other_edge);
+          auto sub_index =
+              super_element.RefEl().SubSubEntity2SubEntity(1, iise, 1, 0);
+          auto first_node_index = super_element.sub_entities_[1][sub_index];
+          geom = super_element.Geometry()->SubGeometry(1, iise);
+          if (first_node_index != std::get<0>(original_edge)[0]) {
+            // the edge in the super_element has the opposite orientation as the
+            // edge that was specified by the user -> switch node order:
+            std::swap(sub_entities[0][0], sub_entities[0][1]);
           }
-
-          // 2) if geometry object is not found, construct it using composition:
-          LF_VERIFY_MSG(geom, "not implemented yet.");
         }
         // put entity element at the right location:
         entities1_[std::get<2>(end_edge)] = Entity<1>(

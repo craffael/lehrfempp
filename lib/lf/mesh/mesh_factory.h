@@ -61,22 +61,29 @@ class MeshFactory {
    * - if you need to know the index of this entity at a later stage, e.g.
    *   to assign flags.
    *
-   * Note that, if you don't add entities with codim>0 explicitly, they will
-   * be generated for you by the mesh builder and their geometry will be deduced
-   * from the geometry object of a father entity using
-   * geometry::Geometry::SubGeometry()
+   * #### If `geometry == nullptr`
+   * If the geometry object is not specified, the mesh will try to
+   * deduce the geometry from super entities (i.e. entities that contain
+   * the givene entity as a sub-entity). E.g. if you add an entity with
+   * `ref_el=RefEl::kSegment` to a mesh with `dimMesh=2` and you don't
+   * specify a `geometry`, then the geometry of the entity will be deduced
+   * from any triangle/quadrilateral that contains this entity
+   * (using the method geometry::Geometry::SubGeometry()).
+   * If the MeshFactory cannot deduce the geometry from a father entity,
+   * an error will be raised when `Build()` is called.
+   *
+   * Since the geometry object is taken from a super entity, there is no
+   * guarantee that the node order of the created entity and the one passed
+   * trough the parameter `nodes` are the same!
+   *
+   * #### If `geometry != nullptr`
+   * If you specify a geometry explicitly, the created entity will have exactly
+   * this geometry object as a reference. Hence the node ordering of the
+   * created entity object agrees with the ordering of `nodes`.
+   *
    *
    * @note The node indices passed with the parameter `nodes` must be added
    *       with AddPoint() before calling this method.
-   * @note If the geometry object is not specified, the mesh will try to
-   *       deduce the geometry from super entities (i.e. entities that contain
-   *       the givene entity as a sub-entity). E.g. if you add an entity with
-   *       `ref_el=RefEl::kSegment` to a mesh with `dimMesh=2` and you don't
-   *       specify a `geometry`, then the geometry of the entity will be deduced
-   *       from any triangle/quadrilateral that contains this entity
-   *       (using the method geometry::Geometry::SubGeometry()).
-   *       If the MeshFactory cannot deduce the geometry from a father entity,
-   *       an error will be raised when `Build()` is called.
    */
   virtual size_type AddEntity(
       base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
