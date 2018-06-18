@@ -11,6 +11,126 @@ class Mesh;
 
 /**
  * @brief classes for topological entities in a 2D hybrid mesh
+ * @{
+ */
+
+/**
+ * @brief A node object for a 2D hybrid mesh
+ * @tparam CODIM the co-dimension of the entity object \f$\in\{0,1,2\}\f$
+ * 
+ * @note Every `Entity` object owns a smart pointer to an associated geometry
+ * object.
+ *
+ */
+class Node : public mesh::Entity {
+  using size_type = mesh::Mesh::size_type;
+
+ public:
+  /** @brief default constructors, needed by std::vector */
+  Node() = default;
+
+  /** @ brief Default and disabled constructors
+   * @{ */
+  Node(const Node&) = delete;
+  Node(Node&&) noexcept = default;
+  Node& operator=(const Node&) = delete;
+  Node& operator=(Node&&) noexcept = default;
+  /** @} */
+  
+ /**
+  * @brief constructor, is called from MeshFactory
+  * @param index index of the entity to be created; will usually be
+  * retrieved via the `Index()` method of `Mesh`
+  * @param geometry pointer to a geometry object providing the shape of the
+  * entity
+  *
+  * @note Note that you need to create a suitable geometry object for the
+  * entity before you can initialize the entity object itseld.
+  */
+  explicit Node(size_type index,
+		std::unique_ptr<geometry::Geometry>&& geometry):
+    index_(index),geometry_(std::move(geometry)) {}
+
+  char Codim() const override { return 2; }
+
+  base::RandomAccessRange<const mesh::Entity>
+    SubEntities(char rel_codim) const override;
+
+  geometry::Geometry* Geometry() const override { return geometry_.get(); }
+
+  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
+
+  bool operator==(const mesh::Entity& rhs) const override { return this == &rhs; }
+
+  virtual ~Node() override = default;
+
+ private:
+  size_type index_ = -1;                         // zero-based index of this entity.
+  std::unique_ptr<geometry::Geometry> geometry_; // shape information
+};
+
+  /**
+ * @brief An edge object for a 2D hybrid mesh
+ * 
+ * An topological edge object is define through two distinct references 
+ * to node objects of the mesh. Their ordering reflects the intrinsic 
+ * orientation of the mesh
+ * @note Every `Edge` object owns a smart pointer to an associated geometry
+ * object.
+ *
+ */
+class Edge : public mesh::Entity {
+  using size_type = mesh::Mesh::size_type;
+
+ public:
+  /** @brief default constructors, needed by std::vector */
+  Edge() = default;
+
+  /** @ brief Default and disabled constructors
+   * @{ */
+  Edge(const Edge&) = delete;
+  Edge(Edge&&) noexcept = default;
+  Edge& operator=(const Edge&) = delete;
+  Edge& operator=(Edge&&) noexcept = default;
+  /** @} */
+  
+ /**
+  * @brief constructor, is called from MeshFactory
+  * @param index index of the entity to be created; will usually be
+  * retrieved via the `Index()` method of `Mesh`
+  * @param geometry pointer to a geometry object providing the shape of the edge
+  * @param endpoint0 pointer to the first node
+  * @param endpoint1 pointer to the second node
+  *
+  * @note Note that you need to create a suitable geometry object for the
+  * entity before you can initialize the entity object itseld.
+  */
+  explicit Edge(size_type index,
+		std::unique_ptr<geometry::Geometry>&& geometry,
+		const Node *endpoint0,const Node *endpoint1):
+    index_(index),geometry_(std::move(geometry)) {}
+
+  char Codim() const override { return 2; }
+
+  base::RandomAccessRange<const mesh::Entity>
+    SubEntities(char rel_codim) const override;
+
+  geometry::Geometry* Geometry() const override { return geometry_.get(); }
+
+  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
+
+  bool operator==(const mesh::Entity& rhs) const override { return this == &rhs; }
+
+  virtual ~Edge() override = default;
+
+ private:
+  size_type index_ = -1;                         // zero-based index of this entity.
+  std::unique_ptr<geometry::Geometry> geometry_; // shape information
+};
+/** @} */
+  
+/**
+ * @brief classes for topological entities in a 2D hybrid mesh
  * @tparam CODIM the co-dimension of the entity object \f$\in\{0,1,2\}\f$
  *
  * This class template can be used to instantiate the four different topological

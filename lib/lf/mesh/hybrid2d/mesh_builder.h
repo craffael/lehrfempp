@@ -3,6 +3,8 @@
 
 #include "mesh_factory.h"
 
+namespace lf::mesh::hybrid2d {
+
 /**
  * @brief Implements a `MeshBuilder` that generates a triangular structured mesh
  *
@@ -21,13 +23,13 @@
  * The horizontal edges are numbered first, the vertical edges next; both groups
  * lexikographically.
  */
-class TPTriagMeshBuilder: public mesh::MeshBuilder {
+class TPTriagMeshBuilder: public MeshFactory {
 public:
   /**
    * @brief Constructor: does nothing
    *
    */
-  TPTriagMeshBuilder():no_of_x_cells_(0),no_of_y_cells_(0) {} 
+  TPTriagMeshBuilder():MeshFactory(2),no_of_x_cells_(0),no_of_y_cells_(0) {} 
    
   /** @copydoc Mesh::DimWorld */
   dim_t DimWorld() const override {return 2; }
@@ -75,5 +77,7 @@ private:
   Eigen::Vector2d bottom_left_corner_,top_right_corner_;
   size_type no_of_x_cells_,no_of_y_cells_;
 };
+
+}  // namespace lf::mesh::hybrid2d
 
 #endif //  __MESHBUILDER_H__

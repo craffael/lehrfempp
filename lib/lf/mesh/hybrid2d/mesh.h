@@ -11,7 +11,7 @@ template <char CODIM>
 class Entity;
 
 class Mesh : public mesh::Mesh {
- protected:
+public:
   /**
    * @brief Default constructor: create "empty" mesh
    */
@@ -46,7 +46,7 @@ class Mesh : public mesh::Mesh {
        std::vector<std::tuple<std::array<size_type, 4>,
                               std::unique_ptr<geometry::Geometry>>>
            elements);
- public:
+
   char DimMesh() const override { return 2; }
 
   char DimWorld() const override { return dim_world_; }
@@ -61,10 +61,10 @@ class Mesh : public mesh::Mesh {
   std::vector<Entity<1>> entities1_;
   std::vector<Entity<2>> entities2_;
 
-  template <char CODIM>
-  friend class Entity;
-
+  template <char CODIM> friend class Entity;
   friend class MeshFactory;
+private:
+  char dim_world_;
 };
 
 }  // namespace lf::mesh::hybrid2d
