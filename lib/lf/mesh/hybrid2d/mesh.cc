@@ -72,16 +72,13 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   // STEP I: Set up and fill array of nodes
   // In the beginning initialize vector of vertices and do not touch it anymore
   const size_type no_of_nodes(nodes.size());
-  /*
-     Initialize vector for Node entities of size `no_of_nodes`
-  */
+  // Initialize vector for Node entities of size `no_of_nodes`
+  std::vector<Node> node_vec {}; node_vec.reserve(no_of_nodes);
+  
   size_type node_index = 0;
   for (const auto &v : nodes) {
     const Eigen::VectorXd &node_coordinates(v);
-    /*
-       Add Node entity object with index `node_index` at the end
-       of vector of Node entities.
-    */
+    node_vec.emplace_back(node_index,std::make_unique<geometry::Point>(node_coordinates));
     node_index++;
   }
 
@@ -119,6 +116,8 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   for (const auto &c : cells) {
     // node indices of corners of cell c
     const std::vector<size_type> &cell_node_list(c.first);
+    // Geometry of current cell
+    const GeometryPtr &cell_geometry(c.second);
     // Can be either a trilateral or a quadrilateral
     const size_type no_of_vertices = cell_node_list.size();
     LF_ASSERT_MSG((no_of_vertices == 3) || (no_of_vertices == 4),
@@ -131,6 +130,9 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
 
     // Visit all edges of the current cell
     for (int j = 0; j < no_of_vertices; j++) {
+      /* 
+	 TODO: Learn local indexing scheme from reference element
+       */
       EndpointIndexPair c_edge_vertex_indices(
           cell_node_list[j], cell_node_list[(j + 1) % no_of_vertices]);
       // Store number of cell and the local index j of the edge
@@ -138,11 +140,9 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
       // Check whether edge exists already
       EdgeMap::iterator edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
-        // Edge does not exist: first create its geometry from the cell
-        // by invoking subGeometry()
-        // Does not work at this point because to type mismatch
-        GeometryPtr edge_geo_ptr(nullptr);
-
+	// Generate geometry of edge
+	GeometryPtr edge_geo_ptr(cell_geometry->SubGeometry(1,j));
+	// Beginning of list of adjacent elements
         AdjCellsList single_cell_list{edge_cell_info};
         EdgeData edge_data{std::move(edge_geo_ptr), single_cell_list};
         std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
@@ -162,22 +162,22 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   // and build edge Entities
   // This is the length to be reserved for the edge vector
   size_type no_of_edges = edge_map.size();
-  /*
-    Initialized vector of Edge entities here
-   */
+  // Initialized vector of Edge entities here
+  std::vector<Edge> edge_vec {}; edge_vec.reserve(no_of_edges);
+  
   size_type edge_index = 0;
   for (EdgeMap::value_type &edge : edge_map) {
     // Indices of the two endpoints of the current edge
     // Use this to obtain pointers/references to nodes
     // from the vector of nodes
     const size_type p0(edge.first.first());   // index of first endpoint
+    const Node *p0_ptr = &node_vec[p0];       // pointer to first endpoint
     const size_type p1(edge.first.second());  // index of second endpoint
+    const Node *p1_ptr = &node_vec[p1];       // pointer to second endpoint
     // geometry of the edge
     GeometryPtr edge_geo_ptr(std::move(edge.second.first));
-    /*
-      Build edge here adding another element to the edge vector.
-      Use the information in p0, p1 to retrieve pointer to node
-    */
+    // Building edge by adding another element to the edge vector.
+    edge_vec.emplace_back(edge_index,edge_geo_ptr,p0_ptr,p1_ptr);
     edge_index++;
   }  // end loop over all edges
 
