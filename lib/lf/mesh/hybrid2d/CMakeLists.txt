@@ -6,6 +6,8 @@ set(sources
   mesh.h
   mesh_factory.cc
   mesh_factory.h
+  mesh_builder.cc
+  mesh_builder.h
 )
 
 add_library(lf.mesh.hybrid2d ${sources})
