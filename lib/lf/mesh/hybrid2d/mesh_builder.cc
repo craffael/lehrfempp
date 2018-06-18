@@ -26,109 +26,101 @@ namespace lf::mesh::hybrid2d {
     const double hx = x_size/nx;
     const double hy = y_size/ny;
 
-    // Instantiate empty mesh object
-    auto mesh = std::make_unique<Mesh>(2);
-
-    // Sizes of arrays for mesh entities
-    mesh->entities0_.reserve(no_of_vertices);
-    mesh->entities1_.reserve(no_of_edges);
-    mesh->entities2_.reserve(no_of_cells);
-
     // Initialize vertices
-    // A vertex does not have any sub-entities; dummy argument
-    std::array<std::vector<size_type>, 0> sub_vertex;
+    std::vector<size_type> v_idx(no_of_vertices);
     int node_cnt = 0; // index of current vertex: lexikographic numbering
     for(int i=0;i<=nx;++i)
       for(int j=0;j<=ny;++j,++node_cnt) {
 	// Tensor-product node locations
-	const Eigen::Vector2d node_coord{i*hx,j*hy};
+	coord_t node_coord(2); node_coord << i*hx,j*hy;
 	// Create suitable geometry object
-	auto point_ptr = std::make_unique<geometry::Point>(node_coord);
-	// TODO mesh->entities0_.emplace_back(mesh,node_cnt,point_ptr,sub_vertex);
+	v_idx[node_cnt] = AddPoint(node_coord);
       }
 
     // Initialize edges
-    // An edge has its two endpoints as sub-entities
-    std::array<std::vector<size_type>, 1> sub_edge;
+    // Just in case of index permutations
+    std::vector<size_type> e_idx(no_of_edges);
     int edge_cnt = 0; // index of currrent edge
     // First horizontal edges
     for(int i=0;i<nx;++i)
       for(int j=0;j<=ny;++j,++edge_cnt) {
 	// Indices of the two endpoints of the edge
-	const size_type first_endpoint_idx = VertexIndex(i,j);
-	const size_type second_endpoint_idx = VertexIndex(i+1,j);
-	sub_edge[0] = std::vector<size_type>{first_endpoint_idx,second_endpoint_idx};
+	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
+	const size_type second_endpoint_idx = v_idx[VertexIndex(i+1,j)];
+	lf::base::ForwardRange<const size_type>
+	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
 	Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2,2);
 	edge_geo << i*hx,(i+1)*hx,j*hy,j*hy;
-	auto seg_ptr = std::make_unique<geometry::SegmentO1>(edge_geo);
-	// TODO mesh->entities1_.emplace_back(mesh,edge_cnt,seg_ptr,sub_edge); 
+	e_idx[edge_cnt] = AddEntity(lf::base::RefEl::kSegment(),
+				    nodes_index_list,
+				    std::make_unique<geometry::SegmentO1>(edge_geo));
       }
     // Next vertical edges
     for(int i=0;i<=nx;++i)
       for(int j=0;j<ny;++j,++edge_cnt) {
 	// Indices of the two endpoints of the edge
-	const size_type first_endpoint_idx = VertexIndex(i,j);
-	const size_type second_endpoint_idx = VertexIndex(i,j+1);
-	sub_edge[0] = std::vector<size_type>{first_endpoint_idx,second_endpoint_idx};
+	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
+	const size_type second_endpoint_idx = v_idx[VertexIndex(i,j+1)];
+	lf::base::ForwardRange<const size_type>
+	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
 	Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2,2);
 	edge_geo << i*hx,i*hx,j*hy,(j+1)*hy;
-	auto seg_ptr = std::make_unique<geometry::SegmentO1>(edge_geo);
-	// TODO mesh->entities1_.emplace_back(mesh,edge_cnt,seg_ptr,sub_edge);
+	e_idx[edge_cnt] = AddEntity(lf::base::RefEl::kSegment(),
+				    nodes_index_list,
+				    std::make_unique<geometry::SegmentO1>(edge_geo));
       }
     // Then the skew edges (diagonals of squares)
     for(int i=0;i<nx;++i)
       for(int j=0;j<ny;++j,++edge_cnt) {
 	// Indices of the two endpoints of the edge
-	const size_type first_endpoint_idx = VertexIndex(i,j);
-	const size_type second_endpoint_idx = VertexIndex(i+1,j+1);
-	sub_edge[0] = std::vector<size_type>{first_endpoint_idx,second_endpoint_idx};
+	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
+	const size_type second_endpoint_idx = v_idx[VertexIndex(i+1,j+1)];
+	lf::base::ForwardRange<const size_type>
+	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
 	Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2,2);
 	edge_geo << i*hx,(i+1)*hx,j*hy,(j+1)*hy;
-	auto seg_ptr = std::make_unique<geometry::SegmentO1>(edge_geo);
-	// TODO mesh->entities1_.emplace_back(mesh,edge_cnt,seg_ptr,sub_edge);
+	e_idx[edge_cnt] = AddEntity(lf::base::RefEl::kSegment(),
+				    nodes_index_list,
+				    std::make_unique<geometry::SegmentO1>(edge_geo));
       }
 
     // Finally initialize the triangles
-    // A triangle expects two arrays of sub-entity indices
-    std::array<std::vector<size_type>, 2> sub_tria;
-    // Index offset for vertical edges
-    const size_type v_edge_offs = nx*(ny+1);
-    // Index offset for diagonal edges
-    const size_type diag_edge_offs
-      = v_edge_offs + (nx+1)*ny;
+    // Index remapping for triangles
+    std::vector<size_type> t_idx(no_of_cells);
+
     int tria_cnt = 0; // index of currrent triangle
     for(int i=0;i<nx;++i)
       for(int j=0;j<ny;++j,tria_cnt+=2) {
 	// Triangle above the diagonal
 	// Indices of the vertices
-	sub_tria[1] = std::vector<size_type>
-	  { VertexIndex(i,j), VertexIndex(i+1,j+1), VertexIndex(i,j+1) };
-	// Indices of the adjacent edges
-	sub_tria[0] = std::vector<size_type>
-	  { diag_edge_offs+i+j*ny, i+(j+1)*nx, v_edge_offs+i*j*(nx+1) };
+	lf::base::ForwardRange<const size_type>
+	vertex_index_list_up { v_idx[VertexIndex(i,j)],
+                            v_idx[VertexIndex(i+1,j+1)],
+	                    v_idx[VertexIndex(i,j+1)] };
 	// Construct geometry
 	Eigen::Matrix<double, Eigen::Dynamic, 3> tria_geo_up(2,3);
 	tria_geo_up << i*hx,(i+1)*hx,i*hx,j*hy,(j+1)*hy,(j+1)*hy;
-	auto tria_geo_up_ptr = std::make_unique<geometry::TriaO1>(tria_geo_up);
-	// Generate the triangle entity
-	//* TODO mesh->entities0_.emplace_back(mesh,tria_cnt,tria_geo_up_ptr,sub_tria); 
-
+	// Enroll the triangle entity
+	t_idx[tria_cnt] =  AddEntity(lf::base::RefEl::kTria(),
+				     vertex_index_list_up,
+				     std::make_unique<geometry::TriaO1>(tria_geo_up));
 	// Triangle below the diagonal
 	// Indices of the vertices
-	sub_tria[1] = std::vector<size_type>
-	  { VertexIndex(i,j), VertexIndex(i+1,j), VertexIndex(i+1,j+1) };
-	// Indices of the adjacent edges
-	sub_tria[0] = std::vector<size_type>
-	  { i+nx*j , v_edge_offs + (i+1)+j*(nx+1) , diag_edge_offs+i+j*ny };
+	lf::base::ForwardRange<const size_type>
+	  vertex_index_list_low { v_idx[VertexIndex(i,j)],
+	                          v_idx[VertexIndex(i+1,j)],
+	                          v_idx[VertexIndex(i+1,j+1)] };
 	// Construct geometry
 	Eigen::Matrix<double, Eigen::Dynamic, 3> tria_geo_low(2,3);
 	tria_geo_low << i*hx,(i+1)*hx,(i+1)*hx,j*hy,j*hy,(j+1)*hy;
 	auto tria_geo_low_ptr = std::make_unique<geometry::TriaO1>(tria_geo_low);
 	// Generate the triangle entity
-	//* TODO mesh->entities0_.emplace_back(mesh,tria_cnt+1,tria_geo_low_ptr,sub_tria); 
+	t_idx[tria_cnt+1] =  AddEntity(lf::base::RefEl::kTria(),
+				       vertex_index_list_low,
+				       std::make_unique<geometry::TriaO1>(tria_geo_low));
       }
   } // end Build()
   

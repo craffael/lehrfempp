@@ -177,7 +177,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // geometry of the edge
     GeometryPtr edge_geo_ptr(std::move(edge.second.first));
     // Building edge by adding another element to the edge vector.
-    edge_vec.emplace_back(edge_index,edge_geo_ptr,p0_ptr,p1_ptr);
+    // edge_vec.emplace_back(edge_index,edge_geo_ptr,p0_ptr,p1_ptr);
     edge_index++;
   }  // end loop over all edges
 
