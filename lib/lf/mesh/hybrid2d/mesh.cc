@@ -177,7 +177,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // geometry of the edge
     GeometryPtr edge_geo_ptr(std::move(edge.second.first));
     // Building edge by adding another element to the edge vector.
-    // edge_vec.emplace_back(edge_index,edge_geo_ptr,p0_ptr,p1_ptr);
+    edge_vec.emplace_back(edge_index,std::move(edge_geo_ptr),p0_ptr,p1_ptr);
     edge_index++;
   }  // end loop over all edges
 
@@ -207,17 +207,17 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
 
   // Now complete information is available for the construction
   // of cells = entities of co-dimension 0
-  /*
-     Initialize two vectors, one for trilaterals of size `no_of_trilaterals`
-     and a second for quadrilaterals of size `no_of_quadrilaterals`
-   */
+  //     Initialize two vectors, one for trilaterals of size `no_of_trilaterals`
+  //   and a second for quadrilaterals of size `no_of_quadrilaterals`
+  std::vector<Trilateral> tria_vec {}; tria_vec.reserve(no_of_trilaterals);
+  std::vector<Quadrilateral> quad_vec {}; quad_vec.reserve(no_of_quadrilaterals);
   // Loop over all cells
   cell_index = 0;
-  for (const auto &c : cells) {
+  for (auto &c : cells) {
     // Node indices for the current cell
     const std::vector<size_type> &c_node_indices(c.first);
     const std::array<size_type, 4> &c_edge_indices(edge_indices[cell_index]);
-    const GeometryPtr &c_geo_ptr(c.second);
+    GeometryPtr c_geo_ptr(std::move(c.second));
     if (c_node_indices.size() == 3) {
       /*
         Add a trilateral entity to the vector of trilaterals
@@ -225,6 +225,15 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
         obtain pointers to nodes and edges.
         index = cell_index
        */
+      const Node *corner0 = &node_vec[c_node_indices[0]];
+      const Node *corner1 = &node_vec[c_node_indices[1]];
+      const Node *corner2 = &node_vec[c_node_indices[2]];
+      const Edge *edge0 = &edge_vec[c_edge_indices[0]];
+      const Edge *edge1 = &edge_vec[c_edge_indices[1]];
+      const Edge *edge2 = &edge_vec[c_edge_indices[2]];
+      tria_vec.emplace_back(cell_index,std::move(c_geo_ptr),
+			    corner0,corner1,corner2,
+			    edge0,edge1,edge2);
     } else {
       /*
          Add a quadrilateral entity to the vector of quadrilaterals
@@ -232,6 +241,17 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
          obtain pointers to nodes and edges.
          index = cell_index
        */
+      const Node *corner0 = &node_vec[c_node_indices[0]];
+      const Node *corner1 = &node_vec[c_node_indices[1]];
+      const Node *corner2 = &node_vec[c_node_indices[2]];
+      const Node *corner3 = &node_vec[c_node_indices[3]];
+      const Edge *edge0 = &edge_vec[c_edge_indices[0]];
+      const Edge *edge1 = &edge_vec[c_edge_indices[1]];
+      const Edge *edge2 = &edge_vec[c_edge_indices[2]];
+      const Edge *edge3 = &edge_vec[c_edge_indices[3]];
+      quad_vec.emplace_back(cell_index,std::move(c_geo_ptr),
+			    corner0,corner1,corner2,corner3,
+			    edge0,edge1,edge2,edge3);
     }
     cell_index++;
   }
