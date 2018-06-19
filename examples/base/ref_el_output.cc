@@ -6,7 +6,7 @@
 #include "lf/base/base.h"
 
 int main(int argc,char **argv) {
-  std::cout << "Test for reference element" << std::endl;
+  std::cout << "Output of information on reference elements" << std::endl;
 
   auto re_node = lf::base::RefEl::kPoint();
   std::cout << "Information about node: " << re_node << std::endl;

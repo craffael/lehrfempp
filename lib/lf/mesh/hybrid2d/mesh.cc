@@ -128,33 +128,51 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     else
       no_of_quadrilaterals++;
 
+    base::RefEl ref_el = (no_of_vertices == 3)
+      ? base::RefEl::kTria()
+      : base::RefEl::kQuad();
+
+    //  A variant:
+    //    There may be cells without a specified geometry. 
+    //    In case an edge is not equipped with a geometry and not
+    //    adjacent to a cell with a specific geometry, assume a straight 
+    //    edge connecting the two endpoints. 
+    // 
+    
     // Visit all edges of the current cell
-    for (int j = 0; j < no_of_vertices; j++) {
-      /* 
-	 TODO: Learn local indexing scheme from reference element
-       */
-      EndpointIndexPair c_edge_vertex_indices(
-          cell_node_list[j], cell_node_list[(j + 1) % no_of_vertices]);
+    for (int j = 0; j < ref_el.NumSubEntities(1); j++) {
+      // Fetch local indices of endpoints of edge j
+      const size_type p0_local_index = ref_el.SubSubEntity2SubEntity(1,j,1,0);
+      const size_type p1_local_index = ref_el.SubSubEntity2SubEntity(1,j,1,1);
+      // Fetch global indices of the endnodes of edge j
+      EndpointIndexPair c_edge_vertex_indices
+	(cell_node_list[p0_local_index], cell_node_list[p1_local_index]);
       // Store number of cell and the local index j of the edge
       AdjCellInfo edge_cell_info{cell_index, j};
       // Check whether edge exists already
       EdgeMap::iterator edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
-	// Generate geometry of edge
-	GeometryPtr edge_geo_ptr(cell_geometry->SubGeometry(1,j));
-	// Beginning of list of adjacent elements
+	// Inherit geometry of edge from adjacent cell
+	GeometryPtr edge_geo_ptr;
+	if (cell_geometry) {
+	  edge_geo_ptr = cell_geometry->SubGeometry(1,j);
+	}
+	  // Beginning of list of adjacent elements
         AdjCellsList single_cell_list{edge_cell_info};
         EdgeData edge_data{std::move(edge_geo_ptr), single_cell_list};
         std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
             std::make_pair(c_edge_vertex_indices, std::move(edge_data)));
         LF_ASSERT_MSG(insert_status.second, "Duplicate not found earlier!");
+	edge_ptr = insert_status.first; // pointer to newly inserted edge
       } else {
         // Store information about neighboring cell
         AdjCellsList &edge_adj_cellslist((edge_ptr->second).second);
         edge_adj_cellslist.push_back(edge_cell_info);
         // Note that the geometry for this edge is fixed already
       }
-    }
+      // At this point edge_ptr points to the map entry for the current edge
+      // Here we could check, whether the edge lacks a geometry. 
+    } // end of loop over edges
     cell_index++;
   }  // end loop over cells
 
@@ -166,6 +184,8 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   std::vector<Edge> edge_vec {}; edge_vec.reserve(no_of_edges);
   
   size_type edge_index = 0;
+  // Note: iteration variable cannot be declared const, because
+  // moving the geometry pointer changes it!
   for (EdgeMap::value_type &edge : edge_map) {
     // Indices of the two endpoints of the current edge
     // Use this to obtain pointers/references to nodes
@@ -175,6 +195,10 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     const size_type p1(edge.first.second());  // index of second endpoint
     const Node *p1_ptr = &node_vec[p1];       // pointer to second endpoint
     // geometry of the edge
+    // ----------------------------------------------------------------------
+    // A variant:
+    //   If the edge does not have a geometry build a straight edge
+    // ----------------------------------------------------------------------
     GeometryPtr edge_geo_ptr(std::move(edge.second.first));
     // Building edge by adding another element to the edge vector.
     edge_vec.emplace_back(edge_index,std::move(edge_geo_ptr),p0_ptr,p1_ptr);
