@@ -16,30 +16,26 @@ using EdgeList =
 using CellList =
     std::vector<std::pair<std::vector<Mesh::size_type>, GeometryPtr>>;
 
-class EndpointIndexPair {
- public:
-  using size_type = Mesh::size_type;
-  // Constructor ensures ordering of indices
-  EndpointIndexPair(size_type p0, size_type p1) {
-    LF_ASSERT_MSG(p0 != p1, "No loops allowed");
-    if (p1 > p0) {
-      p0_ = p0;
-      p1_ = p1;
-    } else {
-      p0_ = p1;
-      p1_ = p0;
+  /** @brief Auxliary class for mesh_from_node_incidence */
+  class EndpointIndexPair {
+  public:
+    using size_type = Mesh::size_type;
+    // Constructor ensures ordering of indices
+    EndpointIndexPair(size_type p0, size_type p1) {
+      LF_ASSERT_MSG(p0 != p1, "No loops allowed");
+      if (p1 > p0) {  p0_ = p0;  p1_ = p1; }
+      else { p0_ = p1; p1_ = p0; }
     }
-  }
-  size_type first(void) const { return p0_; }
-  size_type second(void) const { return p1_; }
-  friend bool operator<(const EndpointIndexPair &e1,
-                        const EndpointIndexPair &e2) {
-    return ((e1.p0_ == e2.p0_) ? (e1.p1_ < e2.p1_) : (e1.p0_ < e2.p0_));
-  }
+    size_type first_node(void) const { return p0_; }
+    size_type second_node(void) const { return p1_; }
+    friend bool operator< (const EndpointIndexPair &e1,
+			   const EndpointIndexPair &e2) {
+      return ((e1.p0_ == e2.p0_) ? (e1.p1_ < e2.p1_) : (e1.p0_ < e2.p0_));
+    }
 
- private:
-  size_type p0_, p1_;  // indices of endpoints
-};
+  private:
+    size_type p0_, p1_;  // indices of endpoints
+  };
 
 /**
  * @brief Construction of mesh from information gathered in a MeshFactory
@@ -61,12 +57,17 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
                               EdgeList &&edges, CellList cells) {
   using size_type = Mesh::size_type;
   // Index of adjacent cell and local index of edge w.r.t. cell
-  using AdjCellInfo = std::pair<size_type, size_type>;
+  struct AdjCellInfo {
+    AdjCellInfo(size_type _cell_idx,size_type _edge_idx):
+      cell_idx(_cell_idx),edge_idx(_edge_idx) {}
+    size_type cell_idx; size_type  edge_idx;
+  };
   // Information about cells adjacent to an edge
   using AdjCellsList = std::vector<AdjCellInfo>;
   // Information about edge in auxiliary array
   using EdgeData = std::pair<GeometryPtr, AdjCellsList>;
   // Type of associative auxiliary array for edge information
+
   using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
 
   // STEP I: Set up and fill array of nodes
@@ -140,7 +141,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // 
     
     // Visit all edges of the current cell
-    for (int j = 0; j < ref_el.NumSubEntities(1); j++) {
+    for (unsigned int j = 0; j < ref_el.NumSubEntities(1); j++) {
       // Fetch local indices of endpoints of edge j
       const size_type p0_local_index = ref_el.SubSubEntity2SubEntity(1,j,1,0);
       const size_type p1_local_index = ref_el.SubSubEntity2SubEntity(1,j,1,1);
@@ -148,7 +149,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
       EndpointIndexPair c_edge_vertex_indices
 	(cell_node_list[p0_local_index], cell_node_list[p1_local_index]);
       // Store number of cell and the local index j of the edge
-      AdjCellInfo edge_cell_info{cell_index, j};
+      AdjCellInfo edge_cell_info(cell_index, j);
       // Check whether edge exists already
       EdgeMap::iterator edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
@@ -190,9 +191,9 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // Indices of the two endpoints of the current edge
     // Use this to obtain pointers/references to nodes
     // from the vector of nodes
-    const size_type p0(edge.first.first());   // index of first endpoint
+    const size_type p0(edge.first.first_node());   // index of first endpoint
     const Node *p0_ptr = &node_vec[p0];       // pointer to first endpoint
-    const size_type p1(edge.first.second());  // index of second endpoint
+    const size_type p1(edge.first.second_node());  // index of second endpoint
     const Node *p1_ptr = &node_vec[p1];       // pointer to second endpoint
     // geometry of the edge
     // ----------------------------------------------------------------------
@@ -217,9 +218,9 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // Obtain array of indices of adjacent cells
     AdjCellsList adjacent_cells(edge.second.second);
     for (const auto &adj_cell : adjacent_cells) {
-      const size_type adj_cell_index = adj_cell.first;
+      const size_type adj_cell_index = adj_cell.cell_idx;
       // Local index of edge in adjacent cell
-      const size_type edge_local_index = adj_cell.second;
+      const size_type edge_local_index = adj_cell.edge_idx;
       LF_ASSERT_MSG(adj_cell_index < no_of_cells, "adj_cell_idx out of bounds");
       LF_ASSERT_MSG(edge_local_index < cells[adj_cell_index].first.size(),
                     "local edge index out of bounds");
