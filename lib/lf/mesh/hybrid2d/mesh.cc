@@ -66,9 +66,16 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   // Information about cells adjacent to an edge
   using AdjCellsList = std::vector<AdjCellInfo>;
   // Information about edge in auxiliary array
-  using EdgeData = std::pair<GeometryPtr, AdjCellsList>;
+  struct EdgeData {
+    EdgeData(GeometryPtr _geo_uptr,AdjCellsList _adj_cells_list):
+      geo_uptr(std::move(geo_uptr)),adj_cells_list(_adj_cells_list) {}
+    EdgeData(EdgeData &&) = default;
+    GeometryPtr geo_uptr;
+    AdjCellsList adj_cells_list;
+  };
+  // = std::pair<GeometryPtr, AdjCellsList>; OLD
+  
   // Type of associative auxiliary array for edge information
-
   using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
 
   // STEP I: Set up and fill array of nodes
@@ -96,7 +103,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     AdjCellsList empty_cells_list{};
-    EdgeData edge_data{std::move(e.second), empty_cells_list};
+    EdgeData edge_data(std::move(e.second), empty_cells_list);
     EdgeMap::value_type edge_info =
         std::make_pair(e_endpoint_idx, std::move(edge_data));
     std::pair<EdgeMap::iterator, bool> insert_status =
@@ -166,14 +173,14 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
 	}
 	  // Beginning of list of adjacent elements
         AdjCellsList single_cell_list{edge_cell_info};
-        EdgeData edge_data{std::move(edge_geo_ptr), single_cell_list};
+        EdgeData edge_data(std::move(edge_geo_ptr), single_cell_list);
         std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
             std::make_pair(c_edge_vertex_indices, std::move(edge_data)));
         LF_ASSERT_MSG(insert_status.second, "Duplicate not found earlier!");
 	edge_ptr = insert_status.first; // pointer to newly inserted edge
       } else {
         // Store information about neighboring cell
-        AdjCellsList &edge_adj_cellslist((edge_ptr->second).second);
+        AdjCellsList &edge_adj_cellslist((edge_ptr->second).adj_cells_list);
         edge_adj_cellslist.push_back(edge_cell_info);
         // Note that the geometry for this edge is fixed already
       }
@@ -206,7 +213,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // A variant:
     //   If the edge does not have a geometry build a straight edge
     // ----------------------------------------------------------------------
-    GeometryPtr edge_geo_ptr(std::move(edge.second.first));
+    GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));
     // Building edge by adding another element to the edge vector.
     edge_vec.emplace_back(edge_index,std::move(edge_geo_ptr),p0_ptr,p1_ptr);
     edge_index++;
@@ -222,7 +229,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
   edge_index = 0;
   for (const EdgeMap::value_type &edge : edge_map) {
     // Obtain array of indices of adjacent cells
-    AdjCellsList adjacent_cells(edge.second.second);
+    AdjCellsList adjacent_cells(edge.second.adj_cells_list);
     for (const auto &adj_cell : adjacent_cells) {
       const size_type adj_cell_index = adj_cell.cell_idx;
       // Local index of edge in adjacent cell
