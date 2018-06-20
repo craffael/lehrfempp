@@ -11,6 +11,7 @@ namespace lf::mesh::hybrid2d {
 
 using GeometryPtr = std::unique_ptr<geometry::Geometry>;
 
+  // Data types for passing information about mesh intities
 using EdgeList =
     std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
 using CellList =
@@ -120,15 +121,20 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     // Geometry of current cell
     const GeometryPtr &cell_geometry(c.second);
     // Can be either a trilateral or a quadrilateral
-    const size_type no_of_vertices = cell_node_list.size();
+    size_type no_of_vertices = cell_node_list.size();
     LF_ASSERT_MSG((no_of_vertices == 3) || (no_of_vertices == 4),
                   "Cell with invalid number of edges");
+    // Special case: A node index vector of length 4 might have been
+    // used for a triangle, indicated by passing an invalid index in
+    // the last element
+    if ((no_of_vertices == 4) && (cell_node_list[3] == size_type(-1))) 
+      no_of_vertices = 3;
     // Count the different cell types
     if (no_of_vertices == 3)
       no_of_trilaterals++;
     else
       no_of_quadrilaterals++;
-
+    // finally fix the type of the cell
     base::RefEl ref_el = (no_of_vertices == 3)
       ? base::RefEl::kTria()
       : base::RefEl::kQuad();
