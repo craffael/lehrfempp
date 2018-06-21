@@ -6,6 +6,8 @@ set(sources
   check_geometry_orientation.h
   check_local_topology.h
   check_local_topology.cc
+  check_mesh_completeness.h
+  check_mesh_completeness.cc
 )
 
 add_library(lf.mesh.test_utils ${sources})

@@ -6,8 +6,10 @@
 #include <lf/geometry/tria_o1.h>
 #include <lf/geometry/quad_o1.h>
 
-namespace lf::mesh::hybrid2d {
+#include <iostream>
 
+namespace lf::mesh::hybrid2d {
+  
   std::unique_ptr<mesh::Mesh>  TPTriagMeshBuilder::Build() {
     const size_type nx = no_of_x_cells_;
     const size_type ny = no_of_y_cells_;
@@ -16,6 +18,8 @@ namespace lf::mesh::hybrid2d {
     const int no_of_cells = 2*nx*ny;
     const int no_of_edges =  no_of_cells + (nx+1)*ny + nx*(ny+1);
     const int no_of_vertices = (nx+1)*(ny+1);
+    //std::cout << "TPmesh: " << no_of_cells << " cells, "
+    // << no_of_edges << " edges " << no_of_vertices << " vertices" << std::endl;
     // No mesh to build 
     if (no_of_cells == 0) return nullptr;
     // define rectangle; return if none
@@ -33,6 +37,7 @@ namespace lf::mesh::hybrid2d {
       for(int j=0;j<=ny;++j,++node_cnt) {
 	// Tensor-product node locations
 	coord_t node_coord(2); node_coord << i*hx,j*hy;
+	// std::cout << "Adding vertex " << node_cnt << ": " << node_coord << std::endl;
 	// Create suitable geometry object
 	v_idx[node_cnt] = AddPoint(node_coord);
       }
@@ -47,6 +52,8 @@ namespace lf::mesh::hybrid2d {
 	// Indices of the two endpoints of the edge
 	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
 	const size_type second_endpoint_idx = v_idx[VertexIndex(i+1,j)];
+	// std::cout << "horizontal edge " << edge_cnt << ": "
+	// << first_endpoint_idx << " <-> " << second_endpoint_idx << std::endl;
 	lf::base::ForwardRange<const size_type>
 	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
@@ -62,6 +69,8 @@ namespace lf::mesh::hybrid2d {
 	// Indices of the two endpoints of the edge
 	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
 	const size_type second_endpoint_idx = v_idx[VertexIndex(i,j+1)];
+	// std::cout << "vertical edge " << edge_cnt << ": "
+	//	  << first_endpoint_idx << " <-> " << second_endpoint_idx << std::endl;
 	lf::base::ForwardRange<const size_type>
 	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
@@ -77,6 +86,8 @@ namespace lf::mesh::hybrid2d {
 	// Indices of the two endpoints of the edge
 	const size_type first_endpoint_idx = v_idx[VertexIndex(i,j)];
 	const size_type second_endpoint_idx = v_idx[VertexIndex(i+1,j+1)];
+	// std::cout << "diagonal edge " << edge_cnt << ": "
+	//	  << first_endpoint_idx << " <-> " << second_endpoint_idx << std::endl;
 	lf::base::ForwardRange<const size_type>
 	  nodes_index_list{first_endpoint_idx,second_endpoint_idx};
 	// Coordinates of endpoints a columns of a 2x2 matrix
@@ -122,6 +133,7 @@ namespace lf::mesh::hybrid2d {
 				       vertex_index_list_low,
 				       std::make_unique<geometry::TriaO1>(tria_geo_low));
       }
+    return std::move(lf::mesh::hybrid2d::MeshFactory::Build());
   } // end Build()
   
 }

@@ -45,12 +45,18 @@ public:
    * @{
    */
   template <typename VECTOR>
-  TPTriagMeshBuilder &setBottomLeftCorner(const VECTOR &&blc) {
+  TPTriagMeshBuilder &setBottomLeftCorner(const VECTOR &blc) {
     bottom_left_corner_ << blc[0],blc[1]; return *this;
+  }
+  TPTriagMeshBuilder &setBottomLeftCorner(double x0,double x1) {
+    bottom_left_corner_ << x0,x1; return *this;
   }
   template <typename VECTOR>
   TPTriagMeshBuilder &setTopRightCorner(const VECTOR &&trc) {
     top_right_corner_ << trc[0],trc[1]; return *this;
+  }
+  TPTriagMeshBuilder &setTopRightCorner(double x0,double x1) {
+    top_right_corner_ << x0,x1; return *this;
   }
   TPTriagMeshBuilder &setNoXCells(size_type nxc) { 
     no_of_x_cells_ = nxc; return *this;
