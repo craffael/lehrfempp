@@ -4,6 +4,8 @@ set(sources
   check_entity_indexing.h
   check_geometry_orientation.cc
   check_geometry_orientation.h
+  check_local_topology.h
+  check_local_topology.cc
 )
 
 add_library(lf.mesh.test_utils ${sources})

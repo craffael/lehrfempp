@@ -276,7 +276,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
 	// and we build an affine triangle.
 	// First assemble corner coordinates into matrix
 	Eigen::Matrix<double,2,3> triag_corner_coords;
-	Eigen::MatrixXd zero_point(2,1); zero_point << 0,0;
+	Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(2,1); 
 	triag_corner_coords.block<2,1>(0,0) =
 	  corner0->Geometry()->Global(zero_point);
 	triag_corner_coords.block<2,1>(0,1) =
@@ -315,7 +315,7 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
 	// with straight edges ("bilinear quadrilateral")
 	// First assemble corner coordinates into matrix
 	Eigen::Matrix<double,2,4> quad_corner_coords;
-	Eigen::MatrixXd zero_point(2,1); zero_point << 0,0;
+	Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(2,1); 
 	quad_corner_coords.block<2,1>(0,0) =
 	  corner0->Geometry()->Global(zero_point);
 	quad_corner_coords.block<2,1>(0,1) =
