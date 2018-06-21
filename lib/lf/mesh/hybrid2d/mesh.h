@@ -11,12 +11,12 @@ template <char CODIM>
 class Entity;
 
 class Mesh : public mesh::Mesh {
-public:
+ public:
   /**
    * @brief Default constructor: create "empty" mesh
    */
-  Mesh(char dim_world):dim_world_(dim_world) {}
-  
+  Mesh(char dim_world) : dim_world_(dim_world) {}
+
   /**
    * @brief Create a new instance of this mesh by directly specifying the
    *        nodes and elements. Do not call this method directly, instead
@@ -57,13 +57,14 @@ public:
 
   size_type Index(const mesh::Entity& e) const override;
 
+ private:
   std::vector<Entity<0>> entities0_;
   std::vector<Entity<1>> entities1_;
   std::vector<Entity<2>> entities2_;
 
-  template <char CODIM> friend class Entity;
+  template <char CODIM>
+  friend class Entity;
   friend class MeshFactory;
-private:
   char dim_world_;
 };
 
