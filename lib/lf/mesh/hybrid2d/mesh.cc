@@ -73,7 +73,6 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
     GeometryPtr geo_uptr;
     AdjCellsList adj_cells_list;
   };
-  // = std::pair<GeometryPtr, AdjCellsList>; OLD
   
   // Type of associative auxiliary array for edge information
   using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
@@ -269,6 +268,27 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
       const Edge *edge0 = &edge_vec[c_edge_indices[0]];
       const Edge *edge1 = &edge_vec[c_edge_indices[1]];
       const Edge *edge2 = &edge_vec[c_edge_indices[2]];
+      if (!c_geo_ptr) {
+	// Cell is lacking a geometry and its shape has to
+	// be determined from the shape of the edges or
+	// location of the vertices
+	// At this point only the latter policy is implemented
+	// and we build an affine triangle.
+	// First assemble corner coordinates into matrix
+	Eigen::Matrix<double,2,3> triag_corner_coords;
+	Eigen::MatrixXd zero_point(2,1); zero_point << 0,0;
+	triag_corner_coords.block<2,1>(0,0) =
+	  corner0->Geometry()->Global(zero_point);
+	triag_corner_coords.block<2,1>(0,1) =
+	  corner1->Geometry()->Global(zero_point);
+	triag_corner_coords.block<2,1>(0,2) =
+	  corner2->Geometry()->Global(zero_point);
+	// Then create geometry of an affine triangle
+	c_geo_ptr = std::make_unique<geometry::TriaO1>(triag_corner_coords);
+	// For later:
+	// If blended geometry are available, a cell could also
+	// inherit its geometry from the edges
+      }
       tria_vec.emplace_back(cell_index,std::move(c_geo_ptr),
 			    corner0,corner1,corner2,
 			    edge0,edge1,edge2);
@@ -287,6 +307,26 @@ void mesh_from_node_incidence(std::vector<Eigen::VectorXd> nodes,
       const Edge *edge1 = &edge_vec[c_edge_indices[1]];
       const Edge *edge2 = &edge_vec[c_edge_indices[2]];
       const Edge *edge3 = &edge_vec[c_edge_indices[3]];
+      if (!c_geo_ptr) {
+	// Cell is lacking a geometry and its shape has to
+	// be determined from the shape of the edges or
+	// location of the vertices
+	// At this point we can only build a quadrilateral
+	// with straight edges ("bilinear quadrilateral")
+	// First assemble corner coordinates into matrix
+	Eigen::Matrix<double,2,4> quad_corner_coords;
+	Eigen::MatrixXd zero_point(2,1); zero_point << 0,0;
+	quad_corner_coords.block<2,1>(0,0) =
+	  corner0->Geometry()->Global(zero_point);
+	quad_corner_coords.block<2,1>(0,1) =
+	  corner1->Geometry()->Global(zero_point);
+	quad_corner_coords.block<2,1>(0,2) =
+	  corner2->Geometry()->Global(zero_point);
+	quad_corner_coords.block<2,1>(0,3) =
+	  corner3->Geometry()->Global(zero_point);
+	// Then create geometry of an affine triangle
+	c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);
+      }
       quad_vec.emplace_back(cell_index,std::move(c_geo_ptr),
 			    corner0,corner1,corner2,corner3,
 			    edge0,edge1,edge2,edge3);
