@@ -12,12 +12,14 @@
 namespace lf::mesh::hybrid2dp {
 base::RandomAccessRange<const mesh::Entity> Segment::SubEntities(
     char rel_codim) const {
+  // An impressive way to do double dereferencing!
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   if (rel_codim == 1) {
     return {base::make_DereferenceLambdaRandomAccessIterator(nodes_.begin(), l),
             base::make_DereferenceLambdaRandomAccessIterator(nodes_.end(), l)};
   }
-  if (rel_codim == 1) {
+  // If the segment itself is requested return reference to itself
+  if (rel_codim == 0) {
     return {this, this + 1};
   }
   LF_VERIFY_MSG(false, "Segment: rel_codim out of range");

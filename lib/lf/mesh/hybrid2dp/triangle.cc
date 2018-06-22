@@ -6,7 +6,7 @@
  * @copyright MIT License
  */
 
-#include "Triangle.h"
+#include "triangle.h"
 #include "point.h"
 #include "segment.h"
 

@@ -16,11 +16,12 @@ namespace lf::mesh::hybrid2dp {
 
 /**
  * @brief A node object for a 2D hybrid mesh
- * @tparam CODIM the co-dimension of the entity object \f$\in\{0,1,2\}\f$
  *
  * @note Every `Entity` object owns a smart pointer to an associated geometry
  * object.
  *
+ * Due to the unidirectional storage scheme for incidence information the node
+ * object does not have much functionality, except for storing its index.
  */
 class Point : public mesh::Entity {
   using size_type = mesh::Mesh::size_type;
