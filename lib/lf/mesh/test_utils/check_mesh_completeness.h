@@ -12,7 +12,7 @@ namespace lf::mesh::test_utils {
  * of at least one entity of dimension dim+1, if dim is smaller
  * than the topological dimension of the mesh
  */
-  bool checkMeshCompleteness(const Mesh& mesh);
+bool checkMeshCompleteness(const Mesh& mesh);
 
 }  // namespace lf::mesh::test_utils
 

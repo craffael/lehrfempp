@@ -1,11 +1,11 @@
 /** @file ref_el_output.cc
- * Demo for outputting information about reference elements 
+ * Demo for outputting information about reference elements
  */
 
 #include <iostream>
 #include "lf/base/base.h"
 
-int main(int argc,char **argv) {
+int main() {
   std::cout << "Output of information on reference elements" << std::endl;
 
   auto re_node = lf::base::RefEl::kPoint();
@@ -13,11 +13,11 @@ int main(int argc,char **argv) {
 
   auto re_seg = lf::base::RefEl::kSegment();
   std::cout << "Information about segment: " << re_seg << std::endl;
-							
+
   auto re_tria = lf::base::RefEl::kTria();
   std::cout << "Information about triangle: " << re_tria << std::endl;
-							
+
   auto re_quad = lf::base::RefEl::kQuad();
   std::cout << "Information about quad: " << re_quad << std::endl;
-  return 0L; 
+  return 0L;
 }

@@ -12,10 +12,21 @@ class Entity;
 
 class Mesh : public mesh::Mesh {
  public:
-  /**
-   * @brief Default constructor: create "empty" mesh
-   */
-  Mesh(char dim_world) : dim_world_(dim_world) {}
+  char DimMesh() const override { return 2; }
+
+  char DimWorld() const override { return dim_world_; }
+
+  base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
+
+  size_type Size(char codim) const override;
+
+  size_type Index(const mesh::Entity& e) const override;
+
+ private:
+  char dim_world_;
+  std::vector<Entity<0>> entities0_;
+  std::vector<Entity<1>> entities1_;
+  std::vector<Entity<2>> entities2_;
 
   /**
    * @brief Create a new instance of this mesh by directly specifying the
@@ -47,25 +58,9 @@ class Mesh : public mesh::Mesh {
                               std::unique_ptr<geometry::Geometry>>>
            elements);
 
-  char DimMesh() const override { return 2; }
-
-  char DimWorld() const override { return dim_world_; }
-
-  base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
-
-  size_type Size(char codim) const override;
-
-  size_type Index(const mesh::Entity& e) const override;
-
- private:
-  std::vector<Entity<0>> entities0_;
-  std::vector<Entity<1>> entities1_;
-  std::vector<Entity<2>> entities2_;
-
   template <char CODIM>
   friend class Entity;
   friend class MeshFactory;
-  char dim_world_;
 };
 
 }  // namespace lf::mesh::hybrid2d

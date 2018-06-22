@@ -10,7 +10,7 @@ namespace lf::mesh::test_utils {
  *
  * This function verifies the consistency of the local topology, that is
  * whether subentities of sub-entities are also subentities of the entity.
- * 
+ *
  */
 void checkLocalTopology(const Entity& e);
 
