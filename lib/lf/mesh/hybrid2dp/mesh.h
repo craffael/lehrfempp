@@ -10,7 +10,7 @@
 #define __62731052ee4a4a2d9f256c2caac43835
 
 #include <lf/mesh/mesh.h>
-#include "Triangle.h"
+#include "triangle.h"
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
