@@ -72,9 +72,9 @@ MeshFactory::size_type MeshFactory::AddEntity(
   return elements_.size() - 1;
 }
 
-std::unique_ptr<mesh::Mesh> MeshFactory::Build() {
+std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   built_ = true;
-  return std::unique_ptr<Mesh>(new Mesh(
+  return std::shared_ptr<Mesh>(new Mesh(
       dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_)));
 }
 

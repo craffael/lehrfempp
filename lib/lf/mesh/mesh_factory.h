@@ -96,7 +96,7 @@ class MeshFactory {
    * @note After calling Build() you are not allowed to call AddPoint or
    *       AddEntity() anymore.
    */
-  virtual std::unique_ptr<Mesh> Build() = 0;
+  virtual std::shared_ptr<Mesh> Build() = 0;
 
   /// @brief Virtual destructor.
   virtual ~MeshFactory() = default;
