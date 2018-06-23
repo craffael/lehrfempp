@@ -15,7 +15,7 @@ namespace lf::mesh::hybrid2dp {
  * of edges, and a list of cells (triangles, quadrilaterals). All entities
  * can be supplied with a geometry. If this is missing, the mesh builder
  * tries to infer it from sub-entities or super-entities. If this is not
- * possible, an affine entity is built. 
+ * possible, an affine entity is built.
  */
 class MeshFactory : public mesh::MeshFactory {
  public:

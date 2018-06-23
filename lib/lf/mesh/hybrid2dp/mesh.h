@@ -27,7 +27,7 @@ class Mesh : public mesh::Mesh {
 
   base::ForwardRange<const Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
-  size_type Index(const Entity& e) const override;
+  size_type Index(const Entity &e) const override;
 
  private:
   dim_t dim_world_{};
@@ -40,9 +40,9 @@ class Mesh : public mesh::Mesh {
   using NodeCoordList = std::vector<Eigen::VectorXd>;
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
   using EdgeList =
-    std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
+      std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
   using CellList =
-    std::vector<std::pair<std::array<Mesh::size_type, 4>, GeometryPtr>>;
+      std::vector<std::pair<std::array<Mesh::size_type, 4>, GeometryPtr>>;
 
   /**
    * @brief Construction of mesh from information gathered in a MeshFactory
@@ -60,8 +60,8 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world,const NodeCoordList &nodes,EdgeList &edges,CellList &cells);
-  
+  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
+
   friend class MeshFactory;
 };
 

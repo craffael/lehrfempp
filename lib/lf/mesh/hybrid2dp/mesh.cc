@@ -12,7 +12,9 @@ namespace lf::mesh::hybrid2dp {
 
 base::ForwardRange<const Entity> Mesh::Entities(char /*codim*/) const {
   // TODO(raffael):  Add implementation here.
-  // NOLINTNEXTLINE
+
+  return {base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),
+          base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr))};
 }
 
 Mesh::size_type Mesh::Size(char codim) const {
@@ -30,7 +32,7 @@ Mesh::size_type Mesh::Size(char codim) const {
 
 Mesh::size_type Mesh::Index(const Entity & /*e*/) const {
   // TODO(raffael): Add implementation here
-  // NOLINTNEXTLINE
+  return -1;
 }
 
 namespace /*anonymous */ {
@@ -61,10 +63,7 @@ class EndpointIndexPair {
 };
 }  // namespace
 
-Mesh::Mesh(dim_t dim_world,
-	   const NodeCoordList &nodes,
-	   EdgeList &edges,
-           CellList &cells)
+Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
@@ -138,7 +137,7 @@ Mesh::Mesh(dim_t dim_world,
   size_type no_of_quadrilaterals = 0;
   for (const auto &c : cells) {
     // node indices of corners of cell c
-    const std::array<size_type,4> &cell_node_list(c.first);
+    const std::array<size_type, 4> &cell_node_list(c.first);
     // Geometry of current cell
     const GeometryPtr &cell_geometry(c.second);
     // Can be either a trilateral or a quadrilateral
@@ -146,16 +145,22 @@ Mesh::Mesh(dim_t dim_world,
     // A triangle is marked by an invalid node number
     // in the last position
     size_type no_of_vertices;
-    if (cell_node_list[3] == size_type(-1)) no_of_vertices = 3;
-    else  no_of_vertices = 4;
+    if (cell_node_list[3] == size_type(-1)) {
+      no_of_vertices = 3;
+    } else {
+      no_of_vertices = 4;
+    }
     // Fix the type of the cell
     base::RefEl ref_el =
         (no_of_vertices == 3) ? base::RefEl::kTria() : base::RefEl::kQuad();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Count the different cell types
-    if (no_of_vertices == 3) no_of_trilaterals++;
-    else no_of_quadrilaterals++;
+    if (no_of_vertices == 3) {
+      no_of_trilaterals++;
+    } else {
+      no_of_quadrilaterals++;
+    }
     //  A variant:
     //    There may be cells without a specified geometry.
     //    In case an edge is not equipped with a geometry and not
@@ -274,8 +279,11 @@ Mesh::Mesh(dim_t dim_world,
     // A triangle is marked by an invalid node number
     // in the last position
     size_type no_of_nodes;
-    if (c_node_indices[3] == size_type(-1)) no_of_nodes = 3;
-    else  no_of_nodes = 4;
+    if (c_node_indices[3] == size_type(-1)) {
+      no_of_nodes = 3;
+    } else {
+      no_of_nodes = 4;
+    }
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     GeometryPtr c_geo_ptr(std::move(c.second));
     if (no_of_nodes == 3) {
