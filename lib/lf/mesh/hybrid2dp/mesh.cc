@@ -61,8 +61,10 @@ class EndpointIndexPair {
 };
 }  // namespace
 
-Mesh::Mesh(dim_t dim_world, std::vector<Eigen::VectorXd> nodes, EdgeList edges,
-           CellList cells)
+Mesh::Mesh(dim_t dim_world,
+	   const NodeCoordList &nodes,
+	   EdgeList &edges,
+           CellList &cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
@@ -136,29 +138,24 @@ Mesh::Mesh(dim_t dim_world, std::vector<Eigen::VectorXd> nodes, EdgeList edges,
   size_type no_of_quadrilaterals = 0;
   for (const auto &c : cells) {
     // node indices of corners of cell c
-    const std::vector<size_type> &cell_node_list(c.first);
+    const std::array<size_type,4> &cell_node_list(c.first);
     // Geometry of current cell
     const GeometryPtr &cell_geometry(c.second);
     // Can be either a trilateral or a quadrilateral
-    size_type no_of_vertices = cell_node_list.size();
-    LF_ASSERT_MSG((no_of_vertices == 3) || (no_of_vertices == 4),
-                  "Cell with invalid number of edges");
-    // Special case: A node index vector of length 4 might have been
-    // used for a triangle, indicated by passing an invalid index in
-    // the last element
-    if ((no_of_vertices == 4) && (cell_node_list[3] == size_type(-1))) {
-      no_of_vertices = 3;
-    }
-    // Count the different cell types
-    if (no_of_vertices == 3) {
-      no_of_trilaterals++;
-    } else {
-      no_of_quadrilaterals++;
-    }
-    // finally fix the type of the cell
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // A triangle is marked by an invalid node number
+    // in the last position
+    size_type no_of_vertices;
+    if (cell_node_list[3] == size_type(-1)) no_of_vertices = 3;
+    else  no_of_vertices = 4;
+    // Fix the type of the cell
     base::RefEl ref_el =
         (no_of_vertices == 3) ? base::RefEl::kTria() : base::RefEl::kQuad();
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    // Count the different cell types
+    if (no_of_vertices == 3) no_of_trilaterals++;
+    else no_of_quadrilaterals++;
     //  A variant:
     //    There may be cells without a specified geometry.
     //    In case an edge is not equipped with a geometry and not
@@ -271,16 +268,24 @@ Mesh::Mesh(dim_t dim_world, std::vector<Eigen::VectorXd> nodes, EdgeList edges,
   cell_index = 0;
   for (auto &c : cells) {
     // Node indices for the current cell
-    const std::vector<size_type> &c_node_indices(c.first);
+    const std::array<size_type, 4> &c_node_indices(c.first);
     const std::array<size_type, 4> &c_edge_indices(edge_indices[cell_index]);
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // A triangle is marked by an invalid node number
+    // in the last position
+    size_type no_of_nodes;
+    if (c_node_indices[3] == size_type(-1)) no_of_nodes = 3;
+    else  no_of_nodes = 4;
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     GeometryPtr c_geo_ptr(std::move(c.second));
-    if (c_node_indices.size() == 3) {
+    if (no_of_nodes == 3) {
+      // Case of a trilateral
       /*
         Add a trilateral entity to the vector of trilaterals
         Use information in c_node_indices, c_edge_indices to
         obtain pointers to nodes and edges.
         index = cell_index
-       */
+      */
       const Point *corner0 = &node_vec[c_node_indices[0]];
       const Point *corner1 = &node_vec[c_node_indices[1]];
       const Point *corner2 = &node_vec[c_node_indices[2]];
@@ -311,6 +316,7 @@ Mesh::Mesh(dim_t dim_world, std::vector<Eigen::VectorXd> nodes, EdgeList edges,
       tria_vec.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, edge0, edge1, edge2);
     } else {
+      // Case of a quadrilateral
       /*
          Add a quadrilateral entity to the vector of quadrilaterals
          Use information in c_node_indices, c_edge_indices to
