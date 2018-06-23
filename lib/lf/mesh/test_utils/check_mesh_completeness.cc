@@ -25,7 +25,6 @@ bool checkMeshCompleteness(const Mesh& mesh) {
       base::RandomAccessRange<const Entity> sub_ent_range(e.SubEntities(1));
       for (const Entity& sub_ent : sub_ent_range) {
         // Obtain index of the sub-entity to address counter
-
         std::cout << mesh.Index(sub_ent) << " " << std::flush;
 
         entity_link_cnt[mesh.Index(sub_ent)]++;
