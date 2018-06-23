@@ -23,22 +23,23 @@ namespace lf::mesh::hybrid2d {
  * The horizontal edges are numbered first, the vertical edges next; both groups
  * lexikographically.
  */
-class TPTriagMeshBuilder : public MeshFactory {
+class TPTriagMeshBuilder {
  public:
+  using size_type = mesh::Mesh::size_type;
+  using dim_t = base::RefEl::dim_t;
   /**
    * @brief Constructor: does nothing
    *
    */
-  TPTriagMeshBuilder() : MeshFactory(2) {}
-
-  /** @copydoc Mesh::DimWorld */
-  dim_t DimWorld() const override { return 2; }
-
-  /**
-   * @brief 2D hybrid meshes are meant to model 2D manifolds
-   *
-   */
-  dim_t DimMesh() const override { return 2; }
+  explicit TPTriagMeshBuilder(std::shared_ptr<MeshFactory> mesh_factory)
+      : mesh_factory_(std::move(mesh_factory)) {
+    LF_ASSERT_MSG(
+        mesh_factory_->DimMesh() == 2,
+        "TPTriagMeshBuilder can only construct meshes with DimMesh==2");
+    LF_ASSERT_MSG(
+        mesh_factory_->DimWorld() == 2,
+        "TPTriagMeshBuilder can only construct meshes with DimWorld==2");
+  }
 
   /**
    * @brief Initialization methods
@@ -76,17 +77,18 @@ class TPTriagMeshBuilder : public MeshFactory {
    * @brief actual construction of the mesh
    *
    */
-  std::unique_ptr<mesh::Mesh> Build() override;
+  std::shared_ptr<mesh::Mesh> Build();
 
  private:
   /**
    * @brief vertex index from grid position
    */
-  inline size_type VertexIndex(size_type i, size_type j) const {
+  size_type VertexIndex(size_type i, size_type j) const {
     return (i + j * (no_of_x_cells_ + 1));
   }
 
  private:
+  std::shared_ptr<mesh::MeshFactory> mesh_factory_;
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
   size_type no_of_x_cells_{0}, no_of_y_cells_{0};
 };

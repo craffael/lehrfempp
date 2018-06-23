@@ -39,7 +39,7 @@ class MeshFactory : public mesh::MeshFactory {
                       std::unique_ptr<geometry::Geometry>&& geometry) override;
 
   /** @copydoc MeshFactory::Build() */
-  std::unique_ptr<mesh::Mesh> Build() override;
+  std::shared_ptr<mesh::Mesh> Build() override;
 
  private:
   dim_t dim_world_;  // dimension of ambient space
