@@ -59,9 +59,11 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, std::vector<Eigen::VectorXd> nodes, EdgeList edges,
+  Mesh(dim_t dim_world,
+       std::vector<Eigen::VectorXd> nodes,
+       EdgeList edges,
        CellList cells);
-
+  
   friend class MeshFactory;
 };
 
