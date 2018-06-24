@@ -23,6 +23,7 @@ class DereferenceLambdaRandomAccessIterator {
       const DereferenceLambdaRandomAccessIterator&) = default;
   DereferenceLambdaRandomAccessIterator& operator=(
       const DereferenceLambdaRandomAccessIterator&) = default;
+  // NOLINTNEXTLINE
   DereferenceLambdaRandomAccessIterator(
       DereferenceLambdaRandomAccessIterator&&) noexcept = default;
   DereferenceLambdaRandomAccessIterator& operator=(
