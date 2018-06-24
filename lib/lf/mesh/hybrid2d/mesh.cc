@@ -164,7 +164,7 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
           geom = std::move(std::get<1>(original_edge));
         } else {
           // The user didn't specify a geometry object
-          // -> We get find the super entity that contains this entity and
+          // -> We find the super entity that contains this entity and
           // construct the geometry object from it.
 
           auto &other_edge = element_edges[begin + 1];
@@ -188,8 +188,15 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
 
     if (std::get<1>(element_edges[end])) {
       // register edge at element. Hmm, fairly intrusive !
+      size_type edge_index;
+      if (!std::get<1>(element_edges[begin])) {
+        // the edge was specified manually by the user:
+        edge_index = std::get<2>(element_edges[begin]);
+      } else {
+        edge_index = entities1_.size() - 1;
+      }
       entities0_[std::get<2>(end_edge)]
-          .sub_entities_[0][std::get<3>(end_edge)] = entities1_.size() - 1;
+          .sub_entities_[0][std::get<3>(end_edge)] = edge_index;
     }
     // Another new edge is detected
     if (end + 1 < element_edges.size() &&

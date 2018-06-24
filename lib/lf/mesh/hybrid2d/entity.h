@@ -117,7 +117,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                     return mesh_->entities1_[*i];
                   }),
               base::make_DereferenceLambdaRandomAccessIterator(
-                  sub_entities_[rel_codim - 1].begin(),
+                  sub_entities_[rel_codim - 1].end(),
                   [&](auto i) -> const mesh::Entity& {
                     return mesh_->entities1_[*i];
                   })};
@@ -128,7 +128,7 @@ base::RandomAccessRange<const mesh::Entity> Entity<CODIM>::SubEntities(
                     return mesh_->entities2_[*i];
                   }),
               base::make_DereferenceLambdaRandomAccessIterator(
-                  sub_entities_[rel_codim - 1].begin(),
+                  sub_entities_[rel_codim - 1].end(),
                   [&](auto i) -> const mesh::Entity& {
                     return mesh_->entities2_[*i];
                   })};
