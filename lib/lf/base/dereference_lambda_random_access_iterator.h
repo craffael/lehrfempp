@@ -18,17 +18,6 @@ class DereferenceLambdaRandomAccessIterator {
   DereferenceLambdaRandomAccessIterator(Iterator&& iterator, lambda_t lambda)
       : iterator_(iterator), lambda_(std::move(lambda)) {}
 
-  DereferenceLambdaRandomAccessIterator() = default;
-  DereferenceLambdaRandomAccessIterator(
-      const DereferenceLambdaRandomAccessIterator&) = default;
-  DereferenceLambdaRandomAccessIterator& operator=(
-      const DereferenceLambdaRandomAccessIterator&) = default;
-  DereferenceLambdaRandomAccessIterator(                            // NOLINT
-      DereferenceLambdaRandomAccessIterator&&) noexcept = default;  // NOLINT
-  DereferenceLambdaRandomAccessIterator& operator=(
-      DereferenceLambdaRandomAccessIterator&&) noexcept = default;
-  ~DereferenceLambdaRandomAccessIterator() = default;
-
   auto& operator*() const { return lambda_(iterator_); }
 
   auto& operator[](std::ptrdiff_t i) const { return lambda_(iterator_ + i); }
