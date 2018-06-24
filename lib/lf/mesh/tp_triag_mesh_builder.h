@@ -1,5 +1,5 @@
-#ifndef __MESHBUILDER_H__
-#define __MESHBUILDER_H__
+#ifndef __TPMESHBUILDER_H__
+#define __TPMESHBUILDER_H__
 
 #include "mesh_factory.h"
 
@@ -88,11 +88,14 @@ class TPTriagMeshBuilder {
   }
 
  private:
+  /** mesh factory object that has to be supplied to the MeshBuilder */
   std::shared_ptr<mesh::MeshFactory> mesh_factory_;
+  /** corners of rectangle defining the domain */
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
+  /** Mesh resolution parameters */
   size_type no_of_x_cells_{0}, no_of_y_cells_{0};
 };
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  //  __MESHBUILDER_H__
+#endif  //  __TPMESHBUILDER_H__
