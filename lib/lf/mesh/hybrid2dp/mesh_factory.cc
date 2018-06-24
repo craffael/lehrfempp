@@ -76,7 +76,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
-      dim_world_, nodes_, edges_, elements_);
+      dim_world_, nodes_, std::move(edges_), std::move(elements_));
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
 

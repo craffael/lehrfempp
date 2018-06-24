@@ -27,7 +27,7 @@ class Mesh : public mesh::Mesh {
 
   base::ForwardRange<const Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
-  size_type Index(const Entity &e) const override;
+  size_type Index(const Entity& e) const override;
 
  private:
   dim_t dim_world_{};
@@ -60,10 +60,8 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world,
-       const NodeCoordList &nodes,
-       EdgeList &edges, CellList
-       &cells);
+  Mesh(dim_t dim_world, const NodeCoordList& nodes, EdgeList edges,
+       CellList cells);
 
   friend class MeshFactory;
 };

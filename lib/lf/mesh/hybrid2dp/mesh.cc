@@ -63,8 +63,8 @@ class EndpointIndexPair {
 };
 }  // namespace
 
-Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList &edges,
-           CellList &cells)
+Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
+           CellList cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
