@@ -60,7 +60,10 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
+  Mesh(dim_t dim_world,
+       const NodeCoordList &nodes,
+       EdgeList &edges, CellList
+       &cells);
 
   friend class MeshFactory;
 };
