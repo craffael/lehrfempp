@@ -68,6 +68,13 @@ TEST(hybrid2d, directMeshConstruction) {
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[0].Codim(), 2);
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[0], *node1);
   EXPECT_EQ(element0->SubEntities(1)[1].SubEntities(1)[1], *node3);
+  auto range = element0->SubEntities(1);
+  auto it = range.begin();
+  ++it;
+  ++it;
+  ++it;
+  ++it;
+  EXPECT_EQ(it, range.end());
 
   mesh::test_utils::checkEntityIndexing(*mesh);
 }

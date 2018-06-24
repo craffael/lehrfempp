@@ -25,9 +25,9 @@ MeshFactory::size_type MeshFactory::AddEntity(
   }
 
   if (ref_el == base::RefEl::kSegment()) {
-    std::array<size_type, 2> ns{};
+    std::array<size_type, 2> ns{{0, 0}};
     unsigned char count = 0;
-    for (auto& n : nodes) {
+    for (size_type n : nodes) {
       LF_ASSERT_MSG(n < nodes_.size(),
                     "node " << n
                             << " specified in call to AddEntity must be "

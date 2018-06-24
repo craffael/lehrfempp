@@ -95,9 +95,7 @@ class ForwardIterator {
     InnerIterator iterator_;
 
    public:
-    explicit WrapperImpl(const InnerIterator& iterator) : iterator_(iterator) {}
-
-    explicit WrapperImpl(InnerIterator&& iterator)
+    explicit WrapperImpl(InnerIterator iterator)
         : iterator_(std::move(iterator)) {}
 
     std::unique_ptr<WrapperInterface> Clone() const override {

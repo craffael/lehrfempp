@@ -32,4 +32,17 @@ TEST(Range, useInForLoop) {
       std::all_of(range.begin(), range.end(), [](int a) { return true; });
   EXPECT_EQ(result, true);
 }
+
+TEST(base_forwardRangeTest, initializerList) {
+  int x = 0;
+  int y = 1;
+  const int* t2;
+  ForwardRange<const int> fw{x, y};
+  auto it = fw.begin();
+  EXPECT_EQ(0, *it);
+  ++it;
+  EXPECT_EQ(1, *it);
+  ++it;
+  EXPECT_EQ(fw.end(), it);
+}
 }  // namespace lf::base::test
