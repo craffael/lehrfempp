@@ -89,6 +89,10 @@ class ForwardRange {
     InitializerListImpl(
         const std::initializer_list<std::remove_const_t<T>>& list)
         : list_(list) {}
+    InitializerListImpl(InitializerListImpl&&) = delete;
+    InitializerListImpl& operator=(const InitializerListImpl&) = delete;
+    InitializerListImpl& operator=(InitializerListImpl&&) = delete;
+    ~InitializerListImpl() override = default;
 
     std::unique_ptr<WrapperInterface> Clone() const override {
       return std::unique_ptr<WrapperInterface>(new InitializerListImpl(*this));
@@ -119,7 +123,7 @@ class ForwardRange {
   std::unique_ptr<WrapperInterface> wrapper_;
 
  public:
-  ForwardRange(const ForwardRange&) : wrapper_(wrapper_->Clone()) {}
+  ForwardRange(const ForwardRange& rhs) : wrapper_(rhs->Clone()) {}
   ForwardRange(ForwardRange&&) noexcept = default;
 
   template <class C, typename = typename std::enable_if<std::is_same<

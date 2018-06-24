@@ -27,8 +27,6 @@ MeshFactory::size_type MeshFactory::AddEntity(
   if (ref_el == base::RefEl::kSegment()) {
     std::array<size_type, 2> ns{{0, 0}};
     unsigned char count = 0;
-    auto begin = nodes.begin();
-    auto q = *begin;
     for (size_type n : nodes) {
       LF_ASSERT_MSG(n < nodes_.size(),
                     "node " << n

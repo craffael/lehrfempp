@@ -16,7 +16,7 @@ class DereferenceLambdaRandomAccessIterator {
 
  public:
   DereferenceLambdaRandomAccessIterator(Iterator&& iterator, lambda_t lambda)
-      : iterator_(iterator), lambda_(lambda) {}
+      : iterator_(iterator), lambda_(std::move(lambda)) {}
 
   DereferenceLambdaRandomAccessIterator() = default;
   DereferenceLambdaRandomAccessIterator(
