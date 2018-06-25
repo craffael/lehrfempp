@@ -31,7 +31,7 @@ class TPTriagMeshBuilder {
    * @brief Constructor: does nothing
    *
    */
-  explicit TPTriagMeshBuilder(std::shared_ptr<MeshFactory> mesh_factory)
+  explicit TPTriagMeshBuilder(std::shared_ptr<mesh::MeshFactory> mesh_factory)
       : mesh_factory_(std::move(mesh_factory)) {
     LF_ASSERT_MSG(
         mesh_factory_->DimMesh() == 2,

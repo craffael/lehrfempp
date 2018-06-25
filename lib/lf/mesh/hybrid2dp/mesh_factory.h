@@ -45,6 +45,7 @@ class MeshFactory : public mesh::MeshFactory {
   /** @copydoc MeshFactory::Build() */
   std::shared_ptr<mesh::Mesh> Build() override;
 
+  virtual ~MeshFactory(void) {}
  private:
   dim_t dim_world_;  // dimension of ambient space
   bool built_;
