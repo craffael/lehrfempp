@@ -11,11 +11,27 @@
 
 namespace lf::mesh::hybrid2dp {
 
-base::ForwardRange<const Entity> Mesh::Entities(char /*codim*/) const {
-  // TODO(raffael):  Add implementation here.
+base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
+  LF_ASSERT_MSG(codim >= 0, "codim negative.");
+  LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
 
-  return {base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),
-          base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr))};
+  switch (codim) {
+  case 0: {
+    std::cerr << "hybriod2dp::Mesh::Entities: incomplete implementation!!"
+	      << std::endl;
+    return {trias_.begin(), trias_.end()};
+  }
+  case 1:
+    return {segments_.begin(), segments_.end()};
+  case 2:
+    return {points_.begin(), points_.end()};
+  default: {
+    LF_VERIFY_MSG(false, "Something is horribyl wrong, codim = " +
+		  std::to_string(codim) + " is out of bounds.");
+    return {base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),
+	base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr))};
+  }
+  }
 }
 
 Mesh::size_type Mesh::Size(char codim) const {
@@ -31,9 +47,25 @@ Mesh::size_type Mesh::Size(char codim) const {
   }
 }
 
-Mesh::size_type Mesh::Index(const Entity & /*e*/) const {
-  // TODO(raffael): Add implementation here
-  return -1;
+Mesh::size_type Mesh::Index(const Entity &e) const {
+  switch (e.Codim()) {
+  case 0: {
+    if (e.RefEl() == lf::base::RefEl::kTria())
+      return dynamic_cast<const Triangle &>(e).index();
+    else if (e.RefEl() == lf::base::RefEl::kQuad())
+      return dynamic_cast<const Quadrilateral &>(e).index();
+    else
+      LF_VERIFY_MSG(false,"Illegal cell type");
+  }
+  case 1:
+    return dynamic_cast<const Segment &>(e).index();
+  case 2:
+    return dynamic_cast<const Point &>(e).index();
+  default:
+    LF_VERIFY_MSG(false,
+		  "Something is horribyl wrong, this entity has codim = " +
+		  std::to_string(e.Codim()));
+  }
 }
 
 namespace /*anonymous */ {
@@ -127,7 +159,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     std::array<size_type, 2> end_nodes(e.first);
     EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
     // DIAGNOSTICS
-    std::cout << "Register edge: " << end_nodes[0] << " <-> " << end_nodes[1] << std::endl;
+    std::cout << "Register edge: " << end_nodes[0] << " <-> "
+	      << end_nodes[1] << std::endl;
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     AdjCellsList empty_cells_list{};
@@ -143,6 +176,20 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // At this point all predefined edges have been stored in the auxiliary
   // associative array, though without information about adjacent cells
 
+  // DIAGNOSTICS
+  std::cout << "Edge map after edge registration" << std::endl;
+  for (auto &edge_info : edge_map) {
+    const EndpointIndexPair &eip(edge_info.first);
+    const EdgeData &edat(edge_info.second);
+    std::cout << "Edge " << eip.first_node() << " <-> "
+	      << eip.second_node() << ": ";
+    const AdjCellsList &acl(edat.adj_cells_list);
+    const GeometryPtr &gptr(edat.geo_uptr);
+    for (auto &i : acl)
+      std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+    std::cout << std::endl;
+  }
+  
   // Run through cells in order to
   // (i) build edges missing in the list of predefined edges
   // (ii) determine cells adjacent to edges
@@ -177,6 +224,14 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     } else {
       no_of_quadrilaterals++;
     }
+
+    // Diagnostics
+    std::cout << "Cell " << cell_index;
+    if (no_of_vertices == 3)
+      std::cout << ", tria " << no_of_trilaterals << ": ";
+    else
+      std::cout << ", quad " << no_of_quadrilaterals << ": ";
+    
     //  A variant:
     //    There may be cells without a specified geometry.
     //    In case an edge is not equipped with a geometry and not
@@ -194,6 +249,13 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
       // Fetch global indices of the endnodes of edge j
       EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
                                               cell_node_list[p1_local_index]);
+
+      // Diagnostics
+      std::cout << "e(" << j << ") = local "
+		<< p0_local_index << " <-> " << p1_local_index 
+                << ", global " << c_edge_vertex_indices.first_node()
+		<< " <-> " << c_edge_vertex_indices.second_node() << " # ";
+      
       // Store number of cell and the local index j of the edge
       AdjCellInfo edge_cell_info(cell_index, j);
       // Check whether edge exists already
@@ -221,8 +283,38 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
       // Here we could check, whether the edge lacks a geometry.
     }  // end of loop over edges
     cell_index++;
+
+    // Diagnostics
+    std::cout << std::endl;
   }  // end loop over cells
 
+  // DIAGNOSTICS
+  {
+    std::cout << "=============================================" << std::endl;
+    std::cout << "Edge map after cell scan" << std::endl;
+    size_type edge_cnt = 0;
+    for (auto &edge_info : edge_map) {
+      const EndpointIndexPair &eip(edge_info.first);
+      const EdgeData &edat(edge_info.second);
+      std::cout << "Edge " << edge_cnt << ": " << eip.first_node() << " <-> "
+		<< eip.second_node() << ": ";
+      const AdjCellsList &acl(edat.adj_cells_list);
+      const GeometryPtr &gptr(edat.geo_uptr);
+      for (auto &i : acl)
+	std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+      std::cout << " geo = " << std::endl;
+      if (gptr) { 
+	Eigen::MatrixXd ref_c(1,2); ref_c << 0.0,1.0;
+	Eigen::MatrixXd edp_c(gptr->Global(ref_c));
+	std::cout << edp_c << std::endl;
+      }
+      else
+	std::cout << "NO GEOMETRY" << std::endl;
+      edge_cnt++;
+    }
+    std::cout << "=============================================" << std::endl;
+  }
+  
   // Run through the entire associative container for edges
   // and build edge Entities
   // This is the length to be reserved for the edge vector
@@ -248,6 +340,11 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     //   If the edge does not have a geometry build a straight edge
     // ----------------------------------------------------------------------
     GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));
+
+    // Diagnostics
+    std::cout << "Registering edge " << edge_index << ": " << p0
+	      << " <-> " << p1 << std::endl;
+    
     // Building edge by adding another element to the edge vector.
     segments_.emplace_back(edge_index, std::move(edge_geo_ptr), p0_ptr, p1_ptr);
     edge_index++;
@@ -277,6 +374,10 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     edge_index++;
   }
 
+  // Diagnostics
+  std::cout << "########################################" << std::endl;
+  std::cout << "Edge indices for cells " << std::endl;
+  
   // Now complete information is available for the construction
   // of cells = entities of co-dimension 0
   //     Initialize two vectors, one for trilaterals of size `no_of_trilaterals`
@@ -302,6 +403,16 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     GeometryPtr c_geo_ptr(std::move(c.second));
     if (no_of_nodes == 3) {
       // Case of a trilateral
+
+      // Diagnostics
+      std::cout << "Triangular cell " << cell_index << ": nodes "
+		<< c_node_indices[0] << ", "
+		<< c_node_indices[1] << ", "
+		<< c_node_indices[2] << ", edges "
+		<< c_edge_indices[0] << ", "
+		<< c_edge_indices[1] << ", "
+		<< c_edge_indices[2] << std::endl;
+      
       /*
         Add a trilateral entity to the vector of trilaterals
         Use information in c_node_indices, c_edge_indices to
@@ -332,13 +443,24 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         // Then create geometry of an affine triangle
         c_geo_ptr = std::make_unique<geometry::TriaO1>(triag_corner_coords);
         // For later:
-        // If blended geometry are available, a cell could also
+        // If blended geometries are available, a cell could also
         // inherit its geometry from the edges
       }
       trias_.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, edge0, edge1, edge2);
     } else {
       // Case of a quadrilateral
+
+      // Diagnostics
+      std::cout << "Quadrilateral cell " << cell_index << ": nodes "
+		<< c_node_indices[0] << ", "
+		<< c_node_indices[1] << ", "
+		<< c_node_indices[2] << ", "
+		<< c_node_indices[3] << ", edges "
+		<< c_edge_indices[0] << ", "
+		<< c_edge_indices[1] << ", "
+		<< c_edge_indices[2] << ", "
+		<< c_edge_indices[3] << std::endl;
       /*
          Add a quadrilateral entity to the vector of quadrilaterals
          Use information in c_node_indices, c_edge_indices to

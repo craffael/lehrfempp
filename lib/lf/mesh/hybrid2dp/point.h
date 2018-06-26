@@ -73,6 +73,9 @@ class Point : public mesh::Entity {
   /** @brief return _pointer_ to associated geometry object */
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
+  /** @brief access to index of an entity */
+  size_type index(void) const { return index_; }
+  
   base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
 
   bool operator==(const mesh::Entity& rhs) const override {

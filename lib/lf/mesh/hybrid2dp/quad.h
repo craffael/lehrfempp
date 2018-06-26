@@ -104,6 +104,9 @@ class Quadrilateral : public mesh::Entity {
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
 
+  /** @brief access to index of an entity */
+  size_type index(void) const { return index_; }
+  
   /** @defgroup Standard methods of an Entity object
    * @sa mesh::Entity
    * @{
