@@ -84,6 +84,7 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
 
+  // For diagnostic output
   void MeshFactory::PrintLists(std::ostream &o) const {
     o << "hybrid2dp::MeshFactory::Build" << std::endl;
     o << nodes_.size() << " nodes:" << std::endl;

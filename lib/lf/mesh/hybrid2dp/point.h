@@ -49,7 +49,7 @@ class Point : public mesh::Entity {
    * entity before you can initialize the entity object itseld.
    */
   explicit Point(size_type index,
-                 std::unique_ptr<geometry::Geometry>&& geometry)
+                 std::unique_ptr<geometry::Geometry> &&geometry)
       : index_(index), geometry_(std::move(geometry)) {
     LF_VERIFY_MSG(geometry->DimLocal() == 0,
                   "Geometry must be that of a point");
@@ -78,7 +78,7 @@ class Point : public mesh::Entity {
 
  private:
   size_type index_ = -1;  // zero-based index of this entity.
-  std::unique_ptr<geometry::Geometry> geometry_;  // shape information
+  std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
 };
 
 }  // namespace lf::mesh::hybrid2dp

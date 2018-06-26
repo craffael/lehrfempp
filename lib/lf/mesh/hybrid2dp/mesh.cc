@@ -93,7 +93,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // Type of associative auxiliary array for edge information
   using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
 
-  // STEP I: Set up and fill array of nodes
+  // ======================================================================
+  // STEP I: Set up and fill array of nodes: points_
   // In the beginning initialize vector of vertices and do not touch it anymore
   const size_type no_of_nodes(nodes.size());
   // DIAGNOSTICS
@@ -112,7 +113,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     points_.emplace_back(node_index,std::move(point_geo));
     node_index++;
   }
-  
+
+  // ======================================================================
   // STEP II: Initialize array of edges using pointers to
   //          entries of the array of nodes
 
