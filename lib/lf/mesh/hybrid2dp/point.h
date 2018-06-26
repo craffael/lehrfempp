@@ -65,6 +65,7 @@ class Point : public mesh::Entity {
     return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
   }
 
+  /** @brief return _pointer_ to associated geometry object */
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
   base::RefEl RefEl() const override { return base::RefEl::kPoint(); }

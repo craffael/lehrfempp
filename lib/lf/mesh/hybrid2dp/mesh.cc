@@ -52,8 +52,10 @@ class EndpointIndexPair {
       p1_ = p0;
     }
   }
+  // Access operators 
   size_type first_node() const { return p0_; }
   size_type second_node() const { return p1_; }
+  // The only comparison operator expected from a Map key
   friend bool operator<(const EndpointIndexPair &e1,
                         const EndpointIndexPair &e2) {
     return ((e1.p0_ == e2.p0_) ? (e1.p1_ < e2.p1_) : (e1.p0_ < e2.p0_));
@@ -98,7 +100,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   std::cout << "Mp: " << no_of_nodes <<  " nodes" << std::endl;
   
   // Initialize vector for Node entities of size `no_of_nodes`
-  /* points_.reserve(no_of_nodes); OUTCOMMENTED */
+  points_.reserve(no_of_nodes); 
 
   size_type node_index = 0;
   for (const auto &v : nodes) {
