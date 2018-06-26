@@ -8,7 +8,7 @@
 
 #ifndef __62731052ee4a4a2d9f256c2caac43835
 #define __62731052ee4a4a2d9f256c2caac43835
-
+ 
 #include <lf/mesh/mesh.h>
 #include "point.h"
 #include "quad.h"
@@ -31,10 +31,10 @@ class Mesh : public mesh::Mesh {
 
  private:
   dim_t dim_world_{};
-  std::vector<Point> points_;
-  std::vector<Segment> segments_;
-  std::vector<Triangle> trias_;
-  std::vector<Quadrilateral> quads_;
+  std::vector<hybrid2dp::Point> points_;
+  std::vector<hybrid2dp::Segment> segments_;
+  std::vector<hybrid2dp::Triangle> trias_;
+  std::vector<hybrid2dp::Quadrilateral> quads_;
 
   // Data types for passing information about mesh intities
   using NodeCoordList = std::vector<Eigen::VectorXd>;

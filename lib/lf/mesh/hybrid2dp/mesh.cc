@@ -7,6 +7,7 @@
  */
 
 #include "mesh.h"
+#include <iostream>
 
 namespace lf::mesh::hybrid2dp {
 
@@ -93,27 +94,36 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // STEP I: Set up and fill array of nodes
   // In the beginning initialize vector of vertices and do not touch it anymore
   const size_type no_of_nodes(nodes.size());
+  // DIAGNOSTICS
+  std::cout << "Mp: " << no_of_nodes <<  " nodes" << std::endl;
+  
   // Initialize vector for Node entities of size `no_of_nodes`
-  std::vector<Point> node_vec{};
-  node_vec.reserve(no_of_nodes);
+  /* points_.reserve(no_of_nodes); OUTCOMMENTED */
 
   size_type node_index = 0;
   for (const auto &v : nodes) {
     const Eigen::VectorXd &node_coordinates(v);
-    node_vec.emplace_back(node_index,
-                          std::make_unique<geometry::Point>(node_coordinates));
+    GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
+    // DIAGNOSTICS
+    std::cout << "Adding node " << node_index << " at "
+	      << node_coordinates.transpose() << std::endl;
+    points_.emplace_back(node_index,std::move(point_geo));
     node_index++;
   }
-
+  
   // STEP II: Initialize array of edges using pointers to
   //          entries of the array of nodes
 
   // Register supplied edges in auxiliary map data structure
+  // DIAGNOSTICS
+  std::cout << "Initializing edge map" << std::endl;
   EdgeMap edge_map;
   for (auto &e : edges) {
     // Node indices of endpoints: the KEY
     std::array<size_type, 2> end_nodes(e.first);
     EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
+    // DIAGNOSTICS
+    std::cout << "Register edge: " << end_nodes[0] << " <-> " << end_nodes[1] << std::endl;
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     AdjCellsList empty_cells_list{};
@@ -135,6 +145,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   size_type cell_index = 0;
   size_type no_of_trilaterals = 0;
   size_type no_of_quadrilaterals = 0;
+  // Diagnostics
+  std::cout << "Scanning list of cells" << std::endl;
   for (const auto &c : cells) {
     // node indices of corners of cell c
     const std::array<size_type, 4> &cell_node_list(c.first);
@@ -211,9 +223,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // and build edge Entities
   // This is the length to be reserved for the edge vector
   size_type no_of_edges = edge_map.size();
+
   // Initialized vector of Edge entities here
-  std::vector<Segment> edge_vec{};
-  edge_vec.reserve(no_of_edges);
+  segments_.reserve(no_of_edges);
 
   size_type edge_index = 0;
   // Note: iteration variable cannot be declared const, because
@@ -223,9 +235,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     // Use this to obtain pointers/references to nodes
     // from the vector of nodes
     const size_type p0(edge.first.first_node());   // index of first endpoint
-    const Point *p0_ptr = &node_vec[p0];           // pointer to first endpoint
+    const Point *p0_ptr = &points_[p0];           // pointer to first endpoint
     const size_type p1(edge.first.second_node());  // index of second endpoint
-    const Point *p1_ptr = &node_vec[p1];           // pointer to second endpoint
+    const Point *p1_ptr = &points_[p1];           // pointer to second endpoint
     // geometry of the edge
     // ----------------------------------------------------------------------
     // A variant:
@@ -233,7 +245,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     // ----------------------------------------------------------------------
     GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));
     // Building edge by adding another element to the edge vector.
-    edge_vec.emplace_back(edge_index, std::move(edge_geo_ptr), p0_ptr, p1_ptr);
+    segments_.emplace_back(edge_index, std::move(edge_geo_ptr), p0_ptr, p1_ptr);
     edge_index++;
   }  // end loop over all edges
 
@@ -265,10 +277,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // of cells = entities of co-dimension 0
   //     Initialize two vectors, one for trilaterals of size `no_of_trilaterals`
   //   and a second for quadrilaterals of size `no_of_quadrilaterals`
-  std::vector<Triangle> tria_vec{};
-  tria_vec.reserve(no_of_trilaterals);
-  std::vector<Quadrilateral> quad_vec{};
-  quad_vec.reserve(no_of_quadrilaterals);
+  trias_.reserve(no_of_trilaterals);
+  quads_.reserve(no_of_quadrilaterals);
   // Loop over all cells
   cell_index = 0;
   for (auto &c : cells) {
@@ -294,12 +304,12 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         obtain pointers to nodes and edges.
         index = cell_index
       */
-      const Point *corner0 = &node_vec[c_node_indices[0]];
-      const Point *corner1 = &node_vec[c_node_indices[1]];
-      const Point *corner2 = &node_vec[c_node_indices[2]];
-      const Segment *edge0 = &edge_vec[c_edge_indices[0]];
-      const Segment *edge1 = &edge_vec[c_edge_indices[1]];
-      const Segment *edge2 = &edge_vec[c_edge_indices[2]];
+      const Point *corner0 = &points_[c_node_indices[0]];
+      const Point *corner1 = &points_[c_node_indices[1]];
+      const Point *corner2 = &points_[c_node_indices[2]];
+      const Segment *edge0 = &segments_[c_edge_indices[0]];
+      const Segment *edge1 = &segments_[c_edge_indices[1]];
+      const Segment *edge2 = &segments_[c_edge_indices[2]];
       if (!c_geo_ptr) {
         // Cell is lacking a geometry and its shape has to
         // be determined from the shape of the edges or
@@ -321,7 +331,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         // If blended geometry are available, a cell could also
         // inherit its geometry from the edges
       }
-      tria_vec.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
+      trias_.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, edge0, edge1, edge2);
     } else {
       // Case of a quadrilateral
@@ -331,14 +341,14 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
          obtain pointers to nodes and edges.
          index = cell_index
        */
-      const Point *corner0 = &node_vec[c_node_indices[0]];
-      const Point *corner1 = &node_vec[c_node_indices[1]];
-      const Point *corner2 = &node_vec[c_node_indices[2]];
-      const Point *corner3 = &node_vec[c_node_indices[3]];
-      const Segment *edge0 = &edge_vec[c_edge_indices[0]];
-      const Segment *edge1 = &edge_vec[c_edge_indices[1]];
-      const Segment *edge2 = &edge_vec[c_edge_indices[2]];
-      const Segment *edge3 = &edge_vec[c_edge_indices[3]];
+      const Point *corner0 = &points_[c_node_indices[0]];
+      const Point *corner1 = &points_[c_node_indices[1]];
+      const Point *corner2 = &points_[c_node_indices[2]];
+      const Point *corner3 = &points_[c_node_indices[3]];
+      const Segment *edge0 = &segments_[c_edge_indices[0]];
+      const Segment *edge1 = &segments_[c_edge_indices[1]];
+      const Segment *edge2 = &segments_[c_edge_indices[2]];
+      const Segment *edge3 = &segments_[c_edge_indices[3]];
       if (!c_geo_ptr) {
         // Cell is lacking a geometry and its shape has to
         // be determined from the shape of the edges or
@@ -359,7 +369,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         // Then create geometry of an affine triangle
         c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);
       }
-      quad_vec.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
+      quads_.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, corner3, edge0, edge1, edge2, edge3);
     }
     cell_index++;

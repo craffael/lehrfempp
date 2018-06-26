@@ -43,7 +43,7 @@ namespace lf::mesh::test {
 
   // Test for pointer-based implementation
   // Note the use of the namespace hybrid2dp
-  TEST(lf_mesh_p, buildStructuredMesh) {
+  TEST(lf_mesh_p, buildStructuredMesh_p) {
     // Construct a structured mesh with 8 triangles
     std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<hybrid2dp::MeshFactory>(2);
