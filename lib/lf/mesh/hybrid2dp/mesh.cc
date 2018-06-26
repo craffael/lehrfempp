@@ -108,7 +108,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     const Eigen::VectorXd &node_coordinates(v);
     GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
     // DIAGNOSTICS
-    std::cout << "Adding node " << node_index << " at "
+    std::cout << "-> Adding node " << node_index << " at "
 	      << node_coordinates.transpose() << std::endl;
     points_.emplace_back(node_index,std::move(point_geo));
     node_index++;

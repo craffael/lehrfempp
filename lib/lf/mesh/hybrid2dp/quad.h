@@ -78,10 +78,12 @@ class Quadrilateral : public mesh::Entity {
     LF_VERIFY_MSG(edge1 != nullptr, "Invalid pointer to edge 1");
     LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
     LF_VERIFY_MSG(edge3 != nullptr, "Invalid pointer to edge 3");
+    if (geometry_) {
     LF_VERIFY_MSG(geometry->DimLocal() == 2,
                   "Geometry must describe a 2D cell");
     LF_VERIFY_MSG(geometry->RefEl() == base::RefEl::kQuad(),
                   "Cell geometry must fit a quad");
+    }
     /*
        TODO: consistency check
     */

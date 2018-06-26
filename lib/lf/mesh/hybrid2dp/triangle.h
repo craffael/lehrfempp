@@ -73,10 +73,12 @@ class Triangle : public mesh::Entity {
     LF_VERIFY_MSG(edge0 != nullptr, "Invalid pointer to edge 0");
     LF_VERIFY_MSG(edge1 != nullptr, "Invalid pointer to edge 1");
     LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
-    LF_VERIFY_MSG(geometry->DimLocal() == 2,
-                  "Geometry must describe a 2D cell");
-    LF_VERIFY_MSG(geometry->RefEl() == base::RefEl::kTria(),
-                  "Cell geometry must fit a triangle");
+    if (geometry_) {
+      LF_VERIFY_MSG(geometry_->DimLocal() == 2,
+		    "Geometry must describe a 2D cell");
+      LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kTria(),
+		    "Cell geometry must fit a triangle");
+    }
     /*
        TODO: consistency check
     */
