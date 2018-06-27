@@ -19,6 +19,9 @@ namespace lf::mesh::hybrid2dp {
 
 class MeshFactory;
 
+  /** @brief Basis 2D mesh type compliant with abstract mesh interface 
+   *
+   */
 class Mesh : public mesh::Mesh {
  public:
   using dim_t = base::RefEl::dim_t;
@@ -31,12 +34,18 @@ class Mesh : public mesh::Mesh {
 
  private:
   dim_t dim_world_{};
+  /** @brief array of 0-dimensional entity object of co-dimension 2 */
   std::vector<hybrid2dp::Point> points_;
+  /** @brief array of 1-dimensional entity object of co-dimension 1 */
   std::vector<hybrid2dp::Segment> segments_;
+  /** @brief array of triangular cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Triangle> trias_;
+  /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Quadrilateral> quads_;
+  /** @brief Auxliary array of cell pointers */
+  std::vector<const mesh::Entity *> cell_pointers_;
 
-  // Data types for passing information about mesh intities
+  /** @brief Data types for passing information about mesh intities */
   using NodeCoordList = std::vector<Eigen::VectorXd>;
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
   using EdgeList =
