@@ -47,6 +47,9 @@ class MeshFactory : public mesh::MeshFactory {
   /** @copydoc MeshFactory::Build() */
   std::shared_ptr<mesh::Mesh> Build() override;
 
+  /** @brief output function printing asssembled lists of entity information */
+  void PrintLists(std::ostream &o = std::cout) const;
+
   virtual ~MeshFactory(void) {}
  private:
   dim_t dim_world_;  // dimension of ambient space
@@ -55,8 +58,6 @@ class MeshFactory : public mesh::MeshFactory {
   hybrid2dp::Mesh::EdgeList edges_;
   hybrid2dp::Mesh::CellList elements_;
 
-  /** @brief output function printing asssembled lists of entity information */
-  void PrintLists(std::ostream &o = std::cout) const;
 };
 
 }  // namespace lf::mesh::hybrid2dp
