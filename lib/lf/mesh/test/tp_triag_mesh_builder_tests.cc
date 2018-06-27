@@ -10,9 +10,11 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/hybrid2dp/hybrid2dp.h>
 #include <lf/mesh/tp_triag_mesh_builder.h>
+#include <lf/mesh/mesh_utils/write_matlab.h>
 #include <memory>
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
+
 
 namespace lf::mesh::test {
   // Test for index-based implementation
@@ -67,6 +69,8 @@ namespace lf::mesh::test {
     test_utils::checkEntityIndexing(*mesh_p);
     std::cout << "Checking mesh completeness" << std::endl;
     test_utils::checkMeshCompleteness(*mesh_p);
+    std::cout << "Writing MATLAB file" << std::endl;
+    mesh_utils::writeMatlab(*mesh_p,"tp_triag_test.m");
   }
   
 }  // namespace lf::mesh::test
