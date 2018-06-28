@@ -74,7 +74,7 @@ namespace lf::mesh::test {
   }
 
   // Test for generating a mesh with reconstruction of edge information
-  TEST(lf_edgegeb, MeshFactory_p) {
+  TEST(lf_edge_create, MeshFactory_p) {
     using coord_t = Eigen::Vector2d;
     using size_type = mesh::Mesh::size_type;
     // Obtain mesh factory
@@ -92,7 +92,7 @@ namespace lf::mesh::test {
     mesh_factory_ptr->AddPoint(coord_t({0,3 }));
     mesh_factory_ptr->AddPoint(coord_t({0,1 }));
 
-    // Setting vertices of cells
+    // Setting vertices of cells but not their geometry
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
 				lf::base::ForwardRange<const size_type>({0,4,1}),
 				std::unique_ptr<geometry::Geometry>(nullptr));
@@ -131,9 +131,14 @@ namespace lf::mesh::test {
     std::cout << "&&&& Building mesh &&&&" << std::endl;
     auto mesh_p = mesh_factory_ptr->Build();
     std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << std::endl;
-    
+
+    std::cout << "Checking entity indexing" << std::endl;
+    test_utils::checkEntityIndexing(*mesh_p);
+    std::cout << "Checking mesh completeness" << std::endl;
+    test_utils::checkMeshCompleteness(*mesh_p);
+
     // Printing mesh information
     printInfo(*mesh_p,std::cout);
-  }
+}
   
 }  // namespace lf::mesh::test
