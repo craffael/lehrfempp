@@ -96,9 +96,6 @@ namespace lf::mesh::test {
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
 				lf::base::ForwardRange<const size_type>({0,4,1}),
 				std::unique_ptr<geometry::Geometry>(nullptr));
-    mesh_factory_ptr->AddEntity(lf::base::RefEl::kQuad(),
-				lf::base::ForwardRange<const size_type>({3,1,0,9}),
-				std::unique_ptr<geometry::Geometry>(nullptr));
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
 				lf::base::ForwardRange<const size_type>({3,4,1}),
 				std::unique_ptr<geometry::Geometry>(nullptr));
@@ -110,6 +107,9 @@ namespace lf::mesh::test {
 				std::unique_ptr<geometry::Geometry>(nullptr));
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
 				lf::base::ForwardRange<const size_type>({5,6,2}),
+				std::unique_ptr<geometry::Geometry>(nullptr));
+    mesh_factory_ptr->AddEntity(lf::base::RefEl::kQuad(),
+				lf::base::ForwardRange<const size_type>({3,1,0,9}),
 				std::unique_ptr<geometry::Geometry>(nullptr));
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kQuad(),
 				lf::base::ForwardRange<const size_type>({2,6,7,0}),

@@ -6,6 +6,7 @@ set(sources
   tp_triag_mesh_builder.cc
   mesh_factory.h
   mesh_interface.h
+  mesh_interface.cc
 )
 
 add_library(lf.mesh ${sources})

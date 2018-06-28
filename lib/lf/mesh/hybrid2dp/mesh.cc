@@ -210,9 +210,9 @@ namespace lf::mesh::hybrid2dp {
       // in the last position
       size_type no_of_vertices;
       if (cell_node_list[3] == size_type(-1)) {
-	no_of_vertices = 3;
+	no_of_vertices = 3; // triangle
       } else {
-	no_of_vertices = 4;
+	no_of_vertices = 4; // quadrilateral
       }
       // Fix the type of the cell
       base::RefEl ref_el =
@@ -232,7 +232,15 @@ namespace lf::mesh::hybrid2dp {
 	std::cout << ", tria " << no_of_trilaterals << ": ";
       else
 	std::cout << ", quad " << no_of_quadrilaterals << ": ";
-    
+
+      // Verify validity of vertex indices
+      for (int l = 0; l < no_of_vertices; l++) {
+	LF_VERIFY_MSG(cell_node_list[l] < no_of_nodes,
+		      "Node " << l << " of cell " << cell_index
+		      << ": invalid index " << cell_node_list[l]);
+      }
+      
+
       //  A variant:
       //    There may be cells without a specified geometry.
       //    In case an edge is not equipped with a geometry and not
@@ -394,15 +402,26 @@ namespace lf::mesh::hybrid2dp {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // A triangle is marked by an invalid node number
       // in the last position
-      size_type no_of_nodes;
+      size_type no_of_vertices;
       if (c_node_indices[3] == size_type(-1)) {
-	no_of_nodes = 3;
+	no_of_vertices = 3; // triangle
       } else {
-	no_of_nodes = 4;
+	no_of_vertices = 4; //quadrilateral
       }
+
+      // Verify validity of node/ede indices
+      for (int l = 0 ; l < no_of_vertices; l++) {
+	LF_VERIFY_MSG(c_node_indices[l] < no_of_nodes,
+		      "Node " << l << " of cell " << cell_index
+		      << ": invalid index " << c_node_indices[l]);
+	LF_VERIFY_MSG(c_edge_indices[l] < no_of_edges,
+		      "Edge " << l << " of cell " << cell_index
+		      << ": invalid index " << c_edge_indices[l]);
+      }
+      
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       GeometryPtr c_geo_ptr(std::move(c.second));
-      if (no_of_nodes == 3) {
+      if (no_of_vertices == 3) {
 	// Case of a trilateral
 
 	// Diagnostics
@@ -434,13 +453,18 @@ namespace lf::mesh::hybrid2dp {
 	  // and we build an affine triangle.
 	  // First assemble corner coordinates into matrix
 	  Eigen::Matrix<double, 2, 3> triag_corner_coords;
-	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(2, 1);
+	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(1, 1);
 	  triag_corner_coords.block<2, 1>(0, 0) =
             corner0->Geometry()->Global(zero_point);
 	  triag_corner_coords.block<2, 1>(0, 1) =
             corner1->Geometry()->Global(zero_point);
 	  triag_corner_coords.block<2, 1>(0, 2) =
             corner2->Geometry()->Global(zero_point);
+
+	  // Diagnostics
+	  std::cout << "Creating triangle with geometry " << std::endl
+		    << triag_corner_coords << std::endl;
+	  
 	  // Then create geometry of an affine triangle
 	  c_geo_ptr = std::make_unique<geometry::TriaO1>(triag_corner_coords);
 	  // For later:
@@ -483,8 +507,9 @@ namespace lf::mesh::hybrid2dp {
 	  // At this point we can only build a quadrilateral
 	  // with straight edges ("bilinear quadrilateral")
 	  // First assemble corner coordinates into matrix
+
 	  Eigen::Matrix<double, 2, 4> quad_corner_coords;
-	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(2, 1);
+	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(1, 1);
 	  quad_corner_coords.block<2, 1>(0, 0) =
             corner0->Geometry()->Global(zero_point);
 	  quad_corner_coords.block<2, 1>(0, 1) =
@@ -494,7 +519,13 @@ namespace lf::mesh::hybrid2dp {
 	  quad_corner_coords.block<2, 1>(0, 3) =
             corner3->Geometry()->Global(zero_point);
 	  // Then create geometry of an affine triangle
+
+	  // Diagnostics
+	  std::cout << "Creating quadrilateral with geometry " << std::endl
+		    << quad_corner_coords << std::endl;
+	  
 	  c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);
+	  // std::cout << "Geometry object created!" << std::endl;
 	}
 	quads_.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, corner3, edge0, edge1, edge2, edge3);
