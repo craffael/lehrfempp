@@ -28,7 +28,9 @@ class Mesh {
   Mesh& operator=(Mesh&&) = default;
 
  public:
+  /** Auxiliary types */
   using size_type = unsigned int;
+  using dim_t = unsigned int;
   /**
    * @brief The dimension of the manifold described by the mesh, or
    *        equivalently the maximum dimension of the reference elements

@@ -132,7 +132,8 @@ namespace lf::mesh::test {
     auto mesh_p = mesh_factory_ptr->Build();
     std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << std::endl;
     
-    
+    // Printing mesh information
+    printInfo(*mesh_p,std::cout);
   }
   
 }  // namespace lf::mesh::test

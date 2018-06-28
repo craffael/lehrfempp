@@ -126,6 +126,10 @@ namespace lf::mesh::hybrid2dp {
     // Type of associative auxiliary array for edge information
     using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
 
+    // For extracting point coordinates
+    const Eigen::MatrixXd zero_point =
+      lf::base::RefEl::ncoords_point_dynamic_;
+
     // ======================================================================
     // STEP I: Set up and fill array of nodes: points_
     // In the beginning initialize vector of vertices and do not touch it anymore
@@ -313,8 +317,7 @@ namespace lf::mesh::hybrid2dp {
 	  std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
 	std::cout << " geo = " << std::endl;
 	if (gptr) { 
-	  Eigen::MatrixXd ref_c(1,2); ref_c << 0.0,1.0;
-	  Eigen::MatrixXd edp_c(gptr->Global(ref_c));
+	  Eigen::MatrixXd edp_c(gptr->Global(lf::base::RefEl::ncoords_segment_dynamic_));
 	  std::cout << edp_c << std::endl;
 	}
 	else
@@ -343,13 +346,17 @@ namespace lf::mesh::hybrid2dp {
       const Point *p0_ptr = &points_[p0];           // pointer to first endpoint
       const size_type p1(edge.first.second_node());  // index of second endpoint
       const Point *p1_ptr = &points_[p1];           // pointer to second endpoint
-      // geometry of the edge
-      // ----------------------------------------------------------------------
-      // A variant:
-      //   If the edge does not have a geometry build a straight edge
-      // ----------------------------------------------------------------------
-      GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));
 
+      // obtain geometry of the edge
+      GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));
+      if (!edge_geo_ptr) {
+	// If the edge does not have a geometry build a straight edge
+	Eigen::Matrix<double,2,2> straight_edge_coords;
+	straight_edge_coords.block<2,1>(0,0) = p0_ptr->Geometry()->Global(zero_point);
+	straight_edge_coords.block<2,1>(0,1) = p1_ptr->Geometry()->Global(zero_point);
+	edge_geo_ptr = std::make_unique<geometry::SegmentO1>(straight_edge_coords);
+      }
+      
       // Diagnostics
       std::cout << "Registering edge " << edge_index << ": " << p0
 		<< " <-> " << p1 << std::endl;
@@ -453,7 +460,6 @@ namespace lf::mesh::hybrid2dp {
 	  // and we build an affine triangle.
 	  // First assemble corner coordinates into matrix
 	  Eigen::Matrix<double, 2, 3> triag_corner_coords;
-	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(1, 1);
 	  triag_corner_coords.block<2, 1>(0, 0) =
             corner0->Geometry()->Global(zero_point);
 	  triag_corner_coords.block<2, 1>(0, 1) =
@@ -509,7 +515,6 @@ namespace lf::mesh::hybrid2dp {
 	  // First assemble corner coordinates into matrix
 
 	  Eigen::Matrix<double, 2, 4> quad_corner_coords;
-	  Eigen::MatrixXd zero_point = Eigen::MatrixXd::Zero(1, 1);
 	  quad_corner_coords.block<2, 1>(0, 0) =
             corner0->Geometry()->Global(zero_point);
 	  quad_corner_coords.block<2, 1>(0, 1) =

@@ -80,10 +80,6 @@ class RefEl {
  public:
   using dim_t = unsigned char;
 
- private:
-  // Member variable
-  RefElType type_;
-
   // Node coordinates as dynamic eigen matrices:
   static const Eigen::MatrixXd ncoords_point_dynamic_;
   static const Eigen::MatrixXd ncoords_segment_dynamic_;
@@ -95,6 +91,10 @@ class RefEl {
   static const std::vector<Eigen::Matrix<double, 1, 1>> ncoords_segment_static_;
   static const std::vector<Eigen::Vector2d> ncoords_tria_static_;
   static const std::vector<Eigen::Vector2d> ncoords_quad_static_;
+
+private:
+  // Member variable
+  RefElType type_;
 
   // subSubEntities, used by SubSubEntity2SubEntity
   static constexpr std::array<std::array<dim_t, 2>, 3>
@@ -466,6 +466,18 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
   return stream << ref_el.ToString();
 }
 
+  /**
+   * @brief Request reference coordinates of a cells corners
+   *
+   * @return A matrix with
+   * - number of columns is the number of corners of the reference element
+   * - number of rows is the dimension of the reference element
+   *  that contains the reference coordinates of the corners in its columns.
+   *
+   */
+  Eigen::MatrixXd getRefElCorners(RefElType type);
+    
+  
 }  // namespace lf::base
 
 #endif  // __96e6ff0ee0034f4584fcdfc7e9c53f82

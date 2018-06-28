@@ -2,7 +2,7 @@
 
 namespace lf::geometry {
 Eigen::MatrixXd Point::Global(const Eigen::MatrixXd& local) const {
-  LF_ASSERT_MSG(local.rows() == 1, "local.rows() != 1");
+  LF_ASSERT_MSG(local.rows() == 0, "local.rows() != 0");
   return coord_.replicate(1, local.cols());
 }
 
