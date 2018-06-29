@@ -75,6 +75,20 @@ Mesh::size_type Mesh::Index(const Entity &e) const {
   }
 }
 
+bool Mesh::Contains(const Entity &e) const {
+  switch (e.Codim()) {
+    case 0:
+      return (&e >= &trias_.front() && &e <= &trias_.back()) ||
+             (&e >= &quads_.front() && &e <= &quads_.back());
+    case 1:
+      return &e >= &segments_.front() && &e <= &segments_.back();
+    case 2:
+      return &e >= &points_.front() && &e <= &points_.back();
+    default:
+      return false;
+  }
+}
+
 namespace /*anonymous */ {
 /** @brief Auxliary class for mesh_from_node_incidence */
 class EndpointIndexPair {

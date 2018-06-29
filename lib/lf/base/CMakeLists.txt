@@ -6,6 +6,7 @@ set(sources
   invalid_type_exception.h
   lf_assert.cc
   lf_assert.h
+  lf_exception.h
   random_access_iterator.h
   random_access_range.h
   ref_el.cc
