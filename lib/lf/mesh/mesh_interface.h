@@ -77,6 +77,13 @@ class Mesh {
   virtual size_type Index(const Entity& e) const = 0;
 
   /**
+   * @brief Check if the given entity is a part of this mesh.
+   * @param e The entity that should be checked.
+   * @return true if the entity lies in this mesh.
+   */
+  virtual bool Contains(const Entity& e) const = 0;
+
+  /**
    * @brief virtual destructor
    */
   virtual ~Mesh() = default;
