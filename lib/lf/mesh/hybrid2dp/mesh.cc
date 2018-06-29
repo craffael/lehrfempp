@@ -211,7 +211,9 @@ namespace lf::mesh::hybrid2dp {
     size_type no_of_trilaterals = 0;
     size_type no_of_quadrilaterals = 0;
     // Diagnostics
-    std::cout << "Scanning list of cells" << std::endl;
+    if (output_ctrl_ > 0) { 
+      std::cout << "Scanning list of cells" << std::endl;
+    }
     for (const auto &c : cells) {
       // node indices of corners of cell c
       const std::array<size_type, 4> &cell_node_list(c.first);
@@ -239,20 +241,20 @@ namespace lf::mesh::hybrid2dp {
 	no_of_quadrilaterals++;
       }
 
-      // Diagnostics
+      if (output_ctrl_ > 10) { 
       std::cout << "Cell " << cell_index;
       if (no_of_vertices == 3)
 	std::cout << ", tria " << no_of_trilaterals << ": ";
       else
 	std::cout << ", quad " << no_of_quadrilaterals << ": ";
-
+      }
+      
       // Verify validity of vertex indices
       for (int l = 0; l < no_of_vertices; l++) {
 	LF_VERIFY_MSG(cell_node_list[l] < no_of_nodes,
 		      "Node " << l << " of cell " << cell_index
 		      << ": invalid index " << cell_node_list[l]);
       }
-      
 
       //  A variant:
       //    There may be cells without a specified geometry.
@@ -272,12 +274,12 @@ namespace lf::mesh::hybrid2dp {
 	EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
 						cell_node_list[p1_local_index]);
 
-	// Diagnostics
-	std::cout << "e(" << j << ") = local "
+	if (output_ctrl_ > 10) { 
+	  std::cout << "e(" << j << ") = local "
 		  << p0_local_index << " <-> " << p1_local_index 
 		  << ", global " << c_edge_vertex_indices.first_node()
 		  << " <-> " << c_edge_vertex_indices.second_node() << " # ";
-      
+	}
 	// Store number of cell and the local index j of the edge
 	AdjCellInfo edge_cell_info(cell_index, j);
 	// Check whether edge exists already
@@ -307,35 +309,38 @@ namespace lf::mesh::hybrid2dp {
       cell_index++;
 
       // Diagnostics
-      std::cout << std::endl;
+      if (output_ctrl_ > 10) std::cout << std::endl;
     }  // end loop over cells
 
     // DIAGNOSTICS
     {
-      std::cout << "=============================================" << std::endl;
-      std::cout << "Edge map after cell scan" << std::endl;
-      size_type edge_cnt = 0;
-      for (auto &edge_info : edge_map) {
-	const EndpointIndexPair &eip(edge_info.first);
-	const EdgeData &edat(edge_info.second);
-	std::cout << "Edge " << edge_cnt << ": " << eip.first_node() << " <-> "
-		  << eip.second_node() << ": ";
-	const AdjCellsList &acl(edat.adj_cells_list);
-	const GeometryPtr &gptr(edat.geo_uptr);
-	for (auto &i : acl)
-	  std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
-	std::cout << " geo = " << std::endl;
-	if (gptr) { 
-	  Eigen::MatrixXd edp_c(gptr->Global(lf::base::RefEl::ncoords_segment_dynamic_));
-	  std::cout << edp_c << std::endl;
-	}
-	else
-	  std::cout << "NO GEOMETRY" << std::endl;
-	edge_cnt++;
+      if (output_ctrl_ > 0) { 
+	std::cout << "=============================================" << std::endl;
       }
-      std::cout << "=============================================" << std::endl;
+      if (output_ctrl_ > 10) { 
+	std::cout << "Edge map after cell scan" << std::endl;
+	size_type edge_cnt = 0;
+	for (auto &edge_info : edge_map) {
+	  const EndpointIndexPair &eip(edge_info.first);
+	  const EdgeData &edat(edge_info.second);
+	  std::cout << "Edge " << edge_cnt << ": " << eip.first_node() << " <-> "
+		    << eip.second_node() << ": ";
+	  const AdjCellsList &acl(edat.adj_cells_list);
+	  const GeometryPtr &gptr(edat.geo_uptr);
+	  for (auto &i : acl)
+	    std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+	  std::cout << " geo = " << std::endl;
+	  if (gptr) { 
+	    Eigen::MatrixXd edp_c(gptr->Global(lf::base::RefEl::ncoords_segment_dynamic_));
+	    std::cout << edp_c << std::endl;
+	  }
+	  else
+	    std::cout << "NO GEOMETRY" << std::endl;
+	  edge_cnt++;
+	}
+	std::cout << "=============================================" << std::endl;
+      }
     }
-  
     // Run through the entire associative container for edges
     // and build edge Entities
     // This is the length to be reserved for the edge vector
@@ -367,9 +372,10 @@ namespace lf::mesh::hybrid2dp {
       }
       
       // Diagnostics
-      std::cout << "Registering edge " << edge_index << ": " << p0
-		<< " <-> " << p1 << std::endl;
-    
+      if (output_ctrl_ > 10) { 
+	std::cout << "Registering edge " << edge_index << ": " << p0
+		  << " <-> " << p1 << std::endl;
+      }
       // Building edge by adding another element to the edge vector.
       segments_.emplace_back(edge_index, std::move(edge_geo_ptr), p0_ptr, p1_ptr);
       edge_index++;
@@ -400,8 +406,10 @@ namespace lf::mesh::hybrid2dp {
     }
 
     // Diagnostics
-    std::cout << "########################################" << std::endl;
-    std::cout << "Edge indices for cells " << std::endl;
+    if (output_ctrl_ > 10) { 
+      std::cout << "########################################" << std::endl;
+      std::cout << "Edge indices for cells " << std::endl;
+    }
   
     // Now complete information is available for the construction
     // of cells = entities of co-dimension 0
@@ -441,6 +449,7 @@ namespace lf::mesh::hybrid2dp {
 	// Case of a trilateral
 
 	// Diagnostics
+    if (output_ctrl_ > 10) { 
 	std::cout << "Triangular cell " << cell_index << ": nodes "
 		  << c_node_indices[0] << ", "
 		  << c_node_indices[1] << ", "
@@ -448,7 +457,7 @@ namespace lf::mesh::hybrid2dp {
 		  << c_edge_indices[0] << ", "
 		  << c_edge_indices[1] << ", "
 		  << c_edge_indices[2] << std::endl;
-      
+    }
 	/*
 	  Add a trilateral entity to the vector of trilaterals
 	  Use information in c_node_indices, c_edge_indices to
@@ -477,8 +486,10 @@ namespace lf::mesh::hybrid2dp {
             corner2->Geometry()->Global(zero_point);
 
 	  // Diagnostics
-	  std::cout << "Creating triangle with geometry " << std::endl
-		    << triag_corner_coords << std::endl;
+	  if (output_ctrl_ > 10) { 
+	    std::cout << "Creating triangle with geometry " << std::endl
+		      << triag_corner_coords << std::endl;
+	  }
 	  
 	  // Then create geometry of an affine triangle
 	  c_geo_ptr = std::make_unique<geometry::TriaO1>(triag_corner_coords);
@@ -492,7 +503,8 @@ namespace lf::mesh::hybrid2dp {
 	// Case of a quadrilateral
 
 	// Diagnostics
-	std::cout << "Quadrilateral cell " << cell_index << ": nodes "
+	    if (output_ctrl_ > 10) { 
+	      std::cout << "Quadrilateral cell " << cell_index << ": nodes "
 		  << c_node_indices[0] << ", "
 		  << c_node_indices[1] << ", "
 		  << c_node_indices[2] << ", "
@@ -501,6 +513,7 @@ namespace lf::mesh::hybrid2dp {
 		  << c_edge_indices[1] << ", "
 		  << c_edge_indices[2] << ", "
 		  << c_edge_indices[3] << std::endl;
+	    }
 	/*
 	  Add a quadrilateral entity to the vector of quadrilaterals
 	  Use information in c_node_indices, c_edge_indices to
@@ -535,11 +548,11 @@ namespace lf::mesh::hybrid2dp {
 	  // Then create geometry of an affine triangle
 
 	  // Diagnostics
-	  std::cout << "Creating quadrilateral with geometry " << std::endl
-		    << quad_corner_coords << std::endl;
+	  if (output_ctrl_ > 0) { 
+	    std::cout << "Creating quadrilateral with geometry " << std::endl
+		      << quad_corner_coords << std::endl;}
 	  
 	  c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);
-	  // std::cout << "Geometry object created!" << std::endl;
 	}
 	quads_.emplace_back(cell_index, std::move(c_geo_ptr), corner0, corner1,
                             corner2, corner3, edge0, edge1, edge2, edge3);
