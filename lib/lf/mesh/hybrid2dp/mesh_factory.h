@@ -21,6 +21,11 @@ namespace lf::mesh::hybrid2dp {
  */
 class MeshFactory : public mesh::MeshFactory {
  public:
+  MeshFactory(const MeshFactory&) = delete;
+  MeshFactory(MeshFactory&&) = delete;
+  MeshFactory& operator=(const MeshFactory&) = delete;
+  MeshFactory& operator=(MeshFactory&&) = delete;
+
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
    *        mesh.
@@ -48,16 +53,16 @@ class MeshFactory : public mesh::MeshFactory {
   std::shared_ptr<mesh::Mesh> Build() override;
 
   /** @brief output function printing asssembled lists of entity information */
-  void PrintLists(std::ostream &o = std::cout) const;
+  void PrintLists(std::ostream& o = std::cout) const;
 
-  virtual ~MeshFactory(void) {}
+  ~MeshFactory() override = default;
+
  private:
   dim_t dim_world_;  // dimension of ambient space
   bool built_;
   hybrid2dp::Mesh::NodeCoordList nodes_;
   hybrid2dp::Mesh::EdgeList edges_;
   hybrid2dp::Mesh::CellList elements_;
-
 };
 
 }  // namespace lf::mesh::hybrid2dp

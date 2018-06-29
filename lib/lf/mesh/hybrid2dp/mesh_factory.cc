@@ -76,39 +76,44 @@ MeshFactory::size_type MeshFactory::AddEntity(
 }
 
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
-  PrintLists(); // DIAGNOSTICS
-  
+  PrintLists();  // DIAGNOSTICS
+
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
       dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
 
-  // For diagnostic output
-  void MeshFactory::PrintLists(std::ostream &o) const {
-    o << "hybrid2dp::MeshFactory::Build" << std::endl;
-    o << nodes_.size() << " nodes:" << std::endl;
-    for (int j =0; j < nodes_.size(); j++) {
-      o << "Node " << j << " at " << nodes_[j].transpose() << std::endl;
-    }
-    o << edges_.size() << " edges " << std::endl;
-    for (int j = 0; j< edges_.size(); j++) {
-      o << "Edge " << j << ": " << edges_[j].first[0]
-	<< " <-> " << edges_[j].first[1];
-		      if (edges_[j].second) o << " with geometry";
-						o << std::endl;
-    }
-    
-    std::cout << elements_.size() << " cells " << std::endl;
-      for(int j=0; j < elements_.size(); j++ ) {
-	o << "Cell " << j << " : ";
-	for (int l=0; l < 4; l++) {
-	  if (elements_[j].first[l] != (size_type)-1)
-	    o << elements_[j].first[l] << " ";
-	}
-	if (elements_[j].second) o << " with geometry";
-	o << std::endl;
-      }
+// For diagnostic output
+void MeshFactory::PrintLists(std::ostream& o) const {
+  o << "hybrid2dp::MeshFactory::Build" << std::endl;
+  o << nodes_.size() << " nodes:" << std::endl;
+  for (size_type j = 0; j < nodes_.size(); j++) {
+    o << "Node " << j << " at " << nodes_[j].transpose() << std::endl;
   }
-  
+  o << edges_.size() << " edges " << std::endl;
+  for (size_type j = 0; j < edges_.size(); j++) {
+    o << "Edge " << j << ": " << edges_[j].first[0] << " <-> "
+      << edges_[j].first[1];
+    if (edges_[j].second) {
+      o << " with geometry";
+    }
+    o << std::endl;
+  }
+
+  std::cout << elements_.size() << " cells " << std::endl;
+  for (size_type j = 0; j < elements_.size(); j++) {
+    o << "Cell " << j << " : ";
+    for (int l = 0; l < 4; l++) {
+      if (elements_[j].first[l] != static_cast<size_type>(-1)) {
+        o << elements_[j].first[l] << " ";
+      }
+    }
+    if (elements_[j].second) {
+      o << " with geometry";
+    }
+    o << std::endl;
+  }
+}
+
 }  // namespace lf::mesh::hybrid2dp

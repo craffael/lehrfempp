@@ -62,7 +62,8 @@ class Segment : public mesh::Entity {
     LF_VERIFY_MSG((endpoint0 != nullptr) && (endpoint1 != nullptr),
                   "Invalid pointer to endnode of edge");
     if (geometry_) {
-      LF_VERIFY_MSG(geometry_->DimLocal() == 1, "Geometry must describe a curve");
+      LF_VERIFY_MSG(geometry_->DimLocal() == 1,
+                    "Geometry must describe a curve");
       LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kSegment(),
                     "Segment geometry must fit a segment");
     }
@@ -81,8 +82,8 @@ class Segment : public mesh::Entity {
       char rel_codim) const override;
 
   /** @brief access to index of an entity */
-  size_type index(void) const { return index_; }
-  
+  size_type index() const { return index_; }
+
   /** @defgroup Standard methods of an Entity object
    * @sa mesh::Entity
    * @{

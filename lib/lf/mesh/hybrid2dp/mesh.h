@@ -8,9 +8,9 @@
 
 #ifndef __62731052ee4a4a2d9f256c2caac43835
 #define __62731052ee4a4a2d9f256c2caac43835
- 
-#include <lf/mesh/mesh.h>
+
 #include <lf/base/static_vars.h>
+#include <lf/mesh/mesh.h>
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
@@ -20,9 +20,9 @@ namespace lf::mesh::hybrid2dp {
 
 class MeshFactory;
 
-  /** @brief Basis 2D mesh type compliant with abstract mesh interface 
-   *
-   */
+/** @brief Basis 2D mesh type compliant with abstract mesh interface
+ *
+ */
 class Mesh : public mesh::Mesh {
  public:
   using dim_t = base::RefEl::dim_t;
@@ -74,7 +74,7 @@ class Mesh : public mesh::Mesh {
 
   friend class MeshFactory;
 
-public:
+ public:
   /** @brief diagnostics control variable */
   static int output_ctrl_;
 };

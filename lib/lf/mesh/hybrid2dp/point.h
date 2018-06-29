@@ -51,13 +51,13 @@ class Point : public mesh::Entity {
    * entity before you can initialize the entity object itseld.
    */
   explicit Point(size_type index,
-                 std::unique_ptr<geometry::Geometry> &&geometry)
-    : index_(index), geometry_(std::move(geometry)) {
+                 std::unique_ptr<geometry::Geometry>&& geometry)
+      : index_(index), geometry_(std::move(geometry)) {
     // DIAGNOSTICS
     std::cout << "hybrid2dp::Point(" << index_ << ") " << std::endl;
-    LF_VERIFY_MSG(geometry_,"Point must be supplied with a geometry");
+    LF_VERIFY_MSG(geometry_, "Point must be supplied with a geometry");
     LF_VERIFY_MSG(geometry_->DimLocal() == 0,
-                   "Geometry must be that of a point");
+                  "Geometry must be that of a point");
     LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kPoint(),
                   "Geometry must fit point");
   }
@@ -74,8 +74,8 @@ class Point : public mesh::Entity {
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
   /** @brief access to index of an entity */
-  size_type index(void) const { return index_; }
-  
+  size_type index() const { return index_; }
+
   base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
 
   bool operator==(const mesh::Entity& rhs) const override {

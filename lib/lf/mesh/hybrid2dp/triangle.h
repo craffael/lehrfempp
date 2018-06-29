@@ -75,9 +75,9 @@ class Triangle : public mesh::Entity {
     LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
     if (geometry_) {
       LF_VERIFY_MSG(geometry_->DimLocal() == 2,
-		    "Geometry must describe a 2D cell");
+                    "Geometry must describe a 2D cell");
       LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kTria(),
-		    "Cell geometry must fit a triangle");
+                    "Cell geometry must fit a triangle");
     }
     /*
        TODO: consistency check
@@ -88,8 +88,8 @@ class Triangle : public mesh::Entity {
   char Codim() const override { return 0; }
 
   /** @brief access to index of an entity */
-  size_type index(void) const { return index_; }
-  
+  size_type index() const { return index_; }
+
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select edges, if 2 select nodes, if 0 select cell
    itself

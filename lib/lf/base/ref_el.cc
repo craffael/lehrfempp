@@ -13,9 +13,8 @@ const Eigen::MatrixXd RefEl::ncoords_tria_dynamic_ =
 const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
     (Eigen::MatrixXd{2, 4} << 0, 1, 1, 0, 0, 0, 1, 1).finished();
 
-
-  Eigen::MatrixXd getRefElCorners(RefElType type) {
-    switch (type) {
+Eigen::MatrixXd getRefElCorners(RefElType type) {
+  switch (type) {
     case RefElType::kPoint:
       return RefEl::ncoords_point_dynamic_;
     case RefElType::kSegment:
@@ -25,7 +24,8 @@ const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
     case RefElType::kQuad:
       return RefEl::ncoords_quad_dynamic_;
     default:
-      LF_VERIFY_MSG(false, "getRefElCorners() not implemented for this RefElType");
-    }
+      LF_VERIFY_MSG(false,
+                    "getRefElCorners() not implemented for this RefElType");
   }
+}
 }  // namespace lf::base
