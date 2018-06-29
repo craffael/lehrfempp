@@ -10,6 +10,7 @@
 #define __62731052ee4a4a2d9f256c2caac43835
  
 #include <lf/mesh/mesh.h>
+#include <lf/base/static_vars.h>
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
@@ -72,6 +73,10 @@ class Mesh : public mesh::Mesh {
   Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
 
   friend class MeshFactory;
+
+public:
+  /** @brief diagnostics control variable */
+  static int output_ctrl_;
 };
 
 }  // namespace lf::mesh::hybrid2dp

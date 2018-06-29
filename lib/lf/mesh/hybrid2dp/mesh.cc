@@ -11,6 +11,9 @@
 
 namespace lf::mesh::hybrid2dp {
 
+  CONTROLDECLARECOMMENT(Mesh,output_ctrl_,"hybrid2dp_mesh_output_ctrl",
+			"Diagnostics control for hybrid2dp::Mesh");
+  
   base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
     LF_ASSERT_MSG(codim >= 0, "codim negative.");
     LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
@@ -134,8 +137,10 @@ namespace lf::mesh::hybrid2dp {
     // STEP I: Set up and fill array of nodes: points_
     // In the beginning initialize vector of vertices and do not touch it anymore
     const size_type no_of_nodes(nodes.size());
-    // DIAGNOSTICS
-    std::cout << "Mp: " << no_of_nodes <<  " nodes" << std::endl;
+
+    if (output_ctrl_ > 0) { 
+      std::cout << "Constructing mesh: " << no_of_nodes <<  " nodes" << std::endl;
+    }
   
     // Initialize vector for Node entities of size `no_of_nodes`
     points_.reserve(no_of_nodes); 
@@ -144,9 +149,10 @@ namespace lf::mesh::hybrid2dp {
     for (const auto &v : nodes) {
       const Eigen::VectorXd &node_coordinates(v);
       GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
-      // DIAGNOSTICS
-      std::cout << "-> Adding node " << node_index << " at "
-		<< node_coordinates.transpose() << std::endl;
+      if (output_ctrl_ > 10) { 
+	std::cout << "-> Adding node " << node_index << " at "
+		  << node_coordinates.transpose() << std::endl;
+      }
       points_.emplace_back(node_index,std::move(point_geo));
       node_index++;
     }
@@ -156,16 +162,18 @@ namespace lf::mesh::hybrid2dp {
     //          entries of the array of nodes
 
     // Register supplied edges in auxiliary map data structure
-    // DIAGNOSTICS
-    std::cout << "Initializing edge map" << std::endl;
+    if (output_ctrl_ > 0) { 
+      std::cout << "Initializing edge map" << std::endl;
+    }
     EdgeMap edge_map;
     for (auto &e : edges) {
       // Node indices of endpoints: the KEY
       std::array<size_type, 2> end_nodes(e.first);
       EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
-      // DIAGNOSTICS
-      std::cout << "Register edge: " << end_nodes[0] << " <-> "
-		<< end_nodes[1] << std::endl;
+      if (output_ctrl_ > 0) { 
+	std::cout << "Register edge: " << end_nodes[0] << " <-> "
+		  << end_nodes[1] << std::endl;
+      }
       // Store provided geometry information; information on adjacent cells
       // not yet available.
       AdjCellsList empty_cells_list{};
@@ -181,18 +189,19 @@ namespace lf::mesh::hybrid2dp {
     // At this point all predefined edges have been stored in the auxiliary
     // associative array, though without information about adjacent cells
 
-    // DIAGNOSTICS
-    std::cout << "Edge map after edge registration" << std::endl;
-    for (auto &edge_info : edge_map) {
-      const EndpointIndexPair &eip(edge_info.first);
-      const EdgeData &edat(edge_info.second);
-      std::cout << "Edge " << eip.first_node() << " <-> "
-		<< eip.second_node() << ": ";
-      const AdjCellsList &acl(edat.adj_cells_list);
-      const GeometryPtr &gptr(edat.geo_uptr);
-      for (auto &i : acl)
-	std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
-      std::cout << std::endl;
+    if (output_ctrl_ > 10) { 
+      std::cout << "Edge map after edge registration" << std::endl;
+      for (auto &edge_info : edge_map) {
+	const EndpointIndexPair &eip(edge_info.first);
+	const EdgeData &edat(edge_info.second);
+	std::cout << "Edge " << eip.first_node() << " <-> "
+		  << eip.second_node() << ": ";
+	const AdjCellsList &acl(edat.adj_cells_list);
+	const GeometryPtr &gptr(edat.geo_uptr);
+	for (auto &i : acl)
+	  std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+	std::cout << std::endl;
+      }
     }
   
     // Run through cells in order to

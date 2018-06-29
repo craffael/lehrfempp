@@ -1,11 +1,16 @@
-
+/** @file lf_assert.h 
+  *
+  * Implementation of basic validation and diagnostics facilities
+  */ 
 
 #ifndef __c3c605c9e48646758bf03fab65d52836
 #define __c3c605c9e48646758bf03fab65d52836
 
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
+#include <map>
 
 namespace lf::base {
 
@@ -54,5 +59,5 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
     }                                                                   \
   }
 #endif
-
+  
 #endif  // __c3c605c9e48646758bf03fab65d52836

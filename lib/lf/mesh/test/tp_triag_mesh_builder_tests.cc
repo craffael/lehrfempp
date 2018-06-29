@@ -94,7 +94,7 @@ namespace lf::mesh::test {
 
     // Setting vertices of cells but not their geometry
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
-				lf::base::ForwardRange<const size_type>({0,4,1}),
+				lf::base::ForwardRange<const size_type>({0,8,9}),
 				std::unique_ptr<geometry::Geometry>(nullptr));
     mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
 				lf::base::ForwardRange<const size_type>({3,4,1}),
