@@ -26,7 +26,7 @@ base::RandomAccessRange<const mesh::Entity> Quadrilateral::SubEntities(
     case 0:
       return {this, this + 1};
     default:
-      LF_VERIFY_MSG(false, "Quadrilateral: rel_codim out of range");
+      LF_VERIFY_MSG(false, "Quadrilateral: rel_codim " << rel_codim << " out of range");
   }
 }
 }  // namespace lf::mesh::hybrid2dp
