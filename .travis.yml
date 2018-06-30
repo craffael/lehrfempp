@@ -36,6 +36,7 @@ jobs:
       os: linux
       addons:
         apt:
+          update: true
           sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
           packages: ['clang-tidy-6.0']
       script: "./travis/run_clang_tidy.sh"

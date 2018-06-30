@@ -80,7 +80,7 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
-      dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
+      dim_world_, nodes_, std::move(edges_), std::move(elements_));
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
 
