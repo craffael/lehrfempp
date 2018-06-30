@@ -44,7 +44,7 @@ class Mesh : public mesh::Mesh {
   /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Quadrilateral> quads_;
   /** @brief Auxliary array of cell pointers */
-  std::vector<const mesh::Entity *> cell_pointers_;
+  std::vector<const mesh::Entity*> cell_pointers_;
 
   /** @brief Data types for passing information about mesh intities */
   using NodeCoordList = std::vector<Eigen::VectorXd>;
