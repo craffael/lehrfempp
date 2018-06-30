@@ -24,7 +24,11 @@ class DereferenceLambdaRandomAccessIterator {
       DereferenceLambdaRandomAccessIterator&& rhs) noexcept
       : iterator_(std::move(rhs.iterator_)), lambda_(std::move(rhs.lambda_)) {}
   DereferenceLambdaRandomAccessIterator& operator=(
-      DereferenceLambdaRandomAccessIterator&&) noexcept = default;
+      DereferenceLambdaRandomAccessIterator&& rhs) noexcept {
+    iterator_ = std::move(rhs.iterator_);
+    lambda_ = std::move(rhs.lambda_);
+    return *this;
+  }
   DereferenceLambdaRandomAccessIterator& operator=(
       const DereferenceLambdaRandomAccessIterator&) = default;
   ~DereferenceLambdaRandomAccessIterator() = default;
