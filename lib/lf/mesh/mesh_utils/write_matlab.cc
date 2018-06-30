@@ -21,7 +21,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
   }
   // Open file for writing
   std::ofstream file(filename);
-  if (file) {
+  if (file.is_open()) {
     // Start regular writing operations
     // Remove trailing .m
     filename.pop_back();
