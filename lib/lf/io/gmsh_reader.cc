@@ -967,11 +967,11 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // mi2gi = mesh_index_2_gmsh_index
   // mi2gi[c][i] contains the gmsh entities that belong to the mesh entity with
   //             codim = c and mesh index i.
-  std::vector<std::vector<std::vector<size_type>>> mi2gi(dim_mesh);
+  std::vector<std::vector<std::vector<size_type>>> mi2gi(dim_mesh + 1);
 
   {
     // count the number of entities for each codimension and reserve space:
-    std::vector<size_type> num_entities(mesh_factory_->DimMesh(), 0);
+    std::vector<size_type> num_entities(mesh_factory_->DimMesh() + 1, 0);
 
     for (const auto& e : msh_file.Elements) {
       LF_ASSERT_MSG(DimOf(e.Type) <= dim_mesh,
@@ -1054,7 +1054,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       }
 
       auto mi = mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
-      mi2gi[codim][mi].push_back(end);
+      mi2gi[codim].emplace_back(std::vector{end});
     }
   }
 
@@ -1076,11 +1076,14 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
         // assign any physical entity nr.
         continue;
       }
-      std::vector<size_type> temp;
-      for (auto& gmsh_index : mi2gi[c][mi]) {
-        temp.push_back(msh_file.Elements[gmsh_index].PhysicalEntityNr);
+      if (mi2gi[c].size() > mi) {
+        std::vector<size_type> temp;
+        for (auto& gmsh_index : mi2gi[c][mi]) {
+          temp.push_back(msh_file.Elements[gmsh_index].PhysicalEntityNr);
+        }
+
+        physical_nrs_->data(e) = std::move(temp);
       }
-      physical_nrs_->data(e) = std::move(temp);
     }
   }
 
@@ -1101,6 +1104,10 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
                  3);*/
   }
 }
+
+GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
+                       std::string filename)
+    : GmshReader(std::move(factory), readGMshFile(filename)) {}
 
 size_type GmshReader::PhysicalEntityName2Nr(const std::string& name,
                                             dim_t codim) const {
@@ -1162,6 +1169,10 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
   throw base::LfException(
       "Physical entity with number=" + std::to_string(number) +
       ", codim=" + std::to_string(codim) + " not found.");
+}
+
+std::vector<size_type> GmshReader::physicalEntityNr(const mesh::Entity& e) {
+  return physical_nrs_->data(e);
 }
 
 }  // namespace lf::io
