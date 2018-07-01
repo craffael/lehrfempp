@@ -285,19 +285,20 @@ class GmshReader {
    * @return  Number of the physical entity (as shown in Gmsh)
    * @note If you have defined a physical entity in GMSH without
    * giving it a name, you cannot use this function.
-   * @sa physicalEntityNr2Name()
+   * @sa PhysicalEntityNr2Name()
    */
-  size_type physicalEntityName2Nr(const std::string& name,
-                                  dim_t codim = -1) const {}
+  size_type PhysicalEntityName2Nr(const std::string& name,
+                                  dim_t codim = -1) const;
+
   /**
    * @brief Gives the name of a physical entity (inverse of
-   * physicalEntityName2Nr())
+   * PhysicalEntityName2Nr())
    * @param  number   The number of the physical entity (as obtained from
-   * physicalEntityName2Nr() )
+   * PhysicalEntityName2Nr() )
    * @return The name of the physical entity with number `number`
-   * @sa physicalEntityNr2Name
+   * @sa PhysicalEntityNr2Name
    */
-  std::string physicalEntityNr2Name(size_type number) const {}
+  std::string PhysicalEntityNr2Name(size_type number, dim_t codim = -1) const;
 
   /**
    * \brief Return the Physical Entity Numbers associated with this mesh entity,
@@ -319,13 +320,13 @@ class GmshReader {
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
   /// The physicalEntityNr of every node (0 if not set):
-  std::shared_ptr<mesh::MeshDataSet<std::vector<size_type>>> physicalNrs_;
+  std::shared_ptr<mesh::MeshDataSet<std::vector<size_type>>> physical_nrs_;
 
   /// Map from physicalEntity name -> nr, codim
-  std::multimap<std::string, std::pair<size_type, dim_t>> name2Nr_;
+  std::multimap<std::string, std::pair<size_type, dim_t>> name_2_nr_;
 
   /// Map from physicalEntity nr -> name, codim
-  std::multimap<size_type, std::pair<std::string, dim_t>> nr2Name_;
+  std::multimap<size_type, std::pair<std::string, dim_t>> nr_2_name_;
 };
 
 }  // namespace lf::io

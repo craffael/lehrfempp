@@ -1,7 +1,8 @@
 #ifndef __f6f00b1842024f36a0ad87792d103c89
 #define __f6f00b1842024f36a0ad87792d103c89
 
-#include "mesh.h"
+#include "entity.h"
+#include "mesh_interface.h"
 
 namespace lf::mesh {
 
@@ -28,6 +29,7 @@ namespace lf::mesh {
 template <class T>
 class MeshDataSet {
  protected:
+  MeshDataSet() = default;
   MeshDataSet(const MeshDataSet&) = default;
   MeshDataSet(MeshDataSet&&) noexcept = default;
   MeshDataSet& operator=(const MeshDataSet&) = default;
@@ -41,7 +43,7 @@ class MeshDataSet {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  virtual T& operator[](const Entity& e) = 0;
+  virtual T& data(const Entity& e) = 0;
 
   /**
    * @brief Get a const reference to the data stored with entity e.
@@ -50,7 +52,7 @@ class MeshDataSet {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  virtual const T& operator[](const Entity& e) const = 0;
+  virtual const T& data(const Entity& e) const = 0;
 
   /**
    * @brief Does the dataset store information with this entity?

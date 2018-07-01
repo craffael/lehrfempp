@@ -24,119 +24,119 @@
 
 using size_type = lf::mesh::Mesh::size_type;
 
-// Structures that represent the msh_file:
+// Structures that represent the MshFile:
 namespace lf::io {
 
 /// Output the element type onto the console:
-std::ostream& operator<<(std::ostream& stream, msh_file::ElementType et) {
+std::ostream& operator<<(std::ostream& stream, MshFile::ElementType et) {
   switch (et) {
     default:
       break;
-    case msh_file::ElementType::EDGE2:
+    case MshFile::ElementType::EDGE2:
       stream << "EDGE2";
       break;
-    case msh_file::ElementType::TRIA3:
+    case MshFile::ElementType::TRIA3:
       stream << "TRIA3";
       break;
-    case msh_file::ElementType::QUAD4:
+    case MshFile::ElementType::QUAD4:
       stream << "QUAD4";
       break;
-    case msh_file::ElementType::TET4:
+    case MshFile::ElementType::TET4:
       stream << "TET4";
       break;
-    case msh_file::ElementType::HEX8:
+    case MshFile::ElementType::HEX8:
       stream << "HEX8";
       break;
-    case msh_file::ElementType::PRISM6:
+    case MshFile::ElementType::PRISM6:
       stream << "PRISM6";
       break;
-    case msh_file::ElementType::PYRAMID5:
+    case MshFile::ElementType::PYRAMID5:
       stream << "PYRAMID5";
       break;
-    case msh_file::ElementType::EDGE3:
+    case MshFile::ElementType::EDGE3:
       stream << "EDGE3";
       break;
-    case msh_file::ElementType::TRIA6:
+    case MshFile::ElementType::TRIA6:
       stream << "TRIA6";
       break;
-    case msh_file::ElementType::QUAD9:
+    case MshFile::ElementType::QUAD9:
       stream << "QUAD9";
       break;
-    case msh_file::ElementType::TET10:
+    case MshFile::ElementType::TET10:
       stream << "TET10";
       break;
-    case msh_file::ElementType::HEX27:
+    case MshFile::ElementType::HEX27:
       stream << "HEX27";
       break;
-    case msh_file::ElementType::PRISM18:
+    case MshFile::ElementType::PRISM18:
       stream << "PRISM18";
       break;
-    case msh_file::ElementType::PYRAMID14:
+    case MshFile::ElementType::PYRAMID14:
       stream << "PYRAMID14";
       break;
-    case msh_file::ElementType::POINT:
+    case MshFile::ElementType::POINT:
       stream << "POINT";
       break;
-    case msh_file::ElementType::QUAD8:
+    case MshFile::ElementType::QUAD8:
       stream << "QUAD8";
       break;
-    case msh_file::ElementType::HEX20:
+    case MshFile::ElementType::HEX20:
       stream << "HEX20";
       break;
-    case msh_file::ElementType::PRISM15:
+    case MshFile::ElementType::PRISM15:
       stream << "PRISM15";
       break;
-    case msh_file::ElementType::PYRAMID13:
+    case MshFile::ElementType::PYRAMID13:
       stream << "PYRAMID13";
       break;
-    case msh_file::ElementType::TRIA9:
+    case MshFile::ElementType::TRIA9:
       stream << "TRIA9";
       break;
-    case msh_file::ElementType::TRIA10:
+    case MshFile::ElementType::TRIA10:
       stream << "TRIA10";
       break;
-    case msh_file::ElementType::TRIA12:
+    case MshFile::ElementType::TRIA12:
       stream << "TRIA12";
       break;
-    case msh_file::ElementType::TRIA15:
+    case MshFile::ElementType::TRIA15:
       stream << "TRIA15";
       break;
-    case msh_file::ElementType::TRIA15_5:
+    case MshFile::ElementType::TRIA15_5:
       stream << "TRIA15_5";
       break;
-    case msh_file::ElementType::TRIA21:
+    case MshFile::ElementType::TRIA21:
       stream << "TRIA21";
       break;
-    case msh_file::ElementType::EDGE4:
+    case MshFile::ElementType::EDGE4:
       stream << "EDGE4";
       break;
-    case msh_file::ElementType::EDGE5:
+    case MshFile::ElementType::EDGE5:
       stream << "EDGE5";
       break;
-    case msh_file::ElementType::EDGE6:
+    case MshFile::ElementType::EDGE6:
       stream << "EDGE6";
       break;
-    case msh_file::ElementType::TET20:
+    case MshFile::ElementType::TET20:
       stream << "TET20";
       break;
-    case msh_file::ElementType::TET35:
+    case MshFile::ElementType::TET35:
       stream << "TET35";
       break;
-    case msh_file::ElementType::TET56:
+    case MshFile::ElementType::TET56:
       stream << "TET56";
       break;
-    case msh_file::ElementType::HEX64:
+    case MshFile::ElementType::HEX64:
       stream << "HEX64";
       break;
-    case msh_file::ElementType::HEX125:
+    case MshFile::ElementType::HEX125:
       stream << "HEX125";
       break;
   }
   return stream;
 }
 
-/// For debugging purposes: Write the msh_file into a stream
-std::ostream& operator<<(std::ostream& stream, const msh_file& mf) {
+/// For debugging purposes: Write the MshFile into a stream
+std::ostream& operator<<(std::ostream& stream, const MshFile& mf) {
   stream << "GMSH FILE: Ver. " << mf.VersionNumber
          << (mf.IsBinary ? "(Binary)" : "(Text)")
          << ", size of double = " << mf.DoubleSize << std::endl;
@@ -350,21 +350,21 @@ int DimOf(MshFile::ElementType et) {
 }  // namespace lf::io
 
 // Boost Fusion Adaptions (needed so boost spirit can parse directly into
-// msh_file struct)
+// MshFile struct)
 //////////////////////////////////////////////////////////////////////////
-BOOST_FUSION_ADAPT_STRUCT(lf::io::msh_file::PhysicalEntity,
+BOOST_FUSION_ADAPT_STRUCT(lf::io::MshFile::PhysicalEntity,
                           (int, Dimension)(int, Number)(std::string, Name));
 
 BOOST_FUSION_ADAPT_STRUCT(
-    lf::io::msh_file::Element,
-    (size_type, Number)(lf::io::msh_file::ElementType,
+    lf::io::MshFile::Element,
+    (size_type, Number)(lf::io::MshFile::ElementType,
                         Type)(int, PhysicalEntityNr)(int, ElementaryEntityNr)(
         std::vector<int>, MeshPartitions)(std::vector<size_type>, NodeNumbers));
 
 /// To circumvent comma in preprocessor invocation
 using nodeMapping_t = std::pair<size_type, size_type>;
 
-BOOST_FUSION_ADAPT_STRUCT(lf::io::msh_file::PeriodicEntity,
+BOOST_FUSION_ADAPT_STRUCT(lf::io::MshFile::PeriodicEntity,
                           (int, Dimension)(int, ElementarySlaveNr)(
                               int,
                               ElementaryMasterNr)(std::vector<nodeMapping_t>,
@@ -373,17 +373,17 @@ BOOST_FUSION_ADAPT_STRUCT(lf::io::msh_file::PeriodicEntity,
 /// To circumvent comma in preprocessor invocation
 using nodePair_t = std::pair<size_type, Eigen::Vector3d>;
 
-/// To use msh_file Struct with boost spirit, node that we leave away all
+/// To use MshFile Struct with boost spirit, node that we leave away all
 /// header information this is set using attributes.
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
-    lf::io::msh_file, msh_fileAdapted,
+    lf::io::MshFile, MshFileAdapted,
     //(double, VersionNumber)
     //(bool, IsBinary)
     //(int, DoubleSize)
-    (std::vector<lf::io::msh_file::PhysicalEntity>,
+    (std::vector<lf::io::MshFile::PhysicalEntity>,
      PhysicalEntities)(std::vector<nodePair_t>,
-                       Nodes)(std::vector<lf::io::msh_file::Element>, Elements)(
-        std::vector<lf::io::msh_file::PeriodicEntity>, Periodic));
+                       Nodes)(std::vector<lf::io::MshFile::Element>, Elements)(
+        std::vector<lf::io::MshFile::PeriodicEntity>, Periodic));
 
 // BOOST Fusion Adaption for Eigen fixed size matrices:
 //////////////////////////////////////////////////////////////////////////
@@ -416,11 +416,11 @@ struct FusionIterator
 
 namespace boost::spirit::traits {
 /*template<>
-struct transform_attribute<hydi::io::msh_file::ElementType, int, qi::domain> {
+struct transform_attribute<hydi::io::MshFile::ElementType, int, qi::domain> {
   using type = int&;
-  static int& pre(hydi::io::msh_file::ElementType& d) { return (int&)d; }
-  static void post(hydi::io::msh_file::ElementType& dval, const int& attr) {}
-  static void fail(hydi::io::msh_file::ElementType&) {}
+  static int& pre(hydi::io::MshFile::ElementType& d) { return (int&)d; }
+  static void post(hydi::io::MshFile::ElementType& dval, const int& attr) {}
+  static void fail(hydi::io::MshFile::ElementType&) {}
 };*/
 
 template <typename Enum, typename RawValue>
@@ -611,7 +611,7 @@ namespace phoenix = boost::phoenix;
 /// A lookup table for boost spirit that can parse an element type
 struct gmshElementType : qi::symbols<char, unsigned> {
   gmshElementType() {
-    for (auto& et : msh_file::AllElementTypes) {
+    for (auto& et : MshFile::AllElementTypes) {
       add(std::to_string((int)et), (int)et);
     }
   }
@@ -622,11 +622,11 @@ BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
 /// Defines the Grammar of a msh file using boost::spirit
 template <class ITERATOR>
 struct MshGrammarText
-    : qi::grammar<ITERATOR, boost::fusion::adapted::msh_fileAdapted(),
+    : qi::grammar<ITERATOR, boost::fusion::adapted::MshFileAdapted(),
                   ascii::space_type> {
   MshGrammarText(
       qi::rule<ITERATOR, std::pair<size_type, Eigen::Vector3d>()> nodeRule,
-      qi::rule<ITERATOR, std::vector<msh_file::Element>(),
+      qi::rule<ITERATOR, std::vector<MshFile::Element>(),
                qi::locals<size_type, int, int, int, size_type>>
           elementGroup)
       : MshGrammarText::base_type(start_, "Msh File"),
@@ -716,9 +716,9 @@ struct MshGrammarText
   qi::rule<ITERATOR, std::string()> startComment_;
   qi::rule<ITERATOR, qi::locals<std::string>, ascii::space_type> comment_;
 
-  qi::rule<ITERATOR, msh_file::PhysicalEntity(), ascii::space_type>
+  qi::rule<ITERATOR, MshFile::PhysicalEntity(), ascii::space_type>
       physicalEntity_;
-  qi::rule<ITERATOR, std::vector<msh_file::PhysicalEntity>(),
+  qi::rule<ITERATOR, std::vector<MshFile::PhysicalEntity>(),
            qi::locals<size_type>, ascii::space_type>
       physicalEntityGroup_;
 
@@ -729,20 +729,20 @@ struct MshGrammarText
 
   /// locals of elementGroup_ are: (# elements, current element type nr, # tags,
   /// # elements read so far)
-  qi::rule<ITERATOR, std::vector<msh_file::Element>(),
+  qi::rule<ITERATOR, std::vector<MshFile::Element>(),
            qi::locals<size_type, int, int, int, size_type>>
       elementGroup_;
 
   qi::rule<ITERATOR, std::vector<std::pair<size_type, size_type>>(),
            qi::locals<size_type>, ascii::space_type>
       periodicEntityNodeMapping_;
-  qi::rule<ITERATOR, msh_file::PeriodicEntity(), ascii::space_type>
+  qi::rule<ITERATOR, MshFile::PeriodicEntity(), ascii::space_type>
       periodicEntity_;
-  qi::rule<ITERATOR, std::vector<msh_file::PeriodicEntity>(),
+  qi::rule<ITERATOR, std::vector<MshFile::PeriodicEntity>(),
            qi::locals<size_type>, ascii::space_type>
       periodicEntityGroup_;
 
-  qi::rule<ITERATOR, boost::fusion::adapted::msh_fileAdapted(),
+  qi::rule<ITERATOR, boost::fusion::adapted::MshFileAdapted(),
            ascii::space_type>
       start_;
 
@@ -757,7 +757,7 @@ struct MshGrammarText
                     WHAT what) const {
       std::string input(first, last);
       if (input.length() > 40) input = input.substr(0, 40);
-      std::cout << "Error in msh_file! Expecting " << what << " here: \""
+      std::cout << "Error in MshFile! Expecting " << what << " here: \""
                 << input << "\"" << std::endl;
     }
   };
@@ -766,7 +766,7 @@ struct MshGrammarText
 
 }  // namespace
 
-const std::vector<msh_file::ElementType> msh_file::AllElementTypes{
+const std::vector<MshFile::ElementType> MshFile::AllElementTypes{
     ElementType::EDGE2,     ElementType::TRIA3,     ElementType::QUAD4,
     ElementType::TET4,      ElementType::HEX8,      ElementType::PRISM6,
     ElementType::PYRAMID5,  ElementType::EDGE3,     ElementType::TRIA6,
@@ -779,8 +779,8 @@ const std::vector<msh_file::ElementType> msh_file::AllElementTypes{
     ElementType::EDGE6,     ElementType::TET20,     ElementType::TET35,
     ElementType::TET56,     ElementType::HEX64,     ElementType::HEX125};
 
-msh_file readGmsh_file(std::string filename) {
-  // Open file and copy into memory:hydi::io::msh_file
+MshFile readGMshFile(std::string filename) {
+  // Open file and copy into memory:hydi::io::MshFile
   //////////////////////////////////////////////////////////////////////////
   std::ifstream in(filename, std::ios_base::in);
   if (!in) {
@@ -796,7 +796,7 @@ msh_file readGmsh_file(std::string filename) {
   // Parse header to determine if we are dealing with ASCII format or binary
   // format + little or big endian:
   //////////////////////////////////////////////////////////////////////////
-  msh_file result;
+  MshFile result;
   std::string::const_iterator iter = storage.begin();
   std::string::const_iterator end = storage.end();
   using iterator_t = std::string::const_iterator;
@@ -870,15 +870,16 @@ msh_file readGmsh_file(std::string filename) {
         "$Elements" >> qi::eol >> qi::eps[_e = 0] >>
         omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >>
         qi::eol  // # Elements in total
-        >> omit[*((qi::eps(_e < _a) >> qi::little_dword[_b = qi::_1] >>
-                   qi::little_dword[_c = qi::_1] >>
-                   qi::little_dword[_d = qi::_1]  // elements-header-binary
-                   >> repeat(_c)[elementBin(
-                          phoenix::static_cast_<msh_file::ElementType>(_b), _d,
-                          numNodesAdapted(
-                              phoenix::static_cast_<msh_file::ElementType>(
-                                  _b)))[phoenix::push_back(_val, qi::_1)]]) >>
-                  qi::eps[_e += _c])]  // elements-binary
+        >>
+        omit[*((qi::eps(_e < _a) >> qi::little_dword[_b = qi::_1] >>
+                qi::little_dword[_c = qi::_1] >>
+                qi::little_dword[_d = qi::_1]  // elements-header-binary
+                >>
+                repeat(_c)[elementBin(
+                    phoenix::static_cast_<MshFile::ElementType>(_b), _d,
+                    numNodesAdapted(phoenix::static_cast_<MshFile::ElementType>(
+                        _b)))[phoenix::push_back(_val, qi::_1)]]) >>
+               qi::eps[_e += _c])]  // elements-binary
         >> qi::eol >> "$EndElements";
   } else {
     // std::cout << "big endian" << std::endl;
@@ -893,15 +894,16 @@ msh_file readGmsh_file(std::string filename) {
         "$Elements" >> qi::eol >> qi::eps[_e = 0] >>
         omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >>
         qi::eol  // # Elements in total
-        >> omit[*((qi::eps(_e < _a) >> qi::big_dword[_b = qi::_1] >>
-                   qi::big_dword[_c = qi::_1] >>
-                   qi::big_dword[_d = qi::_1]  // elements-header-binary
-                   >> repeat(_c)[elementBin(
-                          phoenix::static_cast_<msh_file::ElementType>(_b), _d,
-                          numNodesAdapted(
-                              phoenix::static_cast_<msh_file::ElementType>(
-                                  _b)))[phoenix::push_back(_val, qi::_1)]]) >>
-                  qi::eps[_e += _c])]  // elements-binary
+        >>
+        omit[*((qi::eps(_e < _a) >> qi::big_dword[_b = qi::_1] >>
+                qi::big_dword[_c = qi::_1] >>
+                qi::big_dword[_d = qi::_1]  // elements-header-binary
+                >>
+                repeat(_c)[elementBin(
+                    phoenix::static_cast_<MshFile::ElementType>(_b), _d,
+                    numNodesAdapted(phoenix::static_cast_<MshFile::ElementType>(
+                        _b)))[phoenix::push_back(_val, qi::_1)]]) >>
+               qi::eps[_e += _c])]  // elements-binary
         >> qi::eol >> "$EndElements";
   }
 
@@ -959,39 +961,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
     gi2mi[n.first] = mi;
   }
 
-  // 2) Find duplicate entities in msh_file (happends if an entity belongs to
-  //    more than one physical entity)
-  //////////////////////////////////////////////////////////////////////////////
-
-  // entity_nodes[i].first contains the main nodes of the gmsh entity sorted
-  // msh_file.Elements[entity_nodes[i].second] is the corresponding entity.
-  std::vector<std::pair<std::array<size_type, 8>, size_type>> entity_nodes;
-  entity_nodes.reserve(msh_file.Elements.size());
-
-  // count the number of entities for each codimension:
-  std::vector<size_type> num_entities(mesh_factory_->DimMesh(), 0);
-
-  for (size_type i = 0; i < msh_file.Elements.size(); ++i) {
-    auto& e = msh_file.Elements[i];
-    LF_ASSERT_MSG(DimOf(e.Type) <= dim_mesh,
-                  "mesh_factory->DimMesh() = "
-                      << dim_mesh
-                      << ", but msh-file contains entities with dimension "
-                      << DimOf(e.Type));
-
-    ++num_entities[DimOf(e.Type)];
-
-    auto num_main_nodes = RefElOf(e.Type).NumNodes();
-    std::vector<size_type> nodes(num_main_nodes);
-    for (dim_t j = 0; j < num_main_nodes; ++j) {
-      nodes[j] = e.NodeNumbers[j];
-    }
-    std::sort(nodes.begin(), nodes.end());
-    entity_nodes.emplace_back({std::move(nodes), i});
-  }
-  std::sort(entity_nodes.begin(), entity_nodes.end());
-
-  // 3) Insert entities (except nodes) into MeshFactory:
+  // 2) Count the number of entities of each codim and reserve space
   //////////////////////////////////////////////////////////////////////////////
 
   // mi2gi = mesh_index_2_gmsh_index
@@ -999,61 +969,93 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   //             codim = c and mesh index i.
   std::vector<std::vector<std::vector<size_type>>> mi2gi(dim_mesh);
 
-  // reserve space
-  for (dim_t c = 0; c < dim_mesh; ++c) {
-    mi2gi[c].reserve(num_entities[dim_mesh - c]);
+  {
+    // count the number of entities for each codimension and reserve space:
+    std::vector<size_type> num_entities(mesh_factory_->DimMesh(), 0);
+
+    for (const auto& e : msh_file.Elements) {
+      LF_ASSERT_MSG(DimOf(e.Type) <= dim_mesh,
+                    "mesh_factory->DimMesh() = "
+                        << dim_mesh
+                        << ", but msh-file contains entities with dimension "
+                        << DimOf(e.Type));
+
+      ++num_entities[DimOf(e.Type)];
+    }
+
+    for (dim_t c = 0; c <= dim_mesh; ++c) {
+      mi2gi[c].reserve(num_entities[dim_mesh - c]);
+    }
+
+    LF_ASSERT_MSG(num_entities[dim_mesh] > 0,
+                  "MshFile contains no elements with dimension " << dim_mesh);
   }
 
-  LF_ASSERT_MSG(num_entities[dim_mesh] > 0,
-                "MshFile contains no elements with dimension " << dim_mesh);
+  // 3) Insert entities (except nodes) into MeshFactory:
+  //////////////////////////////////////////////////////////////////////////////
+
   size_type begin = 0;
-  for (size_type end = 0; end < entity_nodes.size(); ++end) {
-    auto& end_element = msh_file.Elements[std::get<1>(entity_nodes[end])];
-
-    physical_entity.push_back();
-    if (std::get<0>(entity_nodes[begin]) == std::get<0>(entity_nodes[end]) &&
-        end < entity_nodes.size() - 1) {
+  for (size_type end = 0; end < msh_file.Elements.size(); ++end) {
+    auto& begin_element = msh_file.Elements[begin];
+    auto& end_element = msh_file.Elements[end];
+    auto ref_el = RefElOf(end_element.Type);
+    auto codim = dim_mesh - ref_el.Dimension();
+    if (begin_element.NodeNumbers == end_element.NodeNumbers && begin != end &&
+        begin_element.Type == end_element.Type) {
+      // This entity appears more than once
+      mi2gi[codim].back().push_back(end);
+      continue;
     }
-  }
 
-  for (auto& e : msh_file.Elements) {
-    auto num_nodes = e.NodeNumbers.size();
-    Eigen::MatrixXd node_coords(dim_world, num_nodes);
-    for (size_type i = 0; i < num_nodes; ++i) {
-      auto node_coord = msh_file.Nodes[gi2mi[e.NodeNumbers[i]]].second;
-      if (dim_world == 2) {
-        node_coords.col(i) = node_coord.topRows(2);
-      } else {
-        node_coords.col(i) = node_coord;
+    begin = end;
+    if (ref_el == base::RefEl::kPoint()) {
+      // special case, this entity is a point (which has already been inserted)
+      auto mesh_index = gi2mi[end_element.NodeNumbers[0]];
+      if (mi2gi[dim_mesh].size() <= mesh_index) {
+        mi2gi[dim_mesh].resize(mesh_index + 1);
       }
-    }
-    base::RefEl ref_el = base::RefEl::kSegment();
-    std::unique_ptr<geometry::Geometry> geom;
+      mi2gi[dim_mesh][mesh_index].push_back(end);
+    } else {
+      // gmsh element is not a point -> insert entity:
+      auto num_nodes = end_element.NodeNumbers.size();
+      Eigen::MatrixXd node_coords(dim_world, num_nodes);
+      for (size_type i = 0; i < num_nodes; ++i) {
+        auto node_coord =
+            msh_file.Nodes[gi2mi[end_element.NodeNumbers[i]]].second;
+        if (dim_world == 2) {
+          node_coords.col(i) = node_coord.topRows(2);
+        } else {
+          node_coords.col(i) = node_coord;
+        }
+      }
+      std::unique_ptr<geometry::Geometry> geom;
 
-    switch (e.Type) {
-      case MshFile::ElementType::EDGE2:
-        ref_el = base::RefEl::kSegment();
-        geom = std::make_unique<geometry::SegmentO1>(node_coords);
-        break;
-      case MshFile::ElementType::TRIA3:
-        ref_el = base::RefEl::kTria();
-        geom = std::make_unique<geometry::TriaO1>(node_coords);
-        break;
-      case MshFile::ElementType::QUAD4:
-        ref_el = base::RefEl::kQuad();
-        break;
-      default:
-        LF_VERIFY_MSG(false, "Gmsh element type "
-                                 << e.Type
-                                 << " not (yet) supported by GmshReader.");
-    }
+      switch (end_element.Type) {
+        case MshFile::ElementType::EDGE2:
+          ref_el = base::RefEl::kSegment();
+          geom = std::make_unique<geometry::SegmentO1>(node_coords);
+          break;
+        case MshFile::ElementType::TRIA3:
+          ref_el = base::RefEl::kTria();
+          geom = std::make_unique<geometry::TriaO1>(node_coords);
+          break;
+        case MshFile::ElementType::QUAD4:
+          ref_el = base::RefEl::kQuad();
+          geom = std::make_unique<geometry::QuadO1>(node_coords);
+          break;
+        default:
+          LF_VERIFY_MSG(false, "Gmsh element type "
+                                   << end_element.Type
+                                   << " not (yet) supported by GmshReader.");
+      }
+      std::vector<size_type> main_nodes(ref_el.NumNodes());
+      for (dim_t i = 0; i < ref_el.NumNodes(); ++i) {
+        main_nodes[i] = gi2mi[end_element.NodeNumbers[i]];
+      }
 
-    std::vector<size_type> main_nodes(ref_el.NumNodes());
-    for (dim_t i = 0; i < ref_el.NumNodes(); ++i) {
-      main_nodes[i] = gi2mi[e.NodeNumbers[i]];
+      auto mi = mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
+      mi2gi[codim][mi].push_back(end);
     }
-
-    mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
   }
 
   // 4) Construct mesh
@@ -1062,34 +1064,104 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
 
   // 5) Build MeshDataSet that assigns the physical entitiies:
   //////////////////////////////////////////////////////////////////////////////
+  physical_nrs_ =
+      std::make_shared<mesh::AllCodimMeshDataSet<std::vector<size_type>>>(
+          mesh());
 
-  // 7) Create mapping physicalEntityNr <-> physicalEntityName:
-  //////////////////////////////////////////////////////////////////////////
-
-  regionID2Name_.resize(maxRegionID + 1);
-  bPatchID2Name_.resize(maxPatchID + 1);
-  physicalNodeNr2PhysicalNodeName_.resize(maxPhysicalNodeNr + 1);
-
-  for (auto pe : msh_file.PhysicalEntities) {
-    if (pe.Name.empty()) continue;
-    if (pe.Dimension == 0) {
-      physicalNodeNr2PhysicalNodeName_[pe.Number] = pe.Name;
-      physicalNodeName2physicalNodeNr_[pe.Name] = pe.Number;
-    } else if (pe.Dimension == dimMesh - 1) {
-      bPatchID2Name_[pe.Number] = pe.Name;
-      bPatchName2Id_[pe.Name] = pe.Number;
-    } else if (pe.Dimension == dimMesh) {
-      regionID2Name_[pe.Number] = pe.Name;
-      regionName2Id_[pe.Name] = pe.Number;
+  for (dim_t c = 0; c <= dim_mesh; ++c) {
+    for (auto& e : mesh_->Entities(c)) {
+      auto mi = mesh_->Index(e);
+      if (c == dim_mesh && mi >= mi2gi[dim_mesh].size()) {
+        // this point did not appear as a gmsh element in the file -> don't
+        // assign any physical entity nr.
+        continue;
+      }
+      std::vector<size_type> temp;
+      for (auto& gmsh_index : mi2gi[c][mi]) {
+        temp.push_back(msh_file.Elements[gmsh_index].PhysicalEntityNr);
+      }
+      physical_nrs_->data(e) = std::move(temp);
     }
   }
 
-  if (msh_file.Periodic.size() > 0) {
-    LOGGER_ENTRY(logger_,
+  // 6) Create mapping physicalEntityNr <-> physicalEntityName:
+  //////////////////////////////////////////////////////////////////////////
+
+  for (auto pe : msh_file.PhysicalEntities) {
+    name_2_nr_.insert(
+        std::pair{pe.Name, std::pair{pe.Number, dim_mesh - pe.Dimension}});
+    nr_2_name_.insert(
+        std::pair{pe.Number, std::pair{pe.Name, dim_mesh - pe.Dimension}});
+  }
+
+  if (!msh_file.Periodic.empty()) {
+    /*LOGGER_ENTRY(logger_,
                  "WARNING: GMSH File  contains periodic boundary relations "
                  "between elements. These are ignored by GmshReader.",
-                 3);
+                 3);*/
   }
+}
+
+size_type GmshReader::PhysicalEntityName2Nr(const std::string& name,
+                                            dim_t codim) const {
+  LF_ASSERT_MSG(!name.empty(), "name is empty");
+  auto [begin, end] = name_2_nr_.equal_range(name);
+  if (begin == end) {
+    throw new base::LfException("No Physical Entity with this name found.");
+  }
+  auto result = *begin;
+  ++begin;
+  if (begin == end) {
+    if (codim == -1 || codim == result.second.second) {
+      return result.second.first;
+    }
+  } else {
+    if (codim == -1) {
+      throw base::LfException(
+          "There are multiple physical entities with the name " + name +
+          ", please specify also the codimension.");
+    }
+    while (begin->second.second != codim || begin == end) {
+      ++begin;
+    }
+    if (begin->second.second == codim) {
+      return begin->second.first;
+    }
+  }
+  throw base::LfException("Physical Entity with name='" + name +
+                          "' and codimension=" + std::to_string(codim) +
+                          "' not found.");
+}
+
+std::string GmshReader::PhysicalEntityNr2Name(size_type number,
+                                              dim_t codim) const {
+  auto [begin, end] = nr_2_name_.equal_range(number);
+  if (begin == end) {
+    throw new base::LfException("Physical entity with number " +
+                                std::to_string(number) + " not found.");
+  }
+  auto result = *begin;
+  ++begin;
+  if (begin == end) {
+    if (codim == -1 || result.second.second == codim) {
+      return result.second.first;
+    }
+  } else {
+    if (codim == -1) {
+      throw base::LfException(
+          "There are multiple physical entities with the Number " +
+          std::to_string(number) + ", please specify also the codimension");
+    }
+    while (begin->second.second == codim || begin == end) {
+      ++begin;
+    }
+    if (begin->second.second == codim) {
+      return begin->second.first;
+    }
+  }
+  throw base::LfException(
+      "Physical entity with number=" + std::to_string(number) +
+      ", codim=" + std::to_string(codim) + " not found.");
 }
 
 }  // namespace lf::io

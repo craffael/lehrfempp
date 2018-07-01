@@ -39,18 +39,19 @@ class CodimMeshDataSet : public MeshDataSet<T> {
    * @param codim The codimension of the entities with which the data is stored.
    * @param init The initial value that should be assigned to every entity.
    */
-  template <class = std::enable_if<std::is_copy_constructible<T>>::type>
+  template <class = typename std::enable_if<
+                std::is_copy_constructible<T>::value>::type>
   CodimMeshDataSet(std::shared_ptr<Mesh> mesh, dim_t codim, T init)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
         data_(mesh_->Size(codim), init),
         codim_(codim) {}
 
-  T& operator[](const Entity& e) override {
+  T& data(const Entity& e) override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
-  const T& operator[](const Entity& e) const override {
+  const T& data(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
