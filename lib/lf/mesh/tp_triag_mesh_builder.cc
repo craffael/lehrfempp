@@ -7,6 +7,9 @@
 
 namespace lf::mesh::hybrid2d {
 
+CONTROLDECLARECOMMENT(TPTriagMeshBuilder, output_ctrl_, "tpquad_output_ctrl",
+                      "Diagnostics control for TPTriagMeshBuilder");
+  
 std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
   const size_type nx = no_of_x_cells_;
@@ -16,8 +19,12 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   const int no_of_cells = 2 * nx * ny;
   const int no_of_edges = no_of_cells + (nx + 1) * ny + nx * (ny + 1);
   const int no_of_vertices = (nx + 1) * (ny + 1);
-  // std::cout << "TPmesh: " << no_of_cells << " cells, "
-  // << no_of_edges << " edges " << no_of_vertices << " vertices" << std::endl;
+  // Diagnostics
+  if (output_ctrl_) {
+     std::cout << "TPmesh: " << no_of_cells << " cells, "
+	       << no_of_edges << " edges "
+	       << no_of_vertices << " vertices" << std::endl;
+  }
   // No mesh to build
   if (no_of_cells == 0) {
     return nullptr;
@@ -40,8 +47,12 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       // Tensor-product node locations
       coord_t node_coord(2);
       node_coord << i * hx, j * hy;
-      // std::cout << "Adding vertex " << node_cnt << ": " << node_coord <<
-      // std::endl; Create suitable geometry object
+        // Diagnostics
+      if (output_ctrl_) {
+	std::cout << "Adding vertex " << node_cnt << ": "
+		  << node_coord << std::endl;
+      }
+      // Enlist vertex
       v_idx[node_cnt] = mesh_factory_->AddPoint(node_coord);
     }
   }
@@ -56,8 +67,12 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       // Indices of the two endpoints of the edge
       auto first_endpoint_idx = v_idx[VertexIndex(i, j)];
       auto second_endpoint_idx = v_idx[VertexIndex(i + 1, j)];
-      // std::cout << "horizontal edge " << edge_cnt << ": "
-      // << first_endpoint_idx << " <-> " << second_endpoint_idx << std::endl;
+        // Diagnostics
+      if (output_ctrl_) {
+	std::cout << "horizontal edge " << edge_cnt << ": "
+		  << first_endpoint_idx << " <-> "
+		  << second_endpoint_idx << std::endl;
+      }
       lf::base::ForwardRange<const size_type> nodes_index_list{
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
@@ -74,9 +89,12 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       // Indices of the two endpoints of the edge
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i, j + 1)];
-      // std::cout << "vertical edge " << edge_cnt << ": "
-      //	  << first_endpoint_idx << " <-> " << second_endpoint_idx <<
-      // std::endl;
+      // Diagnostics
+      if (output_ctrl_) {
+	std::cout << "vertical edge " << edge_cnt << ": "
+		  << first_endpoint_idx << " <-> "
+		  << second_endpoint_idx << std::endl;
+      }
       lf::base::ForwardRange<const size_type> nodes_index_list{
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
@@ -93,9 +111,12 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       // Indices of the two endpoints of the edge
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i + 1, j + 1)];
-      // std::cout << "diagonal edge " << edge_cnt << ": "
-      //	  << first_endpoint_idx << " <-> " << second_endpoint_idx <<
-      // std::endl;
+        // Diagnostics
+      if (output_ctrl_) {
+	std::cout << "diagonal edge " << edge_cnt << ": "
+		  << first_endpoint_idx << " <-> "
+		  << second_endpoint_idx << std::endl;
+      }
       lf::base::ForwardRange<const size_type> nodes_index_list{
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix

@@ -121,6 +121,9 @@ namespace lf::mesh::hybrid2d {
     size_type VertexIndex(size_type i, size_type j) const {
       return (i + j * (no_of_x_cells_ + 1));
     }
+  public:
+    /** Diagnostics control variable */
+    static int output_ctrl_;
   }; // end class definition TPTriagMeshBuilder
 
   /**
