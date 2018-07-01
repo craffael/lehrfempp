@@ -1,5 +1,6 @@
 #include "gmsh_reader.h"
 
+#include <lf/geometry/geometry.h>
 #include <fstream>
 
 #include <boost/fusion/include/adapt_struct.hpp>
@@ -175,75 +176,75 @@ std::ostream& operator<<(std::ostream& stream, const msh_file& mf) {
 }
 
 /// Number of nodes that this element type has
-size_type numNodes(msh_file::ElementType et) {
+size_type NumNodes(MshFile::ElementType et) {
   switch (et) {
     default:
       break;
-    case msh_file::ElementType::EDGE2:
+    case MshFile::ElementType::EDGE2:
       return 2;
-    case msh_file::ElementType::TRIA3:
+    case MshFile::ElementType::TRIA3:
       return 3;
-    case msh_file::ElementType::QUAD4:
+    case MshFile::ElementType::QUAD4:
       return 4;
-    case msh_file::ElementType::TET4:
+    case MshFile::ElementType::TET4:
       return 4;
-    case msh_file::ElementType::HEX8:
+    case MshFile::ElementType::HEX8:
       return 8;
-    case msh_file::ElementType::PRISM6:
+    case MshFile::ElementType::PRISM6:
       return 6;
-    case msh_file::ElementType::PYRAMID5:
+    case MshFile::ElementType::PYRAMID5:
       return 5;
-    case msh_file::ElementType::EDGE3:
+    case MshFile::ElementType::EDGE3:
       return 3;
-    case msh_file::ElementType::TRIA6:
+    case MshFile::ElementType::TRIA6:
       return 6;
-    case msh_file::ElementType::QUAD9:
+    case MshFile::ElementType::QUAD9:
       return 9;
-    case msh_file::ElementType::TET10:
+    case MshFile::ElementType::TET10:
       return 10;
-    case msh_file::ElementType::HEX27:
+    case MshFile::ElementType::HEX27:
       return 27;
-    case msh_file::ElementType::PRISM18:
+    case MshFile::ElementType::PRISM18:
       return 18;
-    case msh_file::ElementType::PYRAMID14:
+    case MshFile::ElementType::PYRAMID14:
       return 14;
-    case msh_file::ElementType::POINT:
+    case MshFile::ElementType::POINT:
       return 1;
-    case msh_file::ElementType::QUAD8:
+    case MshFile::ElementType::QUAD8:
       return 8;
-    case msh_file::ElementType::HEX20:
+    case MshFile::ElementType::HEX20:
       return 20;
-    case msh_file::ElementType::PRISM15:
+    case MshFile::ElementType::PRISM15:
       return 15;
-    case msh_file::ElementType::PYRAMID13:
+    case MshFile::ElementType::PYRAMID13:
       return 13;
-    case msh_file::ElementType::TRIA9:
+    case MshFile::ElementType::TRIA9:
       return 9;
-    case msh_file::ElementType::TRIA10:
+    case MshFile::ElementType::TRIA10:
       return 10;
-    case msh_file::ElementType::TRIA12:
+    case MshFile::ElementType::TRIA12:
       return 12;
-    case msh_file::ElementType::TRIA15:
+    case MshFile::ElementType::TRIA15:
       return 15;
-    case msh_file::ElementType::TRIA15_5:
+    case MshFile::ElementType::TRIA15_5:
       return 15;
-    case msh_file::ElementType::TRIA21:
+    case MshFile::ElementType::TRIA21:
       return 21;
-    case msh_file::ElementType::EDGE4:
+    case MshFile::ElementType::EDGE4:
       return 4;
-    case msh_file::ElementType::EDGE5:
+    case MshFile::ElementType::EDGE5:
       return 5;
-    case msh_file::ElementType::EDGE6:
+    case MshFile::ElementType::EDGE6:
       return 6;
-    case msh_file::ElementType::TET20:
+    case MshFile::ElementType::TET20:
       return 20;
-    case msh_file::ElementType::TET35:
+    case MshFile::ElementType::TET35:
       return 35;
-    case msh_file::ElementType::TET56:
+    case MshFile::ElementType::TET56:
       return 56;
-    case msh_file::ElementType::HEX64:
+    case MshFile::ElementType::HEX64:
       return 64;
-    case msh_file::ElementType::HEX125:
+    case MshFile::ElementType::HEX125:
       return 125;
   }
   LF_VERIFY_MSG(false, "unknown Gmsh element type");
@@ -251,45 +252,94 @@ size_type numNodes(msh_file::ElementType et) {
   return 0;
 }
 
-/// Dimension of the GmshElement type
-int dimOf(msh_file::ElementType et) {
+base::RefEl RefElOf(MshFile::ElementType et) {
   switch (et) {
-    case msh_file::ElementType::POINT:
+    case MshFile::ElementType::POINT:
+      return base::RefEl::kPoint();
+
+    case MshFile::ElementType::EDGE2:
+    case MshFile::ElementType::EDGE3:
+    case MshFile::ElementType::EDGE4:
+    case MshFile::ElementType::EDGE5:
+    case MshFile::ElementType::EDGE6:
+      return base::RefEl::kSegment();
+
+    case MshFile::ElementType::TRIA3:
+    case MshFile::ElementType::TRIA6:
+    case MshFile::ElementType::TRIA9:
+    case MshFile::ElementType::TRIA10:
+    case MshFile::ElementType::TRIA12:
+    case MshFile::ElementType::TRIA15:
+    case MshFile::ElementType::TRIA15_5:
+    case MshFile::ElementType::TRIA21:
+      return base::RefEl::kTria();
+
+    case MshFile::ElementType::QUAD4:
+    case MshFile::ElementType::QUAD8:
+    case MshFile::ElementType::QUAD9:
+      return base::RefEl::kQuad();
+
+    case MshFile::ElementType::TET4:
+    case MshFile::ElementType::HEX8:
+    case MshFile::ElementType::PRISM6:
+    case MshFile::ElementType::PYRAMID5:
+    case MshFile::ElementType::TET10:
+    case MshFile::ElementType::HEX27:
+    case MshFile::ElementType::PRISM18:
+    case MshFile::ElementType::PYRAMID14:
+    case MshFile::ElementType::HEX20:
+    case MshFile::ElementType::PRISM15:
+    case MshFile::ElementType::PYRAMID13:
+    case MshFile::ElementType::TET20:
+    case MshFile::ElementType::TET35:
+    case MshFile::ElementType::TET56:
+    case MshFile::ElementType::HEX64:
+    case MshFile::ElementType::HEX125:
+    default:
+      LF_VERIFY_MSG(
+          false, "Reference element not supported for GmshElement type " << et);
+  }
+}
+
+/// Dimension of the GmshElement type
+int DimOf(MshFile::ElementType et) {
+  switch (et) {
+    case MshFile::ElementType::POINT:
       return 0;
-    case msh_file::ElementType::EDGE2:
-    case msh_file::ElementType::EDGE3:
-    case msh_file::ElementType::EDGE4:
-    case msh_file::ElementType::EDGE5:
-    case msh_file::ElementType::EDGE6:
+    case MshFile::ElementType::EDGE2:
+    case MshFile::ElementType::EDGE3:
+    case MshFile::ElementType::EDGE4:
+    case MshFile::ElementType::EDGE5:
+    case MshFile::ElementType::EDGE6:
       return 1;
-    case msh_file::ElementType::TRIA3:
-    case msh_file::ElementType::QUAD4:
-    case msh_file::ElementType::TRIA6:
-    case msh_file::ElementType::QUAD9:
-    case msh_file::ElementType::QUAD8:
-    case msh_file::ElementType::TRIA9:
-    case msh_file::ElementType::TRIA10:
-    case msh_file::ElementType::TRIA12:
-    case msh_file::ElementType::TRIA15:
-    case msh_file::ElementType::TRIA15_5:
-    case msh_file::ElementType::TRIA21:
+    case MshFile::ElementType::TRIA3:
+    case MshFile::ElementType::QUAD4:
+    case MshFile::ElementType::TRIA6:
+    case MshFile::ElementType::QUAD9:
+    case MshFile::ElementType::QUAD8:
+    case MshFile::ElementType::TRIA9:
+    case MshFile::ElementType::TRIA10:
+    case MshFile::ElementType::TRIA12:
+    case MshFile::ElementType::TRIA15:
+    case MshFile::ElementType::TRIA15_5:
+    case MshFile::ElementType::TRIA21:
       return 2;
-    case msh_file::ElementType::TET4:
-    case msh_file::ElementType::HEX8:
-    case msh_file::ElementType::PRISM6:
-    case msh_file::ElementType::PYRAMID5:
-    case msh_file::ElementType::TET10:
-    case msh_file::ElementType::HEX27:
-    case msh_file::ElementType::PRISM18:
-    case msh_file::ElementType::PYRAMID14:
-    case msh_file::ElementType::HEX20:
-    case msh_file::ElementType::PRISM15:
-    case msh_file::ElementType::PYRAMID13:
-    case msh_file::ElementType::TET20:
-    case msh_file::ElementType::TET35:
-    case msh_file::ElementType::TET56:
-    case msh_file::ElementType::HEX64:
-    case msh_file::ElementType::HEX125:
+    case MshFile::ElementType::TET4:
+    case MshFile::ElementType::HEX8:
+    case MshFile::ElementType::PRISM6:
+    case MshFile::ElementType::PYRAMID5:
+    case MshFile::ElementType::TET10:
+    case MshFile::ElementType::HEX27:
+    case MshFile::ElementType::PRISM18:
+    case MshFile::ElementType::PYRAMID14:
+    case MshFile::ElementType::HEX20:
+    case MshFile::ElementType::PRISM15:
+    case MshFile::ElementType::PYRAMID13:
+    case MshFile::ElementType::TET20:
+    case MshFile::ElementType::TET35:
+    case MshFile::ElementType::TET56:
+    case MshFile::ElementType::HEX64:
+    case MshFile::ElementType::HEX125:
       return 3;
     default:
       LF_VERIFY_MSG(false, "Unknown GmshElement Type.");
@@ -567,7 +617,7 @@ struct gmshElementType : qi::symbols<char, unsigned> {
   }
 };
 
-BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, numNodes, 1);
+BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
 
 /// Defines the Grammar of a msh file using boost::spirit
 template <class ITERATOR>
@@ -781,10 +831,10 @@ msh_file readGmsh_file(std::string filename) {
   // (see comment section)
   qi::rule<iterator_t, Eigen::Vector3d> vec3;
   qi::rule<iterator_t, std::pair<size_type, Eigen::Vector3d>()> node;
-  qi::rule<iterator_t, msh_file::Element(), qi::locals<int>> elementText;
-  qi::rule<iterator_t, msh_file::Element(msh_file::ElementType, int, int)>
+  qi::rule<iterator_t, MshFile::Element(), qi::locals<int>> elementText;
+  qi::rule<iterator_t, MshFile::Element(MshFile::ElementType, int, int)>
       elementBin;
-  qi::rule<iterator_t, std::vector<msh_file::Element>(),
+  qi::rule<iterator_t, std::vector<MshFile::Element>(),
            qi::locals<size_type, int, int, int, size_type>>
       elementGroup;
 
@@ -882,216 +932,136 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // 1) Check Gmsh_file and initialize
   //////////////////////////////////////////////////////////////////////////
 
-  /*if (msh_file.Nodes.size() == 0)
-    LOGGER_ENTRY(logger_, "Warning: The GMSH meshfile " << " does not contain
-  any nodes.", 3); if (msh_file.Elements.size() == 0) LOGGER_ENTRY(logger_,
-  "Warning: The GMSH meshfile " << " does not contain any elements.", 3);*/
+  dim_t dim_mesh = mesh_factory_->DimMesh();
+  dim_t dim_world = mesh_factory_->DimWorld();
+  LF_VERIFY_MSG(
+      dim_mesh >= 2 && dim_mesh <= 3 && dim_world >= 2 && dim_world <= 3,
+      "GmshReader supports only 2D and 3D meshes.");
 
-  /// GmshNodeNr2InsertionIndex[i] = j means: msh_file.Nodes[j].first = i.
-  std::vector<size_type> GmshNodeNr2InsertionIndex(msh_file.Nodes.size() + 1,
-                                                   size_type(-1));
+  // 1) Insert nodes into MeshFactory
+  //////////////////////////////////////////////////////////////////////////////
 
-  /// InsertionIndex2GmshElementNr[i] = j means: msh_file.Elements[j] is the
-  /// i-th element inserted into the mesh.
-  std::vector<size_type> InsertionIndex2GmshElementNr;
-  InsertionIndex2GmshElementNr.reserve(
-      msh_file.Elements.size());  // educated guess
-
-  /// BoundarySegmentInsertionIndex2GmshElementNr[i] = j means:
-  /// msh_file.Elements[j] is the i-th boundary segment inserted by the grid
-  /// factory.
-  std::vector<size_type> BoundarySegmentInsertionIndex2GmshElementNr;
-
-  /// nodeInsertionIndex2GmshElementNr[i] = j means: Node with insertion index i
-  /// is the same as msh_file.Elements[j]
-  // if j==size_type(-1) the node with insertion index i has no
-  // corresponding element.
-  std::vector<size_type> nodeInsertionIndex2GmshElementNr;
-
-  // 2) Add the nodes:
-  //////////////////////////////////////////////////////////////////////////
-  bool loggedWarning = false;
-  for (int i = 0; i < msh_file.Nodes.size(); ++i) {
-    if (msh_file.Nodes[i].first >= GmshNodeNr2InsertionIndex.size()) {
-      GmshNodeNr2InsertionIndex.resize(msh_file.Nodes[i].first + 1,
-                                       size_type(-1));
+  // gmsh_index_2_mesh_index for nodes:
+  // gi2mi[i] = j means that gmsh node with gmsh index i has mesh index j
+  std::vector<size_type> gi2mi;
+  gi2mi.resize(msh_file.Nodes.size());
+  for (auto& n : msh_file.Nodes) {
+    size_type mi;
+    if (dim_world == 2) {
+      LF_ASSERT_MSG(
+          n.second(2) == 0,
+          "In a 2D GmshMesh, the z-coordinate of every node must be zero");
+      mi = mesh_factory_->AddPoint(n.second.topRows(2));
+    } else if (dim_mesh == 3) {
+      mi = mesh_factory_->AddPoint(n.second);
     }
-    size_type insertionIndex;
-    insertionIndex =
-        gridFactory.insertNode(stripVector<dimWorld>(msh_file.Nodes[i].second));
+    if (gi2mi.size() <= n.first) gi2mi.resize(n.first + 1);
+    gi2mi[n.first] = mi;
+  }
 
-    GmshNodeNr2InsertionIndex[msh_file.Nodes[i].first] = i;
-    HYDI_ASSERT_MSG(insertionIndex == i,
-                    "Insertion Index return by grid is not consecutive.");
-    if (dimWorld < 3 && loggedWarning == false &&
-        msh_file.Nodes[i].second.z() != 0) {
-      LOGGER_ENTRY(logger_,
-                   "Warning: The GMSH file "
-                       << " contains nodes where the z-component is not zero. "
-                       << "The z-component will just be ignored because the "
-                          "mesh into which we read has dimWorld!= 3",
-                   2);
-      loggedWarning = true;
+  // 2) Find duplicate entities in msh_file (happends if an entity belongs to
+  //    more than one physical entity)
+  //////////////////////////////////////////////////////////////////////////////
+
+  // entity_nodes[i].first contains the main nodes of the gmsh entity sorted
+  // msh_file.Elements[entity_nodes[i].second] is the corresponding entity.
+  std::vector<std::pair<std::array<size_type, 8>, size_type>> entity_nodes;
+  entity_nodes.reserve(msh_file.Elements.size());
+
+  // count the number of entities for each codimension:
+  std::vector<size_type> num_entities(mesh_factory_->DimMesh(), 0);
+
+  for (size_type i = 0; i < msh_file.Elements.size(); ++i) {
+    auto& e = msh_file.Elements[i];
+    LF_ASSERT_MSG(DimOf(e.Type) <= dim_mesh,
+                  "mesh_factory->DimMesh() = "
+                      << dim_mesh
+                      << ", but msh-file contains entities with dimension "
+                      << DimOf(e.Type));
+
+    ++num_entities[DimOf(e.Type)];
+
+    auto num_main_nodes = RefElOf(e.Type).NumNodes();
+    std::vector<size_type> nodes(num_main_nodes);
+    for (dim_t j = 0; j < num_main_nodes; ++j) {
+      nodes[j] = e.NodeNumbers[j];
+    }
+    std::sort(nodes.begin(), nodes.end());
+    entity_nodes.emplace_back({std::move(nodes), i});
+  }
+  std::sort(entity_nodes.begin(), entity_nodes.end());
+
+  // 3) Insert entities (except nodes) into MeshFactory:
+  //////////////////////////////////////////////////////////////////////////////
+
+  // mi2gi = mesh_index_2_gmsh_index
+  // mi2gi[c][i] contains the gmsh entities that belong to the mesh entity with
+  //             codim = c and mesh index i.
+  std::vector<std::vector<std::vector<size_type>>> mi2gi(dim_mesh);
+
+  // reserve space
+  for (dim_t c = 0; c < dim_mesh; ++c) {
+    mi2gi[c].reserve(num_entities[dim_mesh - c]);
+  }
+
+  LF_ASSERT_MSG(num_entities[dim_mesh] > 0,
+                "MshFile contains no elements with dimension " << dim_mesh);
+  size_type begin = 0;
+  for (size_type end = 0; end < entity_nodes.size(); ++end) {
+    auto& end_element = msh_file.Elements[std::get<1>(entity_nodes[end])];
+
+    physical_entity.push_back();
+    if (std::get<0>(entity_nodes[begin]) == std::get<0>(entity_nodes[end]) &&
+        end < entity_nodes.size() - 1) {
     }
   }
 
-  nodeInsertionIndex2GmshElementNr.resize(msh_file.Nodes.size(), size_type(-1));
-
-  // 3) Add the elements, boundary segments and physical entity numbers of
-  // nodes:
-  //////////////////////////////////////////////////////////////////////////
-  std::vector<size_type> nodes;
-  nodes.reserve(8);
-  loggedWarning = false;
-  bool thereExistsNodeWithPhysicalEntityNr = false;
-  for (int i = 0; i < msh_file.Elements.size(); ++i) {
-    auto& element = msh_file.Elements[i];
-    HYDI_ASSERT_MSG(element.NodeNumbers.size() == numNodes(element.Type),
-                    "Element " << element.Number << " is of type "
-                               << element.Type << " but has "
-                               << element.NodeNumbers.size() << " nodes.");
-
-    if (i > 0 && msh_file.Elements[i - 1].NodeNumbers == element.NodeNumbers) {
-      // There are two elements with exactly the same node numbers, as far as I
-      // understand this only happens when a mesh element belongs to two or more
-      // physical entities. So check that all the remaining information is the
-      // same:
-      HYDI_ASSERT(msh_file.Elements[i - 1].ElementaryEntityNr ==
-                  element.ElementaryEntityNr);
-      HYDI_ASSERT(msh_file.Elements[i - 1].MeshPartitions ==
-                  element.MeshPartitions);
-      HYDI_ASSERT(msh_file.Elements[i - 1].Type == element.Type);
-
-      // we ignore all elements that appear for the second/third/... times:
-      continue;
-    }
-
-    auto dimElement = dimOf(element.Type);
-    if (dimElement == 0) {
-      nodeInsertionIndex2GmshElementNr
-          [GmshNodeNr2InsertionIndex[element.NodeNumbers[0]]] = i;
-      thereExistsNodeWithPhysicalEntityNr = true;
-      continue;
-    }
-
-    if (dimMesh == 3 && dimElement == 1) continue;  // ignore edges in 3D case
-    if (dimElement == dimMesh - 1 && element.PhysicalEntityNr == 0)
-      continue;  // ignore faces with physicalEntity=0
-
-    HYDI_ASSERT_MSG(dimElement <= dimMesh, "GMSH file contains elements of dim "
-                                               << dimElement
-                                               << " but dimMesh = " << dimMesh);
-
-    // Get Geometry type:
-    base::GeometryType geomType;
-    switch (element.Type) {
-      case msh_file::ElementType::EDGE2:
-        geomType = base::GeometryType::SEGMENT2;
-        break;
-      case msh_file::ElementType::TRIA3:
-        geomType = base::GeometryType::TRIA3;
-        break;
-      case msh_file::ElementType::QUAD4:
-        geomType = base::GeometryType::QUAD4;
-        break;
-      case msh_file::ElementType::TET4:
-        geomType = base::GeometryType::TET4;
-        break;
-      case msh_file::ElementType::PYRAMID5:
-        geomType = base::GeometryType::PYRAMID5;
-        break;
-      case msh_file::ElementType::PRISM6:
-        geomType = base::GeometryType::PRISM6;
-        break;
-      case msh_file::ElementType::HEX8:
-        geomType = base::GeometryType::HEX8;
-        break;
-      default:
-        HYDI_VERIFY_MSG(false,
-                        "Gmsh Element type "
-                            << element.Type
-                            << " is not (yet) supported by Gmsh reader.");
-        break;
-    }
-
-    // create nodes (using mapping):
-    for (int iNode = 0; iNode < element.NodeNumbers.size(); ++iNode) {
-      nodes.push_back(GmshNodeNr2InsertionIndex[element.NodeNumbers[iNode]]);
-    }
-    if (dimElement == dimMesh) {
-      // Create Volume element:
-      gridFactory.insertElement(geomType, nodes);
-      InsertionIndex2GmshElementNr.push_back(i);
-    } else if (dimElement == dimMesh - 1) {
-      // Create Boundary element:
-      gridFactory.insertBoundarySegment(geomType, nodes);
-      BoundarySegmentInsertionIndex2GmshElementNr.push_back(i);
-    }
-
-    nodes.clear();
-  }
-
-  // 4) create grid:
-  //////////////////////////////////////////////////////////////////////////
-  HYDI_VERIFY_MSG(
-      InsertionIndex2GmshElementNr.size() > 0,
-      "The GMSH Msh file does not contain any elements of dim=dimMesh="
-          << dimMesh);
-  grid_ = gridFactory.createGrid();
-
-  // 5) Assign regionID to elements and boundary patch id to boundary
-  // intersections.:
-  //////////////////////////////////////////////////////////////////////////
-  auto gridView = grid_->levelView(0);
-  auto gdsRegionID =
-      grid::utils::create_SingleCodimGDS<0, size_type>(gridView, 0);
-  size_type maxRegionID = 0;
-  auto bdsPatchID = grid::utils::create_BoundaryDataSet<size_type>(grid_, 0);
-  size_type maxPatchID = 0;
-  for (auto& e : gridView.template entities<0>()) {
-    size_type regionID =
-        msh_file
-            .Elements[InsertionIndex2GmshElementNr[gridFactory.insertionIndex(
-                e)]]
-            .PhysicalEntityNr;
-    gdsRegionID->data(e, 0) = regionID;
-    if (regionID > maxRegionID) maxRegionID = regionID;
-    if (BoundarySegmentInsertionIndex2GmshElementNr.size() > 0) {
-      for (auto& i : gridView.intersections(e)) {
-        if (i.boundary() == false) continue;
-        auto insertionIndex = gridFactory.insertionIndex(i);
-        if (insertionIndex >=
-            BoundarySegmentInsertionIndex2GmshElementNr.size())
-          continue;
-        size_type patchID =
-            msh_file
-                .Elements[BoundarySegmentInsertionIndex2GmshElementNr
-                              [insertionIndex]]
-                .PhysicalEntityNr;
-        bdsPatchID->data(i) = patchID;
-        if (patchID > maxPatchID) maxPatchID = patchID;
+  for (auto& e : msh_file.Elements) {
+    auto num_nodes = e.NodeNumbers.size();
+    Eigen::MatrixXd node_coords(dim_world, num_nodes);
+    for (size_type i = 0; i < num_nodes; ++i) {
+      auto node_coord = msh_file.Nodes[gi2mi[e.NodeNumbers[i]]].second;
+      if (dim_world == 2) {
+        node_coords.col(i) = node_coord.topRows(2);
+      } else {
+        node_coords.col(i) = node_coord;
       }
     }
-  }
-  egv_ = grid::utils::create_EnhancedGridView(gridView, gdsRegionID, bdsPatchID,
-                                              maxRegionID, maxPatchID);
+    base::RefEl ref_el = base::RefEl::kSegment();
+    std::unique_ptr<geometry::Geometry> geom;
 
-  // 6) Assign the physical entity nr to every node:
-  //////////////////////////////////////////////////////////////////////////
-  gdsPhysicalNodeNr_ =
-      grid::utils::create_SingleCodimGDS<dimMesh, size_type>(gridView, 0);
-  size_type maxPhysicalNodeNr = 0;
-  if (thereExistsNodeWithPhysicalEntityNr) {
-    for (auto& n : gridView.template entities<dimMesh>()) {
-      size_type gmshNr =
-          nodeInsertionIndex2GmshElementNr[gridFactory.insertionIndex(n)];
-      if (gmshNr == size_type(-1)) continue;
-      size_type physicalNodeNr = msh_file.Elements[gmshNr].PhysicalEntityNr;
-      gdsPhysicalNodeNr_->data(n, 0) = physicalNodeNr;
-      if (physicalNodeNr > maxPhysicalNodeNr)
-        maxPhysicalNodeNr = physicalNodeNr;
+    switch (e.Type) {
+      case MshFile::ElementType::EDGE2:
+        ref_el = base::RefEl::kSegment();
+        geom = std::make_unique<geometry::SegmentO1>(node_coords);
+        break;
+      case MshFile::ElementType::TRIA3:
+        ref_el = base::RefEl::kTria();
+        geom = std::make_unique<geometry::TriaO1>(node_coords);
+        break;
+      case MshFile::ElementType::QUAD4:
+        ref_el = base::RefEl::kQuad();
+        break;
+      default:
+        LF_VERIFY_MSG(false, "Gmsh element type "
+                                 << e.Type
+                                 << " not (yet) supported by GmshReader.");
     }
+
+    std::vector<size_type> main_nodes(ref_el.NumNodes());
+    for (dim_t i = 0; i < ref_el.NumNodes(); ++i) {
+      main_nodes[i] = gi2mi[e.NodeNumbers[i]];
+    }
+
+    mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
   }
+
+  // 4) Construct mesh
+  //////////////////////////////////////////////////////////////////////////////
+  mesh_ = mesh_factory_->Build();
+
+  // 5) Build MeshDataSet that assigns the physical entitiies:
+  //////////////////////////////////////////////////////////////////////////////
 
   // 7) Create mapping physicalEntityNr <-> physicalEntityName:
   //////////////////////////////////////////////////////////////////////////

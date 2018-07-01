@@ -237,10 +237,10 @@ std::ostream& operator<<(std::ostream& stream, const MshFile& mf);
 std::ostream& operator<<(std::ostream& stream, MshFile::ElementType et);
 
 /// Number of nodes that this element type has
-unsigned int numNodes(MshFile::ElementType et);
+unsigned int NumNodes(MshFile::ElementType et);
 
 /// Dimension of the GmshElement type
-int dimOf(MshFile::ElementType et);
+int DimOf(MshFile::ElementType et);
 
 /**
  * \brief Read a *.msh file from disk and copy it's contents into the MshFile
@@ -268,12 +268,12 @@ class GmshReader {
   /**
    * @brief Get the mesh that was read by this reader.
    */
-  std::shared_ptr<mesh::Mesh> mesh() { return grid_; }
+  std::shared_ptr<mesh::Mesh> mesh() { return mesh_; }
 
   /**
    * @brief Get the mesh that was read by this reader.
    */
-  std::shared_ptr<const mesh::Mesh> mesh() const { return grid_; }
+  std::shared_ptr<const mesh::Mesh> mesh() const { return mesh_; }
 
   /**
    * @brief maps the name of a physical entity to the physical entity number
@@ -314,7 +314,7 @@ class GmshReader {
 
  private:
   /// The underlying grid created by the grid factory.
-  std::shared_ptr<mesh::Mesh> grid_;
+  std::shared_ptr<mesh::Mesh> mesh_;
 
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
