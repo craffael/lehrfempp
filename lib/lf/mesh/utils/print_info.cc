@@ -39,7 +39,7 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
                     co_dim << "-entity " << e_idx << ": refEl mismatch");
       LF_VERIFY_MSG(e_codim == co_dim,
                     co_dim << "-entity " << e_idx << " co-dimension mismatch");
-      const Eigen::MatrixXd ref_el_corners(e_refel.NodeCoords());
+      const Eigen::MatrixXd &ref_el_corners(e_refel.NodeCoords());
       o << "entity " << e_idx << " (" << e_refel << "): ";
 
       // Loop over local co-dimensions

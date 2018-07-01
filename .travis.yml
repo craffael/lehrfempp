@@ -111,7 +111,7 @@ jobs:
         
     # Deploy doxygen documentation using builtin GitHub Pages support
     - stage: doxygen
-      if: branch = master
+      if: branch = master AND type IN (push)
       os: linux 
       compiler: gcc
       addons: 
