@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-namespace lf::mesh::mesh_utils {
+namespace lf::mesh::utils {
 
 void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
   using size_type = std::size_t;         // unsigned integer
@@ -86,4 +86,4 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
   }
 }
 
-}  // namespace lf::mesh::mesh_utils
+}  // namespace lf::mesh::utils

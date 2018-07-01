@@ -18,4 +18,4 @@ add_library(lf.mesh.hybrid2dp ${sources})
 target_link_libraries(lf.mesh.hybrid2dp PUBLIC Eigen3::Eigen lf.base lf.mesh)
 target_compile_features(lf.mesh.hybrid2dp PUBLIC cxx_std_17)
 
-#add_subdirectory(test)
+add_subdirectory(test)

@@ -134,7 +134,7 @@ Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
   using EdgeMap = std::map<EndpointIndexPair, EdgeData>;
 
   // For extracting point coordinates
-  const Eigen::MatrixXd zero_point = lf::base::RefEl::ncoords_point_dynamic_;
+  const Eigen::MatrixXd zero_point = base::RefEl::kPoint().NodeCoords();
 
   // ======================================================================
   // STEP I: Set up and fill array of nodes: points_
@@ -340,7 +340,7 @@ Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
         std::cout << " geo = " << std::endl;
         if (gptr) {
           Eigen::MatrixXd edp_c(
-              gptr->Global(lf::base::RefEl::ncoords_segment_dynamic_));
+              gptr->Global(base::RefEl::kSegment().NodeCoords()));
           std::cout << edp_c << std::endl;
         } else {
           std::cout << "NO GEOMETRY" << std::endl;

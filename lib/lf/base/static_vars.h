@@ -95,15 +95,12 @@ using StaticVar = Track<int>;
 
 namespace lf::base {
 
-//#ifndef CTRLVARROOT
 /**
  * @brief Pointer to global container for control variables
  *
  * This pointer is defined in lf_assert.cc
  */
 extern StaticVar *ctrl_root;
-//#define CTRLVARROOT
-//#endif
 
 /**
  * @brief Output of globally managed static integers

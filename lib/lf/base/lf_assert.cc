@@ -1,9 +1,5 @@
 /** @file lf_assert.cc */
 
-// Preprocessor flag to prevent double definition of global handler object
-// for control variables
-#define CTRLVARROOT
-
 #include "lf_assert.h"
 #include <iostream>
 

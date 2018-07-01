@@ -1,9 +1,5 @@
 /** @file static_vars.cc */
 
-// Preprocessor flag to prevent double definition of global handler object
-// for control variables
-#define CTRLVARROOT
-
 #include "static_vars.h"
 #include <fstream>
 #include <iostream>
