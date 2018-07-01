@@ -56,7 +56,8 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    * @param init_value The initial value that should be assigned to every
    * entity.
    */
-  template <class = std::enable_if<std::is_copy_constructible<T>>::type>
+  template <class = typename std::enable_if<
+                std::is_copy_constructible<T>::value>::type>
   AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh, T init_value)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
@@ -67,11 +68,11 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
     }
   }
 
-  T& operator[](const Entity& e) override {
+  T& data(const Entity& e) override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[e.Codim()][mesh_->Index(e)];
   }
-  const T& operator[](const Entity& e) const override {
+  const T& data(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[e.Codim()][mesh_->Index(e)];
   }
