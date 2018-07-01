@@ -77,13 +77,6 @@ enum class RefElType : unsigned char {
  * @snippet ref_el.cc refElUsage
  */
 class RefEl {
- public:
-  using dim_t = unsigned char;
-
- private:
-  // Member variable
-  RefElType type_;
-
   // Node coordinates as dynamic eigen matrices:
   static const Eigen::MatrixXd ncoords_point_dynamic_;
   static const Eigen::MatrixXd ncoords_segment_dynamic_;
@@ -96,6 +89,11 @@ class RefEl {
   static const std::vector<Eigen::Vector2d> ncoords_tria_static_;
   static const std::vector<Eigen::Vector2d> ncoords_quad_static_;
 
+  // Member variable
+  RefElType type_;
+
+ public:
+  using dim_t = unsigned char;
   // subSubEntities, used by SubSubEntity2SubEntity
   static constexpr std::array<std::array<dim_t, 2>, 3>
       sub_sub_entity_index_tria_ = {{{0, 1}, {1, 2}, {2, 0}}};

@@ -5,11 +5,12 @@
 namespace lf::geometry {
 
 Eigen::MatrixXd QuadO1::Global(const Eigen::MatrixXd& local) const {
+  LF_ASSERT_MSG(local.rows() == 2, "reference coords must be 2-vectors");
   return coords_.col(0) *
              ((1 - local.array().row(0)) * (1 - local.array().row(1)))
                  .matrix() +
          coords_.col(1) *
-             (local.array().row(0) * (1 - local.array().col(1))).matrix() +
+             (local.array().row(0) * (1 - local.array().row(1))).matrix() +
          coords_.col(2) *
              (local.array().row(0) * local.array().row(1)).matrix() +
          coords_.col(3) *

@@ -28,7 +28,9 @@ class Mesh {
   Mesh& operator=(Mesh&&) = default;
 
  public:
+  /** Auxiliary types */
   using size_type = unsigned int;
+  using dim_t = unsigned int;
   /**
    * @brief The dimension of the manifold described by the mesh, or
    *        equivalently the maximum dimension of the reference elements
@@ -81,6 +83,7 @@ class Mesh {
    */
   virtual ~Mesh() = default;
 };
+
 }  // namespace lf::mesh
 
 #endif  // __b86b0c9cb0fd48da931a1f24421b8842
