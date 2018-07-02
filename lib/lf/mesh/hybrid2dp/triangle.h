@@ -62,27 +62,7 @@ class Triangle : public mesh::Entity {
                     std::unique_ptr<geometry::Geometry>&& geometry,
                     const Point* corner0, const Point* corner1,
                     const Point* corner2, const Segment* edge0,
-                    const Segment* edge1, const Segment* edge2)
-      : index_(index),
-        geometry_(std::move(geometry)),
-        nodes_({corner0, corner1, corner2}),
-        edges_({edge0, edge1, edge2}) {
-    LF_VERIFY_MSG(corner0 != nullptr, "Invalid pointer to corner 0");
-    LF_VERIFY_MSG(corner1 != nullptr, "Invalid pointer to corner 1");
-    LF_VERIFY_MSG(corner2 != nullptr, "Invalid pointer to corner 2");
-    LF_VERIFY_MSG(edge0 != nullptr, "Invalid pointer to edge 0");
-    LF_VERIFY_MSG(edge1 != nullptr, "Invalid pointer to edge 1");
-    LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
-    if (geometry_) {
-      LF_VERIFY_MSG(geometry_->DimLocal() == 2,
-                    "Geometry must describe a 2D cell");
-      LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kTria(),
-                    "Cell geometry must fit a triangle");
-    }
-    /*
-       TODO: consistency check
-    */
-  }
+                    const Segment* edge1, const Segment* edge2);
 
   /** @brief an edge is an entity of co-dimension 1 */
   char Codim() const override { return 0; }
