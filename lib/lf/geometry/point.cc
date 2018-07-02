@@ -28,4 +28,8 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
   LF_VERIFY_MSG(false, "codim or i out of bounds.");
 }
 
+  std::unique_ptr<Geometry>
+  Point::ChildGeometry(int,int) const { return std::make_unique<Point>(coord_); }
+  
+  
 }  // namespace lf::geometry
