@@ -26,7 +26,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     // Remove trailing .m
     filename.pop_back();
     filename.pop_back();
-    file << "function [x,y,TRI.EDS] = " << filename << "()" << std::endl;
+    file << "function [x,y,TRI,QUAD,EDS] = " << filename << "()" << std::endl;
 
     // Obtain topological dimension of the mesh
     const dim_t dim_mesh = mesh.DimMesh();
@@ -37,17 +37,17 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     const dim_t node_codim(dim_mesh);
     // Number of nodes of the mesh
     const size_type no_of_nodes = mesh.Size(node_codim);
-    file << "x = zeros(" << no_of_nodes << ",1)" << std::endl;
-    file << "y = zeros(" << no_of_nodes << ",1)" << std::endl;
+    file << "x = zeros(" << no_of_nodes << ",1);" << std::endl;
+    file << "y = zeros(" << no_of_nodes << ",1);" << std::endl;
 
     // Write node coordinates to file
     size_type node_cnt = 0;
     for (const Entity &node : mesh.Entities(node_codim)) {
       const geometry::Geometry *geo_ptr = node.Geometry();
       Eigen::MatrixXd node_coord(geo_ptr->Global(zero));
-      file << "x(" << node_cnt << ") = " << node_coord(0, 0) << "; "
+      file << "x(" << node_cnt+1 << ") = " << node_coord(0, 0) << "; "
            << std::endl;
-      file << "y(" << node_cnt << ") = " << node_coord(1, 0) << "; "
+      file << "y(" << node_cnt+1 << ") = " << node_coord(1, 0) << "; "
            << std::endl;
       node_cnt++;
     }
@@ -55,7 +55,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
 
     // Write edge information to file
     const size_type no_of_edges = mesh.Size(1);
-    file << "EDS = zeros(" << no_of_edges << ",2);";
+    file << "EDS = zeros(" << no_of_edges << ",2);" << std::endl;
     size_type ed_cnt = 0;
     for (const Entity &edge : mesh.Entities(1)) {
       base::RefEl ref_el = edge.RefEl();
@@ -63,24 +63,44 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
                     "Edge must be a segment");
       // Access endpoints = sub-entities of relative co-dimension 1
       const auto sub_ent = edge.SubEntities(1);
-      file << "EDS(" << ed_cnt << ",:) = [" << mesh.Index(sub_ent[0]) << ", "
-           << mesh.Index(sub_ent[1]) << "];" << std::endl;
+      file << "EDS(" << ed_cnt+1 << ",:) = [" << mesh.Index(sub_ent[0])+1 << ", "
+           << mesh.Index(sub_ent[1])+1 << "];" << std::endl;
       ed_cnt++;
     }
 
     // Write cell (entities of co-dimension 0) information to file
     const size_type no_of_cells = mesh.Size(0);
-    file << "TRI = zeros(" << no_of_cells << ",3);" << std::endl;
+    file << "TRI = []; QUAD = [];" << std::endl;
     size_type cell_cnt = 0;
-    for (const Entity &triangle : mesh.Entities(0)) {
-      base::RefEl ref_el = triangle.RefEl();
-      LF_VERIFY_MSG(ref_el == lf::base::RefEl::kTria(),
-                    "wite_matlab can handle triangular meshes only!");
+    size_type triag_cnt = 0;
+    size_type quad_cnt = 0;
+    for (const Entity &e : mesh.Entities(0)) {
       // Access vertices =  sub-entities of relative co-dimension 2
-      const auto sub_ent = triangle.SubEntities(2);
-      file << "TRI(" << cell_cnt << ",:) = [" << mesh.Index(sub_ent[0]) << ", "
-           << mesh.Index(sub_ent[1]) << ", " << mesh.Index(sub_ent[2]) << "];"
-           << std::endl;
+      const auto sub_ent = e.SubEntities(2);
+      base::RefEl ref_el = e.RefEl();
+      switch (ref_el) {
+      case  lf::base::RefEl::kTria(): {
+	file << "TRI(" << triag_cnt+1 << ",:) = ["
+	     << mesh.Index(sub_ent[0])+1 << ", "
+	     << mesh.Index(sub_ent[1])+1 << ", "
+	     << mesh.Index(sub_ent[2])+1 << "];"  << std::endl;
+	triag_cnt++;
+	break;
+      }
+      case lf::base::RefEl::kQuad(): {
+	file << "QUAD(" << quad_cnt+1 << ",:) = ["
+	     << mesh.Index(sub_ent[0])+1 << ", "
+	     << mesh.Index(sub_ent[1])+1 << ", "
+	     << mesh.Index(sub_ent[2])+1 << ", "
+	     << mesh.Index(sub_ent[3])+1 << "];"  << std::endl;
+	quad_cnt++;
+	break;
+      }
+      default: {
+	LF_VERIFY_MSG(false,"wite_matlab can only handle triangles and quads");
+	break;
+      }
+      }
       cell_cnt++;
     }
   }
