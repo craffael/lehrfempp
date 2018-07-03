@@ -24,15 +24,18 @@ namespace lf::geometry {}
 enum struct RefinementPattern: int {
   rp_copy, /**< just copy the geometry of the current entity */
   rp_split, /**< for edges: split into two halves */
-  rp_bisec_0, /**< single bisection, refinement edge 0 */
-  rp_bisec_1, /**< single bisection, refinement edge 1 */
-  rp_bisec_2, /**< single bisection, refinement edge 2 */
+  rp_bisect_0, /**< single bisection, refinement edge 0 */
+  rp_bisect_1, /**< single bisection, refinement edge 1 */
+  rp_bisect_2, /**< single bisection, refinement edge 2 */
   rp_trisect_01, /**< double bisection, splitting edges 0 and 1 */
   rp_trisect_02, /**< double bisection, splitting edges 0 and 2 */
   rp_trisect_10, /**< double bisection, splitting edges 1 and 0 */
   rp_trisect_12, /**< double bisection, splitting edges 1 and 2 */
   rp_trisect_20, /**< double bisection, splitting edges 2 and 0 */
   rp_trisect_21, /**< double bisection, splitting edges 2 and 1 */
+  rp_quadsect_0, /**< triple bisection, starting at edge 0 */
+  rp_quadsect_1, /**< triple bisection, starting at edge 1 */
+  rp_quadsect_2, /**< triple bisection, starting at edge 2 */
   rp_regular, /**< standard "full" (regular) refinement */
 };
 
