@@ -93,6 +93,10 @@ TEST(lf_edge_create, MeshFactory_p) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
 
+  std::cout << "Writing MATLAB file" << std::endl;
+  utils::writeMatlab(*mesh_p, "test_mesh.m");
+
+  
   // Printing mesh information
   utils::PrintInfo(*mesh_p, std::cout);
 }

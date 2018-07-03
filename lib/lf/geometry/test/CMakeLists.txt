@@ -3,6 +3,7 @@ include(GoogleTest)
 
 set(sources
   point_tests.cc
+  refine_tests.cc
 )
 
 add_executable(lf.geometry.test ${sources})
