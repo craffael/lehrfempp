@@ -41,4 +41,44 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
   LF_VERIFY_MSG(false, "codim is out of bounds.");
 }
 
+  std::unique_ptr<Geometry>
+  SegmentO1::ChildGeometry(int ref_pattern,int selector) const {
+    switch (ref_pattern) {
+    case (int)RefinementPattern::rp_copy: {
+      return std::make_unique<SegmentO1>(coords_);
+    }
+    case (int)RefinementPattern::rp_regular:
+    case (int)RefinementPattern::rp_split: {
+      const dim_t dim_global(coords_.rows());
+      Eigen::Matrix<double,Eigen::Dynamic,2> child_geo(dim_global,2);
+      // Reference coordinates of endpoints and midpoint
+      Eigen::Matrix<double,1,3> ref_coords; ref_coords << 0.0,0.5,1.0;
+      // Fetch point coordinates
+      Eigen::MatrixXd point_coords(Global(ref_coords));
+      switch (selector) {
+      case 0: {
+	// "first half edge" from endpoint 0 to midpoint
+	child_geo = point_coords.block(0,0,dim_global,2);
+	break;
+      }
+      case 1: {
+	// "second half edge" from midpoint to endpoint 1
+	child_geo = point_coords.block(0,1,dim_global,2);
+	break;
+      }
+      default: {
+	LF_VERIFY_MSG(false,"Invalid selector " << selector);
+	break;
+      }
+      } //end switch
+      return std::make_unique<SegmentO1>(child_geo);
+    }
+    default: {
+      LF_VERIFY_MSG(false,"Invalid refinement pattern " << ref_pattern);
+      break;
+    }
+    } // end switch
+    return nullptr;
+  }
+  
 }  // namespace lf::geometry
