@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.mesh.a  CMakeFiles/lf.mesh.dir/mesh.cc.o CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.o
+/usr/bin/ranlib liblf.mesh.a

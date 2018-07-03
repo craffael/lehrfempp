@@ -1,0 +1,1 @@
+/usr/lib64/ccache/c++     CMakeFiles/lf.geometry.test.dir/point_tests.cc.o  -o lf.geometry.test /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtest_maind.a ../liblf.geometry.a /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtestd.a -pthread ../../base/liblf.base.a 

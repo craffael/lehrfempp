@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.geometry.a  CMakeFiles/lf.geometry.dir/point.cc.o CMakeFiles/lf.geometry.dir/quad_o1.cc.o CMakeFiles/lf.geometry.dir/segment_o1.cc.o CMakeFiles/lf.geometry.dir/tria_o1.cc.o
+/usr/bin/ranlib liblf.geometry.a
