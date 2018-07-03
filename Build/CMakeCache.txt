@@ -223,6 +223,9 @@ lf.mesh.hybrid2dp_LIB_DEPENDS:STATIC=general;lf.base;general;lf.mesh;
 lf.mesh.test_utils_LIB_DEPENDS:STATIC=general;GTest::main;general;lf.mesh;
 
 //Dependencies for the target
+lf.mesh.utils_LIB_DEPENDS:STATIC=general;lf.mesh;
+
+//Dependencies for the target
 lf.mesh_LIB_DEPENDS:STATIC=general;lf.base;general;lf.geometry;
 
 
@@ -315,7 +318,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=16
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=18
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

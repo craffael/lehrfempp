@@ -10,8 +10,8 @@ int main() {
 
   auto re_node = lf::base::RefEl::kPoint();
   std::cout << "Information about node: " << re_node << std::endl;
-  int dim_seg = re_seg.Dimension();
-  std::cout << "Dimension of segment: " << dim_seg << std::endl;
+  int dim_node = re_node.Dimension();
+  std::cout << "Dimension of segment: " << dim_node << std::endl;
 
   auto re_seg = lf::base::RefEl::kSegment();
   std::cout << "Information about segment: " << re_seg << std::endl;

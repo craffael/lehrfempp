@@ -289,3 +289,6 @@ lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o
  /u/magina/Documents/lehrfempp/lib/lf/base/lf_assert.h
  /u/magina/Documents/lehrfempp/lib/lf/base/ref_el.cc
  /u/magina/Documents/lehrfempp/lib/lf/base/ref_el.h
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o
+ /u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc
+ /u/magina/Documents/lehrfempp/lib/lf/base/static_vars.h

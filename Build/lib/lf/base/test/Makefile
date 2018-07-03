@@ -244,6 +244,33 @@ ref_el_tests.cc.s:
 	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/test/CMakeFiles/lf.base.test.dir/build.make lib/lf/base/test/CMakeFiles/lf.base.test.dir/ref_el_tests.cc.s
 .PHONY : ref_el_tests.cc.s
 
+static_vars_tests.o: static_vars_tests.cc.o
+
+.PHONY : static_vars_tests.o
+
+# target to build an object file
+static_vars_tests.cc.o:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/test/CMakeFiles/lf.base.test.dir/build.make lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o
+.PHONY : static_vars_tests.cc.o
+
+static_vars_tests.i: static_vars_tests.cc.i
+
+.PHONY : static_vars_tests.i
+
+# target to preprocess a source file
+static_vars_tests.cc.i:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/test/CMakeFiles/lf.base.test.dir/build.make lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.i
+.PHONY : static_vars_tests.cc.i
+
+static_vars_tests.s: static_vars_tests.cc.s
+
+.PHONY : static_vars_tests.s
+
+# target to generate assembly for a file
+static_vars_tests.cc.s:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/test/CMakeFiles/lf.base.test.dir/build.make lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.s
+.PHONY : static_vars_tests.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -266,6 +293,9 @@ help:
 	@echo "... ref_el_tests.o"
 	@echo "... ref_el_tests.i"
 	@echo "... ref_el_tests.s"
+	@echo "... static_vars_tests.o"
+	@echo "... static_vars_tests.i"
+	@echo "... static_vars_tests.s"
 .PHONY : help
 
 

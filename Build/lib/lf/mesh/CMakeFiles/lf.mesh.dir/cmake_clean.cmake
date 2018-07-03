@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/lf.mesh.dir/mesh.cc.o"
   "CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.o"
+  "CMakeFiles/lf.mesh.dir/mesh_interface.cc.o"
   "liblf.mesh.pdb"
   "liblf.mesh.a"
 )

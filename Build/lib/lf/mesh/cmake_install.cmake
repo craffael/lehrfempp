@@ -42,6 +42,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2d/cmake_install.cmake")
   include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2dp/cmake_install.cmake")
   include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/test/cmake_install.cmake")
+  include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/utils/cmake_install.cmake")
   include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/test_utils/cmake_install.cmake")
 
 endif()

@@ -81,6 +81,8 @@ lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/test/CMakeFiles/lf.mesh.test.dir/tp_t
 lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/test/CMakeFiles/lf.mesh.test.dir/build.make
 lib/lf/mesh/test/lf.mesh.test: /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtest_maind.a
 lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/hybrid2d/liblf.mesh.hybrid2d.a
+lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/hybrid2dp/liblf.mesh.hybrid2dp.a
+lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/utils/liblf.mesh.utils.a
 lib/lf/mesh/test/lf.mesh.test: lib/lf/mesh/test_utils/liblf.mesh.test_utils.a
 lib/lf/mesh/test/lf.mesh.test: /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtest_maind.a
 lib/lf/mesh/test/lf.mesh.test: /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtestd.a

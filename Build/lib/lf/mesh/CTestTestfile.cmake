@@ -7,4 +7,5 @@
 subdirs("hybrid2d")
 subdirs("hybrid2dp")
 subdirs("test")
+subdirs("utils")
 subdirs("test_utils")

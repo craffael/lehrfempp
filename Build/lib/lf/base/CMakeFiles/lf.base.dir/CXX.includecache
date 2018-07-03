@@ -1430,3 +1430,21 @@ Eigen/Eigen
 lf_assert.h
 /u/magina/Documents/lehrfempp/lib/lf/base/lf_assert.h
 
+/u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc
+static_vars.h
+/u/magina/Documents/lehrfempp/lib/lf/base/static_vars.h
+fstream
+-
+iostream
+-
+map
+-
+sstream
+-
+
+/u/magina/Documents/lehrfempp/lib/lf/base/static_vars.h
+string
+-
+utility
+-
+

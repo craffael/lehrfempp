@@ -37,3 +37,9 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for each subdirectory.
+  include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2dp/test/cmake_install.cmake")
+
+endif()
+

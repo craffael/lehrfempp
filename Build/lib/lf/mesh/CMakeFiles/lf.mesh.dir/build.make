@@ -83,19 +83,34 @@ lib/lf/mesh/CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.s"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/mesh/tp_triag_mesh_builder.cc -o CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.s
 
+lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.o: lib/lf/mesh/CMakeFiles/lf.mesh.dir/flags.make
+lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.o: ../lib/lf/mesh/mesh_interface.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.o"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && /usr/lib64/ccache/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lf.mesh.dir/mesh_interface.cc.o -c /u/magina/Documents/lehrfempp/lib/lf/mesh/mesh_interface.cc
+
+lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lf.mesh.dir/mesh_interface.cc.i"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/magina/Documents/lehrfempp/lib/lf/mesh/mesh_interface.cc > CMakeFiles/lf.mesh.dir/mesh_interface.cc.i
+
+lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.mesh.dir/mesh_interface.cc.s"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/mesh/mesh_interface.cc -o CMakeFiles/lf.mesh.dir/mesh_interface.cc.s
+
 # Object files for target lf.mesh
 lf_mesh_OBJECTS = \
 "CMakeFiles/lf.mesh.dir/mesh.cc.o" \
-"CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.o"
+"CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.o" \
+"CMakeFiles/lf.mesh.dir/mesh_interface.cc.o"
 
 # External object files for target lf.mesh
 lf_mesh_EXTERNAL_OBJECTS =
 
 lib/lf/mesh/liblf.mesh.a: lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh.cc.o
 lib/lf/mesh/liblf.mesh.a: lib/lf/mesh/CMakeFiles/lf.mesh.dir/tp_triag_mesh_builder.cc.o
+lib/lf/mesh/liblf.mesh.a: lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.o
 lib/lf/mesh/liblf.mesh.a: lib/lf/mesh/CMakeFiles/lf.mesh.dir/build.make
 lib/lf/mesh/liblf.mesh.a: lib/lf/mesh/CMakeFiles/lf.mesh.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library liblf.mesh.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library liblf.mesh.a"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && $(CMAKE_COMMAND) -P CMakeFiles/lf.mesh.dir/cmake_clean_target.cmake
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/mesh && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lf.mesh.dir/link.txt --verbose=$(VERBOSE)
 

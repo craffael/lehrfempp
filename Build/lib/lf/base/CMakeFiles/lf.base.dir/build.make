@@ -83,19 +83,34 @@ lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.base.dir/ref_el.cc.s"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/base/ref_el.cc -o CMakeFiles/lf.base.dir/ref_el.cc.s
 
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o: lib/lf/base/CMakeFiles/lf.base.dir/flags.make
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o: ../lib/lf/base/static_vars.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && /usr/lib64/ccache/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lf.base.dir/static_vars.cc.o -c /u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc
+
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lf.base.dir/static_vars.cc.i"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc > CMakeFiles/lf.base.dir/static_vars.cc.i
+
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.base.dir/static_vars.cc.s"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc -o CMakeFiles/lf.base.dir/static_vars.cc.s
+
 # Object files for target lf.base
 lf_base_OBJECTS = \
 "CMakeFiles/lf.base.dir/lf_assert.cc.o" \
-"CMakeFiles/lf.base.dir/ref_el.cc.o"
+"CMakeFiles/lf.base.dir/ref_el.cc.o" \
+"CMakeFiles/lf.base.dir/static_vars.cc.o"
 
 # External object files for target lf.base
 lf_base_EXTERNAL_OBJECTS =
 
 lib/lf/base/liblf.base.a: lib/lf/base/CMakeFiles/lf.base.dir/lf_assert.cc.o
 lib/lf/base/liblf.base.a: lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o
+lib/lf/base/liblf.base.a: lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o
 lib/lf/base/liblf.base.a: lib/lf/base/CMakeFiles/lf.base.dir/build.make
 lib/lf/base/liblf.base.a: lib/lf/base/CMakeFiles/lf.base.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library liblf.base.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library liblf.base.a"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && $(CMAKE_COMMAND) -P CMakeFiles/lf.base.dir/cmake_clean_target.cmake
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lf.base.dir/link.txt --verbose=$(VERBOSE)
 

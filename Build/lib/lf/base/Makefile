@@ -190,6 +190,33 @@ ref_el.cc.s:
 	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/CMakeFiles/lf.base.dir/build.make lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.s
 .PHONY : ref_el.cc.s
 
+static_vars.o: static_vars.cc.o
+
+.PHONY : static_vars.o
+
+# target to build an object file
+static_vars.cc.o:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/CMakeFiles/lf.base.dir/build.make lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o
+.PHONY : static_vars.cc.o
+
+static_vars.i: static_vars.cc.i
+
+.PHONY : static_vars.i
+
+# target to preprocess a source file
+static_vars.cc.i:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/CMakeFiles/lf.base.dir/build.make lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.i
+.PHONY : static_vars.cc.i
+
+static_vars.s: static_vars.cc.s
+
+.PHONY : static_vars.s
+
+# target to generate assembly for a file
+static_vars.cc.s:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/base/CMakeFiles/lf.base.dir/build.make lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.s
+.PHONY : static_vars.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -206,6 +233,9 @@ help:
 	@echo "... ref_el.o"
 	@echo "... ref_el.i"
 	@echo "... ref_el.s"
+	@echo "... static_vars.o"
+	@echo "... static_vars.i"
+	@echo "... static_vars.s"
 .PHONY : help
 
 

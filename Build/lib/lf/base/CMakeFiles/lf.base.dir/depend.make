@@ -289,3 +289,6 @@ lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o: ../lib/lf/base/lf_assert.h
 lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o: ../lib/lf/base/ref_el.cc
 lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o: ../lib/lf/base/ref_el.h
 
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o: ../lib/lf/base/static_vars.cc
+lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o: ../lib/lf/base/static_vars.h
+

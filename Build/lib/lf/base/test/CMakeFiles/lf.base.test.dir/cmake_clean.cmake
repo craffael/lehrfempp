@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/lf.base.test.dir/forward_range_tests.cc.o"
   "CMakeFiles/lf.base.test.dir/random_access_iterator_tests.cc.o"
   "CMakeFiles/lf.base.test.dir/ref_el_tests.cc.o"
+  "CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o"
   "lf.base.test.pdb"
   "lf.base.test"
 )

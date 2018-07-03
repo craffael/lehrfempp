@@ -109,12 +109,26 @@ lib/lf/base/test/CMakeFiles/lf.base.test.dir/ref_el_tests.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.base.test.dir/ref_el_tests.cc.s"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/base/test/ref_el_tests.cc -o CMakeFiles/lf.base.test.dir/ref_el_tests.cc.s
 
+lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o: lib/lf/base/test/CMakeFiles/lf.base.test.dir/flags.make
+lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o: ../lib/lf/base/test/static_vars_tests.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && /usr/lib64/ccache/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o -c /u/magina/Documents/lehrfempp/lib/lf/base/test/static_vars_tests.cc
+
+lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lf.base.test.dir/static_vars_tests.cc.i"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/magina/Documents/lehrfempp/lib/lf/base/test/static_vars_tests.cc > CMakeFiles/lf.base.test.dir/static_vars_tests.cc.i
+
+lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lf.base.test.dir/static_vars_tests.cc.s"
+	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && /usr/lib64/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/magina/Documents/lehrfempp/lib/lf/base/test/static_vars_tests.cc -o CMakeFiles/lf.base.test.dir/static_vars_tests.cc.s
+
 # Object files for target lf.base.test
 lf_base_test_OBJECTS = \
 "CMakeFiles/lf.base.test.dir/forward_iterator_tests.cc.o" \
 "CMakeFiles/lf.base.test.dir/forward_range_tests.cc.o" \
 "CMakeFiles/lf.base.test.dir/random_access_iterator_tests.cc.o" \
-"CMakeFiles/lf.base.test.dir/ref_el_tests.cc.o"
+"CMakeFiles/lf.base.test.dir/ref_el_tests.cc.o" \
+"CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o"
 
 # External object files for target lf.base.test
 lf_base_test_EXTERNAL_OBJECTS =
@@ -123,12 +137,13 @@ lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/forw
 lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/forward_range_tests.cc.o
 lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/random_access_iterator_tests.cc.o
 lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/ref_el_tests.cc.o
+lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/static_vars_tests.cc.o
 lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/build.make
 lib/lf/base/test/lf.base.test: /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtest_maind.a
 lib/lf/base/test/lf.base.test: lib/lf/base/liblf.base.a
 lib/lf/base/test/lf.base.test: /u/magina/.hunter/_Base/6e3cb4c/b106e35/77416f6/Install/lib64/libgtestd.a
 lib/lf/base/test/lf.base.test: lib/lf/base/test/CMakeFiles/lf.base.test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable lf.base.test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/magina/Documents/lehrfempp/Build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable lf.base.test"
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lf.base.test.dir/link.txt --verbose=$(VERBOSE)
 	cd /u/magina/Documents/lehrfempp/Build/lib/lf/base/test && /usr/bin/cmake -D TEST_TARGET=lf.base.test -D TEST_EXECUTABLE=/u/magina/Documents/lehrfempp/Build/lib/lf/base/test/lf.base.test -D TEST_EXECUTOR= -D TEST_WORKING_DIR=/u/magina/Documents/lehrfempp/Build/lib/lf/base/test -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=lf.base.test_TESTS -D CTEST_FILE=/u/magina/Documents/lehrfempp/Build/lib/lf/base/test/lf.base.test[1]_tests.cmake -D TEST_DISCOVERY_TIMEOUT=5 -P /usr/share/cmake/Modules/GoogleTestAddTests.cmake
 

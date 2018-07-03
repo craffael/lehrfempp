@@ -1,0 +1,5 @@
+if(EXISTS "/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2dp/test/lf.mesh.hybrid2dp.test[1]_tests.cmake")
+  include("/u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2dp/test/lf.mesh.hybrid2dp.test[1]_tests.cmake")
+else()
+  add_test(lf.mesh.hybrid2dp.test_NOT_BUILT lf.mesh.hybrid2dp.test_NOT_BUILT)
+endif()

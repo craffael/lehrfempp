@@ -226,6 +226,19 @@ lf.mesh.hybrid2dp/fast:
 .PHONY : lf.mesh.hybrid2dp/fast
 
 #=============================================================================
+# Target rules for targets named lf.mesh.hybrid2dp.test
+
+# Build rule for target.
+lf.mesh.hybrid2dp.test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 lf.mesh.hybrid2dp.test
+.PHONY : lf.mesh.hybrid2dp.test
+
+# fast build rule for target.
+lf.mesh.hybrid2dp.test/fast:
+	$(MAKE) -f lib/lf/mesh/hybrid2dp/test/CMakeFiles/lf.mesh.hybrid2dp.test.dir/build.make lib/lf/mesh/hybrid2dp/test/CMakeFiles/lf.mesh.hybrid2dp.test.dir/build
+.PHONY : lf.mesh.hybrid2dp.test/fast
+
+#=============================================================================
 # Target rules for targets named lf.mesh.test
 
 # Build rule for target.
@@ -237,6 +250,19 @@ lf.mesh.test: cmake_check_build_system
 lf.mesh.test/fast:
 	$(MAKE) -f lib/lf/mesh/test/CMakeFiles/lf.mesh.test.dir/build.make lib/lf/mesh/test/CMakeFiles/lf.mesh.test.dir/build
 .PHONY : lf.mesh.test/fast
+
+#=============================================================================
+# Target rules for targets named lf.mesh.utils
+
+# Build rule for target.
+lf.mesh.utils: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 lf.mesh.utils
+.PHONY : lf.mesh.utils
+
+# fast build rule for target.
+lf.mesh.utils/fast:
+	$(MAKE) -f lib/lf/mesh/utils/CMakeFiles/lf.mesh.utils.dir/build.make lib/lf/mesh/utils/CMakeFiles/lf.mesh.utils.dir/build
+.PHONY : lf.mesh.utils/fast
 
 #=============================================================================
 # Target rules for targets named lf.mesh.test_utils
@@ -294,7 +320,9 @@ help:
 	@echo "... lf.mesh.hybrid2d"
 	@echo "... lf.mesh.hybrid2d.test"
 	@echo "... lf.mesh.hybrid2dp"
+	@echo "... lf.mesh.hybrid2dp.test"
 	@echo "... lf.mesh.test"
+	@echo "... lf.mesh.utils"
 	@echo "... lf.mesh.test_utils"
 	@echo "... docsnippets"
 	@echo "... lf.examples.base.ref_el_output"

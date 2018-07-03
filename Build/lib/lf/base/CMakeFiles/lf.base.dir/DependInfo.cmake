@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/u/magina/Documents/lehrfempp/lib/lf/base/lf_assert.cc" "/u/magina/Documents/lehrfempp/Build/lib/lf/base/CMakeFiles/lf.base.dir/lf_assert.cc.o"
   "/u/magina/Documents/lehrfempp/lib/lf/base/ref_el.cc" "/u/magina/Documents/lehrfempp/Build/lib/lf/base/CMakeFiles/lf.base.dir/ref_el.cc.o"
+  "/u/magina/Documents/lehrfempp/lib/lf/base/static_vars.cc" "/u/magina/Documents/lehrfempp/Build/lib/lf/base/CMakeFiles/lf.base.dir/static_vars.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

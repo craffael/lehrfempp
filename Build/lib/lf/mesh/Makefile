@@ -163,6 +163,33 @@ mesh.cc.s:
 	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/mesh/CMakeFiles/lf.mesh.dir/build.make lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh.cc.s
 .PHONY : mesh.cc.s
 
+mesh_interface.o: mesh_interface.cc.o
+
+.PHONY : mesh_interface.o
+
+# target to build an object file
+mesh_interface.cc.o:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/mesh/CMakeFiles/lf.mesh.dir/build.make lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.o
+.PHONY : mesh_interface.cc.o
+
+mesh_interface.i: mesh_interface.cc.i
+
+.PHONY : mesh_interface.i
+
+# target to preprocess a source file
+mesh_interface.cc.i:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/mesh/CMakeFiles/lf.mesh.dir/build.make lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.i
+.PHONY : mesh_interface.cc.i
+
+mesh_interface.s: mesh_interface.cc.s
+
+.PHONY : mesh_interface.s
+
+# target to generate assembly for a file
+mesh_interface.cc.s:
+	cd /u/magina/Documents/lehrfempp/Build && $(MAKE) -f lib/lf/mesh/CMakeFiles/lf.mesh.dir/build.make lib/lf/mesh/CMakeFiles/lf.mesh.dir/mesh_interface.cc.s
+.PHONY : mesh_interface.cc.s
+
 tp_triag_mesh_builder.o: tp_triag_mesh_builder.cc.o
 
 .PHONY : tp_triag_mesh_builder.o
@@ -203,6 +230,9 @@ help:
 	@echo "... mesh.o"
 	@echo "... mesh.i"
 	@echo "... mesh.s"
+	@echo "... mesh_interface.o"
+	@echo "... mesh_interface.i"
+	@echo "... mesh_interface.s"
 	@echo "... tp_triag_mesh_builder.o"
 	@echo "... tp_triag_mesh_builder.i"
 	@echo "... tp_triag_mesh_builder.s"
