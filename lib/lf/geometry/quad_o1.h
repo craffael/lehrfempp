@@ -15,8 +15,7 @@ namespace lf::geometry {
    */
 class QuadO1 : public Geometry {
  public:
-  explicit QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
-      : coords_(std::move(coords)) {}
+  explicit QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords);
 
   dim_t DimLocal() const override { return 2; }
   dim_t DimGlobal() const override { return coords_.rows(); }
@@ -34,6 +33,15 @@ class QuadO1 : public Geometry {
 
   /** @copydoc Geometry::isAffine() */
   virtual bool isAffine(void) const override { return false; }
+
+  /**
+   * @brief creation of child geometries as specified in refinement pattern
+   *
+   * For a detailed description of the indexing of the vertices of child 
+   * entities see `Refinement.xoj`.
+   */
+  virtual std::unique_ptr<Geometry>
+  ChildGeometry(int ref_pattern,int anchor,int selector) const override;
 
  private:
   /** @brief Coordinates of the a four vertices */
