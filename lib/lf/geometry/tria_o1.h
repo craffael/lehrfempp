@@ -33,7 +33,7 @@ class TriaO1 : public Geometry {
    * triangles see `Refinement.xoj`.
    */
   virtual std::unique_ptr<Geometry>
-  ChildGeometry(int ref_pattern,int selector) const override;
+  ChildGeometry(int ref_pattern,int anchor,int selector) const override;
   
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;

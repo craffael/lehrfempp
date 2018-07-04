@@ -141,7 +141,7 @@ class Geometry {
    * vanilla integer arguments have been chosen for this method.
    */
   virtual std::unique_ptr<Geometry>
-  ChildGeometry(int ref_pattern,int selector) const {
+  ChildGeometry(int ref_pattern,int anchor,int selector) const {
     LF_VERIFY_MSG(false,
 		  "ChildGeometry not implemented for " << typeid(*this).name());
     return nullptr;
