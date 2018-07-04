@@ -42,7 +42,7 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::unique_ptr<Geometry>
-  SegmentO1::ChildGeometry(int ref_pattern,int selector) const {
+  SegmentO1::ChildGeometry(int ref_pattern,int,int selector) const {
     switch (ref_pattern) {
     case (int)RefinementPattern::rp_copy: {
       return std::make_unique<SegmentO1>(coords_);

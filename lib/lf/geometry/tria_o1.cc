@@ -50,7 +50,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::unique_ptr<Geometry>
-  TriaO1::ChildGeometry(int ref_pattern,int selector) const {
+  TriaO1::ChildGeometry(int ref_pattern,int anchor,int selector) const {
     const dim_t dim_global(DimGlobal());
     const lf::base::RefEl ref_el = RefEl();
     // Coordinates of corners and midpoints in reference triangle
@@ -63,25 +63,35 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
     Eigen::MatrixXd midpoint_coords = Global(ref_midpoint_coords);
     Eigen::MatrixXd child_coords(2,3);
 
+    // Remap local indices according to anchor values
+    const int mod_0 = (0+anchor)%3;
+    const int mod_1 = (1+anchor)%3;
+    const int mod_2 = (2+anchor)%3;
+    
     // Create child geometries according to refinement patterns and selection
     switch (ref_pattern) {
+    case (int)RefinementPattern::rp_nil: {
+      return(nullptr);
+      break;
+    }
     case (int)RefinementPattern::rp_copy: {
       return std::make_unique<TriaO1>(coords_);
       break;
     }
-    case (int)RefinementPattern::rp_bisect_0: {
+    case (int)RefinementPattern::rp_bisect: {
+      // Splitting a triangle in two by bisecting anchor edge
       switch(selector) {
       case 0: { 
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_0);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = corner_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 1: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_1);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = corner_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
@@ -93,74 +103,29 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
       }
       break;
     }
-    case (int)RefinementPattern::rp_bisect_1: {
+    case (int)RefinementPattern::rp_trisect: {
+      // Bisect through anchor edge first and then bisect through
+      // edge with the next larger index (mod 3); creates three
+      // child triangles.
       switch(selector) {
       case 0: { 
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = corner_coords.col(0);
+	child_coords.col(0) = corner_coords.col(mod_0);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = corner_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 1: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = corner_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_bisect_2: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = corner_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = corner_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_trisect_01: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(1);
+	child_coords.col(0) = corner_coords.col(mod_1);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_1);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 2: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_2);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
@@ -172,26 +137,29 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
       }
       break;
     }
-    case (int)RefinementPattern::rp_trisect_02: {
-      switch(selector) {
+    case (int)RefinementPattern::rp_trisect_left: {
+      // Bisect through anchor edge first and then bisect through
+      // edge with the next smaller index (mod 3); creates three
+      // child triangles.
+       switch(selector) {
       case 0: { 
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_0);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 1: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_1);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = corner_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 2: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(2);
+	child_coords.col(0) = corner_coords.col(mod_2);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
@@ -203,233 +171,36 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
       }
       break;
     }
-    case (int)RefinementPattern::rp_trisect_10: {
+    case (int)RefinementPattern::rp_quadsect: {
+      // Bisect through the anchor edge first and then
+      // through the two remaining edges; creates four child
+      // triangles; every edge is split.
       switch(selector) {
       case 0: { 
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(0);
+	child_coords.col(0) = corner_coords.col(mod_0);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 1: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = corner_coords.col(0);
+	child_coords.col(0) = corner_coords.col(mod_1);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_1);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 2: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_trisect_12: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = corner_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_trisect_20: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = corner_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_trisect_21: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = corner_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_quadsect_0: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(1);
+	child_coords.col(0) = corner_coords.col(mod_2);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_1);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
       case 3: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(0);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_quadsect_1: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(2);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 3: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(1);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      default: {
-	LF_VERIFY_MSG(false,"Selector " << selector
-		      << " invalid for pattern " << ref_pattern);
-	break;
-      }
-      }
-      break;
-    }
-    case (int)RefinementPattern::rp_quadsect_2: {
-      switch(selector) {
-      case 0: { 
-	child_coords.col(0) = corner_coords.col(2);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = corner_coords.col(1);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 1: {
-	child_coords.col(0) = corner_coords.col(0);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 2: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(0);
-	return std::make_unique<TriaO1>(child_coords);
-	break;
-      }
-      case 3: {
-	child_coords.col(0) = corner_coords.col(1);
-	child_coords.col(1) = midpoint_coords.col(2);
-	child_coords.col(2) = midpoint_coords.col(1);
+	child_coords.col(0) = corner_coords.col(mod_2);
+	child_coords.col(1) = midpoint_coords.col(mod_0);
+	child_coords.col(2) = midpoint_coords.col(mod_2);
 	return std::make_unique<TriaO1>(child_coords);
 	break;
       }
@@ -442,6 +213,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
       break;
     }
     case (int)RefinementPattern::rp_regular: {
+      // Split triangle into four small  congruent triangles
       switch(selector) {
       case 0: { 
 	child_coords.col(0) = corner_coords.col(0);
@@ -477,6 +249,65 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 	break;
       }
       }
+      break;
+    }
+    case (int)RefinementPattern::rp_barycentric: {
+      //  Split triangle into 5 smaller triangles by connecting
+      // the center of gravity with the vertices and the midpoints
+      // of the edges.
+      
+      // Obtain coordinates of center of gravity
+      Eigen::Matrix<double,2,1> ref_baryc_coords = Eigen::Vector2d({1.0/3,1.0/3});
+      Eigen::MatrixXd baryc_coords = Global(ref_baryc_coords);
+      switch(selector) {
+      case 0: {
+	child_coords.col(0) = corner_coords.col(0);
+	child_coords.col(1) = midpoint_coords.col(0);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      case 1: {
+	child_coords.col(0) = corner_coords.col(1);
+	child_coords.col(1) = midpoint_coords.col(0);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      case 2: {
+	child_coords.col(0) = corner_coords.col(1);
+	child_coords.col(1) = midpoint_coords.col(1);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      case 3: {
+	child_coords.col(0) = corner_coords.col(2);
+	child_coords.col(1) = midpoint_coords.col(1);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      case 4: {
+	child_coords.col(0) = corner_coords.col(2);
+	child_coords.col(1) = midpoint_coords.col(2);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      case 5: {
+	child_coords.col(0) = corner_coords.col(0);
+	child_coords.col(1) = midpoint_coords.col(2);
+	child_coords.col(2) = baryc_coords;
+	return std::make_unique<TriaO1>(child_coords);
+	break;
+      }
+      default: {
+	LF_VERIFY_MSG(false,"Selector " << selector
+		      << " invalid for pattern " << ref_pattern);
+	break;
+      }
+      } // end switch selector
       break;
     }
     default: {

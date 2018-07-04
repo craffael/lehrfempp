@@ -29,7 +29,12 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::unique_ptr<Geometry>
-  Point::ChildGeometry(int,int) const { return std::make_unique<Point>(coord_); }
+  Point::ChildGeometry(int ref_pattern,int,int) const
+  {
+    LF_VERIFY_MSG(ref_pattern == (int)RefinementPattern::rp_copy,
+		  "Illegal refinement pattern " << ref_pattern);
+    return std::make_unique<Point>(coord_);
+  }
   
   
 }  // namespace lf::geometry

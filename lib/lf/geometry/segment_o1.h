@@ -31,9 +31,12 @@ class SegmentO1 : public Geometry {
    * @param ref_pattern three refinement patterns are supported
    * - rp_copy: just copies the geometry information of the segment
    * - rp_split, rp_regular: split edge in the middle.
+   * @param anchor not used
+   * @param selector = 0 for splitting refinement pattern returns half edge
+   * adjacent to endpoint 0, =1 returns the other half.
    */
   std::unique_ptr<Geometry>
-  ChildGeometry(int ref_pattern,int selector) const override;
+  ChildGeometry(int ref_pattern,int anchor, int selector) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;

@@ -12,9 +12,9 @@ namespace lf::geometry::test {
 
     // Refine
     
-    auto ed_copy = edge_ptr->ChildGeometry((int)RefinementPattern::rp_copy,0);
-    auto child0 = edge_ptr->ChildGeometry((int)RefinementPattern::rp_split,0);
-    auto child1 = edge_ptr->ChildGeometry((int)RefinementPattern::rp_split,1);
+    auto ed_copy = edge_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,0);
+    auto child0 = edge_ptr->ChildGeometry((int)RefinementPattern::rp_split,-1,0);
+    auto child1 = edge_ptr->ChildGeometry((int)RefinementPattern::rp_split,-1,1);
     EXPECT_NE(child0,nullptr);
     EXPECT_NE(child1,nullptr);
     EXPECT_NE(ed_copy,nullptr);
@@ -47,128 +47,48 @@ namespace lf::geometry::test {
 		 
     // Check the various refinements
     std::cout << "rp_copy(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_copy,0))
+	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,0))
       ->Global(ref_tria_corners) << std::endl;
-    std::cout << "rp_bisect_0(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_0,0))
-      ->Global(ref_tria_corners) << std::endl;
-    std::cout << "rp_bisect_0(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_0,1))
-      ->Global(ref_tria_corners) << std::endl;
-    std::cout << "rp_bisect_1(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_1,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_bisect_1(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_1,1))
-      ->Global(ref_tria_corners) << std::endl;
-    std::cout << "rp_bisect_2(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_2,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_bisect_2(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect_2,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_01(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_01,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_01(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_01,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_01(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_01,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_02(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_02,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_02(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_02,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_02(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_02,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_10(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_10,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_10(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_10,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_10(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_10,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_12(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_12,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_12(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_12,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_12(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_12,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_20(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_20,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_20(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_20,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_20(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_20,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_21(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_21,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_21(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_21,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_trisect_21(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_21,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_0(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_0,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_0(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_0,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_0(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_0,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_0(3) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_0,3))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_1(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_1,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_1(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_1,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_1(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_1,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_1(3) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_1,3))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_2(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_2,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_2(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_2,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_2(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_2,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_quadsect_2(3) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect_2,3))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_regular(0) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,0))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_regular(1) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,1))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_regular(2) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,2))
-      ->Global(ref_tria_corners) << std::endl;
-   std::cout << "rp_regular(3) : " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,3))
-      ->Global(ref_tria_corners) << std::endl;
+    // Bisection refinement
+    for (int anchor = 0; anchor < 3; anchor++) {
+      for (int selector = 0; selector < 2; selector++) {
+	std::cout << "rp_bisect(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect,anchor,selector))->Global(ref_tria_corners) << std::endl;
+      }
+    }
+    // Trisection refinement
+    for (int anchor = 0; anchor < 3; anchor++) {
+      for (int selector = 0; selector < 3; selector++) {
+	std::cout << "rp_trisect(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect,anchor,selector))->Global(ref_tria_corners) << std::endl;
+	std::cout << "rp_trisect_left(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_left,anchor,selector))->Global(ref_tria_corners) << std::endl;
+      }
+    }
+    // Splitting into four triangles
+    for (int anchor = 0; anchor < 3; anchor++) {
+      for (int selector = 0; selector < 4; selector++) {
+	std::cout << "rp_quadsect(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect,anchor,selector))->Global(ref_tria_corners) << std::endl;
+      }
+    }
+    // Regular refinement
+    for (int selector = 0; selector < 4; selector++) {
+	std::cout << "rp_regular, child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,selector))->Global(ref_tria_corners) << std::endl;
+    }
+    // Bayrcentric refinement
+    for (int selector = 0; selector < 6; selector++) {
+	std::cout << "rp_baryccentric, child "
+		  << selector << " : " << std::endl 
+		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_barycentric,-1,selector))->Global(ref_tria_corners) << std::endl;
+    }
+    
   }
   
 }  // namespace lf::geometry::test
