@@ -1,5 +1,0 @@
-add_test( hybrid2d.directMeshConstruction /u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2d/test/lf.mesh.hybrid2d.test [==[--gtest_filter=hybrid2d.directMeshConstruction]==] --gtest_also_run_disabled_tests)
-set_tests_properties( hybrid2d.directMeshConstruction PROPERTIES WORKING_DIRECTORY /u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2d/test)
-add_test( hybrid2d.buildMeshWithExplicitEdges /u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2d/test/lf.mesh.hybrid2d.test [==[--gtest_filter=hybrid2d.buildMeshWithExplicitEdges]==] --gtest_also_run_disabled_tests)
-set_tests_properties( hybrid2d.buildMeshWithExplicitEdges PROPERTIES WORKING_DIRECTORY /u/magina/Documents/lehrfempp/Build/lib/lf/mesh/hybrid2d/test)
-set( lf.mesh.hybrid2d.test_TESTS hybrid2d.directMeshConstruction hybrid2d.buildMeshWithExplicitEdges)
