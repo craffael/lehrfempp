@@ -78,17 +78,72 @@ namespace lf::geometry::test {
     }
     // Regular refinement
     for (int selector = 0; selector < 4; selector++) {
-	std::cout << "rp_regular, child "
-		  << selector << " : " << std::endl 
-		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,selector))->Global(ref_tria_corners) << std::endl;
+      std::cout << "rp_regular, child "
+		<< selector << " : " << std::endl 
+		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,selector))->Global(ref_tria_corners) << std::endl;
     }
     // Bayrcentric refinement
     for (int selector = 0; selector < 6; selector++) {
-	std::cout << "rp_baryccentric, child "
-		  << selector << " : " << std::endl 
-		  << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_barycentric,-1,selector))->Global(ref_tria_corners) << std::endl;
+      std::cout << "rp_baryccentric, child "
+		<< selector << " : " << std::endl 
+		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_barycentric,-1,selector))->Global(ref_tria_corners) << std::endl;
     }
     
   }
-  
+
+  TEST(RefineTest,QuadRef) {
+    // Reference coordinate of corners of quads and triangles
+    const Eigen::MatrixXd ref_quad_corners(lf::base::RefEl::kQuad().NodeCoords());
+    const Eigen::MatrixXd ref_tria_corners(lf::base::RefEl::kTria().NodeCoords());
+    // Create a triangle
+    Eigen::Matrix<double,2,4> quad_coords;
+    quad_coords.col(0) = Eigen::Vector2d({1,1});
+    quad_coords.col(1) = Eigen::Vector2d({5,-1});
+    quad_coords.col(2) = Eigen::Vector2d({5,3});
+    quad_coords.col(3) = Eigen::Vector2d({3,5});
+    std::unique_ptr<QuadO1> quad_geo_ptr = std::make_unique<QuadO1>(quad_coords);
+    EXPECT_NE(quad_geo_ptr,nullptr);
+    std::cout << "Parent quadngle " << std::endl
+     	      << quad_geo_ptr->Global(ref_quad_corners)
+     	      << std::endl;
+    
+    // Check the various refinements
+    std::cout << "rp_copy(0) : " << std::endl 
+	      << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,0))
+      ->Global(ref_quad_corners) << std::endl;
+
+    for (int anchor = 0; anchor < 4; anchor++) {
+      for (int selector = 0; selector < 3; selector++) {
+	std::cout << "rp_trisect(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect,anchor,selector))->Global(ref_tria_corners) << std::endl;
+      }
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      for (int selector = 0; selector < 4; selector++) {
+	std::cout << "rp_quadsect(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect,anchor,selector))->Global(ref_tria_corners) << std::endl;
+      }
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      for (int selector = 0; selector < 2; selector++) {
+	std::cout << "rp_split(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_split,anchor,selector))->Global(ref_quad_corners) << std::endl;
+      }
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      for (int selector = 0; selector < 4; selector++) {
+	std::cout << "rp_threeedge(" << anchor << ") child "
+		  << selector << " : " << std::endl 
+		  << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_threeedge,anchor,selector))->Global((selector==0)?ref_quad_corners:ref_tria_corners) << std::endl;
+      }
+    }
+    for (int selector = 0; selector < 4; selector++) {
+      std::cout << "rp_regular, child "
+		<< selector << " : " << std::endl 
+		<< (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,selector))->Global(ref_quad_corners) << std::endl;
+    }
+  }
 }  // namespace lf::geometry::test

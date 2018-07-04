@@ -35,6 +35,7 @@ enum struct RefinementPattern: int {
   rp_trisect,  /**< double bisection */
   rp_trisect_left, /**< double bisection, other triangle in second step */
   rp_quadsect,   /**< triple bisection, starting at edge 0 */
+  rp_threeedge,  /**< split quad into one half and three triangles */
   rp_regular,    /**< standard "full" (regular) refinement */
   rp_barycentric /**< barycentric refinement */  
 };
