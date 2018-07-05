@@ -45,4 +45,14 @@ TEST(base_forwardRangeTest, initializerList) {
   ++it;
   EXPECT_EQ(fw.end(), it);
 }
+
+TEST(base_forwardRange, vectorInit) {
+  std::vector<int> v{0, 1, 2};
+  ForwardRange fw = v;
+  int count = 0;
+  for (auto& i : fw) {
+    EXPECT_EQ(i, count);
+    ++count;
+  }
+}
 }  // namespace lf::base::test

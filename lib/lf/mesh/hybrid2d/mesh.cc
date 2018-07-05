@@ -255,4 +255,17 @@ Mesh::size_type Mesh::Index(const mesh::Entity &e) const {
                         std::to_string(e.Codim()));
   }
 }
+
+bool Mesh::Contains(const mesh::Entity &e) const {
+  switch (e.Codim()) {
+    case 0:
+      return &e >= &entities0_.front() && &e <= &entities0_.back();
+    case 1:
+      return &e >= &entities1_.front() && &e <= &entities1_.back();
+    case 2:
+      return &e >= &entities2_.front() && &e <= &entities2_.back();
+    default:
+      return false;
+  }
+}
 }  // namespace lf::mesh::hybrid2d
