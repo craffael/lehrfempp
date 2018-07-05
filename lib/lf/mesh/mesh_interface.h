@@ -29,8 +29,8 @@ class Mesh {
 
  public:
   /** Auxiliary types */
-  using size_type = unsigned int;
-  using dim_t = unsigned int;
+  using size_type = lf::base::size_type;
+  using dim_t = lf::base::dim_t;
   /**
    * @brief The dimension of the manifold described by the mesh, or
    *        equivalently the maximum dimension of the reference elements
