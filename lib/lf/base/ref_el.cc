@@ -17,8 +17,12 @@ const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
 
 // Print function
 void PrintInfo(const RefEl &ref_el, std::ostream &o){
-    o << "Print function test";
-}
+    if (RefEl::output_ctrl_ == 0){
+        o << "output_ctrl_ == 0";
+    } else {
+        o << "Print function test";
+    }
 
+}
 
 }  // namespace lf::base
