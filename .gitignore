@@ -37,3 +37,4 @@ bin/
 bin_clang/
 bin_gcc/
 doc/doxygen/html
+Build/
