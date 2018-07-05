@@ -9,8 +9,10 @@
 //#include <boost/range.hpp>
 #include <Eigen/Eigen>
 #include "lf_assert.h"
+#include "static_vars.h" // Correct?
 
 namespace lf::base {
+
 
 /*!
  * @brief An enum that defines all possible RefEl types.
@@ -449,7 +451,18 @@ class RefEl {
   constexpr operator RefElType() const { return type_; }
 
   ~RefEl() = default;
-};
+
+
+
+  static int output_ctrl_;
+
+
+}; // class RefEl
+
+
+// Declare print function
+void PrintInfo(const RefEl &ref_el, std::ostream &o);
+
 
 /**
  * @brief Operator overload to print a `RefEl` to a stream, such as `std::cout`
@@ -461,7 +474,8 @@ class RefEl {
  * @snippet ref_el.cc streamOutput
  */
 inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
-  return stream << ref_el.ToString();
+  // return stream << ref_el.ToString();
+  PrintInfo(ref_el, stream);
 }
 
 }  // namespace lf::base
