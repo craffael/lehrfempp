@@ -8,7 +8,7 @@
 int main() {
   std::cout << "Output of information on reference elements" << std::endl;
 
-
+/*
   // Node
   auto re_node = lf::base::RefEl::kPoint();
   std::cout << "\nInformation about node: \n" << re_node << std::endl;
@@ -19,7 +19,7 @@ int main() {
   // Segment
   auto re_seg = lf::base::RefEl::kSegment();
   std::cout << "\nInformation about segment: \n" << re_seg << std::endl;
-
+*/
   // Triangle
   auto re_tria = lf::base::RefEl::kTria();
   std::cout << "\nInformation about triangle: \n" << re_tria << std::endl;
@@ -30,22 +30,6 @@ int main() {
   std::cout << "Coordinates of nodes: " << std::endl;
   std::cout << re_tria.NodeCoords() << std::endl;
 
-
-
-  // Loop over dimensions
-  for (int co_dim = dim_tria; co_dim >= 0; co_dim--){
-      int num_sub_ent = re_tria.NumSubEntities(co_dim);
-      std::cout << "Codimension " << co_dim << " has " << num_sub_ent << " entities";
-      std::cout << " of type " << re_tria.SubType(co_dim, 0) << std::endl;
-
-      // Loop over entities
-      for (num_sub_ent; num_sub_ent >= 0; num_sub_ent--){
-          std::cout << " Subentity " << num_sub_ent << " of type " << re_tria.SubType(co_dim,0).ToString();
-          std::cout << " has coordinates" << std::endl;
-
-      }
-  }
-*/
 
 /*
   // Lopp over codimensions
