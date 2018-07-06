@@ -17,10 +17,65 @@ const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
 
 // Print function
 void PrintInfo(const RefEl &ref_el, std::ostream &o){
-    if (RefEl::output_ctrl_ == 0){
-        o << "output_ctrl_ == 0";
+
+
+    // Keep anyway
+    int dim_ref_el = ref_el.Dimension();
+    int no_nodes = ref_el.NumNodes();
+
+    // Remove when done
+    o << "Dimension: " << dim_ref_el << std::endl;
+    o << "Number of nodes: " << no_nodes << std::endl;
+    //o << "Coordinates of nodes: " << std::endl;
+    //o << ref_el.NodeCoords() << std::endl;
+
+
+
+    // Loop over dimensions
+    for (int co_dim = dim_ref_el; co_dim > 0; co_dim--){
+        int num_sub_ent = ref_el.NumSubEntities(co_dim);
+        o << "Codimension " << co_dim << " has " << num_sub_ent << " entities:" << std::endl;
+
+        // Loop over entities
+        for (num_sub_ent; num_sub_ent > 0; num_sub_ent--){
+            o << " Subentity " << num_sub_ent << " of type " << ref_el.SubType(co_dim,0).ToString() << std::endl;
+        }
+    }
+
+
+    // Actual implementation
+    if (RefEl::output_ctrl_ > 0){
+        o << "Reference element: " << ref_el.ToString() << std::endl;
+        o << "Dimension: " << dim_ref_el << std::endl;
+        o << "Number of nodes: " << no_nodes << std::endl;
+
+
+
+    } else if (RefEl::output_ctrl_ > 10){
+        o << "output_ctrl_ > 10" << std::endl;
+        o << "Reference element: " << ref_el.ToString() << std::endl;
+        o << "Dimension: " << dim_ref_el << std::endl;
+        o << "Number of nodes: " << no_nodes << std::endl;
+        //o << "Coordinates of nodes: " << std::endl;
+        //o << ref_el.NodeCoords() << std::endl;
+
+    } else if (RefEl::output_ctrl_ > 20){
+        o << "Reference element: " << ref_el.ToString() << std::endl;
+        o << "Dimension: " << dim_ref_el << std::endl;
+        o << "Number of nodes: " << no_nodes << std::endl;
+        //o << "Coordinates of nodes: " << std::endl;
+        //o << ref_el.NodeCoords() << std::endl;
+
+    } else if (RefEl::output_ctrl_ > 30){
+        o << "Reference element: " << ref_el.ToString() << std::endl;
+        o << "Dimension: " << dim_ref_el << std::endl;
+        o << "Number of nodes: " << no_nodes << std::endl;
+        //o << "Coordinates of nodes: " << std::endl;
+        //o << ref_el.NodeCoords() << std::endl;
+
     } else {
-        o << "Print function test";
+        // o << "Choose another value for output_ctrl_ > 0";
+        o << " ";
     }
 
 }

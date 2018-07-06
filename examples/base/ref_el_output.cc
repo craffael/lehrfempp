@@ -11,17 +11,18 @@ int main() {
 
   // Node
   auto re_node = lf::base::RefEl::kPoint();
-  std::cout << "\nInformation about node: " << re_node << std::endl;
+  std::cout << "\nInformation about node: \n" << re_node << std::endl;
+  //std::cout << "Sub entities of node: " << re_node.NumSubEntities(0);
   //int dim_node = re_node.Dimension();
   //std::cout << "Dimension of segment: " << dim_node << std::endl;
 
   // Segment
   auto re_seg = lf::base::RefEl::kSegment();
-  std::cout << "\nInformation about segment: " << re_seg << std::endl;
+  std::cout << "\nInformation about segment: \n" << re_seg << std::endl;
 
   // Triangle
   auto re_tria = lf::base::RefEl::kTria();
-  std::cout << "\nInformation about triangle: " << re_tria << std::endl;
+  std::cout << "\nInformation about triangle: \n" << re_tria << std::endl;
 
   /*
   int dim_tria = re_tria.Dimension();
@@ -45,6 +46,7 @@ int main() {
       }
   }
 */
+
 /*
   // Lopp over codimensions
   for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
@@ -90,7 +92,7 @@ int main() {
 
   // Qaud
   auto re_quad = lf::base::RefEl::kQuad();
-  std::cout << "\nInformation about quad: " << re_quad << std::endl;
+  std::cout << "\nInformation about quad: \n" << re_quad << std::endl;
 
 
   return 0L;
