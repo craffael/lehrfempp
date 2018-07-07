@@ -35,7 +35,7 @@ class SegmentO1 : public Geometry {
    * @param selector = 0 for splitting refinement pattern returns half edge
    * adjacent to endpoint 0, =1 returns the other half.
    */
-  std::unique_ptr<Geometry>
+  virtual std::vector<std::unique_ptr<Geometry>>
   ChildGeometry(int ref_pattern,int anchor, int selector) const override;
 
  private:

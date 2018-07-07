@@ -28,12 +28,14 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
   LF_VERIFY_MSG(false, "codim or i out of bounds.");
 }
 
-  std::unique_ptr<Geometry>
+  std::vector<std::unique_ptr<Geometry>>
   Point::ChildGeometry(int ref_pattern,int,int) const
   {
+    std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
     LF_VERIFY_MSG(ref_pattern == (int)RefinementPattern::rp_copy,
 		  "Illegal refinement pattern " << ref_pattern);
-    return std::make_unique<Point>(coord_);
+    child_geo_uptrs.push_back(std::make_unique<Point>(coord_));
+    return std::move(child_geo_uptrs);
   }
   
   

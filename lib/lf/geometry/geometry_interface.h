@@ -140,11 +140,11 @@ class Geometry {
    * all possible refinement patterns cannot be predicted. This is why  
    * vanilla integer arguments have been chosen for this method.
    */
-  virtual std::unique_ptr<Geometry>
+  virtual std::vector<std::unique_ptr<Geometry>>
   ChildGeometry(int ref_pattern,int anchor,int selector) const {
     LF_VERIFY_MSG(false,
 		  "ChildGeometry not implemented for " << typeid(*this).name());
-    return nullptr;
+    return std::move(std::vector<std::unique_ptr<Geometry>>{});
   }
   
   /**
