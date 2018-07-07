@@ -32,7 +32,7 @@ class TriaO1 : public Geometry {
    * For a detailed description of the indexing of the vertices of child 
    * triangles see `Refinement.xoj`.
    */
-  virtual std::unique_ptr<Geometry>
+  virtual std::vector<std::unique_ptr<Geometry>>
   ChildGeometry(int ref_pattern,int anchor,int selector) const override;
   
  private:
