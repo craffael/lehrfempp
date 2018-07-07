@@ -42,15 +42,16 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::vector<std::unique_ptr<Geometry>>
-  SegmentO1::ChildGeometry(int ref_pattern,int,int) const {
+  SegmentO1::ChildGeometry(const RefinementPattern &ref_pat) const {
+    RefPat ref_pattern = ref_pat.refpat();
     std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
     switch (ref_pattern) {
-    case (int)RefinementPattern::rp_copy: {
+    case (int)RefPat::rp_copy: {
       child_geo_uptrs.push_back(std::make_unique<SegmentO1>(coords_));
       break;
     }
-    case (int)RefinementPattern::rp_regular:
-    case (int)RefinementPattern::rp_split: {
+    case (int)RefPat::rp_regular:
+    case (int)RefPat::rp_split: {
       const dim_t dim_global(coords_.rows());
       Eigen::Matrix<double,Eigen::Dynamic,2> child_geo(dim_global,2);
       // Reference coordinates of endpoints and midpoint
@@ -66,7 +67,7 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
       break;
     }
     default: {
-      LF_VERIFY_MSG(false,"Invalid refinement pattern " << ref_pattern);
+      LF_VERIFY_MSG(false,"Invalid refinement pattern " << (int)ref_pattern);
       break;
     }
     } // end switch

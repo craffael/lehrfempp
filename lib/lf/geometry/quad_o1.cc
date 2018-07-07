@@ -119,7 +119,11 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::vector<std::unique_ptr<Geometry>>
-  QuadO1::ChildGeometry(int ref_pattern,int anchor,int) const {
+  QuadO1::ChildGeometry(const RefinementPattern &ref_pat) const {
+    LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
+		  "Refinement pattern not for triangle")
+    RefPat ref_pattern = ref_pat.refpat();
+    const int anchor = ref_pat.anchor();
     // Vector for returning unique pointers to child geometries
     std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
     // Key properties of the current cell
@@ -144,14 +148,14 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
     
     // Create child geometries according to refinement patterns and selection
     switch (ref_pattern) {
-    case (int)RefinementPattern::rp_nil: {
+    case (int)RefPat::rp_nil: {
       break;
     }
-    case (int)RefinementPattern::rp_copy: {
+    case (int)RefPat::rp_copy: {
       child_geo_uptrs.push_back(std::make_unique<QuadO1>(coords_));
       break;
     }
-    case (int)RefinementPattern::rp_trisect: {
+    case (int)RefPat::rp_trisect: {
       // Partition a quad into three triangle, the anchor edge
       // being split in the process
 	tria_child_coords.col(0) = midpoint_coords.col(mod_0);
@@ -170,7 +174,7 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 	tria_child_coords.col(2) = corner_coords.col(mod_2);
       break;
     }
-    case (int)RefinementPattern::rp_quadsect: {
+    case (int)RefPat::rp_quadsect: {
       // Partition a quad into four triangle, thus 
       // splitting two edges. The one with the smaller sub index is the
       // anchor edge
@@ -195,8 +199,8 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_bisect: 
-    case (int)RefinementPattern::rp_split: {
+    case (int)RefPat::rp_bisect: 
+    case (int)RefPat::rp_split: {
       // Cut a quadrilateral into two 
 	quad_child_coords.col(0) = corner_coords.col(mod_0);
 	quad_child_coords.col(1) = midpoint_coords.col(mod_0);
@@ -211,7 +215,7 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_threeedge: {
+    case (int)RefPat::rp_threeedge: {
 	quad_child_coords.col(0) = corner_coords.col(mod_2);
 	quad_child_coords.col(1) = corner_coords.col(mod_3);
 	quad_child_coords.col(2) = midpoint_coords.col(mod_3);
@@ -234,8 +238,8 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_barycentric:
-    case (int)RefinementPattern::rp_regular: {
+    case (int)RefPat::rp_barycentric:
+    case (int)RefPat::rp_regular: {
       // Fully symmetric splitting into four quadrilaterals
       // Obtain coordinates of center of gravity
       Eigen::Matrix<double,2,1> ref_baryc_coords = Eigen::Vector2d({0.5,0.5});

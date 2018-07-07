@@ -7,6 +7,9 @@
 
 namespace lf::geometry {
 
+  // forward declaration
+  class RefinementPattern;
+  
 class Geometry {
  protected:
   Geometry() = default;
@@ -141,7 +144,7 @@ class Geometry {
    * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(int ref_pattern,int anchor,int selector) const {
+  ChildGeometry(const RefinementPattern &ref_pat) const {
     LF_VERIFY_MSG(false,
 		  "ChildGeometry not implemented for " << typeid(*this).name());
     return std::move(std::vector<std::unique_ptr<Geometry>>{});

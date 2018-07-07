@@ -27,11 +27,15 @@ namespace lf::geometry::test {
     ed_coords << 1,0,2,1;
     auto edge_ptr = std::make_unique<SegmentO1>(ed_coords);
 
+    // Set up refinement pattern
+    RefinementPattern rp_copy(lf::base::RefEl::kSegment(),RefPat::rp_copy);
+    RefinementPattern rp_split(lf::base::RefEl::kSegment(),RefPat::rp_split);
+    
     // Refine
     std::vector<std::unique_ptr<Geometry>> 
-      ed_copy(edge_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,-1));
+      ed_copy(edge_ptr->ChildGeometry(rp_copy));
     std::vector<std::unique_ptr<Geometry>> 
-      ed_split(edge_ptr->ChildGeometry((int)RefinementPattern::rp_split,-1,-1));
+      ed_split(edge_ptr->ChildGeometry(rp_split));
     EXPECT_EQ(ed_copy.size(),1);
     EXPECT_NE(ed_copy[0],nullptr);
     EXPECT_EQ(ed_split.size(),2);
@@ -67,37 +71,44 @@ namespace lf::geometry::test {
      	      << std::endl;
 		 
     // Check the various refinements
+    RefinementPattern rp_copy(lf::base::RefEl::kTria(),RefPat::rp_copy);
     std::cout << "***** rp_copy(0) : child " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,0))
+	      << (tria_geo_ptr->ChildGeometry(rp_copy))
 	      << std::endl;
     // Bisection refinement
     for (int anchor = 0; anchor < 3; anchor++) {
+      RefinementPattern rp_bisect(lf::base::RefEl::kTria(),RefPat::rp_bisect,anchor);
       std::cout << "*** rp_bisect(" << anchor << ") child "
-		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_bisect,anchor,-1))
+		<< (tria_geo_ptr->ChildGeometry(rp_bisect))
 		<< std::endl;
     }
     // Trisection refinement
     for (int anchor = 0; anchor < 3; anchor++) {
+      RefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_trisect,anchor);
       std::cout << "*** rp_trisect(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect,anchor,-1))
+		<< (tria_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
+      rp.setRefPattern(RefPat::rp_trisect_left);
       std::cout << "*** rp_trisect_left(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect_left,anchor,-1))
+		<< (tria_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
     }
     // Splitting into four triangles
     for (int anchor = 0; anchor < 3; anchor++) {
+      RefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_quadsect,anchor);
       std::cout << "*** rp_quadsect(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect,anchor,-1))
+		<< (tria_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
     }
     // Regular refinement
+    RefinementPattern rp_regular(lf::base::RefEl::kTria(),RefPat::rp_regular);
     std::cout << "*** rp_regular: children " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,-1))
+	      << (tria_geo_ptr->ChildGeometry(rp_regular))
 	      << std::endl;
     // Bayrcentric refinement
+    RefinementPattern rp_barycentric(lf::base::RefEl::kTria(),RefPat::rp_barycentric);
     std::cout << "*** rp_baryccentric, children " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry((int)RefinementPattern::rp_barycentric,-1,-1))
+	      << (tria_geo_ptr->ChildGeometry(rp_barycentric))
 	      << std::endl;
   }
 
@@ -113,38 +124,45 @@ namespace lf::geometry::test {
     quad_coords.col(3) = Eigen::Vector2d({3,5});
     std::unique_ptr<QuadO1> quad_geo_ptr = std::make_unique<QuadO1>(quad_coords);
     EXPECT_NE(quad_geo_ptr,nullptr);
-    std::cout << "Parent quadngle " << std::endl
+    std::cout << "Parent quadrilateral " << std::endl
      	      << quad_geo_ptr->Global(ref_quad_corners)
      	      << std::endl;
     
     // Check the various refinements
+    RefinementPattern rp_copy(lf::base::RefEl::kQuad(),RefPat::rp_copy);
     std::cout << "rp_copy(0) : child " << std::endl 
-	      << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_copy,-1,0))
+	      << (quad_geo_ptr->ChildGeometry(rp_copy))
 	      << std::endl;
 
     for (int anchor = 0; anchor < 4; anchor++) {
+      RefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_trisect,anchor);
       std::cout << "** rp_trisect(anchor = " << anchor << ") : children " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_trisect,anchor,-1))
+		<< (quad_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
     }
     for (int anchor = 0; anchor < 4; anchor++) {
+      RefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_quadsect,anchor);
       std::cout << "** rp_quadsect(anchor = " << anchor << ") : children " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_quadsect,anchor,-1))
+		<< (quad_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
     }
     for (int anchor = 0; anchor < 4; anchor++) {
+      RefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_split,anchor);
       std::cout << "** rp_split(anchor = " << anchor << ") : children "
 		<< -1 << " : " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_split,anchor,-1))
+		<< (quad_geo_ptr->ChildGeometry(rp))
 		<< std::endl;
     }
    for (int anchor = 0; anchor < 4; anchor++) {
+     RefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_threeedge,anchor);
      std::cout << "*** rp_threeedge(anchor = " << anchor << ") : children " << std::endl
-	       << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_threeedge,anchor,-1))
+	       << (quad_geo_ptr->ChildGeometry(rp))
 	       << std::endl;
    }
+   RefinementPattern rp_regular(lf::base::RefEl::kQuad(),RefPat::rp_regular);
    std::cout << "*** rp_regular, children " << std::endl 
-	     << (quad_geo_ptr->ChildGeometry((int)RefinementPattern::rp_regular,-1,-1))
+	     << (quad_geo_ptr->ChildGeometry(rp_regular))
 	     << std::endl;
   }
+
 }  // namespace lf::geometry::test

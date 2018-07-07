@@ -36,7 +36,7 @@ class SegmentO1 : public Geometry {
    * adjacent to endpoint 0, =1 returns the other half.
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(int ref_pattern,int anchor, int selector) const override;
+  ChildGeometry(const RefinementPattern &ref_pattern) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;
