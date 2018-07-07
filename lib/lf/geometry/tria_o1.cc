@@ -65,7 +65,11 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::vector<std::unique_ptr<Geometry>>
-  TriaO1::ChildGeometry(int ref_pattern,int anchor,int) const {
+  TriaO1::ChildGeometry(const RefinementPattern &ref_pat) const {
+    LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kTria(),
+		  "Refinement pattern not for triangle")
+    RefPat ref_pattern = ref_pat.refpat();
+    const int anchor = ref_pat.anchor();
     // vector for returning pointer
     std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
     const dim_t dim_global(DimGlobal());
@@ -87,14 +91,14 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
     
     // Create child geometries according to refinement patterns and selection
     switch (ref_pattern) {
-    case (int)RefinementPattern::rp_nil: {
+    case (int)RefPat::rp_nil: {
       break;
     }
-    case (int)RefinementPattern::rp_copy: {
+    case (int)RefPat::rp_copy: {
       child_geo_uptrs.push_back(std::make_unique<TriaO1>(coords_));
       break;
     }
-    case (int)RefinementPattern::rp_bisect: {
+    case (int)RefPat::rp_bisect: {
       // Splitting a triangle in two by bisecting anchor edge
       child_coords.col(0) = corner_coords.col(mod_0);
       child_coords.col(1) = midpoint_coords.col(mod_0);
@@ -107,7 +111,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
       child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_trisect: {
+    case (int)RefPat::rp_trisect: {
       // Bisect through anchor edge first and then bisect through
       // edge with the next larger index (mod 3); creates three
       // child triangles.
@@ -127,7 +131,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_trisect_left: {
+    case (int)RefPat::rp_trisect_left: {
       // Bisect through anchor edge first and then bisect through
       // edge with the next smaller index (mod 3); creates three
       // child triangles.
@@ -147,7 +151,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_quadsect: {
+    case (int)RefPat::rp_quadsect: {
       // Bisect through the anchor edge first and then
       // through the two remaining edges; creates four child
       // triangles; every edge is split.
@@ -172,7 +176,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_regular: {
+    case (int)RefPat::rp_regular: {
       // Split triangle into four small  congruent triangles
 	child_coords.col(0) = corner_coords.col(0);
 	child_coords.col(1) = midpoint_coords.col(0);
@@ -195,7 +199,7 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
 	child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_coords));
       break;
     }
-    case (int)RefinementPattern::rp_barycentric: {
+    case (int)RefPat::rp_barycentric: {
       //  Split triangle into 5 smaller triangles by connecting
       // the center of gravity with the vertices and the midpoints
       // of the edges.
