@@ -50,7 +50,7 @@ namespace lf::geometry {
      * with the value returned by `noChildren()`. The integer entries of the matrices
      * must be non-negative and the column sums must be <= the lattice constant.
      */
-    virtual std::vector<Eigen::Matrix<int,2,Eigen::Dynamic>>
+    virtual std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>
     ChildPolygons(void) const = 0;
   protected:
     lf::base::RefEl ref_el_;     /**< cell type */
@@ -88,24 +88,35 @@ enum RefPat: int {
  * 
  * For explanations see xournal notes in Refinement.xoj
  */ 
-class RefinementPattern {
+  class RefinementPattern: public LocalRefinePattern {
 public:
   /** @brief constructor */
   explicit  RefinementPattern(lf::base::RefEl ref_el):
-    ref_el_(ref_el),anchor_(-1),ref_pat_(rp_nil),anchor_set_(false) {}
+    LocalRefinePattern(ref_el),anchor_(-1),ref_pat_(rp_nil),anchor_set_(false) {}
   
   /** @brief constructor */
   RefinementPattern(lf::base::RefEl ref_el,RefPat ref_pat):
-    ref_el_(ref_el),anchor_(-1),ref_pat_(ref_pat),anchor_set_(false) {}
+    LocalRefinePattern(ref_el),anchor_(-1),ref_pat_(ref_pat),anchor_set_(false) {}
   
   /** @brief constructor */
   RefinementPattern(lf::base::RefEl ref_el,RefPat ref_pat,lf::base::sub_idx_t anchor):
-    ref_el_(ref_el),anchor_(anchor),ref_pat_(ref_pat),anchor_set_(true)
+    LocalRefinePattern(ref_el),anchor_(anchor),ref_pat_(ref_pat),anchor_set_(true)
   {
     LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
 		  "Anchor " << anchor << " invalid for " << ref_el_.ToString());
   }
-  
+
+    /**
+     * @copydoc LocalRefinePattern::noChildren 
+     */
+    virtual lf::base::size_type noChildren(void) const;
+    /**
+     * @copydoc LocalRefinePattern::ChildPolygons
+     */
+    virtual std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>
+    ChildPolygons(void) const;
+
+		       
   /** @brief set local number of anchor edge */
   RefinementPattern &setAnchor(lf::base::sub_idx_t anchor) {
     LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
@@ -128,7 +139,6 @@ public:
    * @brief Access methods
    * @{
    */
-  lf::base::RefEl RefEl(void) const { return ref_el_; }
   lf::base::sub_idx_t anchor(void) const { return anchor_; }
   RefPat refpat(void) const {
     LF_VERIFY_MSG(!(((ref_pat_ == rp_bisect) ||
@@ -143,7 +153,6 @@ public:
 
   virtual ~RefinementPattern(void) = default;
 private:
-  lf::base::RefEl ref_el_;     /**< cell type */
   lf::base::sub_idx_t anchor_; /**< local number of anchor edge */
   RefPat ref_pat_;             /**< refinement pattern */
   bool anchor_set_; /**< flag indicating valid anchor */
