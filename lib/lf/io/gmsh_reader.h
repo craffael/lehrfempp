@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @brief Declares the class GmshReader
+ * @author Raffael Casagrande
+ * @date   2018-06-29 04:51:59
+ * @copyright MIT License
+ */
+
 #ifndef __7fedf7cf1a0246a98b2bf431cfa34da2
 #define __7fedf7cf1a0246a98b2bf431cfa34da2
 #include <lf/mesh/mesh.h>
@@ -6,14 +14,6 @@
 #include <vector>
 #include "lf/base/lf_exception.h"
 #include "lf/mesh/mesh_data_set.h"
-
-/**
- * @file
- * @brief Declares the class GmshReader
- * @author Raffael Casagrande
- * @date   2018-06-29 04:51:59
- * @copyright MIT License
- */
 
 namespace lf::io {
 /// A representation of a .msh file in a c++ data structure.
@@ -260,6 +260,28 @@ int DimOf(MshFile::ElementType et);
  */
 MshFile readGmshFile(std::string path);
 
+/**
+ * @brief Reads a [Gmsh](http://gmsh.info/) `*.msh` file into a
+ * mesh::MeshFactory and provides a link between mesh::Entity objects and
+ * the gmsh's physical entities.
+ *
+ * In order to import the `*.msh` file successfully make sure that:
+ * - Save the mesh in Gmsh's proprietary `*.msh` file format
+ *   (`Version 2 ASCII` or `Version 2 Binary`)
+ * - If you have specified physical entities in Gmsh and you want to export
+ *   them, make sure you don't tick `Save all (ignore physical groups)` and
+ *   make sure that every surface (2d) / volume (3d) belongs to at least one
+ *   physical entity.
+ *   (Otherwise the corresponding mesh elements are not expored by Gmsh)
+ * - If you didn't specify any physical entities in Gmsh, you should tick
+ *   `Save all (ignore physical groups)`.
+ * - The GmshReader doesn't support the options "Save parametric coordinates"
+ *   and "Save one file per partition".
+ *
+ * #### Sample usage:
+ * @snippet gmsh_reader.cc usage
+ *
+ */
 class GmshReader {
  public:
   using size_type = mesh::Mesh::size_type;
@@ -308,9 +330,42 @@ class GmshReader {
    */
   std::vector<size_type> PhysicalEntityNr(const mesh::Entity& e) const;
 
+  /**
+   * @brief Test whether the given entity belongs to a Gmsh physical entity.
+   * @param e The entity that should be tested.
+   * @param physical_entity_nr The number of the gmsh physical entity.
+   * @return True if the entity `e` belongs to the physical entity.
+   *
+   * This method is related to the method PhysicalEntityNr(): It returns true,
+   * if the vector returned by `PhysicalEntityNr(e)` contains
+   * `physical_entity_nr`
+   *
+   * @sa PhysicalEntityNr()
+   */
+  bool IsPhysicalEntity(const mesh::Entity& e,
+                        size_type physical_entity_nr) const;
+
+  /**
+   * @brief Create a new GmshReader from the given MshFile (advanced usage)
+   * @param factory The mesh::MeshFactory that is used to construct the mesh.
+   * @param msh_file A LehrFEM++ specific representation of a GmshFile.
+   *
+   * @sa MshFile
+   */
   GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
              const MshFile& msh_file);
 
+  /**
+   * @brief Create a new GmshReader by reading from the specified file.
+   * @param factory The mesh::MeshFactory that is used to construct the mesh.
+   * @param filename The filename of the `.msh` file that is read.
+   *
+   * @note If the `factory.DimWorld() == 3`, there must be at least one
+   *       3D mesh element in the *.msh file. Similarly, if
+   *       `factory.DimWorld() == 2` there should be only 2D mesh elements
+   *       in the *.msh file!
+   * @note GmshReader supports ASCII and Binary `.msh` files.
+   */
   GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
              const std::string& filename);
 
