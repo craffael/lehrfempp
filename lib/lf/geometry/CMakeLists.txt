@@ -1,5 +1,6 @@
 set(sources
   geometry.h
+  geometry.cc
   geometry_interface.h
   point.h
   point.cc
