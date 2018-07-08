@@ -78,10 +78,12 @@ class Quadrilateral : public mesh::Entity {
     LF_VERIFY_MSG(edge1 != nullptr, "Invalid pointer to edge 1");
     LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
     LF_VERIFY_MSG(edge3 != nullptr, "Invalid pointer to edge 3");
-    LF_VERIFY_MSG(geometry->DimLocal() == 2,
-                  "Geometry must describe a 2D cell");
-    LF_VERIFY_MSG(geometry->RefEl() == base::RefEl::kQuad(),
-                  "Cell geometry must fit a quad");
+    if (geometry_) {
+      LF_VERIFY_MSG(geometry_->DimLocal() == 2,
+                    "Geometry must describe a 2D cell");
+      LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kQuad(),
+                    "Cell geometry must fit a quad");
+    }
     /*
        TODO: consistency check
     */
@@ -101,6 +103,9 @@ class Quadrilateral : public mesh::Entity {
    */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
+
+  /** @brief access to index of an entity */
+  size_type index() const { return index_; }
 
   /** @defgroup Standard methods of an Entity object
    * @sa mesh::Entity

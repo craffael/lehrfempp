@@ -61,9 +61,12 @@ class Segment : public mesh::Entity {
         nodes_({endpoint0, endpoint1}) {
     LF_VERIFY_MSG((endpoint0 != nullptr) && (endpoint1 != nullptr),
                   "Invalid pointer to endnode of edge");
-    LF_VERIFY_MSG(geometry->DimLocal() == 1, "Geometry must describe a curve");
-    LF_VERIFY_MSG(geometry->RefEl() == base::RefEl::kSegment(),
-                  "Segment geometry must fit a segment");
+    if (geometry_) {
+      LF_VERIFY_MSG(geometry_->DimLocal() == 1,
+                    "Geometry must describe a curve");
+      LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kSegment(),
+                    "Segment geometry must fit a segment");
+    }
   }
 
   /** @brief an edge is an entity of co-dimension 1 */
@@ -77,6 +80,9 @@ class Segment : public mesh::Entity {
    */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
+
+  /** @brief access to index of an entity */
+  size_type index() const { return index_; }
 
   /** @defgroup Standard methods of an Entity object
    * @sa mesh::Entity

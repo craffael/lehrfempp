@@ -4,6 +4,8 @@
 #include <lf/mesh/mesh.h>
 #include "mesh.h"
 
+#include <iostream>
+
 namespace lf::mesh::hybrid2dp {
 
 /**
@@ -19,6 +21,11 @@ namespace lf::mesh::hybrid2dp {
  */
 class MeshFactory : public mesh::MeshFactory {
  public:
+  MeshFactory(const MeshFactory&) = delete;
+  MeshFactory(MeshFactory&&) = delete;
+  MeshFactory& operator=(const MeshFactory&) = delete;
+  MeshFactory& operator=(MeshFactory&&) = delete;
+
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
    *        mesh.
@@ -44,6 +51,11 @@ class MeshFactory : public mesh::MeshFactory {
 
   /** @copydoc MeshFactory::Build() */
   std::shared_ptr<mesh::Mesh> Build() override;
+
+  /** @brief output function printing asssembled lists of entity information */
+  void PrintLists(std::ostream& o = std::cout) const;
+
+  ~MeshFactory() override = default;
 
  private:
   dim_t dim_world_;  // dimension of ambient space

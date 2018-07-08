@@ -1,4 +1,10 @@
-
+/**
+ * @file
+ * @brief Implementation of basic validation and diagnostics facilities
+ * @author Raffael Casagrande
+ * @date   2018-06-29 09:18:48
+ * @copyright MIT License
+ */
 
 #ifndef __c3c605c9e48646758bf03fab65d52836
 #define __c3c605c9e48646758bf03fab65d52836

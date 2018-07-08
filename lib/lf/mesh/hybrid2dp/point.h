@@ -12,6 +12,8 @@
 
 #include <lf/mesh/mesh.h>
 
+#include <iostream>
+
 namespace lf::mesh::hybrid2dp {
 
 /**
@@ -51,6 +53,9 @@ class Point : public mesh::Entity {
   explicit Point(size_type index,
                  std::unique_ptr<geometry::Geometry>&& geometry)
       : index_(index), geometry_(std::move(geometry)) {
+    // DIAGNOSTICS
+    std::cout << "hybrid2dp::Point(" << index_ << ") " << std::endl;
+    LF_VERIFY_MSG(geometry_, "Point must be supplied with a geometry");
     LF_VERIFY_MSG(geometry_->DimLocal() == 0,
                   "Geometry must be that of a point");
     LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kPoint(),
@@ -65,7 +70,11 @@ class Point : public mesh::Entity {
     return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
   }
 
+  /** @brief return _pointer_ to associated geometry object */
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
+
+  /** @brief access to index of an entity */
+  size_type index() const { return index_; }
 
   base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
 
@@ -77,7 +86,7 @@ class Point : public mesh::Entity {
 
  private:
   size_type index_ = -1;  // zero-based index of this entity.
-  std::unique_ptr<geometry::Geometry> geometry_;  // shape information
+  std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
 };
 
 }  // namespace lf::mesh::hybrid2dp
