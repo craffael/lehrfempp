@@ -15,6 +15,48 @@
 
 
 namespace lf::geometry {
+
+  /**
+   * @brief Abstract interface class for topological local refinement
+   *
+   * This class defines a local topological refinement pattern by convex
+   * polygon on an _integer lattice_ covering the reference element.
+   * 
+   */
+  class LocalRefinePattern {
+  public:
+    LocalRefinePattern(lf::base::RefEl ref_el):
+      ref_el_(ref_el),lattice_const_(6) {}
+    
+    LocalRefinePattern(lf::base::RefEl ref_el,lf::base::size_type lattice_const):
+      ref_el_(ref_el),lattice_const_(lattice_const) {
+      LF_VERIFY_MSG(lattice_const %6 == 0,"Lattice constant should be multiple of 6");
+    }
+
+    lf::base::RefEl RefEl(void) const { return ref_el_; }
+    lf::base::size_type LatticeConst(void) const { return lattice_const_; }
+    /**
+     * @brief provide number of child cells to be created by refinement
+     */
+    virtual lf::base::size_type noChildren(void) const = 0;
+    /**
+     * @brief provide lattice reference coordinates of vertices of child polygons
+     *
+     * the shaoe of the children of a cell is defined through a convex lattice polygon
+     * in the reference element. 
+     *
+     * @return vector of integer 2xn matrices containing the lattice coordinates
+     * of the verticess of the child polygons. The length of this vector must agree
+     * with the value returned by `noChildren()`. The integer entries of the matrices
+     * must be non-negative and the column sums must be <= the lattice constant.
+     */
+    virtual std::vector<Eigen::Matrix<int,2,Eigen::Dynamic>>
+    ChildPolygons(void) const = 0;
+  protected:
+    lf::base::RefEl ref_el_;     /**< cell type */
+    lf::base::size_type lattice_const_; /**< defines spacing of integer lattice */
+  };
+  
  /**
  * @brief (possibly incomplete) list of refinement patterns
  *
@@ -44,6 +86,7 @@ enum RefPat: int {
 /** 
  * @brief Class containing information about the refinement of a cell
  * 
+ * For explanations see xournal notes in Refinement.xoj
  */ 
 class RefinementPattern {
 public:
@@ -71,8 +114,15 @@ public:
     return (*this);
   }
 
-  /** @brief set refinement pattern */
-  RefinementPattern &setRefPattern(RefPat ref_pat) { ref_pat_ = ref_pat; }
+  /** @brief set refinement pattern 
+   *
+   * @note invalidates the local number of the anchor edge
+   *
+   * the calling sequence should be
+   * `setRefPattern(..).setAnchor(..)` 
+   */
+  RefinementPattern &setRefPattern(RefPat ref_pat) {
+    ref_pat_ = ref_pat; anchor_set_ = false; }
 
   /** @defgroup getRefPat
    * @brief Access methods
