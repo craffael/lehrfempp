@@ -137,8 +137,8 @@ TEST(lf_io, readTwoElementMesh) {
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  getMeshPath("two_element_hybrid_2d_binary.msh")));
-  /*checkTwoElementMesh(
-      GmshReader(std::make_unique<mesh::hybrid2dp::MeshFactory>(2),
-                 getMeshPath("two_element_hybrid_2d.msh")));*/
+  // checkTwoElementMesh(
+  //     GmshReader(std::make_unique<mesh::hybrid2dp::MeshFactory>(2),
+  //                getMeshPath("two_element_hybrid_2d.msh")));
 }
 }  // namespace lf::io::test
