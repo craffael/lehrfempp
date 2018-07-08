@@ -51,9 +51,9 @@ class Point : public mesh::Entity {
   explicit Point(size_type index,
                  std::unique_ptr<geometry::Geometry>&& geometry)
       : index_(index), geometry_(std::move(geometry)) {
-    LF_VERIFY_MSG(geometry->DimLocal() == 0,
+    LF_VERIFY_MSG(geometry_->DimLocal() == 0,
                   "Geometry must be that of a point");
-    LF_VERIFY_MSG(geometry->RefEl() == base::RefEl::kPoint(),
+    LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kPoint(),
                   "Geometry must fit point");
   }
 

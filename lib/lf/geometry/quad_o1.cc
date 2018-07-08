@@ -9,7 +9,7 @@ Eigen::MatrixXd QuadO1::Global(const Eigen::MatrixXd& local) const {
              ((1 - local.array().row(0)) * (1 - local.array().row(1)))
                  .matrix() +
          coords_.col(1) *
-             (local.array().row(0) * (1 - local.array().col(1))).matrix() +
+             (local.array().row(0) * (1 - local.array().row(1))).matrix() +
          coords_.col(2) *
              (local.array().row(0) * local.array().row(1)).matrix() +
          coords_.col(3) *

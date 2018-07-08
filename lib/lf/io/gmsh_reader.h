@@ -20,11 +20,11 @@ namespace lf::io {
 struct MshFile {
   using size_type = mesh::Mesh::size_type;
   /// The version of GMSH of the msh file, equals usually 2.2
-  double VersionNumber;
+  double VersionNumber = 0;
   /// Is it a binary file?
-  bool IsBinary;
+  bool IsBinary = false;
   /// how many bytes is a double?
-  int DoubleSize;
+  int DoubleSize = 64;
 
   /**
    * \brief Represents a physical entity as defined in gmsh.
@@ -42,7 +42,7 @@ struct MshFile {
   struct PhysicalEntity {
     /// Physical dimension of this physical name (1 for lines, 2 for surfaces
     /// etc.)
-    int Dimension;
+    int Dimension = 0;
     /// The identification number of the physical entity (is specified in GMSH
     /// with the command `Physical Point`, `Physical Line`, Surface etc.)
     /**
@@ -51,7 +51,7 @@ struct MshFile {
      * there is a name) argument of a `Physical Point`, `Physical Line`,
      * `Physical Surface` or `Physical Volume` command.
      */
-    int Number;
+    int Number = 0;
     /// The name of this Physical Entity (provided
     std::string Name;
   };
@@ -153,15 +153,15 @@ struct MshFile {
   struct Element {
     /// The number of this element in the mesh. They are not necessarily dense
     /// or ordered in sequence.
-    size_type Number;
+    size_type Number = 0;
     /// The element type
-    ElementType Type;
+    ElementType Type = ElementType::POINT;
     /**
      * \brief The Number of the Physical Entity to which this element belongs
      * (this is the first tag written in the .msh file) \note  Two Physical
      * Entities with different dimensions can have the same number!
      */
-    int PhysicalEntityNr;
+    int PhysicalEntityNr = 0;
     /**
      * \brief The number of the elementary entity to which this element belongs
      * (second element tag in .msh file)
@@ -170,7 +170,7 @@ struct MshFile {
      * to define the geometry that should be meshed. This is the number that was
      * given by the user to the point/line/surface/volume.
      */
-    int ElementaryEntityNr;
+    int ElementaryEntityNr = 0;
 
     /**
      * \brief The id's of the partition to which this element belongs.
@@ -208,11 +208,11 @@ struct MshFile {
    */
   struct PeriodicEntity {
     /// Dimension of the elementary entities that are coupled to each other.
-    int Dimension;
+    int Dimension = 0;
     /// The elementary entity number (\sa Element) on the slave side.
-    int ElementarySlaveNr;
+    int ElementarySlaveNr = 0;
     /// The elementary entity number (\sa Element) on the master side.
-    int ElementaryMasterNr;
+    int ElementaryMasterNr = 0;
     /**
      * \brief A List of nodes that pairs nodes on the slave side with nodes on
      *the master side.
@@ -306,12 +306,13 @@ class GmshReader {
    * \param e  The entity of the grid.
    * \return   The Physical Entity Number that was assigned in GMSH.
    */
-  std::vector<size_type> physicalEntityNr(const mesh::Entity& e);
+  std::vector<size_type> PhysicalEntityNr(const mesh::Entity& e) const;
 
   GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
              const MshFile& msh_file);
 
-  GmshReader(std::unique_ptr<mesh::MeshFactory> factory, std::string filename);
+  GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
+             const std::string& filename);
 
  private:
   /// The underlying grid created by the grid factory.
@@ -319,7 +320,7 @@ class GmshReader {
 
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
-  /// The physicalEntityNr of every node (0 if not set):
+  /// The PhysicalEntityNr of every node (0 if not set):
   std::shared_ptr<mesh::MeshDataSet<std::vector<size_type>>> physical_nrs_;
 
   /// Map from physicalEntity name -> nr, codim

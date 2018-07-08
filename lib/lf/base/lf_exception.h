@@ -24,7 +24,7 @@ class LfException : public std::exception {
    * @brief Create a new LfException with an error message.
    * @param what
    */
-  LfException(std::string what) : what_(std::move(what)) {}
+  explicit LfException(std::string what) : what_(std::move(what)) {}
 
   char const* what() const noexcept override { return what_.c_str(); }
 

@@ -30,7 +30,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   AllCodimMeshDataSet(AllCodimMeshDataSet&&) = delete;
   AllCodimMeshDataSet& operator=(const AllCodimMeshDataSet&) = delete;
   AllCodimMeshDataSet& operator=(AllCodimMeshDataSet&&) = delete;
-  ~AllCodimMeshDataSet() = default;
+  ~AllCodimMeshDataSet() override = default;
 
   /**
    * @brief Create a new AllCodimMeshDataSet and [Default
@@ -39,7 +39,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    * @param mesh The mesh that contains the entities.
    *
    */
-  AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh)
+  explicit AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
         mesh_(std::move(mesh)),

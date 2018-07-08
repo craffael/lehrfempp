@@ -94,6 +94,9 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
     // Register index numbers of vertices with the current cell
     sub_entities[1].reserve(element_nodes.size());
     for (auto node_nr : element_nodes) {
+      if (node_nr == size_type(-1)) {
+        continue;
+      }
       sub_entities[1].push_back(node_nr);
     }
     // Create new Entity object for current cell
