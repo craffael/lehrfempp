@@ -25,7 +25,9 @@ class MeshFactory;
  */
 class Mesh : public mesh::Mesh {
  public:
-  using dim_t = base::RefEl::dim_t;
+  using dim_t = lf::base::dim_t;
+  using sub_idx_t = lf::base::sub_idx_t;
+  using glb_idx_t = lf::base::glb_idx_t;
   char DimMesh() const override { return 2; }
   char DimWorld() const override { return dim_world_; }
 
