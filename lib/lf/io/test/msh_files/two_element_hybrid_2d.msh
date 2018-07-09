@@ -5,10 +5,10 @@ $PhysicalNames
 6
 0 1 "physicalEntity1"
 0 2 "physicalEntity2"
-1 3 "diagonal"
+1 4 "diagonal"
 2 1 "physicalEntity1"
-2 2 "physicalEntity2"
-2 4 "square"
+2 3 "physicalEntity3"
+2 5 "square"
 $EndPhysicalNames
 $Nodes
 5
@@ -22,8 +22,8 @@ $Elements
 6
 1 15 2 1 1 1
 2 15 2 2 1 1
-3 1 2 3 6 3 5
+3 1 2 4 6 3 5
 4 2 2 1 2 2 3 5
-5 2 2 2 2 2 3 5
-6 3 2 4 1 1 4 5 2
+5 2 2 3 2 2 3 5
+6 3 2 5 1 1 4 5 2
 $EndElements

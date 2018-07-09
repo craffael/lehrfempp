@@ -77,6 +77,17 @@ TEST(hybrid2d, directMeshConstruction) {
   EXPECT_EQ(it, range.end());
 
   mesh::test_utils::checkEntityIndexing(*mesh);
+  test_utils::checkMeshCompleteness(*mesh);
+
+  for (auto& e : mesh->Entities(0)) {
+    test_utils::checkGeometryOrientation(e);
+    test_utils::checkLocalTopology(e);
+  }
+
+  for (auto& e : mesh->Entities(1)) {
+    test_utils::checkGeometryOrientation(e);
+    test_utils::checkLocalTopology(e);
+  }
 }
 
 TEST(hybrid2d, buildMeshWithExplicitEdges) {

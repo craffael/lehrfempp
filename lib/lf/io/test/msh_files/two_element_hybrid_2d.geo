@@ -28,12 +28,10 @@ Plane Surface(2) = {2};
 Physical Point("physicalEntity1", 1) = {1};
 //+
 Physical Point("physicalEntity2", 2) = {1};
-//+
-Physical Line("diagonal") = {6};
-//+
 
 //+
-Physical Surface("square") = {1};
-//+
 Physical Surface("physicalEntity1", 1) = {2};
-Physical Surface("physicalEntity2", 2) = {2};
+Physical Surface("physicalEntity3", 3) = {2};
+
+Physical Line("diagonal") = {6};
+Physical Surface("square") = {1};

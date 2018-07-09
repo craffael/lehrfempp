@@ -157,9 +157,13 @@ std::ostream& operator<<(std::ostream& stream, const MshFile& mf) {
   for (auto e : mf.Elements) {
     stream << "  " << e.Number << "\t " << e.Type << '\t' << e.PhysicalEntityNr
            << "\t" << e.ElementaryEntityNr << "\t";
-    for (auto p : e.MeshPartitions) stream << p << ", ";
+    for (auto p : e.MeshPartitions) {
+      stream << p << ", ";
+    }
     stream << '\t';
-    for (auto n : e.NodeNumbers) stream << n << ", ";
+    for (auto n : e.NodeNumbers) {
+      stream << n << ", ";
+    }
     stream << std::endl;
   }
   stream << std::endl;
@@ -375,6 +379,7 @@ using nodePair_t = std::pair<size_type, Eigen::Vector3d>;
 
 /// To use MshFile Struct with boost spirit, node that we leave away all
 /// header information this is set using attributes.
+// NOLINTNEXTLINE
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
     lf::io::MshFile, MshFileAdapted,
     //(double, VersionNumber)
@@ -409,7 +414,7 @@ struct FusionIterator
   using index = boost::mpl::int_<POS>;
   using category = boost::fusion::random_access_traversal_tag;
 
-  FusionIterator(STRUCT& str) : struct_(str) {}
+  explicit FusionIterator(STRUCT& str) : struct_(str) {}
   STRUCT& struct_;
 };
 }  // namespace Eigen
@@ -518,7 +523,8 @@ struct distance_impl<Eigen::FusionIteratorTag<MATRIX>> {
   struct apply : mpl::minus<typename LAST::index, typename FIRST::index> {
     using self = apply<FIRST, LAST>;
 
-    static typename self::type call(FIRST const& first, LAST const& last) {
+    static typename self::type call(FIRST const& /*first*/,
+                                    LAST const& /*last*/) {
       return typename self::type();
     }
   };
@@ -612,7 +618,7 @@ namespace phoenix = boost::phoenix;
 struct gmshElementType : qi::symbols<char, unsigned> {
   gmshElementType() {
     for (auto& et : MshFile::AllElementTypes) {
-      add(std::to_string((int)et), (int)et);
+      add(std::to_string(static_cast<int>(et)), static_cast<int>(et));
     }
   }
 };
@@ -644,7 +650,11 @@ struct MshGrammarText
     using qi::lit;
     using qi::omit;
     using qi::repeat;
-    using namespace qi::labels;
+    using qi::labels::_1;
+    using qi::labels::_2;
+    using qi::labels::_3;
+    using qi::labels::_4;
+    using qi::labels::_a;
 
     // General Parsers:
     quotedString_ %= lexeme['"' >> +(char_ - '"') >> '"'];
@@ -660,7 +670,7 @@ struct MshGrammarText
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
 
     // Physical Entities:
-    physicalEntity_ %= int_ > int_ > quotedString_;
+    physicalEntity_ %= int_ > int_ > quotedString_;  // NOLINT
     physicalEntity_.name("Physical Entity Entry");
     qi::on_error<qi::fail>(physicalEntity_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
@@ -688,11 +698,12 @@ struct MshGrammarText
     // Periodic entities:
     periodicEntityNodeMapping_ =
         omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >
-        repeat(_a)[qi::uint_ > qi::uint_];
+        repeat(_a)[qi::uint_ > qi::uint_];  // NOLINT
     periodicEntityNodeMapping_.name("slave-master node mapping");
     qi::on_error<qi::fail>(periodicEntityNodeMapping_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
-    periodicEntity_ = int_ > int_ > int_ > periodicEntityNodeMapping_;
+    periodicEntity_ =
+        int_ > int_ > int_ > periodicEntityNodeMapping_;  // NOLINT
     periodicEntity_.name("periodic entity");
     qi::on_error<qi::fail>(periodicEntity_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
@@ -753,10 +764,12 @@ struct MshGrammarText
     };
 
     template <class FIRST, class LAST, class ERROR_POS, class WHAT>
-    void operator()(FIRST first, LAST last, ERROR_POS errorPos,
+    void operator()(FIRST first, LAST last, ERROR_POS /*errorPos*/,
                     WHAT what) const {
       std::string input(first, last);
-      if (input.length() > 40) input = input.substr(0, 40);
+      if (input.length() > 40) {
+        input = input.substr(0, 40);
+      }
       std::cout << "Error in MshFile! Expecting " << what << " here: \""
                 << input << "\"" << std::endl;
     }
@@ -779,14 +792,14 @@ const std::vector<MshFile::ElementType> MshFile::AllElementTypes{
     ElementType::EDGE6,     ElementType::TET20,     ElementType::TET35,
     ElementType::TET56,     ElementType::HEX64,     ElementType::HEX125};
 
-MshFile readGMshFile(std::string filename) {
+MshFile readGMshFile(const std::string& filename) {
   // Open file and copy into memory:hydi::io::MshFile
   //////////////////////////////////////////////////////////////////////////
   std::ifstream in(filename, std::ios_base::in);
   if (!in) {
     std::string error("Could not open file ");
     error += filename;
-    throw new base::LfException(error);
+    throw base::LfException(error);
   }
   std::string storage;
   in.unsetf(std::ios::skipws);  // No white space skipping
@@ -838,11 +851,20 @@ MshFile readGMshFile(std::string filename) {
            qi::locals<size_type, int, int, int, size_type>>
       elementGroup;
 
-  using namespace qi::labels;
   using phoenix::reserve;
   using qi::omit;
   using qi::repeat;
-  if (result.IsBinary == false) {
+  using qi::labels::_a;
+  using qi::labels::_b;
+  using qi::labels::_c;
+  using qi::labels::_d;
+  using qi::labels::_e;
+  using qi::labels::_r1;
+  using qi::labels::_r2;
+  using qi::labels::_r3;
+  using qi::labels::_val;
+
+  if (!result.IsBinary) {
     // Text file
     vec3 = qi::double_ >> ' ' >> qi::double_ >> ' ' >> qi::double_;
     node = qi::uint_ >> ' ' >> vec3 >> qi::eol;
@@ -957,7 +979,9 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
     } else if (dim_mesh == 3) {
       mi = mesh_factory_->AddPoint(n.second);
     }
-    if (gi2mi.size() <= n.first) gi2mi.resize(n.first + 1);
+    if (gi2mi.size() <= n.first) {
+      gi2mi.resize(n.first + 1);
+    }
     gi2mi[n.first] = mi;
   }
 
@@ -1053,7 +1077,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
         main_nodes[i] = gi2mi[end_element.NodeNumbers[i]];
       }
 
-      auto mi = mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
+      mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
       mi2gi[codim].emplace_back(std::vector{end});
     }
   }
@@ -1106,29 +1130,32 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
 }
 
 GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
-                       std::string filename)
+                       const std::string& filename)
     : GmshReader(std::move(factory), readGMshFile(filename)) {}
 
 size_type GmshReader::PhysicalEntityName2Nr(const std::string& name,
                                             dim_t codim) const {
   LF_ASSERT_MSG(!name.empty(), "name is empty");
-  auto [begin, end] = name_2_nr_.equal_range(name);
+  auto [begin, end] = name_2_nr_.equal_range(name);  // NOLINT
   if (begin == end) {
-    throw new base::LfException("No Physical Entity with this name found.");
+    throw base::LfException("No Physical Entity with this name found.");
   }
   auto result = *begin;
   ++begin;
   if (begin == end) {
-    if (codim == -1 || codim == result.second.second) {
+    if (codim == dim_t(-1) || codim == result.second.second) {
       return result.second.first;
     }
   } else {
-    if (codim == -1) {
+    if (codim == dim_t(-1)) {
       throw base::LfException(
           "There are multiple physical entities with the name " + name +
           ", please specify also the codimension.");
     }
-    while (begin->second.second != codim || begin == end) {
+    if (result.second.second == codim) {
+      return result.second.first;
+    }
+    while (begin->second.second != codim && begin != end) {
       ++begin;
     }
     if (begin->second.second == codim) {
@@ -1142,24 +1169,27 @@ size_type GmshReader::PhysicalEntityName2Nr(const std::string& name,
 
 std::string GmshReader::PhysicalEntityNr2Name(size_type number,
                                               dim_t codim) const {
-  auto [begin, end] = nr_2_name_.equal_range(number);
+  auto [begin, end] = nr_2_name_.equal_range(number);  // NOLINT
   if (begin == end) {
-    throw new base::LfException("Physical entity with number " +
-                                std::to_string(number) + " not found.");
+    throw base::LfException("Physical entity with number " +
+                            std::to_string(number) + " not found.");
   }
   auto result = *begin;
   ++begin;
   if (begin == end) {
-    if (codim == -1 || result.second.second == codim) {
+    if (codim == dim_t(-1) || result.second.second == codim) {
       return result.second.first;
     }
   } else {
-    if (codim == -1) {
+    if (codim == dim_t(-1)) {
       throw base::LfException(
           "There are multiple physical entities with the Number " +
           std::to_string(number) + ", please specify also the codimension");
     }
-    while (begin->second.second == codim || begin == end) {
+    if (result.second.second == codim) {
+      return result.second.first;
+    }
+    while (begin->second.second != codim && begin != end) {
       ++begin;
     }
     if (begin->second.second == codim) {
@@ -1171,7 +1201,8 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
       ", codim=" + std::to_string(codim) + " not found.");
 }
 
-std::vector<size_type> GmshReader::physicalEntityNr(const mesh::Entity& e) {
+std::vector<size_type> GmshReader::PhysicalEntityNr(
+    const mesh::Entity& e) const {
   return physical_nrs_->data(e);
 }
 

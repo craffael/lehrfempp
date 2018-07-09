@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @brief Declares the class GmshReader
+ * @author Raffael Casagrande
+ * @date   2018-06-29 04:51:59
+ * @copyright MIT License
+ */
+
 #ifndef __7fedf7cf1a0246a98b2bf431cfa34da2
 #define __7fedf7cf1a0246a98b2bf431cfa34da2
 #include <lf/mesh/mesh.h>
@@ -7,24 +15,16 @@
 #include "lf/base/lf_exception.h"
 #include "lf/mesh/mesh_data_set.h"
 
-/**
- * @file
- * @brief Declares the class GmshReader
- * @author Raffael Casagrande
- * @date   2018-06-29 04:51:59
- * @copyright MIT License
- */
-
 namespace lf::io {
 /// A representation of a .msh file in a c++ data structure.
 struct MshFile {
   using size_type = mesh::Mesh::size_type;
   /// The version of GMSH of the msh file, equals usually 2.2
-  double VersionNumber;
+  double VersionNumber = 0;
   /// Is it a binary file?
-  bool IsBinary;
+  bool IsBinary = false;
   /// how many bytes is a double?
-  int DoubleSize;
+  int DoubleSize = 64;
 
   /**
    * \brief Represents a physical entity as defined in gmsh.
@@ -42,7 +42,7 @@ struct MshFile {
   struct PhysicalEntity {
     /// Physical dimension of this physical name (1 for lines, 2 for surfaces
     /// etc.)
-    int Dimension;
+    int Dimension = 0;
     /// The identification number of the physical entity (is specified in GMSH
     /// with the command `Physical Point`, `Physical Line`, Surface etc.)
     /**
@@ -51,7 +51,7 @@ struct MshFile {
      * there is a name) argument of a `Physical Point`, `Physical Line`,
      * `Physical Surface` or `Physical Volume` command.
      */
-    int Number;
+    int Number = 0;
     /// The name of this Physical Entity (provided
     std::string Name;
   };
@@ -153,15 +153,15 @@ struct MshFile {
   struct Element {
     /// The number of this element in the mesh. They are not necessarily dense
     /// or ordered in sequence.
-    size_type Number;
+    size_type Number = 0;
     /// The element type
-    ElementType Type;
+    ElementType Type = ElementType::POINT;
     /**
      * \brief The Number of the Physical Entity to which this element belongs
      * (this is the first tag written in the .msh file) \note  Two Physical
      * Entities with different dimensions can have the same number!
      */
-    int PhysicalEntityNr;
+    int PhysicalEntityNr = 0;
     /**
      * \brief The number of the elementary entity to which this element belongs
      * (second element tag in .msh file)
@@ -170,7 +170,7 @@ struct MshFile {
      * to define the geometry that should be meshed. This is the number that was
      * given by the user to the point/line/surface/volume.
      */
-    int ElementaryEntityNr;
+    int ElementaryEntityNr = 0;
 
     /**
      * \brief The id's of the partition to which this element belongs.
@@ -208,11 +208,11 @@ struct MshFile {
    */
   struct PeriodicEntity {
     /// Dimension of the elementary entities that are coupled to each other.
-    int Dimension;
+    int Dimension = 0;
     /// The elementary entity number (\sa Element) on the slave side.
-    int ElementarySlaveNr;
+    int ElementarySlaveNr = 0;
     /// The elementary entity number (\sa Element) on the master side.
-    int ElementaryMasterNr;
+    int ElementaryMasterNr = 0;
     /**
      * \brief A List of nodes that pairs nodes on the slave side with nodes on
      *the master side.
@@ -260,6 +260,28 @@ int DimOf(MshFile::ElementType et);
  */
 MshFile readGmshFile(std::string path);
 
+/**
+ * @brief Reads a [Gmsh](http://gmsh.info/) `*.msh` file into a
+ * mesh::MeshFactory and provides a link between mesh::Entity objects and
+ * the gmsh's physical entities.
+ *
+ * In order to import the `*.msh` file successfully make sure that:
+ * - Save the mesh in Gmsh's proprietary `*.msh` file format
+ *   (`Version 2 ASCII` or `Version 2 Binary`)
+ * - If you have specified physical entities in Gmsh and you want to export
+ *   them, make sure you don't tick `Save all (ignore physical groups)` and
+ *   make sure that every surface (2d) / volume (3d) belongs to at least one
+ *   physical entity.
+ *   (Otherwise the corresponding mesh elements are not expored by Gmsh)
+ * - If you didn't specify any physical entities in Gmsh, you should tick
+ *   `Save all (ignore physical groups)`.
+ * - The GmshReader doesn't support the options "Save parametric coordinates"
+ *   and "Save one file per partition".
+ *
+ * #### Sample usage:
+ * @snippet gmsh_reader.cc usage
+ *
+ */
 class GmshReader {
  public:
   using size_type = mesh::Mesh::size_type;
@@ -306,12 +328,46 @@ class GmshReader {
    * \param e  The entity of the grid.
    * \return   The Physical Entity Number that was assigned in GMSH.
    */
-  std::vector<size_type> physicalEntityNr(const mesh::Entity& e);
+  std::vector<size_type> PhysicalEntityNr(const mesh::Entity& e) const;
 
+  /**
+   * @brief Test whether the given entity belongs to a Gmsh physical entity.
+   * @param e The entity that should be tested.
+   * @param physical_entity_nr The number of the gmsh physical entity.
+   * @return True if the entity `e` belongs to the physical entity.
+   *
+   * This method is related to the method PhysicalEntityNr(): It returns true,
+   * if the vector returned by `PhysicalEntityNr(e)` contains
+   * `physical_entity_nr`
+   *
+   * @sa PhysicalEntityNr()
+   */
+  bool IsPhysicalEntity(const mesh::Entity& e,
+                        size_type physical_entity_nr) const;
+
+  /**
+   * @brief Create a new GmshReader from the given MshFile (advanced usage)
+   * @param factory The mesh::MeshFactory that is used to construct the mesh.
+   * @param msh_file A LehrFEM++ specific representation of a GmshFile.
+   *
+   * @sa MshFile
+   */
   GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
              const MshFile& msh_file);
 
-  GmshReader(std::unique_ptr<mesh::MeshFactory> factory, std::string filename);
+  /**
+   * @brief Create a new GmshReader by reading from the specified file.
+   * @param factory The mesh::MeshFactory that is used to construct the mesh.
+   * @param filename The filename of the `.msh` file that is read.
+   *
+   * @note If the `factory.DimWorld() == 3`, there must be at least one
+   *       3D mesh element in the *.msh file. Similarly, if
+   *       `factory.DimWorld() == 2` there should be only 2D mesh elements
+   *       in the *.msh file!
+   * @note GmshReader supports ASCII and Binary `.msh` files.
+   */
+  GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
+             const std::string& filename);
 
  private:
   /// The underlying grid created by the grid factory.
@@ -319,7 +375,7 @@ class GmshReader {
 
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
-  /// The physicalEntityNr of every node (0 if not set):
+  /// The PhysicalEntityNr of every node (0 if not set):
   std::shared_ptr<mesh::MeshDataSet<std::vector<size_type>>> physical_nrs_;
 
   /// Map from physicalEntity name -> nr, codim

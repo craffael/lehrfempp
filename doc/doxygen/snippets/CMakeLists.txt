@@ -1,8 +1,9 @@
 # Here we want to compile all snippets to make sure that they stay up-to-date, even when the code is refactored.
 
-set(sources 
-  ref_el.cc
+set(sources
   forward_iterator.cc
+  gmsh_reader.cc
+  ref_el.cc
 )
 
 add_library(docsnippets ${sources})

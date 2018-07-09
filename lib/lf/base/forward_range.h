@@ -132,7 +132,7 @@ class ForwardRange {
           std::forward_iterator_tag,
           typename std::iterator_traits<decltype(
               std::declval<C>().begin())>::iterator_category>::value>::type>
-  ForwardRange(const C& forward_range)
+  ForwardRange(const C& forward_range)  // NOLINT
       : wrapper_(new ConstReferenceImpl<C>(forward_range)) {}
 
   ForwardRange(std::initializer_list<std::remove_const_t<T>> initializer_list)
