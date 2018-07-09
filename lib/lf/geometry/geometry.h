@@ -30,6 +30,10 @@ namespace lf::geometry {
     
     LocalRefinePattern(lf::base::RefEl ref_el,lf::base::size_type lattice_const):
       ref_el_(ref_el),lattice_const_(lattice_const) {
+      // Lattice constant N should be a multiple of six in order to be able to
+      // define both the barycenter (lattice coordinates [N/3,N/3,N/3], and
+      // the midpoints of edges. (lattice coordinates e.g. [N/2,N/2,0]).
+      // Of course all lattice coordinates must be integers and must add up to N.
       LF_VERIFY_MSG(lattice_const %6 == 0,"Lattice constant should be multiple of 6");
     }
 
