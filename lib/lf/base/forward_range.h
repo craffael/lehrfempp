@@ -126,11 +126,13 @@ class ForwardRange {
   ForwardRange(const ForwardRange& rhs) : wrapper_(rhs->Clone()) {}
   ForwardRange(ForwardRange&&) noexcept = default;
 
-  template <class C, typename = typename std::enable_if<std::is_same<
-                         typename std::iterator_traits<decltype(
-                             std::declval<C>().begin())>::iterator_category,
-                         std::forward_iterator_tag>::value>::type>
-  explicit ForwardRange(const C& forward_range)
+  template <
+      class C,
+      typename = typename std::enable_if<std::is_base_of<
+          std::forward_iterator_tag,
+          typename std::iterator_traits<decltype(
+              std::declval<C>().begin())>::iterator_category>::value>::type>
+  ForwardRange(const C& forward_range)  // NOLINT
       : wrapper_(new ConstReferenceImpl<C>(forward_range)) {}
 
   ForwardRange(std::initializer_list<std::remove_const_t<T>> initializer_list)
@@ -149,6 +151,16 @@ class ForwardRange {
   ForwardIterator<T> begin() const { return wrapper_->begin(); }
   ForwardIterator<T> end() const { return wrapper_->end(); }
 };
+
+// user defined deduction guide:
+template <class C,
+          typename = typename std::enable_if<std::is_base_of<
+              std::forward_iterator_tag,
+              typename std::iterator_traits<decltype(
+                  std::declval<C>().begin())>::iterator_category>::value>::type>
+ForwardRange(const C& forward_range)
+    ->ForwardRange<
+        typename std::remove_reference<decltype(*forward_range.begin())>::type>;
 
 }  // namespace lf::base
 

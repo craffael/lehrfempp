@@ -32,6 +32,7 @@ class Mesh : public mesh::Mesh {
   base::ForwardRange<const Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
   size_type Index(const Entity& e) const override;
+  bool Contains(const Entity& e) const override;
 
  private:
   dim_t dim_world_{};

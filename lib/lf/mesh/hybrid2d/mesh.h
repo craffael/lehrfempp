@@ -22,6 +22,8 @@ class Mesh : public mesh::Mesh {
 
   size_type Index(const mesh::Entity& e) const override;
 
+  bool Contains(const mesh::Entity& e) const override;
+
  private:
   char dim_world_;
   std::vector<Entity<0>> entities0_;

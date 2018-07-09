@@ -94,6 +94,9 @@ Mesh::Mesh(char dim_world, std::vector<Eigen::VectorXd> nodes,
     // Register index numbers of vertices with the current cell
     sub_entities[1].reserve(element_nodes.size());
     for (auto node_nr : element_nodes) {
+      if (node_nr == size_type(-1)) {
+        continue;
+      }
       sub_entities[1].push_back(node_nr);
     }
     // Create new Entity object for current cell
@@ -253,6 +256,19 @@ Mesh::size_type Mesh::Index(const mesh::Entity &e) const {
       LF_VERIFY_MSG(false,
                     "Something is horribyl wrong, this entity has codim = " +
                         std::to_string(e.Codim()));
+  }
+}
+
+bool Mesh::Contains(const mesh::Entity &e) const {
+  switch (e.Codim()) {
+    case 0:
+      return &e >= &entities0_.front() && &e <= &entities0_.back();
+    case 1:
+      return &e >= &entities1_.front() && &e <= &entities1_.back();
+    case 2:
+      return &e >= &entities2_.front() && &e <= &entities2_.back();
+    default:
+      return false;
   }
 }
 }  // namespace lf::mesh::hybrid2d
