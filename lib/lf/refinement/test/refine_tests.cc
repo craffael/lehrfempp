@@ -139,5 +139,49 @@ using INTEGERMATRIX = Eigen::MatrixXi;
       std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
     }
   }
+
+  TEST(TopRefTest,QuadRef) {
+    // Check the various refinements
+    {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_copy);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "COPY: " << child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_trisect,anchor);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "TRISECT(anchor=" << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_quadsect,anchor);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "QUADSECT(anchor=" << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
+    for (int anchor = 0; anchor < 4; anchor++) {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_split,anchor);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "Split(anchor=" << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
+   for (int anchor = 0; anchor < 4; anchor++) {
+     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_threeedge,anchor);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "THREEEDGE(anchor=" << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+   }
+   {
+     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_regular);
+     lt_polys_t child_polygons(rp.ChildPolygons());
+     std::cout << "BARYCENTRIC: " << child_polygons << std::endl;
+     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+   }
+  }
   
 }  // namespace lf::refinement::test

@@ -369,7 +369,7 @@ Hybrid2DRefinementPattern::ChildPolygons(void) const {
 	child_poly.push_back(tria_child_coords);
 
 	tria_child_coords.col(0) = lt_midpoint_coords.col(mod_0);
-	tria_child_coords.col(1) = lt_midpoint_coords.col(mod_2);
+	tria_child_coords.col(1) = lt_midpoint_coords.col(mod_1);
 	tria_child_coords.col(2) = lt_node_coords.col(mod_3);
 	child_poly.push_back(tria_child_coords);
       break;
