@@ -8,6 +8,7 @@
 namespace lf::geometry {
 
   // forward declaration
+  // The class is defined in geometry.h
   class RefinementPattern;
   
 class Geometry {

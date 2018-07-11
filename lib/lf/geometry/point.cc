@@ -32,8 +32,11 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
   Point::ChildGeometry(const RefinementPattern &ref_pattern) const
   {
     std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
-    LF_VERIFY_MSG(ref_pattern.refpat() == (int)RefPat::rp_copy,
-		  "Illegal refinement pattern " << (int)ref_pattern.refpat());
+    LF_VERIFY_MSG(ref_pattern.RefEl() == lf::base::RefEl::kPoint(),
+		  "ref_patern.RefEl() = " << ref_pattern.RefEl().ToString());
+    LF_VERIFY_MSG(ref_pattern.noChildren() == 1,
+		  "ref_pattern.noChildren() = " << ref_pattern.noChildren());
+    // The only way to "refine" a point is to copy it
     child_geo_uptrs.push_back(std::make_unique<Point>(coord_));
     return std::move(child_geo_uptrs);
   }
