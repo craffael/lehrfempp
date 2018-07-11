@@ -22,6 +22,7 @@ class Mesh;
  */
 template <char CODIM>
 // NOLINTNEXTLINE(hicpp-member-init)
+
 class Entity : public mesh::Entity {
   using size_type = mesh::Mesh::size_type;
 
@@ -92,7 +93,8 @@ class Entity : public mesh::Entity {
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
 
   friend class Mesh;
-};
+}; // class Mesh
+
 
 }  // namespace lf::mesh::hybrid2d
 

@@ -9,7 +9,7 @@
 //#include <boost/range.hpp>
 #include <Eigen/Eigen>
 #include "lf_assert.h"
-#include "static_vars.h" // Correct?
+#include "static_vars.h" // Added
 
 namespace lf::base {
 
@@ -474,17 +474,12 @@ void PrintInfo(const RefEl &ref_el, std::ostream &o);
  * @snippet ref_el.cc streamOutput
  */
 inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
-    PrintInfo(ref_el, stream);
 
-    /*
-     * Keep this commented out until PrintInfo is tested thoroughly
-     *
     if (RefEl::output_ctrl_ == 0){
         return stream << ref_el.ToString();
     } else {
         PrintInfo(ref_el, stream);
     }
-    */
 }
 
 }  // namespace lf::base

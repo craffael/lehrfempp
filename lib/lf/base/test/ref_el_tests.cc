@@ -12,4 +12,5 @@ TEST(RefEl, dimensionCorrect) {
   EXPECT_EQ(RefEl::kTria().Dimension(), 2);
   EXPECT_EQ(RefEl::kQuad().Dimension(), 2);
 }
+
 }  // namespace lf::base::test
