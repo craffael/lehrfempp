@@ -1,6 +1,6 @@
 include(GoogleTest)
 
-set(sources refine_tests.cc)
+set(sources refine_tests.cc geo_ref_test.cc)
 
 add_executable(lf.refinement.test ${sources})
 target_link_libraries(lf.refinement.test

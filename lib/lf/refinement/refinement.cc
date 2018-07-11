@@ -244,9 +244,9 @@ Hybrid2DRefinementPattern::ChildPolygons(void) const {
 	child_coords.col(2) = lt_midpoint_coords.col(1);
 	child_poly.push_back(child_coords);
 
-	child_coords.col(0) = lt_node_coords.col(1);
-	child_coords.col(1) = lt_midpoint_coords.col(0);
-	child_coords.col(2) = lt_node_coords.col(2);
+	child_coords.col(0) = lt_midpoint_coords.col(0);
+	child_coords.col(1) = lt_midpoint_coords.col(1);
+	child_coords.col(2) = lt_midpoint_coords.col(2);
 	child_poly.push_back(child_coords);
       break;
     }

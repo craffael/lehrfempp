@@ -1,171 +1,143 @@
+/** @file geo_ref_test.cc
+ * tests for the topological refinement of reference entities
+ */
 #include <gtest/gtest.h>
 #include <lf/refinement/refinement.h>
+#include <stdlib.h>
 #include <iostream>
 
 namespace lf::refinement::test {
 
-  std::ostream  &
-  operator << (std::ostream &o,
-	       const std::vector<std::unique_ptr<lf::geometry::Geometry>> &geo_uptrs) {
-    const int n_uptrs =  geo_uptrs.size();
-    o << "Array of size " << n_uptrs << " of Geometry pointers: " << std::endl;
-    for (int l = 0 ; l < n_uptrs; l++) {
-      if (geo_uptrs[l] != nullptr) {
-	const lf::base::RefEl ref_el = geo_uptrs[l]->RefEl();
-	o << "\t ===> Entity " << l << " = " << ref_el.ToString()
-	  << " with node positions " << std::endl;
-	const Eigen::MatrixXd ref_el_vertices(ref_el.NodeCoords());
-	o << geo_uptrs[l]->Global(ref_el_vertices) << std::endl;
+  using lt_polys_t = std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>;
+  
+  // Output of lattice polygons
+  void PrintLatticePolygons(const lt_polys_t &polygons);
+
+  void PrintLatticePolygons(std::ostream  &o,const lt_polys_t &polygons) {
+    int n_poly = polygons.size();
+    if (n_poly > 0) {
+      int dim = polygons[0].rows();
+      if (dim > 0) {
+	o << n_poly << " polygons in dimension " << dim << std::endl;
+	for (int l=0; l < n_poly; l++) {
+	  LF_VERIFY_MSG(polygons[l].rows() == dim,
+			"Polygon " << l << " dimension mismatch: "
+			<< dim << " <-> " << polygons[l].rows());
+	  o << "\t polygon " << l << ": " << std::endl << polygons[l] << std::endl;
+	}
       }
-      else o << "!!! Pointer " << l << " not valid!" << std::endl;
+      else o << "Point polygon";
     }
+    else o << "Empty polygon";
+  }
+
+  std::ostream &operator << (std::ostream &o,const lt_polys_t &polygons) {
+    PrintLatticePolygons(o,polygons);
     return o;
   }
-  
-  TEST(RefineTest,SegRef) {
-    // Create edge geometry
-    Eigen::Matrix<double, Eigen::Dynamic, 2> ed_coords(2,2);
-    ed_coords << 1,0,2,1;
-    auto edge_ptr = std::make_unique<lf::geometry::SegmentO1>(ed_coords);
 
+  // Computes the area of a _convex_ integer lattice polygon 
+  //  template<typename INTEGERMATRIX>
+using INTEGERMATRIX = Eigen::MatrixXi;
+  unsigned int TwiceArea2DLatticePolygon(const INTEGERMATRIX &lt_poly) {
+    LF_VERIFY_MSG(lt_poly.rows() == 2,"Only available in dimension 2");
+    int n_vertices = lt_poly.cols();
+    if (n_vertices < 3) return 0;
+    else if (n_vertices == 3) {
+      // Determinant area formula for triangles
+      Eigen::Vector2i d1((lt_poly.col(1)-lt_poly.col(0)));
+      Eigen::Vector2i d2((lt_poly.col(2)-lt_poly.col(0)));
+      return std::abs((int)(d1(0)*d2(1)-d1(1)*d2(0)));
+    }
+    else {
+      // recursion: split off a triangle
+      unsigned int area_triangle =
+	TwiceArea2DLatticePolygon(lt_poly.template block<2,3>(0,0));
+      unsigned int area_remainder =
+	TwiceArea2DLatticePolygon(lt_poly.block(0,1,2,n_vertices-1));
+      return area_triangle + area_remainder;
+    }
+    return 0;
+  }
+
+  // Summing 2x area of several polygons
+  unsigned int SumTwiceAreaPolygons(const lt_polys_t &polygons) {
+    int n_poly = polygons.size();
+    if (n_poly > 0) {
+      unsigned int area_sum = 0;
+      for (int l=0; l < n_poly; l++) {
+	area_sum += TwiceArea2DLatticePolygon(polygons[l]);
+	}
+      return area_sum;
+      }
+    return 0;
+  }
+
+
+  // Test of topological refinement of a triangle
+  TEST(TopRefTest,SegRef) {
     // Set up refinement pattern
     Hybrid2DRefinementPattern rp_copy(lf::base::RefEl::kSegment(),RefPat::rp_copy);
     Hybrid2DRefinementPattern rp_split(lf::base::RefEl::kSegment(),RefPat::rp_split);
-    
-    // Refine
-    std::vector<std::unique_ptr<lf::geometry::Geometry>> 
-      ed_copy(edge_ptr->ChildGeometry(rp_copy));
-    std::vector<std::unique_ptr<lf::geometry::Geometry>> 
-      ed_split(edge_ptr->ChildGeometry(rp_split));
-    EXPECT_EQ(ed_copy.size(),1);
-    EXPECT_NE(ed_copy[0],nullptr);
-    EXPECT_EQ(ed_split.size(),2);
-    EXPECT_NE(ed_split[0],nullptr);
-    EXPECT_NE(ed_split[1],nullptr);
 
-    // Retrieve coordinates of endpoints of children
-    const Eigen::MatrixXd ref_seg_endpoints(lf::base::RefEl::kSegment().NodeCoords());
-    std::cout << "Geometry of parent = " << std::endl
-	      << edge_ptr->Global(ref_seg_endpoints) << std::endl;
-    std::cout << "Geometry of copy = " << std::endl
-	      << ed_copy[0]->Global(ref_seg_endpoints) << std::endl;
-    std::cout << "Geometry of child 0 = "  << std::endl
-	      << ed_split[0]->Global(ref_seg_endpoints) << std::endl;
-    std::cout << "Geometry of child 1 = "  << std::endl
-	      << ed_split[1]->Global(ref_seg_endpoints) << std::endl;
-
-    std::cout << ed_split;
+    std::cout << "COPY(N=" << rp_copy.LatticeConst() << "): "
+	      << rp_copy.ChildPolygons() << std::endl;
+    std::cout << "SPLIT(N=" << rp_copy.LatticeConst() << "): "
+	      << rp_split.ChildPolygons() << std::endl;
   }
 
-  TEST(RefineTest,TriaRef) {
-    // Reference coordinate of triangle corners
-    const Eigen::Matrix<double,2,3> ref_tria_corners(lf::base::RefEl::kTria().NodeCoords());
-    // Create a triangle
-    Eigen::Matrix<double,2,3> tria_coords;
-    tria_coords.col(0) = Eigen::Vector2d({1,1});
-    tria_coords.col(1) = Eigen::Vector2d({3,-1});
-    tria_coords.col(2) = Eigen::Vector2d({3,3});
-    std::unique_ptr<lf::geometry::TriaO1> tria_geo_ptr =
-      std::make_unique<lf::geometry::TriaO1>(tria_coords);
-    EXPECT_NE(tria_geo_ptr,nullptr);
-    std::cout << "Parent triangle " << std::endl
-     	      << tria_geo_ptr->Global(ref_tria_corners)
-     	      << std::endl;
-		 
-    // Check the various refinements
-    Hybrid2DRefinementPattern rp_copy(lf::base::RefEl::kTria(),RefPat::rp_copy);
-    std::cout << "***** rp_copy(0) : child " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry(rp_copy))
-	      << std::endl;
+  TEST(TopRefTest,TriaRef) {
+    // Copy "refinement"
+    {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_copy);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "COPY: "  <<  child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
     // Bisection refinement
     for (int anchor = 0; anchor < 3; anchor++) {
-      Hybrid2DRefinementPattern rp_bisect(lf::base::RefEl::kTria(),RefPat::rp_bisect,anchor);
-      std::cout << "*** rp_bisect(" << anchor << ") child "
-		<< (tria_geo_ptr->ChildGeometry(rp_bisect))
-		<< std::endl;
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_bisect,anchor);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "BISECT(anchor = " << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
     }
     // Trisection refinement
     for (int anchor = 0; anchor < 3; anchor++) {
-      Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_trisect,anchor);
-      std::cout << "*** rp_trisect(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
-      rp.setRefPattern(RefPat::rp_trisect_left).setAnchor(anchor);
-      std::cout << "*** rp_trisect_left(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
+      Hybrid2DRefinementPattern rp1(lf::base::RefEl::kTria(),RefPat::rp_trisect,anchor);
+      Hybrid2DRefinementPattern rp2(lf::base::RefEl::kTria(),RefPat::rp_trisect_left,anchor);
+      lt_polys_t child_polygons1(rp1.ChildPolygons());
+      lt_polys_t child_polygons2(rp2.ChildPolygons());
+      std::cout << "TRISECT(anchor=" << anchor << ") : "
+		<< child_polygons1 << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons1) << std::endl;
+      
+      std::cout << "TRISECT_LEFT(anchor=" << anchor << ") : "
+		<< child_polygons2 << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons2) << std::endl;
     }
     // Splitting into four triangles
     for (int anchor = 0; anchor < 3; anchor++) {
       Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_quadsect,anchor);
-      std::cout << "*** rp_quadsect(anchor = " << anchor << ") : children " << std::endl 
-		<< (tria_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "QUADSECT(anchor=" << anchor << ") : "
+		<< child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
     }
     // Regular refinement
-    Hybrid2DRefinementPattern rp_regular(lf::base::RefEl::kTria(),RefPat::rp_regular);
-    std::cout << "*** rp_regular: children " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry(rp_regular))
-	      << std::endl;
+    {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_regular);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+    std::cout << "REGULAR: " << child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
     // Bayrcentric refinement
-    Hybrid2DRefinementPattern rp_barycentric(lf::base::RefEl::kTria(),RefPat::rp_barycentric);
-    std::cout << "*** rp_baryccentric, children " << std::endl 
-	      << (tria_geo_ptr->ChildGeometry(rp_barycentric))
-	      << std::endl;
+    {
+      Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),RefPat::rp_barycentric);
+      lt_polys_t child_polygons(rp.ChildPolygons());
+      std::cout << "BARYCENTRIC: " << child_polygons << std::endl;
+      std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    }
   }
-
-  TEST(RefineTest,QuadRef) {
-    // Reference coordinate of corners of quads and triangles
-    const Eigen::MatrixXd ref_quad_corners(lf::base::RefEl::kQuad().NodeCoords());
-    const Eigen::MatrixXd ref_tria_corners(lf::base::RefEl::kTria().NodeCoords());
-    // Create a triangle
-    Eigen::Matrix<double,2,4> quad_coords;
-    quad_coords.col(0) = Eigen::Vector2d({1,1});
-    quad_coords.col(1) = Eigen::Vector2d({5,-1});
-    quad_coords.col(2) = Eigen::Vector2d({5,3});
-    quad_coords.col(3) = Eigen::Vector2d({3,5});
-    std::unique_ptr<lf::geometry::QuadO1> quad_geo_ptr =
-      std::make_unique<lf::geometry::QuadO1>(quad_coords);
-    EXPECT_NE(quad_geo_ptr,nullptr);
-    std::cout << "Parent quadrilateral " << std::endl
-     	      << quad_geo_ptr->Global(ref_quad_corners)
-     	      << std::endl;
-    
-    // Check the various refinements
-    Hybrid2DRefinementPattern rp_copy(lf::base::RefEl::kQuad(),RefPat::rp_copy);
-    std::cout << "rp_copy(0) : child " << std::endl 
-	      << (quad_geo_ptr->ChildGeometry(rp_copy))
-	      << std::endl;
-
-    for (int anchor = 0; anchor < 4; anchor++) {
-      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_trisect,anchor);
-      std::cout << "** rp_trisect(anchor = " << anchor << ") : children " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
-    }
-    for (int anchor = 0; anchor < 4; anchor++) {
-      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_quadsect,anchor);
-      std::cout << "** rp_quadsect(anchor = " << anchor << ") : children " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
-    }
-    for (int anchor = 0; anchor < 4; anchor++) {
-      Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_split,anchor);
-      std::cout << "** rp_split(anchor = " << anchor << ") : children "
-		<< -1 << " : " << std::endl 
-		<< (quad_geo_ptr->ChildGeometry(rp))
-		<< std::endl;
-    }
-   for (int anchor = 0; anchor < 4; anchor++) {
-     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(),RefPat::rp_threeedge,anchor);
-     std::cout << "*** rp_threeedge(anchor = " << anchor << ") : children " << std::endl
-	       << (quad_geo_ptr->ChildGeometry(rp))
-	       << std::endl;
-   }
-   Hybrid2DRefinementPattern rp_regular(lf::base::RefEl::kQuad(),RefPat::rp_regular);
-   std::cout << "*** rp_regular, children " << std::endl 
-	     << (quad_geo_ptr->ChildGeometry(rp_regular))
-	     << std::endl;
-  }
-
-}  // namespace lf::geometry::test
+  
+}  // namespace lf::refinement::test
