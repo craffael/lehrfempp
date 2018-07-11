@@ -1,4 +1,4 @@
-# cmake configuration file for compilation of LehrFEM++ examples
+# cmake configuration file for compilation of LehrFEM++ examples: RefEl
 
 set(reo_sources ref_el_output.cc)
 

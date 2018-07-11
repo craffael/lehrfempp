@@ -23,7 +23,7 @@ void PrintInfo(const Mesh &mesh, std::ostream &o);
 // Print function for Entity object
 void PrintInfoEntity(const lf::mesh::Entity&, std::ostream& stream);
 // ?? void PrintInfoEntity(const lf::mesh::Entity& e, std::ostream &stream);
-// Function put here or in print_info.h? See github issue #29
+
 
 
 
