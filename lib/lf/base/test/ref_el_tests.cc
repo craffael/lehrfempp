@@ -13,4 +13,12 @@ TEST(RefEl, dimensionCorrect) {
   EXPECT_EQ(RefEl::kQuad().Dimension(), 2);
 }
 
+TEST(RefEl, numberOfNodesCorrect){
+    EXPECT_EQ(RefEl::kPoint().NumNodes(), 1);
+    EXPECT_EQ(RefEl::kSegment().NumNodes(), 2);
+    EXPECT_EQ(RefEl::kTria().NumNodes(), 3);
+    EXPECT_EQ(RefEl::kQuad().NumNodes(), 4);
+
+}
+
 }  // namespace lf::base::test

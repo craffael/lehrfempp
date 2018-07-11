@@ -480,6 +480,7 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
     } else {
         PrintInfo(ref_el, stream);
     }
+
 }
 
 }  // namespace lf::base
