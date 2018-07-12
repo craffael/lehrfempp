@@ -136,24 +136,28 @@ class RefEl {
    * @brief Returns the (1-dimensional) reference segment.
    *
    * #### Node numbering with (1D) node coordinates
-   * @image html segment.png
+   *
+   * @image html segment_num_edg.png
    */
+  //@image html segment.png
   static constexpr RefEl kSegment() { return RefEl(RefElType::kSegment); }
 
   /**
    * @brief Returns the reference triangle
    *
    * #### Node numbering with (2D) node coordinates and segment orientation.
-   * @image html tria.png
+   * @image html tria_num_edg.png
    */
+  //@image html tria.png
   static constexpr RefEl kTria() { return RefEl(RefElType::kTria); }
 
   /**
    * @brief Returns the reference quadrilateral
    *
    * #### Node numbering with (2D) node coordinates and segment orientation
-   * @image html quad.png
+   * @image html quad_num_edg.png
    */
+  // @image html quad.png
   static constexpr RefEl kQuad() { return RefEl(RefElType::kQuad); }
 
   /**

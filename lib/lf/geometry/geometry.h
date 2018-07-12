@@ -13,5 +13,6 @@ namespace lf::geometry {}
 #include "quad_o1.h"
 #include "segment_o1.h"
 #include "tria_o1.h"
+#include "print_info.h"
 
 #endif  // __02a3dfa9ae3a4969b29d4c0ecfaa6ad9
