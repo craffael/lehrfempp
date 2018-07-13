@@ -32,7 +32,7 @@ class QuadO1 : public Geometry {
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
   /** @copydoc Geometry::isAffine() */
-  virtual bool isAffine(void) const override { return false; }
+  bool isAffine() const override { return false; }
 
   /**
    * @brief creation of child geometries as specified in refinement pattern
@@ -40,7 +40,7 @@ class QuadO1 : public Geometry {
    * For a detailed description of the indexing of the vertices of child
    * entities see `Refinement.xoj`.
    */
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat) const override;
 
  private:

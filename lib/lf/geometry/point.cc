@@ -37,7 +37,7 @@ std::vector<std::unique_ptr<Geometry>> Point::ChildGeometry(
                 "ref_pattern.noChildren() = " << ref_pattern.noChildren());
   // The only way to "refine" a point is to copy it
   child_geo_uptrs.push_back(std::make_unique<Point>(coord_));
-  return std::move(child_geo_uptrs);
+  return child_geo_uptrs;
 }
 
 }  // namespace lf::geometry

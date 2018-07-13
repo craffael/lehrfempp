@@ -2,6 +2,7 @@
 #include <cmath>
 #include "point.h"
 #include "segment_o1.h"
+#include "tria_o1.h"
 
 namespace lf::geometry {
 
@@ -126,7 +127,7 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
   // Lattice meshwidth
-  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as lattice polygons
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons());

@@ -29,7 +29,7 @@ class Point : public Geometry {
   /**
    * @brief the child geometry is just a copy of the point geometry
    */
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pattern) const override;
 
  private:

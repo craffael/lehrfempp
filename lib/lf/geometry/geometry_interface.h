@@ -1,15 +1,12 @@
 #ifndef __7ed6b0d4d9244155819c464fc4eb9bbb
 #define __7ed6b0d4d9244155819c464fc4eb9bbb
 
-#include <lf/base/ref_el.h>
+#include <lf/base/base.h>
 #include <Eigen/Eigen>
 #include <memory>
+#include "refinement_pattern.h"
 
 namespace lf::geometry {
-
-// forward declaration
-// The class is defined in geometry.h
-class RefinementPattern;
 
 class Geometry {
  protected:
@@ -132,7 +129,7 @@ class Geometry {
   /**
    * @brief Generate a geometry object arising in the course of refinement
    *
-   * @param ref_pattern A code indicating the particular refinement of the
+   * @param ref_pat A code indicating the particular refinement of the
    * element
    * @paream selector A number selecting a particular child element
    *
@@ -146,11 +143,7 @@ class Geometry {
    * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pat) const {
-    LF_VERIFY_MSG(false,
-                  "ChildGeometry not implemented for " << typeid(*this).name());
-    return std::move(std::vector<std::unique_ptr<Geometry>>{});
-  }
+      const RefinementPattern& ref_pat) const = 0;
 
   /**
    * @brief element shape by affine mapping from reference element
@@ -165,7 +158,7 @@ class Geometry {
    *
    * @note The Jacobian/Gramian for an affine element are _constant_.
    */
-  virtual bool isAffine(void) const { return true; }
+  virtual bool isAffine() const { return true; }
 
   /**
    * @brief Virtual destructor

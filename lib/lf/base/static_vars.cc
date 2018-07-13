@@ -159,17 +159,19 @@ int ReadCtrVarsCmdArgs(int argc, const char *argv[],
       std::cout << "Argument " << i << std::flush << " = " << argv[i]
                 << std::endl;
     }
-    for (const char *p = argv[i]; *p != (char)0; ++p) {
+    for (const char *p = argv[i]; *p != 0; ++p) {
       if (*p == '=') {
-        if (readkey)
+        if (readkey) {
           readkey = false;
-        else
+        } else {
           value.push_back(*p);
+        }
       } else {
-        if (readkey)
+        if (readkey) {
           key.push_back(*p);
-        else
+        } else {
           value.push_back(*p);
+        }
       }
     }
     if (read_ctrl_vars_args > 0) {
@@ -177,7 +179,9 @@ int ReadCtrVarsCmdArgs(int argc, const char *argv[],
                 << std::endl;
     }
     // Add key-value pair only if '=' was found
-    if (!readkey) keyval_map[key] = value;
+    if (!readkey) {
+      keyval_map[key] = value;
+    }
   }
   // Global variable list is default
   if (ctrl_var_root == nullptr) {

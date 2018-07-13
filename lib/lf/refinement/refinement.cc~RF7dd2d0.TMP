@@ -140,15 +140,15 @@ Hybrid2DRefinementPattern::ChildPolygons() const {
         case RefPat::rp_copy: {
           Eigen::Matrix<int, 1, 2> seg_ref_coord;
           seg_ref_coord << 0, lt_one;
-          child_poly.emplace_back(seg_ref_coord);
+          child_poly.push_back(seg_ref_coord);
           break;
         }
         case RefPat::rp_split: {
           Eigen::Matrix<int, 1, 2> part_ref_coord;
           part_ref_coord << 0, lt_half;
-          child_poly.emplace_back(part_ref_coord);
+          child_poly.push_back(part_ref_coord);
           part_ref_coord << lt_half, lt_one;
-          child_poly.emplace_back(part_ref_coord);
+          child_poly.push_back(part_ref_coord);
           break;
         }
         default: {

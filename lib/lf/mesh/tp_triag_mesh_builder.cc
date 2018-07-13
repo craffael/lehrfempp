@@ -1,5 +1,4 @@
-#include <lf/geometry/segment_o1.h>
-#include <lf/geometry/tria_o1.h>
+#include <lf/geometry/geometry.h>
 
 #include <iostream>
 #include "mesh_interface.h"
@@ -20,7 +19,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   const int no_of_edges = no_of_cells + (nx + 1) * ny + nx * (ny + 1);
   const int no_of_vertices = (nx + 1) * (ny + 1);
   // Diagnostics
-  if (output_ctrl_) {
+  if (output_ctrl_ != 0) {
     std::cout << "TPmesh: " << no_of_cells << " cells, " << no_of_edges
               << " edges " << no_of_vertices << " vertices" << std::endl;
   }
@@ -47,7 +46,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       coord_t node_coord(2);
       node_coord << i * hx, j * hy;
       // Diagnostics
-      if (output_ctrl_) {
+      if (output_ctrl_ != 0) {
         std::cout << "Adding vertex " << node_cnt << ": " << node_coord
                   << std::endl;
       }
@@ -67,7 +66,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       auto first_endpoint_idx = v_idx[VertexIndex(i, j)];
       auto second_endpoint_idx = v_idx[VertexIndex(i + 1, j)];
       // Diagnostics
-      if (output_ctrl_) {
+      if (output_ctrl_ != 0) {
         std::cout << "horizontal edge " << edge_cnt << ": "
                   << first_endpoint_idx << " <-> " << second_endpoint_idx
                   << std::endl;
@@ -89,7 +88,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i, j + 1)];
       // Diagnostics
-      if (output_ctrl_) {
+      if (output_ctrl_ != 0) {
         std::cout << "vertical edge " << edge_cnt << ": " << first_endpoint_idx
                   << " <-> " << second_endpoint_idx << std::endl;
       }
@@ -110,7 +109,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i + 1, j + 1)];
       // Diagnostics
-      if (output_ctrl_) {
+      if (output_ctrl_ != 0) {
         std::cout << "diagonal edge " << edge_cnt << ": " << first_endpoint_idx
                   << " <-> " << second_endpoint_idx << std::endl;
       }

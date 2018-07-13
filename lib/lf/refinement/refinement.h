@@ -42,6 +42,12 @@ enum RefPat : int {
  * For explanations see xournal notes in Refinement.xoj
  */
 class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
+  Hybrid2DRefinementPattern(const Hybrid2DRefinementPattern&) = default;
+  Hybrid2DRefinementPattern(Hybrid2DRefinementPattern&&) = default;
+  Hybrid2DRefinementPattern& operator=(const Hybrid2DRefinementPattern&) =
+      default;
+  Hybrid2DRefinementPattern& operator=(Hybrid2DRefinementPattern&&) = default;
+
  public:
   /** @brief constructor */
   explicit Hybrid2DRefinementPattern(lf::base::RefEl ref_el)
@@ -71,15 +77,15 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   /**
    * @copydoc RefinementPattern::noChildren
    */
-  virtual lf::base::size_type noChildren(void) const;
+  lf::base::size_type noChildren() const override;
   /**
    * @copydoc RefinementPattern::ChildPolygons
    */
-  virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-  ChildPolygons(void) const;
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+  ChildPolygons() const override;
 
   /** @brief set local number of anchor edge */
-  Hybrid2DRefinementPattern &setAnchor(lf::base::sub_idx_t anchor) {
+  Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
     LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
                   "Anchor " << anchor << " invalid for " << ref_el_.ToString());
     anchor_ = anchor;
@@ -94,28 +100,29 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    * the calling sequence should be
    * `setRefPattern(..).setAnchor(..)`
    */
-  Hybrid2DRefinementPattern &setRefPattern(RefPat ref_pat) {
+  Hybrid2DRefinementPattern& setRefPattern(RefPat ref_pat) {
     ref_pat_ = ref_pat;
     anchor_set_ = false;
+    return *this;
   }
 
   /** @defgroup getRefPat
    * @brief Access methods
    * @{
    */
-  lf::base::sub_idx_t anchor(void) const { return anchor_; }
-  RefPat refpat(void) const {
+  lf::base::sub_idx_t anchor() const { return anchor_; }
+  RefPat refpat() const {
     LF_VERIFY_MSG(
         !(((ref_pat_ == rp_bisect) || (ref_pat_ == rp_trisect) ||
            (ref_pat_ == rp_trisect_left) || (ref_pat_ == rp_quadsect) ||
            (ref_pat_ == rp_quadsect) || (ref_pat_ == rp_threeedge)) &&
           !anchor_set_),
-        "ref pattern " << (int)ref_pat_ << " needs anchor!");
+        "ref pattern " << ref_pat_ << " needs anchor!");
     return ref_pat_;
   }
   /** @} */
 
-  virtual ~Hybrid2DRefinementPattern(void) = default;
+  ~Hybrid2DRefinementPattern() override = default;
 
  private:
   lf::base::sub_idx_t anchor_; /**< local number of anchor edge */

@@ -32,8 +32,8 @@ class TriaO1 : public Geometry {
    * For a detailed description of the indexing of the vertices of child
    * triangles see `Refinement.xoj`.
    */
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pattern) const override;
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;

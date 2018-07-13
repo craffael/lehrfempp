@@ -69,7 +69,6 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     }
 
     // Write cell (entities of co-dimension 0) information to file
-    const size_type no_of_cells = mesh.Size(0);
     file << "TRI = []; QUAD = [];" << std::endl;
     size_type cell_cnt = 0;
     size_type triag_cnt = 0;

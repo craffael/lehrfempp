@@ -47,7 +47,7 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
   // Lattice meshwidth
-  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as vector of pairs of lattice coordinates
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons());

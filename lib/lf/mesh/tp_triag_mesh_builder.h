@@ -116,7 +116,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
    * @brief actual construction of the mesh
    *
    */
-  virtual std::shared_ptr<mesh::Mesh> Build() override;
+  std::shared_ptr<mesh::Mesh> Build() override;
 
  private:
   /**
@@ -157,7 +157,7 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
    * @brief actual construction of the mesh
    *
    */
-  virtual std::shared_ptr<mesh::Mesh> Build() override;
+  std::shared_ptr<mesh::Mesh> Build() override;
 
  private:
   /**
