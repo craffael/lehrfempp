@@ -65,29 +65,7 @@ class Quadrilateral : public mesh::Entity {
                          const Point* corner0, const Point* corner1,
                          const Point* corner2, const Point* corner3,
                          const Segment* edge0, const Segment* edge1,
-                         const Segment* edge2, const Segment* edge3)
-      : index_(index),
-        geometry_(std::move(geometry)),
-        nodes_({corner0, corner1, corner2, corner3}),
-        edges_({edge0, edge1, edge2, edge3}) {
-    LF_VERIFY_MSG(corner0 != nullptr, "Invalid pointer to corner 0");
-    LF_VERIFY_MSG(corner1 != nullptr, "Invalid pointer to corner 1");
-    LF_VERIFY_MSG(corner2 != nullptr, "Invalid pointer to corner 2");
-    LF_VERIFY_MSG(corner3 != nullptr, "Invalid pointer to corner 3");
-    LF_VERIFY_MSG(edge0 != nullptr, "Invalid pointer to edge 0");
-    LF_VERIFY_MSG(edge1 != nullptr, "Invalid pointer to edge 1");
-    LF_VERIFY_MSG(edge2 != nullptr, "Invalid pointer to edge 2");
-    LF_VERIFY_MSG(edge3 != nullptr, "Invalid pointer to edge 3");
-    if (geometry_) {
-      LF_VERIFY_MSG(geometry_->DimLocal() == 2,
-                    "Geometry must describe a 2D cell");
-      LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kQuad(),
-                    "Cell geometry must fit a quad");
-    }
-    /*
-       TODO: consistency check
-    */
-  }
+                         const Segment* edge2, const Segment* edge3);
 
   /** @brief an edge is an entity of co-dimension 1 */
   char Codim() const override { return 0; }

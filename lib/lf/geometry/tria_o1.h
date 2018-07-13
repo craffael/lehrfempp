@@ -26,6 +26,15 @@ class TriaO1 : public Geometry {
   }
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
+  /**
+   * @brief creation of child geometries as specified in refinement pattern
+   *
+   * For a detailed description of the indexing of the vertices of child
+   * triangles see `Refinement.xoj`.
+   */
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat) const override;
+
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_;

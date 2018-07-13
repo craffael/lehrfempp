@@ -370,6 +370,17 @@ class RefEl {
    *
    * @notes the argument `sub_rel_index` is a local index in the sub-entity.
    *
+   * #### Conventions
+   * - For a triangle (the arrow indicates the induced orientation of the edge)
+   *   - edge 0 connects vertices 0 -> 1
+   *   - edge 1 connects vertices 1 -> 2
+   *   - edge 2 connects vertices 2 -> 0
+   * - For a quadrilateral
+   *   - edge 0 connects vertices 0 -> 1
+   *   - edge 1 connects vertices 1 -> 2
+   *   - edge 2 connects vertices 2 -> 3
+   *   - edge 3 connects vertices 3 -> 0
+   *
    * #### Examples
    * - The sub-entity of a `RefEl::kTria()` with `sub_codim=1`, `sub_index=1`
    *   is a `RefEl::kSegment()` that connects node 1 with node 2. The
