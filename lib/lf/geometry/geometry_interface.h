@@ -1,9 +1,10 @@
 #ifndef __7ed6b0d4d9244155819c464fc4eb9bbb
 #define __7ed6b0d4d9244155819c464fc4eb9bbb
 
-#include <lf/base/ref_el.h>
+#include <lf/base/base.h>
 #include <Eigen/Eigen>
 #include <memory>
+#include "refinement_pattern.h"
 
 namespace lf::geometry {
 
@@ -124,6 +125,40 @@ class Geometry {
    * mapping \f$ \mathbf{\Phi} \circ \mathbf{\xi} \f$
    */
   virtual std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const = 0;
+
+  /**
+   * @brief Generate a geometry object arising in the course of refinement
+   *
+   * @param ref_pat A code indicating the particular refinement of the
+   * element
+   * @paream selector A number selecting a particular child element
+   *
+   * Implementation of local mesh refinement entails splitting of elements into
+   * parts ("children"), whose shape will depend on the refinement pattern.
+   * This method creates the geometry objects describing the shape of children.
+   *
+   * The arguments are unspecified integers to be interpreted correctly by
+   * specializations of this method. At the time of the definition of the
+   * interface all possible refinement patterns cannot be predicted. This is why
+   * vanilla integer arguments have been chosen for this method.
+   */
+  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat) const = 0;
+
+  /**
+   * @brief element shape by affine mapping from reference element
+   *
+   * @retrurn true, if the element is the affine image of a reference element
+   *
+   * An affine map is a linear mapping plus a translation. For a 2D mesh
+   * an entity has an affine geometry, if
+   * - a segement is a straight line
+   * - a triangle is flat
+   * - a quadrilateral is a flat parallelogram.
+   *
+   * @note The Jacobian/Gramian for an affine element are _constant_.
+   */
+  virtual bool isAffine() const { return true; }
 
   /**
    * @brief Virtual destructor

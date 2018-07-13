@@ -1,9 +1,7 @@
 
 include(GoogleTest)
 
-set(sources
-  point_tests.cc
-)
+set(sources point_tests.cc)
 
 add_executable(lf.geometry.test ${sources})
 target_link_libraries(lf.geometry.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.geometry)

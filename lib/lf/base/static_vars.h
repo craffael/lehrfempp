@@ -127,6 +127,15 @@ bool SetCtrlVar(const std::string &varname, int value,
 bool ReadCtrlVarsFile(const std::string &filename,
                       const StaticVar *ctrl_var_root = nullptr);
 
+/** @brief Process command line arguments to set variables
+ *
+ * Command line arguments of the form
+ *    `vaname=value'
+ * can be used to set internal static integer variables.
+ * The variable name `varname` must not contain the character `=`
+ */
+int ReadCtrVarsCmdArgs(int argc, const char *argv[],
+                       const StaticVar *ctrl_var_root = nullptr);
 }  // end namespace lf::base
 
 #endif  // __c3c605c9e48646758bf03fab65d52836
