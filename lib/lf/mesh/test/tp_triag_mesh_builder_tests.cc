@@ -73,7 +73,6 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
 
   // Printing mesh information
   utils::PrintInfo(*mesh_p, std::cout);
-
 }
 
 // Test for pointer-based implementation
@@ -81,17 +80,17 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
 TEST(lf_mesh_p, buildTPQuadMesh) {
   // Enable copious output
   hybrid2d::TPQuadMeshBuilder::output_ctrl_ = 100;
-   // Construct a tensor-product grid of the unit square
+  // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
   std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
-    std::make_shared<hybrid2dp::MeshFactory>(2);
+      std::make_shared<hybrid2dp::MeshFactory>(2);
   hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
-    .setTopRightCorner(Eigen::Vector2d{1, 1})
-    .setNoXCells(3)
-    .setNoYCells(2);
+      .setTopRightCorner(Eigen::Vector2d{1, 1})
+      .setNoXCells(3)
+      .setNoYCells(2);
   auto mesh_p = builder.Build();
 
   EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
@@ -107,6 +106,6 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Printing mesh information" << std::endl;
   utils::PrintInfo(*mesh_p, std::cout);
-} 
-  
+}
+
 }  // namespace lf::mesh::test

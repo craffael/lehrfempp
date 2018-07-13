@@ -5,9 +5,9 @@
 
 namespace lf::geometry {
 
-  /**
-   * @brief A straight edge defined by the location of its two endpoints
-   */
+/**
+ * @brief A straight edge defined by the location of its two endpoints
+ */
 class SegmentO1 : public Geometry {
  public:
   explicit SegmentO1(Eigen::Matrix<double, Eigen::Dynamic, 2> coords)
@@ -24,7 +24,7 @@ class SegmentO1 : public Geometry {
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
-  /** @brief creation of child geometry for the sake of mesh refinement 
+  /** @brief creation of child geometry for the sake of mesh refinement
    *
    * @see Geometry::ChildGeometry()
    * @see RefinementPattern
@@ -35,8 +35,8 @@ class SegmentO1 : public Geometry {
    * @param selector = 0 for splitting refinement pattern returns half edge
    * adjacent to endpoint 0, =1 returns the other half.
    */
-  virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pattern) const override;
+  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pattern) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;

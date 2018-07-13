@@ -19,7 +19,8 @@ class StaticVarsTest {
 CONTROLDECLARE(testvar, "testvar");
 CLASSCONTROLDECLARE(StaticVarsTest, ctrl_var_, "ctrl_var");
 CONTROLDECLARECOMMENT(StaticVarsTest, other_var_, "other_var", "A test case");
-CONTROLDECLARECOMMENT(StaticVarsTest, arg_var_, "arg_var", "Set from command line");
+CONTROLDECLARECOMMENT(StaticVarsTest, arg_var_, "arg_var",
+                      "Set from command line");
 
 TEST(StaticVar, BasicTest) {
   ListCtrlVars(std::cout);
@@ -37,13 +38,13 @@ TEST(StaticVar, FileTest) {
   ListCtrlVars(std::cout);
   ReadCtrlVarsFile("setup.vars");
   std::cout << "########## After reading file:"
-	    << " Listing of control variables:" << std::endl;
+            << " Listing of control variables:" << std::endl;
   ListCtrlVars(std::cout);
   int argc = 2;
-  const char* argv[] = { "arg_var=51", "another_option" };
-  ReadCtrVarsCmdArgs(argc,argv);
+  const char* argv[] = {"arg_var=51", "another_option"};
+  ReadCtrVarsCmdArgs(argc, argv);
   std::cout << "########## After reading command line args:"
-	    << " Listing of control variables:" << std::endl;
+            << " Listing of control variables:" << std::endl;
   ListCtrlVars(std::cout);
 }
 }  // namespace lf::base::test

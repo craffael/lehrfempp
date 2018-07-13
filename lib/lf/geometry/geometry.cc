@@ -4,7 +4,4 @@
 
 #include "geometry.h"
 
-
-namespace lf::geometry {
-
-} // end namespace
+namespace lf::geometry {}  // namespace lf::geometry

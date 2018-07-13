@@ -96,12 +96,11 @@ TEST(lf_edge_create, MeshFactory_p) {
   std::cout << "Writing MATLAB file" << std::endl;
   utils::writeMatlab(*mesh_p, "test_mesh.m");
 
-  
   // Printing mesh information
   utils::PrintInfo(*mesh_p, std::cout);
 }
 
-  // TODO Enable this once issue #33 is resolved
+// TODO Enable this once issue #33 is resolved
 TEST(lf_hybrid2dp, EdgeNumbering) {
   // Construct a one element mesh that consists of a quad:
   MeshFactory mf(2);
@@ -135,29 +134,25 @@ TEST(lf_hybrid2dp, EdgeNumbering) {
   // check indices of the nodes:
   Eigen::VectorXd zero = Eigen::VectorXd::Zero(0);
   auto entities2 = mesh->Entities(2);
-  auto node0 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e)
-  {
+  auto node0 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e) {
     return e.Geometry()->Global(zero).norm() < 1e-6;
   });
   EXPECT_NE(node0, entities2.end());
   EXPECT_EQ(mesh->Index(*node0), 0);
 
-  auto node1 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e)
-  {
+  auto node1 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e) {
     return e.Geometry()->Global(zero).isApprox(Eigen::Vector2d(1, 0));
   });
   EXPECT_NE(node1, entities2.end());
   EXPECT_EQ(mesh->Index(*node1), 1);
 
-  auto node2 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e)
-  {
+  auto node2 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e) {
     return e.Geometry()->Global(zero).isApprox(Eigen::Vector2d(1, 1));
   });
   EXPECT_NE(node2, entities2.end());
   EXPECT_EQ(mesh->Index(*node2), 2);
 
-  auto node3 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e)
-  {
+  auto node3 = std::find_if(entities2.begin(), entities2.end(), [&](auto& e) {
     return e.Geometry()->Global(zero).isApprox(Eigen::Vector2d(0, 1));
   });
   EXPECT_NE(node3, entities2.end());

@@ -8,7 +8,6 @@ namespace lf::mesh::hybrid2dp {
 CONTROLDECLARECOMMENT(MeshFactory, output_ctrl_, "hybrid2dpmf_output_ctrl",
                       "Enables printing of internal lists for MeshFactory");
 
-  
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(!built_, "Build() already called.");
   LF_ASSERT_MSG(coord.rows() == dim_world_,
@@ -39,7 +38,8 @@ MeshFactory::size_type MeshFactory::AddEntity(
                     "node " << n
                             << " specified in call to AddEntity must be "
                                "inserted with AddNode() first.");
-      LF_ASSERT_MSG(count < 2,
+      LF_ASSERT_MSG(
+          count < 2,
           "ref_el = segment, but nodes contains more than 2 node indices");
       ns[count] = n;
       ++count;
@@ -80,7 +80,9 @@ MeshFactory::size_type MeshFactory::AddEntity(
 
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   // DIAGNOSTICS
-  if (output_ctrl_ > 0) { PrintLists(); }
+  if (output_ctrl_ > 0) {
+    PrintLists();
+  }
 
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(

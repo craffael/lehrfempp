@@ -5,14 +5,14 @@
 
 namespace lf::geometry {
 
-  /**
-   * @brief Bilinear quadrilateral element shape
-   *
-   * This element shape arises from subjecting the unit square to
-   * a componentwise bilinear mapping. This results in a _non-flat_ quadrilateral
-   * with _straight_ edges, whose shape is determined by the location of the 
-   * four vertices.
-   */
+/**
+ * @brief Bilinear quadrilateral element shape
+ *
+ * This element shape arises from subjecting the unit square to
+ * a componentwise bilinear mapping. This results in a _non-flat_ quadrilateral
+ * with _straight_ edges, whose shape is determined by the location of the
+ * four vertices.
+ */
 class QuadO1 : public Geometry {
  public:
   explicit QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords);
@@ -27,7 +27,7 @@ class QuadO1 : public Geometry {
       const ::Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
-  
+
   /** @copydoc Geometry::SubGeometry() */
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
@@ -37,11 +37,11 @@ class QuadO1 : public Geometry {
   /**
    * @brief creation of child geometries as specified in refinement pattern
    *
-   * For a detailed description of the indexing of the vertices of child 
+   * For a detailed description of the indexing of the vertices of child
    * entities see `Refinement.xoj`.
    */
-  virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pat) const override;
+  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat) const override;
 
  private:
   /** @brief Coordinates of the a four vertices */
