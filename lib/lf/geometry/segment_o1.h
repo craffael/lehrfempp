@@ -34,9 +34,8 @@ class SegmentO1 : public Geometry {
    * @param codim _relative_ codimension of children whose shape is
    *        requested
    */
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pattern,
-      lf::base::dim_t codim) const override;
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;

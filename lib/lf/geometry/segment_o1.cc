@@ -42,12 +42,12 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
 std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
-    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
+    const RefinementPattern& ref_pat, base::dim_t codim) const {
   // The refinement pattern must be for a segment
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
   // Lattice meshwidth
-  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as vector of pairs of lattice coordinates
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(0));

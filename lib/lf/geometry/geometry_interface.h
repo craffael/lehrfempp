@@ -129,9 +129,9 @@ class Geometry {
   /**
    * @brief Generate a geometry object arising in the course of refinement
    *
-   * @param ref_pattern A code indicating the particular refinement of the
+   * @param ref_pat A code indicating the particular refinement of the
    * element
-   * @paream codim _relative_ codimension of child entities whose
+   * @param codim _relative_ codimension of child entities whose
    *         shape is requested
    *
    * Implementation of local mesh refinement entails splitting of elements into

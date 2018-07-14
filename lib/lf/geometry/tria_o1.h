@@ -33,7 +33,7 @@ class TriaO1 : public Geometry {
    * triangles see `Refinement.xoj`.
    */
 
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pattern,
       lf::base::dim_t codim) const override;
 

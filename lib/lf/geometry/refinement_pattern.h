@@ -8,6 +8,7 @@
 
 #ifndef __3178e8d1e7bf4366bcb00cdb4ebbf5fb
 #define __3178e8d1e7bf4366bcb00cdb4ebbf5fb
+#include <utility>
 #include "lf/base/base.h"
 
 namespace lf::geometry {
@@ -20,12 +21,18 @@ namespace lf::geometry {
  *
  */
 class RefinementPattern {
+ protected:
+  RefinementPattern(const RefinementPattern&) = default;
+  RefinementPattern(RefinementPattern&&) = default;
+  RefinementPattern& operator=(const RefinementPattern&) = default;
+  RefinementPattern& operator=(RefinementPattern&&) = default;
+
  public:
-  RefinementPattern(lf::base::RefEl ref_el)
-      : ref_el_(ref_el), lattice_const_(6) {}
+  explicit RefinementPattern(lf::base::RefEl ref_el)
+      : ref_el_(std::move(ref_el)), lattice_const_(6) {}
 
   RefinementPattern(lf::base::RefEl ref_el, lf::base::size_type lattice_const)
-      : ref_el_(ref_el), lattice_const_(lattice_const) {
+      : ref_el_(std::move(ref_el)), lattice_const_(lattice_const) {
     // Lattice constant N should be a multiple of six in order to be able to
     // define both the barycenter (lattice coordinates [N/3,N/3,N/3], and
     // the midpoints of edges. (lattice coordinates e.g. [N/2,N/2,0]).
@@ -34,8 +41,8 @@ class RefinementPattern {
                   "Lattice constant should be multiple of 6");
   }
 
-  lf::base::RefEl RefEl(void) const { return ref_el_; }
-  lf::base::size_type LatticeConst(void) const { return lattice_const_; }
+  lf::base::RefEl RefEl() const { return ref_el_; }
+  lf::base::size_type LatticeConst() const { return lattice_const_; }
   /**
    * @brief provide number of child entities of a given co-dimension
    * to be created by refinement
@@ -70,7 +77,7 @@ class RefinementPattern {
   virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
   ChildPolygons(lf::base::dim_t codim) const = 0;
 
-  virtual ~RefinementPattern(void) = default;
+  virtual ~RefinementPattern() = default;
 
  protected:
   lf::base::RefEl ref_el_;            /**< cell type */
