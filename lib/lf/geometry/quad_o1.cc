@@ -122,7 +122,7 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
 std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
-    const RefinementPattern& ref_pat) const {
+    const RefinementPattern& ref_pat, base::dim_t codim) const {
   // The refinement pattern must be for a quadrilateral
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
