@@ -142,7 +142,7 @@ namespace lf::refinement::test {
       std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
     }
   }
-
+ 
   TEST(TopRefTest,TopQuadRef) {
     // Check the various refinements
     {
