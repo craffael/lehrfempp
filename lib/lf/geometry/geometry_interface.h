@@ -143,11 +143,7 @@ class Geometry {
    * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pat,lf::base::dim_t codim) const {
-    LF_VERIFY_MSG(false,
-		  "ChildGeometry not implemented for " << typeid(*this).name());
-    return std::move(std::vector<std::unique_ptr<Geometry>>{});
-  }
+  ChildGeometry(const RefinementPattern &ref_pat,lf::base::dim_t codim) const = 0;
   
   /**
    * @brief element shape by affine mapping from reference element

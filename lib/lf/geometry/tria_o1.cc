@@ -13,12 +13,9 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
   double area = std::fabs(
       (coords_(0, 1) - coords_(0, 0)) * (coords_(1, 2) - coords_(1, 0)) -
       (coords_(1, 1) - coords_(1, 0)) * (coords_(0, 2) - coords_(0, 0)));
-  double e0lensq = (std::pow(coords_(0, 1) - coords_(0, 0), 2) +
-                    std::pow(coords_(1, 1) - coords_(1, 0), 2));
-  double e1lensq = (std::pow(coords_(0, 2) - coords_(0, 1), 2) +
-                    std::pow(coords_(1, 2) - coords_(1, 1), 2));
-  double e2lensq = (std::pow(coords_(0, 0) - coords_(0, 2), 2) +
-                    std::pow(coords_(1, 0) - coords_(1, 2), 2));
+  double e0lensq = (coords_.col(1)-coords_.col(0)).squaredNorm();
+  double e1lensq = (coords_.col(2)-coords_.col(1)).squaredNorm();
+  double e2lensq = (coords_.col(0)-coords_.col(2)).squaredNorm();
   double circum = e0lensq + e1lensq + e2lensq;
   LF_VERIFY_MSG(e0lensq > 1.0E-8 * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > 1.0E-8 * circum, "Collapsed edge 1");
