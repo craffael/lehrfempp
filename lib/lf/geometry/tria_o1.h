@@ -29,13 +29,15 @@ class TriaO1 : public Geometry {
   /**
    * @brief creation of child geometries as specified in refinement pattern
    *
-   * For a detailed description of the indexing of the vertices of child 
+   * For a detailed description of the indexing of the vertices of child
    * triangles see `Refinement.xoj`.
    */
+
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pattern) const override;
-  
- private:
+  ChildGeometry(const RefinementPattern &ref_pattern,
+		lf::base::dim_t codim) const override;
+
+private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_inverse_gramian_;

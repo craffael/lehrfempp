@@ -374,11 +374,11 @@ class RefEl {
    * - For a triangle (the arrow indicates the induced orientation of the edge)
    *   - edge 0 connects vertices 0 -> 1
    *   - edge 1 connects vertices 1 -> 2
-   *   - edge 2 connects vertices 2 -> 0  
-   * - For a quadrilateral 
+   *   - edge 2 connects vertices 2 -> 0
+   * - For a quadrilateral
    *   - edge 0 connects vertices 0 -> 1
    *   - edge 1 connects vertices 1 -> 2
-   *   - edge 2 connects vertices 2 -> 3  
+   *   - edge 2 connects vertices 2 -> 3
    *   - edge 3 connects vertices 3 -> 0
    *
    * #### Examples

@@ -26,13 +26,14 @@ class Point : public Geometry {
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
-  /** 
+  /**
    * @brief the child geometry is just a copy of the point geometry
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pattern) const override;
+  ChildGeometry(const RefinementPattern &ref_pattern,
+		lf::base::dim_t codim) const override;
   
- private:
+private:
   Eigen::VectorXd coord_;
 };
 

@@ -119,9 +119,7 @@ class EndpointIndexPair {
 };
 }  // namespace
 
-Mesh::Mesh(dim_t dim_world,
-	   const NodeCoordList &nodes,
-	   EdgeList edges,
+Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
            CellList cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
@@ -135,13 +133,14 @@ Mesh::Mesh(dim_t dim_world,
   // Information about edge in auxiliary array
   struct EdgeData {
     EdgeData(GeometryPtr geo_uptr, AdjCellsList _adj_cells_list)
-      : geo_uptr(std::move(geo_uptr)),
-	adj_cells_list(std::move(_adj_cells_list)),
-	edge_global_index(-1) {}
-    EdgeData(GeometryPtr geo_uptr, AdjCellsList _adj_cells_list,glb_idx_t global_index)
-      : geo_uptr(std::move(geo_uptr)),
-	adj_cells_list(std::move(_adj_cells_list)),
-	edge_global_index(global_index) {}
+        : geo_uptr(std::move(geo_uptr)),
+          adj_cells_list(std::move(_adj_cells_list)),
+          edge_global_index(-1) {}
+    EdgeData(GeometryPtr geo_uptr, AdjCellsList _adj_cells_list,
+             glb_idx_t global_index)
+        : geo_uptr(std::move(geo_uptr)),
+          adj_cells_list(std::move(_adj_cells_list)),
+          edge_global_index(global_index) {}
     EdgeData(const EdgeData &) = delete;
     EdgeData(EdgeData &&) = default;
     EdgeData &operator=(const EdgeData &) = delete;
@@ -194,7 +193,7 @@ Mesh::Mesh(dim_t dim_world,
     std::cout << "Initializing edge map" << std::endl;
   }
   EdgeMap edge_map;
-  glb_idx_t edge_index = 0; // position in the array gives index of edge
+  glb_idx_t edge_index = 0;  // position in the array gives index of edge
   for (auto &e : edges) {
     // Node indices of endpoints: the KEY
     std::array<size_type, 2> end_nodes(e.first);
@@ -206,7 +205,7 @@ Mesh::Mesh(dim_t dim_world,
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     AdjCellsList empty_cells_list{};
-    EdgeData edge_data(std::move(e.second), empty_cells_list,edge_index);
+    EdgeData edge_data(std::move(e.second), empty_cells_list, edge_index);
     EdgeMap::value_type edge_info =
         std::make_pair(e_endpoint_idx, std::move(edge_data));
     std::pair<EdgeMap::iterator, bool> insert_status =
@@ -298,7 +297,6 @@ Mesh::Mesh(dim_t dim_world,
     //    edge connecting the two endpoints.
     //
 
-    
     // Visit all edges of the current cell
     for (unsigned int j = 0; j < ref_el.NumSubEntities(1); j++) {
       // Fetch local indices of endpoints of edge j
@@ -363,12 +361,11 @@ Mesh::Mesh(dim_t dim_world,
         const EdgeData &edat(edge_info.second);
         std::cout << "Edge " << edge_cnt << ": " << eip.first_node() << " <-> "
                   << eip.second_node();
-	if (edat.edge_global_index == -1) {
-	  std::cout << " no index : ";
-	}
-	else {
-	  std::cout << ": index = " << edat.edge_global_index << ": ";
-	}
+        if (edat.edge_global_index == -1) {
+          std::cout << " no index : ";
+        } else {
+          std::cout << ": index = " << edat.edge_global_index << ": ";
+        }
         const AdjCellsList &acl(edat.adj_cells_list);
         const GeometryPtr &gptr(edat.geo_uptr);
         for (auto &i : acl) {
@@ -397,7 +394,7 @@ Mesh::Mesh(dim_t dim_world,
 
   // Note: the variable edge_index contains the number externally supplied
   // edges, whose index must agree with their position in the
-  // 'edges' array. 
+  // 'edges' array.
 
   // Note: iteration variable cannot be declared const, because
   // moving the geometry pointer changes it!
@@ -435,19 +432,18 @@ Mesh::Mesh(dim_t dim_world,
       // internally created edge
       edge_index++;
     }
-    
+
     // Diagnostics
     if (output_ctrl_ > 10) {
-      std::cout << "Registering edge " << edge.second.edge_global_index
-		<< ": " << p0 << " <-> " << p1 << std::endl;
+      std::cout << "Registering edge " << edge.second.edge_global_index << ": "
+                << p0 << " <-> " << p1 << std::endl;
     }
     // Building edge by adding another element to the edge vector.
     segments_.emplace_back(edge.second.edge_global_index,
-			   std::move(edge_geo_ptr),
-			   p0_ptr, p1_ptr);
+                           std::move(edge_geo_ptr), p0_ptr, p1_ptr);
   }  // end loop over all edges
-  LF_ASSERT_MSG(edge_index == no_of_edges,"Edge index mismatch");
-  
+  LF_ASSERT_MSG(edge_index == no_of_edges, "Edge index mismatch");
+
   const size_type no_of_cells = cells.size();
 
   // Create an auxiliary data structure to store the edges for the cells
@@ -455,7 +451,7 @@ Mesh::Mesh(dim_t dim_world,
   // from the auxiliary associative array.
   std::vector<std::array<size_type, 4>> edge_indices(no_of_cells);
 
-  size_type edge_array_position = 0; // actual position in edge array
+  size_type edge_array_position = 0;  // actual position in edge array
   for (const EdgeMap::value_type &edge : edge_map) {
     // Obtain array of indices of adjacent cells
     AdjCellsList adjacent_cells(edge.second.adj_cells_list);

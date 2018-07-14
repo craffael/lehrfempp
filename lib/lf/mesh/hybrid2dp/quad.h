@@ -66,7 +66,7 @@ class Quadrilateral : public mesh::Entity {
                          const Point* corner2, const Point* corner3,
                          const Segment* edge0, const Segment* edge1,
                          const Segment* edge2, const Segment* edge3);
-  
+
   /** @brief an edge is an entity of co-dimension 1 */
   char Codim() const override { return 0; }
 

@@ -1,16 +1,13 @@
 #ifndef __7ed6b0d4d9244155819c464fc4eb9bbb
 #define __7ed6b0d4d9244155819c464fc4eb9bbb
 
-#include <lf/base/ref_el.h>
+#include <lf/base/base.h>
 #include <Eigen/Eigen>
 #include <memory>
+#include "refinement_pattern.h"
 
 namespace lf::geometry {
 
-  // forward declaration
-  // The class is defined in geometry.h
-  class RefinementPattern;
-  
 class Geometry {
  protected:
   Geometry() = default;
@@ -133,19 +130,20 @@ class Geometry {
    * @brief Generate a geometry object arising in the course of refinement
    * 
    * @param ref_pattern A code indicating the particular refinement of the element
-   * @paream selector A number selecting a particular child element
+   * @paream codim _relative_ codimension of child entities whose 
+   *         shape is requested
    *
    * Implementation of local mesh refinement entails splitting of elements into
-   * parts ("children"), whose shape will depend on the refinement pattern. 
+   * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
    *
    * The arguments are unspecified integers to be interpreted correctly by
-   * specializations of this method. At the time of the definition of the interface
-   * all possible refinement patterns cannot be predicted. This is why  
+   * specializations of this method. At the time of the definition of the
+   * interface all possible refinement patterns cannot be predicted. This is why
    * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pat) const {
+  ChildGeometry(const RefinementPattern &ref_pat,lf::base::dim_t codim) const {
     LF_VERIFY_MSG(false,
 		  "ChildGeometry not implemented for " << typeid(*this).name());
     return std::move(std::vector<std::unique_ptr<Geometry>>{});
@@ -156,7 +154,7 @@ class Geometry {
    *
    * @retrurn true, if the element is the affine image of a reference element
    *
-   * An affine map is a linear mapping plus a translation. For a 2D mesh 
+   * An affine map is a linear mapping plus a translation. For a 2D mesh
    * an entity has an affine geometry, if
    * - a segement is a straight line
    * - a triangle is flat
@@ -164,8 +162,8 @@ class Geometry {
    *
    * @note The Jacobian/Gramian for an affine element are _constant_.
    */
-  virtual bool isAffine(void) const { return true; }
-  
+  virtual bool isAffine() const { return true; }
+
   /**
    * @brief Virtual destructor
    */

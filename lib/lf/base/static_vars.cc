@@ -142,71 +142,76 @@ bool ReadCtrlVarsFile(const std::string &filename,
 }
 
 CONTROLDECLARE(read_ctrl_vars_args, "read_ctrl_vars_args");
-  
-  int ReadCtrVarsCmdArgs(int argc,const char *argv[],
-			 const StaticVar *ctrl_var_root) {
-    if (read_ctrl_vars_args > 0) {
-      std::cout << "Processing " << argc << " arguments" << std::endl;
-    }
-    // Create temporary map for key-value string pairs
-    std::map<std::string, std::string> keyval_map;
 
-    // Run through all command line arguments
-    for (int i=0; i<argc; i++) {
-      std::string key {} ,value {};
-      bool readkey = true;
-      if (read_ctrl_vars_args > 0) {
-	std::cout << "Argument " << i << std::flush
-		  << " = " << argv[i] << std::endl;
-      }
-      for (const char *p = argv[i]; *p != (char)0 ; ++p) {
-	if (*p == '=') {
-	  if (readkey)
-	    readkey = false;
-	  else
-	    value.push_back(*p);
-	  }
-	else {
-	  if (readkey) key.push_back(*p);
-	  else value.push_back(*p);
-	}
-      }
-      if (read_ctrl_vars_args > 0) {
-	std::cout << "Arg " << i << ", key = " << key
-		  << ", val = " << value << std::endl;
-      }
-      // Add key-value pair only if '=' was found
-      if (!readkey)
-	keyval_map[key] = value;
+int ReadCtrVarsCmdArgs(int argc, const char *argv[],
+                       const StaticVar *ctrl_var_root) {
+  if (read_ctrl_vars_args > 0) {
+    std::cout << "Processing " << argc << " arguments" << std::endl;
+  }
+  // Create temporary map for key-value string pairs
+  std::map<std::string, std::string> keyval_map;
+
+  // Run through all command line arguments
+  for (int i = 0; i < argc; i++) {
+    std::string key{}, value{};
+    bool readkey = true;
+    if (read_ctrl_vars_args > 0) {
+      std::cout << "Argument " << i << std::flush << " = " << argv[i]
+                << std::endl;
     }
-      // Global variable list is default
+    for (const char *p = argv[i]; *p != 0; ++p) {
+      if (*p == '=') {
+        if (readkey) {
+          readkey = false;
+        } else {
+          value.push_back(*p);
+        }
+      } else {
+        if (readkey) {
+          key.push_back(*p);
+        } else {
+          value.push_back(*p);
+        }
+      }
+    }
+    if (read_ctrl_vars_args > 0) {
+      std::cout << "Arg " << i << ", key = " << key << ", val = " << value
+                << std::endl;
+    }
+    // Add key-value pair only if '=' was found
+    if (!readkey) {
+      keyval_map[key] = value;
+    }
+  }
+  // Global variable list is default
   if (ctrl_var_root == nullptr) {
     ctrl_var_root = ctrl_root;
   }
   const StaticVar *root = ctrl_var_root;
 
   int set_var_cnt = 0;
-  
+
   while (root != nullptr) {
     if (!(root->name_).empty()) {
       auto keyval_ptr = keyval_map.find(root->name_);
       if (keyval_ptr != keyval_map.end()) {
         if (read_ctrl_vars_args > 0) {
-          std::cout << "From args: Setting variable " << root->name_ << std::endl;
+          std::cout << "From args: Setting variable " << root->name_
+                    << std::endl;
         }
         std::istringstream intstr(keyval_ptr->second);
         intstr >> root->ref_;
-	set_var_cnt++;
+        set_var_cnt++;
       } else {
         if (read_ctrl_vars_file > 0) {
           std::cout << "Variable " << root->name_ << " not set from args"
-		    << std::endl;
+                    << std::endl;
         }
       }
     }
     root = root->next_;
   }
   return set_var_cnt;
-  }
-  
+}
+
 }  // end namespace lf::base

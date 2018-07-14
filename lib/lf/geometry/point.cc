@@ -29,16 +29,17 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
 }
 
   std::vector<std::unique_ptr<Geometry>>
-  Point::ChildGeometry(const RefinementPattern &ref_pattern) const
+  Point::ChildGeometry(const RefinementPattern &ref_pattern,lf::base::dim_t codim) const
   {
+    LF_VERIFY_MSG(codim == 0,"Only codim = 0 allowed for a point");		 
     std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
     LF_VERIFY_MSG(ref_pattern.RefEl() == lf::base::RefEl::kPoint(),
 		  "ref_patern.RefEl() = " << ref_pattern.RefEl().ToString());
-    LF_VERIFY_MSG(ref_pattern.noChildren() == 1,
-		  "ref_pattern.noChildren() = " << ref_pattern.noChildren());
+    LF_VERIFY_MSG(ref_pattern.noChildren(0) == 1,
+		  "ref_pattern.noChildren() = " << ref_pattern.noChildren(0));
     // The only way to "refine" a point is to copy it
     child_geo_uptrs.push_back(std::make_unique<Point>(coord_));
-    return std::move(child_geo_uptrs);
+    return child_geo_uptrs;
   }
   
   

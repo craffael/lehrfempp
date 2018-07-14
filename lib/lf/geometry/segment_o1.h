@@ -5,9 +5,9 @@
 
 namespace lf::geometry {
 
-  /**
-   * @brief A straight edge defined by the location of its two endpoints
-   */
+/**
+ * @brief A straight edge defined by the location of its two endpoints
+ */
 class SegmentO1 : public Geometry {
  public:
   explicit SegmentO1(Eigen::Matrix<double, Eigen::Dynamic, 2> coords)
@@ -24,19 +24,19 @@ class SegmentO1 : public Geometry {
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
-  /** @brief creation of child geometry for the sake of mesh refinement 
+  /** @brief creation of child geometry for the sake of mesh refinement
    *
    * @see Geometry::ChildGeometry()
    * @see RefinementPattern
-   * @param ref_pattern three refinement patterns are supported
+   * @param ref_pat three refinement patterns are supported
    * - rp_copy: just copies the geometry information of the segment
    * - rp_split, rp_regular: split edge in the middle.
-   * @param anchor not used
-   * @param selector = 0 for splitting refinement pattern returns half edge
-   * adjacent to endpoint 0, =1 returns the other half.
+   * @param codim _relative_ codimension of children whose shape is 
+   *        requested  
    */
   virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pattern) const override;
+  ChildGeometry(const RefinementPattern &ref_pattern,
+		lf::base::dim_t codim) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;

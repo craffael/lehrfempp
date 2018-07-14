@@ -59,11 +59,12 @@ class MeshFactory : public mesh::MeshFactory {
 
  private:
   dim_t dim_world_;  // dimension of ambient space
-  bool built_; // mesh built? If yes, refuse to build another one.
+  bool built_;       // mesh built? If yes, refuse to build another one.
   hybrid2dp::Mesh::NodeCoordList nodes_;
   hybrid2dp::Mesh::EdgeList edges_;
   hybrid2dp::Mesh::CellList elements_;
-public:
+
+ public:
   // Switch for verbosity level of output
   static int output_ctrl_;
 };
