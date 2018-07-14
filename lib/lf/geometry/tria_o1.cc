@@ -13,9 +13,9 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
   double area = std::fabs(
       (coords_(0, 1) - coords_(0, 0)) * (coords_(1, 2) - coords_(1, 0)) -
       (coords_(1, 1) - coords_(1, 0)) * (coords_(0, 2) - coords_(0, 0)));
-  double e0lensq = (coords_.col(1)-coords_.col(0)).squaredNorm();
-  double e1lensq = (coords_.col(2)-coords_.col(1)).squaredNorm();
-  double e2lensq = (coords_.col(0)-coords_.col(2)).squaredNorm();
+  double e0lensq = (coords_.col(1) - coords_.col(0)).squaredNorm();
+  double e1lensq = (coords_.col(2) - coords_.col(1)).squaredNorm();
+  double e2lensq = (coords_.col(0) - coords_.col(2)).squaredNorm();
   double circum = e0lensq + e1lensq + e2lensq;
   LF_VERIFY_MSG(e0lensq > 1.0E-8 * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > 1.0E-8 * circum, "Collapsed edge 1");
@@ -64,33 +64,34 @@ std::unique_ptr<Geometry> TriaO1::SubGeometry(dim_t codim, dim_t i) const {
   }
 }
 
-  
-std::vector<std::unique_ptr<Geometry>>
-  TriaO1::ChildGeometry(const RefinementPattern &ref_pat,lf::base::dim_t codim) const {
+std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
+    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
   // The refinement pattern must be for a triangle
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kTria(),
-		"Refinement pattern for " << ref_pat.RefEl().ToString());
-    // Lattice meshwidth
-    const double h_lattice = 1.0/(double)ref_pat.LatticeConst();
-    // Obtain geometry of children as lattice polygon
-    std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>
+                "Refinement pattern for " << ref_pat.RefEl().ToString());
+  // Lattice meshwidth
+  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  // Obtain geometry of children as lattice polygon
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(0));
-    // Number of child segments
-    const int no_children = child_polygons.size();
-    std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
-    // For each child triangle create a geometry object and a unique pointer to it.
-    for (int l=0; l<no_children; l++) {
-      // A single child triangle is described by a lattice polygon with
-      // three vertices
-      LF_VERIFY_MSG(child_polygons[l].rows() == 2,
-		    "child_polygons[l].rows() = " << child_polygons[l].rows());
-      LF_VERIFY_MSG(child_polygons[l].cols() == 3,
-		    "child_polygons[l].cols() = " << child_polygons[l].cols());
-      // Normalize lattice coordinates
-      const Eigen::MatrixXd child_geo(Global(h_lattice*child_polygons[l].cast<double>()));
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
-    }
-    return (child_geo_uptrs);
+  // Number of child segments
+  const int no_children = child_polygons.size();
+  std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
+  // For each child triangle create a geometry object and a unique pointer to
+  // it.
+  for (int l = 0; l < no_children; l++) {
+    // A single child triangle is described by a lattice polygon with
+    // three vertices
+    LF_VERIFY_MSG(child_polygons[l].rows() == 2,
+                  "child_polygons[l].rows() = " << child_polygons[l].rows());
+    LF_VERIFY_MSG(child_polygons[l].cols() == 3,
+                  "child_polygons[l].cols() = " << child_polygons[l].cols());
+    // Normalize lattice coordinates
+    const Eigen::MatrixXd child_geo(
+        Global(h_lattice * child_polygons[l].cast<double>()));
+    child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
+  }
+  return (child_geo_uptrs);
 }
 
 }  // namespace lf::geometry

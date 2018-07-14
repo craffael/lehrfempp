@@ -41,37 +41,37 @@ std::unique_ptr<Geometry> SegmentO1::SubGeometry(dim_t codim, dim_t i) const {
   LF_VERIFY_MSG(false, "codim is out of bounds.");
 }
 
-
-  std::vector<std::unique_ptr<Geometry>>
-  SegmentO1::ChildGeometry(const RefinementPattern &ref_pat,
-			   lf::base::dim_t codim) const {
-    // The refinement pattern must be for a segment
-    LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
-		  "Refinement pattern for " << ref_pat.RefEl().ToString());
-    // Lattice meshwidth
-    const double h_lattice = 1.0/(double)ref_pat.LatticeConst();
-    // Obtain geometry of children as vector of pairs of lattice coordinates
-    std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>
+std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
+    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
+  // The refinement pattern must be for a segment
+  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
+                "Refinement pattern for " << ref_pat.RefEl().ToString());
+  // Lattice meshwidth
+  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  // Obtain geometry of children as vector of pairs of lattice coordinates
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(0));
-    // Number of child segments
-    const int no_children = child_polygons.size();
-    LF_VERIFY_MSG(no_children == ref_pat.noChildren(0),
-		  "no_children = " << no_children << " <-> " << ref_pat.noChildren(0));
-    std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
-    // For each child create a geometry object and a unique pointer to it.
-    for (int l=0; l<no_children; l++) {
-      // A single child must be described by an interval, that is
-      // two differente lattice coordinates 
-      LF_VERIFY_MSG(child_polygons[l].rows() == 1,
-		    "child_polygons[l].rows() = " << child_polygons[l].rows());
-      LF_VERIFY_MSG(child_polygons[l].cols() == 2,
-		    "child_polygons[l].cols() = " << child_polygons[l].cols());
-      // Normalize lattice coordinates
-      const Eigen::MatrixXd child_geo(Global(h_lattice*child_polygons[l].cast<double>()));
-      child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
-    }
-    return child_geo_uptrs;
+  // Number of child segments
+  const int no_children = child_polygons.size();
+  LF_VERIFY_MSG(
+      no_children == ref_pat.noChildren(0),
+      "no_children = " << no_children << " <-> " << ref_pat.noChildren(0));
+  std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
+  // For each child create a geometry object and a unique pointer to it.
+  for (int l = 0; l < no_children; l++) {
+    // A single child must be described by an interval, that is
+    // two differente lattice coordinates
+    LF_VERIFY_MSG(child_polygons[l].rows() == 1,
+                  "child_polygons[l].rows() = " << child_polygons[l].rows());
+    LF_VERIFY_MSG(child_polygons[l].cols() == 2,
+                  "child_polygons[l].cols() = " << child_polygons[l].cols());
+    // Normalize lattice coordinates
+    const Eigen::MatrixXd child_geo(
+        Global(h_lattice * child_polygons[l].cast<double>()));
+    child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
   }
+  return child_geo_uptrs;
+}
 
 /* OLD IMPLEMENTATION based on explicit refinement patterns
 std::vector<std::unique_ptr<Geometry>>

@@ -50,7 +50,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
       default;
   Hybrid2DRefinementPattern& operator=(Hybrid2DRefinementPattern&&) = default;
   /** @} */
-  
+
  public:
   /** @brief constructor */
   explicit Hybrid2DRefinementPattern(lf::base::RefEl ref_el)
@@ -77,15 +77,15 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
                   "Anchor " << anchor << " invalid for " << ref_el_.ToString());
   }
 
-    /**
-     * @copydoc RefinementPattern::noChildren 
-     */
+  /**
+   * @copydoc RefinementPattern::noChildren
+   */
   virtual lf::base::size_type noChildren(lf::base::dim_t codim) const;
-    /**
-     * @copydoc RefinementPattern::ChildPolygons
-     */
-    virtual std::vector<Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>>
-    ChildPolygons(lf::base::dim_t codim) const;
+  /**
+   * @copydoc RefinementPattern::ChildPolygons
+   */
+  virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+  ChildPolygons(lf::base::dim_t codim) const;
 
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
@@ -132,7 +132,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   RefPat ref_pat_;             /**< refinement pattern */
   bool anchor_set_;            /**< flag indicating valid anchor */
 };
-  
+
 }  // namespace lf::refinement
 
 #endif

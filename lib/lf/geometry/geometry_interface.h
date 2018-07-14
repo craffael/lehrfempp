@@ -128,9 +128,10 @@ class Geometry {
 
   /**
    * @brief Generate a geometry object arising in the course of refinement
-   * 
-   * @param ref_pattern A code indicating the particular refinement of the element
-   * @paream codim _relative_ codimension of child entities whose 
+   *
+   * @param ref_pattern A code indicating the particular refinement of the
+   * element
+   * @paream codim _relative_ codimension of child entities whose
    *         shape is requested
    *
    * Implementation of local mesh refinement entails splitting of elements into
@@ -142,9 +143,9 @@ class Geometry {
    * interface all possible refinement patterns cannot be predicted. This is why
    * vanilla integer arguments have been chosen for this method.
    */
-  virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pat,lf::base::dim_t codim) const = 0;
-  
+  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat, lf::base::dim_t codim) const = 0;
+
   /**
    * @brief element shape by affine mapping from reference element
    *

@@ -16,8 +16,6 @@
 #include "segment_o1.h"
 #include "tria_o1.h"
 
-namespace lf::geometry {
-  
-} // end namespace
+namespace lf::geometry {}  // namespace lf::geometry
 
 #endif  // __02a3dfa9ae3a4969b29d4c0ecfaa6ad9

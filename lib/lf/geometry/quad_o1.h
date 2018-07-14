@@ -41,9 +41,8 @@ class QuadO1 : public Geometry {
    * entities see `Refinement.xoj`.
    */
 
-  virtual std::vector<std::unique_ptr<Geometry>>
-  ChildGeometry(const RefinementPattern &ref_pat,
-		lf::base::dim_t codim) const override;
+  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:
   /** @brief Coordinates of the a four vertices */
