@@ -119,7 +119,10 @@ class EndpointIndexPair {
 };
 }  // namespace
 
-Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
+  // **********************************************************************
+  // Construction of a 2D hybrid mesh
+  // **********************************************************************
+Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,
            CellList cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
@@ -173,14 +176,15 @@ Mesh::Mesh(dim_t dim_world, const NodeCoordList &nodes, EdgeList edges,
   points_.reserve(no_of_nodes);
 
   size_type node_index = 0;
-  for (const auto &v : nodes) {
-    const Eigen::VectorXd &node_coordinates(v);
-    GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
+  for (hybrid2dp::Mesh::GeometryPtr &pt_geo_ptr : nodes) {
+    // OLD VERSION. In the new version the geomtry of a point is passed in 'nodes'
+    // const Eigen::VectorXd &node_coordinates(v);
+    // GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
     if (output_ctrl_ > 10) {
       std::cout << "-> Adding node " << node_index << " at "
-                << node_coordinates.transpose() << std::endl;
+                << (pt_geo_ptr->Global(Eigen::Matrix<double,0,1>())).transpose() << std::endl;
     }
-    points_.emplace_back(node_index, std::move(point_geo));
+    points_.emplace_back(node_index, std::move(pt_geo_ptr));
     node_index++;
   }
 

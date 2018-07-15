@@ -45,6 +45,15 @@ class MeshFactory {
   virtual size_type AddPoint(coord_t coord) = 0;
 
   /**
+   * @brief Add a point to the mesh.
+   * @param geometry unique pointer to geometry object giving location of point
+   * @return The 0-based index of the entity that will be created.
+   *         The first call to this method will return 0, the second call 1,
+   *         ...
+   */
+  virtual size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) = 0;
+  
+  /**
    * @brief Add an an entity (codim>0) to the mesh.
    * @param ref_el The reference element of the entity.
    * @param nodes The 0-based indices of the nodes that make up this entity

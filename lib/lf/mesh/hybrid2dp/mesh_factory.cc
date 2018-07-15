@@ -12,10 +12,30 @@ MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(!built_, "Build() already called.");
   LF_ASSERT_MSG(coord.rows() == dim_world_,
                 "coord has incompatible number of rows.");
-  nodes_.emplace_back(std::move(coord));
+  // Create default geometry object for a point from location vector
+  hybrid2dp::Mesh::GeometryPtr point_geo = std::make_unique<geometry::Point>(coord);
+  nodes_.emplace_back(std::move(point_geo));
   return nodes_.size() - 1;
 }
-
+  
+  MeshFactory::size_type
+  MeshFactory::AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) {
+    LF_ASSERT_MSG(!built_, "Build() already called.");
+    // Note: For the sake of purely topological computations meshes without
+    // any geometry information may make sense.
+    // Moreover, the location of a point can in principle be deduced from
+    // geometry information supplied for edges or cells.
+    // Hence the next assertion should be removed in the medium run.
+    LF_ASSERT_MSG(geometry != nullptr,
+		  "No creation of a point without a valid geoetry");
+    LF_ASSERT_MSG(geometry->DimGlobal() == dim_world_,
+                  "geometry->DimGlobal() != dim_world_");
+    LF_ASSERT_MSG(geometry->RefEl() == lf::base::RefEl::kPoint(),
+		  "Geometry object must belong to a point");
+    nodes_.emplace_back(std::move(geometry));
+    return nodes_.size() - 1;
+  }
+    
 MeshFactory::size_type MeshFactory::AddEntity(
     base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
@@ -37,7 +57,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
       LF_ASSERT_MSG(n < nodes_.size(),
                     "node " << n
                             << " specified in call to AddEntity must be "
-                               "inserted with AddNode() first.");
+                               "inserted with AddPoint() first.");
       LF_ASSERT_MSG(
           count < 2,
           "ref_el = segment, but nodes contains more than 2 node indices");
@@ -95,7 +115,11 @@ void MeshFactory::PrintLists(std::ostream& o) const {
   o << "hybrid2dp::MeshFactory::Build" << std::endl;
   o << nodes_.size() << " nodes:" << std::endl;
   for (size_type j = 0; j < nodes_.size(); j++) {
-    o << "Node " << j << " at " << nodes_[j].transpose() << std::endl;
+    o << "Node " << j << " at ";
+    if (nodes_[j] != nullptr)
+      o << (nodes_[j]->Global(Eigen::Matrix<double,0,1>())).transpose() << std::endl;
+    else
+      o << "with unknown location!" << std::endl;
   }
   o << edges_.size() << " edges " << std::endl;
   for (size_type j = 0; j < edges_.size(); j++) {

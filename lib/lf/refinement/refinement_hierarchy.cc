@@ -26,14 +26,13 @@ MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,
         (refinement_edges_.back())[cell_index] = -1;
       }
     }
-    // Initialize child information
-    std::vector<ChildInfo> cell_child_info(base_mesh->Size(0));
-    // Nothing special has to be done for edges and points
-    std::vector<ChildInfo> edge_child_info(base_mesh->Size(1));
-    std::vector<ChildInfo> point_child_info(base_mesh->Size(2));
-    child_infos_.push_back({std::move(cell_child_info),
-                            std::move(edge_child_info),
-                            std::move(point_child_info)});
+    // Setting upe child information
+    std::vector<CellChildInfo> cell_child_info(base_mesh->Size(0));
+    std::vector<EdgeChildInfo> edge_child_info(base_mesh->Size(1));
+    std::vector<PointChildInfo> point_child_info(base_mesh->Size(2));
+    cell_child_infos_.push_back(std::move(cell_child_info));
+    edge_child_infos_.push_back(std::move(edge_child_info));
+    point_child_infos_.push_back(std::move(point_child_info));
   }
   {
     // No parents for entities on the coarsest level
@@ -52,23 +51,20 @@ void MeshHierarchy::RefineRegular(void) {
   // Flag all points as to be copied
   for (const mesh::Entity &point : finest_mesh.Entities(2)) {
     const lf::base::glb_idx_t point_index = finest_mesh.Index(point);
-    ChildInfo &pt_child_info((child_infos_.back())[2][point_index]);
+    PointChildInfo &pt_child_info((point_child_infos_.back())[point_index]);
     // Set the information about a points children except the child pointer
-    pt_child_info.num_children_ = 1;
     pt_child_info.ref_pat_ = RefPat::rp_copy;
   }
   // Flag all edges as to be split
   for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
     const lf::base::glb_idx_t edge_index = finest_mesh.Index(edge);
-    ChildInfo &ed_child_info(((child_infos_.back())[1])[edge_index]);
-    ed_child_info.num_children_ = 2;
+    EdgeChildInfo &ed_child_info(((edge_child_infos_.back()))[edge_index]);
     ed_child_info.ref_pat_ = RefPat::rp_split;
   }
   // All cells are to be refined regularly
   for (const mesh::Entity &cell : finest_mesh.Entities(0)) {
     const lf::base::glb_idx_t cell_index = finest_mesh.Index(cell);
-    ChildInfo &cell_child_info(((child_infos_.back())[0])[cell_index]);
-    cell_child_info.num_children_ = 4;
+    CellChildInfo &cell_child_info(((cell_child_infos_.back()))[cell_index]);
     cell_child_info.ref_pat_ = RefPat::rp_regular;
   }
   // With all refinement patterns set, generate the new mesh
@@ -94,40 +90,57 @@ void MeshHierarchy::PerformRefinement(void) {
   // First run through the vertices, create child vertices and register
   // them with the mesh factory
   // Store child indices in an auxiliary array
-  std::vector<ChildInfo> &pt_child_info((child_infos_.back())[2]);
-  std::vector<lf::base::glb_idx_t> pt_child_idx(parent_mesh.Size(2), -1);
+  std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
   for (const mesh::Entity &node : parent_mesh.Entities(2)) {
+    // Obtain index of node in coarse mesh
     const lf::base::glb_idx_t node_index = parent_mesh.Index(node);
+    // Find position of node in physical coordinates
     const lf::geometry::Geometry &pt_geo(*node.Geometry());
     Eigen::MatrixXd pt_coords(pt_geo.Global(Eigen::Matrix<double, 0, 1>()));
     if (pt_child_info[node_index].ref_pat_ != RefPat::rp_nil) {
-      pt_child_idx[node_index] = mesh_factory_.AddPoint(pt_coords);
-    }
-  }
+      // Generate a node for the fine mesh at the same position
+      pt_child_info[node_index].child_point_idx_ = mesh_factory_.AddPoint(pt_coords);
+    }} // end loop over nodes 
 
   // Now traverse the edges. Depending on the refinement pattern,
-  // either copy them or split them
-  // In auxiliary arrays store the indices of the endpoints
-  // of the new edges and those of midpoints in the case of split edges
-  std::vector<lf::base::glb_idx_t> edge_part00_idx(parent_mesh.Size(1), -1);
-  std::vector<lf::base::glb_idx_t> edge_part1_idx(parent_mesh.Size(1), -1);
-  std::vector<lf::base::glb_idx_t> edge_mp_idx(parent_mesh.Size(1), -1);
+  // either copy them or split them.
+  // Supplement the refinement information for edges accordingly.
+  std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
   for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
+    // Fetch global index of edge
     lf::base::glb_idx_t edge_index = parent_mesh.Index(edge);
-    const ChildInfo &edge_ci((child_infos_.back())[1][edge_index]);
+    EdgeChildInfo &edge_ci(ed_child_info[edge_index]);
     const RefPat edge_refpat(edge_ci.ref_pat_);
+    Hybrid2DRefinementPattern rp(edge.RefEl(),edge_refpat);
+    // Distinguish between different local refinement patterns
     switch (edge_refpat) {
       case RefPat::rp_copy: {
         // Edge has to be duplicated
-        Hybrid2DRefinementPattern rp_copy(edge.RefEl(), edge_refpat);
-        std::vector<std::unique_ptr<lf::geometry::Geometry>> ed_copy(
-            edge.Geometry()->ChildGeometry(rp_copy, 0));
-        LF_VERIFY_MSG(ed_copy.size() == 1, "Copy creates only a single child!");
+        std::vector<std::unique_ptr<lf::geometry::Geometry>>
+	  ed_copy(edge.Geometry()->ChildGeometry(rp, 0));
+        LF_VERIFY_MSG(ed_copy.size() == 1, "Copy may create only a single child!");
         // Get indices of endpoints in parent mesh
-
-        // Fetch indices of endpoints in
+	auto ed_nodes(edge.SubEntities(1));
+	const lf::base::glb_idx_t ed_p0_coarse_idx = parent_mesh.Index(ed_nodes[0]);
+	const lf::base::glb_idx_t ed_p1_coarse_idx = parent_mesh.Index(ed_nodes[1]);
+	// Obtain indices of the nodes at the same position in the fine mesh
+	const lf::base::glb_idx_t ed_p0_fine_idx =
+	  pt_child_info[ed_p0_coarse_idx].child_point_idx_;
+	const lf::base::glb_idx_t ed_p1_fine_idx =
+	  pt_child_info[ed_p1_coarse_idx].child_point_idx_;
+	// Finally register the new edge
+	edge_ci.child_edge_idx_.push_back
+	  (mesh_factory_.AddEntity
+	   (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
+	    ({ed_p0_fine_idx,ed_p1_fine_idx}),std::move(ed_copy[0])));
         break;
       }  // end rp_copy
+    case rp_split: {
+      // Edge has to be split into two halves with a new node created at the midpoint
+      // position.
+      // First obtain geometry information about new node 
+      break;
+    } // end rp_split
     }    // end switch refpat
   }      // end edge loop
 }

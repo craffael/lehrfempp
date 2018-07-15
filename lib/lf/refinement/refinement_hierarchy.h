@@ -12,7 +12,40 @@
 namespace lf::refinement {
 
 /**
- * @brief Information about the refinement status of an entity.
+ * @brief Information about the refinement status of a point
+ *
+ * This information is used by methods of the class `MeshHierarchy` to
+ * organize uniform and adaptive refinement.
+ *
+ * The key pieces of information are
+ * - a flag indicating whether the point is to be duplicated (rp_copy)
+ * - global index of the child point
+ */
+  struct PointChildInfo {
+    PointChildInfo(void):ref_pat_(RefPat::rp_nil),child_point_idx_(-1) {}
+    RefPat ref_pat_;
+    lf::base::glb_idx_t child_point_idx_;
+  };
+
+/**
+ * @brief Information about the refinement status of an edge
+ *
+ * This information is used by methods of the class `MeshHierarchy` to
+ * organize uniform and adaptive refinement.
+ *
+ * The key pieces of information are
+ * - the topological refinement type (rp_copy or rp_split)
+ * - indices of all _interior_ child entities (edges or points)
+ */
+  struct EdgeChildInfo {
+    EdgeChildInfo(void):ref_pat_(RefPat::rp_nil) {}
+    RefPat ref_pat_;
+    std::vector<lf::base::glb_idx_t> child_edge_idx_;
+    std::vector<lf::base::glb_idx_t> child_point_idx_;
+  };
+
+/**
+ * @brief Information about the refinement status of a cell
  *
  * This information is used by methods of the class `MeshHierarchy` to
  * organize uniform and adaptive refinement.
@@ -20,27 +53,17 @@ namespace lf::refinement {
  * The key pieces of information are
  * - the topological refinement type along with the anchor index used
  *   in the case of a cell, which completely defines the geometric refinement.
- * - the number of children created during refinement, which, in principle, can
- *   be inferred from the previous bits of information.
- * - the marking status of an entity, only relevant for edges in the current
- *   implementation.
- * - the local index of the refinement edge, only relevant for cells.
- * - pointers to the child entities (at most 6)
- * - indices of the child entities
+ * - indices of all _interior_ child entities
  */
-struct ChildInfo {
-  explicit ChildInfo(void)
-      : num_children_(0), ref_pat_(RefPat::rp_nil), anchor_(-1) {
-    for (auto &child_ptr : child_ptr_) child_ptr = nullptr;
-    for (auto &child_idx : child_idx_) child_idx = -1;
-  }
-  lf::base::size_type num_children_;
-  std::array<const mesh::Entity *, 6> child_ptr_;
-  std::array<lf::base::glb_idx_t, 6> child_idx_;
-  RefPat ref_pat_;
-  lf::base::sub_idx_t anchor_;
-};
-
+  struct CellChildInfo {
+    CellChildInfo(void):ref_pat_(RefPat::rp_nil), anchor_(-1) {}
+    RefPat ref_pat_;
+    lf::base::sub_idx_t anchor_;
+    std::vector<lf::base::glb_idx_t> child_cell_idx_;
+    std::vector<lf::base::glb_idx_t> child_edge_idx_;
+    std::vector<lf::base::glb_idx_t> child_point_idx_;
+  };
+  
 /**
  * @brief Information about possible parent entities
  */
@@ -130,7 +153,9 @@ class MeshHierarchy {
   /** The mesh factory to be used to creating a new mesh */
   mesh::MeshFactory &mesh_factory_;
   /** information about children for each level and each class of entities */
-  std::vector<std::array<std::vector<ChildInfo>, 3>> child_infos_;
+  std::vector<std::vector<PointChildInfo>> point_child_infos_;
+  std::vector<std::vector<EdgeChildInfo>> edge_child_infos_;
+  std::vector<std::vector<CellChildInfo>> cell_child_infos_;
   /** information about parent entities on each level */
   std::vector<std::array<std::vector<ParentInfo>, 3>> parent_infos_;
   /** Information about marked edges */

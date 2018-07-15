@@ -50,8 +50,8 @@ class Mesh : public mesh::Mesh {
   std::vector<const mesh::Entity*> cell_pointers_;
 
   /** @brief Data types for passing information about mesh intities */
-  using NodeCoordList = std::vector<Eigen::VectorXd>;
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
+  using NodeCoordList = std::vector<GeometryPtr>;
   using EdgeList =
       std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
   using CellList =
@@ -73,7 +73,7 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, const NodeCoordList& nodes, EdgeList edges,
+  Mesh(dim_t dim_world,NodeCoordList& nodes, EdgeList edges,
        CellList cells);
 
   friend class MeshFactory;
