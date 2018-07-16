@@ -2,6 +2,8 @@ set(sources
   gmsh_reader.cc
   gmsh_reader.h
   io.h
+  vtk_writer.h
+  vtk_writer.cc
 )
 
 add_library(lf.io ${sources})
