@@ -31,7 +31,7 @@ TEST(lf_mesh, buildStructuredMesh) {
 
   EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
-  EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
+  EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
   EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
   EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
@@ -59,7 +59,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
 
   EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
-  EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
+  EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
   EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
   EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
