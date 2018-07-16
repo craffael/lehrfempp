@@ -68,13 +68,15 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
 
   /** @brief constructor */
   Hybrid2DRefinementPattern(lf::base::RefEl ref_el, RefPat ref_pat,
-                            lf::base::sub_idx_t anchor)
-      : geometry::RefinementPattern(ref_el),
-        anchor_(anchor),
-        ref_pat_(ref_pat),
-        anchor_set_(true) {
-    LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
-                  "Anchor " << anchor << " invalid for " << ref_el_.ToString());
+                            lf::base::sub_idx_t anchor):
+    geometry::RefinementPattern(ref_el),
+    anchor_(anchor),
+    ref_pat_(ref_pat),
+    anchor_set_((anchor==(lf::base::sub_idx_t)-1)?false:true) {
+    if (anchor_set_) {
+      LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
+		    "Anchor " << anchor << " invalid for " << ref_el_.ToString());
+    }
   }
 
   /**
@@ -89,10 +91,12 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
 
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
-    LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
-                  "Anchor " << anchor << " invalid for " << ref_el_.ToString());
     anchor_ = anchor;
-    anchor_set_ = true;
+    anchor_set_ = (anchor==(lf::base::sub_idx_t)-1)?false:true;
+    if (anchor_set_) {
+      LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
+		    "Anchor " << anchor << " invalid for " << ref_el_.ToString());
+    }
     return (*this);
   }
 

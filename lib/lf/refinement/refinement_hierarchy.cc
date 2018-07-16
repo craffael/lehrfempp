@@ -109,6 +109,16 @@ void MeshHierarchy::PerformRefinement(void) {
   for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
     // Fetch global index of edge
     lf::base::glb_idx_t edge_index = parent_mesh.Index(edge);
+    // Get indices of endpoints in parent mesh
+    auto ed_nodes(edge.SubEntities(1));
+    const lf::base::glb_idx_t ed_p0_coarse_idx = parent_mesh.Index(ed_nodes[0]);
+    const lf::base::glb_idx_t ed_p1_coarse_idx = parent_mesh.Index(ed_nodes[1]);
+    // Obtain indices of the nodes at the same position in the fine mesh
+    const lf::base::glb_idx_t ed_p0_fine_idx =
+      pt_child_info[ed_p0_coarse_idx].child_point_idx_;
+    const lf::base::glb_idx_t ed_p1_fine_idx =
+      pt_child_info[ed_p1_coarse_idx].child_point_idx_;
+    // Prepare request of geometry after refinement
     EdgeChildInfo &edge_ci(ed_child_info[edge_index]);
     const RefPat edge_refpat(edge_ci.ref_pat_);
     Hybrid2DRefinementPattern rp(edge.RefEl(),edge_refpat);
@@ -119,16 +129,7 @@ void MeshHierarchy::PerformRefinement(void) {
         std::vector<std::unique_ptr<lf::geometry::Geometry>>
 	  ed_copy(edge.Geometry()->ChildGeometry(rp, 0));
         LF_VERIFY_MSG(ed_copy.size() == 1, "Copy may create only a single child!");
-        // Get indices of endpoints in parent mesh
-	auto ed_nodes(edge.SubEntities(1));
-	const lf::base::glb_idx_t ed_p0_coarse_idx = parent_mesh.Index(ed_nodes[0]);
-	const lf::base::glb_idx_t ed_p1_coarse_idx = parent_mesh.Index(ed_nodes[1]);
-	// Obtain indices of the nodes at the same position in the fine mesh
-	const lf::base::glb_idx_t ed_p0_fine_idx =
-	  pt_child_info[ed_p0_coarse_idx].child_point_idx_;
-	const lf::base::glb_idx_t ed_p1_fine_idx =
-	  pt_child_info[ed_p1_coarse_idx].child_point_idx_;
-	// Finally register the new edge
+	// Register the new edge
 	edge_ci.child_edge_idx_.push_back
 	  (mesh_factory_.AddEntity
 	   (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
@@ -138,11 +139,126 @@ void MeshHierarchy::PerformRefinement(void) {
     case rp_split: {
       // Edge has to be split into two halves with a new node created at the midpoint
       // position.
-      // First obtain geometry information about new node 
+      // First obtain geometry information about new node (sub-entity with relative
+      // co-dimension 1)
+      std::vector<std::unique_ptr<geometry::Geometry>>
+	edge_nodes_geo_ptrs(edge.Geometry()->ChildGeometry(rp,1));
+      LF_VERIFY_MSG(edge_nodes_geo_ptrs.size() != 1,
+		    "Split edge with " << edge_nodes_geo_ptrs.size() << " child nodes!");
+      // Register midpoint as new node
+      const lf::base::glb_idx_t midpoint_fine_idx =
+	mesh_factory_.AddPoint(std::move(edge_nodes_geo_ptrs[0]));
+      edge_ci.child_point_idx_.push_back(midpoint_fine_idx);
+      // Next get the geometry objects for the two child edges (co-dim == 0)
+      std::vector<std::unique_ptr<geometry::Geometry>>
+	edge_child_geo_ptrs(edge.Geometry()->ChildGeometry(rp,0));
+      LF_VERIFY_MSG(edge_child_geo_ptrs.size() != 2,
+		    "Split edge with " << edge_child_geo_ptrs.size() << " parts!");
+      // Register the two new edges
+      // CAREFUL: Assignment of endpoints has to match implementation in
+      // refinement.cc
+      edge_ci.child_edge_idx_.push_back
+	(mesh_factory_.AddEntity
+	 (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
+	  ({ed_p0_fine_idx,midpoint_fine_idx}),std::move(edge_child_geo_ptrs[0])));
+      edge_ci.child_edge_idx_.push_back
+	(mesh_factory_.AddEntity
+	 (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
+	  ({midpoint_fine_idx,ed_p1_fine_idx}),std::move(edge_child_geo_ptrs[1])));
       break;
     } // end rp_split
+    default: {
+      LF_VERIFY_MSG(false,"Refinement pattern " << (int)edge_refpat << " illegal for edge");
+      break;
+    }
     }    // end switch refpat
   }      // end edge loop
+
+  // Visit all cells, examine their refinement patterns, retrieve indices of
+  // their sub-entities, and those of the children.
+  std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
+  for(const mesh::Entity &cell : parent_mesh.Entities(0)) {
+    // type of cell
+    const lf::base::RefEl ref_el(cell.RefEl());
+    const lf::base::size_type num_edges = ref_el.NumSubEntities(1);
+    const lf::base::size_type num_vertices = ref_el.NumSubEntities(2);
+    // fetch index of current cell
+    const lf::base::glb_idx_t cell_index(parent_mesh.Index(cell));
+    
+    // Obtain indices of subentities (co-dimension = outer array index)
+    // std::array<std::vector<const mesh::Entity *>,3> cell_subent_ptrs; NOT NEEDED
+    std::array<std::vector<lf::base::glb_idx_t>,3> cell_subent_idx;
+    cell_subent_idx[0].push_back(cell_index);
+    // cell_subent_ptrs[0].push_back(&cell); NOT NEEDED
+    for (int codim = 1; codim <= 2; codim++) {
+      base::RandomAccessRange<const mesh::Entity> subentities(cell.SubEntities(codim));
+      for (const mesh::Entity &sub_ent : subentities) {
+	// cell_subent_ptrs[codim].push_back(&sub_ent); NOT NEEDED
+	cell_subent_idx[codim].push_back(parent_mesh.Index(sub_ent));
+      }
+      LF_VERIFY_MSG(cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
+		    ref_el.ToString() << ": only " << cell_subent_idx[codim].size()
+		    << " subents of codim = " << codim);
+    }
+    // Retrieve indices of vertices of cell on the fine mesh
+    std::vector<lf::base::glb_idx_t> vertex_child_idx;
+    for (lf::base::sub_idx_t vt_lidx = 0; vt_lidx < num_vertices; vt_lidx++) {
+      LF_VERIFY_MSG(pt_child_info[cell_subent_idx[2][vt_lidx]].ref_pat_ == RefPat::rp_copy,
+		    "Vertex must have been copied!");
+      vertex_child_idx.push_back(pt_child_info[cell_subent_idx[2][vt_lidx]].child_point_idx_);
+    }
+
+    // // Determine orientation of edges NOT NEEDED
+    // const lf::base::size_type num_edges = ref_el.NumSubEntities(1);
+    // std::vector<std::array<lf::base::sub_idx_t,2>> index_perm;
+    // for (lf::base::sub_idx_t edge_lidx = 0; edge_lidx < ref_el.NumSubEntities(1); edge_lidx++) {
+    //   base::RandomAccessRange<const mesh::Entity> edge_nodes
+    // 	(cell_subent_ptrs[1][edge_lidx]->SubEntities(1));
+    //   if (edge_nodes[0] == *cell_subent_ptrs[2][edge_lidx]) {
+    // 	// Edge is oriented as the edge in the reference configuration
+    // 	index_perm.push_back({0,1});
+    //   }
+    //   else {
+    // 	// Edge has orientation opposite to reference edge
+    // 	index_perm.push_back({1,0});
+    //   }
+    // } // end loop over edges
+    
+    // Set up refinement pattern:
+    CellChildInfo &cell_ci(cell_child_info[cell_index]);
+    const RefPat cell_refpat(cell_ci.ref_pat_);
+    Hybrid2DRefinementPattern rp(cell.RefEl(),cell_refpat,cell_ci.anchor_);
+
+    // Local linking of child entities is very different depending on cell type
+    // and refinement patterns.
+    if (ref_el == lf::base::RefEl::kTria()) {
+      // Case of a triangle
+      switch (cell_refpat) {
+      case RefPat::rp_regular: {
+	// regular refinement into four congruent triangles
+	// First we need to find the indices of the newly created midpoints
+	// on the fine mesh.
+	std::array<lf::base::glb_idx_t,3> midpoint_child_idx;
+	for (lf::base::sub_idx_t edge_lidx = 0; edge_lidx < num_edges; edge_lidx++) {
+	  const EdgeChildInfo edge_ci(ed_child_info[cell_subent_idx[1][edge_lidx]]);
+	  LF_VERIFY_MSG(edge_ci.ref_pat_ == RefPat::rp_split,
+			"Edge " << edge_lidx << " must have been split");
+	  LF_VERIFY_MSG(edge_ci.child_point_idx_.size() == 1,
+			"Split edge should have exactly one child node");
+	  midpoint_child_idx[edge_lidx] = edge_ci.child_point_idx_[0];
+	}
+	break;
+      }
+      } // end switch refpat
+    }
+    else if (ref_el == lf::base::RefEl::kQuad()) {
+      // Case of a quadrilateral
+      
+    }
+    else {
+      LF_VERIFY_MSG(false,"Unknown cell type" << ref_el.ToString());
+    }
+  }// end loop over cells
 }
 
 }  // namespace lf::refinement
