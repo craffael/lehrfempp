@@ -27,6 +27,10 @@ using sub_idx_t = unsigned int;
  * @brief type for dimensions and co-dimensions and numbers derived from them
  */
 using dim_t = unsigned char;
+  /**
+   * @brief Index flagged as invalid
+   */
+  const unsigned int idx_nil = (unsigned int)-1;
 /** @} */
 }  // namespace lf::base
 

@@ -99,6 +99,7 @@ void MeshHierarchy::PerformRefinement(void) {
     Eigen::MatrixXd pt_coords(pt_geo.Global(Eigen::Matrix<double, 0, 1>()));
     if (pt_child_info[node_index].ref_pat_ != RefPat::rp_nil) {
       // Generate a node for the fine mesh at the same position
+      // ADJUST to new version of AddPoint() using ChildGeometry() !!!!!!!
       pt_child_info[node_index].child_point_idx_ = mesh_factory_.AddPoint(pt_coords);
     }} // end loop over nodes 
 
@@ -201,11 +202,21 @@ void MeshHierarchy::PerformRefinement(void) {
 		    << " subents of codim = " << codim);
     }
     // Retrieve indices of vertices of cell on the fine mesh
-    std::vector<lf::base::glb_idx_t> vertex_child_idx;
+    std::array<lf::base::glb_idx_t,4> vertex_child_idx({idx_nil,idx_nil,idx_nil,idx_nil});
     for (lf::base::sub_idx_t vt_lidx = 0; vt_lidx < num_vertices; vt_lidx++) {
       LF_VERIFY_MSG(pt_child_info[cell_subent_idx[2][vt_lidx]].ref_pat_ == RefPat::rp_copy,
 		    "Vertex must have been copied!");
-      vertex_child_idx.push_back(pt_child_info[cell_subent_idx[2][vt_lidx]].child_point_idx_);
+      vertex_child_idx[vt_lidx] = pt_child_info[cell_subent_idx[2][vt_lidx]].child_point_idx_;
+    }
+    // Retrieve indices of midpoints of edges, if they exist
+    std::array<lf::base::glb_idx_t,4> edge_midpoint_idx({idx_nil,idx_nil,idx_nil,idx_nil});
+    for (lf::base::sub_idx_t ed_lidx = 0; ed_lidx < num_edges; ed_lidx++) {
+      const EdgeChildInfo &ed_ci(ed_child_info[cell_subent_idx[1][ed_lidx]]);
+      if (ed_ci.child_point_idx_.size() > 0) {
+	LF_VERIFY_MSG(ed_child_info[cell_subent_idx[1][ed_lidx]].ref_pat_ == RefPat::rp_split,
+		      "Edge with a midpoint must have been split");
+	edge_midpoint_idx[ed_lidx] = ed_ci.child_point_idx_[0];
+      }
     }
 
     // // Determine orientation of edges NOT NEEDED
@@ -236,17 +247,7 @@ void MeshHierarchy::PerformRefinement(void) {
       switch (cell_refpat) {
       case RefPat::rp_regular: {
 	// regular refinement into four congruent triangles
-	// First we need to find the indices of the newly created midpoints
-	// on the fine mesh.
-	std::array<lf::base::glb_idx_t,3> midpoint_child_idx;
-	for (lf::base::sub_idx_t edge_lidx = 0; edge_lidx < num_edges; edge_lidx++) {
-	  const EdgeChildInfo edge_ci(ed_child_info[cell_subent_idx[1][edge_lidx]]);
-	  LF_VERIFY_MSG(edge_ci.ref_pat_ == RefPat::rp_split,
-			"Edge " << edge_lidx << " must have been split");
-	  LF_VERIFY_MSG(edge_ci.child_point_idx_.size() == 1,
-			"Split edge should have exactly one child node");
-	  midpoint_child_idx[edge_lidx] = edge_ci.child_point_idx_[0];
-	}
+	
 	break;
       }
       } // end switch refpat
