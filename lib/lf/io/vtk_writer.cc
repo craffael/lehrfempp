@@ -22,26 +22,42 @@ BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile::UnstructuredGrid,
     (std::vector<lf::io::VtkFile::CellType>, cell_types)
 );
 
+BOOST_FUSION_ADAPT_TPL_STRUCT((T), (lf::io::VtkFile::FieldDataArray)(T),
+                              (std::string, name),
+                              (auto, data)
+);
+
 BOOST_FUSION_ADAPT_TPL_STRUCT((T), (lf::io::VtkFile::ScalarData)(T),
     (std::string, data_name)
     (std::string, lookup_table)
     (auto, data)
 );
 
- BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile::Attributes,
-     (std::vector<lf::io::VtkFile::ScalarData<int>>, scalar_int_data)
-     (std::vector<lf::io::VtkFile::ScalarData<unsigned int>>, scalar_unsigned_int_data)
-     (std::vector<lf::io::VtkFile::ScalarData<long>>, scalar_long_data)
-     (std::vector<lf::io::VtkFile::ScalarData<unsigned long>>, scalar_unsigned_long_data)
-     (std::vector<lf::io::VtkFile::ScalarData<float>>, scalar_float_data)
-     (std::vector<lf::io::VtkFile::ScalarData<double>>, scalar_double_data)
- );
+BOOST_FUSION_ADAPT_TPL_STRUCT((T), (lf::io::VtkFile::VectorData)(T),
+    (std::string, name)
+    (auto, data)
+);
+
+// BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile::Attributes,
+//                           (auto, data)
+//                           );
+
+ // BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile::Attributes,
+ //     (std::vector<lf::io::VtkFile::ScalarData<int>>, scalar_int_data)
+ //     (std::vector<lf::io::VtkFile::ScalarData<unsigned int>>, scalar_unsigned_int_data)
+ //     (std::vector<lf::io::VtkFile::ScalarData<long>>, scalar_long_data)
+ //     (std::vector<lf::io::VtkFile::ScalarData<unsigned long>>, scalar_unsigned_long_data)
+ //     (std::vector<lf::io::VtkFile::ScalarData<float>>, scalar_float_data)
+ //     (std::vector<lf::io::VtkFile::ScalarData<double>>, scalar_double_data)
+ // );
 
 BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile,
     (std::string, header)
     (lf::io::VtkFile::Format, format)
     (lf::io::VtkFile::UnstructuredGrid, unstructured_grid)
+    (lf::io::VtkFile::FieldData, field_data)
     (lf::io::VtkFile::Attributes, point_data)
+    (lf::io::VtkFile::Attributes, cell_data)
 );
 
 // clang-format on
@@ -86,8 +102,8 @@ BOOST_PHOENIX_ADAPT_FUNCTION(void, CellListSize, cell_list_size, 2);
 //     using type = typename Subject::size_type;
 //   };
 //
-//   template<class OutputIterator, class Context, class Delimiter, class
-//   Attribute> bool generate(OutputIterator& sink, Context& ctx, const
+//   template<class Iterator, class Context, class Delimiter, class
+//   Attribute> bool generate(Iterator& sink, Context& ctx, const
 //   Delimiter& delimiter, const Attribute& attr) const {
 //     return boost::spirit::karma::int_inserter<10, >
 //   }
@@ -114,10 +130,10 @@ std::ostream& operator<<(std::ostream& stream, const VtkFile::Format& f) {
 
 namespace /*anonymous */ {
 namespace karma = boost::spirit::karma;
-template <class OutputIterator, bool BINARY>
-struct VtkGrammar : karma::grammar<OutputIterator, VtkFile()> {
+template <class Iterator, bool BINARY>
+struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
   // template <class T>
-  // karma::rule<OutputIterator, std::vector<T>()> vector_size() {
+  // karma::rule<Iterator, std::vector<T>()> vector_size() {
   //   return karma::int_[karma::_1 = boost::phoenix::size(karma::_val)];
   // }
 
@@ -178,65 +194,138 @@ struct VtkGrammar : karma::grammar<OutputIterator, VtkFile()> {
     unstructured_grid %= lit("DATASET UNSTRUCTURED_GRID")
                          << karma::eol << points << cells << cell_types;
 
+    // Field data
+    field_data_int %= karma::string << lit(" 1 ") << lit(size(at_c<1>(_val)))
+                                    << lit(" int") << eol
+                                    << (karma::int_ % lit(' ')) << eol;
+    field_data_float %= karma::string << lit(" 1 ") << lit(size(at_c<1>(_val)))
+                                      << lit(" float") << eol
+                                      << (karma::float_ % lit(' ')) << eol;
+
+    field_data_double %= karma::string << lit(" 1 ") << lit(size(at_c<1>(_val)))
+                                       << lit(" double") << eol
+                                       << (karma::double_ % lit(' ')) << eol;
+
+    field_data %= lit("FIELD FieldData ")
+                  << lit(size(_val)) << eol
+                  << *(field_data_int | field_data_float | field_data_double);
+
+    // Point/Cell data
+    scalar_data_char %=
+        (lit("SCALARS ") << karma::string << lit(" char 1") << eol
+                         << lit("LOOKUP_TABLE ") << karma::string << eol
+                         << (*(karma::short_ % eol)))
+        << eol;
+
+    scalar_data_uchar %=
+        (lit("SCALARS ") << karma::string << lit(" char 1") << eol
+                         << lit("LOOKUP_TABLE ") << karma::string << eol
+                         << (*(karma::ushort_ % eol)))
+        << eol;
+
+    scalar_data_short %=
+        (lit("SCALARS ") << karma::string << lit(" short 1") << eol
+                         << lit("LOOKUP_TABLE ") << karma::string << eol
+                         << (*(karma::short_ % eol)))
+        << eol;
+
+    scalar_data_ushort %=
+        (lit("SCALARS ") << karma::string << lit(" unsigned_short 1") << eol
+                         << lit("LOOKUP_TABLE ") << karma::string << eol
+                         << (*(karma::ushort_ % eol)))
+        << eol;
+
     scalar_data_int %= (lit("SCALARS ") << karma::string << lit(" int 1") << eol
                                         << lit("LOOKUP_TABLE ") << karma::string
-                                        << eol << (*(karma::int_ % eol)));
+                                        << eol << (*(karma::int_ % eol)))
+                       << eol;
     scalar_data_unsigned_int %=
         (lit("SCALARS ") << karma::string << lit(" unsigned_int 1") << eol
                          << lit("LOOKUP_TABLE ") << karma::string << eol
-                         << (*(karma::uint_ % eol)));
+                         << (*(karma::uint_ % eol)))
+        << eol;
 
     scalar_data_long %=
         (lit("SCALARS ") << karma::string << lit(" long 1") << eol
                          << lit("LOOKUP_TABLE ") << karma::string << eol
-                         << (*(karma::long_ % eol)));
+                         << (*(karma::long_ % eol)))
+        << eol;
 
     scalar_data_unsigned_long %=
         (lit("SCALARS ") << karma::string << lit(" unsigned_long 1") << eol
                          << lit("LOOKUP_TABLE ") << karma::string << eol
-                         << (*(karma::ulong_ % eol)));
+                         << (*(karma::ulong_ % eol)))
+        << eol;
 
     scalar_data_float %=
         (lit("SCALARS ") << karma::string << lit(" float 1") << eol
                          << lit("LOOKUP_TABLE ") << karma::string << eol
-                         << (*(karma::float_ % eol)));
+                         << (*(karma::float_ % eol)))
+        << eol;
 
     scalar_data_double %=
         (lit("SCALARS ") << karma::string << lit(" double 1") << eol
                          << lit("LOOKUP_TABLE ") << karma::string << eol
-                         << (*(karma::double_ % eol)));
+                         << (*(karma::double_ % eol)))
+        << eol;
 
-    attributes %= (*scalar_data_int)
-                  << (*scalar_data_unsigned_int) << (*scalar_data_long)
-                  << (*scalar_data_unsigned_long) << (*scalar_data_float)
-                  << (*scalar_data_double);
+    vector_data_float %=
+        lit("VECTORS ") << karma::string << lit(" float") << eol
+                        << *(karma::float_ << lit(' ') << karma::float_
+                                           << lit(' ') << karma::float_ << eol);
+
+    vector_data_double %= lit("VECTORS ")
+                          << karma::string << lit(" double") << eol
+                          << *(karma::double_ << lit(' ') << karma::double_
+                                              << lit(' ') << karma::double_
+                                              << eol);
+
+    attributes %=
+        (*(scalar_data_char | scalar_data_uchar | scalar_data_short |
+           scalar_data_ushort | scalar_data_int | scalar_data_unsigned_int |
+           scalar_data_long | scalar_data_unsigned_long | scalar_data_float |
+           scalar_data_double | vector_data_float | vector_data_double));
 
     root %= lit("# vtk DataFile Version 3.0")
             << karma::eol << karma::string << karma::eol << karma::stream
-            << karma::eol << unstructured_grid << karma::eol;
-    // << lit("POINT_DATA ") << lit(size(at_c<0>(at_c<2>(_val)))) << eol
-    // << attributes;
+            << karma::eol << unstructured_grid << karma::eol << field_data
+            << lit("POINT_DATA ") << lit(size(at_c<0>(at_c<2>(_val)))) << eol
+            << attributes << lit("CELL_DATA ")
+            << lit(size(at_c<1>(at_c<2>(_val)))) << eol << attributes;
   }
 
-  karma::rule<OutputIterator, VtkFile()> root;
-  karma::rule<OutputIterator, VtkFile()> header;
-  karma::rule<OutputIterator, VtkFile::UnstructuredGrid()> unstructured_grid;
-  karma::rule<OutputIterator, std::vector<Eigen::Vector3d>()> points;
-  karma::rule<OutputIterator, std::vector<Eigen::Vector3d>()> points_vector;
-  karma::rule<OutputIterator, std::vector<std::vector<unsigned int>>> cells;
-  karma::rule<OutputIterator, std::vector<unsigned int>> cells_vector;
-  karma::rule<OutputIterator, std::vector<VtkFile::CellType>> cell_types;
-  karma::rule<OutputIterator, VtkFile::CellType> cell_type;
-  karma::rule<OutputIterator, VtkFile::Attributes()> attributes;
-  karma::rule<OutputIterator, VtkFile::ScalarData<int>()> scalar_data_int;
-  karma::rule<OutputIterator, VtkFile::ScalarData<unsigned int>()>
+  karma::rule<Iterator, VtkFile()> root;
+  karma::rule<Iterator, VtkFile()> header;
+  karma::rule<Iterator, VtkFile::UnstructuredGrid()> unstructured_grid;
+  karma::rule<Iterator, std::vector<Eigen::Vector3d>()> points;
+  karma::rule<Iterator, std::vector<Eigen::Vector3d>()> points_vector;
+  karma::rule<Iterator, std::vector<std::vector<unsigned int>>> cells;
+  karma::rule<Iterator, std::vector<unsigned int>> cells_vector;
+  karma::rule<Iterator, std::vector<VtkFile::CellType>> cell_types;
+  karma::rule<Iterator, VtkFile::CellType> cell_type;
+
+  karma::rule<Iterator, VtkFile::FieldData()> field_data;
+  karma::rule<Iterator, VtkFile::FieldDataArray<int>()> field_data_int;
+  karma::rule<Iterator, VtkFile::FieldDataArray<float>()> field_data_float;
+  karma::rule<Iterator, VtkFile::FieldDataArray<double>()> field_data_double;
+
+  karma::rule<Iterator, VtkFile::Attributes()> attributes;
+
+  karma::rule<Iterator, VtkFile::ScalarData<char>()> scalar_data_char;
+  karma::rule<Iterator, VtkFile::ScalarData<unsigned char>()> scalar_data_uchar;
+  karma::rule<Iterator, VtkFile::ScalarData<short>()> scalar_data_short;
+  karma::rule<Iterator, VtkFile::ScalarData<unsigned short>()>
+      scalar_data_ushort;
+  karma::rule<Iterator, VtkFile::ScalarData<int>()> scalar_data_int;
+  karma::rule<Iterator, VtkFile::ScalarData<unsigned int>()>
       scalar_data_unsigned_int;
-  karma::rule<OutputIterator, VtkFile::ScalarData<long>()> scalar_data_long;
-  karma::rule<OutputIterator, VtkFile::ScalarData<unsigned long>()>
+  karma::rule<Iterator, VtkFile::ScalarData<long>()> scalar_data_long;
+  karma::rule<Iterator, VtkFile::ScalarData<unsigned long>()>
       scalar_data_unsigned_long;
-  karma::rule<OutputIterator, VtkFile::ScalarData<float>()> scalar_data_float;
-  karma::rule<OutputIterator, VtkFile::ScalarData<double>()> scalar_data_double;
-  karma::rule<OutputIterator, std::vector<int>()> temp;
+  karma::rule<Iterator, VtkFile::ScalarData<float>()> scalar_data_float;
+  karma::rule<Iterator, VtkFile::ScalarData<double>()> scalar_data_double;
+  karma::rule<Iterator, VtkFile::VectorData<float>()> vector_data_float;
+  karma::rule<Iterator, VtkFile::VectorData<double>()> vector_data_double;
 };
 
 /// Perform some checks to make sure the vtk file is valid.

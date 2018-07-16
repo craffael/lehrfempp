@@ -11,7 +11,9 @@
 #define __3e48c7b32a034cb3be3dbca884ff4f6c
 
 #include <Eigen/Eigen>
+#include <boost/variant/variant.hpp>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace lf::io {
@@ -53,6 +55,18 @@ class VtkFile {
     std::vector<CellType> cell_types;
   };
 
+  template <class T>
+  class FieldDataArray {
+   public:
+    std::string name;
+    std::vector<T> data;
+
+    FieldDataArray() {}
+
+    explicit FieldDataArray(std::string name, std::vector<T> data)
+        : name(name), data(data) {}
+  };
+
   /// Represents one set of attribute data (can be attached to points or cells)
   template <class T>
   class ScalarData {
@@ -60,17 +74,38 @@ class VtkFile {
     std::string data_name;
     std::vector<T> data;
     std::string lookup_table = "default";
+
+    ScalarData() {}
+
+    explicit ScalarData(std::string data_name, std::vector<T> data,
+                        std::string lookup_table = "default")
+        : data_name(data_name),
+          data(std::move(data)),
+          lookup_table(lookup_table) {}
   };
 
-  class Attributes {
+  template <class T>
+  class VectorData {
    public:
-    std::vector<ScalarData<int>> scalar_int_data;
-    std::vector<ScalarData<unsigned int>> scalar_unsigned_int_data;
-    std::vector<ScalarData<long>> scalar_long_data;
-    std::vector<ScalarData<unsigned long>> scalar_unsigned_long_data;
-    std::vector<ScalarData<float>> scalar_float_data;
-    std::vector<ScalarData<double>> scalar_double_data;
+    std::string name;
+    std::vector<Eigen::Matrix<T, 3, 1>> data;
+
+    VectorData() {}
+
+    explicit VectorData(std::string name,
+                        std::vector<Eigen::Matrix<T, 3, 1>> data)
+        : name(name), data(data) {}
   };
+
+  using Attributes = std::vector<boost::variant<
+      ScalarData<char>, ScalarData<unsigned char>, ScalarData<short>,
+      ScalarData<unsigned short>, ScalarData<int>, ScalarData<unsigned int>,
+      ScalarData<long>, ScalarData<unsigned long>, ScalarData<float>,
+      ScalarData<double>, VectorData<float>, VectorData<double>>>;
+
+  using FieldData =
+      std::vector<boost::variant<FieldDataArray<int>, FieldDataArray<float>,
+                                 FieldDataArray<double>>>;
 
   // Actual members
   //////////////////////////////////////////////////////////////////////////////
@@ -83,8 +118,13 @@ class VtkFile {
   /// Describes the nodes + cells
   UnstructuredGrid unstructured_grid;
 
+  FieldData field_data;
+
   // Data that is attached to points
   Attributes point_data;
+
+  // Data that is attached to the cells of the mesh
+  Attributes cell_data;
 };
 
 void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
