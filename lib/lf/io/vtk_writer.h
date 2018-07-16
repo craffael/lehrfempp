@@ -50,7 +50,7 @@ class VtkFile {
 
   class UnstructuredGrid {
    public:
-    std::vector<Eigen::Vector3d> points;
+    std::vector<Eigen::Vector3f> points;
     std::vector<std::vector<size_type>> cells;
     std::vector<CellType> cell_types;
   };
@@ -71,7 +71,7 @@ class VtkFile {
   template <class T>
   class ScalarData {
    public:
-    std::string data_name;
+    std::string name;
     std::vector<T> data;
     std::string lookup_table = "default";
 
@@ -79,9 +79,7 @@ class VtkFile {
 
     explicit ScalarData(std::string data_name, std::vector<T> data,
                         std::string lookup_table = "default")
-        : data_name(data_name),
-          data(std::move(data)),
-          lookup_table(lookup_table) {}
+        : name(data_name), data(std::move(data)), lookup_table(lookup_table) {}
   };
 
   template <class T>

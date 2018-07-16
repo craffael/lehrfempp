@@ -15,9 +15,30 @@
 #include <fstream>
 #include "eigen_fusion_adapter.h"
 
+template <class RESULT_TYPE, class LAMBDA>
+class VariantVisitor {
+ public:
+  using result_type = RESULT_TYPE;
+
+  template <class T>
+  result_type operator()(T&& arg) {
+    return lambda_(std::forward<T>(arg));
+  }
+
+  VariantVisitor(LAMBDA lambda) : lambda_(lambda) {}
+
+ private:
+  LAMBDA lambda_;
+};
+
+template <class RESULT_TYPE, class LAMBDA>
+VariantVisitor<RESULT_TYPE, LAMBDA> make_VariantVisitor(LAMBDA l) {
+  return VariantVisitor<RESULT_TYPE, LAMBDA>(l);
+}
+
 // clang-format off
 BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile::UnstructuredGrid,
-    (std::vector<Eigen::Vector3d>, points)
+    (std::vector<Eigen::Vector3f>, points)
     (std::vector<std::vector<unsigned int>>, cells)
     (std::vector<lf::io::VtkFile::CellType>, cell_types)
 );
@@ -28,7 +49,7 @@ BOOST_FUSION_ADAPT_TPL_STRUCT((T), (lf::io::VtkFile::FieldDataArray)(T),
 );
 
 BOOST_FUSION_ADAPT_TPL_STRUCT((T), (lf::io::VtkFile::ScalarData)(T),
-    (std::string, data_name)
+    (std::string, name)
     (std::string, lookup_table)
     (auto, data)
 );
@@ -149,17 +170,17 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
     using karma::lit;
 
     if constexpr (BINARY) {
-      points_vector %= *(karma::big_bin_double << karma::big_bin_double
-                                               << karma::big_bin_double)
+      points_vector %= *(karma::big_bin_float << karma::big_bin_float
+                                              << karma::big_bin_float)
                        << eol;
     } else {
-      points_vector %= *(karma::double_ << ' ' << karma::double_ << ' '
-                                        << karma::double_ << karma::eol);
+      points_vector %= *(karma::float_ << ' ' << karma::float_ << ' '
+                                       << karma::float_ << karma::eol);
     }
 
     points = lit("POINTS ")
              << karma::uint_[karma::_1 = boost::phoenix::size(karma::_val)]
-             << lit(" double") << karma::eol
+             << lit(" float") << karma::eol
              << points_vector[karma::_1 = karma::_val];
 
     // cells_vector %= (karma::uint_ % " ") << karma::eol;
@@ -400,8 +421,8 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
   karma::rule<Iterator, VtkFile()> root;
   karma::rule<Iterator, VtkFile()> header;
   karma::rule<Iterator, VtkFile::UnstructuredGrid()> unstructured_grid;
-  karma::rule<Iterator, std::vector<Eigen::Vector3d>()> points;
-  karma::rule<Iterator, std::vector<Eigen::Vector3d>()> points_vector;
+  karma::rule<Iterator, std::vector<Eigen::Vector3f>()> points;
+  karma::rule<Iterator, std::vector<Eigen::Vector3f>()> points_vector;
   karma::rule<Iterator, std::vector<std::vector<unsigned int>>> cells;
   karma::rule<Iterator, std::vector<unsigned int>> cells_vector;
   karma::rule<Iterator, std::vector<VtkFile::CellType>> cell_types;
@@ -447,6 +468,26 @@ void ValidateVtkFile(const VtkFile& vtk_file) {
     throw base::LfException(
         "Mismatch of size of cell_types and cells in VtkFile.");
   }
+  for (auto& d : vtk_file.point_data) {
+    boost::apply_visitor(
+        [&](auto e) {
+          if (e.data.size() != vtk_file.unstructured_grid.points.size()) {
+            throw base::LfException("Length of dataset " + e.name +
+                                    " does not match the number of points.");
+          }
+        },
+        d);
+  }
+  for (auto& d : vtk_file.cell_data) {
+    boost::apply_visitor(
+        [&](auto e) {
+          if (e.data.size() != vtk_file.unstructured_grid.cells.size()) {
+            throw base::LfException("Length of dataset " + e.name +
+                                    " does not match the number of cells.");
+          }
+        },
+        d);
+  }
 }
 }  // namespace
 
@@ -461,8 +502,15 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
   }
   karma::ostream_iterator<char> outit(file);
 
-  VtkGrammar<decltype(outit), true> grammar{};
-  bool result = karma::generate(outit, grammar, vtk_file);
+  bool result = false;
+  if (vtk_file.format == VtkFile::Format::BINARY) {
+    VtkGrammar<decltype(outit), true> grammar{};
+    result = karma::generate(outit, grammar, vtk_file);
+  } else {
+    VtkGrammar<decltype(outit), false> grammar{};
+    result = karma::generate(outit, grammar, vtk_file);
+  }
+
   file.close();
   if (!result) {
     throw base::LfException("Karma error");

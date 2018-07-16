@@ -67,22 +67,26 @@ TEST(lf_io_VtkWriter, writeVtkFile) {
   vtk_file.cell_data.push_back(
       VectorData<double>("vdouble", {{0, 0, 0}, {-1, 0, 0}}));
 
-  vtk_file.format = VtkFile::Format::BINARY;
-
   WriteToFile(vtk_file, "all_features.vtk");
+
+  vtk_file.format = VtkFile::Format::BINARY;
+  WriteToFile(vtk_file, "all_features_binary.vtk");
 }
 
-// TEST(lf_io_VtkWriter, onlyMesh) {
-//   VtkFile vtk_file;
-//   vtk_file.header = "this is my test header :)";
-//   vtk_file.format = VtkFile::Format::BINARY;
-//   vtk_file.unstructured_grid.points = {
-//       {0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {1, 1, 0}, {0, 1, 0}};
-//   vtk_file.unstructured_grid.cells = {{0, 1, 3, 4}, {1, 2, 3}};
-//   vtk_file.unstructured_grid.cell_types = {VtkFile::CellType::VTK_QUAD,
-//                                            VtkFile::CellType::VTK_TRIANGLE};
-//
-//   WriteToFile(vtk_file, "test.vtk");
-// }
+TEST(lf_io_VtkWriter, onlyMesh) {
+  VtkFile vtk_file;
+  vtk_file.header = "this is my test header :)";
+  vtk_file.format = VtkFile::Format::ASCII;
+  vtk_file.unstructured_grid.points = {
+      {0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {1, 1, 0}, {0, 1, 0}};
+  vtk_file.unstructured_grid.cells = {{0, 1, 3, 4}, {1, 2, 3}};
+  vtk_file.unstructured_grid.cell_types = {VtkFile::CellType::VTK_QUAD,
+                                           VtkFile::CellType::VTK_TRIANGLE};
+
+  WriteToFile(vtk_file, "only_mesh.vtk");
+
+  vtk_file.format = VtkFile::Format::BINARY;
+  WriteToFile(vtk_file, "only_mesh_binary.vtk");
+}
 
 }  // namespace lf::io::test
