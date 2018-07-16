@@ -57,18 +57,22 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   Hybrid2DRefinementPattern& operator=(Hybrid2DRefinementPattern&&) = default;
   /** @} */
 
+  // TODO:
+  // We do not need the achor_set_ member, if we follow the convention that
+  // lf::base::idx_nil represents an invalid (= non-set) anchor index. 
+  
  public:
   /** @brief constructor */
   explicit Hybrid2DRefinementPattern(lf::base::RefEl ref_el)
       : geometry::RefinementPattern(ref_el),
-        anchor_(-1),
+        anchor_(idx_nil),
         ref_pat_(rp_nil),
         anchor_set_(false) {}
 
   /** @brief constructor */
   Hybrid2DRefinementPattern(lf::base::RefEl ref_el, RefPat ref_pat)
       : geometry::RefinementPattern(ref_el),
-        anchor_(-1),
+        anchor_(idx_nil),
         ref_pat_(ref_pat),
         anchor_set_(false) {}
 
@@ -78,7 +82,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
     geometry::RefinementPattern(ref_el),
     anchor_(anchor),
     ref_pat_(ref_pat),
-    anchor_set_((anchor==(lf::base::sub_idx_t)-1)?false:true) {
+    anchor_set_(anchor==idx_nil?false:true) {
     if (anchor_set_) {
       LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
 		    "Anchor " << anchor << " invalid for " << ref_el_.ToString());
@@ -98,7 +102,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
     anchor_ = anchor;
-    anchor_set_ = (anchor==(lf::base::sub_idx_t)-1)?false:true;
+    anchor_set_ = (anchor==idx_nil)?false:true;
     if (anchor_set_) {
       LF_VERIFY_MSG(anchor < ref_el_.NumSubEntities(1),
 		    "Anchor " << anchor << " invalid for " << ref_el_.ToString());

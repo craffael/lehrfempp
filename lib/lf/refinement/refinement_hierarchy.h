@@ -70,7 +70,7 @@ namespace lf::refinement {
 struct ParentInfo {
   explicit ParentInfo(void) : parent_ptr_(nullptr), child_number_(-1) {}
   // Data members
-  mesh::Entity
+  const mesh::Entity
       *parent_ptr_; /**< parent entity, not necessarily the same type */
   lf::base::sub_idx_t child_number_; /**< local index in the parent entity */
 };
