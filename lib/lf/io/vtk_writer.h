@@ -97,6 +97,8 @@ class VtkFile {
         : name(name), data(data) {}
   };
 
+  // WARNING: the type long is interepreted differently depending on the
+  // platorm. I suggest to not use it at all.
   using Attributes = std::vector<boost::variant<
       ScalarData<char>, ScalarData<unsigned char>, ScalarData<short>,
       ScalarData<unsigned short>, ScalarData<int>, ScalarData<unsigned int>,
