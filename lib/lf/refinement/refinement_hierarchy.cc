@@ -18,12 +18,12 @@ namespace lf::refinement {
     {
       // Refinement edge has to be set for edges
       refinement_edges_.push_back(
-				  std::vector<lf::base::sub_idx_t>(base_mesh->Size(0), -1));
+				  std::vector<lf::base::sub_idx_t>(base_mesh->Size(0), idx_nil));
       for (const mesh::Entity &cell : base_mesh->Entities(0)) {
 	lf::base::glb_idx_t cell_index = base_mesh->Index(cell);
 	if (cell.RefEl() == lf::base::RefEl::kTria()) {
 	  // TODO: set refinement edge to longest edge
-	  (refinement_edges_.back())[cell_index] = -1;
+	  (refinement_edges_.back())[cell_index] = idx_nil;
 	}
       }
       // Setting upe child information
@@ -76,7 +76,7 @@ namespace lf::refinement {
     // Retrieve the finest mesh in the hierarchy
     const mesh::Mesh &finest_mesh(*meshes_.back());
     // Run through the edges = entities of co-dimension 1
-    for (mesh::Entity &edge : finest_mesh.Entities(1)) {
+    for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
       lf::base::glb_idx_t edge_index = finest_mesh.Index(edge);
       (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
     }
@@ -98,17 +98,23 @@ namespace lf::refinement {
     // them with the mesh factory
     // Store child indices in an auxiliary array
     std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
+    const Hybrid2DRefinementPattern rp_copy_node(lf::base::RefEl::kPoint(),RefPat::rp_copy);
     for (const mesh::Entity &node : parent_mesh.Entities(2)) {
       // Obtain index of node in coarse mesh
       const lf::base::glb_idx_t node_index = parent_mesh.Index(node);
+      LF_VERIFY_MSG(node_index < pt_child_info.size(),
+		    "Node index " << node_index << " out of range");
       // Find position of node in physical coordinates
       const lf::geometry::Geometry &pt_geo(*node.Geometry());
-      Eigen::MatrixXd pt_coords(pt_geo.Global(Eigen::Matrix<double, 0, 1>()));
       if (pt_child_info[node_index].ref_pat_ != RefPat::rp_nil) {
 	// Generate a node for the fine mesh at the same position
-	// ADJUST to new version of AddPoint() using ChildGeometry() !!!!!!!
-	pt_child_info[node_index].child_point_idx_ = mesh_factory_.AddPoint(pt_coords);
-      }} // end loop over nodes 
+	std::vector<std::unique_ptr<geometry::Geometry>> pt_child_geo_ptrs(pt_geo.ChildGeometry(rp_copy_node,0));
+	LF_VERIFY_MSG(pt_child_geo_ptrs.size() == 1,
+		      "A point can only have one chile");
+	pt_child_info[node_index].child_point_idx_
+	  = mesh_factory_.AddPoint(std::move(pt_child_geo_ptrs[0]));
+      }
+    } // end loop over nodes 
 
     // Now traverse the edges. Depending on the refinement pattern,
     // either copy them or split them.
@@ -154,7 +160,7 @@ namespace lf::refinement {
 	// co-dimension 1)
 	std::vector<std::unique_ptr<geometry::Geometry>>
 	  edge_nodes_geo_ptrs(edge.Geometry()->ChildGeometry(rp,1));
-	LF_VERIFY_MSG(edge_nodes_geo_ptrs.size() != 1,
+	LF_VERIFY_MSG(edge_nodes_geo_ptrs.size() == 1,
 		      "Split edge with " << edge_nodes_geo_ptrs.size() << " child nodes!");
 	// Register midpoint as new node
 	const lf::base::glb_idx_t midpoint_fine_idx =
@@ -163,7 +169,7 @@ namespace lf::refinement {
 	// Next get the geometry objects for the two child edges (co-dim == 0)
 	std::vector<std::unique_ptr<geometry::Geometry>>
 	  edge_child_geo_ptrs(edge.Geometry()->ChildGeometry(rp,0));
-	LF_VERIFY_MSG(edge_child_geo_ptrs.size() != 2,
+	LF_VERIFY_MSG(edge_child_geo_ptrs.size() == 2,
 		      "Split edge with " << edge_child_geo_ptrs.size() << " parts!");
 	// Register the two new edges
 	// CAREFUL: Assignment of endpoints has to match implementation in
@@ -197,14 +203,11 @@ namespace lf::refinement {
       const lf::base::glb_idx_t cell_index(parent_mesh.Index(cell));
     
       // Obtain indices of subentities (co-dimension = outer array index)
-      // std::array<std::vector<const mesh::Entity *>,3> cell_subent_ptrs; NOT NEEDED
       std::array<std::vector<lf::base::glb_idx_t>,3> cell_subent_idx;
       cell_subent_idx[0].push_back(cell_index);
-      // cell_subent_ptrs[0].push_back(&cell); NOT NEEDED
       for (int codim = 1; codim <= 2; codim++) {
 	base::RandomAccessRange<const mesh::Entity> subentities(cell.SubEntities(codim));
 	for (const mesh::Entity &sub_ent : subentities) {
-	  // cell_subent_ptrs[codim].push_back(&sub_ent); NOT NEEDED
 	  cell_subent_idx[codim].push_back(parent_mesh.Index(sub_ent));
 	}
 	LF_VERIFY_MSG(cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
@@ -236,15 +239,16 @@ namespace lf::refinement {
       const sub_idx_t anchor = cell_ci.anchor_; // anchor edge index
       Hybrid2DRefinementPattern rp(cell.RefEl(),cell_refpat,anchor);
 
-      // Index offsets
+      // Index offsets for refinement patterns requiring an ancchor edge
       std::array<sub_idx_t,4> mod;
       if (anchor != idx_nil) {
-	for (int l =0; l < num_vertices; l++) mod[l] = (l + anchor) % num_vertices;
+	for (int k =0; k < num_vertices; k++) mod[k] = (k + anchor) % num_vertices;
       }
 
       // Array of node indices (w.r.t. fine mesh) for sub-cells (triangles or quadrilaterals)
       std::vector<std::vector<glb_idx_t>> child_cell_nodes;
-      std::vector<glb_idx_t> ccn_tmp {}; 
+      std::vector<glb_idx_t> tria_ccn_tmp(3);
+      std::vector<glb_idx_t> quad_ccn_tmp(4);
       // Array of node indices for interior child edges
       std::vector<std::array<glb_idx_t,2>> child_edge_nodes;
       std::array<glb_idx_t,2> cen_tmp;
@@ -252,7 +256,6 @@ namespace lf::refinement {
       // Local linking of child entities is very different depending on cell type
       // and refinement patterns.
       if (ref_el == lf::base::RefEl::kTria()) {
-	ccn_tmp.resize(3); // Only triangular children
 	// Case of a triangle
 	switch (cell_refpat) {
 	case RefPat::rp_nil: {
@@ -268,25 +271,25 @@ namespace lf::refinement {
 	case RefPat::rp_regular: {
 	  // regular refinement into four congruent triangles
 	  // Child cells
-	  ccn_tmp[0] = vertex_child_idx[0];
-	  ccn_tmp[1] = edge_midpoint_idx[0];
-	  ccn_tmp[2] = edge_midpoint_idx[2];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  tria_ccn_tmp[0] = vertex_child_idx[0];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[0];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[2];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
 
-	  ccn_tmp[0] = vertex_child_idx[1];
-	  ccn_tmp[1] = edge_midpoint_idx[0];
-	  ccn_tmp[2] = edge_midpoint_idx[1];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  tria_ccn_tmp[0] = vertex_child_idx[1];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[0];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[1];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
 
-	  ccn_tmp[0] = vertex_child_idx[2];
-	  ccn_tmp[1] = edge_midpoint_idx[2];
-	  ccn_tmp[2] = edge_midpoint_idx[1];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  tria_ccn_tmp[0] = vertex_child_idx[2];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[2];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[1];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
 
-	  ccn_tmp[0] = edge_midpoint_idx[0];
-	  ccn_tmp[1] = edge_midpoint_idx[1];
-	  ccn_tmp[2] = edge_midpoint_idx[2];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  tria_ccn_tmp[0] = edge_midpoint_idx[0];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[1];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[2];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
 
 	  // Child edges (interior edges)
 	  cen_tmp[0] = edge_midpoint_idx[0];
@@ -326,7 +329,7 @@ namespace lf::refinement {
 	  // Create a new interior vertex
 	  std::vector<std::unique_ptr<geometry::Geometry>>
 	    cell_center_geo_ptrs(cell.Geometry()->ChildGeometry(rp,2)); // point: co-dim == 2
-	  LF_VERIFY_MSG(cell_center_geo_ptrs.size() != 1,
+	  LF_VERIFY_MSG(cell_center_geo_ptrs.size() == 1,
 			"Regularly refined quadrilateral with "
 			<< cell_center_geo_ptrs.size() << " interior child nodes!");
 	  // Register midpoint as new node
@@ -335,31 +338,29 @@ namespace lf::refinement {
 	  cell_ci.child_point_idx_.push_back(center_fine_idx);
 
 	  // Set the node indices (w.r.t. fine mesh) of the four sub-quads
-	  ccn_tmp.resize(4);
-	
-	  ccn_tmp[0] = vertex_child_idx[0];
-	  ccn_tmp[1] = edge_midpoint_idx[0];
-	  ccn_tmp[2] = center_fine_idx;
-	  ccn_tmp[3] = edge_midpoint_idx[3];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  quad_ccn_tmp[0] = vertex_child_idx[0];
+	  quad_ccn_tmp[1] = edge_midpoint_idx[0];
+	  quad_ccn_tmp[2] = center_fine_idx;
+	  quad_ccn_tmp[3] = edge_midpoint_idx[3];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
 
-	  ccn_tmp[0] = vertex_child_idx[1];
-	  ccn_tmp[1] = edge_midpoint_idx[1];
-	  ccn_tmp[2] = center_fine_idx;
-	  ccn_tmp[3] = edge_midpoint_idx[0];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  quad_ccn_tmp[0] = vertex_child_idx[1];
+	  quad_ccn_tmp[1] = edge_midpoint_idx[1];
+	  quad_ccn_tmp[2] = center_fine_idx;
+	  quad_ccn_tmp[3] = edge_midpoint_idx[0];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
 
-	  ccn_tmp[0] = vertex_child_idx[2];
-	  ccn_tmp[1] = edge_midpoint_idx[1];
-	  ccn_tmp[2] = center_fine_idx;
-	  ccn_tmp[3] = edge_midpoint_idx[2];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  quad_ccn_tmp[0] = vertex_child_idx[2];
+	  quad_ccn_tmp[1] = edge_midpoint_idx[1];
+	  quad_ccn_tmp[2] = center_fine_idx;
+	  quad_ccn_tmp[3] = edge_midpoint_idx[2];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
 
-	  ccn_tmp[0] = vertex_child_idx[3];
-	  ccn_tmp[1] = edge_midpoint_idx[2];
-	  ccn_tmp[2] = center_fine_idx;
-	  ccn_tmp[3] = edge_midpoint_idx[3];
-	  child_cell_nodes.push_back(ccn_tmp);
+	  quad_ccn_tmp[0] = vertex_child_idx[3];
+	  quad_ccn_tmp[1] = edge_midpoint_idx[2];
+	  quad_ccn_tmp[2] = center_fine_idx;
+	  quad_ccn_tmp[3] = edge_midpoint_idx[3];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
 
 	  // set node indices of the four new interior edges
 	  cen_tmp[0] = edge_midpoint_idx[0];
@@ -374,7 +375,7 @@ namespace lf::refinement {
 	  cen_tmp[1] = center_fine_idx;
 	  child_edge_nodes.push_back(cen_tmp);
 
-	  cen_tmp[0] = edge_midpoint_idx[2];
+	  cen_tmp[0] = edge_midpoint_idx[3];
 	  cen_tmp[1] = center_fine_idx;
 	  child_edge_nodes.push_back(cen_tmp);
 	  break;
@@ -522,7 +523,6 @@ namespace lf::refinement {
 	  ((parent_infos_.back()[2])[node_child_idx]).child_number_ = l;
 	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &cell;
 	} // end loop over child points
-
       }
     }
   }
