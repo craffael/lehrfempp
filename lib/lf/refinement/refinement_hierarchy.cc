@@ -484,6 +484,46 @@ namespace lf::refinement {
 	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &edge;
 	} // end loop over child points
       } // end loop over edges
+
+
+      // Loop over cells
+      for(const mesh::Entity &cell : parent_mesh.Entities(0)) {
+	// fetch index of current cell
+	const glb_idx_t cell_index(parent_mesh.Index(cell));
+	// Get infformation about children
+	CellChildInfo &cell_ci(cell_child_info[cell_index]);
+
+	// Visit child cells
+	const size_type num_child_cells = cell_ci.child_cell_idx_.size();
+	for (int l=0; l<num_child_cells; l++) {
+	  const glb_idx_t child_cell_idx = cell_ci.child_cell_idx_[l];
+	  LF_VERIFY_MSG(child_cell_idx < (parent_infos_.back())[0].size(),
+			"index " << child_cell_idx << " illegal for child cell");
+	  ((parent_infos_.back()[0])[child_cell_idx]).child_number_ = l;
+	  ((parent_infos_.back()[0])[child_cell_idx]).parent_ptr_ = &cell;
+	}
+
+	// Visit child edges
+	const size_type num_child_edges = cell_ci.child_edge_idx_.size();
+	for (int l = 0; l<num_child_edges; l++) {
+	  const glb_idx_t edge_child_idx = cell_ci.child_edge_idx_[l];
+	  LF_VERIFY_MSG(edge_child_idx < (parent_infos_.back())[1].size(),
+			"index " << edge_child_idx << " illegal for child edge");
+	  ((parent_infos_.back()[1])[edge_child_idx]).child_number_ = l;
+	  ((parent_infos_.back()[1])[edge_child_idx]).parent_ptr_ = &cell;
+	} // end loop over child edges
+
+	// Visit child nodes
+	const size_type num_child_nodes = cell_ci.child_point_idx_.size();
+	for (int l = 0; l<num_child_nodes; l++) {
+	  const glb_idx_t node_child_idx = cell_ci.child_point_idx_[l];
+	  LF_VERIFY_MSG(node_child_idx < (parent_infos_.back())[2].size(),
+			"index " << node_child_idx << " illegal for child point");
+	  ((parent_infos_.back()[2])[node_child_idx]).child_number_ = l;
+	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &cell;
+	} // end loop over child points
+
+      }
     }
   }
 
