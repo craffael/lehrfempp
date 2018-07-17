@@ -2,8 +2,15 @@
 #define __37e385afbd3b4b1dba8611fb71787822
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
+#include <lf/base/static_vars.h>
+
+
 
 namespace lf::mesh {
+
+// Introduce output_ctrl_ (Here or in utils/print_info.cc?)
+CONTROLDECLARECOMMENT(Entity, output_ctrl_, "output_ctrl_", "Diagnostics control for Mesh/Entity");
+// NOT WORKING
 
 class Entity {
  protected:
@@ -71,7 +78,27 @@ class Entity {
    * @brief Virtual Destructor.
    */
   virtual ~Entity() = default;
-};
+
+  // Add global output control
+  static int output_ctrl_;
+  // NOT WORKING
+
+}; // class entity
+
+
+
+/*
+inline std::ostream& operator<<(std::ostream& stream, const Entity& entity) {
+
+    if (Entity::output_ctrl_ == 0){
+        return stream << entity.ToString();
+    } else {
+        PrintInfo(entity, stream);
+    }
+
+}
+*/
+
 
 }  // namespace lf::mesh
 

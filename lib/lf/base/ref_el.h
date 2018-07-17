@@ -467,10 +467,7 @@ class RefEl {
 
   ~RefEl() = default;
 
-
-
   static int output_ctrl_;
-
 
 }; // class RefEl
 

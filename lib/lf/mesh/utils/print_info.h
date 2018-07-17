@@ -19,11 +19,11 @@ namespace lf::mesh::utils {
  */
 void PrintInfo(const Mesh &mesh, std::ostream &o);
 
-
+/*
 // Print function for Entity object
 void PrintInfoEntity(const lf::mesh::Entity&, std::ostream& stream);
 // ?? void PrintInfoEntity(const lf::mesh::Entity& e, std::ostream &stream);
-
+*/
 
 
 

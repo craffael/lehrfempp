@@ -10,6 +10,7 @@
 
 namespace lf::mesh::utils {
 
+
 void PrintInfo(const Mesh &mesh, std::ostream &o) {
   using dim_t = Mesh::dim_t;
   using size_type = Mesh::size_type;
@@ -58,14 +59,14 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
   }    // end loop over co-dimensions
 }
 
-
+/*
 // Print function for Entity object
 void PrintInfoEntity(const lf::mesh::Entity&, std::ostream& stream){
     // also loop over codimensions
-    stream << "Hei paa deg" << std::endl;
+    stream << "Print" << std::endl;
 
 }
 // ?? void PrintInfoEntity(const lf::mesh::Entity& e, std::ostream &stream);
-
+*/
 
 }  // namespace lf::mesh::utils

@@ -7,6 +7,10 @@
 
 namespace lf::mesh::hybrid2d {
 
+
+//CONTROLDECLARECOMMENT(Entity, output_ctrl_, "output_ctrl_", "Diagnostics control for Mesh/Entity");
+// NOT WORKING
+
 class Mesh;
 
 /**
@@ -93,10 +97,22 @@ class Entity : public mesh::Entity {
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
 
   friend class Mesh;
+
+  // Add global output control
+  //static int output_ctrl_;
+
+
 }; // class Mesh
 
 
+
+
 }  // namespace lf::mesh::hybrid2d
+
+
+
+
+
 
 #include "mesh.h"
 

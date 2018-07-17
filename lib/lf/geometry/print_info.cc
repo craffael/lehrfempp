@@ -3,6 +3,8 @@
 
 namespace lf::geometry {
 
+CONTROLDECLARECOMMENT(Geometry, output_ctrl_, "output_ctrl_", "Diagnostics control for Geometry");
+
 void PrintInfo(const Geometry &geom, std::ostream &o){
 
     int dim_glob = geom.DimGlobal();

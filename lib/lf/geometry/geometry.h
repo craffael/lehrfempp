@@ -15,7 +15,8 @@
 #include "refinement_pattern.h"
 #include "segment_o1.h"
 #include "tria_o1.h"
-// #include "print_info.cc" // Added
+
+
 
 /**
  * \brief Defines the Geometry interface and provides a number of

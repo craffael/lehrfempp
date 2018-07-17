@@ -164,7 +164,14 @@ class Geometry {
    * @brief Virtual destructor
    */
   virtual ~Geometry() = default;
-};
+
+  // Output control variable
+  static int output_ctrl_;
+
+
+}; // class Geometry
+
+
 
 }  // namespace lf::geometry
 
