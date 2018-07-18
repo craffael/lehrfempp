@@ -37,7 +37,7 @@ namespace lf::refinement {
 	}
       } // end loop over cells
       
-      // Setting upe child information
+      // Setting up child information
       std::vector<CellChildInfo> cell_child_info(base_mesh->Size(0));
       std::vector<EdgeChildInfo> edge_child_info(base_mesh->Size(1));
       std::vector<PointChildInfo> point_child_info(base_mesh->Size(2));
@@ -871,7 +871,41 @@ namespace lf::refinement {
 	  ((parent_infos_.back()[2])[node_child_idx]).child_number_ = l;
 	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &cell;
 	} // end loop over child points
-      }
+      } // end loop over cells of parent mesh
+    }
+    
+    // Initialize (empty) refinement information for newly created fine mesh
+    // Same code as in the constructor of MeshHierarchy
+    {
+     std::vector<CellChildInfo> fine_cell_child_info(child_mesh.Size(0));
+     std::vector<EdgeChildInfo> fine_edge_child_info(child_mesh.Size(1));
+     std::vector<PointChildInfo> fine_point_child_info(child_mesh.Size(2));
+     cell_child_infos_.push_back(std::move(fine_cell_child_info));
+     edge_child_infos_.push_back(std::move(fine_edge_child_info));
+     point_child_infos_.push_back(std::move(fine_point_child_info));
+    }
+    // Finally set refinement edges for fine mesh
+    {
+     refinement_edges_.push_back(std::vector<sub_idx_t>(child_mesh.Size(0),idx_nil));
+     // Traverse the cells of the fine mesh
+     for (const mesh::Entity &fine_cell : child_mesh.Entities(0)) {
+       // Refinement edge relevant for triangles onyl
+       if (fine_cell.RefEl() == lf::base::RefEl::kTria()) {
+	 const glb_idx_t cell_index = child_mesh.Index(fine_cell);
+	 const mesh::Entity *parent_ptr = (parent_infos_.back())[0][cell_index].parent_ptr_;
+	 const sub_idx_t fine_cell_child_number = (parent_infos_.back())[0][cell_index].child_number_;
+	 const glb_idx_t parent_index = parent_mesh.Index(*parent_ptr);
+	 const CellChildInfo parent_ci(cell_child_info[parent_index]);
+	 LF_VERIFY_MSG(parent_ci.child_cell_idx_[fine_cell_child_number] == cell_index,
+		       "Parent child index mismatch!");
+	 const RefPat parent_ref_pat = parent_ci.ref_pat_;
+	 const sub_idx_t anchor = parent_ci.anchor_;
+	 const int mod_0 = (0 + anchor) % 3;
+	 const int mod_1 = (1 + anchor) % 3;
+	 const int mod_2 = (2 + anchor) % 3;
+ 
+       }
+     }
     }
   }
 
