@@ -106,16 +106,19 @@ class MeshHierarchy {
   }
 
   /**
-   * @brief Perform regular uniform refinement of the finest mesh in the
+   * @brief Perform regular or barycentric uniform refinement of the finest mesh in the
    * hierarchy
    *
-   * This method carries out regular refinement of all cells of a mesh according
-   * to the `rp_regular` refinement pattern.
+   * @param ref_pat selector for type of uniform refinement: default is rp_regular, 
+   *         rp_barycentric choses barycentric refinement.
+   * 
+   * This method carries out uniform refinement of all cells of a mesh according
+   * to the `rp_regular` or `rp_barycentric` refinement patterns.
    *
    * Regular refinement means that every node is copied, every edge is split
-   * and every cell is subdivided into four smaller ones of the same shape.
+   * and every cell is subdivided into four or six smaller ones of the same shape.
    */
-  void RefineRegular(void);
+  void RefineRegular(RefPat ref_pat = RefPat::rp_regular);
   /**
    * @brief Mark the edges of a mesh based on a predicate
    *

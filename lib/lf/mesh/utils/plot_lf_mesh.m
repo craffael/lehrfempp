@@ -36,6 +36,8 @@ for  k=1:num_tri
     shrunk_tri = [shrunk_tri,shrunk_tri(:,1)];
     plot(shrunk_tri(1,:),shrunk_tri(2,:),'g-');
     text(baryc(1),baryc(2),sprintf('%2i',TRI(k,4)),'color','g');
+    str = {'0','1','2'};
+    text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,'color','k','fontsize',6,'horizontalalignment','center');
 end
 
 % Plot quads

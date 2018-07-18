@@ -553,7 +553,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               child_coords.col(0) = lt_midpoint_coords.col(mod_0);
               child_coords.col(1) = lt_midpoint_coords.col(mod_2);
               child_poly.push_back(child_coords);
-              break;
+               break;
             }
             case RefPat::rp_quadsect: {
               LF_VERIFY_MSG(

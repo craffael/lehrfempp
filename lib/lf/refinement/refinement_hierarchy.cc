@@ -22,10 +22,21 @@ namespace lf::refinement {
       for (const mesh::Entity &cell : base_mesh->Entities(0)) {
 	lf::base::glb_idx_t cell_index = base_mesh->Index(cell);
 	if (cell.RefEl() == lf::base::RefEl::kTria()) {
-	  // TODO: set refinement edge to longest edge
-	  (refinement_edges_.back())[cell_index] = idx_nil;
+	  base::RandomAccessRange<const lf::mesh::Entity> sub_edges(cell.SubEntities(1));
+	  double max_len = 0.0;
+	  sub_idx_t idx_longest_edge = 0;
+	  Eigen::MatrixXd mp_refc(1,1); mp_refc(0,0) = 0.5;
+	  for (int k=0; k < 3; k++) {
+	    const double approx_length = (sub_edges[k].Geometry()->IntegrationElement(mp_refc))[0];
+	    if (max_len < approx_length) {
+	      idx_longest_edge = k;
+	      max_len = approx_length;
+	    }
+	  }
+	  (refinement_edges_.back())[cell_index] = idx_longest_edge;
 	}
-      }
+      } // end loop over cells
+      
       // Setting upe child information
       std::vector<CellChildInfo> cell_child_info(base_mesh->Size(0));
       std::vector<EdgeChildInfo> edge_child_info(base_mesh->Size(1));
@@ -45,7 +56,10 @@ namespace lf::refinement {
     }
   }
 
-  void MeshHierarchy::RefineRegular(void) {
+  void MeshHierarchy::RefineRegular(RefPat ref_pat) {
+    LF_VERIFY_MSG(ref_pat == RefPat::rp_regular ||
+		  ref_pat == RefPat::rp_barycentric,
+		  "Only regular or barycentric uniform refinement possible");
     // Retrieve the finest mesh in the hierarchy
     const mesh::Mesh &finest_mesh(*meshes_.back());
     // Flag all points as to be copied
@@ -65,7 +79,7 @@ namespace lf::refinement {
     for (const mesh::Entity &cell : finest_mesh.Entities(0)) {
       const lf::base::glb_idx_t cell_index = finest_mesh.Index(cell);
       CellChildInfo &cell_child_info(((cell_child_infos_.back()))[cell_index]);
-      cell_child_info.ref_pat_ = RefPat::rp_regular;
+      cell_child_info.ref_pat_ = ref_pat;
     }
     // With all refinement patterns set, generate the new mesh
     PerformRefinement();
@@ -233,7 +247,7 @@ namespace lf::refinement {
 	}
       } // end loop over local edges
 
-       // Set up refinement object -> v
+      // Set up refinement object -> v
       CellChildInfo &cell_ci(cell_child_info[cell_index]);
       const RefPat cell_refpat(cell_ci.ref_pat_);
       const sub_idx_t anchor = cell_ci.anchor_; // anchor edge index
@@ -268,7 +282,204 @@ namespace lf::refinement {
 	    ({vertex_child_idx[0],vertex_child_idx[1],vertex_child_idx[2]});
 	  break;
 	}
-	case RefPat::rp_regular: {
+	case RefPat::rp_bisect: {
+	  LF_VERIFY_MSG(anchor != idx_nil,
+			"Anchor must be set for bisection refinement of triangle");
+	  // Splitting a triangle in two by bisecting anchor edge
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_trisect: {
+	  LF_VERIFY_MSG(
+			anchor != idx_nil,
+			"Anchor must be set for trisection refinement of triangle");
+	  // Bisect through anchor edge first and then bisect through
+	  // edge with the next larger index (mod 3); creates three
+	  // child triangles.
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[1]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_trisect_left: {
+	  LF_VERIFY_MSG(
+			anchor != idx_nil,
+			"Anchor must be set for trisection refinement of triangle");
+
+	  // Bisect through anchor edge first and then bisect through
+	  // edge with the next smaller index (mod 3); creates three
+	  // child triangles.
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_quadsect: {
+	  LF_VERIFY_MSG(
+			anchor != idx_nil,
+			"Anchor must be set for quadsection refinement of triangle");
+	  // Bisect through the anchor edge first and then
+	  // through the two remaining edges; creates four child
+	  // triangles; every edge is split.
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[1]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_barycentric: {
+	  //  Split triangle into 5 smaller triangles by connecting
+	  // the center of gravity with the vertices and the midpoints
+	  // of the edges.
+	  // Create a new interior vertex
+	  std::vector<std::unique_ptr<geometry::Geometry>>
+	    cell_center_geo_ptrs(cell.Geometry()->ChildGeometry(rp,2)); // point: co-dim == 2
+	  LF_VERIFY_MSG(cell_center_geo_ptrs.size() == 1,
+			"Barycentrically refined triangle with "
+			<< cell_center_geo_ptrs.size() << " interior child nodes ??");
+	  // Register midpoint as new node
+	  const glb_idx_t center_fine_idx  =
+	    mesh_factory_.AddPoint(std::move(cell_center_geo_ptrs[0]));
+	  cell_ci.child_point_idx_.push_back(center_fine_idx);
+
+ 	  tria_ccn_tmp[0] = vertex_child_idx[0];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[0];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[1];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[0];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[1];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[1];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[2];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[1];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[2];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[2];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[0];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[2];
+	  tria_ccn_tmp[2] = center_fine_idx;
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = vertex_child_idx[0];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = vertex_child_idx[1];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = vertex_child_idx[2];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[0];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[1];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[2];
+	  cen_tmp[1] = center_fine_idx;
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+ 	case RefPat::rp_regular: {
 	  // regular refinement into four congruent triangles
 	  // Child cells
 	  tria_ccn_tmp[0] = vertex_child_idx[0];
@@ -325,6 +536,143 @@ namespace lf::refinement {
 	    ({vertex_child_idx[0],vertex_child_idx[1],vertex_child_idx[2],vertex_child_idx[3]});
 	  break;
 	}
+	case RefPat::rp_trisect: {
+	  LF_VERIFY_MSG(
+			anchor != idx_nil,
+			"Anchor must be set for trisection refinement of quad");
+
+	  // Partition a quad into three triangle, the anchor edge
+	  // being split in the process
+	  tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[1] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[1] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[1] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = vertex_child_idx[mod[3]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_quadsect: {
+	  LF_VERIFY_MSG(
+			anchor != idx_nil,
+			"Anchor must be set for quadsection refinement of triangle");
+	  // Partition a quad into four triangle, thus
+	  // splitting two edges. The one with the smaller sub index is the
+	  // anchor edge
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = vertex_child_idx[mod[3]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[0]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[0]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  tria_ccn_tmp[1] = vertex_child_idx[mod[3]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
+	  tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = vertex_child_idx[mod[3]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[0]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[1]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[0]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = vertex_child_idx[mod[3]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[1]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_bisect:
+	case RefPat::rp_split: {
+	  LF_VERIFY_MSG(anchor != idx_nil,
+			"Anchor must be set for splitting of quad");
+
+	  // Cut a quadrilateral into two
+	  quad_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  quad_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  quad_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  quad_ccn_tmp[3] = vertex_child_idx[mod[3]];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
+
+	  quad_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  quad_ccn_tmp[1] = vertex_child_idx[mod[2]];
+	  quad_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
+	  quad_ccn_tmp[3] = edge_midpoint_idx[mod[0]];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[2]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_threeedge: {
+	  LF_VERIFY_MSG(anchor != idx_nil,
+			"Anchor must be set for three edge refinement of a quad");
+
+	  quad_ccn_tmp[0] = vertex_child_idx[mod[2]];
+	  quad_ccn_tmp[1] = vertex_child_idx[mod[3]];
+	  quad_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
+	  quad_ccn_tmp[3] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(quad_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
+	  tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
+	  tria_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
+	  child_cell_nodes.push_back(tria_ccn_tmp);
+
+	  // edges
+	  cen_tmp[0] = edge_midpoint_idx[mod[3]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[1]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[3]];
+	  child_edge_nodes.push_back(cen_tmp);
+
+	  cen_tmp[0] = edge_midpoint_idx[mod[0]];
+	  cen_tmp[1] = edge_midpoint_idx[mod[1]];
+	  child_edge_nodes.push_back(cen_tmp);
+	  break;
+	}
+	case RefPat::rp_barycentric:
 	case RefPat::rp_regular: {
 	  // Create a new interior vertex
 	  std::vector<std::unique_ptr<geometry::Geometry>>
@@ -443,8 +791,8 @@ namespace lf::refinement {
     {
       parent_infos_.push_back
 	({ std::vector<ParentInfo>(child_mesh.Size(0)),
-	   std::vector<ParentInfo>(child_mesh.Size(1)),
-	   std::vector<ParentInfo>(child_mesh.Size(2))});
+	    std::vector<ParentInfo>(child_mesh.Size(1)),
+	    std::vector<ParentInfo>(child_mesh.Size(2))});
     
       // Visit all nodes of the parent mesh and retrieve their children by index
       for (const mesh::Entity &node : parent_mesh.Entities(2)) {
