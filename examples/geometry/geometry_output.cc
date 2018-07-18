@@ -5,7 +5,7 @@
 #include <iostream>
 #include "lf/geometry/geometry.h"
 #include "lf/geometry/point.h"
-//#include "lf/geometry/print_info.h"
+#include "lf/geometry/print_info.h"
 
 int main() {
   std::cout << "Output of information of geometry" << std::endl;

@@ -4,6 +4,8 @@ set(sources
   utils.h
   write_matlab.cc
   write_matlab.h
+  write_tikz.cc
+  write_tikz.h
 )
 
 add_library(lf.mesh.utils ${sources})

@@ -99,7 +99,7 @@ class Entity : public mesh::Entity {
   friend class Mesh;
 
   // Add global output control
-  //static int output_ctrl_;
+  // static int output_ctrl_;
 
 
 }; // class Mesh
