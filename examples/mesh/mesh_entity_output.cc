@@ -35,22 +35,27 @@ int main() {
   // Need to add nodes and entity, AddPoint, AddEntity
 
   // add nodes
-
-  //test.AddPoint(Eigen::Vector2cd(0,0));
-
-/*
-  EXPECT_EQ(mf.AddPoint(Eigen::Vector2d(0, 0)), 0);
-  EXPECT_EQ(mf.AddPoint(Eigen::Vector2d(1, 0)), 1);
-  EXPECT_EQ(mf.AddPoint(Eigen::Vector2d(1, 1)), 2);
-  EXPECT_EQ(mf.AddPoint(Eigen::Vector2d(0, 1)), 3);
+  test.AddPoint(Eigen::Vector2d(0,0));
+  test.AddPoint(Eigen::Vector2d(0,1));
+  test.AddPoint(Eigen::Vector2d(1,1));
+  test.AddPoint(Eigen::Vector2d(1,0));
 
   // add an element
   Eigen::MatrixXd node_coord(2, 4);
   node_coord << 0, 1, 1, 0, 0, 0, 1, 1;
-  EXPECT_EQ(0, mf.AddEntity(
-                   base::RefEl::kQuad(), {0, 1, 2, 3},
-                   std::make_unique<geometry::QuadO1>(std::move(node_coord))));
-*/
+  test.AddEntity(lf::base::RefEl::kQuad(), {0, 1, 2, 3}, std::make_unique<lf::geometry::QuadO1>(std::move(node_coord)));
+
+
+  // explicitly add the right edge:
+  node_coord = Eigen::MatrixXd(2, 2);
+  node_coord << 1, 1, 0, 1;
+  test.AddEntity(lf::base::RefEl::kSegment(), {1, 2}, std::make_unique<lf::geometry::SegmentO1>(node_coord));
+
+
+  // build the mesh
+  auto mesh = test.Build();
+
+  std::cout << mesh.DimWorld() << std::endl;
 
 
   return 0L;
