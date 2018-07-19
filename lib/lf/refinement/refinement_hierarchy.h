@@ -70,8 +70,7 @@ namespace lf::refinement {
 struct ParentInfo {
   explicit ParentInfo(void) : parent_ptr_(nullptr), child_number_(-1) {}
   // Data members
-  const mesh::Entity
-      *parent_ptr_; /**< parent entity, not necessarily the same type */
+  const mesh::Entity *parent_ptr_; /**< parent entity, not necessarily the same type */
   lf::base::sub_idx_t child_number_; /**< local index in the parent entity */
 };
 
@@ -165,6 +164,11 @@ class MeshHierarchy {
   std::vector<std::vector<bool>> edge_marked_;
   /** Information about local refinement edges of triangles */
   std::vector<std::vector<lf::base::sub_idx_t>> refinement_edges_;
+
+  /**
+   * @brief Finds the index of the longest edge of a triangle
+   */
+  sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 };
 
 }  // namespace lf::refinement
