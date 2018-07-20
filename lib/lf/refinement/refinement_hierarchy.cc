@@ -51,23 +51,28 @@ namespace lf::refinement {
 		  "Only regular or barycentric uniform refinement possible");
     // Retrieve the finest mesh in the hierarchy
     const mesh::Mesh &finest_mesh(*meshes_.back());
+    // Arrays containing refinement information for finest mesh
+    std::vector<PointChildInfo> &finest_point_ci(point_child_infos_.back());
+    std::vector<EdgeChildInfo> &finest_edge_ci(edge_child_infos_.back());
+    std::vector<CellChildInfo> &finest_cell_ci(cell_child_infos_.back());
+    
     // Flag all points as to be copied
     for (const mesh::Entity &point : finest_mesh.Entities(2)) {
       const lf::base::glb_idx_t point_index = finest_mesh.Index(point);
-      PointChildInfo &pt_child_info((point_child_infos_.back())[point_index]);
+      PointChildInfo &pt_child_info(finest_point_ci[point_index]);
       // Set the information about a points children except the child pointer
       pt_child_info.ref_pat_ = RefPat::rp_copy;
     }
     // Flag all edges as to be split
     for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
       const lf::base::glb_idx_t edge_index = finest_mesh.Index(edge);
-      EdgeChildInfo &ed_child_info(((edge_child_infos_.back()))[edge_index]);
+      EdgeChildInfo &ed_child_info(finest_edge_ci[edge_index]);
       ed_child_info.ref_pat_ = RefPat::rp_split;
     }
     // All cells are to be refined regularly
     for (const mesh::Entity &cell : finest_mesh.Entities(0)) {
       const lf::base::glb_idx_t cell_index = finest_mesh.Index(cell);
-      CellChildInfo &cell_child_info(((cell_child_infos_.back()))[cell_index]);
+      CellChildInfo &cell_child_info(finest_cell_ci[cell_index]);
       cell_child_info.ref_pat_ = ref_pat;
     }
     // With all refinement patterns set, generate the new mesh
@@ -88,11 +93,15 @@ namespace lf::refinement {
   void MeshHierarchy::RefineMarked(void) {
     // Target the finest mesh
     const lf::mesh::Mesh &finest_mesh(*meshes_.back());
+    // Arrays containing refinement information for finest mesh
+    std::vector<PointChildInfo> &finest_point_ci(point_child_infos_.back());
+    std::vector<EdgeChildInfo> &finest_edge_ci(edge_child_infos_.back());
+    std::vector<CellChildInfo> &finest_cell_ci(cell_child_infos_.back());
 
     // Flag all points as to be copied
     for (const mesh::Entity &point : finest_mesh.Entities(2)) {
       const glb_idx_t point_index = finest_mesh.Index(point);
-      PointChildInfo &pt_child_info((point_child_infos_.back())[point_index]);
+      PointChildInfo &pt_child_info(finest_point_ci[point_index]);
       // Set the information about a points children except the child pointer
       pt_child_info.ref_pat_ = RefPat::rp_copy;
     }
@@ -102,7 +111,7 @@ namespace lf::refinement {
       LF_VERIFY_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
 		    "Wrong type for an edge");
       const glb_idx_t edge_index = finest_mesh.Index(edge);
-      EdgeChildInfo &ed_ci(edge_child_infos_.back()[edge_index]);
+      EdgeChildInfo &ed_ci(finest_edge_ci[edge_index]);
       LF_VERIFY_MSG(ed_ci.ref_pat_ == RefPat::rp_nil,
 		    "Edge " << edge_index << " already refined!");
       if ((edge_marked_.back())[edge_index]) {
@@ -123,9 +132,15 @@ namespace lf::refinement {
       // Visit all cells and update their refinement patterns
       for (const lf::mesh::Entity &cell : finest_mesh.Entities(0)) {
 	const glb_idx_t cell_index = finest_mesh.Index(cell);
-	CellChildInfo &cell_child_info(cell_child_infos_.back()[cell_index]);
+	CellChildInfo &cell_child_info(finest_cell_ci[cell_index]);
+
+	// Global indices of edges
+	std::array<glb_idx_t,4> cell_edge_indices;
+	
 	// Find edges which are marked as split
-	std::array<bool,4> edge_split;
+	std::array<bool,4> edge_split({false,false,false,false});
+	// Local indices of edges marked as split
+	std::array<sub_idx_t,4> split_edge_idx;
 	// Array of references to edge sub-entities of current cell
 	base::RandomAccessRange<const lf::mesh::Entity> sub_edges(cell.SubEntities(1));
 	const size_type num_edges = cell.RefEl().NumSubEntities(1);
@@ -133,20 +148,155 @@ namespace lf::refinement {
 	size_type split_edge_cnt = 0;
 	for (int k=0; k < num_edges; k++) {
 	  const glb_idx_t edge_index = finest_mesh.Index(sub_edges[k]);
+	  cell_edge_indices[k] = edge_index;
 	  edge_split[k] =
-	    (edge_child_infos_.back()[edge_index].ref_pat_ == RefPat::rp_split);
-	  if (edge_split[k]) split_edge_cnt++;
+	    (finest_edge_ci[edge_index].ref_pat_ == RefPat::rp_split);
+	  if (edge_split[k]) {
+	    split_edge_idx[split_edge_cnt] = k;
+	    split_edge_cnt++;
+	  }
 	}
-	const sub_idx_t ref_edge_idx = refinement_edges_.back()[cell_index];
 	switch (cell.RefEl()) {
 	case lf::base::RefEl::kTria(): {
+	  // Case of a triangular cell: In this case bisection refinement
+	  // is performed starting with the refinement edge.
+	  // Local index of refinement edge for the current triangle, also
+	  // called the "anchor edge" in the case of repeated  bisection
+	  const sub_idx_t anchor = refinement_edges_.back()[cell_index];
+	  // Refinement edge will always be the anchor edge
+	  finest_cell_ci[cell_index].anchor_ = anchor;
+	  const sub_idx_t mod_0 = anchor;
+	  const sub_idx_t mod_1 = (anchor + 1) % 3;
+	  const sub_idx_t mod_2 = (anchor + 2) % 3;
 	  
+	  std::tuple<bool,bool,bool> split_status
+	    ({edge_split[mod_0],edge_split[mod_1],edge_split[mod_2]});
+
+	  // Determine updated refinement pattern for triangle depending on the
+	  // splitting status of its edges. If the triangle is subdivided, the refinement
+	  // must always be split in a first bisection step, even if it may not have been
+	  // marked as split. In this case refinement may spread to neighboring cells and
+	  // we have to iterative once more. Therefore the refinement_complete flag
+	  // has to be set to 'false'.
+	  
+	  if (split_status == std::tuple<bool,bool,bool>({false,false,false})) {
+	    // No edge to be split: just copy triangle
+	    LF_VERIFY_MSG(split_edge_cnt == 0,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_copy;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({true,false,false})) {
+	    // Only refinement edge has to be split by a single bisection
+	    // No additional edge will be split
+	    LF_VERIFY_MSG(split_edge_cnt == 1,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_bisect;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({true,true,false})) {
+	    // Trisection refinement, no extra splitting of edges
+	    LF_VERIFY_MSG(split_edge_cnt == 2,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_trisect;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({false,true,false})) {
+	    // Trisection refinement, triggering splitting of refinement edge
+	    LF_VERIFY_MSG(split_edge_cnt == 1,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_trisect;
+	    finest_edge_ci[cell_edge_indices[anchor]].ref_pat_ = RefPat::rp_split;
+	    refinement_complete = false;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({true,false,true})) {
+	    // Trisection refinement (other side), no extra splitting of edges
+	    LF_VERIFY_MSG(split_edge_cnt == 2,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_trisect_left;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({false,false,true})) {
+	    // Trisection refinement (other side), triggering splitting of refinement edge
+	    LF_VERIFY_MSG(split_edge_cnt == 1,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_trisect_left;
+	    finest_edge_ci[cell_edge_indices[anchor]].ref_pat_ = RefPat::rp_split;
+	    refinement_complete = false;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({true,true,true})) {
+	    // Quadsection refinement, no extra splitting of edges
+	    LF_VERIFY_MSG(split_edge_cnt == 3,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
+	  }
+	  else if (split_status == std::tuple<bool,bool,bool>({false,true,true})) {
+	    // Quadsection refinement requiring splitting of refinement edge
+	    LF_VERIFY_MSG(split_edge_cnt == 2,"Wrong number of split edges");
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
+	    finest_edge_ci[cell_edge_indices[anchor]].ref_pat_ = RefPat::rp_split;
+	    refinement_complete = false;
+	  }
+	  else {
+	    LF_VERIFY_MSG(false,"Impossible case");
+	  }
 	  break;
-	}
+	} // end case of a triangle
 	case lf::base::RefEl::kQuad(): {
-	  
+	  // There is no refinement edge for quadrilaterals and so no extra edge splitting will
+	  // be necessary. The refinement pattern for a quadrilateral will be determined from
+	  // the number of edges split and their location to each other.
+	  switch (split_edge_cnt) {
+	  case 0: {
+	    // No edge split: quadrilateral has to be copied
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_copy;
+	    break;
+	  }
+	  case 1: {
+	    // One edge split: trisection refinement of the quadrilateral
+	    // Anchor edge is the split edge
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_trisect;
+	    finest_cell_ci[cell_index].anchor_ = split_edge_idx[0];
+	    break;
+	  }
+	  case 2: {
+	    if ((split_edge_idx[1]-split_edge_idx[0]) == 2) {
+	      // If the two split edges are opposite to each other, then bisection
+	      // of the quadrilateral is the right refinement pattern.
+	      finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_bisect;
+	      finest_cell_ci[cell_index].anchor_ = split_edge_idx[0];
+	    }
+	    else { 
+	      // Tthe two split edges are adjacent, this case can be accommodated
+	      // by quadsection refinement. Anchor is the split edge with the lower
+	      // index (modulo 4).
+	      finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
+	      if (((split_edge_idx[0]+1)%4) == split_edge_idx[1]) 
+		finest_cell_ci[cell_index].anchor_ = split_edge_idx[0];
+	      else if (((split_edge_idx[1]+1)%4) == split_edge_idx[0])
+		finest_cell_ci[cell_index].anchor_ = split_edge_idx[1];
+	    }
+	    break;
+	  }
+	  case 3: {
+	    // Three edges of the quadrilateral are split, which can be
+	    // accommodated only by the rp_threeedge refinement pattern
+	    // anchor is the edge with the middle index
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_threeedge;
+	    if (!edge_split[0]) // Split edges 1,2,3, middle edge 2
+	      finest_cell_ci[cell_index].anchor_ = 2;
+	    else if (!edge_split[1]) // Split edges 0,2,3, middle edge 3
+	      finest_cell_ci[cell_index].anchor_ = 3;
+	    else if (!edge_split[2]) // Split edges 0,1,3, middle edge 0
+	      finest_cell_ci[cell_index].anchor_ = 0;
+	    else if (!edge_split[3]) // Split edges 0,1,2, middle edge 1
+	      finest_cell_ci[cell_index].anchor_ = 1;
+	    else {
+	      LF_VERIFY_MSG(false,"Inconsistent split pattern");
+	    }
+	    break;
+	  }
+	  case 4: {
+	    // All edges are split => regular refinement
+	    finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_regular;
+	    break;
+	  }
+	  default: {
+	    LF_VERIFY_MSG(false,"Illegal number " << split_edge_cnt << " of split edges");
+	    break;
+	  }
+	  } // end switch split_edge_cnt
 	  break;
-	}
+	} // end case of a quadrilateral
 	default: {
 	  LF_VERIFY_MSG(false,"Illegal cell type");
 	  break;

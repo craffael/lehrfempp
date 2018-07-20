@@ -104,6 +104,43 @@ class MeshHierarchy {
     return *meshes_.at(level);
   }
 
+  /** 
+   * @brief Obtain refinement information for all points
+   */
+  const std::vector<PointChildInfo> &point_child_info(size_type level) {
+    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    return point_child_infos_[level];
+  }
+  /** 
+   * @brief Obtain refinement information for all edges
+   */
+  const std::vector<EdgeChildInfo> &edge_child_info(size_type level) {
+    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    return edge_child_infos_[level];
+  }
+  /** 
+   e* @brief Obtain refinement information for all 
+   */
+  const std::vector<CellChildInfo> &cell_child_info(size_type level) {
+    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    return cell_child_infos_[level];
+  }
+  /**
+   * @brief Fetch information about parents
+   */
+  const std::vector<ParentInfo> &parent_info(size_type level,dim_t codim) {
+    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    LF_VERIFY_MSG(codim < 3,"Codim = " << codim << " illegal");
+    return parent_infos_[level][codim];
+  }
+  /** 
+   * @brief Access refinement edge indices
+   */
+  const std::vector<glb_idx_t> &refinement_edges(size_type level) {
+    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    return refinement_edges_[level];
+  }
+
   /**
    * @brief Perform regular or barycentric uniform refinement of the finest mesh in the
    * hierarchy
