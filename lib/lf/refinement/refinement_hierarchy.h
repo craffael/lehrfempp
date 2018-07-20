@@ -164,6 +164,8 @@ class MeshHierarchy {
    */
   template <typename Marker>
   void MarkEdges(Marker &&marker);
+
+  
   /**
    * @brief Conduct local refinement of the mesh splitting all marked edges
    */
@@ -206,7 +208,27 @@ class MeshHierarchy {
    * @brief Finds the index of the longest edge of a triangle
    */
   sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
+
+public:
+  /** @brief diagnostics control variable */
+  static int output_ctrl_;
 };
+
+
+  template <typename Marker>
+  void MeshHierarchy::MarkEdges(Marker &&marker) {
+    // Retrieve the finest mesh in the hierarchy
+    const mesh::Mesh &finest_mesh(*meshes_.back());
+
+    LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.Size(1),
+		  "Length  mismatch for edge flag array");
+    
+    // Run through the edges = entities of co-dimension 1
+    for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
+      lf::base::glb_idx_t edge_index = finest_mesh.Index(edge);
+      (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
+    }
+  }
 
 }  // namespace lf::refinement
 

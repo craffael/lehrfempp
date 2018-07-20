@@ -142,6 +142,9 @@ void MeshFactory::PrintLists(std::ostream& o) const {
     if (elements_[j].second) {
       o << " with geometry";
     }
+    else {
+      o << "[no geometry]";
+    }
     o << std::endl;
   }
 }
