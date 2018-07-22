@@ -1013,36 +1013,71 @@ namespace lf::refinement {
     meshes_.push_back(mesh_factory_.Build()); // MESH CONSTRUCTION
     mesh::Mesh &child_mesh(*meshes_.back());
 
-    if (output_ctrl_ > 10) {
+    CONTROLLEDSTATEMENT(output_ctrl_,10,
       std::cout << "Child mesh" << child_mesh.Size(2) << " nodes, "
 		<< child_mesh.Size(1) << " edges, "
-		<< child_mesh.Size(0) << " cells." << std::endl;
+			<< child_mesh.Size(0) << " cells." << std::endl;)
+
+
+    // Create space for data pertaining to the new mesh
+    // Note that references to vectors may become invalid
+    {
+      // Arrays containing parent information 
+      parent_infos_.push_back
+	({ std::move(std::vector<ParentInfo>(child_mesh.Size(0))),
+	    std::move(std::vector<ParentInfo>(child_mesh.Size(1))),
+	    std::move(std::vector<ParentInfo>(child_mesh.Size(2)))});
+      
+      // Initialize (empty) refinement information for newly created fine mesh
+      // Same code as in the constructor of MeshHierarchy
+      std::vector<CellChildInfo> fine_cell_child_info(child_mesh.Size(0));
+      std::vector<EdgeChildInfo> fine_edge_child_info(child_mesh.Size(1));
+      std::vector<PointChildInfo> fine_point_child_info(child_mesh.Size(2));
+      cell_child_infos_.push_back(std::move(fine_cell_child_info));
+      edge_child_infos_.push_back(std::move(fine_edge_child_info));
+      point_child_infos_.push_back(std::move(fine_point_child_info));
+
+      // Array containing information about refinement edges
+      refinement_edges_.push_back(std::move(std::vector<sub_idx_t>(child_mesh.Size(0),idx_nil)));
+
+      // Finally set up vector for edge flags
+      edge_marked_.emplace_back(child_mesh.Size(1),false);
     }
     
     // Finally, we have to initialize the parent pointers for the entities of the newly
     // created finest mesh.
     {
-      parent_infos_.push_back
-	({ std::vector<ParentInfo>(child_mesh.Size(0)),
-	    std::vector<ParentInfo>(child_mesh.Size(1)),
-	    std::vector<ParentInfo>(child_mesh.Size(2))});
+      const size_type n_levels = meshes_.size();
+      LF_VERIFY_MSG(n_levels > 1,"A least two levels after refinement");
+      // Access parent information for finest level
+      std::vector<ParentInfo> &fine_node_parent_info(parent_infos_.back()[2]);
+      std::vector<ParentInfo> &fine_edge_parent_info(parent_infos_.back()[1]);
+      std::vector<ParentInfo> &fine_cell_parent_info(parent_infos_.back()[0]);
 
+      LF_VERIFY_MSG(fine_node_parent_info.size() == child_mesh.Size(2),
+		    "fine_node_parent_info size mismatch");
+      LF_VERIFY_MSG(fine_edge_parent_info.size() == child_mesh.Size(1),
+		    "fine_edge_parent_info size mismatch");
+      LF_VERIFY_MSG(fine_cell_parent_info.size() == child_mesh.Size(0),
+		    "fine_edge_parent_info size mismatch");
+      
       // Visit all nodes of the parent mesh and retrieve their children by index
-      std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
+      std::vector<PointChildInfo> &pt_child_info(point_child_infos_.at(n_levels-2));
       for (const mesh::Entity &node : parent_mesh.Entities(2)) {
 	// Obtain index of node in coarse mesh
 	const glb_idx_t node_index = parent_mesh.Index(node);
 	const glb_idx_t child_index = pt_child_info[node_index].child_point_idx_;
 	if (child_index != idx_nil) {
-	  LF_VERIFY_MSG(child_index < (parent_infos_.back())[2].size(),
+	  LF_VERIFY_MSG(child_index < fine_node_parent_info.size(),
 			"index " << child_index << " illegal for child vertex");
-	  ((parent_infos_.back()[2])[child_index]).child_number_ = 0;
-	  ((parent_infos_.back()[2])[child_index]).parent_ptr_ = &node;
+	  fine_node_parent_info[child_index].child_number_ = 0;
+	  fine_node_parent_info[child_index].parent_ptr_ = &node;
+	  fine_node_parent_info[child_index].parent_index_ = node_index;
 	}
       } // end loop over nodes 
 
       // Traverse edges and set the parent for their interior nodes and child edges
-      std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
+      std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.at(n_levels-2));
       for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
 	// Obtain index of edge in coarse mesh
 	const glb_idx_t edge_index = parent_mesh.Index(edge);
@@ -1052,26 +1087,28 @@ namespace lf::refinement {
 	const size_type num_child_edges = ci_edge.child_edge_idx_.size();
 	for (int l = 0; l<num_child_edges; l++) {
 	  const glb_idx_t edge_child_idx = ci_edge.child_edge_idx_[l];
-	  LF_VERIFY_MSG(edge_child_idx < (parent_infos_.back())[1].size(),
+	  LF_VERIFY_MSG(edge_child_idx < fine_edge_parent_info.size(),
 			"index " << edge_child_idx << " illegal for child edge");
-	  ((parent_infos_.back()[1])[edge_child_idx]).child_number_ = l;
-	  ((parent_infos_.back()[1])[edge_child_idx]).parent_ptr_ = &edge;
+	  fine_edge_parent_info[edge_child_idx].child_number_ = l;
+	  fine_edge_parent_info[edge_child_idx].parent_ptr_ = &edge;
+	  fine_edge_parent_info[edge_child_idx].parent_index_ = edge_index;
 	} // end loop over child edges
 
 	// Visit child nodes
 	const size_type num_child_nodes = ci_edge.child_point_idx_.size();
 	for (int l = 0; l<num_child_nodes; l++) {
 	  const glb_idx_t node_child_idx = ci_edge.child_point_idx_[l];
-	  LF_VERIFY_MSG(node_child_idx < (parent_infos_.back())[2].size(),
+	  LF_VERIFY_MSG(node_child_idx < fine_node_parent_info.size(),
 			"index " << node_child_idx << " illegal for child point");
-	  ((parent_infos_.back()[2])[node_child_idx]).child_number_ = l;
-	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &edge;
+	  fine_node_parent_info[node_child_idx].child_number_ = l;
+	  fine_node_parent_info[node_child_idx].parent_ptr_ = &edge;
+	  fine_node_parent_info[node_child_idx].parent_index_ = edge_index;
 	} // end loop over child points
       } // end loop over edges
 
 
       // Loop over cells
-      std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
+      std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.at(n_levels-2));
       for(const mesh::Entity &cell : parent_mesh.Entities(0)) {
 	// fetch index of current cell
 	const glb_idx_t cell_index(parent_mesh.Index(cell));
@@ -1082,68 +1119,62 @@ namespace lf::refinement {
 	const size_type num_child_cells = cell_ci.child_cell_idx_.size();
 	for (int l=0; l<num_child_cells; l++) {
 	  const glb_idx_t child_cell_idx = cell_ci.child_cell_idx_[l];
-	  LF_VERIFY_MSG(child_cell_idx < (parent_infos_.back())[0].size(),
+	  LF_VERIFY_MSG(child_cell_idx < fine_cell_parent_info.size(),
 			"index " << child_cell_idx << " illegal for child cell");
-	  ((parent_infos_.back()[0])[child_cell_idx]).child_number_ = l;
-	  ((parent_infos_.back()[0])[child_cell_idx]).parent_ptr_ = &cell;
+	  fine_cell_parent_info[child_cell_idx].child_number_ = l;
+	  fine_cell_parent_info[child_cell_idx].parent_ptr_ = &cell;
+	  fine_cell_parent_info[child_cell_idx].parent_index_ = cell_index;
 	}
 
 	// Visit child edges
 	const size_type num_child_edges = cell_ci.child_edge_idx_.size();
 	for (int l = 0; l<num_child_edges; l++) {
 	  const glb_idx_t edge_child_idx = cell_ci.child_edge_idx_[l];
-	  LF_VERIFY_MSG(edge_child_idx < (parent_infos_.back())[1].size(),
+	  LF_VERIFY_MSG(edge_child_idx < fine_edge_parent_info.size(),
 			"index " << edge_child_idx << " illegal for child edge");
-	  ((parent_infos_.back()[1])[edge_child_idx]).child_number_ = l;
-	  ((parent_infos_.back()[1])[edge_child_idx]).parent_ptr_ = &cell;
+	  fine_edge_parent_info[edge_child_idx].child_number_ = l;
+	  fine_edge_parent_info[edge_child_idx].parent_ptr_ = &cell;
+	  fine_edge_parent_info[edge_child_idx].parent_index_ = cell_index;
 	} // end loop over child edges
 
 	// Visit child nodes
 	const size_type num_child_nodes = cell_ci.child_point_idx_.size();
 	for (int l = 0; l<num_child_nodes; l++) {
 	  const glb_idx_t node_child_idx = cell_ci.child_point_idx_[l];
-	  LF_VERIFY_MSG(node_child_idx < (parent_infos_.back())[2].size(),
+	  LF_VERIFY_MSG(node_child_idx < fine_node_parent_info.size(),
 			"index " << node_child_idx << " illegal for child point");
-	  ((parent_infos_.back()[2])[node_child_idx]).child_number_ = l;
-	  ((parent_infos_.back()[2])[node_child_idx]).parent_ptr_ = &cell;
+	  fine_node_parent_info[node_child_idx].child_number_ = l;
+	  fine_node_parent_info[node_child_idx].parent_ptr_ = &cell;
+	  fine_node_parent_info[node_child_idx].parent_index_ = cell_index;
 	} // end loop over child points
       } // end loop over cells of parent mesh
     }
     
-    // Initialize (empty) refinement information for newly created fine mesh
-    // Same code as in the constructor of MeshHierarchy
-    {
-      std::vector<CellChildInfo> fine_cell_child_info(child_mesh.Size(0));
-      std::vector<EdgeChildInfo> fine_edge_child_info(child_mesh.Size(1));
-      std::vector<PointChildInfo> fine_point_child_info(child_mesh.Size(2));
-      cell_child_infos_.push_back(std::move(fine_cell_child_info));
-      edge_child_infos_.push_back(std::move(fine_edge_child_info));
-      point_child_infos_.push_back(std::move(fine_point_child_info));
-    }
     // Finally set refinement edges for fine mesh
     {
       size_type n_levels = meshes_.size();
       LF_VERIFY_MSG(n_levels > 1,"At least two levels after refinement!");
-      std::vector<sub_idx_t> &parent_ref_edges(refinement_edges_.back());
-      refinement_edges_.push_back(std::move(std::vector<sub_idx_t>(child_mesh.Size(0),idx_nil)));
-      std::vector<sub_idx_t> &child_ref_edges(refinement_edges_.back());
-      std::vector<ParentInfo> &cell_parent_info(parent_infos_.back()[0]);
-      std::vector<CellChildInfo> &parent_cell_ci(cell_child_infos_[n_levels-2]);
+      std::vector<sub_idx_t> &child_ref_edges(refinement_edges_.at(n_levels-1));
+      std::vector<ParentInfo> &cell_parent_info(parent_infos_.at(n_levels-1)[0]);
+      std::vector<CellChildInfo> &parent_cell_ci(cell_child_infos_.at(n_levels-2));
+      std::vector<sub_idx_t> &parent_ref_edges(refinement_edges_.at(n_levels-2));
       
       // Traverse the cells of the fine mesh
       if (output_ctrl_ > 10) {
 	std::cout << "Setting refinement edges" << std::endl;
       }
       for (const mesh::Entity &fine_cell : child_mesh.Entities(0)) {
+	const glb_idx_t cell_index = child_mesh.Index(fine_cell);
+	child_ref_edges[cell_index] = idx_nil;
 	// Refinement edge relevant for triangles onyl
 	if (fine_cell.RefEl() == lf::base::RefEl::kTria()) {
-	  const glb_idx_t cell_index = child_mesh.Index(fine_cell);
-	  if (output_ctrl_ > 100) {
-	    std::cout << "Cell " << cell_index << ": " << std::flush;
-	  }
+	  CONTROLLEDSTATEMENT(output_ctrl_,100,
+			      std::cout << "Cell " << cell_index << ": " << std::flush;)
 	  // pointer to cell whose refinement has created the current one
 	  const mesh::Entity *parent_ptr = cell_parent_info[cell_index].parent_ptr_;
-	  LF_VERIFY_MSG(parent_ptr != nullptr,"Every cell on the fine mesh must have a parent!");
+	  LF_VERIFY_MSG(parent_ptr != nullptr,
+			"Cell " << cell_index << " has no parent, paren_index = "
+			<< cell_parent_info[cell_index].parent_index_);
 	 
 	  if (parent_ptr->RefEl() == lf::base::RefEl::kTria()) {
 	    // Current cell was created  by splitting a triangle
@@ -1171,14 +1202,14 @@ namespace lf::refinement {
 	    case RefPat::rp_copy: {
 	      if (output_ctrl_ > 100) { std::cout << "COPY" << std::flush; }
 	      // Inherit refinement edge from parent triangle
-	      refinement_edges_.back()[cell_index] = parent_ref_edges[parent_index];
+	      child_ref_edges[cell_index] = parent_ref_edges[parent_index];
 	      break;
 	    }
 	    case RefPat::rp_bisect: {
 	      if (output_ctrl_ > 100) { std::cout << "BISECT " << std::flush; }
 	      // Both children have refinement edge 2
 	      LF_VERIFY_MSG(fine_cell_child_number < 2,"Only 2 children for rp_bisect");
-	      refinement_edges_.back()[cell_index] = 2;
+	      child_ref_edges[cell_index] = 2;
 	      break;
 	    }
 	    case RefPat::rp_trisect: {
@@ -1186,9 +1217,9 @@ namespace lf::refinement {
 	      // Refinement edges: 0 -> 2, 1 -> 1, 2 -> 0
 	      LF_VERIFY_MSG(fine_cell_child_number < 3,"Only 3 children for rp_trisect");
 	      switch (fine_cell_child_number) {
-	      case 0: { refinement_edges_.back()[cell_index] = 2; break; }
-	      case 1: { refinement_edges_.back()[cell_index] = 1; break; }
-	      case 2: { refinement_edges_.back()[cell_index] = 0; break; }
+	      case 0: { child_ref_edges[cell_index] = 2; break; }
+	      case 1: { child_ref_edges[cell_index] = 1; break; }
+	      case 2: { child_ref_edges[cell_index] = 0; break; }
 	      }
 	      break;
 	    }
@@ -1197,9 +1228,9 @@ namespace lf::refinement {
 	      // Refinement edges: 0 -> 2, 1 -> 1, 2 -> 0
 	      LF_VERIFY_MSG(fine_cell_child_number < 4,"Only 3 children for rp_quadsect");
 	      switch (fine_cell_child_number) {
-	      case 0: { refinement_edges_.back()[cell_index] = 2; break; }
-	      case 1: { refinement_edges_.back()[cell_index] = 2; break; }
-	      case 2: { refinement_edges_.back()[cell_index] = 0; break; }
+	      case 0: { child_ref_edges[cell_index] = 2; break; }
+	      case 1: { child_ref_edges[cell_index] = 2; break; }
+	      case 2: { child_ref_edges[cell_index] = 0; break; }
 	      }
 	      break;
 	    }
@@ -1207,10 +1238,10 @@ namespace lf::refinement {
 	      if (output_ctrl_ > 100) { std::cout << "QUADSECT " << std::flush; }
 	      // Refinement edges: 0 -> 2, 1 -> 0, 2 -> 0, 3-> 0
 	      switch (fine_cell_child_number) {
-	      case 0: { refinement_edges_.back()[cell_index] = 2; break; }
-	      case 1: { refinement_edges_.back()[cell_index] = 0; break; }
-	      case 2: { refinement_edges_.back()[cell_index] = 0; break; }
-	      case 3: { refinement_edges_.back()[cell_index] = 0; break; }
+	      case 0: { child_ref_edges[cell_index] = 2; break; }
+	      case 1: { child_ref_edges[cell_index] = 0; break; }
+	      case 2: { child_ref_edges[cell_index] = 0; break; }
+	      case 3: { child_ref_edges[cell_index] = 0; break; }
 	      default: { LF_VERIFY_MSG(false,"Illegal child number"); break; }
 	      }
 	      break;
@@ -1222,30 +1253,30 @@ namespace lf::refinement {
 	      switch (parent_ref_edge_idx)  {
 	      case 0: {
 		switch (fine_cell_child_number) {
-		case 0: { refinement_edges_.back()[cell_index] = 0; break; }
-		case 1: { refinement_edges_.back()[cell_index] = 0; break; }
-		case 2: { refinement_edges_.back()[cell_index] = 1; break; }
-		case 3: { refinement_edges_.back()[cell_index] = 1; break; }
+		case 0: { child_ref_edges[cell_index] = 0; break; }
+		case 1: { child_ref_edges[cell_index] = 0; break; }
+		case 2: { child_ref_edges[cell_index] = 1; break; }
+		case 3: { child_ref_edges[cell_index] = 1; break; }
 		default: { LF_VERIFY_MSG(false,"Illegal child number"); break; }
 		}
 		break;
 	      }
 	      case 1: {
 		switch (fine_cell_child_number) {
-		case 0: { refinement_edges_.back()[cell_index] = 1; break; }
-		case 1: { refinement_edges_.back()[cell_index] = 2; break; }
-		case 2: { refinement_edges_.back()[cell_index] = 2; break; }
-		case 3: { refinement_edges_.back()[cell_index] = 2; break; }
+		case 0: { child_ref_edges[cell_index] = 1; break; }
+		case 1: { child_ref_edges[cell_index] = 2; break; }
+		case 2: { child_ref_edges[cell_index] = 2; break; }
+		case 3: { child_ref_edges[cell_index] = 2; break; }
 		default: { LF_VERIFY_MSG(false,"Illegal child number"); break; }
 		}
 		break;
 	      }
 	      case 2: {
 		switch (fine_cell_child_number) {
-		case 0: { refinement_edges_.back()[cell_index] = 2; break; }
-		case 1: { refinement_edges_.back()[cell_index] = 1; break; }
-		case 2: { refinement_edges_.back()[cell_index] = 0; break; }
-		case 3: { refinement_edges_.back()[cell_index] = 0; break; }
+		case 0: { child_ref_edges[cell_index] = 2; break; }
+		case 1: { child_ref_edges[cell_index] = 1; break; }
+		case 2: { child_ref_edges[cell_index] = 0; break; }
+		case 3: { child_ref_edges[cell_index] = 0; break; }
 		default: { LF_VERIFY_MSG(false,"Illegal child number"); break; }
 		}
 		break;
@@ -1254,10 +1285,10 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case rp_barycentric: {
-	      if (output_ctrl_ > 100) { std::cout << "BARUCENTRIC " << std::flush; }
+	      if (output_ctrl_ > 100) { std::cout << "BARYCENTRIC " << std::flush; }
 	      // In the case of barycentric refinement choose the longest edge as
 	      // refinement edge for every child triangle
-	      refinement_edges_.back()[cell_index] = LongestEdge(fine_cell);
+	      child_ref_edges[cell_index] = LongestEdge(fine_cell);
 	      break;
 	    }
 	    default: {
@@ -1266,14 +1297,14 @@ namespace lf::refinement {
 	    }
 	    } // end switch parent_ref_pat
 	    if (output_ctrl_ > 100) {
-	      std::cout << " ref edge = " << refinement_edges_.back()[cell_index] << std::endl;
+	      std::cout << " ref edge = " << child_ref_edges[cell_index] << std::endl;
 	    }
 
 	  } // end treatment of triangular child cell
 	  else if (parent_ptr->RefEl() == lf::base::RefEl::kQuad()) {
 	    // Parent is a quadrilateral:
 	    // refinement edge will be set to the longest edge
-	    refinement_edges_.back()[cell_index] = LongestEdge(fine_cell);
+	    child_ref_edges[cell_index] = LongestEdge(fine_cell);
 	  }
 	  else {
 	    LF_VERIFY_MSG(false,"Unknown parent cell type");
@@ -1281,8 +1312,6 @@ namespace lf::refinement {
 	}
       }
     } 
-    // Finally set up vector for edge flags
-    edge_marked_.emplace_back(child_mesh.Size(1),false);
   }
 
   sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {

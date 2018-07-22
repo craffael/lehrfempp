@@ -8,6 +8,22 @@
 
 namespace lf::refinement {
 
+  std::ostream &operator << (std::ostream &o,const RefPat &refpat) {
+    switch (refpat) {
+    rp_nil: { return o << "rp_NIL"; }
+    rp_copy: { return o << "rp_COPY"; }
+    rp_split: { return o << "rp_SPLIT"; }
+    rp_bisect: { return o << "rp_BISECT"; }
+    rp_trisect: { return o << "rp_TRISECT"; }
+    rp_trisect_left: { return o << "rp_TRISECT_LEFT"; }
+    rp_quadsect: { return o << "rp_QUADSECT"; }
+    rp_threeedge: { return o << "rp_THREEEDGE"; }
+    rp_regular: { return o << "rp_REGULAR"; }
+    rp_barycentric: { return o << "rp_BARYCENTRIC"; }
+    }
+  }
+
+  
 // Implementation for RefinemeentPattern
 
 lf::base::size_type Hybrid2DRefinementPattern::noChildren(

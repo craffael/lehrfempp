@@ -93,6 +93,21 @@ using StaticVar = Track<int>;
                                            lf::base::ctrl_root, #comment)
 /**@}*/
 
+/**
+ * @brief Macro for conditional output
+ * @param ctrlvar integer control variable
+ * @param level control level
+ * @statement code to be executed 
+ *
+ * The code passed in statement is executed if the value of the 
+ * control variable is larger than the value passed in level
+ *
+ * @note The executable code must not involve a comma operator. 
+ * Commas inside strings are ok.
+ */
+#define CONTROLLEDSTATEMENT(ctrlvar,level,statement) \
+  if ((ctrlvar) < (level)) { statement ; }
+  
 namespace lf::base {
 
 /**

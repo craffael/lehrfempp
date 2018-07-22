@@ -1,9 +1,40 @@
-function plot_lf_mesh(mesh_data)
+function plot_lf_mesh(mesh_data,opts)
 % Plots a mesh written by the write_matlab() mesh utility function
 % of LehrFEM++
+% mesh_data must be a function handle to a MATLAB function produced by 
+% the writeMatlab() C++ function of the LehrFEM++ library.
+% 
+% The following options are available:
+% opts.numbers -> Add entity index numbers
+% opts.parents -> Add index numbers of parents
+%   In this case opts.parents must be a handle to a function
+%   produced by the LehrFEM++ function writeMatlabLevel()
+%
 
 % Get geometry information for (affine) 2D mesh 
 [x,y,TRI,QUAD,EDS] = mesh_data();
+
+if (nargin < 2), opts = []; end
+
+% Option: read parent information
+if (isfield(opts,'parents'))
+    display('Plotting mesh with parent information');
+    [PTPAR,EDPAR,CELLPAR] = opts.parents();
+    if (size(PTPAR,1) ~= length(x))
+        error('ParentInfo Mismatch: number of points');
+    end
+    if (size(EDS,1) ~= size(EDPAR,1))
+        error('ParentInfo Mismatch: number of edges');
+    end
+    if ((size(TRI,1) + size(QUAD,1)) ~= size(CELLPAR,1))
+        error('ParentInfo Mismatch: number of cells')
+    end
+    parplot = true;
+else
+    PTPAR = []; EDPAR = []; CELLPAR = [];
+    parplot = false;
+end
+
 
 % Bounding box
 bb = [min(x) max(x) min(y) max(y)];
@@ -22,7 +53,12 @@ for k=1:num_edges
     ed = [x(EDS(k,1)) x(EDS(k,2)) ; y(EDS(k,1)) y(EDS(k,2))];
     plot( ed(1,:), ed(2,:),'b-');
     baryc = sum(ed,2)/2;
-    text(baryc(1),baryc(2),sprintf('%2i',k),'color','k');
+    if (isfield(opts,'numbers'))
+        text(baryc(1),baryc(2),sprintf('%2i',k-1),'color','k','horizontalalignment','center');
+    end
+    if (parplot)
+        text(baryc(1),baryc(2),sprintf('P=%2i',EDPAR(k,1)),'color','k','horizontalalignment','center');
+    end        
 end
 
 % plot triangles with numbers
@@ -35,7 +71,12 @@ for  k=1:num_tri
     shrunk_tri = 0.9*(trc-bm)+bm;
     shrunk_tri = [shrunk_tri,shrunk_tri(:,1)];
     plot(shrunk_tri(1,:),shrunk_tri(2,:),'g-');
-    text(baryc(1),baryc(2),sprintf('%2i',TRI(k,4)),'color','g');
+    if (isfield(opts,'numbers'))
+        text(baryc(1),baryc(2),sprintf('%2i',TRI(k,4)),'color','g','horizontalalignment','center');
+    end
+    if (parplot)
+        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(TRI(k,4)+1,1)),'color','g','horizontalalignment','center');
+    end        
     str = {'0','1','2'};
     text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,'color','k','fontsize',6,'horizontalalignment','center');
 end
@@ -50,5 +91,10 @@ for  k=1:num_quad
     shrunk_quad = 0.9*(trc-bm)+bm;
     shrunk_quad = [shrunk_quad,shrunk_quad(:,1)];
     plot(shrunk_quad(1,:),shrunk_quad(2,:),'m-');
-    text(baryc(1),baryc(2),sprintf('%2i',QUAD(k,5)),'color','m');
+    if (isfield(opts,'numbers'))
+        text(baryc(1),baryc(2),sprintf('%2i',QUAD(k,5)),'color','m','horizontalalignment','center');
+    end
+    if (parplot)
+        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(QUAD(k,5)+1,1)),'color','m','horizontalalignment','center');
+    end
 end

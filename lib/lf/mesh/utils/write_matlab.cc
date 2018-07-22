@@ -27,6 +27,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     filename.pop_back();
     filename.pop_back();
     file << "function [x,y,TRI,QUAD,EDS] = " << filename << "()" << std::endl;
+    file << "% Data for an unstructure planar hybrid 2D mesh" << std::endl;
 
     // Obtain topological dimension of the mesh
     const dim_t dim_mesh = mesh.DimMesh();

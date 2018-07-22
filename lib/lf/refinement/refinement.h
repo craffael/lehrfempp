@@ -8,6 +8,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+#include <iostream>
 
 namespace lf::refinement {
   // Convenient types
@@ -42,6 +43,8 @@ enum RefPat : int {
   rp_barycentric   /**< barycentric refinement */
 };
 
+  std::ostream &operator << (std::ostream &o,const RefPat &refpat);
+  
 /**
  * @brief Class containing information about the refinement of a cell
  *
