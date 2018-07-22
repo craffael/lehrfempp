@@ -15,3 +15,4 @@ endif()
 
 
 add_subdirectory(test)
+add_subdirectory(test_utils)

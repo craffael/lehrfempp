@@ -25,7 +25,7 @@ class VariantVisitor {
     return lambda_(std::forward<T>(arg));
   }
 
-  VariantVisitor(LAMBDA lambda) : lambda_(lambda) {}
+  explicit VariantVisitor(LAMBDA lambda) : lambda_(lambda) {}
 
  private:
   LAMBDA lambda_;
@@ -84,7 +84,7 @@ BOOST_FUSION_ADAPT_STRUCT(lf::io::VtkFile,
 // clang-format on
 
 namespace /*anonymous*/ {
-void cell_list_size(unsigned int& result,
+void cell_list_size(unsigned int& result,  // NOLINT
                     const std::vector<std::vector<unsigned int>>& cells) {
   result = cells.size();
   for (auto& v : cells) {
@@ -169,7 +169,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
     using karma::eps;
     using karma::lit;
 
-    if constexpr (BINARY) {
+    if (BINARY) {
       points_vector %= *(karma::big_bin_float << karma::big_bin_float
                                               << karma::big_bin_float)
                        << eol;
@@ -184,7 +184,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
              << points_vector[karma::_1 = karma::_val];
 
     // cells_vector %= (karma::uint_ % " ") << karma::eol;
-    if constexpr (BINARY) {
+    if (BINARY) {
       cells_vector %= karma::big_dword(boost::phoenix::size(karma::_val))
                       << *(karma::big_dword);
     } else {
@@ -199,7 +199,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
             << lit(' ') << karma::uint_[CellListSize(karma::_1, karma::_val)]
             << karma::eol << (*cells_vector)[karma::_1 = karma::_val] << eol;
 
-    if constexpr (BINARY) {
+    if (BINARY) {
       cell_type =
           karma::big_dword[karma::_1 =
                                boost::phoenix::static_cast_<int>(karma::_val)];
@@ -216,7 +216,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
                          << karma::eol << points << cells << cell_types;
 
     // Field data
-    if constexpr (BINARY) {
+    if (BINARY) {
       field_data_int %= karma::string << lit(" 1 ") << lit(size(at_c<1>(_val)))
                                       << lit(" int") << eol << *karma::big_dword
                                       << eol;
@@ -248,7 +248,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
                   << *(field_data_int | field_data_float | field_data_double);
 
     // Point/Cell data
-    if constexpr (BINARY) {
+    if (BINARY) {
       scalar_data_char %=
           (lit("SCALARS ") << karma::string << lit(" char 1") << eol
                            << lit("LOOKUP_TABLE ") << karma::string << eol
@@ -284,6 +284,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
                            << *karma::big_dword)
           << eol;
 
+      // NOLINTNEXTLINE
       if constexpr (sizeof(long) == 8) {
         scalar_data_long %=
             (lit("SCALARS ")
@@ -516,4 +517,59 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
     throw base::LfException("Karma error");
   }
 }
+
+VtkWriter::VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
+                     dim_t codim)
+    : mesh_(std::move(mesh)), filename_(std::move(filename)), codim_(codim) {
+  auto dim_mesh = mesh_->DimMesh();
+  auto dim_world = mesh_->DimWorld();
+  LF_ASSERT_MSG(dim_world > 0 && dim_world <= 4,
+                "VtkWriter supports only dim_world = 1,2 or 3");
+  LF_ASSERT_MSG(codim >= 0 && codim < dim_mesh, "codim out of bounds.");
+
+  // insert nodes:
+  vtk_file_.unstructured_grid.points.resize(mesh_->Size(dim_mesh));
+  Eigen::Matrix<double, 0, 1> zero;
+  for (auto& p : mesh_->Entities(dim_mesh)) {
+    auto index = mesh_->Index(p);
+    Eigen::Vector3f coord;
+    if (dim_world == 1) {
+      coord(0) = p.Geometry()->Global(zero)(0);
+      coord(1) = 0.f;
+      coord(2) = 0.f;
+    } else if (dim_world == 2) {
+      coord.topRows<2>() = p.Geometry()->Global(zero).cast<float>();
+      coord(2) = 0.f;
+    } else {
+      coord = p.Geometry()->Global(zero).cast<float>();
+    }
+
+    vtk_file_.unstructured_grid.points[index] = std::move(coord);
+  }
+
+  // insert elements:
+  vtk_file_.unstructured_grid.cells.resize(mesh_->Size(codim));
+  vtk_file_.unstructured_grid.cell_types.resize(mesh_->Size(codim));
+  for (auto& e : mesh_->Entities(codim)) {
+    auto index = mesh_->Index(e);
+    auto ref_el = e.RefEl();
+    auto& node_indices = vtk_file_.unstructured_grid.cells[index];
+    node_indices.reserve(ref_el.NumNodes());
+    for (auto& p : e.SubEntities(dim_mesh - codim)) {
+      node_indices.push_back(mesh_->Index(p));
+    }
+
+    if (ref_el == base::RefEl::kSegment()) {
+      vtk_file_.unstructured_grid.cell_types[index] =
+          VtkFile::CellType::VTK_LINE;
+    } else if (ref_el == base::RefEl::kTria()) {
+      vtk_file_.unstructured_grid.cell_types[index] =
+          VtkFile::CellType::VTK_TRIANGLE;
+    } else if (ref_el == base::RefEl::kQuad()) {
+      vtk_file_.unstructured_grid.cell_types[index] =
+          VtkFile::CellType::VTK_QUAD;
+    }
+  }
+}
+
 }  // namespace lf::io

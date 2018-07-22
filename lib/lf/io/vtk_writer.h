@@ -10,14 +10,24 @@
 #ifndef __3e48c7b32a034cb3be3dbca884ff4f6c
 #define __3e48c7b32a034cb3be3dbca884ff4f6c
 
+#include <lf/mesh/mesh.h>
 #include <Eigen/Eigen>
 #include <boost/variant/variant.hpp>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
 namespace lf::io {
 
+/**
+ * @brief Representation of a VTK file (only relevant) features (advanced usage)
+ *
+ * This class can be written to a *.vtk file through the method WriteToFile().
+ * The VtkWriter uses this class internally, it is not intended for direct
+ * usage by the normal user but it can be useful if a special kind of
+ * VtkFile should be written.
+ */
 class VtkFile {
  public:
   using size_type = unsigned int;
@@ -61,10 +71,10 @@ class VtkFile {
     std::string name;
     std::vector<T> data;
 
-    FieldDataArray() {}
+    FieldDataArray() = default;
 
     explicit FieldDataArray(std::string name, std::vector<T> data)
-        : name(name), data(data) {}
+        : name(std::move(name)), data(std::move(data)) {}
   };
 
   /// Represents one set of attribute data (can be attached to points or cells)
@@ -75,11 +85,13 @@ class VtkFile {
     std::vector<T> data;
     std::string lookup_table = "default";
 
-    ScalarData() {}
+    ScalarData() = default;
 
     explicit ScalarData(std::string data_name, std::vector<T> data,
                         std::string lookup_table = "default")
-        : name(data_name), data(std::move(data)), lookup_table(lookup_table) {}
+        : name(std::move(data_name)),
+          data(std::move(data)),
+          lookup_table(std::move(lookup_table)) {}
   };
 
   template <class T>
@@ -88,11 +100,11 @@ class VtkFile {
     std::string name;
     std::vector<Eigen::Matrix<T, 3, 1>> data;
 
-    VectorData() {}
+    VectorData() = default;
 
     explicit VectorData(std::string name,
                         std::vector<Eigen::Matrix<T, 3, 1>> data)
-        : name(name), data(data) {}
+        : name(std::move(name)), data(std::move(data)) {}
   };
 
   // WARNING: the type long is interepreted differently depending on the
@@ -128,6 +140,54 @@ class VtkFile {
 };
 
 void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
+
+class VtkWriter {
+ public:
+  using dim_t = base::dim_t;
+
+  VtkWriter(const VtkWriter&) = delete;
+  VtkWriter(VtkWriter&&) = delete;
+  VtkWriter& operator=(const VtkWriter&) = delete;
+  VtkWriter& operator=(VtkWriter&&) = delete;
+
+  /**
+   * @brief Construct a new VtkWriter.
+   * @param mesh The underlying mesh that should be written into the VtkFile.
+   * @param filename The filename of the Vtk File
+   * @param codim (Optional) the codimension of the cells, default is 0, i.e.
+   *              the codim=0 entities of the mesh are written into the vtk
+   *              files and data can be attached to these entities.
+   *              If you set `codim=1`, the sekelton (only codim=1 entities)
+   *              will be written into the vtk file and you can visualize data
+   *              on the skeleton
+   */
+  VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
+            dim_t codim = 0);
+
+  /**
+   * @brief Determines whether the Vtk file is written in binary or ASCII mode
+   *        (default).
+   * @param binary  true if binary mode should be used, otherwise false
+   */
+  void setBinary(bool binary) {
+    if (binary) {
+      vtk_file_.format = VtkFile::Format::BINARY;
+    } else {
+      vtk_file_.format = VtkFile::Format::ASCII;
+    }
+  }
+
+  /**
+   * @brief Destructor, writes everything into the file and closes it.
+   */
+  ~VtkWriter() { WriteToFile(vtk_file_, filename_); }
+
+ private:
+  std::shared_ptr<mesh::Mesh> mesh_;
+  VtkFile vtk_file_;
+  std::string filename_;
+  dim_t codim_;
+};
 
 }  // namespace lf::io
 

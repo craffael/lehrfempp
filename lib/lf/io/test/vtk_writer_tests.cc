@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
+#include <lf/io/test_utils/read_mesh.h>
 
 namespace lf::io::test {
 
@@ -73,7 +74,7 @@ TEST(lf_io_VtkWriter, writeVtkFile) {
   WriteToFile(vtk_file, "all_features_binary.vtk");
 }
 
-TEST(lf_io_VtkWriter, onlyMesh) {
+TEST(lf_io_VtkWriter, writeOnlyMesh) {
   VtkFile vtk_file;
   vtk_file.header = "this is my test header :)";
   vtk_file.format = VtkFile::Format::ASCII;
@@ -87,6 +88,20 @@ TEST(lf_io_VtkWriter, onlyMesh) {
 
   vtk_file.format = VtkFile::Format::BINARY;
   WriteToFile(vtk_file, "only_mesh_binary.vtk");
+}
+
+// TEST(lf_io_VtkWriter, twoElementMeshCodim0) {
+//   auto reader = test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
+//
+//   // write mesh:
+//   VtkWriter writer(reader.mesh(), "two_element.vtk");
+// }
+
+TEST(lf_io_VtkWriter, twoElementMeshCodim1) {
+  auto reader = test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
+
+  // write mesh:
+  VtkWriter writer(reader.mesh(), "two_element_1d.vtk", 1);
 }
 
 }  // namespace lf::io::test
