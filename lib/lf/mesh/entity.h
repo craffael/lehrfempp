@@ -3,7 +3,7 @@
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
 #include <lf/base/static_vars.h>
-#include "lf/mesh/utils/print_info.h"
+//#include "lf/mesh/utils/print_info.h"
 
 
 namespace lf::mesh {
@@ -80,24 +80,20 @@ class Entity {
 
 }; // class entity
 
+inline std::ostream& operator<<(std::ostream& stream, const Entity& entity){
+    stream << "entity object";
+}
 
 /*
 inline std::ostream& operator<<(std::ostream& stream, const Entity& entity) {
-
-    //stream << "Hei" << std::endl;
-
     //PrintInfo(entity, stream);
-
-
     if (Entity::output_ctrl_ == 0){
         return stream << entity.ToString();
     } else {
         PrintInfo(entity, stream);
     }
-
 }
 */
-
 
 }  // namespace lf::mesh
 

@@ -3,20 +3,15 @@
  */
 
 #include <iostream>
-
-#include "lf/mesh/hybrid2d/entity.h"
-#include "lf/mesh/hybrid2dp/triangle.h"
-#include "lf/mesh/mesh_factory.h"
-#include "lf/mesh/entity.h"
-#include "lf/base/base.h"
-#include "lf/mesh/tp_triag_mesh_builder.h"
+//#include "lf/base/base.h"
+#include "lf/mesh/mesh.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
+#include "lf/mesh/hybrid2dp/hybrid2dp.h"
+#include "lf/mesh/utils/utils.h"
+#include "lf/mesh/utils/print_info.h"
 
 /*
 #include <gtest/gtest.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
-#include <lf/mesh/mesh.h>
-#include <lf/mesh/utils/utils.h>
 #include <Eigen/Eigen>
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
@@ -31,8 +26,30 @@ int main() {
   // - mesh/hybrid2d/test
   // - mesh/hybrid2dp/test
 
-  lf::mesh::hybrid2d::MeshFactory test(2); // Working, but not entity
-  // Need to add nodes and entity, AddPoint, AddEntity
+
+  // Entities -------------------------------
+  lf::mesh::hybrid2d::Entity<2> entity_2;
+  lf::mesh::hybrid2d::Entity<1> entity_1;
+  lf::mesh::hybrid2d::Entity<0> entity_0;
+
+  std::cout << entity_2 << std::endl;
+  std::cout << entity_2.RefEl() << std::endl; // kPoint
+  std::cout << std::endl;
+
+  std::cout << entity_0 << std::endl;
+  std::cout << entity_0.RefEl() << std::endl; // kQuad
+  std::cout << std::endl;
+
+  std::cout << entity_1 << std::endl;
+  std::cout << entity_1.RefEl() << std::endl; // kSegment
+
+  writeTikZ(entity_2, "tikztest.txt");
+
+
+
+
+  // Test ----------------------------------
+  lf::mesh::hybrid2d::MeshFactory test(2); // MeshFactory object
 
   // add nodes
   test.AddPoint(Eigen::Vector2d(0,0));
@@ -55,7 +72,17 @@ int main() {
   // build the mesh
   auto mesh = test.Build();
 
-  std::cout << mesh.DimWorld() << std::endl;
+  int dim_mesh = test.DimWorld();
+  int dim_world = test.DimWorld();
+
+  // test is MeshFactory object
+  std::cout << test << std::endl;
+  std::cout << "Dim of mesh: " << dim_mesh << std::endl;
+  std::cout << "Dim world: " << dim_world << std::endl;
+
+
+  //PrintInfoMesh(mesh, std::cout);
+
 
 
   return 0L;

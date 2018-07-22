@@ -11,7 +11,7 @@
 namespace lf::mesh::utils {
 
 
-void PrintInfo(const Mesh &mesh, std::ostream &o) {
+void PrintInfoMesh(const Mesh &mesh, std::ostream &o) {
   using dim_t = Mesh::dim_t;
   using size_type = Mesh::size_type;
 

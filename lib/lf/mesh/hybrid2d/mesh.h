@@ -65,6 +65,11 @@ class Mesh : public mesh::Mesh {
   friend class MeshFactory;
 };
 
+
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
+    stream << "mesh object" << std::endl;
+}
+
 }  // namespace lf::mesh::hybrid2d
 
 #endif  // __b43a044f002e459b8060206d5193d7ec
