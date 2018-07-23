@@ -59,6 +59,8 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
   }    // end loop over co-dimensions
 }
 
+
+
 /*
 // Print function for Entity object
 void PrintInfo(const lf::mesh::Entity&, std::ostream& stream){

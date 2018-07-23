@@ -55,7 +55,7 @@ class MeshFactory : public mesh::MeshFactory {
 
 
 inline std::ostream& operator<<(std::ostream& stream, const MeshFactory& mesh_factory){
-    stream << "mesh factory object" << std::endl;
+    stream << "mesh factory object";
 }
 
 }  // namespace lf::mesh::hybrid2d

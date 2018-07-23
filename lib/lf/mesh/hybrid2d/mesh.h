@@ -67,7 +67,7 @@ class Mesh : public mesh::Mesh {
 
 
 inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
-    stream << "mesh object" << std::endl;
+    stream << "mesh object";
 }
 
 }  // namespace lf::mesh::hybrid2d
