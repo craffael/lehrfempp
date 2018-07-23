@@ -69,6 +69,12 @@ class MeshFactory : public mesh::MeshFactory {
   static int output_ctrl_;
 };
 
+
+inline std::ostream& operator<<(std::ostream& stream, const MeshFactory& mesh_factory){
+    stream << "mesh factory object";
+}
+
+
 }  // namespace lf::mesh::hybrid2dp
 
 #endif  // __e98a803fac5b430a8ff634ceb2f809aX

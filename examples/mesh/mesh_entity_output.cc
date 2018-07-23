@@ -26,8 +26,12 @@ int main() {
   // - mesh/hybrid2d/test
   // - mesh/hybrid2dp/test
 
+  // Don't use hybrid2d!
+
 
   // Entities -------------------------------
+
+  // !!! Do not use hybrid2d
   lf::mesh::hybrid2d::Entity<2> entity_2;
   lf::mesh::hybrid2d::Entity<1> entity_1;
   lf::mesh::hybrid2d::Entity<0> entity_0;
@@ -42,14 +46,16 @@ int main() {
 
   std::cout << entity_1 << std::endl;
   std::cout << entity_1.RefEl() << std::endl; // kSegment
+  // !!!
 
-  //lf::mesh::utils::writeTikZ(entity_2, "tikztest.txt");
+  lf::mesh::utils::writeTikZ(entity_2, "tikztest.txt");
+  // file is saved in /Build/examples/mesh/
 
 
 
 
   // Test ----------------------------------
-  lf::mesh::hybrid2d::MeshFactory test(2); // MeshFactory object
+  lf::mesh::hybrid2dp::MeshFactory test(2); // MeshFactory object
 
   // add nodes
   test.AddPoint(Eigen::Vector2d(0,0));
@@ -72,22 +78,23 @@ int main() {
   // build the mesh
   auto mesh = test.Build();
 
-  int dim_mesh = test.DimWorld();
+  int dim_mesh_MeshFactory = test.DimWorld();
   int dim_mesh_Mesh = mesh->DimWorld();
 
   // test is MeshFactory object
-  std::cout << test << std::endl;
-  std::cout << "Dim of MeshFactory mesh: " << dim_mesh << std::endl;
+  std::cout << "\n" << test << std::endl;
+  std::cout << "Dim of MeshFactory mesh: " << dim_mesh_MeshFactory << std::endl;
 
   // mesh is Mesh object
-  std::cout << mesh << std::endl;
+  std::cout << "\n" << mesh << std::endl;
   std::cout << "Dim of Mesh mesh: " << dim_mesh_Mesh << std::endl;
 
 
 
-  //lf::mesh::utils::PrintInfo(mesh, std::cout);
-
+  lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints
+  lf::mesh::utils::PrintInfo(entity_2, std::cout); // Prints
 
 
   return 0L;
+
 }

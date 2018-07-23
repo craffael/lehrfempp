@@ -83,6 +83,11 @@ class Mesh : public mesh::Mesh {
   static int output_ctrl_;
 };
 
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
+    //stream << "mesh object";
+    //lf::mesh::utils::PrintInfo(mesh, stream);
+}
+
 }  // namespace lf::mesh::hybrid2dp
 
 #endif  // __62731052ee4a4a2d9f256c2caac43835
