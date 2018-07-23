@@ -10,5 +10,6 @@
 #define __22f8165024874bb58675c694b54c52b5
 
 #include "gmsh_reader.h"
+#include "vtk_writer.h"
 
 #endif  // __22f8165024874bb58675c694b54c52b5
