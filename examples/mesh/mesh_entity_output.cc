@@ -31,24 +31,14 @@ int main() {
 
   // Entities -------------------------------
 
-  // !!! Do not use hybrid2d
-  lf::mesh::hybrid2d::Entity<2> entity_2;
-  lf::mesh::hybrid2d::Entity<1> entity_1;
-  lf::mesh::hybrid2d::Entity<0> entity_0;
+  std::cout << lf::mesh::hybrid2dp::Point().RefEl() << std::endl;
+  lf::mesh::hybrid2dp::Segment();
+  lf::mesh::hybrid2dp::Triangle();
+  lf::mesh::hybrid2dp::Quadrilateral();
 
-  std::cout << entity_2 << std::endl;
-  std::cout << entity_2.RefEl() << std::endl; // kPoint
-  std::cout << std::endl;
 
-  std::cout << entity_0 << std::endl;
-  std::cout << entity_0.RefEl() << std::endl; // kQuad
-  std::cout << std::endl;
 
-  std::cout << entity_1 << std::endl;
-  std::cout << entity_1.RefEl() << std::endl; // kSegment
-  // !!!
-
-  lf::mesh::utils::writeTikZ(entity_2, "tikztest.txt");
+  //lf::mesh::utils::writeTikZ(entity, "tikztest.txt");
   // file is saved in /Build/examples/mesh/
 
 
@@ -86,13 +76,13 @@ int main() {
   std::cout << "Dim of MeshFactory mesh: " << dim_mesh_MeshFactory << std::endl;
 
   // mesh is Mesh object
-  std::cout << "\n" << mesh << std::endl;
+  std::cout << "\n" << mesh << std::endl; // Use PrintInfo
   std::cout << "Dim of Mesh mesh: " << dim_mesh_Mesh << std::endl;
 
 
 
   lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints
-  lf::mesh::utils::PrintInfo(entity_2, std::cout); // Prints
+  //lf::mesh::utils::PrintInfo(entity, std::cout); // Prints
 
 
   return 0L;
