@@ -26,7 +26,7 @@ namespace lf::mesh::utils {
 //Declare
 //void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename);
 
-void writeTikZ(const lf::mesh::Entity &e, std::string filename);
+//void writeTikZ(const lf::mesh::Entity &e, std::string filename);
 
 
 

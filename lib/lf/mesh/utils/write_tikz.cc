@@ -12,6 +12,7 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename){
 }
 */
 
+/*
 void writeTikZ(const lf::mesh::Entity &e, std::string filename){
     std::ofstream outfile(filename);
 
@@ -27,7 +28,7 @@ void writeTikZ(const lf::mesh::Entity &e, std::string filename){
     }
     filename << "\\end{tikzpicture}"
 }
-
+*/
 
 
 

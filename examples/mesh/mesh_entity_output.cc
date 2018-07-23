@@ -43,7 +43,7 @@ int main() {
   std::cout << entity_1 << std::endl;
   std::cout << entity_1.RefEl() << std::endl; // kSegment
 
-  writeTikZ(entity_2, "tikztest.txt");
+  //lf::mesh::utils::writeTikZ(entity_2, "tikztest.txt");
 
 
 
@@ -73,15 +73,19 @@ int main() {
   auto mesh = test.Build();
 
   int dim_mesh = test.DimWorld();
-  int dim_world = test.DimWorld();
+  int dim_mesh_Mesh = mesh->DimWorld();
 
   // test is MeshFactory object
   std::cout << test << std::endl;
-  std::cout << "Dim of mesh: " << dim_mesh << std::endl;
-  std::cout << "Dim world: " << dim_world << std::endl;
+  std::cout << "Dim of MeshFactory mesh: " << dim_mesh << std::endl;
+
+  // mesh is Mesh object
+  std::cout << mesh << std::endl;
+  std::cout << "Dim of Mesh mesh: " << dim_mesh_Mesh << std::endl;
 
 
-  //PrintInfoMesh(mesh, std::cout);
+
+  //lf::mesh::utils::PrintInfo(mesh, std::cout);
 
 
 

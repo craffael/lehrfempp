@@ -86,11 +86,11 @@ inline std::ostream& operator<<(std::ostream& stream, const Entity& entity){
 
 /*
 inline std::ostream& operator<<(std::ostream& stream, const Entity& entity) {
-    //PrintInfo(entity, stream);
+    //utils::PrintInfo(entity, stream);
     if (Entity::output_ctrl_ == 0){
-        return stream << entity.ToString();
+        return stream << entity.RefEl();
     } else {
-        PrintInfo(entity, stream);
+        utils::PrintInfo(entity, stream);
     }
 }
 */
