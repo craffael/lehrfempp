@@ -3,7 +3,7 @@
  */
 
 #include "refutils.h"
-
+#include "lf/mesh/utils/utils.h"
 #include <fstream>
 
 namespace lf::refinement {
@@ -74,8 +74,21 @@ namespace lf::refinement {
     
 
   void WriteMatlab(const MeshHierarchy &hier_mesh,
-		   std::string filename) {
-
+		   std::string basename) {
+    const size_type n_levels = hier_mesh.numLevels();
+    for (int level = 0; level < n_levels; level++) {
+      // prepare filename
+      std::stringstream level_asc; level_asc << level;
+      std::string filebase = basename + "_L" + level_asc.str();
+      // Fetch mesh on the current level
+      const lf::mesh::Mesh &mesh(hier_mesh.getMesh(level));
+      // Output of mesh data
+      lf::mesh::utils::writeMatlab(mesh,filebase + ".m");
+      if (level > 0) {
+	// Output of parent information
+	WriteMatlabLevel(hier_mesh,level,filebase + "_pi.m");
+      }
     }
+  }
   
   } // end namespace

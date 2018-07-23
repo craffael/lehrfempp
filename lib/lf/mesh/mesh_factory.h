@@ -103,8 +103,8 @@ class MeshFactory {
    * @brief Construct a mesh out of the specified nodes and elements.
    * @return The created mesh.
    *
-   * @note After calling Build() you are not allowed to call AddPoint or
-   *       AddEntity() anymore.
+   * @note All data supplied to the MeshFactory will be cleared after
+   *       a mesh has been built successfully.
    */
   virtual std::shared_ptr<Mesh> Build() = 0;
 

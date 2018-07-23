@@ -51,13 +51,17 @@ plot(x,y,'r*');
 num_edges = size(EDS,1);
 for k=1:num_edges
     ed = [x(EDS(k,1)) x(EDS(k,2)) ; y(EDS(k,1)) y(EDS(k,2))];
-    plot( ed(1,:), ed(2,:),'b-');
+    dir = ed(:,2) - ed(:,1);
+    quiver(ed(1,1),ed(2,1),dir(1),dir(2),'b-');
+    %    plot( ed(1,:), ed(2,:),'b-');
     baryc = sum(ed,2)/2;
     if (isfield(opts,'numbers'))
-        text(baryc(1),baryc(2),sprintf('%2i',k-1),'color','k','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('%2i',k-1),...
+             'fontsize',8,'color','k','horizontalalignment','center');
     end
     if (parplot)
-        text(baryc(1),baryc(2),sprintf('P=%2i',EDPAR(k,1)),'color','k','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('P=%2i',EDPAR(k,1)),...
+             'fontsize',8,'color','k','horizontalalignment','center');
     end        
 end
 
@@ -72,13 +76,16 @@ for  k=1:num_tri
     shrunk_tri = [shrunk_tri,shrunk_tri(:,1)];
     plot(shrunk_tri(1,:),shrunk_tri(2,:),'g-');
     if (isfield(opts,'numbers'))
-        text(baryc(1),baryc(2),sprintf('%2i',TRI(k,4)),'color','g','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('%2i',TRI(k,4)),...
+             'fontsize',8,'color','g','horizontalalignment','center');
     end
     if (parplot)
-        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(TRI(k,4)+1,1)),'color','g','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(TRI(k,4)+1,1)),...
+             'fontsize',8,'color','g','horizontalalignment','center');
     end        
     str = {'0','1','2'};
-    text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,'color','k','fontsize',6,'horizontalalignment','center');
+    text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,...
+         'fontsize',8,'color','k','fontsize',6,'horizontalalignment','center');
 end
 
 % Plot quads
@@ -92,9 +99,11 @@ for  k=1:num_quad
     shrunk_quad = [shrunk_quad,shrunk_quad(:,1)];
     plot(shrunk_quad(1,:),shrunk_quad(2,:),'m-');
     if (isfield(opts,'numbers'))
-        text(baryc(1),baryc(2),sprintf('%2i',QUAD(k,5)),'color','m','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('%2i',QUAD(k,5)),...
+             'fontsize',8,'color','m','horizontalalignment','center');
     end
     if (parplot)
-        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(QUAD(k,5)+1,1)),'color','m','horizontalalignment','center');
+        text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(QUAD(k,5)+1,1)),...
+             'fontsize',8,'color','m','horizontalalignment','center');
     end
 end

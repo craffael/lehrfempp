@@ -8,10 +8,19 @@
 
 namespace lf::refinement {
 
+  // Debuggin function: check validity of index vectors
+  bool checkValidIndex(std::vector<glb_idx_t> &idx_vec) {
+    const size_type n_idx = idx_vec.size();
+    for (int n=0; n < n_idx; n++) {
+      if (idx_vec[n] == idx_nil) return false;
+    }
+    return true;
+  }
+
+  
   CONTROLDECLARECOMMENT(MeshHierarchy, output_ctrl_, "MeshHierarchy_output_ctrl",
 			"Diagnostics control for MeshHierarchy");
-  
-  
+
   // Implementation of MeshHierarchy
   MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,
 			       mesh::MeshFactory &mesh_factory)
@@ -325,6 +334,9 @@ namespace lf::refinement {
   } // end RefineMarked
 
   void MeshHierarchy::PerformRefinement(void) {
+    if (output_ctrl_ > 10) {
+      std::cout << "Entering MeshHierarchy::PerformRefinement" << std::endl;
+    }
     // This function expects that the refinement patterns  stored in the
     // vectors point_child_infos_, edge_child_infos_ and cell_child_infos_
     // have been initialized consistently for the finest mesh.
@@ -339,6 +351,7 @@ namespace lf::refinement {
     // Store child indices in an auxiliary array
     {
       std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
+      size_type new_node_cnt = 0;
       const Hybrid2DRefinementPattern rp_copy_node(lf::base::RefEl::kPoint(),RefPat::rp_copy);
       for (const mesh::Entity &node : parent_mesh.Entities(2)) {
 	// Obtain index of node in coarse mesh
@@ -354,13 +367,18 @@ namespace lf::refinement {
 			"A point can only have one chile");
 	  pt_child_info[node_index].child_point_idx_
 	    = mesh_factory_.AddPoint(std::move(pt_child_geo_ptrs[0]));
+	  new_node_cnt++;
 	}
       } // end loop over nodes 
-
+      if (output_ctrl_ > 10) {
+	std::cout << new_node_cnt << " new nodes added" << std::endl;
+      }
+      
       // Now traverse the edges. Depending on the refinement pattern,
       // either copy them or split them.
       // Supplement the refinement information for edges accordingly.
       std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
+      size_type new_edge_cnt = 0;
       for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
 	// Fetch global index of edge
 	lf::base::glb_idx_t edge_index = parent_mesh.Index(edge);
@@ -388,6 +406,10 @@ namespace lf::refinement {
 	    ed_copy(edge.Geometry()->ChildGeometry(rp, 0));
 	  LF_VERIFY_MSG(ed_copy.size() == 1, "Copy may create only a single child!");
 	  // Register the new edge
+	  if (output_ctrl_ > 50) {
+	    std::cout << "Copy edge " << edge_index << " new edge ["
+		      << ed_p0_fine_idx <<  "," << ed_p1_fine_idx << "] " << std::endl;
+	  }
 	  edge_ci.child_edge_idx_.push_back
 	    (mesh_factory_.AddEntity
 	     (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
@@ -415,6 +437,11 @@ namespace lf::refinement {
 	  // Register the two new edges
 	  // CAREFUL: Assignment of endpoints has to match implementation in
 	  // refinement.cc
+	  if (output_ctrl_ > 50) {
+	    std::cout << "Split Edge " << edge_index << " new edges ["
+		      << ed_p0_fine_idx << "," << midpoint_fine_idx << "], ["
+		      << midpoint_fine_idx << "," << ed_p1_fine_idx << "] " << std::endl;
+	  }
 	  edge_ci.child_edge_idx_.push_back
 	    (mesh_factory_.AddEntity
 	     (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
@@ -430,11 +457,18 @@ namespace lf::refinement {
 	  break;
 	}
 	}    // end switch refpat
+	new_edge_cnt++;
       }      // end edge loop
 
+      if (output_ctrl_ > 10) {
+	std::cout << new_edge_cnt << " edges added " << std::endl;
+      }
+      
       // Visit all cells, examine their refinement patterns, retrieve indices of
       // their sub-entities, and those of the children.
       std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
+      LF_VERIFY_MSG(cell_child_info.size() == parent_mesh.Size(0),
+		    "Size mismatch for cell_child_info");
       for(const mesh::Entity &cell : parent_mesh.Entities(0)) {
 	// type of cell
 	const lf::base::RefEl ref_el(cell.RefEl());
@@ -442,7 +476,26 @@ namespace lf::refinement {
 	const lf::base::size_type num_vertices = ref_el.NumSubEntities(2);
 	// fetch index of current cell
 	const lf::base::glb_idx_t cell_index(parent_mesh.Index(cell));
-    
+
+	// Set up refinement object -> variable rp
+	CellChildInfo &cell_ci(cell_child_info[cell_index]);
+	const RefPat cell_refpat(cell_ci.ref_pat_);
+	const sub_idx_t anchor = cell_ci.anchor_; // anchor edge index
+
+	if (output_ctrl_ > 50) {
+	  std::cout << "Cell " << cell_index << " = " << ref_el.ToString()
+		    << ", refpat = " << (int)cell_refpat << ", anchor = " << anchor << std::endl;
+	}
+	
+	Hybrid2DRefinementPattern rp(cell.RefEl(),cell_refpat,anchor);
+
+	
+	// Index offsets for refinement patterns requiring an ancchor edge
+	std::array<sub_idx_t,4> mod;
+	if (anchor != idx_nil) {
+	  for (int k =0; k < num_vertices; k++) mod[k] = (k + anchor) % num_vertices;
+	}
+
 	// Obtain indices of subentities (co-dimension = outer array index)
 	std::array<std::vector<lf::base::glb_idx_t>,3> cell_subent_idx;
 	cell_subent_idx[0].push_back(cell_index);
@@ -454,6 +507,14 @@ namespace lf::refinement {
 	  LF_VERIFY_MSG(cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
 			ref_el.ToString() << ": only " << cell_subent_idx[codim].size()
 			<< " subents of codim = " << codim);
+	  if (output_ctrl_ > 50) {
+	    std::cout << " Subent(" << codim << ") = [" << std::flush;
+	    for  (int j=0; j < cell_subent_idx[codim].size(); j++) {
+	      std::cout << cell_subent_idx[codim][j] << "," << std::flush;
+	    }
+	    std::cout << "], " << std::flush;
+	  }
+	  std::cout << std::endl;
 	}
 	// Index information for sub-entities with respect  to fine mesh
 	// Retrieve indices of vertices of cell on the fine mesh
@@ -463,6 +524,15 @@ namespace lf::refinement {
 			"Vertex must have been copied!");
 	  vertex_child_idx[vt_lidx] = pt_child_info[cell_subent_idx[2][vt_lidx]].child_point_idx_;
 	}
+
+	if (output_ctrl_ > 50) {
+	  std::cout << ", vt_child_idx = [" << std::flush;
+	  for  (int j=0; j < num_vertices; j++) {
+	    std::cout << vertex_child_idx[j] << "," << std::flush;
+	  }
+	  std::cout << "], " << std::flush;
+	}
+
 	// Retrieve indices of midpoints of edges, if they exist
 	std::array<lf::base::glb_idx_t,4> edge_midpoint_idx({idx_nil,idx_nil,idx_nil,idx_nil});
 	for (lf::base::sub_idx_t ed_lidx = 0; ed_lidx < num_edges; ed_lidx++) {
@@ -474,16 +544,12 @@ namespace lf::refinement {
 	  }
 	} // end loop over local edges
 
-	// Set up refinement object -> v
-	CellChildInfo &cell_ci(cell_child_info[cell_index]);
-	const RefPat cell_refpat(cell_ci.ref_pat_);
-	const sub_idx_t anchor = cell_ci.anchor_; // anchor edge index
-	Hybrid2DRefinementPattern rp(cell.RefEl(),cell_refpat,anchor);
-
-	// Index offsets for refinement patterns requiring an ancchor edge
-	std::array<sub_idx_t,4> mod;
-	if (anchor != idx_nil) {
-	  for (int k =0; k < num_vertices; k++) mod[k] = (k + anchor) % num_vertices;
+	if (output_ctrl_ > 50) {
+	  std::cout << ", ed_mp_idx = [" << std::flush;
+	  for  (int j=0; j < num_edges; j++) {
+	    std::cout << edge_midpoint_idx[j] << "," << std::flush;
+	  }
+	  std::cout << "], " << std::endl;
 	}
 
 	// Array of node indices (w.r.t. fine mesh) for sub-cells (triangles or quadrilaterals)
@@ -516,12 +582,16 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -539,17 +609,23 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
-	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -572,17 +648,23 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -604,22 +686,30 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -653,32 +743,44 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[0];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[0];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[1];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[0];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[1];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[1];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[2];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[1];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[2];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[2];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[0];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[2];
 	    tria_ccn_tmp[2] = center_fine_idx;
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = vertex_child_idx[0];
@@ -712,22 +814,30 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[0];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[0];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[2];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[1];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[0];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[1];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[2];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[2];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[1];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = edge_midpoint_idx[0];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[1];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[2];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // Child edges (interior edges)
 	    cen_tmp[0] = edge_midpoint_idx[0];
@@ -773,17 +883,23 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[1] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[1] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[1] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[2]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -805,22 +921,30 @@ namespace lf::refinement {
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = vertex_child_idx[mod[3]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[0]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[0]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
 	    tria_ccn_tmp[1] = vertex_child_idx[mod[3]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
 	    tria_ccn_tmp[2] = vertex_child_idx[mod[3]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = vertex_child_idx[mod[3]];
@@ -846,13 +970,17 @@ namespace lf::refinement {
 	    quad_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    quad_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
 	    quad_ccn_tmp[3] = vertex_child_idx[mod[3]];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    quad_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    quad_ccn_tmp[1] = vertex_child_idx[mod[2]];
 	    quad_ccn_tmp[2] = edge_midpoint_idx[mod[2]];
 	    quad_ccn_tmp[3] = edge_midpoint_idx[mod[0]];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -868,22 +996,30 @@ namespace lf::refinement {
 	    quad_ccn_tmp[1] = vertex_child_idx[mod[3]];
 	    quad_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
 	    quad_ccn_tmp[3] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[1]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
 	    tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
 	    tria_ccn_tmp[2] = edge_midpoint_idx[mod[3]];
-	    child_cell_nodes.push_back(tria_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(tria_ccn_tmp);;
 
 	    // edges
 	    cen_tmp[0] = edge_midpoint_idx[mod[3]];
@@ -917,25 +1053,33 @@ namespace lf::refinement {
 	    quad_ccn_tmp[1] = edge_midpoint_idx[0];
 	    quad_ccn_tmp[2] = center_fine_idx;
 	    quad_ccn_tmp[3] = edge_midpoint_idx[3];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    quad_ccn_tmp[0] = vertex_child_idx[1];
 	    quad_ccn_tmp[1] = edge_midpoint_idx[1];
 	    quad_ccn_tmp[2] = center_fine_idx;
 	    quad_ccn_tmp[3] = edge_midpoint_idx[0];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    quad_ccn_tmp[0] = vertex_child_idx[2];
 	    quad_ccn_tmp[1] = edge_midpoint_idx[1];
 	    quad_ccn_tmp[2] = center_fine_idx;
 	    quad_ccn_tmp[3] = edge_midpoint_idx[2];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    quad_ccn_tmp[0] = vertex_child_idx[3];
 	    quad_ccn_tmp[1] = edge_midpoint_idx[2];
 	    quad_ccn_tmp[2] = center_fine_idx;
 	    quad_ccn_tmp[3] = edge_midpoint_idx[3];
-	    child_cell_nodes.push_back(quad_ccn_tmp);
+	    LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
+			  "refpat = " << (int)cell_refpat << ": illegal index");
+	    child_cell_nodes.push_back(quad_ccn_tmp);;
 
 	    // set node indices of the four new interior edges
 	    cen_tmp[0] = edge_midpoint_idx[0];
@@ -973,6 +1117,11 @@ namespace lf::refinement {
 			"num_new_edges = " << num_new_edges << " <-> " << rp.noChildren(1));
 	  for (int k = 0; k < num_new_edges; k++) {
 	    const std::array<glb_idx_t,2> &cen(child_edge_nodes[k]);
+	    if (output_ctrl_ > 50) {
+	      std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
+			<< ": new edge " << k << "[" << cen[0] << "," << cen[1] << "]" << std::endl;
+	    }
+	    
 	    const glb_idx_t new_edge_index =
 	      mesh_factory_.AddEntity(lf::base::RefEl::kSegment(),{cen[0],cen[1]},
 				      std::move(cell_edge_geo_ptrs[k]));
@@ -991,12 +1140,22 @@ namespace lf::refinement {
 	    glb_idx_t new_cell_index;
 	    if (ccn.size() == 3) {
 	      // New cell is a triangle
+	      if (output_ctrl_ > 50) {
+		std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
+			  << ": new triangle " << k << " [" << ccn[0] << "," << ccn[1]
+			  << "," << ccn[2] << "]" << std::endl;
+	      }
 	      new_cell_index =
 		mesh_factory_.AddEntity(lf::base::RefEl::kTria(),{ccn[0],ccn[1],ccn[2]},
 					std::move(childcell_geo_ptrs[k]));
 	    }
 	    else if (ccn.size() == 4) {
 	      // New cell is a quadrilateral
+	      if (output_ctrl_ > 50) {
+		std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
+			  << ": new quad " << k << " [" << ccn[0] << "," << ccn[1]
+			  << "," << ccn[2] << "," << ccn[3] << "]" << std::endl;
+	      }
 	      new_cell_index =
 		mesh_factory_.AddEntity(lf::base::RefEl::kQuad(),{ccn[0],ccn[1],ccn[2],ccn[3]},
 					std::move(childcell_geo_ptrs[k]));
@@ -1168,8 +1327,9 @@ namespace lf::refinement {
 	child_ref_edges[cell_index] = idx_nil;
 	// Refinement edge relevant for triangles onyl
 	if (fine_cell.RefEl() == lf::base::RefEl::kTria()) {
-	  CONTROLLEDSTATEMENT(output_ctrl_,100,
-			      std::cout << "Cell " << cell_index << ": " << std::flush;)
+	  if (output_ctrl_ > 100) {
+	    std::cout << "Cell " << cell_index << ": " << std::flush;
+	  }
 	  // pointer to cell whose refinement has created the current one
 	  const mesh::Entity *parent_ptr = cell_parent_info[cell_index].parent_ptr_;
 	  LF_VERIFY_MSG(parent_ptr != nullptr,

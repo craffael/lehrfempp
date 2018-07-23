@@ -68,20 +68,19 @@ MeshFactory::size_type MeshFactory::AddEntity(
                   "ref_el = segment but size of nodes was " << count);
     edges_.emplace_back(ns, std::move(geometry));
     return edges_.size() - 1;
-  }
+  } // end insertion of an edge
 
   // otherwise its an element:
   // LF_ASSERT_MSG(geometry, "Geometry is required for elements (codim=0)");
   std::array<size_type, 4> ns{};
   unsigned char count = 0;
   for (auto& n : nodes) {
-    LF_ASSERT_MSG(n < nodes_.size(),
-                  "node " << n
-                          << " specified in call to AddEntity must be "
-                             "inserted with AddNode() first.");
     LF_ASSERT_MSG(count < ref_el.NumNodes(),
                   "ref_el = " << ref_el << ", but nodes contains " << count + 1
                               << "node indices");
+    LF_ASSERT_MSG(n < nodes_.size(),
+                  " Node " << n << " for " << ref_el.ToString()
+		  <<"  must be inserted with AddNode() first.");
     ns[count] = n;
     ++count;
   }
@@ -104,12 +103,22 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
     PrintLists();
   }
 
+  // Obtain points to new mesh object; the actual construction of the
+  // mesh is done by the constructor of that object
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
       dim_world_, nodes_, std::move(edges_), std::move(elements_));
+
+  if (mesh_ptr != nullptr) {
+    // Clear all information supplied to the MeshFactory object
+    nodes_.clear();
+    edges_.clear();
+    elements_.clear();
+    built_ = false;    
+  }
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
-
+  
 // For diagnostic output
 void MeshFactory::PrintLists(std::ostream& o) const {
   o << "hybrid2dp::MeshFactory: Internal information" << std::endl;

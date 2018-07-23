@@ -10,17 +10,18 @@ namespace lf::refinement {
 
   std::ostream &operator << (std::ostream &o,const RefPat &refpat) {
     switch (refpat) {
-    rp_nil: { return o << "rp_NIL"; }
-    rp_copy: { return o << "rp_COPY"; }
-    rp_split: { return o << "rp_SPLIT"; }
-    rp_bisect: { return o << "rp_BISECT"; }
-    rp_trisect: { return o << "rp_TRISECT"; }
-    rp_trisect_left: { return o << "rp_TRISECT_LEFT"; }
-    rp_quadsect: { return o << "rp_QUADSECT"; }
-    rp_threeedge: { return o << "rp_THREEEDGE"; }
-    rp_regular: { return o << "rp_REGULAR"; }
-    rp_barycentric: { return o << "rp_BARYCENTRIC"; }
+    rp_nil: { o << "rp_NIL"; break; }
+    rp_copy: { o << "rp_COPY"; break; }
+    rp_split: { o << "rp_SPLIT"; break; }
+    rp_bisect: { o << "rp_BISECT"; break; }
+    rp_trisect: { o << "rp_TRISECT"; break; }
+    rp_trisect_left: { o << "rp_TRISECT_LEFT"; break; }
+    rp_quadsect: { o << "rp_QUADSECT"; break; }
+    rp_threeedge: { o << "rp_THREEEDGE"; break; }
+    rp_regular: { o << "rp_REGULAR"; break; }
+    rp_barycentric: { o << "rp_BARYCENTRIC"; break; }
     }
+    return o;
   }
 
   
@@ -385,7 +386,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
 
               child_coords.col(0) = lt_node_coords.col(mod_2);
               child_coords.col(1) = lt_midpoint_coords.col(mod_0);
-              child_coords.col(2) = lt_midpoint_coords.col(mod_2);
+              child_coords.col(2) = lt_midpoint_coords.col(mod_1);
               child_poly.push_back(child_coords);
               break;
             }
