@@ -81,6 +81,10 @@ using StaticVar = Track<int>;
   static int intvar = 0;                                      \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root)
+#define CONTROLDECLAREINFO(intvar, varname, info)	      \
+  static int intvar = 0;                                      \
+  static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
+                                             lf::base::ctrl_root, #info)
 
 #define CLASSCONTROLDECLARE(class, intvar, varname)                 \
   int class ::intvar = 0;                                           \
@@ -106,7 +110,7 @@ using StaticVar = Track<int>;
  * Commas inside strings are ok.
  */
 #define CONTROLLEDSTATEMENT(ctrlvar,level,statement) \
-  if ((ctrlvar) < (level)) { statement ; }
+  if ((ctrlvar) >= (level)) { statement ; }
   
 namespace lf::base {
 

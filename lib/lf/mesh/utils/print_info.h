@@ -14,6 +14,16 @@
 
 namespace lf::mesh::utils {
 
+  /**
+   * @brief output control variable for mesh output
+   *
+   * - > 10: also output entity information
+   * - > 90: also output subentity information
+   *
+   * @note: this static variable is intialized to the value 100
+   */   
+  extern int printinfo_ctrl;
+  
 /**
  * @brief diagnostic output operator
  */

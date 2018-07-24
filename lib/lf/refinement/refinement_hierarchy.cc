@@ -334,9 +334,9 @@ namespace lf::refinement {
   } // end RefineMarked
 
   void MeshHierarchy::PerformRefinement(void) {
-    if (output_ctrl_ > 10) {
-      std::cout << "Entering MeshHierarchy::PerformRefinement" << std::endl;
-    }
+    CONTROLLEDSTATEMENT(output_ctrl_,10,
+      std::cout << "Entering MeshHierarchy::PerformRefinement: "
+			<< meshes_.size() << " levels"<< std::endl;)
     // This function expects that the refinement patterns  stored in the
     // vectors point_child_infos_, edge_child_infos_ and cell_child_infos_
     // have been initialized consistently for the finest mesh.
@@ -362,7 +362,8 @@ namespace lf::refinement {
 	const lf::geometry::Geometry &pt_geo(*node.Geometry());
 	if (pt_child_info[node_index].ref_pat_ != RefPat::rp_nil) {
 	  // Generate a node for the fine mesh at the same position
-	  std::vector<std::unique_ptr<geometry::Geometry>> pt_child_geo_ptrs(pt_geo.ChildGeometry(rp_copy_node,0));
+	  std::vector<std::unique_ptr<geometry::Geometry>>
+	    pt_child_geo_ptrs(pt_geo.ChildGeometry(rp_copy_node,0));
 	  LF_VERIFY_MSG(pt_child_geo_ptrs.size() == 1,
 			"A point can only have one chile");
 	  pt_child_info[node_index].child_point_idx_
@@ -370,9 +371,8 @@ namespace lf::refinement {
 	  new_node_cnt++;
 	}
       } // end loop over nodes 
-      if (output_ctrl_ > 10) {
-	std::cout << new_node_cnt << " new nodes added" << std::endl;
-      }
+      CONTROLLEDSTATEMENT\
+	(output_ctrl_,10,std::cout << new_node_cnt << " new nodes added" << std::endl;)
       
       // Now traverse the edges. Depending on the refinement pattern,
       // either copy them or split them.
@@ -406,10 +406,11 @@ namespace lf::refinement {
 	    ed_copy(edge.Geometry()->ChildGeometry(rp, 0));
 	  LF_VERIFY_MSG(ed_copy.size() == 1, "Copy may create only a single child!");
 	  // Register the new edge
-	  if (output_ctrl_ > 50) {
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,50,
 	    std::cout << "Copy edge " << edge_index << " new edge ["
-		      << ed_p0_fine_idx <<  "," << ed_p1_fine_idx << "] " << std::endl;
-	  }
+	     << ed_p0_fine_idx <<  "," << ed_p1_fine_idx << "] " << std::endl;)
+
 	  edge_ci.child_edge_idx_.push_back
 	    (mesh_factory_.AddEntity
 	     (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
@@ -437,11 +438,12 @@ namespace lf::refinement {
 	  // Register the two new edges
 	  // CAREFUL: Assignment of endpoints has to match implementation in
 	  // refinement.cc
-	  if (output_ctrl_ > 50) {
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,50,
 	    std::cout << "Split Edge " << edge_index << " new edges ["
-		      << ed_p0_fine_idx << "," << midpoint_fine_idx << "], ["
-		      << midpoint_fine_idx << "," << ed_p1_fine_idx << "] " << std::endl;
-	  }
+	     << ed_p0_fine_idx << "," << midpoint_fine_idx << "], ["
+	     << midpoint_fine_idx << "," << ed_p1_fine_idx << "] " << std::endl;)
+
 	  edge_ci.child_edge_idx_.push_back
 	    (mesh_factory_.AddEntity
 	     (edge.RefEl(),lf::base::ForwardRange<const lf::base::glb_idx_t>
@@ -460,9 +462,8 @@ namespace lf::refinement {
 	new_edge_cnt++;
       }      // end edge loop
 
-      if (output_ctrl_ > 10) {
-	std::cout << new_edge_cnt << " edges added " << std::endl;
-      }
+      CONTROLLEDSTATEMENT\
+	(output_ctrl_,50,std::cout << new_edge_cnt << " edges added " << std::endl;)
       
       // Visit all cells, examine their refinement patterns, retrieve indices of
       // their sub-entities, and those of the children.
@@ -482,13 +483,12 @@ namespace lf::refinement {
 	const RefPat cell_refpat(cell_ci.ref_pat_);
 	const sub_idx_t anchor = cell_ci.anchor_; // anchor edge index
 
-	if (output_ctrl_ > 50) {
-	  std::cout << "Cell " << cell_index << " = " << ref_el.ToString()
-		    << ", refpat = " << (int)cell_refpat << ", anchor = " << anchor << std::endl;
-	}
+	CONTROLLEDSTATEMENT			\
+	  (output_ctrl_,50,
+	   std::cout << "Cell " << cell_index << " = " << ref_el.ToString()
+	   << ", refpat = " << (int)cell_refpat << ", anchor = " << anchor << std::endl;)
 	
 	Hybrid2DRefinementPattern rp(cell.RefEl(),cell_refpat,anchor);
-
 	
 	// Index offsets for refinement patterns requiring an ancchor edge
 	std::array<sub_idx_t,4> mod;
@@ -507,13 +507,13 @@ namespace lf::refinement {
 	  LF_VERIFY_MSG(cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
 			ref_el.ToString() << ": only " << cell_subent_idx[codim].size()
 			<< " subents of codim = " << codim);
-	  if (output_ctrl_ > 50) {
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,50,
 	    std::cout << " Subent(" << codim << ") = [" << std::flush;
 	    for  (int j=0; j < cell_subent_idx[codim].size(); j++) {
 	      std::cout << cell_subent_idx[codim][j] << "," << std::flush;
 	    }
-	    std::cout << "], " << std::flush;
-	  }
+	    std::cout << "], " << std::flush;)
 	  std::cout << std::endl;
 	}
 	// Index information for sub-entities with respect  to fine mesh
@@ -525,13 +525,12 @@ namespace lf::refinement {
 	  vertex_child_idx[vt_lidx] = pt_child_info[cell_subent_idx[2][vt_lidx]].child_point_idx_;
 	}
 
-	if (output_ctrl_ > 50) {
-	  std::cout << ", vt_child_idx = [" << std::flush;
-	  for  (int j=0; j < num_vertices; j++) {
-	    std::cout << vertex_child_idx[j] << "," << std::flush;
-	  }
-	  std::cout << "], " << std::flush;
-	}
+	CONTROLLEDSTATEMENT			\
+	  (output_ctrl_,50,
+	   std::cout << ", vt_child_idx = [" << std::flush;
+	   for  (int j=0; j < num_vertices; j++) 
+	     std::cout << vertex_child_idx[j] << "," << std::flush;
+	   std::cout << "], " << std::flush;)
 
 	// Retrieve indices of midpoints of edges, if they exist
 	std::array<lf::base::glb_idx_t,4> edge_midpoint_idx({idx_nil,idx_nil,idx_nil,idx_nil});
@@ -544,13 +543,12 @@ namespace lf::refinement {
 	  }
 	} // end loop over local edges
 
-	if (output_ctrl_ > 50) {
-	  std::cout << ", ed_mp_idx = [" << std::flush;
-	  for  (int j=0; j < num_edges; j++) {
-	    std::cout << edge_midpoint_idx[j] << "," << std::flush;
-	  }
-	  std::cout << "], " << std::endl;
-	}
+	CONTROLLEDSTATEMENT			\
+	  (output_ctrl_,50,
+	   std::cout << ", ed_mp_idx = [" << std::flush;
+	   for  (int j=0; j < num_edges; j++) 
+	     std::cout << edge_midpoint_idx[j] << "," << std::flush;
+	   std::cout << "], " << std::endl;)
 
 	// Array of node indices (w.r.t. fine mesh) for sub-cells (triangles or quadrilaterals)
 	std::vector<std::vector<glb_idx_t>> child_cell_nodes;
@@ -1117,10 +1115,11 @@ namespace lf::refinement {
 			"num_new_edges = " << num_new_edges << " <-> " << rp.noChildren(1));
 	  for (int k = 0; k < num_new_edges; k++) {
 	    const std::array<glb_idx_t,2> &cen(child_edge_nodes[k]);
-	    if (output_ctrl_ > 50) {
-	      std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
-			<< ": new edge " << k << "[" << cen[0] << "," << cen[1] << "]" << std::endl;
-	    }
+	    CONTROLLEDSTATEMENT			\
+	      (output_ctrl_,50,
+	       std::cout << ref_el.ToString() << "(" << cell_index
+	       << "), ref_pat = " << (int)cell_refpat
+	       << ": new edge " << k << "[" << cen[0] << "," << cen[1] << "]" << std::endl;)
 	    
 	    const glb_idx_t new_edge_index =
 	      mesh_factory_.AddEntity(lf::base::RefEl::kSegment(),{cen[0],cen[1]},
@@ -1140,22 +1139,26 @@ namespace lf::refinement {
 	    glb_idx_t new_cell_index;
 	    if (ccn.size() == 3) {
 	      // New cell is a triangle
-	      if (output_ctrl_ > 50) {
-		std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
-			  << ": new triangle " << k << " [" << ccn[0] << "," << ccn[1]
-			  << "," << ccn[2] << "]" << std::endl;
-	      }
-	      new_cell_index =
-		mesh_factory_.AddEntity(lf::base::RefEl::kTria(),{ccn[0],ccn[1],ccn[2]},
+	      CONTROLLEDSTATEMENT		\
+		(output_ctrl_,50,
+	     std::cout << ref_el.ToString() << "(" << cell_index
+	     << "), ref_pat = " << (int)cell_refpat
+	     << ": new triangle " << k << " [" << ccn[0] << "," << ccn[1]
+	     << "," << ccn[2] << "]" << std::endl;)
+	    
+	    new_cell_index =
+	    mesh_factory_.AddEntity(lf::base::RefEl::kTria(),{ccn[0],ccn[1],ccn[2]},
 					std::move(childcell_geo_ptrs[k]));
 	    }
 	    else if (ccn.size() == 4) {
 	      // New cell is a quadrilateral
-	      if (output_ctrl_ > 50) {
-		std::cout << ref_el.ToString() << "(" << cell_index << "), ref_pat = " << (int)cell_refpat
-			  << ": new quad " << k << " [" << ccn[0] << "," << ccn[1]
-			  << "," << ccn[2] << "," << ccn[3] << "]" << std::endl;
-	      }
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,50,
+	     std::cout << ref_el.ToString() << "(" << cell_index
+	     << "), ref_pat = " << (int)cell_refpat
+	     << ": new quad " << k << " [" << ccn[0] << "," << ccn[1]
+	     << "," << ccn[2] << "," << ccn[3] << "]" << std::endl;)
+	    
 	      new_cell_index =
 		mesh_factory_.AddEntity(lf::base::RefEl::kQuad(),{ccn[0],ccn[1],ccn[2],ccn[3]},
 					std::move(childcell_geo_ptrs[k]));
@@ -1176,7 +1179,6 @@ namespace lf::refinement {
       std::cout << "Child mesh" << child_mesh.Size(2) << " nodes, "
 		<< child_mesh.Size(1) << " edges, "
 			<< child_mesh.Size(0) << " cells." << std::endl;)
-
 
     // Create space for data pertaining to the new mesh
     // Note that references to vectors may become invalid
@@ -1319,17 +1321,15 @@ namespace lf::refinement {
       std::vector<sub_idx_t> &parent_ref_edges(refinement_edges_.at(n_levels-2));
       
       // Traverse the cells of the fine mesh
-      if (output_ctrl_ > 10) {
-	std::cout << "Setting refinement edges" << std::endl;
-      }
+      CONTROLLEDSTATEMENT\
+	(output_ctrl_,10,
+	 std::cout << "Setting refinement edges" << std::endl;)
+	
       for (const mesh::Entity &fine_cell : child_mesh.Entities(0)) {
 	const glb_idx_t cell_index = child_mesh.Index(fine_cell);
 	child_ref_edges[cell_index] = idx_nil;
 	// Refinement edge relevant for triangles onyl
 	if (fine_cell.RefEl() == lf::base::RefEl::kTria()) {
-	  if (output_ctrl_ > 100) {
-	    std::cout << "Cell " << cell_index << ": " << std::flush;
-	  }
 	  // pointer to cell whose refinement has created the current one
 	  const mesh::Entity *parent_ptr = cell_parent_info[cell_index].parent_ptr_;
 	  LF_VERIFY_MSG(parent_ptr != nullptr,
@@ -1344,15 +1344,21 @@ namespace lf::refinement {
 	    const glb_idx_t parent_index = parent_mesh.Index(*parent_ptr);
 	    LF_VERIFY_MSG(parent_index < parent_mesh.Size(0),
 			  "parent_index = " << parent_index << " out of range");
-	    if (output_ctrl_ > 100) {
-	      std::cout << "triangle child " << fine_cell_child_number << " of parent " << parent_index << std::endl;
-	    }
+
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,100,
+	      std::cout << "Cell " << cell_index << ": " << std::flush;
+	      std::cout << "triangle child " << fine_cell_child_number
+	     << " of parent " << parent_index << std::endl;)
+	    
 	    const CellChildInfo &parent_ci(parent_cell_ci[parent_index]);
 	    LF_VERIFY_MSG(parent_ci.child_cell_idx_[fine_cell_child_number] == cell_index,
 			  "Parent child index mismatch!");
 	    const RefPat parent_ref_pat = parent_ci.ref_pat_;
 
-	    if (output_ctrl_ > 100) { std::cout << "ref_pat = " << (int)parent_ref_pat << std::flush; }
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,100,
+	     std::cout << "ref_pat = " << (int)parent_ref_pat << std::flush; )
 	    
 	    switch (parent_ref_pat) {
 	    case RefPat::rp_nil: {
@@ -1360,20 +1366,20 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case RefPat::rp_copy: {
-	      if (output_ctrl_ > 100) { std::cout << "COPY" << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "COPY" << std::flush;)
 	      // Inherit refinement edge from parent triangle
 	      child_ref_edges[cell_index] = parent_ref_edges[parent_index];
 	      break;
 	    }
 	    case RefPat::rp_bisect: {
-	      if (output_ctrl_ > 100) { std::cout << "BISECT " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "BISECT" << std::flush;)
 	      // Both children have refinement edge 2
 	      LF_VERIFY_MSG(fine_cell_child_number < 2,"Only 2 children for rp_bisect");
 	      child_ref_edges[cell_index] = 2;
 	      break;
 	    }
 	    case RefPat::rp_trisect: {
-	      if (output_ctrl_ > 100) { std::cout << "TRISECT " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "TRISECT" << std::flush;)
 	      // Refinement edges: 0 -> 2, 1 -> 1, 2 -> 0
 	      LF_VERIFY_MSG(fine_cell_child_number < 3,"Only 3 children for rp_trisect");
 	      switch (fine_cell_child_number) {
@@ -1384,7 +1390,7 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case RefPat::rp_trisect_left: {
-	      if (output_ctrl_ > 100) { std::cout << "TRISECT_LEFT " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "TRISECT_LEFT" << std::flush;)
 	      // Refinement edges: 0 -> 2, 1 -> 1, 2 -> 0
 	      LF_VERIFY_MSG(fine_cell_child_number < 4,"Only 3 children for rp_quadsect");
 	      switch (fine_cell_child_number) {
@@ -1395,7 +1401,7 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case RefPat::rp_quadsect: {
-	      if (output_ctrl_ > 100) { std::cout << "QUADSECT " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "QUADSECT" << std::flush;)
 	      // Refinement edges: 0 -> 2, 1 -> 0, 2 -> 0, 3-> 0
 	      switch (fine_cell_child_number) {
 	      case 0: { child_ref_edges[cell_index] = 2; break; }
@@ -1407,7 +1413,7 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case rp_regular: {
-	      if (output_ctrl_ > 100) { std::cout << "REGULAR " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "REGULAR" << std::flush;)
 	      // Inherit the refinement edge of the parent triangle
 	      const sub_idx_t parent_ref_edge_idx = parent_ref_edges[parent_index];
 	      switch (parent_ref_edge_idx)  {
@@ -1445,7 +1451,7 @@ namespace lf::refinement {
 	      break;
 	    }
 	    case rp_barycentric: {
-	      if (output_ctrl_ > 100) { std::cout << "BARYCENTRIC " << std::flush; }
+	      CONTROLLEDSTATEMENT(output_ctrl_,100,std::cout << "BARYCENTRIC" << std::flush;)
 	      // In the case of barycentric refinement choose the longest edge as
 	      // refinement edge for every child triangle
 	      child_ref_edges[cell_index] = LongestEdge(fine_cell);
@@ -1456,10 +1462,10 @@ namespace lf::refinement {
 	      break;
 	    }
 	    } // end switch parent_ref_pat
-	    if (output_ctrl_ > 100) {
-	      std::cout << " ref edge = " << child_ref_edges[cell_index] << std::endl;
-	    }
-
+	  CONTROLLEDSTATEMENT\
+	    (output_ctrl_,100,
+	     std::cout << " ref edge = " << child_ref_edges[cell_index] << std::endl;)
+	    
 	  } // end treatment of triangular child cell
 	  else if (parent_ptr->RefEl() == lf::base::RefEl::kQuad()) {
 	    // Parent is a quadrilateral:
