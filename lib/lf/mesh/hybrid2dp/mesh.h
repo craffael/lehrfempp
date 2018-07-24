@@ -11,6 +11,7 @@
 
 #include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
+#include "lf/mesh/utils/print_info.h"
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
@@ -85,7 +86,7 @@ class Mesh : public mesh::Mesh {
 
 inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
     //stream << "mesh object";
-    //lf::mesh::utils::PrintInfo(mesh, stream);
+    utils::PrintInfo(mesh, stream);
 }
 
 }  // namespace lf::mesh::hybrid2dp

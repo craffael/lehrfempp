@@ -31,17 +31,8 @@ int main() {
 
   // Entities -------------------------------
 
-  std::cout << lf::mesh::hybrid2dp::Point().RefEl() << std::endl;
-  lf::mesh::hybrid2dp::Segment();
-  lf::mesh::hybrid2dp::Triangle();
-  lf::mesh::hybrid2dp::Quadrilateral();
-
-
-
-  //lf::mesh::utils::writeTikZ(entity, "tikztest.txt");
+  lf::mesh::utils::writeTikZ(lf::mesh::hybrid2dp::Point(), "tikztest.txt");
   // file is saved in /Build/examples/mesh/
-
-
 
 
   // Test ----------------------------------
@@ -66,23 +57,22 @@ int main() {
 
 
   // build the mesh
-  auto mesh = test.Build();
+  auto mesh = test.Build(); // mesh is Mesh object
 
-  int dim_mesh_MeshFactory = test.DimWorld();
+  int dim_mesh_MeshFactory = test.DimWorld(); // test is MeshFactory object
   int dim_mesh_Mesh = mesh->DimWorld();
 
-  // test is MeshFactory object
-  std::cout << "\n" << test << std::endl;
-  std::cout << "Dim of MeshFactory mesh: " << dim_mesh_MeshFactory << std::endl;
 
-  // mesh is Mesh object
   std::cout << "\n" << mesh << std::endl; // Use PrintInfo
-  std::cout << "Dim of Mesh mesh: " << dim_mesh_Mesh << std::endl;
 
+  // Mesh
+  //lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints
 
-
-  lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints
-  //lf::mesh::utils::PrintInfo(entity, std::cout); // Prints
+  // Entities
+  //lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Point(), std::cout); // Dimension = 2?
+  lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Segment(), std::cout); // Dimension = 1
+  lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Triangle(), std::cout); // Prints
+  lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Quadrilateral(), std::cout); // Prints
 
 
   return 0L;

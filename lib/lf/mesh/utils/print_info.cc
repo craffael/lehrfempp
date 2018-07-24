@@ -20,7 +20,7 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
   o << "Mesh of dimension " << dim_mesh << ", ambient dimension " << dim_world
     << std::endl;
 
-  // Lopp over codimensions
+  // Loop over codimensions
   for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
     const size_type no_ent = mesh.Size(co_dim);
     o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
@@ -61,13 +61,36 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
 
 
 
-
 // Print function for Entity object
-void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
+void PrintInfo(const Entity& e, std::ostream& stream){
     // also loop over codimensions
-    stream << "Print entity" << std::endl;
+    //stream << "Print entity" << std::endl;
 
-}
+    int co_dim_entity = e.Codim();
+    lf::base::RefEl e_ref_el = e.RefEl();
+
+    stream << "Type of Entity: " << e_ref_el << std::endl;
+    stream << "Codimension of entity w.r.t. Mesh.dimMesh(): " << co_dim_entity << std::endl;
+
+    if (Entity::output_ctrl_ == 0){
+        // Loop over codimensions
+        for (int co_dim = co_dim_entity; co_dim > 0; co_dim--){
+            stream << "Codimension " << co_dim << " has " << "something" << std::endl;
+
+            if (Entity::output_ctrl_ == 0){
+                // Loop over subentities
+                for (const Entity &sub_ent : e.SubEntities(co_dim_entity)){
+                    stream << "Subent " << std::endl;
+                }
+
+            }
+
+
+        }
+    }
+
+    const geometry::Geometry *e_geo_ptr = e.Geometry();
+} // PrintInfo
 /*
 // ?? void PrintInfo(const lf::mesh::Entity& e, const lf::mesh::Mesh& m, std::ostream &stream);
 */

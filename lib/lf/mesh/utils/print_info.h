@@ -22,7 +22,8 @@ void PrintInfo(const Mesh &mesh, std::ostream &o);
 
 
 // Print function for Entity object
-void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
+// lf::mesh::Entity?
+void PrintInfo(const Entity& e, std::ostream& stream);
 /*
 // void PrintInfo(const lf::mesh::Entity& e, const lf::mesh::Mesh& m, std::ostream &stream);
 */
