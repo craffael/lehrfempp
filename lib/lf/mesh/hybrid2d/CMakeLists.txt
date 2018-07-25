@@ -9,7 +9,7 @@ set(sources
 )
 
 add_library(lf.mesh.hybrid2d ${sources})
-target_link_libraries(lf.mesh.hybrid2d PUBLIC Eigen3::Eigen lf.mesh)
+target_link_libraries(lf.mesh.hybrid2d PUBLIC Eigen3::Eigen lf.mesh lf.mesh.utils)
 target_compile_features(lf.mesh.hybrid2d PUBLIC cxx_std_17)
 
 add_subdirectory(test)

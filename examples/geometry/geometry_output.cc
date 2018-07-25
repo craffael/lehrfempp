@@ -16,5 +16,7 @@ int main() {
   // Print point
   PrintInfo(test_point, std::cout);
 
+  std::cout << test_point << std::endl;
+
   return 0L;
 }

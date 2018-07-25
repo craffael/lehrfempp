@@ -12,7 +12,7 @@ void PrintInfo(const Geometry &geom, std::ostream &o){
 
     o << "Global dimension: " << dim_glob << std::endl;
     o << "Local dimension: " << dim_local << std::endl;
-    o << "Type of reference element: " << geom.RefEl().ToString() << std::endl;
+    o << "Type of reference element: " << geom.RefEl() << std::endl;
     // Working
 
 }

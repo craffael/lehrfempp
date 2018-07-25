@@ -334,6 +334,7 @@ class RefEl {
    * - The codim=0 subEntity of a triangle is the triangle itself, therefore
    *   `RefEl::kTria().SubType(0,0) == RefEl::kTria()`.
    *
+   *
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
    */

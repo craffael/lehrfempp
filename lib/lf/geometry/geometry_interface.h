@@ -5,6 +5,7 @@
 #include <Eigen/Eigen>
 #include <memory>
 #include "refinement_pattern.h"
+//#include "lf/geometry/print_info.h"
 
 namespace lf::geometry {
 
@@ -171,7 +172,16 @@ class Geometry {
 
 }; // class Geometry
 
+void PrintInfo(const Geometry &geom, std::ostream &o);
 
+inline std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
+
+    if (Geometry::output_ctrl_ > 0){
+        return stream << geom.RefEl();
+    } else {
+        PrintInfo(geom, stream);
+    }
+}
 
 
 }  // namespace lf::geometry

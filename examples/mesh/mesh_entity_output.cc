@@ -7,8 +7,8 @@
 #include "lf/mesh/mesh.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
-#include "lf/mesh/utils/utils.h"
-#include "lf/mesh/utils/print_info.h"
+//#include "lf/mesh/utils/utils.h"
+//#include "lf/mesh/utils/print_info.h"
 
 /*
 #include <gtest/gtest.h>
@@ -64,7 +64,7 @@ int main() {
 
 
 
-  std::cout << "\n" << mesh << std::endl; // Use PrintInfo
+  //std::cout << "\n" << mesh << std::endl; // Use PrintInfo
 
   // Mesh
   //lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints

@@ -86,7 +86,7 @@ class Mesh : public mesh::Mesh {
 
 inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
     //stream << "mesh object";
-    utils::PrintInfo(mesh, stream);
+    //utils::PrintInfo(mesh, stream);
 }
 
 }  // namespace lf::mesh::hybrid2dp
