@@ -27,6 +27,20 @@ void writeTikZ(const lf::mesh::Entity &e, std::string filename){
         outfile << "\\draw (1,0) node[circle, draw](1) {1};\n";
         outfile << "\\draw [->](0) edge (1);\n";
     }
+    if(e.RefEl() == lf::base::RefEl::kTria()){
+        outfile << "\\draw (0,0) node[circle, draw](0) {0};\n";
+        outfile << "\\draw (1,0) node[circle, draw](1) {1};\n";
+        outfile << "\\draw (0,1) node[circle, draw](2) {2};\n";
+        outfile << "\\draw [->](0) edge (1) (1) edge (2) (2) edge (0);\n";
+    }
+    if(e.RefEl() == lf::base::RefEl::kQuad()){
+        outfile << "\\draw (0,0) node[circle, draw](0) {0};\n";
+        outfile << "\\draw (1,0) node[circle, draw](1) {1};\n";
+        outfile << "\\draw (1,1) node[circle, draw](2) {2};\n";
+        outfile << "\\draw (0,1) node[circle, draw}(3) {3}:\n";
+        outfile << "\\draw [->](0) edge (1) (1) edge (2) (2) edge (3) (3) edge (0);\n";
+
+    }
     outfile << "\\end{tikzpicture}";
 }
 

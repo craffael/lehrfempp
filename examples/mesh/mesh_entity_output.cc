@@ -31,7 +31,7 @@ int main() {
 
   // Entities -------------------------------
 
-  lf::mesh::utils::writeTikZ(lf::mesh::hybrid2dp::Point(), "tikztest.txt");
+  //lf::mesh::utils::writeTikZ(lf::mesh::hybrid2dp::Triangle(), "tikztest.txt");
   // file is saved in /Build/examples/mesh/
 
 
@@ -63,16 +63,21 @@ int main() {
   int dim_mesh_Mesh = mesh->DimWorld();
 
 
+
   std::cout << "\n" << mesh << std::endl; // Use PrintInfo
 
   // Mesh
   //lf::mesh::utils::PrintInfo(*mesh, std::cout); // Prints
 
+
   // Entities
+  /*
   //lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Point(), std::cout); // Dimension = 2?
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Segment(), std::cout); // Dimension = 1
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Triangle(), std::cout); // Prints
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Quadrilateral(), std::cout); // Prints
+*/
+  std::cout << lf::mesh::hybrid2dp::Point() << std::endl;
 
 
   return 0L;

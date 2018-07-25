@@ -71,7 +71,7 @@ void PrintInfo(const Entity& e, std::ostream& stream){
 
     stream << "Type of Entity: " << e_ref_el << std::endl;
     stream << "Codimension of entity w.r.t. Mesh.dimMesh(): " << co_dim_entity << std::endl;
-
+/*
     if (Entity::output_ctrl_ == 0){
         // Loop over codimensions
         for (int co_dim = co_dim_entity; co_dim > 0; co_dim--){
@@ -88,9 +88,16 @@ void PrintInfo(const Entity& e, std::ostream& stream){
 
         }
     }
-
+*/
+    /*
     const geometry::Geometry *e_geo_ptr = e.Geometry();
+    const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
+    stream << std::endl << e_geo_ptr->Global(ref_el_corners) << std::endl;
+    */
+
 } // PrintInfo
+
+
 /*
 // ?? void PrintInfo(const lf::mesh::Entity& e, const lf::mesh::Mesh& m, std::ostream &stream);
 */
