@@ -22,9 +22,9 @@ base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
   switch (codim) {
     case 0: {
       return {base::make_DereferenceLambdaRandomAccessIterator(
-                  cell_pointers_.begin(), l),
+                  entity_pointers_[0].begin(), l),
               base::make_DereferenceLambdaRandomAccessIterator(
-                  cell_pointers_.end(), l)};
+                  entity_pointers_[0].end(), l)};
     }
     case 1:
       return {segments_.begin(), segments_.end()};
@@ -75,6 +75,13 @@ Mesh::size_type Mesh::Index(const Entity &e) const {
   }
 }
 
+  const Entity *Mesh::EntityByIndex(dim_t codim,glb_idx_t index) const {
+    LF_ASSERT_MSG(codim <= 2,"Illegal codimension " << codim);
+    LF_ASSERT_MSG(index < Size(codim),
+		  "Index " << index << " > " << Size(codim));
+    return entity_pointers_[codim][index];
+  }
+  
 bool Mesh::Contains(const Entity &e) const {
   switch (e.Codim()) {
     case 0:
@@ -623,17 +630,60 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,
     cell_index++;
   }
   // ======================================================================
-  // Initialization of auxiliary cell pointer array: triangles first
-  cell_pointers_.reserve(trias_.size() + quads_.size());
+  // Initialization of auxiliary entity pointer arrays
+
+  // Order the cells according to their indices!
+  // First  fill the array with NIL pointers
+  entity_pointers_[0] = std::move(std::vector<const mesh::Entity*>
+				   (trias_.size() + quads_.size(),nullptr));
   size_type cell_ptr_cnt = 0;
+
+  // First retrieve pointers to triangular cells
   for (int j = 0; j < trias_.size(); j++, cell_ptr_cnt++) {
-    cell_pointers_.push_back(&(trias_[j]));
-  }
+    // Fetch index of a triangle  by a non-virtual call to Index()
+    const glb_idx_t cell_index = lf::mesh::hybrid2dp::Mesh::Index(trias_[j]);
+    LF_ASSERT_MSG(cell_index < entity_pointers_[0].size(),
+		  "Cell index out of range");
+    // This index must be unique !
+    LF_ASSERT_MSG(entity_pointers_[0][cell_index] == nullptr,
+		  "Cell index " << cell_index << " occurs twice!");
+    entity_pointers_[0][cell_index] = &(trias_[j]);
+  } // end loop over triangles
+
+  // Second deal with the quadrilateral cells
   for (int j = 0; j < quads_.size(); j++, cell_ptr_cnt++) {
-    cell_pointers_.push_back(&(quads_[j]));
+    // Fetch index of a quadrilateral by a non-virtual call to Index()
+    const glb_idx_t cell_index = lf::mesh::hybrid2dp::Mesh::Index(quads_[j]);
+    LF_ASSERT_MSG(cell_index < entity_pointers_[0].size(),
+		  "Cell index out of range");
+    // This index must be unique !
+    LF_ASSERT_MSG(entity_pointers_[0][cell_index] == nullptr,
+		  "Cell index " << cell_index << " occurs twice!");
+    entity_pointers_[0][cell_index] = &(quads_[j]);
   }
-  LF_VERIFY_MSG(cell_ptr_cnt == cell_pointers_.size(),
+  LF_VERIFY_MSG(cell_ptr_cnt == entity_pointers_[0].size(),
                 "Size mismatch for cell counters array");
-}
+
+  // Next the edges and nodes
+
+  entity_pointers_[1] = std::move(std::vector<const mesh::Entity*>
+				  (segments_.size(),nullptr));
+  entity_pointers_[2] = std::move(std::vector<const mesh::Entity*>
+				  (points_.size(),nullptr));
+  
+  for (dim_t codim = 1; codim <= 2; codim++) {
+    // Loop over all entities of codimenson codim
+    for (const Entity &e : lf::mesh::hybrid2dp::Mesh::Entities(codim)) {
+      const glb_idx_t entity_index = lf::mesh::hybrid2dp::Mesh::Index(e);
+      LF_ASSERT_MSG(entity_index < entity_pointers_[codim].size(),
+		    "Entity(" << codim << ") index out of range");
+      // This index must be unique !
+      LF_ASSERT_MSG(entity_pointers_[codim][entity_index] == nullptr,
+		    "Entity(" << codim << ") index " << entity_index << " occurs twice!");
+      entity_pointers_[codim][entity_index] = (const mesh::Entity *)&e;
+    } // loop over entities
+  } // loop over codim's
+  
+} // end of constructor
 
 }  // namespace lf::mesh::hybrid2dp

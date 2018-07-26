@@ -18,6 +18,11 @@
 
 namespace lf::mesh::hybrid2dp {
 
+  using size_type = lf::base::size_type;
+  using dim_t = lf::base::dim_t;
+  using sub_idx_t = lf::base::sub_idx_t;
+  using glb_idx_t = lf::base::glb_idx_t;
+
 class MeshFactory;
 
 /** @brief Basis 2D mesh type compliant with abstract mesh interface
@@ -25,16 +30,14 @@ class MeshFactory;
  */
 class Mesh : public mesh::Mesh {
  public:
-  using dim_t = lf::base::dim_t;
-  using sub_idx_t = lf::base::sub_idx_t;
-  using glb_idx_t = lf::base::glb_idx_t;
   char DimMesh() const override { return 2; }
   char DimWorld() const override { return dim_world_; }
 
-  base::ForwardRange<const Entity> Entities(char codim) const override;
+  base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
   size_type Index(const Entity& e) const override;
-  bool Contains(const Entity& e) const override;
+  const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const override;
+  bool Contains(const mesh::Entity& e) const override;
 
  private:
   dim_t dim_world_{};
@@ -46,16 +49,21 @@ class Mesh : public mesh::Mesh {
   std::vector<hybrid2dp::Triangle> trias_;
   /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Quadrilateral> quads_;
-  /** @brief Auxliary array of cell pointers */
-  std::vector<const mesh::Entity*> cell_pointers_;
+  /** @brief Auxliary array of cell (co-dim ==0 entities) pointers 
+   *
+   * This array serves two purposes. It facilitates the construction
+   * of a range covering all the cells. It is also required to retrieving
+   * the entity of a specific codimension belonging to an index. 
+   */
+  std::array<std::vector<const mesh::Entity*>,3> entity_pointers_;
 
   /** @brief Data types for passing information about mesh intities */
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
   using NodeCoordList = std::vector<GeometryPtr>;
   using EdgeList =
-      std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
+      std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
   using CellList =
-      std::vector<std::pair<std::array<Mesh::size_type, 4>, GeometryPtr>>;
+      std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
 
   /**
    * @brief Construction of mesh from information gathered in a MeshFactory

@@ -92,7 +92,7 @@ Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
                       (coords_.col(2) - coords_.col(1)) * local(0, i);
 
     if (DimGlobal() == 2) {
-      result(i) = jacobian.determinant();
+      result(i) = std::abs(jacobian.determinant());
     } else {
       result(i) = std::sqrt((jacobian.transpose() * jacobian).determinant());
     }

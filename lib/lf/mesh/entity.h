@@ -5,6 +5,11 @@
 
 namespace lf::mesh {
 
+  using size_type = lf::base::size_type;
+  using dim_t = lf::base::dim_t;
+  using sub_idx_t = lf::base::sub_idx_t;
+  using glb_idx_t = lf::base::glb_idx_t;
+  
 class Entity {
  protected:
   Entity() = default;
@@ -64,6 +69,7 @@ class Entity {
 
   /**
    * @brief Check if two entities are different.
+   * @sa Entity::operator==
    */
   bool operator!=(const Entity& rhs) const { return !operator==(rhs); }
 

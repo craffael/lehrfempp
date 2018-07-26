@@ -17,7 +17,7 @@
 
 namespace lf::mesh::test {
 // Test for index-based implementation
-TEST(lf_mesh, buildStructuredMesh) {
+TEST(DISABLED_lf_mesh, buildStructuredMesh) {
   // Construct a structured mesh with 8 triangles
   hybrid2d::TPTriagMeshBuilder builder(
       std::make_shared<hybrid2d::MeshFactory>(2));

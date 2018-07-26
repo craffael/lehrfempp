@@ -20,13 +20,13 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
   LF_VERIFY_MSG(e0lensq > 1.0E-8 * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > 1.0E-8 * circum, "Collapsed edge 1");
   LF_VERIFY_MSG(e2lensq > 1.0E-8 * circum, "Collapsed edge 2");
-  LF_VERIFY_MSG(area > 1.0E-8 * circum, "Degenerate quad");
+  LF_VERIFY_MSG(area > 1.0E-8 * circum, "Degenerate triangle");
 
   jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(2) - coords_.col(0);
 
   if (coords_.rows() == 2) {
     jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
-    integrationElement_ = jacobian_.determinant();
+    integrationElement_ = std::abs(jacobian_.determinant());
   } else {
     jacobian_inverse_gramian_ = Eigen::MatrixXd(
         jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
