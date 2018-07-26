@@ -76,6 +76,7 @@ class Entity {
   virtual ~Entity() = default;
 
   // Add global output control
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 
 }; // class entity
@@ -83,13 +84,21 @@ class Entity {
 
 //void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
 
+/**
+ * @brief Operator overload to print a `Entity` to a stream, such as `std::cout`
+ * @param stream The stream to which this function should output
+ * @param entity The entity to write to `stream`.
+ * @return The stream itself.
+ *
+ * - If Entity::output_ctrl_ == 0, type of reference element of entity is sent as output to stream
+ * - If Entity::output_ctrl_ > 0, then lf::mesh::utils::PrintInfo(const lf::mesh::Entity& e, std::ostream& stream) is called.
+ *
+ */
 inline std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity &entity){
-    stream << "entity object" << std::endl;
 
-    if (Entity::output_ctrl_ > 0){
+    if (Entity::output_ctrl_ == 0){
         return stream << entity.RefEl();
     } else {
-        stream << "Hei" << std::endl;
         //lf::mesh::utils::PrintInfo(entity, stream);
     }
 

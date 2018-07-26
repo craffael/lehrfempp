@@ -8,11 +8,12 @@ namespace lf::geometry {
 
 
 /**
- * @brief diagnostic output operator for Geometry
+ * @brief Diagnostic output operator for Geometry
+ * @param &geom The geometry to print info about
+ * @param &o The stream to which this function should output
+ *
  */
 void PrintInfo(const Geometry &geom, std::ostream &o);
-
-
 
 
 } // namespace lf::geometry

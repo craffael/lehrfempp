@@ -22,7 +22,7 @@ void PrintInfo(const RefEl &ref_el, std::ostream &o){
 
     int dim_ref_el = ref_el.Dimension();
     int no_nodes = ref_el.NumNodes();
-    o << "Entity: " << ref_el.ToString() << std::endl;
+    o << "Type of reference element: " << ref_el.ToString() << std::endl;
     o << "Dimension: " << dim_ref_el << std::endl;
     o << "Number of nodes: " << no_nodes << std::endl;
 

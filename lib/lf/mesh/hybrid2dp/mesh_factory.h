@@ -66,6 +66,7 @@ class MeshFactory : public mesh::MeshFactory {
 
  public:
   // Switch for verbosity level of output
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 };
 

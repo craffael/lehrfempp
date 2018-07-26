@@ -469,12 +469,26 @@ class RefEl {
   ~RefEl() = default;
 
   // Output control variable
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 
 }; // class RefEl
 
 
 // Declare print function
+/**
+ * @brief Diagnostic output operator. Prints info about a reference element.
+ * @param &ref_el The reference element to print info about
+ * @param &o The stream to which this function should output
+ *
+ * #### Output levels
+ * - RefEl::output_ctrl_ = 0: Type of reference element, dimension and number of nodes
+ * - RefEl::output_ctrl_ > 0: The above and number of subentities and their types for each codimension
+ * - RefEl::output_ctrl_ > 10: The above and type of subentity for each subentities in each codimension.
+ * - RefEl::output_ctrl_ > 20: The above and coordinates of the points of the reference element
+ *
+ *
+ */
 void PrintInfo(const RefEl &ref_el, std::ostream &o);
 
 
@@ -483,6 +497,9 @@ void PrintInfo(const RefEl &ref_el, std::ostream &o);
  * @param stream The stream to which this function should output
  * @param ref_el The reference element to write to `stream`.
  * @return The stream itself.
+ *
+ * - If RefEl::output_ctrl_ == 0, type of reference element is sent as output to stream.
+ * - If RefEl::output_ctrl_ > 0, then lf::base::PrintInfo(const RefEl &ref_el, std::ostream &o) is called.
  *
  * #### Usage example
  * @snippet ref_el.cc streamOutput

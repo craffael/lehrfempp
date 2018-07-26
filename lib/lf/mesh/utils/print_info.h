@@ -15,15 +15,27 @@
 namespace lf::mesh::utils {
 
 /**
- * @brief diagnostic output operator. Prints info about a mesh.
+ * @brief Diagnostic output operator. Prints info about a mesh.
+ * @param &mesh The mesh to print info about
+ * @param &o The stream to which this function should output
  */
 void PrintInfo(const Mesh &mesh, std::ostream &o);
 
 
-
 // Print function for Entity object
-// lf::mesh::Entity?
+/**
+ * @brief Diagnostic output operator. Prints info about an entity.
+ *
+ * @param e The entity to print info about
+ * @param stream The stream to which this function should output
+ *
+ * #### Output levels
+ * - Entity::output_ctrl_ == 0: Derived type of entity and type of entity is printed
+ * - Entity::output_ctrl_ > 0: The above and geometry of the entity is printed
+ * - Entity::output_ctrl_ > 10: The above and geometry of subentities is printed
+ */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
+
 /*
 // void PrintInfo(const lf::mesh::Entity& e, const lf::mesh::Mesh& m, std::ostream &stream);
 */

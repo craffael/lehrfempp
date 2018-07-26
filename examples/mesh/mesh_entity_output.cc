@@ -71,13 +71,15 @@ int main() {
 
 
   // Entities
-  /*
-  //lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Point(), std::cout); // Dimension = 2?
+
+  lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Point(), std::cout); // Dimension = 2?
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Segment(), std::cout); // Dimension = 1
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Triangle(), std::cout); // Prints
   lf::mesh::utils::PrintInfo(lf::mesh::hybrid2dp::Quadrilateral(), std::cout); // Prints
-*/
-  std::cout << lf::mesh::hybrid2dp::Point() << std::endl;
+
+  //std::cout << lf::mesh::hybrid2dp::Point() << std::endl;
+  //std::cout << lf::mesh::hybrid2dp::Point() << std::endl;
+
 
 
   return 0L;

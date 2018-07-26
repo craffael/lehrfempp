@@ -7,6 +7,7 @@
  */
 
 #include "print_info.h"
+#include "lf/geometry/geometry.h"
 
 namespace lf::mesh::utils {
 
@@ -29,6 +30,7 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
     for (const Entity &e : mesh.Entities(co_dim)) {
       size_type e_idx = mesh.Index(e);
       dim_t e_codim = e.Codim();
+
       const geometry::Geometry *e_geo_ptr = e.Geometry();
       lf::base::RefEl e_refel = e.RefEl();
 
@@ -61,37 +63,39 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
 
 // Print function for Entity object
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
-    // also loop over codimensions
-    //stream << "Print entity" << std::endl;
 
-    int co_dim_entity = e.Codim();
     lf::base::RefEl e_ref_el = e.RefEl();
+    int dim_ref_el = e_ref_el.Dimension();
+    stream << "Derived type of entity: " << typeid(e).name() << std::endl;
+    stream << "Type of reference element: " << e_ref_el << std::endl;
 
-    stream << "Type of Entity: " << e_ref_el << std::endl;
-    stream << "Codimension of entity w.r.t. Mesh.dimMesh(): " << co_dim_entity << std::endl;
-/*
-    if (Entity::output_ctrl_ == 0){
-        // Loop over codimensions
-        for (int co_dim = co_dim_entity; co_dim > 0; co_dim--){
-            stream << "Codimension " << co_dim << " has " << "something" << std::endl;
 
-            if (Entity::output_ctrl_ == 0){
-                // Loop over subentities
-                for (const Entity &sub_ent : e.SubEntities(co_dim_entity)){
-                    stream << "Subent " << std::endl;
+    if(Entity::output_ctrl_ == 0){ // > 0
+        int co_dim_entity = e.Codim();
+        stream << "Codimension of entity w.r.t. Mesh.dimMesh(): " << co_dim_entity << std::endl;
+
+        // Geometry of entity
+        const geometry::Geometry *e_geo_ptr = e.Geometry();
+        const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords()); // From PrintInfo(Mesh)
+        //int dim_global = e_geo_ptr->DimGlobal();
+        //stream << std::endl << e_geo_ptr->Global(ref_el_corners) << std::endl; // Causes segmentation fault
+
+
+        for(int co_dim = dim_ref_el; co_dim > 0; co_dim--){
+            int num_sub_ent = e_ref_el.NumSubEntities(co_dim);
+            stream << "Codimension " << co_dim << " has " << num_sub_ent << " entities" << std::endl;
+
+            if(Entity::output_ctrl_ == 0){ // > 10
+                // Geometry of subentities
+                for (const Entity &sub_ent : e.SubEntities(0)){ // (co_dim_entities)
+                    lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
+                    stream << "Subentity, type: " << sub_ent_refel << std::endl;
+                    const geometry::Geometry *sub_e_geo_ptr = sub_ent.Geometry();
                 }
-
             }
-
-
         }
-    }
-*/
-    /*
-    const geometry::Geometry *e_geo_ptr = e.Geometry();
-    const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
-    stream << std::endl << e_geo_ptr->Global(ref_el_corners) << std::endl;
-    */
+
+    } // if
 
 } // PrintInfo
 
