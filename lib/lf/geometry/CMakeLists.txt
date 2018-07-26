@@ -11,6 +11,8 @@ set(sources
   segment_o1.cc
   tria_o1.h
   tria_o1.cc
+  print_info.h
+  print_info.cc
 )
 
 add_library(lf.geometry ${sources})

@@ -2,6 +2,9 @@
 #define __37e385afbd3b4b1dba8611fb71787822
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
+#include <lf/base/static_vars.h>
+//#include <lf/mesh/utils/utils.h>
+
 
 namespace lf::mesh {
 
@@ -77,7 +80,14 @@ class Entity {
    * @brief Virtual Destructor.
    */
   virtual ~Entity() = default;
-};
+
+  // Add global output control
+  /** @brief Diagnostics control variable */
+  static int output_ctrl_;
+
+}; // class entity
+
+
 
 }  // namespace lf::mesh
 

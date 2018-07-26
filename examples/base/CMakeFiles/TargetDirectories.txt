@@ -1,0 +1,5 @@
+/hg/u/magina/Documents/lehrfempp/examples/base/CMakeFiles/rebuild_cache.dir
+/hg/u/magina/Documents/lehrfempp/examples/base/CMakeFiles/edit_cache.dir
+/hg/u/magina/Documents/lehrfempp/examples/base/base/CMakeFiles/rebuild_cache.dir
+/hg/u/magina/Documents/lehrfempp/examples/base/base/CMakeFiles/lf.examples.base.ref_el_output.dir
+/hg/u/magina/Documents/lehrfempp/examples/base/base/CMakeFiles/edit_cache.dir

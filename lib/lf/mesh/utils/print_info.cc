@@ -7,6 +7,7 @@
  */
 
 #include "print_info.h"
+#include "lf/geometry/geometry.h"
 
 namespace lf::mesh::utils {
 
@@ -69,4 +70,53 @@ namespace lf::mesh::utils {
       }    // end loop over co-dimensions
     } // end printinfo_ctrl > 10
   } // end function PrintInfo
+
+// Print function for Entity object
+void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
+
+    lf::base::RefEl e_ref_el = e.RefEl();
+    int dim_ref_el = e_ref_el.Dimension();
+    stream << "Derived type of entity: " << typeid(e).name() << std::endl;
+    stream << "Type of reference element: " << e_ref_el << std::endl;
+
+
+    if (Entity::output_ctrl_ > 0 ) { // > 0
+        int co_dim_entity = e.Codim();
+        stream << "Codimension of entity w.r.t. Mesh.dimMesh(): " << co_dim_entity << std::endl;
+
+        // Geometry of entity
+        const geometry::Geometry *e_geo_ptr = e.Geometry();
+	LF_ASSERT_MSG(e_geo_ptr != nullptr,
+		      "Missing geometry information!");
+	const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
+	int dim_global = e_geo_ptr->DimGlobal();
+        stream << std::endl << e_geo_ptr->Global(ref_el_corners) << std::endl; 
+
+        for (int co_dim = dim_ref_el; co_dim > 0; co_dim--){
+            int num_sub_ent = e_ref_el.NumSubEntities(co_dim);
+            stream << "Codimension " << co_dim << " has "
+		   << num_sub_ent << " sub-entities:" << std::endl;
+
+            if (Entity::output_ctrl_ > 10){ 
+                // Geometry of subentities
+                for (const Entity &sub_ent : e.SubEntities(co_dim)){ // (co_dim_entities)
+                    lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
+                    stream << "Subentity, type: " << sub_ent_refel << std::endl;
+                    const geometry::Geometry *sub_e_geo_ptr = sub_ent.Geometry();
+                }
+            }
+        }
+    } // if
+} // PrintInfo
+
+  std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity &entity) {
+    if (Entity::output_ctrl_ == 0){
+      return stream << entity.RefEl();
+    } else {
+      lf::mesh::utils::PrintInfo(entity, stream);
+      return stream;
+    }
+  } // end output  operator <<
+  
 }  // end namespace lf::mesh::utils
+

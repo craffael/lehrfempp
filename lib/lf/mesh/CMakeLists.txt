@@ -2,6 +2,7 @@ set(sources
   all_codim_mesh_data_set.h
   codim_mesh_data_set.h
   entity.h
+  entity.cc
   mesh.h
   mesh.cc
   mesh_data_set.h

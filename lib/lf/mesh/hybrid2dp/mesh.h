@@ -11,6 +11,7 @@
 
 #include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
+#include "lf/mesh/utils/print_info.h"
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
@@ -87,9 +88,22 @@ class Mesh : public mesh::Mesh {
   friend class MeshFactory;
 
  public:
-  /** @brief diagnostics control variable */
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 };
+
+
+/**
+ * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
+ * @param stream The stream to which this function should output
+ * @param mesh The mesh to write to `stream`.
+ * @return The stream itself.
+ *
+ */
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
+    //stream << "mesh object";
+    //utils::PrintInfo(mesh, stream);
+}
 
 }  // namespace lf::mesh::hybrid2dp
 

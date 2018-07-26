@@ -10,7 +10,9 @@
  *
  * @see lf::mesh::hybrid2d for a concrete implementation of a %mesh manager.
  */
-namespace lf::mesh {}
+namespace lf::mesh {
+
+}
 
 #include "all_codim_mesh_data_set.h"
 #include "codim_mesh_data_set.h"
