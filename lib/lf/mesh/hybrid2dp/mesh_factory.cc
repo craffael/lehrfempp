@@ -39,9 +39,9 @@ MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
 MeshFactory::size_type MeshFactory::AddEntity(
     base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
-  LF_ASSERT_MSG(!built_, "Build() already called.");
+  LF_ASSERT_MSG(!built_, "Build() already called. reset() first!");
   LF_ASSERT_MSG(ref_el.Dimension() > 0,
-                "Use AddNode() to add a node to a mesh.");
+                "Use AddPoint() to add a node to a mesh.");
   LF_ASSERT_MSG(ref_el.Dimension() <= 2, "ref_el.Dimension > 2");
   if (geometry != nullptr) {
     LF_ASSERT_MSG(geometry->DimGlobal() == dim_world_,

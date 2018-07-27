@@ -23,6 +23,7 @@ namespace lf::mesh::hybrid2dp {
   using dim_t = lf::base::dim_t;
   using sub_idx_t = lf::base::sub_idx_t;
   using glb_idx_t = lf::base::glb_idx_t;
+  const unsigned int idx_nil = lf::base::idx_nil;
 
 class MeshFactory;
 

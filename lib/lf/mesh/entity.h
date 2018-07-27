@@ -87,8 +87,6 @@ class Entity {
 
 }; // class entity
 
-
-
 }  // namespace lf::mesh
 
 #endif  // __37e385afbd3b4b1dba8611fb71787822

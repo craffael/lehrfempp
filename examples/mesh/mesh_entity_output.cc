@@ -68,7 +68,7 @@ int main() {
   std::cout << "****** Output of mesh entities *******" << std::endl;
   // Loop over entities and print associated information
   for (lf::base::dim_t codim=0; codim <= 2; ++codim) {
-    std::cout << "******* Entities of codimension " << codim << " ******* " << std::endl;
+    std::cout << "******* Entities of codimension " << (int)codim << " ******* " << std::endl;
     for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
       std::cout << entity << std::endl;
     }
