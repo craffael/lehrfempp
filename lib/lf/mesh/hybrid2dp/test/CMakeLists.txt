@@ -2,7 +2,8 @@
 include(GoogleTest)
 
 set(sources
-  mesh_factory_tests.cc mesh_factory_test.h
+  mesh_factory_tests.cc
+  mesh_factory_test.h
 )
 
 add_executable(lf.mesh.hybrid2dp.test ${sources})

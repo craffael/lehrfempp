@@ -1,0 +1,4 @@
+#ifndef MESH_FACTORY_TESTS_H
+#define MESH_FACTORY_TESTS_H
+
+#endif // MESH_FACTORY_TESTS_H
