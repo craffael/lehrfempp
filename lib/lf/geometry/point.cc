@@ -18,7 +18,7 @@ Eigen::MatrixXd Point::JacobianInverseGramian(
 
 // NOLINTNEXTLINE(misc-unused-parameters)
 Eigen::VectorXd Point::IntegrationElement(const Eigen::MatrixXd& local) const {
-  LF_VERIFY_MSG(false, "integrationElement() undefined for points.");
+  return Eigen::Matrix<double,1,1>::Constant(1.0);
 }
 
 std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {

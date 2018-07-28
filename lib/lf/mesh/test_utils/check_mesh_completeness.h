@@ -14,6 +14,25 @@ namespace lf::mesh::test_utils {
  */
 bool checkMeshCompleteness(const Mesh& mesh);
 
+  /**
+   * @brief check for match of entity geometries
+   * @param mesh A reference to the mesh to be checked
+   * @param vertices_only if true, then only the correct vertex positions 
+   *                 are checked, otherwise edges are included
+   * @return a vector of types and indices of those entities for
+   *         which the test has failed   
+   *
+   * @note For special geometries the exact matching of cell and edge
+   *       shapes may not be intended
+   *
+   * Optional output of this function is controlled by the 
+   * control variable watertight_mesh_ctrl
+   */
+  std::vector<std::pair<lf::base::RefEl,glb_idx_t>>
+  isWatertightMesh(const Mesh &mesh,bool vertices_only = false);
+
+  extern int watertight_mesh_ctrl;
+  
 }  // namespace lf::mesh::test_utils
 
 #endif  // __2633e7bf8dd548de839f74075687e81A

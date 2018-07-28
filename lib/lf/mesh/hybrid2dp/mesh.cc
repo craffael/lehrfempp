@@ -426,6 +426,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     // OLD VERSION. In the new version the geomtry of a point is passed in 'nodes'
     // const Eigen::VectorXd &node_coordinates(v);
     // GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
+    LF_VERIFY_MSG(pt_geo_ptr != nullptr,
+		  "Missing geometry for node " << node_index);
     if (output_ctrl_ > 10) {
       std::cout << "-> Adding node " << node_index << " at "
                 << (pt_geo_ptr->Global(Eigen::Matrix<double,0,1>())).transpose() << std::endl;
@@ -475,7 +477,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     /// is stored in the 'edge_global_index' field of the EdgeData structure.
     // (ii) the edge has to be created internally. In this case assign an index
     // larger than the index of any supplied edge.
-    if (edge.second.edge_global_index == -1) {
+    if (edge.second.edge_global_index == idx_nil) {
       // Internally created edge needs new index.
       edge.second.edge_global_index = edge_index;
       // Increment 'edge_index', which will give the index of the next
@@ -494,6 +496,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
   }  // end loop over all edges
   LF_ASSERT_MSG(edge_index == no_of_edges, "Edge index mismatch");
 
+  // ======================================================================
+  // NEXT STEP: Create cells
+  
   const size_type no_of_cells = cells.size();
 
   // Create an auxiliary data structure to store the edges for the cells
@@ -538,7 +543,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     const std::array<size_type, 4> &c_edge_indices(edge_indices[cell_index]);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // A triangle is marked by an invalid node number
-    // in the last position
+    // in the last position (also see above)
     size_type no_of_vertices;
     if (c_node_indices[3] == size_type(-1)) {
       no_of_vertices = 3;  // triangle

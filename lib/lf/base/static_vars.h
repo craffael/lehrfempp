@@ -78,11 +78,11 @@ using StaticVar = Track<int>;
  */
 /**@{*/
 #define CONTROLDECLARE(intvar, varname)                       \
-  static int intvar = 0;                                      \
+  int intvar = 0;                                      \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root)
 #define CONTROLDECLAREINFO(intvar, varname, info)	      \
-  static int intvar = 0;                                      \
+  int intvar = 0;                                      \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 

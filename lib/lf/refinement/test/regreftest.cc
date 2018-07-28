@@ -30,13 +30,26 @@ namespace lf::refinement::test {
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
     
+    std::cout << "Checking geometry compatibulity: " << std::flush;
+    lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+    auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh,false);
+    EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+    if (fails.size() == 0) {
+      std::cout << "consistent!" << std::endl;
+    }
+    else {
+      std::cout << "INCONSISTENT!" << std::endl;
+      for (auto & geo_errs : fails) {
+	std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+      }
+    }
     std::cout << "Writing MATLAB file" << std::endl;
     lf::mesh::utils::writeMatlab(fine_mesh, "fine_mesh.m");
 
     // Printing mesh information
     lf::mesh::utils::PrintInfo(fine_mesh,std::cout);
     
-    } 
+  } 
 
 
   TEST(RegRefTest,BarycentricRef) {
@@ -55,13 +68,27 @@ namespace lf::refinement::test {
     auto &fine_mesh = multi_mesh.getMesh(1);
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
+
+    std::cout << "Checking geometry compatibulity: " << std::flush;
+    lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+    auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh,false);
+    EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+    if (fails.size() == 0) {
+      std::cout << "consistent!" << std::endl;
+    }
+    else {
+      std::cout << "INCONSISTENT!" << std::endl;
+      for (auto & geo_errs : fails) {
+	std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+      }
+    }
     
     std::cout << "Writing MATLAB file" << std::endl;
     lf::mesh::utils::writeMatlab(fine_mesh, "barycentric_ref.m");
 
     // Printing mesh information
     lf::mesh::utils::PrintInfo(fine_mesh,std::cout);
-    } 
+  } 
 
 
   TEST(RegRefTest,AllMarkedRefinement) {
@@ -92,6 +119,20 @@ namespace lf::refinement::test {
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
     
+    std::cout << "Checking geometry compatibulity: " << std::flush;
+    lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+    auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh,false);
+    EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+    if (fails.size() == 0) {
+      std::cout << "consistent!" << std::endl;
+    }
+    else {
+      std::cout << "INCONSISTENT!" << std::endl;
+      for (auto & geo_errs : fails) {
+	std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+      }
+    }
+
     std::cout << "Writing MATLAB file" << std::endl;
     lf::mesh::utils::writeMatlab(fine_mesh, "allref.m");
 
@@ -100,9 +141,9 @@ namespace lf::refinement::test {
     
     // Printing mesh information
     lf::mesh::utils::PrintInfo(fine_mesh,std::cout);
-    } 
+  } 
 
- TEST(LocRefTest,LocalRefinement) {
+  TEST(LocRefTest,LocalRefinement) {
     lf::refinement::MeshHierarchy::output_ctrl_ = 0;
     std::cout << "TEST: Marked edges in the unit square" << std::endl;
     
@@ -133,7 +174,21 @@ namespace lf::refinement::test {
     auto &fine_mesh = multi_mesh.getMesh(1);
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
-    
+
+    std::cout << "Checking geometry compatibulity: " << std::flush;
+    lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+    auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh,false);
+    EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+    if (fails.size() == 0) {
+      std::cout << "consistent!" << std::endl;
+    }
+    else {
+      std::cout << "INCONSISTENT!" << std::endl;
+      for (auto & geo_errs : fails) {
+	std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+      }
+    }
+
     std::cout << "Writing MATLAB file" << std::endl;
     lf::mesh::utils::writeMatlab(fine_mesh, "locref.m");
 
@@ -142,40 +197,40 @@ namespace lf::refinement::test {
     
     // Printing mesh information
     lf::mesh::utils::PrintInfo(fine_mesh,std::cout);
-    } 
+  } 
 
 
   /* MATLAB script for visualizing the output of the next test
  
-% MATLAB script for ploting testing refinement hierarchy
+     % MATLAB script for ploting testing refinement hierarchy
 
-display('Level 0');
-opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L0,opts);
-title(sprintf('Multirev level %i',0));
+     display('Level 0');
+     opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L0,opts);
+     title(sprintf('Multirev level %i',0));
 
-display('Level 1');
-opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L1,opts);
-title(sprintf('Multirev level %i',1));
-opts = []; opts.parents = @multiref_L1_pi; plot_lf_mesh(@multiref_L1,opts);
-title(sprintf('Multirev parent into %i',1));
+     display('Level 1');
+     opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L1,opts);
+     title(sprintf('Multirev level %i',1));
+     opts = []; opts.parents = @multiref_L1_pi; plot_lf_mesh(@multiref_L1,opts);
+     title(sprintf('Multirev parent into %i',1));
 
-display('Level 2');
-opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L2,opts);
-title(sprintf('Multirev level %i',2));
-opts = []; opts.parents = @multiref_L2_pi; plot_lf_mesh(@multiref_L2,opts);
-title(sprintf('Multirev parent into %i',2));
+     display('Level 2');
+     opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L2,opts);
+     title(sprintf('Multirev level %i',2));
+     opts = []; opts.parents = @multiref_L2_pi; plot_lf_mesh(@multiref_L2,opts);
+     title(sprintf('Multirev parent into %i',2));
 
-display('Level 3');
-opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L3,opts);
-title(sprintf('Multirev level %i',3));
-opts = []; opts.parents = @multiref_L3_pi; plot_lf_mesh(@multiref_L3,opts);
-title(sprintf('Multirev parent into %i',3));
+     display('Level 3');
+     opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L3,opts);
+     title(sprintf('Multirev level %i',3));
+     opts = []; opts.parents = @multiref_L3_pi; plot_lf_mesh(@multiref_L3,opts);
+     title(sprintf('Multirev parent into %i',3));
 
-display('Level 4');
-opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L4,opts);
-title(sprintf('Multirev level %i',4));
-opts = []; opts.parents = @multiref_L4_pi; plot_lf_mesh(@multiref_L4,opts);
-title(sprintf('Multirev parent into %i',4));
+     display('Level 4');
+     opts = []; opts.numbers = true; plot_lf_mesh(@multiref_L4,opts);
+     title(sprintf('Multirev level %i',4));
+     opts = []; opts.parents = @multiref_L4_pi; plot_lf_mesh(@multiref_L4,opts);
+     title(sprintf('Multirev parent into %i',4));
 
   */
   
@@ -224,6 +279,6 @@ title(sprintf('Multirev parent into %i',4));
       lf::mesh::utils::PrintInfo(mesh,std::cout);
     }
     WriteMatlab(multi_mesh,"multiref");
-    } 
+  } 
 
 }
