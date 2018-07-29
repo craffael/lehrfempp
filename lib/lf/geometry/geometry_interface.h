@@ -187,16 +187,17 @@ void PrintInfo(const Geometry &geom, std::ostream &o);
  * - If Geometry::output_ctrl_ > 0, then lf::geometry::PrintInfo(const Geometry &geom, std::ostream &o) is called.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
+  std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
 
-    if (Geometry::output_ctrl_ == 0){
-        return stream << geom.RefEl();
-    } else {
-        PrintInfo(geom, stream);
-    }
-}
+  /** 
+   * @brief (Approximate) Volume of a shape
+   * @param geometry object
+   * 
+   * @note the volume can be computed exactly only for planar affine/bilinear shapes
+   *       Otherwise this functions returns a one-point quadrature approximation
+   */
 
-
+  double Volume(const Geometry &geo);
 }  // namespace lf::geometry
 
 #endif  // __7ed6b0d4d9244155819c464fc4eb9bbb

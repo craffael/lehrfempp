@@ -95,13 +95,19 @@ bool checkMeshCompleteness(const Mesh& mesh) {
 	  if ((vertex_coords.col(j) - node_coords).squaredNorm() > 1.0E-8*approx_area) {
 	    ret_vals.emplace_back(e_refel,mesh.Index(e));
 	    if (watertight_mesh_ctrl > 0) {
-	      // std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-	      // 		<< mesh.Index(e) << "): position  mismath" << std::endl;
+	         std::cout << "Node " << j << " of " << e_refel.ToString() << "("
+	       		<< mesh.Index(e) << "): position  mismath" << std::endl;
 	    }
 	  } // end geometry test
 	} // end loop over nodes
       } // end loop over entities
     } // end loop over co-dimensions
+    if (!vertices_only) {
+      // Check whether geometry of edges and cells match
+      // ASSERT_MSG(false,
+      //	    "Geometric compatibility test for edges and cells not yet implemented");
+    }
+    
     return ret_vals;
   }
 

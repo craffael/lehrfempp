@@ -45,6 +45,16 @@ TEST(lf_edge_create, MeshFactory_p) {
       std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
     }
   }
+
+  // Compute volumes
+  double total_area = 0.0;
+  for (const mesh::Entity &cell : mesh_p->Entities(0)) {
+    const double vol = Volume(*cell.Geometry());
+    std::cout << cell.RefEl().ToString() << ' ' << mesh_p->Index(cell) << ": volume = "
+	      << vol << std::endl;
+    total_area += vol;
+  }
+  std::cout << ">>> Total area = " << total_area << std::endl;
   
   std::cout << "Writing MATLAB file" << std::endl;
   utils::writeMatlab(*mesh_p, "test_mesh.m");

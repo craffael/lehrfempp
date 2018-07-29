@@ -101,7 +101,7 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim1) {
   auto reader = test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
 
   // write mesh:
-  VtkWriter writer(reader.mesh(), "two_element_1d.vtk", 1);
+  VtkWriter writer(*reader.mesh(), "two_element_1d.vtk", 1);
 }
 
 }  // namespace lf::io::test

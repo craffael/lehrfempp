@@ -8,6 +8,7 @@ target_link_libraries(lf.refinement.test
   lf.refinement
   lf.mesh.hybrid2dp
   lf.mesh.test_utils
-  lf.mesh.utils)
+  lf.mesh.utils
+  lf.io)
 target_compile_features(lf.refinement.test PUBLIC cxx_std_17)
 gtest_discover_tests(lf.refinement.test)
