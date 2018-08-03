@@ -510,9 +510,9 @@ void PrintInfo(const RefEl& ref_el, std::ostream& o);
 inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
   if (RefEl::output_ctrl_ == 0) {
     return stream << ref_el.ToString();
-  } else {
-    PrintInfo(ref_el, stream);
   }
+  PrintInfo(ref_el, stream);
+  return stream;
 }
 
 }  // namespace lf::base
