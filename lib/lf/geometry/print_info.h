@@ -3,9 +3,7 @@
 
 #include "lf/geometry/geometry.h"
 
-
 namespace lf::geometry {
-
 
 /**
  * @brief Diagnostic output operator for Geometry
@@ -15,7 +13,6 @@ namespace lf::geometry {
  */
 void PrintInfo(const Geometry &geom, std::ostream &o);
 
+}  // namespace lf::geometry
 
-} // namespace lf::geometry
-
-#endif // PRINT_INFO_H
+#endif  // PRINT_INFO_H

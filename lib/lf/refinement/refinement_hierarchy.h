@@ -21,11 +21,11 @@ namespace lf::refinement {
  * - a flag indicating whether the point is to be duplicated (rp_copy)
  * - global index of the child point
  */
-  struct PointChildInfo {
-    PointChildInfo(void):ref_pat_(RefPat::rp_nil),child_point_idx_(-1) {}
-    RefPat ref_pat_;
-    glb_idx_t child_point_idx_;
-  };
+struct PointChildInfo {
+  PointChildInfo(void) : ref_pat_(RefPat::rp_nil), child_point_idx_(-1) {}
+  RefPat ref_pat_;
+  glb_idx_t child_point_idx_;
+};
 
 /**
  * @brief Information about the refinement status of an edge
@@ -37,12 +37,12 @@ namespace lf::refinement {
  * - the topological refinement type (rp_copy or rp_split)
  * - indices of all _interior_ child entities (edges or points)
  */
-  struct EdgeChildInfo {
-    EdgeChildInfo(void):ref_pat_(RefPat::rp_nil) {}
-    RefPat ref_pat_;
-    std::vector<glb_idx_t> child_edge_idx_;
-    std::vector<glb_idx_t> child_point_idx_;
-  };
+struct EdgeChildInfo {
+  EdgeChildInfo(void) : ref_pat_(RefPat::rp_nil) {}
+  RefPat ref_pat_;
+  std::vector<glb_idx_t> child_edge_idx_;
+  std::vector<glb_idx_t> child_point_idx_;
+};
 
 /**
  * @brief Information about the refinement status of a cell
@@ -55,22 +55,24 @@ namespace lf::refinement {
  *   in the case of a cell, which completely defines the geometric refinement.
  * - indices of all _interior_ child entities
  */
-  struct CellChildInfo {
-    CellChildInfo(void):ref_pat_(RefPat::rp_nil), anchor_(-1) {}
-    RefPat ref_pat_;
-    sub_idx_t anchor_;
-    std::vector<glb_idx_t> child_cell_idx_;
-    std::vector<glb_idx_t> child_edge_idx_;
-    std::vector<glb_idx_t> child_point_idx_;
-  };
-  
+struct CellChildInfo {
+  CellChildInfo(void) : ref_pat_(RefPat::rp_nil), anchor_(-1) {}
+  RefPat ref_pat_;
+  sub_idx_t anchor_;
+  std::vector<glb_idx_t> child_cell_idx_;
+  std::vector<glb_idx_t> child_edge_idx_;
+  std::vector<glb_idx_t> child_point_idx_;
+};
+
 /**
  * @brief Information about possible parent entities
  */
 struct ParentInfo {
-  explicit ParentInfo(void) : parent_ptr_(nullptr), child_number_(idx_nil), parent_index_(idx_nil) {}
+  explicit ParentInfo(void)
+      : parent_ptr_(nullptr), child_number_(idx_nil), parent_index_(idx_nil) {}
   // Data members
-  const mesh::Entity *parent_ptr_; /**< parent entity, not necessarily the same type */
+  const mesh::Entity
+      *parent_ptr_;        /**< parent entity, not necessarily the same type */
   glb_idx_t parent_index_; /**< index of parent entity w.r.t. coarse mesh */
   sub_idx_t child_number_; /**< local index in the parent entity */
 };
@@ -105,55 +107,57 @@ class MeshHierarchy {
     return *meshes_.at(level);
   }
 
-  /** 
+  /**
    * @brief Obtain refinement information for all points
    */
   const std::vector<PointChildInfo> &point_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
     return point_child_infos_[level];
   }
-  /** 
+  /**
    * @brief Obtain refinement information for all edges
    */
   const std::vector<EdgeChildInfo> &edge_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
     return edge_child_infos_[level];
   }
-  /** 
-   e* @brief Obtain refinement information for all 
+  /**
+   e* @brief Obtain refinement information for all
    */
   const std::vector<CellChildInfo> &cell_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
     return cell_child_infos_[level];
   }
   /**
    * @brief Fetch information about parents
    */
-  const std::vector<ParentInfo> &parent_info(size_type level,dim_t codim) const {
-    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
-    LF_VERIFY_MSG(codim < 3,"Codim = " << codim << " illegal");
+  const std::vector<ParentInfo> &parent_info(size_type level,
+                                             dim_t codim) const {
+    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(codim < 3, "Codim = " << codim << " illegal");
     return parent_infos_[level][codim];
   }
-  /** 
+  /**
    * @brief Access refinement edge indices
    */
   const std::vector<glb_idx_t> &refinement_edges(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(),"Illegal level " << level);
+    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
     return refinement_edges_[level];
   }
 
   /**
-   * @brief Perform regular or barycentric uniform refinement of the finest mesh in the
-   * hierarchy
+   * @brief Perform regular or barycentric uniform refinement of the finest mesh
+   * in the hierarchy
    *
-   * @param ref_pat selector for type of uniform refinement: default is rp_regular, 
-   *         rp_barycentric choses barycentric refinement.
-   * 
+   * @param ref_pat selector for type of uniform refinement: default is
+   * rp_regular, rp_barycentric choses barycentric refinement.
+   *
    * This method carries out uniform refinement of all cells of a mesh according
    * to the `rp_regular` or `rp_barycentric` refinement patterns.
    *
    * Regular refinement means that every node is copied, every edge is split
-   * and every cell is subdivided into four or six smaller ones of the same shape.
+   * and every cell is subdivided into four or six smaller ones of the same
+   * shape.
    */
   void RefineRegular(RefPat ref_pat = RefPat::rp_regular);
   /**
@@ -166,7 +170,6 @@ class MeshHierarchy {
   template <typename Marker>
   void MarkEdges(Marker &&marker);
 
-  
   /**
    * @brief Conduct local refinement of the mesh splitting all marked edges
    */
@@ -210,26 +213,25 @@ class MeshHierarchy {
    */
   sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 
-public:
+ public:
   /** @brief diagnostics control variable */
   static int output_ctrl_;
 };
 
+template <typename Marker>
+void MeshHierarchy::MarkEdges(Marker &&marker) {
+  // Retrieve the finest mesh in the hierarchy
+  const mesh::Mesh &finest_mesh(*meshes_.back());
 
-  template <typename Marker>
-  void MeshHierarchy::MarkEdges(Marker &&marker) {
-    // Retrieve the finest mesh in the hierarchy
-    const mesh::Mesh &finest_mesh(*meshes_.back());
+  LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.Size(1),
+                "Length  mismatch for edge flag array");
 
-    LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.Size(1),
-		  "Length  mismatch for edge flag array");
-    
-    // Run through the edges = entities of co-dimension 1
-    for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
-      glb_idx_t edge_index = finest_mesh.Index(edge);
-      (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
-    }
+  // Run through the edges = entities of co-dimension 1
+  for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
+    glb_idx_t edge_index = finest_mesh.Index(edge);
+    (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
   }
+}
 
 }  // namespace lf::refinement
 

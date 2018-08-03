@@ -70,14 +70,14 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p,false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
-  }
-  else {
+  } else {
     std::cout << "INCONSISTENT!" << std::endl;
-    for (auto & geo_errs : fails) {
-      std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+    for (auto& geo_errs : fails) {
+      std::cout << geo_errs.first.ToString() << "(" << geo_errs.second << ")"
+                << std::endl;
     }
   }
   std::cout << "Writing MATLAB file" << std::endl;

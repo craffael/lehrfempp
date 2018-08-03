@@ -46,8 +46,8 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   // The refinement pattern must be for a segment
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
-  LF_VERIFY_MSG((codim < 2),"Illegal codim = " << codim);
-						
+  LF_VERIFY_MSG((codim < 2), "Illegal codim = " << codim);
+
   // Lattice meshwidth
   const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Return variable
@@ -55,36 +55,37 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
 
   // Obtain geometry of children as vector of pairs of lattice coordinates
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-    child_polygons(ref_pat.ChildPolygons(codim));
+      child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child entities
   const int no_children = child_polygons.size();
-  LF_VERIFY_MSG(no_children == ref_pat.noChildren(codim),
-		"no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+  LF_VERIFY_MSG(
+      no_children == ref_pat.noChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
   // For each child create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
     // codim == 0:A single child must be described by an interval, that is
     // two differente lattice coordinates
     // codim == 1: a point's location is just one number
     LF_VERIFY_MSG(child_polygons[l].rows() == 1,
-		  "child_polygons[l].rows() = " << child_polygons[l].rows());
-    LF_VERIFY_MSG(child_polygons[l].cols() == (2-codim),
-		  "child_polygons[l].cols() = " << child_polygons[l].cols());
+                  "child_polygons[l].rows() = " << child_polygons[l].rows());
+    LF_VERIFY_MSG(child_polygons[l].cols() == (2 - codim),
+                  "child_polygons[l].cols() = " << child_polygons[l].cols());
     // Normalize lattice coordinates
-    const Eigen::MatrixXd
-      child_geo(Global(h_lattice * child_polygons[l].cast<double>()));
+    const Eigen::MatrixXd child_geo(
+        Global(h_lattice * child_polygons[l].cast<double>()));
 
     switch (codim) {
-    case 0: { 
-	child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
-	break;
+      case 0: {
+        child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
+        break;
       }
-    case 1: {
-	child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
-	break;
+      case 1: {
+        child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
+        break;
       }
-    } // end switch codim
-  } // end loop over child entities
-    return child_geo_uptrs;
+    }  // end switch codim
+  }    // end loop over child entities
+  return child_geo_uptrs;
 }
 
 }  // namespace lf::geometry

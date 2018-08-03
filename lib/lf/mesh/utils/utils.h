@@ -13,10 +13,7 @@
  * @brief Contains helper functions and classes that all operate on the
  *        interface classes defined in lf::mesh
  */
-namespace lf::mesh::utils {
-
-
-}
+namespace lf::mesh::utils {}
 
 #include "print_info.h"
 #include "write_matlab.h"
