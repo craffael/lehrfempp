@@ -109,7 +109,7 @@ std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
     // Check whether geometry of edges and cells match
     // ASSERT_MSG(false,
     //	    "Geometric compatibility test for edges and cells not yet
-    //implemented");
+    // implemented");
   }
 
   return ret_vals;
