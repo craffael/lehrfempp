@@ -68,47 +68,51 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   return status;
 }  // end checkMeshCompleteness
 
-  CONTROLDECLARE(watertight_mesh_ctrl,"watertight_mesh");
+CONTROLDECLARE(watertight_mesh_ctrl, "watertight_mesh");
 
-  std::vector<std::pair<lf::base::RefEl,glb_idx_t>>
-  isWatertightMesh(const Mesh &mesh,bool vertices_only) {
-    const dim_t dim_mesh = mesh.DimMesh();
-    std::vector<std::pair<lf::base::RefEl,glb_idx_t>> ret_vals {};
+std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
+    const Mesh& mesh, bool vertices_only) {
+  const dim_t dim_mesh = mesh.DimMesh();
+  std::vector<std::pair<lf::base::RefEl, glb_idx_t>> ret_vals{};
 
-    // "Reference coordinates" for a point: dummy argument
-    Eigen::Matrix<double,0,1> pt_ref_coord; 
-    
-    // Loop over cells and edges
-    for (int co_dim = dim_mesh; co_dim > 0; co_dim--) {
-      const dim_t codim_pt = dim_mesh - co_dim; // co-dim of vertices
-      // Loop over entities of the specified co-dimension
-      for (const Entity &e : mesh.Entities(co_dim)) {
-	const lf::base::RefEl e_refel = e.RefEl();
-	const Eigen::MatrixXd &ref_el_corners(e_refel.NodeCoords());
-	const Eigen::MatrixXd vertex_coords(e.Geometry()->Global(ref_el_corners));
-	const double approx_area = (e.Geometry()->IntegrationElement(ref_el_corners))[0];
-	// Visit all nodes
-	base::RandomAccessRange<const Entity> sub_ents(e.SubEntities(codim_pt));
-	for (sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
-	  const Eigen::VectorXd node_coords(sub_ents[j].Geometry()->Global(pt_ref_coord));
-	  // Check agreement of coordinates up to roundoff
-	  if ((vertex_coords.col(j) - node_coords).squaredNorm() > 1.0E-8*approx_area) {
-	    ret_vals.emplace_back(e_refel,mesh.Index(e));
-	    if (watertight_mesh_ctrl > 0) {
-	         std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-	       		<< mesh.Index(e) << "): position  mismath" << std::endl;
-	    }
-	  } // end geometry test
-	} // end loop over nodes
-      } // end loop over entities
-    } // end loop over co-dimensions
-    if (!vertices_only) {
-      // Check whether geometry of edges and cells match
-      // ASSERT_MSG(false,
-      //	    "Geometric compatibility test for edges and cells not yet implemented");
-    }
-    
-    return ret_vals;
+  // "Reference coordinates" for a point: dummy argument
+  Eigen::Matrix<double, 0, 1> pt_ref_coord;
+
+  // Loop over cells and edges
+  for (int co_dim = dim_mesh; co_dim > 0; co_dim--) {
+    const dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
+    // Loop over entities of the specified co-dimension
+    for (const Entity& e : mesh.Entities(co_dim)) {
+      const lf::base::RefEl e_refel = e.RefEl();
+      const Eigen::MatrixXd& ref_el_corners(e_refel.NodeCoords());
+      const Eigen::MatrixXd vertex_coords(e.Geometry()->Global(ref_el_corners));
+      const double approx_area =
+          (e.Geometry()->IntegrationElement(ref_el_corners))[0];
+      // Visit all nodes
+      base::RandomAccessRange<const Entity> sub_ents(e.SubEntities(codim_pt));
+      for (sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
+        const Eigen::VectorXd node_coords(
+            sub_ents[j].Geometry()->Global(pt_ref_coord));
+        // Check agreement of coordinates up to roundoff
+        if ((vertex_coords.col(j) - node_coords).squaredNorm() >
+            1.0E-8 * approx_area) {
+          ret_vals.emplace_back(e_refel, mesh.Index(e));
+          if (watertight_mesh_ctrl > 0) {
+            std::cout << "Node " << j << " of " << e_refel.ToString() << "("
+                      << mesh.Index(e) << "): position  mismath" << std::endl;
+          }
+        }  // end geometry test
+      }    // end loop over nodes
+    }      // end loop over entities
+  }        // end loop over co-dimensions
+  if (!vertices_only) {
+    // Check whether geometry of edges and cells match
+    // ASSERT_MSG(false,
+    //	    "Geometric compatibility test for edges and cells not yet
+    // implemented");
   }
+
+  return ret_vals;
+}
 
 }  // namespace lf::mesh::test_utils

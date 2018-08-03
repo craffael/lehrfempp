@@ -66,8 +66,9 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
                     "Edge must be a segment");
       // Access endpoints = sub-entities of relative co-dimension 1
       const auto sub_ent = edge.SubEntities(1);
-      file << "EDS(" << edge_index + 1 << ",:) = [" << mesh.Index(sub_ent[0]) + 1
-           << ", " << mesh.Index(sub_ent[1]) + 1 << "];" << std::endl;
+      file << "EDS(" << edge_index + 1 << ",:) = ["
+           << mesh.Index(sub_ent[0]) + 1 << ", " << mesh.Index(sub_ent[1]) + 1
+           << "];" << std::endl;
       ed_cnt++;
     }
 
@@ -86,8 +87,8 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
           file << "TRI(" << triag_cnt + 1 << ",:) = ["
                << mesh.Index(sub_ent[0]) + 1 << ", "
                << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << ", "
-	       << cell_index << " ];" << std::endl;
+               << mesh.Index(sub_ent[2]) + 1 << ", " << cell_index << " ];"
+               << std::endl;
           triag_cnt++;
           break;
         }
@@ -96,8 +97,8 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
                << mesh.Index(sub_ent[0]) + 1 << ", "
                << mesh.Index(sub_ent[1]) + 1 << ", "
                << mesh.Index(sub_ent[2]) + 1 << ", "
-               << mesh.Index(sub_ent[3]) + 1 << ", "
-	       << cell_index << " ];" << std::endl;
+               << mesh.Index(sub_ent[3]) + 1 << ", " << cell_index << " ];"
+               << std::endl;
           quad_cnt++;
           break;
         }

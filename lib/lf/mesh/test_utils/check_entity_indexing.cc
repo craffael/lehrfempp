@@ -3,10 +3,10 @@
 #include <iostream>
 
 namespace lf::mesh::test_utils {
-  
+
 void checkEntityIndexing(const Mesh& mesh) {
-  using size_type = lf::base::size_type;     // type for indices
-  const auto dim_mesh = mesh.DimMesh();  // dimension of meshed manifold
+  using size_type = lf::base::size_type;  // type for indices
+  const auto dim_mesh = mesh.DimMesh();   // dimension of meshed manifold
   // Now run over all co-dimensions to check indexing
   for (size_type co_dim = 0; co_dim <= dim_mesh; ++co_dim) {
     // Number of entities of current co-dimension
@@ -23,14 +23,15 @@ void checkEntityIndexing(const Mesh& mesh) {
       idx_use[current_idx]++;
 
       // Check consistency of indexing
-      const lf::mesh::Entity *e_ptr = mesh.EntityByIndex(co_dim,current_idx);
-      EXPECT_NE(e_ptr,nullptr) << "Invalid pointer to entity " << current_idx;
-      if (e_ptr != nullptr) { 
-	EXPECT_EQ(current_idx,mesh.Index(*e_ptr))
-	  << "Index mismatch for codim " << co_dim << ", index " << current_idx;
+      const lf::mesh::Entity* e_ptr = mesh.EntityByIndex(co_dim, current_idx);
+      EXPECT_NE(e_ptr, nullptr) << "Invalid pointer to entity " << current_idx;
+      if (e_ptr != nullptr) {
+        EXPECT_EQ(current_idx, mesh.Index(*e_ptr))
+            << "Index mismatch for codim " << co_dim << ", index "
+            << current_idx;
       }
-    } // end loop over entities
-    
+    }  // end loop over entities
+
     // Indices should occur only once. This means that the counting array
     // should contain 1 in every component.
     for (size_type idx_cnt = 0; idx_cnt < no_of_entities; ++idx_cnt) {

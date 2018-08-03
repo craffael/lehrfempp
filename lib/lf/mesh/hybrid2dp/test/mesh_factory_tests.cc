@@ -17,7 +17,7 @@
 #include "mesh_factory_test.h"
 
 namespace lf::mesh::hybrid2dp::test {
-  
+
 // Test for generating a mesh with reconstruction of edge information
 TEST(lf_edge_create, MeshFactory_p) {
   using coord_t = Eigen::Vector2d;
@@ -34,28 +34,28 @@ TEST(lf_edge_create, MeshFactory_p) {
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p,false);
-  EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
+  EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
-  }
-  else {
+  } else {
     std::cout << "INCONSISTENT!" << std::endl;
-    for (auto & geo_errs : fails) {
-      std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+    for (auto& geo_errs : fails) {
+      std::cout << geo_errs.first.ToString() << "(" << geo_errs.second << ")"
+                << std::endl;
     }
   }
 
   // Compute volumes
   double total_area = 0.0;
-  for (const mesh::Entity &cell : mesh_p->Entities(0)) {
+  for (const mesh::Entity& cell : mesh_p->Entities(0)) {
     const double vol = Volume(*cell.Geometry());
-    std::cout << cell.RefEl().ToString() << ' ' << mesh_p->Index(cell) << ": volume = "
-	      << vol << std::endl;
+    std::cout << cell.RefEl().ToString() << ' ' << mesh_p->Index(cell)
+              << ": volume = " << vol << std::endl;
     total_area += vol;
   }
   std::cout << ">>> Total area = " << total_area << std::endl;
-  
+
   std::cout << "Writing MATLAB file" << std::endl;
   utils::writeMatlab(*mesh_p, "test_mesh.m");
 

@@ -11,7 +11,7 @@ int main() {
   std::cout << "Output of information of geometry" << std::endl;
 
   // Create point
-  lf::geometry::Point test_point(Eigen::Vector3d(1,0,0));
+  lf::geometry::Point test_point(Eigen::Vector3d(1, 0, 0));
 
   // Print point
   PrintInfo(test_point, std::cout);

@@ -126,7 +126,7 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   // The refinement pattern must be for a quadrilateral
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
-  LF_VERIFY_MSG(codim < 3,"Illegal codim " << codim);
+  LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
   // Lattice meshwidth
   const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as lattice polygons
@@ -134,9 +134,10 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
   const int no_children = child_polygons.size();
-  LF_VERIFY_MSG(no_children == ref_pat.noChildren(codim),
-		"no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
-  
+  LF_VERIFY_MSG(
+      no_children == ref_pat.noChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   // For each child cell create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
@@ -149,38 +150,40 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
     const Eigen::MatrixXd child_geo(
         Global(h_lattice * child_polygons[l].cast<double>()));
     switch (codim) {
-    case 0: {
-    if (child_polygons[l].cols() == 3) {
-      // Child cell is a triangle
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
-    } else if (child_polygons[l].cols() == 4) {
-      // Child cell is a quadrilateral
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(child_geo));
-    } else {
-      LF_VERIFY_MSG(false, "child_polygons[" << l << "].cols() = "
-                                             << child_polygons[l].cols());
-    }
-    break;
-    }
-    case 1: {
-      // Child is an edge
-      LF_VERIFY_MSG(child_polygons[l].cols() == 2,
-		    "child_polygons[l].cols() = " << child_polygons[l].cols());
-      child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
-      break;
-    }
-    case 2: {
-      LF_VERIFY_MSG(child_polygons[l].cols() == 1,
-		    "child_polygons[l].cols() = " << child_polygons[l].cols());
-      child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
-      break;
-    }
-    default: {
-      LF_VERIFY_MSG(false,"Illegal co-dimension");
-      break;
-    }
-    } // end switch codim
-  } // end loop over children
+      case 0: {
+        if (child_polygons[l].cols() == 3) {
+          // Child cell is a triangle
+          child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
+        } else if (child_polygons[l].cols() == 4) {
+          // Child cell is a quadrilateral
+          child_geo_uptrs.push_back(std::make_unique<QuadO1>(child_geo));
+        } else {
+          LF_VERIFY_MSG(false, "child_polygons[" << l << "].cols() = "
+                                                 << child_polygons[l].cols());
+        }
+        break;
+      }
+      case 1: {
+        // Child is an edge
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 2,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
+        break;
+      }
+      case 2: {
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 1,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
+        break;
+      }
+      default: {
+        LF_VERIFY_MSG(false, "Illegal co-dimension");
+        break;
+      }
+    }  // end switch codim
+  }    // end loop over children
   return (child_geo_uptrs);
 }  // end ChildGeometry()
 

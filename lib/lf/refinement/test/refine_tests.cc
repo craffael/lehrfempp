@@ -89,7 +89,6 @@ TEST(TopRefTest, TopSegRef) {
             << "): " << rp_split.ChildPolygons(0) << std::endl;
 }
 
-
 TEST(TopRefTest, TopTriaRef) {
   // Copy "refinement"
   {
@@ -197,6 +196,6 @@ TEST(TopRefTest, TopQuadRef) {
     std::cout << "BARYCENTRIC: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
   }
-  } 
+}
 
 }  // namespace lf::refinement::test
