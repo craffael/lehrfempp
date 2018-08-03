@@ -2,9 +2,17 @@
 #define __37e385afbd3b4b1dba8611fb71787822
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
+#include <lf/base/static_vars.h>
+//#include <lf/mesh/utils/utils.h>
+
 
 namespace lf::mesh {
 
+  using size_type = lf::base::size_type;
+  using dim_t = lf::base::dim_t;
+  using sub_idx_t = lf::base::sub_idx_t;
+  using glb_idx_t = lf::base::glb_idx_t;
+  
 class Entity {
  protected:
   Entity() = default;
@@ -64,6 +72,7 @@ class Entity {
 
   /**
    * @brief Check if two entities are different.
+   * @sa Entity::operator==
    */
   bool operator!=(const Entity& rhs) const { return !operator==(rhs); }
 
@@ -71,7 +80,12 @@ class Entity {
    * @brief Virtual Destructor.
    */
   virtual ~Entity() = default;
-};
+
+  // Add global output control
+  /** @brief Diagnostics control variable */
+  static int output_ctrl_;
+
+}; // class entity
 
 }  // namespace lf::mesh
 

@@ -2,6 +2,7 @@ set(sources
   geometry.h
   geometry.cc
   geometry_interface.h
+  geometry_interface.cc
   point.h
   point.cc
   quad_o1.h
@@ -11,6 +12,8 @@ set(sources
   segment_o1.cc
   tria_o1.h
   tria_o1.cc
+  print_info.h
+  print_info.cc
 )
 
 add_library(lf.geometry ${sources})

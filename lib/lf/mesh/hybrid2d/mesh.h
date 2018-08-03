@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include <lf/mesh/mesh.h>
+//#include "lf/mesh/utils/utils.h"
 
 namespace lf::mesh::hybrid2d {
 
@@ -21,6 +22,11 @@ class Mesh : public mesh::Mesh {
   size_type Size(char codim) const override;
 
   size_type Index(const mesh::Entity& e) const override;
+
+  const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const override {
+    LF_VERIFY_MSG(false,"Not implemented");
+    return nullptr;
+  }
 
   bool Contains(const mesh::Entity& e) const override;
 
@@ -64,6 +70,7 @@ class Mesh : public mesh::Mesh {
   friend class Entity;
   friend class MeshFactory;
 };
+
 
 }  // namespace lf::mesh::hybrid2d
 

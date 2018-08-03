@@ -54,7 +54,7 @@ class Point : public mesh::Entity {
                  std::unique_ptr<geometry::Geometry>&& geometry)
       : index_(index), geometry_(std::move(geometry)) {
     // DIAGNOSTICS
-    std::cout << "hybrid2dp::Point(" << index_ << ") " << std::endl;
+    // std::cout << "hybrid2dp::Point(" << index_ << ") " << std::endl;
     LF_VERIFY_MSG(geometry_, "Point must be supplied with a geometry");
     LF_VERIFY_MSG(geometry_->DimLocal() == 0,
                   "Geometry must be that of a point");

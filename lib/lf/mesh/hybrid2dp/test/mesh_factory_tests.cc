@@ -13,86 +13,49 @@
 #include <Eigen/Eigen>
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
+#include "lf/mesh/test_utils/test_meshes.h"
+#include "mesh_factory_test.h"
 
 namespace lf::mesh::hybrid2dp::test {
-
+  
 // Test for generating a mesh with reconstruction of edge information
 TEST(lf_edge_create, MeshFactory_p) {
   using coord_t = Eigen::Vector2d;
   using size_type = mesh::Mesh::size_type;
-  // Obtain mesh factory
-  std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<hybrid2dp::MeshFactory>(2);
-  // Setting point coordinate
-  mesh_factory_ptr->AddPoint(coord_t({1.5, 2}));
-  mesh_factory_ptr->AddPoint(coord_t({1, 1}));
-  mesh_factory_ptr->AddPoint(coord_t({2, 1}));
-  mesh_factory_ptr->AddPoint(coord_t({0, 0}));
-  mesh_factory_ptr->AddPoint(coord_t({1.5, 0}));
-  mesh_factory_ptr->AddPoint(coord_t({3, 0}));
-  mesh_factory_ptr->AddPoint(coord_t({3, 2}));
-  mesh_factory_ptr->AddPoint(coord_t({3, 3}));
-  mesh_factory_ptr->AddPoint(coord_t({0, 3}));
-  mesh_factory_ptr->AddPoint(coord_t({0, 1}));
-
-  // Setting vertices of cells but not their geometry
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({0, 8, 9}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({3, 4, 1}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({4, 2, 1}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({4, 5, 2}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({5, 6, 2}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kQuad(),
-      lf::base::ForwardRange<const size_type>({3, 1, 0, 9}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kQuad(),
-      lf::base::ForwardRange<const size_type>({2, 6, 7, 0}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({0, 7, 8}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({0, 1, 2}),
-      std::unique_ptr<geometry::Geometry>(nullptr));
-  // Inspect data
-  std::cout << "**************************************************"
-            << std::endl;
-  std::cout << "Internal data of MeshFactory" << std::endl;
-  mesh_factory_ptr->PrintLists(std::cout);
-  std::cout << "**************************************************"
-            << std::endl;
 
   // Building the mesh
-  std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
-            << std::endl;
-  std::cout << "&&&& Building mesh &&&&" << std::endl;
-  auto mesh_p = mesh_factory_ptr->Build();
-  std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
-            << std::endl;
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   std::cout << "Checking entity indexing" << std::endl;
   test_utils::checkEntityIndexing(*mesh_p);
+
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
 
+  std::cout << "Checking geometry compatibulity: " << std::flush;
+  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p,false);
+  EXPECT_EQ(fails.size(),0) << "Inconsistent geometry!";
+  if (fails.size() == 0) {
+    std::cout << "consistent!" << std::endl;
+  }
+  else {
+    std::cout << "INCONSISTENT!" << std::endl;
+    for (auto & geo_errs : fails) {
+      std::cout  << geo_errs.first.ToString() << "(" << geo_errs.second << ")" << std::endl;
+    }
+  }
+
+  // Compute volumes
+  double total_area = 0.0;
+  for (const mesh::Entity &cell : mesh_p->Entities(0)) {
+    const double vol = Volume(*cell.Geometry());
+    std::cout << cell.RefEl().ToString() << ' ' << mesh_p->Index(cell) << ": volume = "
+	      << vol << std::endl;
+    total_area += vol;
+  }
+  std::cout << ">>> Total area = " << total_area << std::endl;
+  
   std::cout << "Writing MATLAB file" << std::endl;
   utils::writeMatlab(*mesh_p, "test_mesh.m");
 

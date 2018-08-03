@@ -20,13 +20,13 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
   LF_VERIFY_MSG(e0lensq > 1.0E-8 * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > 1.0E-8 * circum, "Collapsed edge 1");
   LF_VERIFY_MSG(e2lensq > 1.0E-8 * circum, "Collapsed edge 2");
-  LF_VERIFY_MSG(area > 1.0E-8 * circum, "Degenerate quad");
+  LF_VERIFY_MSG(area > 1.0E-8 * circum, "Degenerate triangle");
 
   jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(2) - coords_.col(0);
 
   if (coords_.rows() == 2) {
     jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
-    integrationElement_ = jacobian_.determinant();
+    integrationElement_ = std::abs(jacobian_.determinant());
   } else {
     jacobian_inverse_gramian_ = Eigen::MatrixXd(
         jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
@@ -69,13 +69,17 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   // The refinement pattern must be for a triangle
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kTria(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
+  LF_VERIFY_MSG(codim < 3,"Illegal codim " << codim);
   // Lattice meshwidth
   const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
   // Obtain geometry of children as lattice polygon
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-      child_polygons(ref_pat.ChildPolygons(0));
+      child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
   const int no_children = child_polygons.size();
+  LF_VERIFY_MSG(no_children == ref_pat.noChildren(codim),
+		"no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+  // return variable
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   // For each child triangle create a geometry object and a unique pointer to
   // it.
@@ -84,14 +88,31 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
     // three vertices
     LF_VERIFY_MSG(child_polygons[l].rows() == 2,
                   "child_polygons[l].rows() = " << child_polygons[l].rows());
-    LF_VERIFY_MSG(child_polygons[l].cols() == 3,
+    LF_VERIFY_MSG(child_polygons[l].cols() == 3-codim,
                   "child_polygons[l].cols() = " << child_polygons[l].cols());
     // Normalize lattice coordinates
     const Eigen::MatrixXd child_geo(
         Global(h_lattice * child_polygons[l].cast<double>()));
-    child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
-  }
-  return (child_geo_uptrs);
+    switch (codim) {
+    case 0: {
+      // child is a triangle
+      child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
+      break;
+    }
+    case 1: {
+      // child is an edge
+      child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
+      break;
+    }
+    case 2: {
+      // child is a node
+      child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
+      break;
+    }
+    } // end switch codim
+  } // end loop over the children
+    return (child_geo_uptrs);
 }
+
 
 }  // namespace lf::geometry

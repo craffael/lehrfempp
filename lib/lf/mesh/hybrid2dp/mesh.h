@@ -11,12 +11,19 @@
 
 #include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
+#include "lf/mesh/utils/print_info.h"
 #include "point.h"
 #include "quad.h"
 #include "segment.h"
 #include "triangle.h"
 
 namespace lf::mesh::hybrid2dp {
+
+  using size_type = lf::base::size_type;
+  using dim_t = lf::base::dim_t;
+  using sub_idx_t = lf::base::sub_idx_t;
+  using glb_idx_t = lf::base::glb_idx_t;
+  const unsigned int idx_nil = lf::base::idx_nil;
 
 class MeshFactory;
 
@@ -25,16 +32,14 @@ class MeshFactory;
  */
 class Mesh : public mesh::Mesh {
  public:
-  using dim_t = lf::base::dim_t;
-  using sub_idx_t = lf::base::sub_idx_t;
-  using glb_idx_t = lf::base::glb_idx_t;
   char DimMesh() const override { return 2; }
   char DimWorld() const override { return dim_world_; }
 
-  base::ForwardRange<const Entity> Entities(char codim) const override;
+  base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
   size_type Index(const Entity& e) const override;
-  bool Contains(const Entity& e) const override;
+  const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const override;
+  bool Contains(const mesh::Entity& e) const override;
 
  private:
   dim_t dim_world_{};
@@ -46,16 +51,21 @@ class Mesh : public mesh::Mesh {
   std::vector<hybrid2dp::Triangle> trias_;
   /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Quadrilateral> quads_;
-  /** @brief Auxliary array of cell pointers */
-  std::vector<const mesh::Entity*> cell_pointers_;
+  /** @brief Auxliary array of cell (co-dim ==0 entities) pointers 
+   *
+   * This array serves two purposes. It facilitates the construction
+   * of a range covering all the cells. It is also required to retrieving
+   * the entity of a specific codimension belonging to an index. 
+   */
+  std::array<std::vector<const mesh::Entity*>,3> entity_pointers_;
 
   /** @brief Data types for passing information about mesh intities */
-  using NodeCoordList = std::vector<Eigen::VectorXd>;
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
+  using NodeCoordList = std::vector<GeometryPtr>;
   using EdgeList =
-      std::vector<std::pair<std::array<Mesh::size_type, 2>, GeometryPtr>>;
+      std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
   using CellList =
-      std::vector<std::pair<std::array<Mesh::size_type, 4>, GeometryPtr>>;
+      std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
 
   /**
    * @brief Construction of mesh from information gathered in a MeshFactory
@@ -73,15 +83,28 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, const NodeCoordList& nodes, EdgeList edges,
+  Mesh(dim_t dim_world,NodeCoordList& nodes, EdgeList edges,
        CellList cells);
 
   friend class MeshFactory;
 
  public:
-  /** @brief diagnostics control variable */
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 };
+
+
+/**
+ * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
+ * @param stream The stream to which this function should output
+ * @param mesh The mesh to write to `stream`.
+ * @return The stream itself.
+ *
+ */
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
+    //stream << "mesh object";
+    //utils::PrintInfo(mesh, stream);
+}
 
 }  // namespace lf::mesh::hybrid2dp
 

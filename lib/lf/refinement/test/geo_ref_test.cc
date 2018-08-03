@@ -26,6 +26,7 @@ std::ostream &operator<<(
   return o;
 }
 
+
 TEST(RefineTest, SegRef) {
   // Create edge geometry
   Eigen::Matrix<double, Eigen::Dynamic, 2> ed_coords(2, 2);

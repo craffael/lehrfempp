@@ -27,6 +27,10 @@ using sub_idx_t = unsigned int;
  * @brief type for dimensions and co-dimensions and numbers derived from them
  */
 using dim_t = unsigned char;
+  /**
+   * @brief Index flagged as invalid
+   */
+  const unsigned int idx_nil = (unsigned int)-1;
 /** @} */
 }  // namespace lf::base
 
@@ -40,5 +44,6 @@ using dim_t = unsigned char;
 #include "random_access_iterator.h"
 #include "random_access_range.h"
 #include "ref_el.h"
+
 
 #endif  // __986f32316282425d9be137cb399482f3

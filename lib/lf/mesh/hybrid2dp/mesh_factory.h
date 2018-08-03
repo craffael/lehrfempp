@@ -44,6 +44,9 @@ class MeshFactory : public mesh::MeshFactory {
   /** @copydoc MeshFactory::AddPoint() */
   size_type AddPoint(coord_t coord) override;
 
+  /** @copydoc MeshFactory::AddPoint() */
+  size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) override;
+  
   /** @copydoc MeshFactory::AddEntity() */
   size_type AddEntity(base::RefEl ref_el,
                       const base::ForwardRange<const size_type>& nodes,
@@ -66,8 +69,15 @@ class MeshFactory : public mesh::MeshFactory {
 
  public:
   // Switch for verbosity level of output
+  /** @brief Diagnostics control variable */
   static int output_ctrl_;
 };
+
+
+inline std::ostream& operator<<(std::ostream& stream, const MeshFactory& mesh_factory){
+    stream << "mesh factory object";
+}
+
 
 }  // namespace lf::mesh::hybrid2dp
 

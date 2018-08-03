@@ -8,6 +8,8 @@ set(sources
   check_local_topology.cc
   check_mesh_completeness.h
   check_mesh_completeness.cc
+  test_meshes.h
+  test_meshes.cc
 )
 
 add_library(lf.mesh.test_utils ${sources})
