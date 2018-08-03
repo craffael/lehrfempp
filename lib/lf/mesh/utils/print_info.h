@@ -40,9 +40,10 @@ void PrintInfo(const Mesh &mesh, std::ostream &o);
  * @param stream The stream to which this function should output
  *
  * #### Output levels
- * - Entity::output_ctrl_ == 0: Derived type of entity and type of entity is printed
- * - Entity::output_ctrl_ > 0: The above and geometry of the entity is printed
- * - Entity::output_ctrl_ > 10: The above and geometry of subentities is printed
+ * - Entity::output_ctrl_ == 0: Entity type is printed
+ * - Entity::output_ctrl_ > 10: The above and information of codimensions
+ * - Entity::output_ctrl_ > 50: The above and information about subentities
+ * - Entity::output_ctrl_ > 90: The above and coordinates
  */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
 

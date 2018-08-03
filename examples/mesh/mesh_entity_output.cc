@@ -11,8 +11,9 @@
 #include "lf/mesh/utils/print_info.h"
 
 int main() {
-  using namespace lf::mesh::utils;
   
+  using namespace lf::mesh::utils;
+  /*
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // NOTE TO SELF: There are several test folders in lf/mesh:
@@ -27,7 +28,7 @@ int main() {
 
   //lf::mesh::utils::writeTikZ(lf::mesh::hybrid2dp::Triangle(), "tikztest.txt");
   // file is saved in /Build/examples/mesh/
-
+  */
 
   // Test ----------------------------------
   lf::mesh::hybrid2dp::MeshFactory test(2); // MeshFactory object
@@ -44,25 +45,28 @@ int main() {
   test.AddEntity(lf::base::RefEl::kQuad(), {0, 1, 2, 3},
 		 std::make_unique<lf::geometry::QuadO1>(std::move(node_coord)));
 
-
+  /*
   // explicitly add the right edge:
   node_coord = Eigen::MatrixXd(2, 2);
   node_coord << 1, 1, 0, 1;
   test.AddEntity(lf::base::RefEl::kSegment(), {1, 2},
 		 std::make_unique<lf::geometry::SegmentO1>(node_coord));
-
+  */
+  
   // build the mesh and retrieve a pointer
   auto mesh = test.Build(); // mesh is Mesh object
 
   int dim_mesh_MeshFactory = test.DimWorld(); // test is MeshFactory object
   int dim_mesh_Mesh = mesh->DimWorld();
 
+  /*
   // Output information on mesh
   std::cout << "##### Mesh information ######" << std::endl;
   PrintInfo(*mesh, std::cout);
   std::cout << "#####                   #####" << std::endl;
-
-  lf::mesh::Entity::output_ctrl_ = 100; 
+*/
+  /*
+  lf::mesh::Entity::output_ctrl_ = 100;
 
 
   std::cout << "****** Output of mesh entities *******" << std::endl;
@@ -73,6 +77,11 @@ int main() {
       std::cout << entity << std::endl;
     }
   }
+*/
 
+
+  // Testing of writeTikZ for mesh
+  lf::mesh::utils::writeTikZ(*mesh, "tikz_mesh_test.txt");
+  
   return 0L;
 }

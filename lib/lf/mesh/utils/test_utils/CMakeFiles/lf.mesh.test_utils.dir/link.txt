@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.mesh.test_utils.a  CMakeFiles/lf.mesh.test_utils.dir/check_entity_indexing.o CMakeFiles/lf.mesh.test_utils.dir/check_geometry_orientation.o CMakeFiles/lf.mesh.test_utils.dir/check_local_topology.o CMakeFiles/lf.mesh.test_utils.dir/check_mesh_completeness.o CMakeFiles/lf.mesh.test_utils.dir/test_meshes.o
+/usr/bin/ranlib liblf.mesh.test_utils.a
