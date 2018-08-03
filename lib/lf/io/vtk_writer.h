@@ -178,6 +178,300 @@ class VtkWriter {
   }
 
   /**
+   * @brief Add a new `unsigned char` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<unsigned char>& mds,
+                      unsigned char undefined_value = 0);
+
+  /**
+   * @brief Add a new `char` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name, const mesh::MeshDataSet<char>& mds,
+                      char undefined_value = 0);
+
+  /**
+   * @brief Add a new `unsigned int` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<unsigned int>& mds,
+                      unsigned undefined_value = 0);
+
+  /**
+   * @brief Add a new `unsigned int` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name, const mesh::MeshDataSet<int>& mds,
+                      int undefined_value = 0);
+
+  /**
+   * @brief Add a new `float` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name, const mesh::MeshDataSet<float>& mds,
+                      float undefined_value = 0.f);
+
+  /**
+   * @brief Add a new `double` attribute dataset that attaches data to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name, const mesh::MeshDataSet<double>& mds,
+                      double undefined_value = 0.);
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<Eigen::Vector2d>& mds,
+                      Eigen::Vector2d undefined_value = {0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<Eigen::Vector2f>& mds,
+                      Eigen::Vector2f undefined_value = {0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<Eigen::Vector3d>& mds,
+                      Eigen::Vector3d undefined_value = {0, 0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WritePointData(std::string name,
+                      const mesh::MeshDataSet<Eigen::Vector3f>& mds,
+                      Eigen::Vector3f undefined_value = {0, 0, 0});
+
+  /**
+   * @brief Add a new `unsigned char` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<unsigned char>& mds,
+                     unsigned char undefined_value = 0);
+
+  /**
+   * @brief Add a new `char` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name, const mesh::MeshDataSet<char>& mds,
+                     char undefined_value = 0);
+
+  /**
+   * @brief Add a new `unsigned int` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<unsigned int>& mds,
+                     unsigned int undefined_value = 0);
+
+  /**
+   * @brief Add a new `int` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name, const mesh::MeshDataSet<int>& mds,
+                     int undefined_value = 0);
+
+  /**
+   * @brief Add a new `float` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name, const mesh::MeshDataSet<float>& mds,
+                     float undefined_value = 0);
+
+  /**
+   * @brief Add a new `double` attribute dataset that attaches data to
+   * the `cells` of the mesh (i.e. to entities with codim = "codim that was
+   * specified in constructor of VtkWriter")
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name, const mesh::MeshDataSet<double>& mds,
+                     double undefined_value = 0);
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<Eigen::Vector2d>& mds,
+                     Eigen::Vector2d undefined_value = {0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<Eigen::Vector2f>& mds,
+                     Eigen::Vector2f undefined_value = {0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<Eigen::Vector3d>& mds,
+                     Eigen::Vector3d undefined_value = {0, 0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   */
+  void WriteCellData(std::string name,
+                     const mesh::MeshDataSet<Eigen::Vector3f>& mds,
+                     Eigen::Vector3f undefined_value = {0, 0, 0});
+
+  /**
+   * @brief Write global data into the vtk file that is not related to the mesh
+   *        at all.
+   * @param name Name of the global dataset.
+   * @param data The data series that should be written.
+   *
+   * This function writes so-called "Field Data" into the vtk file which can
+   * be read and visualized by paraview. It is e.g. a convenient way to export
+   * the simulation time or the global mesh size.
+   */
+  void WriteGlobalData(std::string name, std::vector<int> data);
+
+  /**
+   * @brief Write global data into the vtk file that is not related to the mesh
+   *        at all.
+   * @param name Name of the global dataset.
+   * @param data The data series that should be written.
+   *
+   * This function writes so-called "Field Data" into the vtk file which can
+   * be read and visualized by paraview. It is e.g. a convenient way to export
+   * the simulation time or the global mesh size.
+   */
+  void WriteGlobalData(std::string name, std::vector<float> data);
+
+  /**
+   * @brief Write global data into the vtk file that is not related to the mesh
+   *        at all.
+   * @param name Name of the global dataset.
+   * @param data The data series that should be written.
+   *
+   * This function writes so-called "Field Data" into the vtk file which can
+   * be read and visualized by paraview. It is e.g. a convenient way to export
+   * the simulation time or the global mesh size.
+   */
+  void WriteGlobalData(std::string name, std::vector<double> data);
+
+  /**
    * @brief Destructor, writes everything into the file and closes it.
    */
   ~VtkWriter() { WriteToFile(vtk_file_, filename_); }
@@ -187,6 +481,27 @@ class VtkWriter {
   VtkFile vtk_file_;
   std::string filename_;
   dim_t codim_;
+
+  template <class T>
+  void WriteScalarPointData(std::string name, const mesh::MeshDataSet<T>&,
+                            T undefined_value);
+
+  template <int ROWS, class T>
+  void WriteVectorPointData(
+      std::string, const mesh::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
+      Eigen::Matrix<T, ROWS, 1> undefined_value);
+
+  template <class T>
+  void WriteScalarCellData(std::string name, const mesh::MeshDataSet<T>& mds,
+                           T undefined_value);
+
+  template <int ROWS, class T>
+  void WriteVectorCellData(
+      std::string name, const mesh::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
+      Eigen::Matrix<T, ROWS, 1> undefined_value);
+
+  template <class T>
+  void WriteFieldData(std::string name, std::vector<T> data);
 };
 
 }  // namespace lf::io
