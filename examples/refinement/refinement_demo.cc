@@ -15,7 +15,7 @@ int main(int argc, const char *argv[]) {
             << std::endl;
 
   // Set control variables from command line or file "setup vars"
-  const int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
+  // const int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;
   }

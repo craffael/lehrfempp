@@ -13,7 +13,7 @@ namespace lf::mesh::test_utils {
  * @brief Generates a simple 2D hybrid test mesh
  */
 
-std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(void);
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh();
 
 }  // namespace lf::mesh::test_utils
 

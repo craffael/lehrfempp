@@ -24,8 +24,8 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
 
   const dim_t dim_mesh = mesh.DimMesh();
   const dim_t dim_world = mesh.DimWorld();
-  o << "Mesh of dimension " << (int)dim_mesh << ", ambient dimension "
-    << (int)dim_world << std::endl;
+  o << "Mesh of dimension " << static_cast<int>(dim_mesh)
+    << ", ambient dimension " << static_cast<int>(dim_world) << std::endl;
 
   if (printinfo_ctrl > 10) {
     // Loop over codimensions
@@ -88,7 +88,6 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
     const geometry::Geometry *e_geo_ptr = e.Geometry();
     LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
     const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
-    int dim_global = e_geo_ptr->DimGlobal();
     stream << std::endl << e_geo_ptr->Global(ref_el_corners) << std::endl;
 
     for (int co_dim = dim_ref_el; co_dim > 0; co_dim--) {
@@ -102,7 +101,6 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
              e.SubEntities(co_dim)) {  // (co_dim_entities)
           lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
           stream << "Subentity, type: " << sub_ent_refel << std::endl;
-          const geometry::Geometry *sub_e_geo_ptr = sub_ent.Geometry();
         }
       }
     }
@@ -112,10 +110,9 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
 std::ostream &operator<<(std::ostream &stream, const lf::mesh::Entity &entity) {
   if (Entity::output_ctrl_ == 0) {
     return stream << entity.RefEl();
-  } else {
-    lf::mesh::utils::PrintInfo(entity, stream);
-    return stream;
   }
+  lf::mesh::utils::PrintInfo(entity, stream);
+  return stream;
 }  // end output  operator <<
 
 }  // end namespace lf::mesh::utils

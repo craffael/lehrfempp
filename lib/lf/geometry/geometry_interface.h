@@ -5,7 +5,6 @@
 #include <Eigen/Eigen>
 #include <memory>
 #include "refinement_pattern.h"
-//#include "lf/geometry/print_info.h"
 
 namespace lf::geometry {
 
@@ -172,8 +171,6 @@ class Geometry {
   static int output_ctrl_;
 
 };  // class Geometry
-
-void PrintInfo(const Geometry& geom, std::ostream& o);
 
 /**
  * @brief Operator overload to print a `Geometry` to a stream, such as

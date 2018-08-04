@@ -137,8 +137,7 @@ class EndpointIndexPair {
 // EdgeList = std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
 // CellList = std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
 // **********************************************************************
-Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,
-           CellList cells)
+Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     : dim_world_(dim_world) {
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
@@ -347,7 +346,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,
       // Store number of cell and the local index j of the edge
       AdjCellInfo edge_cell_info(cell_index, j);
       // Check whether edge exists already
-      EdgeMap::iterator edge_ptr = edge_map.find(c_edge_vertex_indices);
+      auto edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
         // Inherit geometry of edge from adjacent cell
         GeometryPtr edge_geo_ptr;
@@ -737,7 +736,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,
       LF_ASSERT_MSG(
           entity_pointers_[codim][entity_index] == nullptr,
           "Entity(" << codim << ") index " << entity_index << " occurs twice!");
-      entity_pointers_[codim][entity_index] = (const mesh::Entity *)&e;
+      entity_pointers_[codim][entity_index] =
+          static_cast<const mesh::Entity *>(&e);
     }  // loop over entities
   }    // loop over codim's
 

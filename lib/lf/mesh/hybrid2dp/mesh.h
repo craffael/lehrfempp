@@ -70,6 +70,7 @@ class Mesh : public mesh::Mesh {
 
   /**
    * @brief Construction of mesh from information gathered in a MeshFactory
+   * @param dim_world Dimension of the ambient space.
    * @param nodes sequential container of node coordinates
    * @param edges sequential container of pairs of
                   (i) vectors of indices of the nodes of an edge
@@ -84,7 +85,7 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, NodeCoordList& nodes, EdgeList edges, CellList cells);
+  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
 
   friend class MeshFactory;
 
@@ -100,9 +101,10 @@ class Mesh : public mesh::Mesh {
  * @return The stream itself.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& /*mesh*/) {
   // stream << "mesh object";
   // utils::PrintInfo(mesh, stream);
+  return stream;
 }
 
 }  // namespace lf::mesh::hybrid2dp

@@ -78,8 +78,8 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
   }
 }
 
-void WriteMatlab(const MeshHierarchy &hier_mesh, std::string basename) {
-  const size_type n_levels = hier_mesh.numLevels();
+void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &filename) {
+  const size_type n_levels = hier_mesh.NumLevels();
   for (int level = 0; level < n_levels; level++) {
     // prepare filename
     std::stringstream level_asc;

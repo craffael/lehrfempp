@@ -271,7 +271,7 @@ TEST(LocRefTest, MultipleRefinement) {
     std::cout << "#### Refining mesh locally" << std::endl;
     multi_mesh.RefineMarked();
 
-    const size_type n_levels = multi_mesh.numLevels();
+    const size_type n_levels = multi_mesh.NumLevels();
     const lf::mesh::Mesh &mesh(multi_mesh.getMesh(n_levels - 1));
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
               << " nodes, " << mesh.Size(1) << " nodes, " << mesh.Size(0)
@@ -336,7 +336,7 @@ TEST(LocRefTest, MixedRefinement) {
   multi_mesh.RefineMarked();
 
   // Check mesh integrity
-  const size_type n_levels = multi_mesh.numLevels();
+  const size_type n_levels = multi_mesh.NumLevels();
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
                          << " level?";
   for (int l = 0; l < n_levels; ++l) {

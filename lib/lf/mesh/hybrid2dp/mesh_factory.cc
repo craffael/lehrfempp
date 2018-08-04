@@ -108,7 +108,7 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   // mesh is done by the constructor of that object
   built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
-      dim_world_, nodes_, std::move(edges_), std::move(elements_));
+      dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
 
   if (mesh_ptr != nullptr) {
     // Clear all information supplied to the MeshFactory object
@@ -126,11 +126,12 @@ void MeshFactory::PrintLists(std::ostream& o) const {
   o << nodes_.size() << " nodes:" << std::endl;
   for (size_type j = 0; j < nodes_.size(); j++) {
     o << "Node " << j << " at ";
-    if (nodes_[j] != nullptr)
+    if (nodes_[j] != nullptr) {
       o << (nodes_[j]->Global(Eigen::Matrix<double, 0, 1>())).transpose()
         << std::endl;
-    else
+    } else {
       o << "with unknown location!" << std::endl;
+    }
   }
   o << edges_.size() << " edges " << std::endl;
   for (size_type j = 0; j < edges_.size(); j++) {

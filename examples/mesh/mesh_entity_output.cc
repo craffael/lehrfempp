@@ -11,8 +11,6 @@
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-  using namespace lf::mesh::utils;
-
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // NOTE TO SELF: There are several test folders in lf/mesh:
@@ -52,12 +50,12 @@ int main() {
   // build the mesh and retrieve a pointer
   auto mesh = test.Build();  // mesh is Mesh object
 
-  int dim_mesh_MeshFactory = test.DimWorld();  // test is MeshFactory object
-  int dim_mesh_Mesh = mesh->DimWorld();
+  // int dim_mesh_MeshFactory = test.DimWorld();  // test is MeshFactory object
+  // int dim_mesh_Mesh = mesh->DimWorld();
 
   // Output information on mesh
   std::cout << "##### Mesh information ######" << std::endl;
-  PrintInfo(*mesh, std::cout);
+  lf::mesh::utils::PrintInfo(*mesh, std::cout);
   std::cout << "#####                   #####" << std::endl;
 
   lf::mesh::Entity::output_ctrl_ = 100;
@@ -65,8 +63,8 @@ int main() {
   std::cout << "****** Output of mesh entities *******" << std::endl;
   // Loop over entities and print associated information
   for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
-    std::cout << "******* Entities of codimension " << (int)codim << " ******* "
-              << std::endl;
+    std::cout << "******* Entities of codimension " << static_cast<int>(codim)
+              << " ******* " << std::endl;
     for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
       std::cout << entity << std::endl;
     }

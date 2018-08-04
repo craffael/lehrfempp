@@ -71,7 +71,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
   LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
   // Lattice meshwidth
-  const double h_lattice = 1.0 / (double)ref_pat.LatticeConst();
+  const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as lattice polygon
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));

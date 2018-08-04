@@ -34,8 +34,7 @@ class TriaO1 : public Geometry {
    */
 
   std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pattern,
-      lf::base::dim_t codim) const override;
+      const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;

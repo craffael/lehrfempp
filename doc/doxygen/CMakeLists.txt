@@ -10,7 +10,7 @@ if(DOXYGEN_FOUND)
   configure_file(${DOXYGEN_INPUT} ${DOXYGEN_OUTPUT} @ONLY)
   
   # note the option all which allows to build the docs together with the application
-  add_custom_target(doxygen ALL 
+  add_custom_target(doxygen 
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUTPUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating API Documentation with Doxygen"
