@@ -8,7 +8,6 @@
  */
 
 #include <lf/mesh/mesh.h>
-#include <iostream>
 
 namespace lf::refinement {
 // Convenient types
@@ -60,7 +59,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   Hybrid2DRefinementPattern& operator=(Hybrid2DRefinementPattern&&) = default;
   /** @} */
 
-  // TODO:
+  // TODO(ralfh):
   // We do not need the achor_set_ member, if we follow the convention that
   // lf::base::idx_nil represents an invalid (= non-set) anchor index.
 
@@ -96,12 +95,12 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   /**
    * @copydoc RefinementPattern::noChildren
    */
-  virtual lf::base::size_type noChildren(lf::base::dim_t codim) const;
+  lf::base::size_type noChildren(lf::base::dim_t codim) const override;
   /**
    * @copydoc RefinementPattern::ChildPolygons
    */
-  virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-  ChildPolygons(lf::base::dim_t codim) const;
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> ChildPolygons(
+      lf::base::dim_t codim) const override;
 
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
@@ -144,7 +143,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   }
   /** @} */
 
-  virtual ~Hybrid2DRefinementPattern() override = default;
+  ~Hybrid2DRefinementPattern() override = default;
 
  private:
   lf::base::sub_idx_t anchor_; /**< local number of anchor edge */

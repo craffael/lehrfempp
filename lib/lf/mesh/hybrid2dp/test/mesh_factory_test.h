@@ -3,8 +3,6 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::mesh::hybrid2dp::test {
-
-}
+namespace lf::mesh::hybrid2dp::test {}
 
 #endif

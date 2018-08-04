@@ -22,7 +22,7 @@ TEST(RegRefTest, RegRef) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   std::cout << "RegRefTEST: Regular refinement" << std::endl;
   multi_mesh.RefineRegular();
@@ -61,12 +61,12 @@ TEST(RegRefTest, BarycentricRef) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
 
   std::shared_ptr<const mesh::Mesh> fine_mesh_ptr = multi_mesh.getMesh(1);
-  auto &fine_mesh = *fine_mesh_ptr;
+  const lf::mesh::Mesh &fine_mesh = *fine_mesh_ptr;
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
 
@@ -102,7 +102,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark all edges
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)> marker =
@@ -157,7 +157,7 @@ TEST(LocRefTest, LocalRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark all edges
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -254,7 +254,7 @@ TEST(LocRefTest, MultipleRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -275,7 +275,7 @@ TEST(LocRefTest, MultipleRefinement) {
     std::cout << "#### Refining mesh locally" << std::endl;
     multi_mesh.RefineMarked();
 
-    const size_type n_levels = multi_mesh.numLevels();
+    const size_type n_levels = multi_mesh.NumLevels();
     std::shared_ptr<const mesh::Mesh> mesh_ptr = multi_mesh.getMesh(n_levels - 1);
     const lf::mesh::Mesh &mesh = *mesh_ptr;
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
@@ -317,7 +317,7 @@ TEST(LocRefTest, MixedRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -341,7 +341,7 @@ TEST(LocRefTest, MixedRefinement) {
   multi_mesh.RefineMarked();
 
   // Check mesh integrity
-  const size_type n_levels = multi_mesh.numLevels();
+  const size_type n_levels = multi_mesh.NumLevels();
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
                          << " level?";
   for (int l = 0; l < n_levels; ++l) {

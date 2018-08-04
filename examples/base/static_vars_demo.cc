@@ -10,16 +10,11 @@
 
 class StaticVarsDemoClass {
  public:
-  StaticVarsDemoClass() = default;
-  ~StaticVarsDemoClass(void) = default;
-
   static int ctrl_var_;
   static int other_var_;
   static int arg_var_;
   static int output_ctrl_;  // Added
 };
-
-using namespace lf::base;
 
 // Definition of static control variables
 
@@ -45,21 +40,21 @@ int main(int argc, const char *argv[]) {
 
   std::cout << ">> List of control variables before initialization:"
             << std::endl;
-  ListCtrlVars(std::cout);
+  lf::base::ListCtrlVars(std::cout);
 
   // Set verbosity of output for functions called subsequently
-  SetCtrlVar("read_ctrl_vars_file", 1);
-  SetCtrlVar("read_ctrl_vars_args", 10);
+  lf::base::SetCtrlVar("read_ctrl_vars_file", 1);
+  lf::base::SetCtrlVar("read_ctrl_vars_args", 10);
 
-  int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
+  // int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
 
-  if (!ReadCtrlVarsFile("setup.vars")) {
+  if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;
   }
 
   std::cout << ">> List of control variables after initialization:"
             << std::endl;
-  ListCtrlVars(std::cout);
+  lf::base::ListCtrlVars(std::cout);
 
   return 0;
 }

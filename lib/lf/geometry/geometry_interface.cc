@@ -3,19 +3,19 @@
  */
 
 #include "geometry_interface.h"
+#include "print_info.h"
 
 namespace lf::geometry {
 
 std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
   if (Geometry::output_ctrl_ == 0) {
     return stream << geom.RefEl();
-  } else {
-    PrintInfo(geom, stream);
   }
+  PrintInfo(geom, stream);
+  return stream;
 }
 
 double Volume(const Geometry& geo) {
-  const lf::base::dim_t dim = geo.DimGlobal();
   const lf::base::dim_t refdim = geo.DimLocal();
 
   Eigen::Matrix<double, Eigen::Dynamic, 1> refc(refdim, 1);

@@ -12,7 +12,7 @@ MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
 }
 
 MeshFactory::size_type MeshFactory::AddPoint(
-    std::unique_ptr<geometry::Geometry>&& geometry) {
+    std::unique_ptr<geometry::Geometry>&& /*geometry*/) {
   LF_ASSERT_MSG(false, "Not implemented");
   return -1;
 }

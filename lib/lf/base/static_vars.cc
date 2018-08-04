@@ -63,7 +63,7 @@ bool SetCtrlVar(const std::string &varname, int value,
 
 CONTROLDECLARE(read_ctrl_vars_file, "read_ctrl_vars_file");
 
-bool ReadCtrlVarsFile(const std::string filename,
+bool ReadCtrlVarsFile(const std::string &filename,
                       const StaticVar *ctrl_var_root) {
   // Open file for reading
   std::ifstream file(filename, std::ios::in);

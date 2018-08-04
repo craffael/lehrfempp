@@ -50,6 +50,36 @@ std::ostream &operator<<(std::ostream &o, const RefPat &refpat) {
     o << "rp_BARYCENTRIC";
     break;
   }
+  case rp_nil:
+    o << "rp_nil";
+    break;
+    case rp_copy:
+      o << "rp_copy";
+      break;
+    case rp_split:
+      o << "rp_split";
+      break;
+    case rp_bisect:
+      o << "rp_bisect";
+      break;
+    case rp_trisect:
+      o << "rp_trisect";
+      break;
+    case rp_trisect_left:
+      o << "rp_trisect_left";
+      break;
+    case rp_quadsect:
+      o << "rp_quadsect";
+      break;
+    case rp_threeedge:
+      o << "rp_threeedge";
+      break;
+    case rp_regular:
+      o << "rp_regular";
+      break;
+    case rp_barycentric:
+      o << "rp_barycentric";
+      break;
   }
   return o;
 }
@@ -186,7 +216,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
             }
             default: {
               LF_VERIFY_MSG(false, "refinement pattern "
-                                       << (int)ref_pat_
+                                       << ref_pat_
                                        << "not implemented for triangle!");
               break;
             }
@@ -194,11 +224,10 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
           break;
         }  // end case codim = 1
         case 2: {
-          if (ref_pat_ == RefPat::rp_barycentric)
+          if (ref_pat_ == RefPat::rp_barycentric) {
             return 1;
-          else
-            return 0;
-          break;
+          }
+          return 0;
         }
       }  // end switch codim
       break;
@@ -232,7 +261,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
             }
             default: {
               LF_VERIFY_MSG(false, "refinement pattern "
-                                       << (int)ref_pat_
+                                       << ref_pat_
                                        << "not implemented for quadrilateral!");
               break;
             }
@@ -275,10 +304,10 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
         }
         case 2: {
           if ((ref_pat_ == RefPat::rp_barycentric) ||
-              (ref_pat_ == RefPat::rp_regular))
+              (ref_pat_ == RefPat::rp_regular)) {
             return 1;
-          else
-            return 0;
+          }
+          return 0;
           break;
         }
       }  // end switch codim
@@ -303,7 +332,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
   // Depending on the type of cell do something different
   switch (ref_el_) {
     case lf::base::RefEl::kPoint(): {
-      if (ref_pat_ != RefPat::rp_nil) child_poly.emplace_back(0, 1);
+      if (ref_pat_ != RefPat::rp_nil) {
+        child_poly.emplace_back(0, 1);
+      }
       break;
     }                                    // end case of a simple point
     case lf::base::RefEl::kSegment(): {  // case of an edge
@@ -316,15 +347,15 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             case RefPat::rp_copy: {
               Eigen::Matrix<int, 1, 2> seg_ref_coord;
               seg_ref_coord << 0, lt_one;
-              child_poly.push_back(seg_ref_coord);
+              child_poly.emplace_back(seg_ref_coord);
               break;
             }
             case RefPat::rp_split: {
               Eigen::Matrix<int, 1, 2> part_ref_coord;
               part_ref_coord << 0, lt_half;
-              child_poly.push_back(part_ref_coord);
+              child_poly.emplace_back(part_ref_coord);
               part_ref_coord << lt_half, lt_one;
-              child_poly.push_back(part_ref_coord);
+              child_poly.emplace_back(part_ref_coord);
               break;
             }
             default: {
@@ -341,7 +372,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             // child is the midpoint
             Eigen::Matrix<int, 1, 1> point_ref_coord;
             point_ref_coord << lt_half;
-            child_poly.push_back(point_ref_coord);
+            child_poly.emplace_back(point_ref_coord);
           }
           break;
         }  // end case codim = 1
@@ -685,7 +716,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           if (ref_pat_ == RefPat::rp_barycentric) {
             // Only in the case of barycentric refinemnt insert new point
             // in the center of gravitfy.
-            child_poly.push_back(Eigen::Vector2i({lt_third, lt_third}));
+            child_poly.emplace_back(Eigen::Vector2i({lt_third, lt_third}));
           }
           break;
         }  // end codim == 2
@@ -975,7 +1006,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           // Those arise only in the case of regular/barycentric refinement
           if ((ref_pat_ == RefPat::rp_regular) ||
               (ref_pat_ == RefPat::rp_barycentric)) {
-            child_poly.push_back(Eigen::Vector2i({lt_half, lt_half}));
+            child_poly.emplace_back(Eigen::Vector2i({lt_half, lt_half}));
           }
           break;
         }  // end codim == 2

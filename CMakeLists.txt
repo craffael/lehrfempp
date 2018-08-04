@@ -30,5 +30,6 @@ hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
 add_subdirectory(lib)
+add_subdirectory(doc/doxygen)
 add_subdirectory(doc/doxygen/snippets)
 add_subdirectory(examples)

@@ -22,9 +22,9 @@ namespace lf::refinement {
  * - global index of the child point
  */
 struct PointChildInfo {
-  PointChildInfo(void) : ref_pat_(RefPat::rp_nil), child_point_idx_(-1) {}
-  RefPat ref_pat_;
-  glb_idx_t child_point_idx_;
+  explicit PointChildInfo() = default;
+  RefPat ref_pat_{RefPat::rp_nil};
+  glb_idx_t child_point_idx_{static_cast<glb_idx_t>(-1)};
 };
 
 /**
@@ -38,8 +38,8 @@ struct PointChildInfo {
  * - indices of all _interior_ child entities (edges or points)
  */
 struct EdgeChildInfo {
-  EdgeChildInfo(void) : ref_pat_(RefPat::rp_nil) {}
-  RefPat ref_pat_;
+  explicit EdgeChildInfo() = default;
+  RefPat ref_pat_{RefPat::rp_nil};
   std::vector<glb_idx_t> child_edge_idx_;
   std::vector<glb_idx_t> child_point_idx_;
 };
@@ -56,9 +56,9 @@ struct EdgeChildInfo {
  * - indices of all _interior_ child entities
  */
 struct CellChildInfo {
-  CellChildInfo(void) : ref_pat_(RefPat::rp_nil), anchor_(-1) {}
-  RefPat ref_pat_;
-  sub_idx_t anchor_;
+  explicit CellChildInfo() = default;
+  RefPat ref_pat_{RefPat::rp_nil};
+  sub_idx_t anchor_{static_cast<sub_idx_t>(-1)};
   std::vector<glb_idx_t> child_cell_idx_;
   std::vector<glb_idx_t> child_edge_idx_;
   std::vector<glb_idx_t> child_point_idx_;
@@ -68,13 +68,13 @@ struct CellChildInfo {
  * @brief Information about possible parent entities
  */
 struct ParentInfo {
-  explicit ParentInfo(void)
-      : parent_ptr_(nullptr), child_number_(idx_nil), parent_index_(idx_nil) {}
+  explicit ParentInfo() = default;
   // Data members
-  const mesh::Entity
-      *parent_ptr_;        /**< parent entity, not necessarily the same type */
-  glb_idx_t parent_index_; /**< index of parent entity w.r.t. coarse mesh */
-  sub_idx_t child_number_; /**< local index in the parent entity */
+  const mesh::Entity *parent_ptr_{
+      nullptr}; /**< parent entity, not necessarily the same type */
+  glb_idx_t parent_index_{
+      idx_nil}; /**< index of parent entity w.r.t. coarse mesh */
+  sub_idx_t child_number_{idx_nil}; /**< local index in the parent entity */
 };
 
 /**
@@ -89,14 +89,16 @@ class MeshHierarchy {
    * @param mesh_factory factory object creating new meshes during refinement
    */
   MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,
-                mesh::MeshFactory &mesh_factory);
+                std::shared_ptr<mesh::MeshFactory> mesh_factory);
   MeshHierarchy(const MeshHierarchy &) = delete;
   MeshHierarchy &operator=(const MeshHierarchy &) = delete;
+  MeshHierarchy(MeshHierarchy &&) = delete;
+  MeshHierarchy &operator=(MeshHierarchy &&) = delete;
 
   /**
    * @brief number of meshes contained in the hierarchy, 1 for a single mesh
    */
-  size_type numLevels(void) const { return meshes_.size(); }
+  size_type NumLevels() const { return meshes_.size(); }
 
   /**
    * @brief access the mesh on a particular level
@@ -111,21 +113,21 @@ class MeshHierarchy {
    * @brief Obtain refinement information for all points
    */
   const std::vector<PointChildInfo> &point_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return point_child_infos_[level];
   }
   /**
    * @brief Obtain refinement information for all edges
    */
   const std::vector<EdgeChildInfo> &edge_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return edge_child_infos_[level];
   }
   /**
    e* @brief Obtain refinement information for all
    */
   const std::vector<CellChildInfo> &cell_child_info(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return cell_child_infos_[level];
   }
   /**
@@ -133,7 +135,7 @@ class MeshHierarchy {
    */
   const std::vector<ParentInfo> &parent_info(size_type level,
                                              dim_t codim) const {
-    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     LF_VERIFY_MSG(codim < 3, "Codim = " << codim << " illegal");
     return parent_infos_[level][codim];
   }
@@ -141,7 +143,7 @@ class MeshHierarchy {
    * @brief Access refinement edge indices
    */
   const std::vector<glb_idx_t> &refinement_edges(size_type level) const {
-    LF_VERIFY_MSG(level < numLevels(), "Illegal level " << level);
+    LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return refinement_edges_[level];
   }
 
@@ -173,13 +175,13 @@ class MeshHierarchy {
   /**
    * @brief Conduct local refinement of the mesh splitting all marked edges
    */
-  void RefineMarked(void);
+  void RefineMarked();
   /**
    * @brief Destroy the mesh on the finest level unless it is the base mesh
    */
-  void Coarsen(void);
+  void Coarsen();
 
-  virtual ~MeshHierarchy(void) = default;
+  virtual ~MeshHierarchy() = default;
 
  private:
   /**
@@ -190,13 +192,13 @@ class MeshHierarchy {
    * in the `ChildInfo` structure for each entity. According to this
    * information, refinement is carried out.
    */
-  void PerformRefinement(void);
+  void PerformRefinement();
 
  private:
   /** the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;
   /** The mesh factory to be used to creating a new mesh */
-  mesh::MeshFactory &mesh_factory_;
+  std::shared_ptr<mesh::MeshFactory> mesh_factory_;
   /** information about children for each level and each class of entities */
   std::vector<std::vector<PointChildInfo>> point_child_infos_;
   std::vector<std::vector<EdgeChildInfo>> edge_child_infos_;

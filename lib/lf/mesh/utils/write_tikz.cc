@@ -13,7 +13,7 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename){
 }
 */
 
-void writeTikZ(const lf::mesh::Entity &e, std::string filename) {
+void writeTikZ(const lf::mesh::Entity& e, const std::string& filename) {
   std::ofstream outfile(filename);
 
   outfile << "% TikZ document graphics \n";

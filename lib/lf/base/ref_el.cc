@@ -33,7 +33,7 @@ void PrintInfo(const RefEl &ref_el, std::ostream &o) {
         << std::endl;
 
       if (RefEl::output_ctrl_ > 10) {
-        for (num_sub_ent; num_sub_ent > 0; num_sub_ent--) {
+        for (; num_sub_ent > 0; num_sub_ent--) {
           int sub_ent = num_sub_ent - 1;
           o << " Subentity " << sub_ent << " is of type "
             << ref_el.SubType(co_dim, 0).ToString();
