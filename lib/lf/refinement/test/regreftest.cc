@@ -27,7 +27,8 @@ TEST(RegRefTest, RegRef) {
   std::cout << "RegRefTEST: Regular refinement" << std::endl;
   multi_mesh.RefineRegular();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  std::shared_ptr<const mesh::Mesh> fine_mesh_ptr = multi_mesh.getMesh(1);
+  auto &fine_mesh = *fine_mesh_ptr;
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
 
@@ -64,7 +65,8 @@ TEST(RegRefTest, BarycentricRef) {
 
   multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  std::shared_ptr<const mesh::Mesh> fine_mesh_ptr = multi_mesh.getMesh(1);
+  auto &fine_mesh = *fine_mesh_ptr;
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
 
@@ -115,7 +117,8 @@ TEST(RegRefTest, AllMarkedRefinement) {
   std::cout << "#### Refining mesh" << std::endl;
   multi_mesh.RefineMarked();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  std::shared_ptr<const mesh::Mesh> fine_mesh_ptr = multi_mesh.getMesh(1);
+  auto &fine_mesh = *fine_mesh_ptr;
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
 
@@ -173,7 +176,8 @@ TEST(LocRefTest, LocalRefinement) {
   std::cout << "#### Refining mesh locally" << std::endl;
   multi_mesh.RefineMarked();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  std::shared_ptr<const mesh::Mesh> fine_mesh_ptr = multi_mesh.getMesh(1);
+  auto &fine_mesh = *fine_mesh_ptr;
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
 
@@ -272,7 +276,8 @@ TEST(LocRefTest, MultipleRefinement) {
     multi_mesh.RefineMarked();
 
     const size_type n_levels = multi_mesh.numLevels();
-    const lf::mesh::Mesh &mesh(multi_mesh.getMesh(n_levels - 1));
+    std::shared_ptr<const mesh::Mesh> mesh_ptr = multi_mesh.getMesh(n_levels - 1);
+    const lf::mesh::Mesh &mesh = *mesh_ptr;
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
               << " nodes, " << mesh.Size(1) << " nodes, " << mesh.Size(0)
               << " cells," << std::endl;
@@ -340,8 +345,8 @@ TEST(LocRefTest, MixedRefinement) {
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
                          << " level?";
   for (int l = 0; l < n_levels; ++l) {
-    const lf::mesh::Mesh &mesh(multi_mesh.getMesh(l));
-
+    std::shared_ptr<const mesh::Mesh> mesh_ptr = multi_mesh.getMesh(l);
+    const lf::mesh::Mesh &mesh = *mesh_ptr;
     std::cout << "### LEVEL " << l << " ####" << std::endl;
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
               << " nodes, " << mesh.Size(1) << " nodes, " << mesh.Size(0)

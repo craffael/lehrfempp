@@ -34,8 +34,8 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
     file << "% Parent data for a hybid 2D mesh" << std::endl;
 
     // Mesh on the selected level
-    const lf::mesh::Mesh &mesh(hier_mesh.getMesh(level));
-
+    std::shared_ptr<const mesh::Mesh> mesh_ptr = hier_mesh.getMesh(level);
+    const lf::mesh::Mesh &mesh = *mesh_ptr;
     {
       // Output parent information for nodes
       const std::vector<ParentInfo> &pt_parent_info(
@@ -85,8 +85,11 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, std::string basename) {
     std::stringstream level_asc;
     level_asc << level;
     std::string filebase = basename + "_L" + level_asc.str();
+
     // Fetch mesh on the current level
-    const lf::mesh::Mesh &mesh(hier_mesh.getMesh(level));
+    std::shared_ptr<const mesh::Mesh> mesh_ptr = hier_mesh.getMesh(level);
+    const lf::mesh::Mesh &mesh = *mesh_ptr;
+
     // Output of mesh data
     lf::mesh::utils::writeMatlab(mesh, filebase + ".m");
     if (level > 0) {
