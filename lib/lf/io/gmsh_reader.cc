@@ -895,8 +895,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // 5) Build MeshDataSet that assigns the physical entitiies:
   //////////////////////////////////////////////////////////////////////////////
   physical_nrs_ =
-      std::make_shared<mesh::AllCodimMeshDataSet<std::vector<size_type>>>(
-          mesh());
+      mesh::utils::AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
 
   for (dim_t c = 0; c <= dim_mesh; ++c) {
     for (auto& e : mesh_->Entities(c)) {
@@ -912,7 +911,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
           temp.push_back(msh_file.Elements[gmsh_index].PhysicalEntityNr);
         }
 
-        physical_nrs_->data(e) = std::move(temp);
+        physical_nrs_->operator()(e) = std::move(temp);
       }
     }
   }
@@ -1009,7 +1008,7 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
 
 std::vector<size_type> GmshReader::PhysicalEntityNr(
     const mesh::Entity& e) const {
-  return physical_nrs_->data(e);
+  return physical_nrs_->operator()(e);
 }
 
 }  // namespace lf::io

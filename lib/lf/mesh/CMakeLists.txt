@@ -1,10 +1,7 @@
 set(sources
-  all_codim_mesh_data_set.h
-  codim_mesh_data_set.h
   entity.h
   mesh.h
   mesh.cc
-  mesh_data_set.h
   tp_triag_mesh_builder.h
   tp_triag_mesh_builder.cc
   mesh_factory.h

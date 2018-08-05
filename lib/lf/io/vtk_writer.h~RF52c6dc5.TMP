@@ -446,6 +446,7 @@ class VtkWriter {
   /**
    * @brief Write global data into the vtk file that is not related to the mesh
    *        at all.
+   * @tparam T The type of data, must be either `int`, `double` or `float`
    * @param name Name of the global dataset.
    * @param data The data series that should be written.
    *
@@ -453,31 +454,45 @@ class VtkWriter {
    * be read and visualized by paraview. It is e.g. a convenient way to export
    * the simulation time or the global mesh size.
    */
-  void WriteGlobalData(std::string name, std::vector<int> data);
+  template <class T>
+  void WriteGlobalData(std::string name, std::vector<T> data) {
+    if constexpr (std::is_same_v<T, int> || std::is_same_v<T, float> ||
+                  std::is_same_v<T, double>) {
+      WriteFieldData(std::move(name), std::move(data));
+    } else {
+      LF_VERIFY_MSG(false, "T must be int, float or double");
+    }
+  }
 
-  /**
-   * @brief Write global data into the vtk file that is not related to the mesh
-   *        at all.
-   * @param name Name of the global dataset.
-   * @param data The data series that should be written.
-   *
-   * This function writes so-called "Field Data" into the vtk file which can
-   * be read and visualized by paraview. It is e.g. a convenient way to export
-   * the simulation time or the global mesh size.
-   */
-  void WriteGlobalData(std::string name, std::vector<float> data);
-
-  /**
-   * @brief Write global data into the vtk file that is not related to the mesh
-   *        at all.
-   * @param name Name of the global dataset.
-   * @param data The data series that should be written.
-   *
-   * This function writes so-called "Field Data" into the vtk file which can
-   * be read and visualized by paraview. It is e.g. a convenient way to export
-   * the simulation time or the global mesh size.
-   */
-  void WriteGlobalData(std::string name, std::vector<double> data);
+  // void WriteGlobalData(std::string name, std::vector<int> data);
+  //
+  // /**
+  //  * @brief Write global data into the vtk file that is not related to the
+  //  mesh
+  //  *        at all.
+  //  * @param name Name of the global dataset.
+  //  * @param data The data series that should be written.
+  //  *
+  //  * This function writes so-called "Field Data" into the vtk file which can
+  //  * be read and visualized by paraview. It is e.g. a convenient way to
+  //  export
+  //  * the simulation time or the global mesh size.
+  //  */
+  // void WriteGlobalData(std::string name, std::vector<float> data);
+  //
+  // /**
+  //  * @brief Write global data into the vtk file that is not related to the
+  //  mesh
+  //  *        at all.
+  //  * @param name Name of the global dataset.
+  //  * @param data The data series that should be written.
+  //  *
+  //  * This function writes so-called "Field Data" into the vtk file which can
+  //  * be read and visualized by paraview. It is e.g. a convenient way to
+  //  export
+  //  * the simulation time or the global mesh size.
+  //  */
+  // void WriteGlobalData(std::string name, std::vector<double> data);
 
   /**
    * @brief Destructor, writes everything into the file and closes it.

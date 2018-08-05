@@ -3,7 +3,7 @@
 
 #include "mesh_data_set.h"
 
-namespace lf::mesh {
+namespace lf::mesh::utils {
 
 /**
  * @brief A MeshDataSet that attaches data of type `T` to every entity of a mesh
@@ -47,11 +47,18 @@ class CodimMeshDataSet : public MeshDataSet<T> {
         data_(mesh_->Size(codim), init),
         codim_(codim) {}
 
-  T& data(const Entity& e) override {
+  /**
+   * @brief Get a (modifiable) reference to the data stored with entity e.
+   * @param e The entity whose data should be retrieved/modified
+   * @return  A reference to the stored data.
+   *
+   * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
+   */
+  T& operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
-  const T& data(const Entity& e) const override {
+  T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
@@ -65,6 +72,6 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   dim_t codim_;
 };
 
-}  // namespace lf::mesh
+}  // namespace lf::mesh::utils
 
 #endif  // __bae24f2390174bff85f65c2c2e558a9e

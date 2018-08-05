@@ -443,6 +443,16 @@ class VtkWriter {
                      const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
                      Eigen::Vector3f undefined_value = {0, 0, 0});
 
+  template <class T>
+  void WriteGlobalData(std::string name, std::vector<T> data) {
+    if constexpr (std::is_same_v<T, int> || std::is_same_v<T, float> ||
+                  std::is_same_v<T, double>) {
+      WriteFieldData(std::move(name), std::move(data));
+    } else {
+      static_assert(false, "T must be int, float or double");
+    }
+  }
+
   /**
    * @brief Write global data into the vtk file that is not related to the mesh
    *        at all.

@@ -3,6 +3,7 @@
 set(sources
   forward_iterator.cc
   gmsh_reader.cc
+  lambda_mesh_data_set.cc
   ref_el.cc
 )
 

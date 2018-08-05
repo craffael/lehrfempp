@@ -9,11 +9,11 @@
 #ifndef __df4311acf6554f11919b7b1edfc5b3dd
 #define __df4311acf6554f11919b7b1edfc5b3dd
 
+#include <lf/mesh/mesh.h>
 #include "lf/base/lf_assert.h"
 #include "mesh_data_set.h"
-#include "mesh_interface.h"
 
-namespace lf::mesh {
+namespace lf::mesh::utils {
 
 /**
  * @brief Assigns to every entity(all codims) in a mesh a value of type `T`
@@ -27,9 +27,9 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
 
  public:
   AllCodimMeshDataSet(const AllCodimMeshDataSet&) = delete;
-  AllCodimMeshDataSet(AllCodimMeshDataSet&&) = delete;
+  AllCodimMeshDataSet(AllCodimMeshDataSet&&) = default;
   AllCodimMeshDataSet& operator=(const AllCodimMeshDataSet&) = delete;
-  AllCodimMeshDataSet& operator=(AllCodimMeshDataSet&&) = delete;
+  AllCodimMeshDataSet& operator=(AllCodimMeshDataSet&&) = default;
   ~AllCodimMeshDataSet() override = default;
 
   /**
@@ -68,11 +68,18 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
     }
   }
 
-  T& data(const Entity& e) override {
+  /**
+   * @brief Get a (modifiable) reference to the data stored with entity e.
+   * @param e The entity whose data should be retrieved/modified
+   * @return  A reference to the stored data.
+   *
+   * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
+   */
+  T& operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[e.Codim()][mesh_->Index(e)];
   }
-  const T& data(const Entity& e) const override {
+  T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[e.Codim()][mesh_->Index(e)];
   }
@@ -84,6 +91,6 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   std::vector<std::vector<T>> data_;
 };
 
-}  // namespace lf::mesh
+}  // namespace lf::mesh::utils
 
 #endif  // __df4311acf6554f11919b7b1edfc5b3dd
