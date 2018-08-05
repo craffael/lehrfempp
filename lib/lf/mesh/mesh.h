@@ -12,10 +12,7 @@
  */
 namespace lf::mesh {}
 
-#include "all_codim_mesh_data_set.h"
-#include "codim_mesh_data_set.h"
 #include "entity.h"
-#include "mesh_data_set.h"
 #include "mesh_factory.h"
 #include "mesh_interface.h"
 #include "tp_triag_mesh_builder.h"

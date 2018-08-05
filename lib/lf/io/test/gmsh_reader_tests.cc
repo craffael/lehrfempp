@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
+#include <lf/io/test_utils/read_mesh.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/hybrid2dp/hybrid2dp.h>
 #include <lf/mesh/test_utils/check_entity_indexing.h>
@@ -18,23 +19,6 @@
 namespace lf::io::test {
 
 using size_type = mesh::Mesh::size_type;
-
-/// Retrieves the name of a mesh that lies in the lib/lf/io/test/msh_files/
-/// folder
-std::string getMeshPath(std::string mesh_name) {
-  std::string file_path = __FILE__;
-  // get directory: get last index of / or backslash
-  int index = 0;
-  char separator;
-  for (unsigned int i = 0; i < file_path.length(); ++i) {
-    if (file_path[i] == '/' || file_path[i] == '\\') {
-      index = i;
-      separator = file_path[i];
-    }
-  }
-  std::string directory_path = file_path.substr(0, index + 1);
-  return directory_path + "msh_files" + separator + mesh_name;
-}
 
 void checkTwoElementMesh(const GmshReader& reader) {
   auto mesh = reader.mesh();
@@ -133,13 +117,13 @@ void checkTwoElementMesh(const GmshReader& reader) {
 TEST(lf_io, readTwoElementMesh) {
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
-                 getMeshPath("two_element_hybrid_2d.msh")));
+                 test_utils::getMeshPath("two_element_hybrid_2d.msh")));
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
-                 getMeshPath("two_element_hybrid_2d_binary.msh")));
+                 test_utils::getMeshPath("two_element_hybrid_2d_binary.msh")));
 
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2dp::MeshFactory>(2),
-                 getMeshPath("two_element_hybrid_2d.msh")));
+                 test_utils::getMeshPath("two_element_hybrid_2d.msh")));
 }
 }  // namespace lf::io::test
