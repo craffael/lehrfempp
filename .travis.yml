@@ -24,14 +24,14 @@ stages:
   
 jobs:
   include:
-    # - stage: clang-format
-      # os: linux
-      # addons:
-        # apt:
-          # update: true
-          # sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-format-6.0']
-      # script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
+    - stage: clang-format
+      os: linux
+      addons:
+        apt:
+          update: true
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-format-6.0']
+      script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
     - stage: clang-tidy
       os: linux
       addons:
