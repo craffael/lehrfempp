@@ -12,8 +12,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "lf/base/lf_exception.h"
-#include "lf/mesh/mesh_data_set.h"
+#include "lf/mesh/utils/utils.h"
 
 namespace lf::io {
 /// A representation of a .msh file in a c++ data structure.
@@ -376,7 +375,8 @@ class GmshReader {
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
   /// The PhysicalEntityNr of every node (0 if not set):
-  std::shared_ptr<mesh::MeshDataSet<std::vector<size_type>>> physical_nrs_;
+  std::shared_ptr<mesh::utils::AllCodimMeshDataSet<std::vector<size_type>>>
+      physical_nrs_;
 
   /// Map from physicalEntity name -> nr, codim
   std::multimap<std::string, std::pair<size_type, dim_t>> name_2_nr_;
