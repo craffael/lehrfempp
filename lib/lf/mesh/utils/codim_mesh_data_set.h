@@ -58,7 +58,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
-  T operator()(const Entity& e) const override {
+  const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }

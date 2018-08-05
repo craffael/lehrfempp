@@ -116,35 +116,117 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
   writer.WriteGlobalData("global_twos", std::vector<float>{2., 2., 2.});
 
   auto zero = Eigen::VectorXd::Zero(0);
+  auto zero2 = Eigen::Vector2d::Zero();
 
   writer.WritePointData(
-      "point_uchar", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+      "uchar", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
         return static_cast<unsigned char>(reader.mesh()->Index(e));
       }));
-  writer.WritePointData("point_char",
-                        mesh::utils::LambdaMeshDataSet([&](const auto& e) {
-                          return static_cast<char>(reader.mesh()->Index(e));
-                        }));
   writer.WritePointData(
-      "point_uint", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+      "char", mesh::utils::LambdaMeshDataSet(
+                  [&](const auto& e) {
+                    return static_cast<char>(reader.mesh()->Index(e));
+                  },
+                  [&](const auto& e) { return reader.mesh()->Index(e) < 3; }));
+  writer.WritePointData(
+      "uint", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
         return static_cast<unsigned int>(reader.mesh()->Index(e));
       }));
-  writer.WritePointData("point_int",
+  writer.WritePointData("int",
                         mesh::utils::LambdaMeshDataSet([&](const auto& e) {
                           return static_cast<int>(reader.mesh()->Index(e));
                         }));
-  writer.WritePointData("point_float",
+  writer.WritePointData("float",
                         mesh::utils::LambdaMeshDataSet([&](const auto& e) {
                           return static_cast<float>(reader.mesh()->Index(e));
                         }));
-  writer.WritePointData("point_double",
+  writer.WritePointData("double",
                         mesh::utils::LambdaMeshDataSet([&](const auto& e) {
                           return static_cast<double>(reader.mesh()->Index(e));
                         }));
-  writer.WritePointData("point_vectord2",
+  writer.WritePointData("vector2d",
                         mesh::utils::LambdaMeshDataSet([&](const auto& e) {
-                          return e.Geometry()->Global(zero);
+                          return Eigen::Vector2d(e.Geometry()->Global(zero));
                         }));
+  writer.WritePointData(
+      "vector2f", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+        return Eigen::Vector2f(
+            e.Geometry()->Global(zero).template cast<float>());
+      }));
+  writer.WritePointData(
+      "vector3d", mesh::utils::LambdaMeshDataSet(
+                      [&](const auto& e) { return Eigen::Vector3d(0, 1, 2); }));
+  writer.WritePointData("vector3f",
+                        mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                          return Eigen::Vector3f{0, 1, 2};
+                        }));
+
+  writer.WriteCellData(
+      "uchar", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+        return static_cast<unsigned char>(reader.mesh()->Index(e));
+      }));
+  writer.WriteCellData(
+      "char", mesh::utils::LambdaMeshDataSet(
+                  [&](const auto& e) {
+                    return static_cast<char>(reader.mesh()->Index(e));
+                  },
+                  [&](const auto& e) { return reader.mesh()->Index(e) == 0; }));
+  writer.WriteCellData(
+      "uint", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+        return static_cast<unsigned int>(reader.mesh()->Index(e));
+      }));
+  writer.WriteCellData("int",
+                       mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                         return static_cast<int>(reader.mesh()->Index(e));
+                       }));
+  writer.WriteCellData("float",
+                       mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                         return static_cast<float>(reader.mesh()->Index(e));
+                       }));
+  writer.WriteCellData("double",
+                       mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                         return static_cast<double>(reader.mesh()->Index(e));
+                       }));
+  writer.WriteCellData("vector2d",
+                       mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                         return Eigen::Vector2d(e.Geometry()->Global(zero2));
+                       }));
+  writer.WriteCellData(
+      "vector2f", mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+        return Eigen::Vector2f(
+            e.Geometry()->Global(zero2).template cast<float>());
+      }));
+  writer.WriteCellData(
+      "vector3d", mesh::utils::LambdaMeshDataSet(
+                      [&](const auto& e) { return Eigen::Vector3d(0, 1, 2); }));
+  writer.WriteCellData("vector3f",
+                       mesh::utils::LambdaMeshDataSet([&](const auto& e) {
+                         return Eigen::Vector3f{0, 1, 2};
+                       }));
+
+  // try to write data with a name that is already used:
+  EXPECT_THROW(
+      writer.WritePointData("char", mesh::utils::LambdaMeshDataSet(
+                                        [](const auto& e) { return 1; })),
+      base::LfException);
+  EXPECT_THROW(
+      writer.WriteCellData("char", mesh::utils::LambdaMeshDataSet(
+                                       [](const auto& e) { return 1; })),
+      base::LfException);
+  EXPECT_THROW(writer.WriteGlobalData("global_zeros", std::vector<int>{0}),
+               base::LfException);
+
+  // try to write data with a name that contains spaces:
+  EXPECT_THROW(
+      writer.WritePointData("h w", mesh::utils::LambdaMeshDataSet(
+                                       [](const auto& e) { return 1; })),
+      base::LfException);
+  EXPECT_THROW(
+      writer.WriteCellData("h w", mesh::utils::LambdaMeshDataSet(
+                                      [](const auto& e) { return 1; })),
+      base::LfException);
+  EXPECT_THROW(writer.WriteGlobalData("h w", std::vector<int>{0}),
+               base::LfException);
 }
 
 }  // namespace lf::io::test

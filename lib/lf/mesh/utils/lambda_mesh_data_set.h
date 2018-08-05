@@ -48,7 +48,7 @@ class LambdaMeshDataSet
                              DefinedOnPredicate dol = base::PredicateTrue{})
       : value_lambda_(std::move(vl)), defined_on_lambda_(std::move(dol)) {}
 
-  T operator()(const Entity& e) const override {
+  const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return value_lambda_(e);
   }
