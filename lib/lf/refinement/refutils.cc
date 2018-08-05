@@ -34,13 +34,13 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
     file << "% Parent data for a hybid 2D mesh" << std::endl;
 
     // Mesh on the selected level
-    const lf::mesh::Mesh &mesh(hier_mesh.getMesh(level));
+    auto mesh = hier_mesh.getMesh(level);
 
     {
       // Output parent information for nodes
       const std::vector<ParentInfo> &pt_parent_info(
           hier_mesh.parent_info(level, 2));
-      const size_type no_nodes = mesh.Size(2);
+      const size_type no_nodes = mesh->Size(2);
       for (int k = 0; k < no_nodes; k++) {
         file << "PTPAR(" << k + 1 << ",:) = ["
              << normalize_idx(pt_parent_info[k].parent_index_) << " , "
@@ -53,7 +53,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       // Output parent information for edge
       const std::vector<ParentInfo> &ed_parent_info(
           hier_mesh.parent_info(level, 1));
-      const size_type no_edges = mesh.Size(1);
+      const size_type no_edges = mesh->Size(1);
       for (int k = 0; k < no_edges; k++) {
         file << "EDPAR(" << k + 1 << ",:) = ["
              << normalize_idx(ed_parent_info[k].parent_index_) << " , "
@@ -67,7 +67,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       const std::vector<ParentInfo> &cell_parent_info(
           hier_mesh.parent_info(level, 0));
       const std::vector<glb_idx_t> &ref_eds(hier_mesh.refinement_edges(level));
-      const size_type no_cells = mesh.Size(0);
+      const size_type no_cells = mesh->Size(0);
       for (int k = 0; k < no_cells; k++) {
         file << "CELLPAR(" << k + 1 << ",:) = ["
              << normalize_idx(cell_parent_info[k].parent_index_) << " , "
@@ -84,11 +84,11 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &filename) {
     // prepare filename
     std::stringstream level_asc;
     level_asc << level;
-    std::string filebase = basename + "_L" + level_asc.str();
+    std::string filebase = filename + "_L" + level_asc.str();
     // Fetch mesh on the current level
-    const lf::mesh::Mesh &mesh(hier_mesh.getMesh(level));
+    auto mesh = hier_mesh.getMesh(level);
     // Output of mesh data
-    lf::mesh::utils::writeMatlab(mesh, filebase + ".m");
+    lf::mesh::utils::writeMatlab(*mesh, filebase + ".m");
     if (level > 0) {
       // Output of parent information
       WriteMatlabLevel(hier_mesh, level, filebase + "_pi.m");

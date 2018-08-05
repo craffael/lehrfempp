@@ -45,7 +45,9 @@ void PrintInfo(const Mesh& mesh, std::ostream& o);
  * - Entity::output_ctrl_ > 10: The above and geometry of subentities is printed
  */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
+}  // namespace lf::mesh::utils
 
+namespace lf::mesh {
 /**
  * @brief Operator overload to print a `Entity` to a stream, such as `std::cout`
  * @param stream The stream to which this function should output
@@ -58,8 +60,8 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
  * lf::mesh::Entity& e, std::ostream& stream) is called.
  *
  */
-std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
+std::ostream& operator<<(std::ostream& stream, const Entity& entity);
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::mesh
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

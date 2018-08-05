@@ -22,18 +22,18 @@ TEST(RegRefTest, RegRef) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   std::cout << "RegRefTEST: Regular refinement" << std::endl;
   multi_mesh.RefineRegular();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  auto fine_mesh = multi_mesh.getMesh(1);
   std::cout << "Checking mesh completeness" << std::endl;
-  lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
+  lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh, false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
@@ -45,10 +45,10 @@ TEST(RegRefTest, RegRef) {
     }
   }
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(fine_mesh, "fine_mesh.m");
+  lf::mesh::utils::writeMatlab(*fine_mesh, "fine_mesh.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 }
 
 TEST(RegRefTest, BarycentricRef) {
@@ -60,17 +60,17 @@ TEST(RegRefTest, BarycentricRef) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  auto fine_mesh = multi_mesh.getMesh(1);
   std::cout << "Checking mesh completeness" << std::endl;
-  lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
+  lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh, false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
@@ -83,10 +83,10 @@ TEST(RegRefTest, BarycentricRef) {
   }
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(fine_mesh, "barycentric_ref.m");
+  lf::mesh::utils::writeMatlab(*fine_mesh, "barycentric_ref.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 }
 
 TEST(RegRefTest, AllMarkedRefinement) {
@@ -100,7 +100,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark all edges
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)> marker =
@@ -115,13 +115,13 @@ TEST(RegRefTest, AllMarkedRefinement) {
   std::cout << "#### Refining mesh" << std::endl;
   multi_mesh.RefineMarked();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  auto fine_mesh = multi_mesh.getMesh(1);
   std::cout << "Checking mesh completeness" << std::endl;
-  lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
+  lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh, false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
@@ -134,13 +134,13 @@ TEST(RegRefTest, AllMarkedRefinement) {
   }
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(fine_mesh, "allref.m");
+  lf::mesh::utils::writeMatlab(*fine_mesh, "allref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "allref_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 }
 
 TEST(LocRefTest, LocalRefinement) {
@@ -154,7 +154,7 @@ TEST(LocRefTest, LocalRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark all edges
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -173,13 +173,13 @@ TEST(LocRefTest, LocalRefinement) {
   std::cout << "#### Refining mesh locally" << std::endl;
   multi_mesh.RefineMarked();
 
-  auto &fine_mesh = multi_mesh.getMesh(1);
+  auto fine_mesh = multi_mesh.getMesh(1);
   std::cout << "Checking mesh completeness" << std::endl;
-  lf::mesh::test_utils::checkMeshCompleteness(fine_mesh);
+  lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(fine_mesh, false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
@@ -192,13 +192,13 @@ TEST(LocRefTest, LocalRefinement) {
   }
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(fine_mesh, "locref.m");
+  lf::mesh::utils::writeMatlab(*fine_mesh, "locref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "locref_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 }
 
 /* MATLAB script for visualizing the output of the next test
@@ -250,7 +250,7 @@ TEST(LocRefTest, MultipleRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -272,17 +272,17 @@ TEST(LocRefTest, MultipleRefinement) {
     multi_mesh.RefineMarked();
 
     const size_type n_levels = multi_mesh.NumLevels();
-    const lf::mesh::Mesh &mesh(multi_mesh.getMesh(n_levels - 1));
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
-              << " nodes, " << mesh.Size(1) << " nodes, " << mesh.Size(0)
+    auto mesh = multi_mesh.getMesh(n_levels - 1);
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
+              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
               << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
-    lf::mesh::test_utils::checkMeshCompleteness(mesh);
+    lf::mesh::test_utils::checkMeshCompleteness(*mesh);
 
     std::cout << "RefStep " << refstep + 1
               << ": Checking geometry compatibulity: " << std::flush;
-    auto fails = lf::mesh::test_utils::isWatertightMesh(mesh, false);
+    auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
     if (fails.size() == 0) {
       std::cout << "consistent!" << std::endl;
@@ -295,7 +295,7 @@ TEST(LocRefTest, MultipleRefinement) {
     }
 
     // Printing mesh information
-    lf::mesh::utils::PrintInfo(mesh, std::cout);
+    lf::mesh::utils::PrintInfo(*mesh, std::cout);
   }
   WriteMatlab(multi_mesh, "multiref");
 }
@@ -312,7 +312,7 @@ TEST(LocRefTest, MixedRefinement) {
   // Build mesh hierarchy
   std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, *mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -340,18 +340,18 @@ TEST(LocRefTest, MixedRefinement) {
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
                          << " level?";
   for (int l = 0; l < n_levels; ++l) {
-    const lf::mesh::Mesh &mesh(multi_mesh.getMesh(l));
+    auto mesh = multi_mesh.getMesh(l);
 
     std::cout << "### LEVEL " << l << " ####" << std::endl;
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh.Size(2)
-              << " nodes, " << mesh.Size(1) << " nodes, " << mesh.Size(0)
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
+              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
               << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
-    lf::mesh::test_utils::checkMeshCompleteness(mesh);
+    lf::mesh::test_utils::checkMeshCompleteness(*mesh);
 
     std::cout << ": Checking geometry compatibulity: " << std::flush;
-    auto fails = lf::mesh::test_utils::isWatertightMesh(mesh, false);
+    auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
     if (fails.size() == 0) {
       std::cout << "consistent!" << std::endl;

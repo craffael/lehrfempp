@@ -161,7 +161,8 @@ class VtkWriter {
    *              will be written into the vtk file and you can visualize data
    *              on the skeleton
    */
-  VtkWriter(const mesh::Mesh& mesh, std::string filename, dim_t codim = 0);
+  VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
+            dim_t codim = 0);
 
   /**
    * @brief Determines whether the Vtk file is written in binary or ASCII mode
@@ -484,7 +485,7 @@ class VtkWriter {
   ~VtkWriter() { WriteToFile(vtk_file_, filename_); }
 
  private:
-  const mesh::Mesh& mesh_;
+  std::shared_ptr<mesh::Mesh> mesh_;
   VtkFile vtk_file_;
   std::string filename_;
   dim_t codim_;
