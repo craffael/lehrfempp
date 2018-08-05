@@ -27,9 +27,9 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
 
  public:
   AllCodimMeshDataSet(const AllCodimMeshDataSet&) = delete;
-  AllCodimMeshDataSet(AllCodimMeshDataSet&&) = default;
+  AllCodimMeshDataSet(AllCodimMeshDataSet&&) noexcept = default;
   AllCodimMeshDataSet& operator=(const AllCodimMeshDataSet&) = delete;
-  AllCodimMeshDataSet& operator=(AllCodimMeshDataSet&&) = default;
+  AllCodimMeshDataSet& operator=(AllCodimMeshDataSet&&) noexcept = default;
   ~AllCodimMeshDataSet() override = default;
 
   /**
@@ -83,9 +83,8 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   friend std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
       std::shared_ptr<Mesh> mesh);
 
-  template <class S, class = typename std::enable_if<
-                         std::is_copy_constructible<S>::value>::type>
-  std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
+  template <class S, class>
+  friend std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
       std::shared_ptr<Mesh> mesh, S init_value);
 };
 

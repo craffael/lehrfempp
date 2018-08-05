@@ -19,7 +19,7 @@ namespace lf::base {
 class PredicateTrue {
  public:
   template <class... T>
-  bool operator()(T&&...) const {
+  bool operator()(T&&... /*unused*/) const {
     return true;
   }
 };

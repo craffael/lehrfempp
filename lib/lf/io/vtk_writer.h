@@ -267,7 +267,7 @@ class VtkWriter {
    */
   void WritePointData(std::string name,
                       const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
-                      Eigen::Vector2d undefined_value = {0, 0});
+                      const Eigen::Vector2d& undefined_value = {0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -280,7 +280,7 @@ class VtkWriter {
    */
   void WritePointData(std::string name,
                       const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
-                      Eigen::Vector2f undefined_value = {0, 0});
+                      const Eigen::Vector2f& undefined_value = {0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -293,7 +293,7 @@ class VtkWriter {
    */
   void WritePointData(std::string name,
                       const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
-                      Eigen::Vector3d undefined_value = {0, 0, 0});
+                      const Eigen::Vector3d& undefined_value = {0, 0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -306,7 +306,7 @@ class VtkWriter {
    */
   void WritePointData(std::string name,
                       const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
-                      Eigen::Vector3f undefined_value = {0, 0, 0});
+                      const Eigen::Vector3f& undefined_value = {0, 0, 0});
 
   /**
    * @brief Add a new `unsigned char` attribute dataset that attaches data to
@@ -402,7 +402,7 @@ class VtkWriter {
    */
   void WriteCellData(std::string name,
                      const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
-                     Eigen::Vector2d undefined_value = {0, 0});
+                     const Eigen::Vector2d& undefined_value = {0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -415,7 +415,7 @@ class VtkWriter {
    */
   void WriteCellData(std::string name,
                      const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
-                     Eigen::Vector2f undefined_value = {0, 0});
+                     const Eigen::Vector2f& undefined_value = {0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -428,7 +428,7 @@ class VtkWriter {
    */
   void WriteCellData(std::string name,
                      const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
-                     Eigen::Vector3d undefined_value = {0, 0, 0});
+                     const Eigen::Vector3d& undefined_value = {0, 0, 0});
 
   /**
    * @brief Add a new vector attribute dataset that attaches vectors to
@@ -441,7 +441,7 @@ class VtkWriter {
    */
   void WriteCellData(std::string name,
                      const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
-                     Eigen::Vector3f undefined_value = {0, 0, 0});
+                     const Eigen::Vector3f& undefined_value = {0, 0, 0});
 
   /**
    * @brief Write global data into the vtk file that is not related to the mesh
@@ -492,12 +492,12 @@ class VtkWriter {
 
   template <class T>
   void WriteScalarPointData(std::string name,
-                            const mesh::utils::MeshDataSet<T>&,
+                            const mesh::utils::MeshDataSet<T>& mds,
                             T undefined_value);
 
   template <int ROWS, class T>
   void WriteVectorPointData(
-      std::string,
+      std::string mds,
       const mesh::utils::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
       Eigen::Matrix<T, ROWS, 1> undefined_value);
 

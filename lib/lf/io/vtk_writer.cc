@@ -571,25 +571,25 @@ void VtkWriter::WritePointData(std::string name,
 
 void VtkWriter::WritePointData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
-    Eigen::Vector2d undefined_value) {
+    const Eigen::Vector2d& undefined_value) {
   WriteVectorPointData<2, double>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
-    Eigen::Vector2f undefined_value) {
+    const Eigen::Vector2f& undefined_value) {
   WriteVectorPointData<2, float>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
-    Eigen::Vector3d undefined_value) {
+    const Eigen::Vector3d& undefined_value) {
   WriteVectorPointData<3, double>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
-    Eigen::Vector3f undefined_value) {
+    const Eigen::Vector3f& undefined_value) {
   WriteVectorPointData<3, float>(std::move(name), mds, undefined_value);
 }
 
@@ -631,25 +631,25 @@ void VtkWriter::WriteCellData(std::string name,
 
 void VtkWriter::WriteCellData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
-    Eigen::Vector2d undefined_value) {
+    const Eigen::Vector2d& undefined_value) {
   WriteVectorCellData<2, double>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
-    Eigen::Vector2f undefined_value) {
+    const Eigen::Vector2f& undefined_value) {
   WriteVectorCellData<2, float>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
-    Eigen::Vector3d undefined_value) {
+    const Eigen::Vector3d& undefined_value) {
   WriteVectorCellData<3, double>(std::move(name), mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
     std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
-    Eigen::Vector3f undefined_value) {
+    const Eigen::Vector3f& undefined_value) {
   WriteVectorCellData<3, float>(std::move(name), mds, undefined_value);
 }
 
@@ -702,12 +702,12 @@ void VtkWriter::WriteScalarPointData(std::string name,
 template <int ROWS, class T>
 void PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
                   const Eigen::Matrix<T, ROWS, 1>& in) {
-  if constexpr (ROWS == 2) {
+  if constexpr (ROWS == 2) {  // NOLINT
     out.template block<2, 1>(0, 0) = in;
     out(2) = T(0);
-  } else if constexpr (ROWS == 3) {
+  } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
-  } else if constexpr (ROWS == Eigen::Dynamic) {
+  } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
     out(2) = T(0);
     out.topRows(in.rows()) = in;
   }
