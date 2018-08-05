@@ -10,7 +10,6 @@
 #define __7fedf7cf1a0246a98b2bf431cfa34da2
 #include <lf/mesh/mesh.h>
 #include <map>
-#include <optional>
 #include <string>
 #include <vector>
 #include "lf/mesh/utils/utils.h"
