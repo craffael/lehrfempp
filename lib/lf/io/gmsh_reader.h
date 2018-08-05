@@ -376,7 +376,7 @@ class GmshReader {
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
   /// The PhysicalEntityNr of every node (0 if not set):
-  std::optional<mesh::utils::AllCodimMeshDataSet<std::vector<size_type>>>
+  std::shared_ptr<mesh::utils::AllCodimMeshDataSet<std::vector<size_type>>>
       physical_nrs_;
 
   /// Map from physicalEntity name -> nr, codim

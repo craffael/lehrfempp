@@ -14,16 +14,17 @@ namespace lf::mesh::utils {
 void foo() {
   //! [usage]
   // MeshDataSet that stores a `1` with every entity of the mesh
-  auto ones_mds = LambdaMeshDataSet([](const Entity& e) { return 1; });
+  auto ones_mds = make_LambdaMeshDataSet([](const Entity& e) { return 1; });
 
   // A MeshDataSet that stores the codimension of every entity:
-  auto index_mds = LambdaMeshDataSet([](const auto& e) { return e.Codim(); });
+  auto index_mds =
+      make_LambdaMeshDataSet([](const auto& e) { return e.Codim(); });
 
   // A MeshDataSet that stores the string "hello" with every codim=0 entity
   // and that is undefined for other codimensions:
   auto hello_mds =
-      LambdaMeshDataSet([](const auto& e) { return "hello"; },
-                        [](const auto& e) { return e.Codim() == 0; });
+      make_LambdaMeshDataSet([](const auto& e) { return "hello"; },
+                             [](const auto& e) { return e.Codim() == 0; });
 
   //! [usage]
 }

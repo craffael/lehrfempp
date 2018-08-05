@@ -15,7 +15,7 @@ namespace lf::mesh::utils {
 
 /**
  * @brief Calls a provided Lambda function to retrieve the data of an entity
- * @tparam ValueLambda The type of the lambda function that returns the values.
+ * @tparam ValueLambda The type of the lambda function that provides the values.
  * @tparam DefinedOnPredicate The type of the predicate that defines on which
  *                            entities this MeshDataSet is defined.
  *
@@ -25,7 +25,7 @@ namespace lf::mesh::utils {
  * @note It is of course essential, that the two lambdas return the same value
  * if they are called twice with the same argument (deterministic)!
  */
-template <class ValueLambda, class DefinedOnPredicate = base::PredicateTrue>
+template <class ValueLambda, class DefinedOnPredicate>
 class LambdaMeshDataSet
     : public MeshDataSet<std::remove_reference_t<decltype(
           std::declval<ValueLambda>()(std::declval<Entity>()))>> {
@@ -35,19 +35,6 @@ class LambdaMeshDataSet
   using base_t = MeshDataSet<T>;
 
  public:
-  /**
-   * @brief Construct LambdaMeshDataSet
-   * @param vl This lambda function should accept a `const Entity&` and return
-   *           the value that is attached to that entity.
-   * @param dol (optional) This predicate should accpet a `const Entity&` and
-   * return a `bool` that specifies whether the this mesh data set attaches data
-   * to this entity. If it is not specified, the MeshDataSet is defined for all
-   * entities.
-   */
-  explicit LambdaMeshDataSet(ValueLambda vl,
-                             DefinedOnPredicate dol = base::PredicateTrue{})
-      : value_lambda_(std::move(vl)), defined_on_lambda_(std::move(dol)) {}
-
   const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return value_lambda_(e);
@@ -60,7 +47,33 @@ class LambdaMeshDataSet
  private:
   ValueLambda value_lambda_;
   DefinedOnPredicate defined_on_lambda_;
+
+  explicit LambdaMeshDataSet(ValueLambda vl, DefinedOnPredicate dol)
+      : value_lambda_(std::move(vl)), defined_on_lambda_(std::move(dol)) {}
+
+  // Friends:
+  template <class ValueLambda_, class DefinedOnPredicate_>
+  friend std::shared_ptr<LambdaMeshDataSet<ValueLambda_, DefinedOnPredicate_>>
+  make_LambdaMeshDataSet(ValueLambda_ vl, DefinedOnPredicate_ dol);
 };
+
+/**
+ * @brief Construct LambdaMeshDataSet
+ * @param vl This lambda function should accept a `const Entity&` and provide
+ *           the value for this entity.
+ * @param dol (optional) This predicate should accept a `const Entity&` and
+ * return a `bool` that specifies whether this mesh data set attaches data
+ * to this entity. If this argument is not specified, the MeshDataSet is defined
+ * for all entities.
+ */
+template <class ValueLambda, class DefinedOnPredicate = base::PredicateTrue>
+std::shared_ptr<LambdaMeshDataSet<ValueLambda, DefinedOnPredicate>>
+make_LambdaMeshDataSet(ValueLambda vl,
+                       DefinedOnPredicate dol = base::PredicateTrue{}) {
+  using impl_t = LambdaMeshDataSet<ValueLambda, DefinedOnPredicate>;
+  return std::shared_ptr<impl_t>(new impl_t(vl, dol));
+}
+
 }  // namespace lf::mesh::utils
 
 #endif  // __72c5049b6331454e8fbba79135b5319b

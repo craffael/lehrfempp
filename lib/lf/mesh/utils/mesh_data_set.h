@@ -18,6 +18,11 @@ namespace lf::mesh::utils {
  * @attention A MeshDataSet may store information only with a subset of
  * entities. See DefinedOn() .
  *
+ * @note By convention, MeshDataSets are always stored in `std::shared_ptr`'s in
+ * order to facilitate memory management. Thus most implementations of this
+ * interface don't have public constructors but they provide `make_xxx`
+ * functions for this purpose.
+ *
  * #### Implementations
  * There are a number of classes that implement the MeshDataSet interface
  * that differ mostly by the subset of entities to which they can attach data:

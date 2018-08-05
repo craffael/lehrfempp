@@ -33,42 +33,6 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   ~AllCodimMeshDataSet() override = default;
 
   /**
-   * @brief Create a new AllCodimMeshDataSet and [Default
-   * initialize](https://en.cppreference.com/w/cpp/language/default_initialization)
-   * the data.
-   * @param mesh The mesh that contains the entities.
-   *
-   */
-  explicit AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh)
-      : MeshDataSet<T>(),
-        dim_mesh_(mesh->DimMesh()),
-        mesh_(std::move(mesh)),
-        data_(dim_mesh_ + 1) {
-    for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
-      data_[codim].resize(mesh_->Size(codim));
-    }
-  }
-
-  /**
-   * @brief Create a new AllCodimMeshDataSet and initialize the data of every
-   * entity with the given value (`T` must be copyable!)
-   * @param mesh The mesh that contains the entities.
-   * @param init_value The initial value that should be assigned to every
-   * entity.
-   */
-  template <class = typename std::enable_if<
-                std::is_copy_constructible<T>::value>::type>
-  AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh, T init_value)
-      : MeshDataSet<T>(),
-        dim_mesh_(mesh->DimMesh()),
-        mesh_(std::move(mesh)),
-        data_(dim_mesh_ + 1) {
-    for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
-      data_[codim] = std::vector<T>(mesh_->Size(codim), init_value);
-    }
-  }
-
-  /**
    * @brief Get a (modifiable) reference to the data stored with entity e.
    * @param e The entity whose data should be retrieved/modified
    * @return  A reference to the stored data.
@@ -89,7 +53,70 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   dim_t dim_mesh_;
   std::shared_ptr<Mesh> mesh_;
   std::vector<std::vector<T>> data_;
+
+  /** Private constructor, use make_AllCodimMeshDataSet function! */
+  explicit AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh)
+      : MeshDataSet<T>(),
+        dim_mesh_(mesh->DimMesh()),
+        mesh_(std::move(mesh)),
+        data_(dim_mesh_ + 1) {
+    for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
+      data_[codim].resize(mesh_->Size(codim));
+    }
+  }
+
+  /** Private constructor, use make_AllCodimMeshDataSet function! */
+  template <class = typename std::enable_if<
+                std::is_copy_constructible<T>::value>::type>
+  AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh, T init_value)
+      : MeshDataSet<T>(),
+        dim_mesh_(mesh->DimMesh()),
+        mesh_(std::move(mesh)),
+        data_(dim_mesh_ + 1) {
+    for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
+      data_[codim] = std::vector<T>(mesh_->Size(codim), init_value);
+    }
+  }
+
+  // Friends
+  template <class S>
+  friend std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
+      std::shared_ptr<Mesh> mesh);
+
+  template <class S, class = typename std::enable_if<
+                         std::is_copy_constructible<S>::value>::type>
+  std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
+      std::shared_ptr<Mesh> mesh, S init_value);
 };
+
+/**
+ * @brief Create a new AllCodimMeshDataSet and [Default
+ * initialize](https://en.cppreference.com/w/cpp/language/default_initialization)
+ * the data.
+ * @param mesh The mesh that contains the entities.
+ *
+ */
+template <class T>
+std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
+    std::shared_ptr<Mesh> mesh) {
+  using impl_t = AllCodimMeshDataSet<T>;
+  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh)));
+}
+
+/**
+ * @brief Create a new AllCodimMeshDataSet and initialize the data of every
+ * entity with the given value (`T` must be copyable!)
+ * @param mesh The mesh that contains the entities.
+ * @param init_value The initial value that should be assigned to every
+ * entity.
+ */
+template <class T, class = typename std::enable_if<
+                       std::is_copy_constructible<T>::value>::type>
+std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
+    std::shared_ptr<Mesh> mesh, T init_value) {
+  using impl_t = AllCodimMeshDataSet<T>;
+  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), init_value));
+}
 
 }  // namespace lf::mesh::utils
 
