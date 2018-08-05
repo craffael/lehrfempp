@@ -11,7 +11,7 @@
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-  using lf::mesh::utils::operator<<;
+  using namespace lf::mesh::utils;
   
   std::cout << "Output of information for mesh entity elements" << std::endl;
 

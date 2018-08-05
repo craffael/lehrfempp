@@ -31,7 +31,7 @@ CONTROLDECLARECOMMENT(StaticVarsDemoClass, arg_var_, "arg_var",
 CONTROLDECLARECOMMENT(StaticVarsDemoClass, output_ctrl_, "output_ctrl_",
                       "Test output ctrl");
 
-int main(int argc, const char *argv[]) {
+int main() {
   std::cout << "LehrFEM++ Demo program for the use of static control variables"
             << std::endl;
   std::cout << "Variables can be set via command line arguments: VARNAME=VALUE"

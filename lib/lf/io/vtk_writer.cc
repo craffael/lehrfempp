@@ -479,19 +479,20 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
   }
 }
 
-VtkWriter::VtkWriter(const mesh::Mesh& mesh, std::string filename, dim_t codim)
-    : mesh_(mesh), filename_(filename), codim_(codim) {
-  auto dim_mesh = mesh_.DimMesh();
-  auto dim_world = mesh_.DimWorld();
+VtkWriter::VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
+                     dim_t codim)
+    : mesh_(std::move(mesh)), filename_(std::move(filename)), codim_(codim) {
+  auto dim_mesh = mesh_->DimMesh();
+  auto dim_world = mesh_->DimWorld();
   LF_ASSERT_MSG(dim_world > 0 && dim_world <= 4,
                 "VtkWriter supports only dim_world = 1,2 or 3");
   LF_ASSERT_MSG(codim >= 0 && codim < dim_mesh, "codim out of bounds.");
 
   // insert nodes:
-  vtk_file_.unstructured_grid.points.resize(mesh_.Size(dim_mesh));
+  vtk_file_.unstructured_grid.points.resize(mesh_->Size(dim_mesh));
   Eigen::Matrix<double, 0, 1> zero;
-  for (auto& p : mesh_.Entities(dim_mesh)) {
-    auto index = mesh_.Index(p);
+  for (auto& p : mesh_->Entities(dim_mesh)) {
+    auto index = mesh_->Index(p);
     Eigen::Vector3f coord;
     if (dim_world == 1) {
       coord(0) = p.Geometry()->Global(zero)(0);
@@ -508,15 +509,15 @@ VtkWriter::VtkWriter(const mesh::Mesh& mesh, std::string filename, dim_t codim)
   }
 
   // insert elements:
-  vtk_file_.unstructured_grid.cells.resize(mesh_.Size(codim));
-  vtk_file_.unstructured_grid.cell_types.resize(mesh_.Size(codim));
-  for (auto& e : mesh_.Entities(codim)) {
-    auto index = mesh_.Index(e);
+  vtk_file_.unstructured_grid.cells.resize(mesh_->Size(codim));
+  vtk_file_.unstructured_grid.cell_types.resize(mesh_->Size(codim));
+  for (auto& e : mesh_->Entities(codim)) {
+    auto index = mesh_->Index(e);
     auto ref_el = e.RefEl();
     auto& node_indices = vtk_file_.unstructured_grid.cells[index];
     node_indices.reserve(ref_el.NumNodes());
     for (auto& p : e.SubEntities(dim_mesh - codim)) {
-      node_indices.push_back(mesh_.Index(p));
+      node_indices.push_back(mesh_->Index(p));
     }
 
     if (ref_el == base::RefEl::kSegment()) {

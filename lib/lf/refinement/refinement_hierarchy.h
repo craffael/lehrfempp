@@ -103,7 +103,7 @@ class MeshHierarchy {
   /**
    * @brief access the mesh on a particular level
    */
-  const std::shared_ptr<const mesh::Mesh> getMesh(size_type level) const {
+  const std::shared_ptr<mesh::Mesh> getMesh(size_type level) const {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
