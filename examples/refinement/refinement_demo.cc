@@ -10,7 +10,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-int main(int argc, const char *argv[]) {
+int main() {
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
 

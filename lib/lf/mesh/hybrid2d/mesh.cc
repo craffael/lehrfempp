@@ -268,10 +268,9 @@ const mesh::Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
   } else if (codim == 1) {
     LF_ASSERT_MSG(index < entities1_.size(), "index too large");
     return &entities1_[index];
-  } else {
-    LF_ASSERT_MSG(index < entities2_.size(), "index too large");
-    return &entities2_[index];
   }
+  LF_ASSERT_MSG(index < entities2_.size(), "index too large");
+  return &entities2_[index];
 }
 
 bool Mesh::Contains(const mesh::Entity &e) const {
