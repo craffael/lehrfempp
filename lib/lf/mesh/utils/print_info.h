@@ -58,7 +58,7 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
  * lf::mesh::Entity& e, std::ostream& stream) is called.
  *
  */
-std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
+std::ostream &operator << (std::ostream& stream, const lf::mesh::Entity& entity);
 
 }  // namespace lf::mesh::utils
 
