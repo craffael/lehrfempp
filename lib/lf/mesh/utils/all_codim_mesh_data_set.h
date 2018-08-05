@@ -80,11 +80,13 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
 
   // Friends
   template <class S>
-  friend std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
+  friend std::shared_ptr<AllCodimMeshDataSet<S>>
+  make_AllCodimMeshDataSet(  // NOLINT
       std::shared_ptr<Mesh> mesh);
 
   template <class S, class>
-  friend std::shared_ptr<AllCodimMeshDataSet<S>> make_AllCodimMeshDataSet(
+  friend std::shared_ptr<AllCodimMeshDataSet<S>>
+  make_AllCodimMeshDataSet(  // NOLINT
       std::shared_ptr<Mesh> mesh, S init_value);
 };
 

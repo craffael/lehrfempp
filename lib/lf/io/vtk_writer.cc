@@ -534,135 +534,146 @@ VtkWriter::VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
 }
 
 void VtkWriter::WritePointData(
-    std::string name, const mesh::utils::MeshDataSet<unsigned char>& mds,
+    const std::string& name, const mesh::utils::MeshDataSet<unsigned char>& mds,
     unsigned char undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(std::string name,
+void VtkWriter::WritePointData(const std::string& name,
                                const mesh::utils::MeshDataSet<char>& mds,
                                char undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(std::string name,
+void VtkWriter::WritePointData(const std::string& name,
                                const mesh::utils::MeshDataSet<unsigned>& mds,
                                unsigned undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(std::string name,
+void VtkWriter::WritePointData(const std::string& name,
                                const mesh::utils::MeshDataSet<int>& mds,
                                int undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(std::string name,
+void VtkWriter::WritePointData(const std::string& name,
                                const mesh::utils::MeshDataSet<float>& mds,
                                float undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(std::string name,
+void VtkWriter::WritePointData(const std::string& name,
                                const mesh::utils::MeshDataSet<double>& mds,
                                double undefined_value) {
-  WriteScalarPointData(std::move(name), mds, undefined_value);
+  WriteScalarPointData(name, mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
     const Eigen::Vector2d& undefined_value) {
-  WriteVectorPointData<2, double>(std::move(name), mds, undefined_value);
+  WriteVectorPointData<2, double>(name, mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
     const Eigen::Vector2f& undefined_value) {
-  WriteVectorPointData<2, float>(std::move(name), mds, undefined_value);
+  WriteVectorPointData<2, float>(name, mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
     const Eigen::Vector3d& undefined_value) {
-  WriteVectorPointData<3, double>(std::move(name), mds, undefined_value);
+  WriteVectorPointData<3, double>(name, mds, undefined_value);
 }
 
 void VtkWriter::WritePointData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
     const Eigen::Vector3f& undefined_value) {
-  WriteVectorPointData<3, float>(std::move(name), mds, undefined_value);
+  WriteVectorPointData<3, float>(name, mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
-    std::string name, const mesh::utils::MeshDataSet<unsigned char>& mds,
+    const std::string& name, const mesh::utils::MeshDataSet<unsigned char>& mds,
     unsigned char undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteCellData(std::string name,
+void VtkWriter::WriteCellData(const std::string& name,
                               const mesh::utils::MeshDataSet<char>& mds,
                               char undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteCellData(std::string name,
+void VtkWriter::WriteCellData(const std::string& name,
                               const mesh::utils::MeshDataSet<unsigned>& mds,
                               unsigned undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteCellData(std::string name,
+void VtkWriter::WriteCellData(const std::string& name,
                               const mesh::utils::MeshDataSet<int>& mds,
                               int undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteCellData(std::string name,
+void VtkWriter::WriteCellData(const std::string& name,
                               const mesh::utils::MeshDataSet<float>& mds,
                               float undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteCellData(std::string name,
+void VtkWriter::WriteCellData(const std::string& name,
                               const mesh::utils::MeshDataSet<double>& mds,
                               double undefined_value) {
-  WriteScalarCellData(std::move(name), mds, undefined_value);
+  WriteScalarCellData(name, mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector2d>& mds,
     const Eigen::Vector2d& undefined_value) {
-  WriteVectorCellData<2, double>(std::move(name), mds, undefined_value);
+  WriteVectorCellData<2, double>(name, mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector2f>& mds,
     const Eigen::Vector2f& undefined_value) {
-  WriteVectorCellData<2, float>(std::move(name), mds, undefined_value);
+  WriteVectorCellData<2, float>(name, mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector3d>& mds,
     const Eigen::Vector3d& undefined_value) {
-  WriteVectorCellData<3, double>(std::move(name), mds, undefined_value);
+  WriteVectorCellData<3, double>(name, mds, undefined_value);
 }
 
 void VtkWriter::WriteCellData(
-    std::string name, const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
     const Eigen::Vector3f& undefined_value) {
-  WriteVectorCellData<3, float>(std::move(name), mds, undefined_value);
+  WriteVectorCellData<3, float>(name, mds, undefined_value);
 }
 
-void VtkWriter::WriteGlobalData(std::string name, std::vector<int> data) {
-  WriteFieldData(std::move(name), std::move(data));
+void VtkWriter::WriteGlobalData(const std::string& name,
+                                std::vector<int> data) {
+  WriteFieldData(name, std::move(data));
 }
 
-void VtkWriter::WriteGlobalData(std::string name, std::vector<float> data) {
-  WriteFieldData(std::move(name), std::move(data));
+void VtkWriter::WriteGlobalData(const std::string& name,
+                                std::vector<float> data) {
+  WriteFieldData(name, std::move(data));
 }
 
-void VtkWriter::WriteGlobalData(std::string name, std::vector<double> data) {
-  WriteFieldData(std::move(name), std::move(data));
+void VtkWriter::WriteGlobalData(const std::string& name,
+                                std::vector<double> data) {
+  WriteFieldData(name, std::move(data));
 }
 
 template <class DATA>
@@ -682,13 +693,13 @@ void CheckAttributeSetName(const DATA& data, const std::string& name) {
 }
 
 template <class T>
-void VtkWriter::WriteScalarPointData(std::string name,
+void VtkWriter::WriteScalarPointData(const std::string& name,
                                      const mesh::utils::MeshDataSet<T>& mds,
                                      T undefined_value) {
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->Size(mesh_->DimMesh()));
-  data.name = std::move(name);
+  data.name = name;
   for (auto& p : mesh_->Entities(mesh_->DimMesh())) {
     if (mds.DefinedOn(p)) {
       data.data[mesh_->Index(p)] = mds(p);
@@ -715,13 +726,13 @@ void PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
 
 template <int ROWS, class T>
 void VtkWriter::WriteVectorPointData(
-    std::string name,
+    const std::string& name,
     const mesh::utils::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
-    Eigen::Matrix<T, ROWS, 1> undefined_value) {
+    const Eigen::Matrix<T, ROWS, 1>& undefined_value) {
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::VectorData<T> data{};
   data.data.resize(mesh_->Size(mesh_->DimMesh()));
-  data.name = std::move(name);
+  data.name = name;
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
@@ -736,13 +747,13 @@ void VtkWriter::WriteVectorPointData(
 }
 
 template <class T>
-void VtkWriter::WriteScalarCellData(std::string name,
+void VtkWriter::WriteScalarCellData(const std::string& name,
                                     const mesh::utils::MeshDataSet<T>& mds,
                                     T undefined_value) {
   CheckAttributeSetName(vtk_file_.cell_data, name);
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->Size(codim_));
-  data.name = std::move(name);
+  data.name = name;
   for (auto& e : mesh_->Entities(codim_)) {
     if (mds.DefinedOn(e)) {
       data.data[mesh_->Index(e)] = mds(e);
@@ -755,13 +766,13 @@ void VtkWriter::WriteScalarCellData(std::string name,
 
 template <int ROWS, class T>
 void VtkWriter::WriteVectorCellData(
-    std::string name,
+    const std::string& name,
     const mesh::utils::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
-    Eigen::Matrix<T, ROWS, 1> undefined_value) {
+    const Eigen::Matrix<T, ROWS, 1>& undefined_value) {
   CheckAttributeSetName(vtk_file_.cell_data, name);
   VtkFile::VectorData<T> data{};
   data.data.resize(mesh_->Size(codim_));
-  data.name = std::move(name);
+  data.name = name;
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
@@ -776,10 +787,10 @@ void VtkWriter::WriteVectorCellData(
 }
 
 template <class T>
-void VtkWriter::WriteFieldData(std::string name, std::vector<T> data) {
+void VtkWriter::WriteFieldData(const std::string& name, std::vector<T> data) {
   CheckAttributeSetName(vtk_file_.field_data, name);
   VtkFile::FieldDataArray<T> vtk_data{};
-  vtk_data.name = std::move(name);
+  vtk_data.name = name;
   vtk_data.data = std::move(data);
   vtk_file_.field_data.push_back(std::move(vtk_data));
 }
