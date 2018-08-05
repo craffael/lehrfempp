@@ -16,7 +16,6 @@
 #include <boost/variant/variant.hpp>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 namespace lf::io {
