@@ -41,6 +41,7 @@ const unsigned int idx_nil = static_cast<unsigned int>(-1);
 #include "invalid_type_exception.h"
 #include "lf_assert.h"
 #include "lf_exception.h"
+#include "predicate_true.h"
 #include "random_access_iterator.h"
 #include "random_access_range.h"
 #include "ref_el.h"
