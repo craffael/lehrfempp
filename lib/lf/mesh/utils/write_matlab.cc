@@ -103,7 +103,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
         }
         default: {
           LF_VERIFY_MSG(false,
-                        "wite_matlab can only handle triangles and quads");
+                        "write_matlab can only handle triangles and quads");
           break;
         }
       }

@@ -8,7 +8,11 @@
 #include "lf/geometry/print_info.h"
 
 int main() {
+
+  using namespace lf::geometry;
+  lf::geometry::Geometry::output_ctrl_ = 100;
   std::cout << "Output of information of geometry" << std::endl;
+
 
   // Create point
   lf::geometry::Point test_point(Eigen::Vector3d(1,0,0));

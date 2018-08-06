@@ -65,10 +65,10 @@ int main() {
   PrintInfo(*mesh, std::cout);
   std::cout << "#####                   #####" << std::endl;
 */
-  /*
+
   lf::mesh::Entity::output_ctrl_ = 100;
 
-
+/*
   std::cout << "****** Output of mesh entities *******" << std::endl;
   // Loop over entities and print associated information
   for (lf::base::dim_t codim=0; codim <= 2; ++codim) {
@@ -77,11 +77,14 @@ int main() {
       std::cout << entity << std::endl;
     }
   }
-*/
-
+  */
 
   // Testing of writeTikZ for mesh
-  lf::mesh::utils::writeTikZ(*mesh, "tikz_mesh_test.txt");
+  lf::mesh::utils::writeTikZ(*mesh, "tikz_mesh_test2.txt");
+
+  //lf::mesh::utils::writeMatlab(*mesh, "write_matlab");
+
+  std::cout << 4%2 << std::endl;
   
   return 0L;
 }

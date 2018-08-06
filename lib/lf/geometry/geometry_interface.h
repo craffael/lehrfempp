@@ -175,29 +175,6 @@ class Geometry {
 }; // class Geometry
 
 
-void PrintInfo(const Geometry &geom, std::ostream &o);
-
-
-/**
- * @brief Operator overload to print a `Geometry` to a stream, such as `std::cout`
- * @param stream The stream to which this function should output
- * @param entity The geometry to write to `stream`.
- * @return The stream itself.
- *
- * - If Geometry::output_ctrl_ == 0, type reference element of geometry is sent as output to stream
- * - If Geometry::output_ctrl_ > 0, then lf::geometry::PrintInfo(const Geometry &geom, std::ostream &o) is called.
- *
- */
-inline std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
-
-    if (Geometry::output_ctrl_ == 0){
-        return stream << geom.RefEl();
-    } else {
-        PrintInfo(geom, stream);
-    }
-}
-
-
 }  // namespace lf::geometry
 
 #endif  // __7ed6b0d4d9244155819c464fc4eb9bbb
