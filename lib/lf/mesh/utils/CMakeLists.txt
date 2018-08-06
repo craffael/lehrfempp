@@ -1,4 +1,8 @@
 set(sources
+  all_codim_mesh_data_set.h
+  codim_mesh_data_set.h
+  lambda_mesh_data_set.h
+  mesh_data_set.h
   print_info.cc
   print_info.h
   utils.h

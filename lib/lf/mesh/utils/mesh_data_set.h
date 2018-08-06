@@ -1,29 +1,35 @@
 #ifndef __f6f00b1842024f36a0ad87792d103c89
 #define __f6f00b1842024f36a0ad87792d103c89
 
-#include "entity.h"
-#include "mesh_interface.h"
+#include <lf/mesh/mesh.h>
 
-namespace lf::mesh {
+namespace lf::mesh::utils {
 
 /**
  * @brief Interface that specifies how data is stored with an
  * entity.
  * @tparam T The type of data that is stored with the entity.
  *
- * A MeshDataSet is a class that allows us to store data with entities of a
- * mesh. Typical types of data that could be stored in a MeshDataSet:
+ * A MeshDataSet is a interface that attaches data of type `T` with entities
+ * of a mesh. Typical types of data that could be stored in a MeshDataSet:
  * - Flags that mark boundary entities.
  * - Material parameters for mesh elements (codim=0)
  *
  * @attention A MeshDataSet may store information only with a subset of
  * entities. See DefinedOn() .
  *
+ * @note By convention, MeshDataSets are always stored in `std::shared_ptr`'s in
+ * order to facilitate memory management. Thus most implementations of this
+ * interface don't have public constructors but they provide `make_xxx`
+ * functions for this purpose.
+ *
  * #### Implementations
  * There are a number of classes that implement the MeshDataSet interface
  * that differ mostly by the subset of entities to which they can attach data:
  * - CodimMeshDataSet attaches data to all entities of a given codimension and
  *   is undefined on other entities.
+ * - AllCodimMeshDataSet attaches data to all entities of a mesh (all
+ *   codimensions)
  *
  */
 template <class T>
@@ -37,22 +43,13 @@ class MeshDataSet {
 
  public:
   /**
-   * @brief Get a (modifiable) reference to the data stored with entity e.
-   * @param e The entity whose data should be retrieved/modified
-   * @return  A reference to the stored data.
-   *
-   * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
-   */
-  virtual T& data(const Entity& e) = 0;
-
-  /**
-   * @brief Get a const reference to the data stored with entity e.
+   * @brief Get the data stored with entity e.
    * @param e The entity whose data should be retrieved.
-   * @return A constant reference to the data stored for this entity.
+   * @return The data stored for this entity.
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  virtual const T& data(const Entity& e) const = 0;
+  virtual const T operator()(const Entity& e) const = 0;
 
   /**
    * @brief Does the dataset store information with this entity?
@@ -66,6 +63,6 @@ class MeshDataSet {
   virtual ~MeshDataSet() = default;
 };
 
-}  // namespace lf::mesh
+}  // namespace lf::mesh::utils
 
 #endif  // __f6f00b1842024f36a0ad87792d103c89
