@@ -8,6 +8,7 @@
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/utils/utils.h"
+#include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/print_info.h"
 
 int main() {
@@ -45,13 +46,13 @@ int main() {
   test.AddEntity(lf::base::RefEl::kQuad(), {0, 1, 2, 3},
 		 std::make_unique<lf::geometry::QuadO1>(std::move(node_coord)));
 
-  /*
+
   // explicitly add the right edge:
   node_coord = Eigen::MatrixXd(2, 2);
   node_coord << 1, 1, 0, 1;
   test.AddEntity(lf::base::RefEl::kSegment(), {1, 2},
 		 std::make_unique<lf::geometry::SegmentO1>(node_coord));
-  */
+
   
   // build the mesh and retrieve a pointer
   auto mesh = test.Build(); // mesh is Mesh object
@@ -59,14 +60,15 @@ int main() {
   int dim_mesh_MeshFactory = test.DimWorld(); // test is MeshFactory object
   int dim_mesh_Mesh = mesh->DimWorld();
 
-  /*
+
   // Output information on mesh
   std::cout << "##### Mesh information ######" << std::endl;
   PrintInfo(*mesh, std::cout);
   std::cout << "#####                   #####" << std::endl;
-*/
+
 
   lf::mesh::Entity::output_ctrl_ = 100;
+
 
 /*
   std::cout << "****** Output of mesh entities *******" << std::endl;
@@ -77,14 +79,17 @@ int main() {
       std::cout << entity << std::endl;
     }
   }
-  */
+*/
 
-  // Testing of writeTikZ for mesh
-  lf::mesh::utils::writeTikZ(*mesh, "tikz_mesh_test2.txt");
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Testing of writeTikZ for mesh (test mesh)
+  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt");
 
   //lf::mesh::utils::writeMatlab(*mesh, "write_matlab");
 
-  std::cout << 4%2 << std::endl;
-  
+  int enumtest = (TikzFlags::EdgeNumbering | TikzFlags::CellNumbering | TikzFlags::NodeNumbering);
+  std::cout << enumtest << std::endl;
+
   return 0L;
 }

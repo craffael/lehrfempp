@@ -9,31 +9,50 @@
 namespace lf::mesh::utils {
 
 void writeTikZ(const Mesh &mesh, std::string filename){
+  std::ofstream outfile(filename);
 
   using size_type = std::size_t; //lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t; // lf::base::dim_t;
   const Eigen::MatrixXd zero(Eigen::MatrixXd::Zero(0, 1));
 
-
   // Obtain topological dimension of the mesh
   const dim_t dim_mesh = mesh.DimMesh();
-  //const dim_t dim_world = mesh.DimWorld();
   LF_VERIFY_MSG(dim_mesh == 2, "writeTikZ() only available for 2D meshes");
 
+  //Run through nodes
   const dim_t node_codim(dim_mesh);
   const size_type no_of_nodes = mesh.Size(node_codim);
-
-
-
-
-
-  std::ofstream outfile(filename);
+  size_type node_count = 0;
 
   outfile << "% TikZ document graphics \n";
-  outfile << "\\begin{tikzpicture}[scale=2]\n";
+  outfile << "\\begin{tikzpicture}[scale=0.8]\n";
 
+  for (const Entity &node : mesh.Entities(node_codim)){
+      const lf::base::glb_idx_t node_index = mesh.Index(node);
+      const geometry::Geometry *geo_ptr = node.Geometry();
+      Eigen::MatrixXd node_coord(geo_ptr->Global(zero));
+      std::cout << node_index << std::endl;
+
+      outfile << "\\draw (" << node_coord(0, 0) << "," << node_coord(1, 0) << ")\n";
+      /*
+      if((node_index+1)%no_of_nodes != 0){
+          outfile << " -- ";
+      }
+      */
+
+      node_count++;
+
+  }
+
+  for (const Entity &e : mesh.Entities(0)){
+      size_type e_idx = mesh.Index(e);
+      std::cout << e_idx << std::endl;
+  }
+
+  /*
   // Loop over codimensions
   for (int co_dim = dim_mesh; co_dim >= 0; co_dim--){
+
     // Loop over entities
     for (const Entity &e : mesh.Entities(co_dim)){
       size_type e_idx = mesh.Index(e); // Entity number/index
@@ -56,7 +75,7 @@ void writeTikZ(const Mesh &mesh, std::string filename){
 
     } // loop entities
   } // loop codimensions
-
+*/
 
   outfile << "\\end{tikzpicture}" << std::endl;
 

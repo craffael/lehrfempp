@@ -23,4 +23,5 @@ int main() {
   std::cout << test_point << std::endl;
 
   return 0L;
+
 }
