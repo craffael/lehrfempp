@@ -9,6 +9,10 @@
 
 #include <lf/mesh/mesh.h>
 
+/**
+ * @brief tools for regular or local refinement of 2D hybrid meshes
+ *
+ */
 namespace lf::refinement {
 // Convenient types
 using lf::base::dim_t;

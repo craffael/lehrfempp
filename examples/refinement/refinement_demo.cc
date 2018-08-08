@@ -9,6 +9,7 @@
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
+#include "lf/mesh/hybrid2dp/hybrid2dp.h"
 
 int main() {
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
@@ -19,6 +20,14 @@ int main() {
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;
   }
+
+  // Generate hybrid test mesh and obtain a pointer to it
+  std::shared_ptr<lf::mesh::Mesh>
+    mesh_ptr = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  const lf::mesh::Mesh &mesh = *mesh_ptr;
+
+  // Output information about the mesh
+  lf::mesh::utils::PrintInfo(mesh,std::cout);
 
   return 0;
 }
