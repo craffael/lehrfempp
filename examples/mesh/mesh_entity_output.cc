@@ -60,14 +60,14 @@ int main() {
   int dim_mesh_MeshFactory = test.DimWorld(); // test is MeshFactory object
   int dim_mesh_Mesh = mesh->DimWorld();
 
-
+/*
   // Output information on mesh
   std::cout << "##### Mesh information ######" << std::endl;
   PrintInfo(*mesh, std::cout);
   std::cout << "#####                   #####" << std::endl;
+*/
 
-
-  lf::mesh::Entity::output_ctrl_ = 100;
+ // lf::mesh::Entity::output_ctrl_ = 100;
 
 
 /*
@@ -86,10 +86,11 @@ int main() {
   // Testing of writeTikZ for mesh (test mesh)
   lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt");
 
-  //lf::mesh::utils::writeMatlab(*mesh, "write_matlab");
 
+/*
   int enumtest = (TikzFlags::EdgeNumbering | TikzFlags::CellNumbering | TikzFlags::NodeNumbering);
   std::cout << enumtest << std::endl;
+*/
 
   return 0L;
 }

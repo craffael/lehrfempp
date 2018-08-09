@@ -123,14 +123,6 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
 
 
 
-  std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity &entity) {
-    if (Entity::output_ctrl_ == 0){
-      return stream << entity.RefEl();
-    } else {
-      lf::mesh::utils::PrintInfo(entity, stream);
-      return stream;
-    }
-  } // end output  operator <<
   
 }  // end namespace lf::mesh::utils
 
