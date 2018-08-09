@@ -7,7 +7,7 @@
  *
  */
 
-#include "refinement.h"
+#include "refinement_pattern.h"
 
 namespace lf::refinement {
 
