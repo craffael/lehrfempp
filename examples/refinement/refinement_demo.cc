@@ -83,22 +83,26 @@ int main(int argc,const char *argv[]) {
     switch (refselector) {
     case 0: {
       // Global regular refinement
+      std::cout << "#### global regular refinement" << std::endl;
       multi_mesh.RefineRegular();
       break;
     }
     case 1: {
       // Global barycentric refinement
+      std::cout << "#### global barycentric refinement" << std::endl;
       multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
       break;
     }
     case 2: {
       // Global regular refinement
+      std::cout << "#### global bisection refinement" << std::endl;
       multi_mesh.MarkEdges(allmarker);
       multi_mesh.RefineMarked();
       break;
     }
     case 3: {
       // Global regular refinement
+      std::cout << "#### local bisection refinement" << std::endl;
       multi_mesh.MarkEdges(locmarker);
       multi_mesh.RefineMarked();
       break;
