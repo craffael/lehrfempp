@@ -24,22 +24,15 @@ namespace lf::mesh::utils {
  */
 
 //Declare
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename);
+void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl);
 
 
 // enum
-enum TikzFlags {
+enum TikzOutputCtrl {
     EdgeNumbering = 1,
     CellNumbering = 2,
     NodeNumbering = 4
 };
-
-/*
-// https://stackoverflow.com/questions/1448396/how-to-use-enums-as-flags-in-c
-inline TikzFlags operator|(TikzFlags a, TikzFlags b){
-    return static_cast<TikzFlags>(static_cast<int>(a) | static_cast<int>(b));
-}
-*/
 
 
 
