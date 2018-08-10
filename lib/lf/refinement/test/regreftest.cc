@@ -159,7 +159,7 @@ TEST(LocRefTest, LocalRefinement) {
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
-  // Mark all edges
+  // Mark edges whose center lies inside a square
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
       marker =
           [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {

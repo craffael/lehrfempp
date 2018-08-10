@@ -19,17 +19,26 @@
 #include "lf/mesh/utils/utils.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 
-int main() {
+// Global variable for selection of refinement type
+// 0 -> regular global refinement
+// 1 -> global baryccentric refinement
+// 2 -> global marking of edges
+// 3 -> local marking of edges with midpoints in [0,1]^2
+CONTROLDECLAREINFO(refselector,"refselector","Selector for refinement method");
+
+int main(int argc,const char *argv[]) {
   using size_type = lf::base::size_type;
   
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
 
   // Set control variables from command line or file "setup vars"
-  // const int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
+  const int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;
   }
+  std::cout << "##### Control variables:" << std::endl;
+  lf::base::ListCtrlVars(std::cout);
 
   // Generate hybrid test mesh and obtain a pointer to it
   std::shared_ptr<lf::mesh::Mesh>
@@ -48,14 +57,58 @@ int main() {
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
 
+  // lambda functions for (local) marking
+  // First, a global marker
+    std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)> allmarker =
+      [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {
+	return true;
+      };
+  // Mark edges whose center lies inside a square
+    std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)> locmarker =
+      [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {
+	Eigen::MatrixXd ref_c(1, 1);
+	ref_c(0, 0) = 0.5;
+	Eigen::VectorXd c(edge.Geometry()->Global(ref_c));
+	return ((c[0] >= 0.0) && (c[0] < 1.0) && (c[1] >= 0.0) && (c[1] < 1.0));
+      };
+    
   // Main refinement loop
   std::cout << "########################################" << std::endl;
   std::size_t Nrefs; std::cout << "No of refinement steps: "; std::cin >> Nrefs;
   std::cout << "Entering main refinement loop" << std::endl;
   for (int refstep = 0; refstep < Nrefs; refstep++) {
     std::cout << "#### Refinement step " << refstep+1 << std::endl;
-    // Global regular refinement
-    multi_mesh.RefineRegular();
+    // Depending on the value of the control variable do different types
+    // of refinement
+    switch (refselector) {
+    case 0: {
+      // Global regular refinement
+      multi_mesh.RefineRegular();
+      break;
+    }
+    case 1: {
+      // Global barycentric refinement
+      multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
+      break;
+    }
+    case 2: {
+      // Global regular refinement
+      multi_mesh.MarkEdges(allmarker);
+      multi_mesh.RefineMarked();
+      break;
+    }
+    case 3: {
+      // Global regular refinement
+      multi_mesh.MarkEdges(locmarker);
+      multi_mesh.RefineMarked();
+      break;
+    }
+    default: {
+      LF_VERIFY_MSG(false,"Unknown refinement selector");
+      break;
+    }
+    } // end switch refselector
+    
     // Inquire about number of existing levels
     const size_type n_levels = multi_mesh.NumLevels();
     // Obtain pointer to mesh on finest level

@@ -31,7 +31,7 @@ CONTROLDECLARECOMMENT(StaticVarsDemoClass, arg_var_, "arg_var",
 CONTROLDECLARECOMMENT(StaticVarsDemoClass, output_ctrl_, "output_ctrl_",
                       "Test output ctrl");
 
-int main() {
+int main(int argc,const char *argv[]) {
   std::cout << "LehrFEM++ Demo program for the use of static control variables"
             << std::endl;
   std::cout << "Variables can be set via command line arguments: VARNAME=VALUE"
@@ -46,7 +46,7 @@ int main() {
   lf::base::SetCtrlVar("read_ctrl_vars_file", 1);
   lf::base::SetCtrlVar("read_ctrl_vars_args", 10);
 
-  // int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
+  int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
 
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;

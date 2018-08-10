@@ -135,7 +135,7 @@ unsigned int ListCtrlVars(std::ostream &out,
  * @param varname string containing the name of the global control variable
  * @param ctrl_var_root pointer to the beginning of the variable list
  */
-bool SetCtrlVar(const std::string &varname, int value,
+bool SetCtrlVar(const std::string varname, int value,
                 const StaticVar *ctrl_var_root = nullptr);
 
 /**
@@ -145,7 +145,7 @@ bool SetCtrlVar(const std::string &varname, int value,
  * that can be converted into an integer.
  * @param filename name of the file to read from
  */
-bool ReadCtrlVarsFile(const std::string& filename,
+bool ReadCtrlVarsFile(const std::string filename,
                       const StaticVar *ctrl_var_root = nullptr);
 
 /** @brief Process command line arguments to set variables
