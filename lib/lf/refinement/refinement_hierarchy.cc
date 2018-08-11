@@ -539,8 +539,8 @@ void MeshHierarchy::PerformRefinement() {
                  : cell_subent_idx[codim]) {
               std::cout << j << "," << std::flush;
             } std::cout
-            << "], " << std::flush;)
-        std::cout << std::endl;
+            << "], " << std::flush;
+	    std::cout << std::endl;)
       }
       // Index information for sub-entities with respect  to fine mesh
       // Retrieve indices of vertices of cell on the fine mesh
