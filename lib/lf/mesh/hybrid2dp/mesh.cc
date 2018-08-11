@@ -139,11 +139,12 @@ class EndpointIndexPair {
 // **********************************************************************
 Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     : dim_world_(dim_world) {
+  // Auxiliary data type for gathering information about cells adjacent to an edge
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
         : cell_idx(_cell_idx), edge_idx(_edge_idx) {}
-    size_type cell_idx;
-    size_type edge_idx;
+    size_type cell_idx; // index of adjacent cell
+    size_type edge_idx; // local index of edge in adjacent cell
   };
   // Information about cells adjacent to an edge
   using AdjCellsList = std::vector<AdjCellInfo>;
@@ -421,7 +422,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         edge_cnt++;
       }
       std::cout << "=============================================" << std::endl;
-    }
+    } // end if(output_ctrl > 10)
   }
 
   // ======================================================================

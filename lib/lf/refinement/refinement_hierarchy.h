@@ -7,7 +7,7 @@
  *
  */
 
-#include "refinement.h"
+#include "refinement_pattern.h"
 
 namespace lf::refinement {
 
@@ -103,7 +103,12 @@ class MeshHierarchy {
   /**
    * @brief access the mesh on a particular level
    */
-  const std::shared_ptr<mesh::Mesh> getMesh(size_type level) const {
+  std::shared_ptr<const mesh::Mesh> getMesh(size_type level) const {
+    LF_VERIFY_MSG(level < meshes_.size(),
+                  "Level " << level << " outside scope");
+    return meshes_.at(level);
+  }
+  std::shared_ptr<mesh::Mesh> getMesh(size_type level) {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
@@ -168,6 +173,10 @@ class MeshHierarchy {
    * @param marker this should be functor of type
    * `std::function<bool(const Mesh &,const Entity &)>`
    * returning true if the passed edge is to be marked.
+   *
+   * The _marker_ object also takes a reference to a mesh, because
+   * marking makes sense only for the finest level. The mesh on the 
+   * finest level is provided to the marker object by the `MeshHierarchy`.
    */
   template <typename Marker>
   void MarkEdges(Marker &&marker);

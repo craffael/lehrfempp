@@ -112,9 +112,9 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
   if (mesh_ptr != nullptr) {
     // Clear all information supplied to the MeshFactory object
-    nodes_.clear();
-    edges_.clear();
-    elements_.clear();
+    nodes_ = hybrid2dp::Mesh::NodeCoordList {}; // .clear();
+    edges_ = hybrid2dp::Mesh::EdgeList {}; // .clear();
+    elements_ = hybrid2dp::Mesh::CellList {} ; // clear();
     built_ = false;
   }
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);

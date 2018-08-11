@@ -80,8 +80,13 @@ for  k=1:num_tri
              'fontsize',8,'color','g','horizontalalignment','center');
     end
     if (parplot)
+        % indicate number of parent
         text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(TRI(k,4)+1,1)),...
              'fontsize',8,'color','g','horizontalalignment','center');
+        % mark refinement edge
+        refedge = CELLPAR(TRI(k,4)+1,3);
+        refedgepos = (shrunk_tri(:,refedge+1)+shrunk_tri(:,refedge+2))/2;
+        plot(refedgepos(1),refedgepos(2),'r^');
     end        
     str = {'0','1','2'};
     text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,...

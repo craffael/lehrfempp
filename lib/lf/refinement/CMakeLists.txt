@@ -1,5 +1,6 @@
 set(sources
   refinement.h refinement.cc
+  refinement_pattern.h refinement_pattern.cc
   refinement_hierarchy.h refinement_hierarchy.cc
   refutils.h refutils.cc
   )

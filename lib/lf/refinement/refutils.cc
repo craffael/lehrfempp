@@ -8,7 +8,7 @@
 
 namespace lf::refinement {
 
-inline glb_idx_t normalize_idx(glb_idx_t idx) {
+inline int normalize_idx(glb_idx_t idx) {
   return (idx == idx_nil) ? -1 : idx;
 }
 
@@ -70,7 +70,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       for (int k = 0; k < no_cells; k++) {
         file << "CELLPAR(" << k + 1 << ",:) = ["
              << normalize_idx(cell_parent_info[k].parent_index_) << " , "
-             << normalize_idx(cell_parent_info[k].child_number_)
+             << normalize_idx(cell_parent_info[k].child_number_) << " , "
              << normalize_idx(ref_eds[k]) << " ];" << std::endl;
       }
     }
@@ -90,10 +90,8 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &basename) {
 
     // Output of mesh data
     lf::mesh::utils::writeMatlab(*mesh, filebase + ".m");
-    if (level > 0) {
-      // Output of parent information
+    // Output of parent/refinement edge information
       WriteMatlabLevel(hier_mesh, level, filebase + "_pi.m");
-    }
   }
 }
 
