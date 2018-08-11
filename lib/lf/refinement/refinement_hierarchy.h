@@ -17,13 +17,12 @@ namespace lf::refinement {
  * This information is used by methods of the class `MeshHierarchy` to
  * organize uniform and adaptive refinement.
  *
- * The key pieces of information are
- * - a flag indicating whether the point is to be duplicated (rp_copy)
- * - global index of the child point
  */
 struct PointChildInfo {
   explicit PointChildInfo() = default;
+  /** @brief a flag indicating whether the point is to be duplicated (rp_copy) */
   RefPat ref_pat_{RefPat::rp_nil};
+  /** @brief global index of the child point */
   glb_idx_t child_point_idx_{static_cast<glb_idx_t>(-1)};
 };
 

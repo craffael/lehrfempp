@@ -133,15 +133,17 @@ class Geometry {
    * element
    * @param codim _relative_ codimension of child entities whose
    *         shape is requested
+   * @return an array of unique pointers pointers to geometry objects for child
+   *         entities of the specified co-dimension and the given refinement
+   *         pattern. The numbering of child entities is a convention.
    *
    * Implementation of local mesh refinement entails splitting of elements into
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
+   * The details of subdivisions corresponding to particular refinement patterns
+   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons` and should 
+   * be documented there. 
    *
-   * The arguments are unspecified integers to be interpreted correctly by
-   * specializations of this method. At the time of the definition of the
-   * interface all possible refinement patterns cannot be predicted. This is why
-   * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const = 0;

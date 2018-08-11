@@ -9,7 +9,6 @@ CONTROLDECLARECOMMENT(MeshFactory, output_ctrl_, "hybrid2dpmf_output_ctrl",
                       "Enables printing of internal lists for MeshFactory");
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
-  LF_ASSERT_MSG(!built_, "Build() already called.");
   LF_ASSERT_MSG(coord.rows() == dim_world_,
                 "coord has incompatible number of rows.");
   // Create default geometry object for a point from location vector
@@ -21,7 +20,6 @@ MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
 
 MeshFactory::size_type MeshFactory::AddPoint(
     std::unique_ptr<geometry::Geometry>&& geometry) {
-  LF_ASSERT_MSG(!built_, "Build() already called.");
   // Note: For the sake of purely topological computations meshes without
   // any geometry information may make sense.
   // Moreover, the location of a point can in principle be deduced from
@@ -40,7 +38,6 @@ MeshFactory::size_type MeshFactory::AddPoint(
 MeshFactory::size_type MeshFactory::AddEntity(
     base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
-  LF_ASSERT_MSG(!built_, "Build() already called. reset() first!");
   LF_ASSERT_MSG(ref_el.Dimension() > 0,
                 "Use AddPoint() to add a node to a mesh.");
   LF_ASSERT_MSG(ref_el.Dimension() <= 2, "ref_el.Dimension > 2");
@@ -106,17 +103,14 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
   // Obtain points to new mesh object; the actual construction of the
   // mesh is done by the constructor of that object
-  built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
       dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
 
-  if (mesh_ptr != nullptr) {
-    // Clear all information supplied to the MeshFactory object
-    nodes_ = hybrid2dp::Mesh::NodeCoordList{};  // .clear();
-    edges_ = hybrid2dp::Mesh::EdgeList{};       // .clear();
-    elements_ = hybrid2dp::Mesh::CellList{};    // clear();
-    built_ = false;
-  }
+  // Clear all information supplied to the MeshFactory object
+  nodes_ = hybrid2dp::Mesh::NodeCoordList{};  // .clear();
+  edges_ = hybrid2dp::Mesh::EdgeList{};       // .clear();
+  elements_ = hybrid2dp::Mesh::CellList{};    // clear();
+
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
 
