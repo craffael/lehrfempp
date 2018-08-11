@@ -12,7 +12,7 @@
 
 int main() {
   using namespace lf::mesh::utils;
-  
+
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // NOTE TO SELF: There are several test folders in lf/mesh:

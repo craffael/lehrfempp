@@ -346,7 +346,6 @@ TEST(LocRefTest, MixedRefinement) {
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
                          << " level?";
   for (int l = 0; l < n_levels; ++l) {
-
     std::shared_ptr<mesh::Mesh> mesh = multi_mesh.getMesh(l);
 
     std::cout << "### LEVEL " << l << " ####" << std::endl;

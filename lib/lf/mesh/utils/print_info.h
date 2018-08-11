@@ -60,8 +60,8 @@ namespace lf::mesh {
  * lf::mesh::Entity& e, std::ostream& stream) is called.
  *
  */
-std::ostream& operator << (std::ostream& stream, const Entity& entity);
+std::ostream& operator<<(std::ostream& stream, const Entity& entity);
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::mesh
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

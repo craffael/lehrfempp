@@ -8,9 +8,7 @@
 
 namespace lf::refinement {
 
-inline int normalize_idx(glb_idx_t idx) {
-  return (idx == idx_nil) ? -1 : idx;
-}
+inline int normalize_idx(glb_idx_t idx) { return (idx == idx_nil) ? -1 : idx; }
 
 void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
                       std::string filename) {
@@ -91,7 +89,7 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &basename) {
     // Output of mesh data
     lf::mesh::utils::writeMatlab(*mesh, filebase + ".m");
     // Output of parent/refinement edge information
-      WriteMatlabLevel(hier_mesh, level, filebase + "_pi.m");
+    WriteMatlabLevel(hier_mesh, level, filebase + "_pi.m");
   }
 }
 

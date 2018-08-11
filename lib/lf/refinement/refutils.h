@@ -24,7 +24,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
  * @param hier_mesh reference to a valid MeshHierarchy object
  * @filename basename for output file, of which there will be _several_
  */
-void WriteMatlab(const MeshHierarchy &hier_mesh,const std::string &basename);
+void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &basename);
 
 }  // namespace lf::refinement
 

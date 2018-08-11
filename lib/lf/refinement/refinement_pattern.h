@@ -10,12 +10,12 @@
 #include <lf/mesh/mesh.h>
 
 namespace lf::refinement {
-  // Convenient types inherited from base namespace
-  using lf::base::dim_t;
-  using lf::base::glb_idx_t;
-  using lf::base::size_type;
-  using lf::base::sub_idx_t;
-  const unsigned int idx_nil = lf::base::idx_nil;
+// Convenient types inherited from base namespace
+using lf::base::dim_t;
+using lf::base::glb_idx_t;
+using lf::base::size_type;
+using lf::base::sub_idx_t;
+const unsigned int idx_nil = lf::base::idx_nil;
 
 /**
  * @brief (possibly incomplete) list of refinement patterns

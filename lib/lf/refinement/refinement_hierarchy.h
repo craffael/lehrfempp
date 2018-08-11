@@ -175,7 +175,7 @@ class MeshHierarchy {
    * returning true if the passed edge is to be marked.
    *
    * The _marker_ object also takes a reference to a mesh, because
-   * marking makes sense only for the finest level. The mesh on the 
+   * marking makes sense only for the finest level. The mesh on the
    * finest level is provided to the marker object by the `MeshHierarchy`.
    */
   template <typename Marker>

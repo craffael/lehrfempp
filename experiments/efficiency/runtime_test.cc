@@ -6,8 +6,7 @@
 #include "lf/base/base.h"
 
 int main(int argc, const char *[]) {
-
   std::cout << "Runtime test" << std::endl;
-   
+
   return 0;
 }

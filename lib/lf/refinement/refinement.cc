@@ -6,6 +6,4 @@
 
 #include "refinement.h"
 
-namespace lf::refinement {
-
-}  // namespace lf::refinement
+namespace lf::refinement {}  // namespace lf::refinement
