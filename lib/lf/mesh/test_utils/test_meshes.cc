@@ -3,7 +3,7 @@
 
 namespace lf::mesh::test_utils {
 
-std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(void) {
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh() {
   using coord_t = Eigen::Vector2d;
   using size_type = lf::mesh::Mesh::size_type;
   // Obtain mesh factory
