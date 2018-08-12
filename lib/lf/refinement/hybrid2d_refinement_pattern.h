@@ -15,7 +15,7 @@ using lf::base::dim_t;
 using lf::base::glb_idx_t;
 using lf::base::size_type;
 using lf::base::sub_idx_t;
-const unsigned int idx_nil = lf::base::idx_nil;
+const unsigned int idx_nil = lf::base::kIdxNil;
 
 /**
  * @brief (possibly incomplete) list of refinement patterns
@@ -62,7 +62,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
 
   // TODO(ralfh):
   // We do not need the achor_set_ member, if we follow the convention that
-  // lf::base::idx_nil represents an invalid (= non-set) anchor index.
+  // lf::base::kIdxNil represents an invalid (= non-set) anchor index.
 
  public:
   /** @brief constructor */

@@ -1,7 +1,7 @@
 set(sources
   refinement.h refinement.cc
-  refinement_pattern.h refinement_pattern.cc
-  refinement_hierarchy.h refinement_hierarchy.cc
+  hybrid2d_refinement_pattern.h hybrid2d_refinement_pattern.cc
+  mesh_hierarchy.h mesh_hierarchy.cc
   refutils.h refutils.cc
   )
 

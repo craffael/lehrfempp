@@ -2,7 +2,7 @@
  * @brief utility functions for debugging refinement methods
  */
 
-#include "refinement_hierarchy.h"
+#include "mesh_hierarchy.h"
 
 #ifndef LF_REFUTILS_H_H
 #define LF_REFUTILS_H_H

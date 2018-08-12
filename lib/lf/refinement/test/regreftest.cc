@@ -3,7 +3,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/refinement/refinement_hierarchy.h>
+#include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include <iostream>
 #include "lf/io/io.h"

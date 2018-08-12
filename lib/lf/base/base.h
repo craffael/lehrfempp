@@ -30,7 +30,7 @@ using dim_t = unsigned char;
 /**
  * @brief Index flagged as invalid
  */
-const unsigned int idx_nil = static_cast<unsigned int>(-1);
+const unsigned int kIdxNil = static_cast<unsigned int>(-1);
 /** @} */
 }  // namespace lf::base
 

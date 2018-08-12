@@ -4,7 +4,7 @@
  * refinement patterns
  */
 
-#include "refinement_pattern.h"
+#include "hybrid2d_refinement_pattern.h"
 
 namespace lf::refinement {
 
@@ -103,7 +103,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
         default: {
           LF_VERIFY_MSG(false, "Illegal refinement pattern for point");
         }
-      }  // end swtich ref_pat_
+      }  // end swtich ref_pat
       break;
     }  // end case of a simple point
     case lf::base::RefEl::kSegment(): {
@@ -125,7 +125,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
                                        << "not implemented for edge!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }
         case 1: {
@@ -265,7 +265,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
                                        << "not implemented for quadrilateral!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }
         case 1: {
@@ -299,7 +299,7 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
                                        << "not implemented for quadrilateral!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }
         case 2: {
@@ -364,7 +364,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                                        << "not implemented for edge!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }          // case codeim = 0
         case 1: {  // child entities are points
@@ -571,7 +571,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                                        << "not implemented for triangle!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }          // end case codim = 0
         case 1: {  // codim == 1
@@ -708,7 +708,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                                        << "not implemented for triangle!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }  // end codim = 1
         case 2: {
@@ -890,7 +890,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                                        << "not implemented for quadrilateral!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }  // end codim == 0
         case 1: {
@@ -998,7 +998,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                                        << "not implemented for quadrilateral!");
               break;
             }
-          }  // end switch ref_pat_
+          }  // end switch ref_pat
           break;
         }
         case 2: {
