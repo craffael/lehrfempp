@@ -3,8 +3,8 @@
  * @brief implementation of global/local refinement methods
  */
 
-#include <iostream>
 #include "mesh_hierarchy.h"
+#include <iostream>
 
 namespace lf::refinement {
 
@@ -156,7 +156,7 @@ void MeshHierarchy::RefineMarked() {
       std::array<glb_idx_t, 4> cell_edge_indices{};
 
       // Find edges which are marked as split
-      std::array<bool, 4> edge_split({false, false, false, false});
+      std::array<bool, 4> edge_split{{false, false, false, false}};
       // Local indices of edges marked as split
       std::array<sub_idx_t, 4> split_edge_idx{};
       // Array of references to edge sub-entities of current cell
@@ -545,8 +545,8 @@ void MeshHierarchy::PerformRefinement() {
       }
       // Index information for sub-entities with respect  to fine mesh
       // Retrieve indices of vertices of cell on the fine mesh
-      std::array<lf::base::glb_idx_t, 4> vertex_child_idx(
-          {idx_nil, idx_nil, idx_nil, idx_nil});
+      std::array<lf::base::glb_idx_t, 4> vertex_child_idx{
+          {idx_nil, idx_nil, idx_nil, idx_nil}};
       for (lf::base::sub_idx_t vt_lidx = 0; vt_lidx < num_vertices; vt_lidx++) {
         LF_VERIFY_MSG(pt_child_info[cell_subent_idx[2][vt_lidx]].ref_pat ==
                           RefPat::rp_copy,
@@ -563,8 +563,8 @@ void MeshHierarchy::PerformRefinement() {
           << "], " << std::flush;)
 
       // Retrieve indices of midpoints of edges, if they exist
-      std::array<lf::base::glb_idx_t, 4> edge_midpoint_idx(
-          {idx_nil, idx_nil, idx_nil, idx_nil});
+      std::array<lf::base::glb_idx_t, 4> edge_midpoint_idx{
+          {idx_nil, idx_nil, idx_nil, idx_nil}};
       for (lf::base::sub_idx_t ed_lidx = 0; ed_lidx < num_edges; ed_lidx++) {
         const EdgeChildInfo &ed_ci(ed_child_info[cell_subent_idx[1][ed_lidx]]);
         if (!ed_ci.child_point_idx.empty()) {
