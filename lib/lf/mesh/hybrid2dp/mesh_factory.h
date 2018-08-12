@@ -33,7 +33,7 @@ class MeshFactory : public mesh::MeshFactory {
    *                  mesh is embedded.
    */
   explicit MeshFactory(dim_t dim_world)
-      : dim_world_(dim_world), built_(false) {}
+      : dim_world_(dim_world) {}
 
   /** @copydoc MeshFactory::DimWorld() */
   dim_t DimWorld() const override { return dim_world_; }
@@ -62,7 +62,6 @@ class MeshFactory : public mesh::MeshFactory {
 
  private:
   dim_t dim_world_;  // dimension of ambient space
-  bool built_;       // mesh built? If yes, refuse to build another one.
   hybrid2dp::Mesh::NodeCoordList nodes_;
   hybrid2dp::Mesh::EdgeList edges_;
   hybrid2dp::Mesh::CellList elements_;
