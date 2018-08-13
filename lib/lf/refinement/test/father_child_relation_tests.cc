@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/io/test_utils/read_mesh.h>
+#include <lf/io/vtk_writer.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 
@@ -29,11 +30,22 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
     auto& father_info = point_father_infos[child_mesh->Index(cp)];
     auto fp = father_info.parent_ptr;
     EXPECT_EQ(father_mesh->Index(*fp), father_info.parent_index);
-    EXPECT_EQ(fp->Codim(), 2);
     EXPECT_EQ(father_info.child_number, 0);
-
-    EXPECT_TRUE(
-        cp.Geometry()->Global(origin).isApprox(fp->Geometry()->Global(origin)));
+    if (fp->Codim() == 2) {
+      // father entity is a point
+      EXPECT_TRUE(cp.Geometry()->Global(origin).isApprox(
+          fp->Geometry()->Global(origin)));
+    } else if (fp->Codim() == 1) {
+      // father entity is a segment ->calculate distance to segment:
+      auto a = fp->Geometry()->Global(Eigen::VectorXd::Zero(1));
+      auto b = fp->Geometry()->Global(Eigen::VectorXd::Ones(1));
+      auto c = cp.Geometry()->Global(origin);
+      double dist = std::abs((Eigen::MatrixXd(2, 2) << (b - a), (c - a))
+                                 .finished()
+                                 .determinant()) /
+                    (b - a).norm();
+      EXPECT_LT(dist, 1e-10);
+    }
   }
 }
 
@@ -57,6 +69,12 @@ TEST(lf_refinement, FatherChildRelations) {
 
   mh.MarkEdges([&](auto& mesh, auto& e) { return (*marks)(e); });
   mh.RefineMarked();
+
+  {
+    // For debug purposes: print the meshs into a vtk file
+    io::VtkWriter writer0(base_mesh, "mesh0.vtk");
+    io::VtkWriter writer1(mh.getMesh(1), "mesh1.vtk");
+  }
 
   auto child_mesh1 = mh.getMesh(1);
   checkFatherChildRelations(mh, 0);
