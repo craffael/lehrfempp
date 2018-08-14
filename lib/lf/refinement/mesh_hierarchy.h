@@ -24,7 +24,7 @@ struct PointChildInfo {
    */
   RefPat ref_pat{RefPat::rp_nil};
   /** @brief global index of the child point */
-  glb_idx_t child_point_idx{static_cast<glb_idx_t>(-1)};
+  glb_idx_t child_point_idx{idx_nil};
 };
 
 /**
@@ -39,8 +39,11 @@ struct PointChildInfo {
  */
 struct EdgeChildInfo {
   explicit EdgeChildInfo() = default;
+  /** @brief type of refinement edge has undergone, see `RefPat` */
   RefPat ref_pat_{RefPat::rp_nil};
+  /** @brief global indices of child edges in fine mesh */
   std::vector<glb_idx_t> child_edge_idx;
+  /** @brief global indices of _interior_ child points in fine mesh */
   std::vector<glb_idx_t> child_point_idx;
 };
 
@@ -58,7 +61,7 @@ struct EdgeChildInfo {
 struct CellChildInfo {
   explicit CellChildInfo() = default;
   RefPat ref_pat_{RefPat::rp_nil};
-  sub_idx_t anchor_{static_cast<sub_idx_t>(-1)};
+  sub_idx_t anchor_{idx_nil};
   std::vector<glb_idx_t> child_cell_idx;
   std::vector<glb_idx_t> child_edge_idx;
   std::vector<glb_idx_t> child_point_idx;
