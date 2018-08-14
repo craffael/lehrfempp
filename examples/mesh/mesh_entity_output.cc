@@ -84,7 +84,7 @@ int main() {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Testing of writeTikZ for mesh (test mesh)
-  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt", TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::NodeNumbering);
+  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt", TikzOutputCtrl::NodeNumbering|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering|TikzOutputCtrl::EdgeNumbering);
 
 
   return 0L;
