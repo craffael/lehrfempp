@@ -112,6 +112,55 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
     }
     } // end switch
   } // end loop over nodes of fine mesh
+
+  // ----------------------------------------
+  // I: check parent-child relations for nodes
+  // ----------------------------------------
+  // Run through all edges of the fine mesh
+  for (const lf::mesh::Entity &edge : child_mesh->Entities(1)) {
+    const lf::base::glb_idx_t edge_index = child_mesh->Index(edge);
+    const lf::refinement::ParentInfo &edge_parent_info =
+      edge_father_infos[edge_index];
+    const lf::mesh::Entity *edge_parent_ptr = edge_parent_info.parent_ptr;
+    EXPECT_NE(edge_parent_ptr,nullptr)
+      << "Invalid pointer to parent edge";
+      if (edge_parent_ptr != nullptr) {
+	const lf::base::glb_idx_t edge_parent_index = edge_parent_info.parent_index;
+	// Check consistency of index of father entity
+	EXPECT_EQ(edge_parent_index,father_mesh->Index(*edge_parent_ptr))
+	  << "Inconsistent parent index: " << edge_parent_index << " <-> "
+	  << father_mesh->Index(*edge_parent_ptr);
+	const lf::base::RefEl parent_type = edge_parent_ptr->RefEl();
+
+	switch (parent_type) {
+	case lf::base::RefEl::kPoint(): {
+	  ADD_FAILURE() << "A point cannot be the parent of an edge";
+	  break;
+	}
+	case lf::base::RefEl::kSegment(): {
+	  // Parent is another edge
+	  const lf::refinement::EdgeChildInfo &eci(edge_child_infos[edge_parent_index]);
+	  const std::vector<lf::base::glb_idx_t> &cei(eci.child_edge_idx);
+	  EXPECT_NE(std::find(cei.begin(),cei.end(),edge_index),cei.end())
+	    << "Child edge " << edge_index << " not registered with parent edge";
+	  break;
+	}
+	case lf::base::RefEl::kTria():
+	case lf::base::RefEl::kQuad(): {
+	  // Parent is a cell
+	  const lf::refinement::CellChildInfo &cci(cell_child_infos[edge_parent_index]);
+	  const std::vector<lf::base::glb_idx_t> &cei(cci.child_edge_idx);
+	  EXPECT_NE(std::find(cei.begin(),cei.end(),edge_index),cei.end())
+	    << "Child edge " << edge_index << " not registered with parent cell";
+	  break;
+	}
+	default: {
+	  FAIL() << "Unknown entity type";
+	  break;
+	}
+	} // end switch
+      }
+  } // end loop over edges
 }
 
 TEST(lf_refinement, FatherChildRelations) {
