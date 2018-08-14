@@ -15,6 +15,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
   bool EdgeNumOn = output_ctrl & TikzOutputCtrl::EdgeNumbering;
   bool NodeNumOn = output_ctrl & TikzOutputCtrl::NodeNumbering;
   bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
+  bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
 
   if(EdgeNumOn){
       // Display edge numbering
@@ -38,41 +39,84 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
   // START writing to file
   outfile << "% TikZ document graphics \n";
-  outfile << "\\begin{tikzpicture}[scale=0.8]\n";
+  outfile << "\\begin{tikzpicture}[scale=3]\n";
 
+  for (int co_dim = dim_mesh; co_dim >= 0; co_dim--){
 
+      for (const Entity &obj : mesh.Entities(co_dim)){
+          size_type obj_idx = mesh.Index(obj);
+          lf::base::RefEl obj_refel = obj.RefEl();
+          const geometry::Geometry *obj_geo_ptr = obj.Geometry();
+          const Eigen::MatrixXd &obj_corners(obj_refel.NodeCoords());
 
-  /*
-  for (const Entity &cell : mesh.Entities(0)){
-      size_type cell_idx = mesh.Index(cell);
-      lf::base::RefEl cell_refel = cell.RefEl();
-      int num_nodes_cell = cell_refel.NumNodes();
-      const geometry::Geometry *cell_geo_ptr = cell.Geometry();
-      const Eigen::MatrixXd &cell_corners(cell_refel.NodeCoords());
-      //Eigen::MatrixXd node_coord(cell_geo_ptr->Global(zero));
+          switch (obj_refel) {
+          case lf::base::RefEl::kPoint():
+              outfile << "\\draw[red, fill = white] (" << obj_geo_ptr->Global(obj_corners).col(0)[0] << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") node[circle, draw, fill = white] {";
 
+              // Node numbering
+              if(NodeNumOn){
+                  outfile << obj_idx << "};\n";
+              } else {outfile << "};\n"; }
+              break;
 
-      outfile << "\\draw ";
-      for (int node = 0; node < num_nodes_cell; node++){
-          outfile << "(" << cell_geo_ptr->Global(cell_corners).col(node)[0]
-                  << "," << cell_geo_ptr->Global(cell_corners).col(node)[1] << ") -- ";
+          case lf::base::RefEl::kSegment():
+              if (EdgeNumOn){
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") -- node[] {" << obj_idx << "} "
+                          << "(" << obj_geo_ptr->Global(obj_corners).col(1)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ");\n";
+              } else {
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ")"
+                          << "(" << obj_geo_ptr->Global(obj_corners).col(1)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ");\n";
+              }
+              break;
 
-      } // for nodes
-      outfile << "(" << cell_geo_ptr->Global(cell_corners).col(num_nodes_cell)[0]
-              << "," << cell_geo_ptr->Global(cell_corners).col(num_nodes_cell)[1] << ");\n";
+          case lf::base::RefEl::kTria():
+              if(VerticeNumOn){
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") node[very near end, below left] {0} -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(1)[0] << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ") node[very near end, below left] {1} -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(2)[0] << "," << obj_geo_ptr->Global(obj_corners).col(2)[1] << ") node[very near end, below left] {2} -- cycle;\n";
+              } else {
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(1)[0] << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ") -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(2)[0] << "," << obj_geo_ptr->Global(obj_corners).col(2)[1] << ") -- cycle;\n";
 
+              } // if EdgeNumOn
+              break;
 
+          case lf::base::RefEl::kQuad():
+              if (VerticeNumOn){
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") node[very near end, below left] {0} -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(1)[0] << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ") node[very near end, below left] {1} -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(2)[0] << "," << obj_geo_ptr->Global(obj_corners).col(2)[1] << ") node[very near end, below left] {2} -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(3)[0] << "," << obj_geo_ptr->Global(obj_corners).col(3)[1] << ") node[very near end, below left] {3} -- cycle;\n";
+              } else {
+                  outfile << "\\draw[->, black] (" << obj_geo_ptr->Global(obj_corners).col(0)[0]
+                          << "," << obj_geo_ptr->Global(obj_corners).col(0)[1] << ") -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(1)[0] << "," << obj_geo_ptr->Global(obj_corners).col(1)[1] << ") -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(2)[0] << "," << obj_geo_ptr->Global(obj_corners).col(2)[1] << ") -- ("
+                          << obj_geo_ptr->Global(obj_corners).col(3)[0] << "," << obj_geo_ptr->Global(obj_corners).col(3)[1] << ") -- cycle;\n";
+              }
 
+          default:
+              std::cout << "Error for object " << obj_idx << " in co-dim " << co_dim << std::endl;
+              std::cout << "Object type: " << obj_refel << std::endl;
+              break;
+          } // switch
+      } // for entities
 
-  } // for cells
-*/
+       node_count++;
+   } // for codim
 
-  outfile << "\\end{tikzpicture}" << std::endl;
+  outfile << "\\end{tikzpicture}\n";
 
 
 } // writeTikZ mesh
-
-
 
 
 } // namespace lf::mesh::utils

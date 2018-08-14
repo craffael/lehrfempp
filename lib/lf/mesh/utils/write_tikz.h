@@ -31,7 +31,8 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
 enum TikzOutputCtrl {
     EdgeNumbering = 1,
     CellNumbering = 2,
-    NodeNumbering = 4
+    NodeNumbering = 4,
+    VerticeNumbering = 8
 };
 
 
