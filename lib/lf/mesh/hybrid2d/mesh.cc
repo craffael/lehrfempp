@@ -265,7 +265,8 @@ const mesh::Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
   if (codim == 0) {
     LF_ASSERT_MSG(index < entities0_.size(), "index too large.");
     return &entities0_[index];
-  } else if (codim == 1) {
+  }
+  if (codim == 1) {
     LF_ASSERT_MSG(index < entities1_.size(), "index too large");
     return &entities1_[index];
   }
