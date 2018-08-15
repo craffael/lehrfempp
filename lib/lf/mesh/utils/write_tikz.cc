@@ -49,7 +49,6 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
           Eigen::MatrixXd center_mat(center.rows(), num_nodes_obj);
 
 
-
           switch (obj_refel) {
 
           case lf::base::RefEl::kPoint():{
@@ -138,6 +137,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
       } // for entities
 
        node_count++;
+       //LF_VERIFY_MSG(node_count == no_of_nodes, "Node count mismatch");
    } // for codim
 
   outfile << "\\end{tikzpicture}\n";
