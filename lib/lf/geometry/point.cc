@@ -18,7 +18,7 @@ Eigen::MatrixXd Point::JacobianInverseGramian(
 
 // NOLINTNEXTLINE(misc-unused-parameters)
 Eigen::VectorXd Point::IntegrationElement(const Eigen::MatrixXd& local) const {
-  LF_VERIFY_MSG(false, "integrationElement() undefined for points.");
+  return Eigen::Matrix<double, 1, 1>::Constant(1.0);
 }
 
 std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
@@ -28,9 +28,8 @@ std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
   LF_VERIFY_MSG(false, "codim or i out of bounds.");
 }
 
-std::vector<std::unique_ptr<Geometry>>
-Point::ChildGeometry(const RefinementPattern& ref_pattern,
-		     lf::base::dim_t codim) const {
+std::vector<std::unique_ptr<Geometry>> Point::ChildGeometry(
+    const RefinementPattern& ref_pattern, lf::base::dim_t codim) const {
   LF_VERIFY_MSG(codim == 0, "Only codim = 0 allowed for a point");
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   LF_VERIFY_MSG(ref_pattern.RefEl() == lf::base::RefEl::kPoint(),

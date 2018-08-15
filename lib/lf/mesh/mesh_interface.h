@@ -82,13 +82,15 @@ class Mesh {
    * @brief Method for accessing an entity through its index
    * @param codim codimension of the entity. Remember that indices are supposed
    *        to be unique and contiguous for a given co-dimension
-   * @param index an integer between 0 and number of entities of the given co-dimension
-   *        -1. It passes the index. 
+   * @param index an integer between 0 and number of entities of the given
+   * co-dimension -1. It passes the index.
    *
-   * Based on the bijectition between entities of a givenco-dimension and an integer range
+   * Based on the bijectition between entities of a givenco-dimension and an
+   * integer range
    */
-  virtual const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const = 0;
-  
+  virtual const mesh::Entity* EntityByIndex(dim_t codim,
+                                            glb_idx_t index) const = 0;
+
   /**
    * @brief Check if the given entity is a part of this mesh.
    * @param e The entity that should be checked.

@@ -13,10 +13,7 @@
  * @brief Contains helper functions and classes that all operate on the
  *        interface classes defined in lf::mesh
  */
-namespace lf::mesh::utils {
-
-
-}
+namespace lf::mesh::utils {}
 
 #include "all_codim_mesh_data_set.h"
 #include "codim_mesh_data_set.h"

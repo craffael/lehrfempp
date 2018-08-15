@@ -33,7 +33,7 @@ class MeshFactory : public mesh::MeshFactory {
    *                  mesh is embedded.
    */
   explicit MeshFactory(dim_t dim_world)
-      : dim_world_(dim_world), built_(false) {}
+      : dim_world_(dim_world) {}
 
   /** @copydoc MeshFactory::DimWorld() */
   dim_t DimWorld() const override { return dim_world_; }
@@ -46,7 +46,7 @@ class MeshFactory : public mesh::MeshFactory {
 
   /** @copydoc MeshFactory::AddPoint() */
   size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) override;
-  
+
   /** @copydoc MeshFactory::AddEntity() */
   size_type AddEntity(base::RefEl ref_el,
                       const base::ForwardRange<const size_type>& nodes,
@@ -62,7 +62,6 @@ class MeshFactory : public mesh::MeshFactory {
 
  private:
   dim_t dim_world_;  // dimension of ambient space
-  bool built_;       // mesh built? If yes, refuse to build another one.
   hybrid2dp::Mesh::NodeCoordList nodes_;
   hybrid2dp::Mesh::EdgeList edges_;
   hybrid2dp::Mesh::CellList elements_;
@@ -73,11 +72,11 @@ class MeshFactory : public mesh::MeshFactory {
   static int output_ctrl_;
 };
 
-
-inline std::ostream& operator<<(std::ostream& stream, const MeshFactory& mesh_factory){
-    stream << "mesh factory object";
+inline std::ostream& operator<<(std::ostream& stream,
+                                const MeshFactory& /*mesh_factory*/) {
+  stream << "mesh factory object";
+  return stream;
 }
-
 
 }  // namespace lf::mesh::hybrid2dp
 

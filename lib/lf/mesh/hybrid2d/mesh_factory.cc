@@ -11,13 +11,12 @@ MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   return nodes_.size() - 1;
 }
 
-  MeshFactory::size_type
-  MeshFactory::AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) {
-    LF_ASSERT_MSG(false,"Not implemented");
-    return -1;
-  }
+MeshFactory::size_type MeshFactory::AddPoint(
+    std::unique_ptr<geometry::Geometry>&& /*geometry*/) {
+  LF_ASSERT_MSG(false, "Not implemented");
+  return -1;
+}
 
-  
 MeshFactory::size_type MeshFactory::AddEntity(
     base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {

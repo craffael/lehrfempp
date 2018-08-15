@@ -23,10 +23,8 @@ class Mesh : public mesh::Mesh {
 
   size_type Index(const mesh::Entity& e) const override;
 
-  const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const override {
-    LF_VERIFY_MSG(false,"Not implemented");
-    return nullptr;
-  }
+  const mesh::Entity* EntityByIndex(dim_t codim,
+                                    glb_idx_t index) const override;
 
   bool Contains(const mesh::Entity& e) const override;
 
@@ -70,7 +68,6 @@ class Mesh : public mesh::Mesh {
   friend class Entity;
   friend class MeshFactory;
 };
-
 
 }  // namespace lf::mesh::hybrid2d
 

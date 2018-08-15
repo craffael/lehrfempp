@@ -19,11 +19,11 @@
 
 namespace lf::mesh::hybrid2dp {
 
-  using size_type = lf::base::size_type;
-  using dim_t = lf::base::dim_t;
-  using sub_idx_t = lf::base::sub_idx_t;
-  using glb_idx_t = lf::base::glb_idx_t;
-  const unsigned int idx_nil = lf::base::idx_nil;
+using size_type = lf::base::size_type;
+using dim_t = lf::base::dim_t;
+using sub_idx_t = lf::base::sub_idx_t;
+using glb_idx_t = lf::base::glb_idx_t;
+const unsigned int idx_nil = lf::base::kIdxNil;
 
 class MeshFactory;
 
@@ -38,7 +38,8 @@ class Mesh : public mesh::Mesh {
   base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
   size_type Index(const Entity& e) const override;
-  const mesh::Entity *EntityByIndex(dim_t codim,glb_idx_t index) const override;
+  const mesh::Entity* EntityByIndex(dim_t codim,
+                                    glb_idx_t index) const override;
   bool Contains(const mesh::Entity& e) const override;
 
  private:
@@ -51,13 +52,13 @@ class Mesh : public mesh::Mesh {
   std::vector<hybrid2dp::Triangle> trias_;
   /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2dp::Quadrilateral> quads_;
-  /** @brief Auxliary array of cell (co-dim ==0 entities) pointers 
+  /** @brief Auxliary array of cell (co-dim ==0 entities) pointers
    *
    * This array serves two purposes. It facilitates the construction
    * of a range covering all the cells. It is also required to retrieving
-   * the entity of a specific codimension belonging to an index. 
+   * the entity of a specific codimension belonging to an index.
    */
-  std::array<std::vector<const mesh::Entity*>,3> entity_pointers_;
+  std::array<std::vector<const mesh::Entity*>, 3> entity_pointers_;
 
   /** @brief Data types for passing information about mesh intities */
   using GeometryPtr = std::unique_ptr<geometry::Geometry>;
@@ -69,6 +70,7 @@ class Mesh : public mesh::Mesh {
 
   /**
    * @brief Construction of mesh from information gathered in a MeshFactory
+   * @param dim_world Dimension of the ambient space.
    * @param nodes sequential container of node coordinates
    * @param edges sequential container of pairs of
                   (i) vectors of indices of the nodes of an edge
@@ -83,8 +85,7 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world,NodeCoordList& nodes, EdgeList edges,
-       CellList cells);
+  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
 
   friend class MeshFactory;
 
@@ -93,7 +94,6 @@ class Mesh : public mesh::Mesh {
   static int output_ctrl_;
 };
 
-
 /**
  * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
  * @param stream The stream to which this function should output
@@ -101,9 +101,10 @@ class Mesh : public mesh::Mesh {
  * @return The stream itself.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh){
-    //stream << "mesh object";
-    //utils::PrintInfo(mesh, stream);
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& /*mesh*/) {
+  // stream << "mesh object";
+  // utils::PrintInfo(mesh, stream);
+  return stream;
 }
 
 }  // namespace lf::mesh::hybrid2dp

@@ -1,23 +1,22 @@
 cmake_minimum_required (VERSION 2.8.8)
 
-FIND_PACKAGE(Doxygen REQUIRED)
+FIND_PACKAGE(Doxygen)
 
-SET(DOXYGEN_INPUT Doxyfile)
-SET(DOXYGEN_OUTPUT ${CMAKE_BINARY_DIR}/documentation)
+if(DOXYGEN_FOUND)
+  SET(DOXYGEN_INPUT Doxyfile.in)
+  SET(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  
+  # request to configure the file
+  configure_file(${DOXYGEN_INPUT} ${DOXYGEN_OUTPUT} @ONLY)
+  
+  # note the option all which allows to build the docs together with the application
+  add_custom_target(doxygen 
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUTPUT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating API Documentation with Doxygen"
+    VERBATIM
+    )
 
-ADD_CUSTOM_COMMAND(
-  OUTPUT ${DOXYGEN_OUTPUT}
-  COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-  COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
-  COMMAND ${CMAKE_COMMAND} -E echo "Done."
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  DEPENDS ${DOXYGEN_INPUT}
-  )
-
-ADD_CUSTOM_TARGET(apidoc ALL DEPENDS ${DOXYGEN_OUTPUT})
-
-ADD_CUSTOM_TARGET(apidoc_forced
-  COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-  COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
-  COMMAND ${CMAKE_COMMAND} -E echo "Done."
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
+  
+  add_subdirectory(snippets)

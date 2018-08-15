@@ -14,23 +14,22 @@
 
 namespace lf::mesh::utils {
 
-  /**
-   * @brief output control variable for mesh output
-   *
-   * - > 10: also output entity information
-   * - > 90: also output subentity information
-   *
-   * @note: this static variable is intialized to the value 100
-   */   
-  extern int printinfo_ctrl;
-  
+/**
+ * @brief output control variable for mesh output
+ *
+ * - > 10: also output entity information
+ * - > 90: also output subentity information
+ *
+ * @note: this static variable is intialized to the value 100
+ */
+extern int printinfo_ctrl;
+
 /**
  * @brief Diagnostic output operator. Prints info about a mesh.
  * @param &mesh The mesh to print info about
  * @param &o The stream to which this function should output
  */
-void PrintInfo(const Mesh &mesh, std::ostream &o);
-
+void PrintInfo(const Mesh& mesh, std::ostream& o);
 
 // Print function for Entity object
 /**
@@ -46,8 +45,9 @@ void PrintInfo(const Mesh &mesh, std::ostream &o);
  * - Entity::output_ctrl_ > 90: The above and coordinates
  */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
-
-
 }  // namespace lf::mesh::utils
+
+
+}  // namespace lf::mesh
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

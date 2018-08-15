@@ -75,13 +75,12 @@ Mesh::size_type Mesh::Index(const Entity &e) const {
   }
 }
 
-  const Entity *Mesh::EntityByIndex(dim_t codim,glb_idx_t index) const {
-    LF_ASSERT_MSG(codim <= 2,"Illegal codimension " << codim);
-    LF_ASSERT_MSG(index < Size(codim),
-		  "Index " << index << " > " << Size(codim));
-    return entity_pointers_[codim][index];
-  }
-  
+const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
+  LF_ASSERT_MSG(codim <= 2, "Illegal codimension " << codim);
+  LF_ASSERT_MSG(index < Size(codim), "Index " << index << " > " << Size(codim));
+  return entity_pointers_[codim][index];
+}
+
 bool Mesh::Contains(const Entity &e) const {
   switch (e.Codim()) {
     case 0:
@@ -101,45 +100,52 @@ namespace /*anonymous */ {
 class EndpointIndexPair {
  public:
   using size_type = Mesh::size_type;
-  // Constructor 
-  EndpointIndexPair(size_type p0, size_type p1):p0_(p0),p1_(p1) {
+  // Constructor
+  EndpointIndexPair(size_type p0, size_type p1) : p0_(p0), p1_(p1) {
     LF_ASSERT_MSG(p0 != p1, "No loops allowed");
-    if (p1 > p0) { cmp_p0_ = p0; cmp_p1_ = p1; }
-    else { cmp_p0_ = p1; cmp_p1_ = p0; }
+    if (p1 > p0) {
+      cmp_p0_ = p0;
+      cmp_p1_ = p1;
+    } else {
+      cmp_p0_ = p1;
+      cmp_p1_ = p0;
+    }
   }
   // Access operators
   size_type first_node() const { return p0_; }
   size_type second_node() const { return p1_; }
   // The only comparison operator expected from a Map key
   // Edges are considered equal even if they have the opposite orientation
-  friend bool operator < (const EndpointIndexPair &e1,
-			  const EndpointIndexPair &e2) {
-    return ((e1.cmp_p0_ == e2.cmp_p0_) ?
-	    (e1.cmp_p1_ < e2.cmp_p1_) : (e1.cmp_p0_ < e2.cmp_p0_));
+  friend bool operator<(const EndpointIndexPair &e1,
+                        const EndpointIndexPair &e2) {
+    return ((e1.cmp_p0_ == e2.cmp_p0_) ? (e1.cmp_p1_ < e2.cmp_p1_)
+                                       : (e1.cmp_p0_ < e2.cmp_p0_));
   }
 
  private:
   size_type p0_, p1_;  // indices of endpoints
-  size_type cmp_p0_,cmp_p1_;
+  size_type cmp_p0_, cmp_p1_;
 };
 }  // namespace
 
-  // **********************************************************************
-  // Construction of a 2D hybrid mesh
-  //
-  // Data types for arguments
-  // GeometryPtr = std::unique_ptr<geometry::Geometry>;
-  // NodeCoordList = std::vector<GeometryPtr>;
-  // EdgeList = std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
-  // CellList = std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
-  // **********************************************************************
-Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells) 
+// **********************************************************************
+// Construction of a 2D hybrid mesh
+//
+// Data types for arguments
+// GeometryPtr = std::unique_ptr<geometry::Geometry>;
+// NodeCoordList = std::vector<GeometryPtr>;
+// EdgeList = std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
+// CellList = std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
+// **********************************************************************
+Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     : dim_world_(dim_world) {
+  // Auxiliary data type for gathering information about cells adjacent to an
+  // edge
   struct AdjCellInfo {
     AdjCellInfo(size_type _cell_idx, size_type _edge_idx)
         : cell_idx(_cell_idx), edge_idx(_edge_idx) {}
-    size_type cell_idx;
-    size_type edge_idx;
+    size_type cell_idx;  // index of adjacent cell
+    size_type edge_idx;  // local index of edge in adjacent cell
   };
   // Information about cells adjacent to an edge
   using AdjCellsList = std::vector<AdjCellInfo>;
@@ -194,9 +200,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     // Node indices of endpoints: the KEY
     std::array<size_type, 2> end_nodes(e.first);
     EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
-    LF_ASSERT_MSG((end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
-		  "Illegal edge node numbers " << end_nodes[0] << ", "
-		  << end_nodes[1]);
+    LF_ASSERT_MSG(
+        (end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
+        "Illegal edge node numbers " << end_nodes[0] << ", " << end_nodes[1]);
     if (output_ctrl_ > 0) {
       std::cout << "Register edge: " << end_nodes[0] << " <-> " << end_nodes[1]
                 << std::endl;
@@ -204,7 +210,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     LF_ASSERT_MSG(e.second != nullptr,
-		  "Edge " << edge_index << ": missing geometry!");
+                  "Edge " << edge_index << ": missing geometry!");
     AdjCellsList empty_cells_list{};
     EdgeData edge_data(std::move(e.second), empty_cells_list, edge_index);
     EdgeMap::value_type edge_info =
@@ -214,16 +220,16 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     LF_ASSERT_MSG(insert_status.second,
                   "Duplicate edge " << end_nodes[0] << " <-> " << end_nodes[1]);
 
-    // If one of the endpoints of a edge does not have a geometry, supply it with
-    // one inherited from the edge.
-    for (int j=0; j < 2; ++j) {
+    // If one of the endpoints of a edge does not have a geometry, supply it
+    // with one inherited from the edge.
+    for (int j = 0; j < 2; ++j) {
       if (nodes[end_nodes[j]] == nullptr) {
-	// if no geometry for node exists request geomtry for an endpoint of the edge
-	// Note: endpoints are entities of relative co-dimension 1
-	nodes[end_nodes[j]] = std::move(e.second->SubGeometry(1,j));
+        // if no geometry for node exists request geomtry for an endpoint of the
+        // edge Note: endpoints are entities of relative co-dimension 1
+        nodes[end_nodes[j]] = std::move(e.second->SubGeometry(1, j));
       }
     }
-    
+
     edge_index++;
   }  // end loop over predefined edges
   // ======================================================================
@@ -302,15 +308,19 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     }
 
     // If the cell has a geometry, it can be used to generate the
-    // geometry for its vertices through the SubGeometry() method of Geometry objects
+    // geometry for its vertices through the SubGeometry() method of Geometry
+    // objects
     if (cell_geometry != nullptr) {
-      for (int j=0; j < no_of_vertices; ++j) {
-	if (nodes[cell_node_list[j]] == nullptr) {
-	  // if no geometry for node exists request geomtry for an vertex from the cell
-	  // Note: vertices are entities of relative co-dimension 2
-	  nodes[cell_node_list[j]] = std::move(cell_geometry->SubGeometry(2,j));
-	}}} 
-    
+      for (int j = 0; j < no_of_vertices; ++j) {
+        if (nodes[cell_node_list[j]] == nullptr) {
+          // if no geometry for node exists request geomtry for an vertex from
+          // the cell Note: vertices are entities of relative co-dimension 2
+          nodes[cell_node_list[j]] =
+              std::move(cell_geometry->SubGeometry(2, j));
+        }
+      }
+    }
+
     //  A variant:
     //    There may be cells without a specified geometry.
     //    In case an edge is not equipped with a geometry and not
@@ -338,7 +348,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
       // Store number of cell and the local index j of the edge
       AdjCellInfo edge_cell_info(cell_index, j);
       // Check whether edge exists already
-      EdgeMap::iterator edge_ptr = edge_map.find(c_edge_vertex_indices);
+      auto edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
         // Inherit geometry of edge from adjacent cell
         GeometryPtr edge_geo_ptr;
@@ -353,20 +363,21 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
         LF_ASSERT_MSG(insert_status.second, "Duplicate not found earlier!");
         edge_ptr = insert_status.first;  // pointer to newly inserted edge
       } else {
-	// Here *edge_ptr is a valid std::pair<EndpointIndexPair,EdgeData>
-	
+        // Here *edge_ptr is a valid std::pair<EndpointIndexPair,EdgeData>
+
         // Store information about neighboring cell
         AdjCellsList &edge_adj_cellslist((edge_ptr->second).adj_cells_list);
         edge_adj_cellslist.push_back(edge_cell_info);
         // Check, if the edge possesses geometry information
-	GeometryPtr &edge_supplied_geo_uptr((*edge_ptr).second.geo_uptr);
-	if (edge_supplied_geo_uptr == nullptr) {
-	  // Edge does not know its geometry yet. Try to obtain it from the
-	  // cell
-	  if (cell_geometry) {
-	    edge_supplied_geo_uptr = std::move(cell_geometry->SubGeometry(1, j));
-	  }
-	}
+        GeometryPtr &edge_supplied_geo_uptr((*edge_ptr).second.geo_uptr);
+        if (edge_supplied_geo_uptr == nullptr) {
+          // Edge does not know its geometry yet. Try to obtain it from the
+          // cell
+          if (cell_geometry) {
+            edge_supplied_geo_uptr =
+                std::move(cell_geometry->SubGeometry(1, j));
+          }
+        }
       }
       // At this point edge_ptr points to the map entry for the current edge
     }  // end of loop over edges
@@ -412,7 +423,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
         edge_cnt++;
       }
       std::cout << "=============================================" << std::endl;
-    }
+    }  // end if(output_ctrl > 10)
   }
 
   // ======================================================================
@@ -423,12 +434,16 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
 
   size_type node_index = 0;
   for (hybrid2dp::Mesh::GeometryPtr &pt_geo_ptr : nodes) {
-    // OLD VERSION. In the new version the geomtry of a point is passed in 'nodes'
-    // const Eigen::VectorXd &node_coordinates(v);
-    // GeometryPtr point_geo = std::make_unique<geometry::Point>(node_coordinates);
+    // OLD VERSION. In the new version the geomtry of a point is passed in
+    // 'nodes' const Eigen::VectorXd &node_coordinates(v); GeometryPtr point_geo
+    // = std::make_unique<geometry::Point>(node_coordinates);
+    LF_VERIFY_MSG(pt_geo_ptr != nullptr,
+                  "Missing geometry for node " << node_index);
     if (output_ctrl_ > 10) {
-      std::cout << "-> Adding node " << node_index << " at "
-                << (pt_geo_ptr->Global(Eigen::Matrix<double,0,1>())).transpose() << std::endl;
+      std::cout
+          << "-> Adding node " << node_index << " at "
+          << (pt_geo_ptr->Global(Eigen::Matrix<double, 0, 1>())).transpose()
+          << std::endl;
     }
     points_.emplace_back(node_index, std::move(pt_geo_ptr));
     node_index++;
@@ -475,7 +490,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     /// is stored in the 'edge_global_index' field of the EdgeData structure.
     // (ii) the edge has to be created internally. In this case assign an index
     // larger than the index of any supplied edge.
-    if (edge.second.edge_global_index == -1) {
+    if (edge.second.edge_global_index == idx_nil) {
       // Internally created edge needs new index.
       edge.second.edge_global_index = edge_index;
       // Increment 'edge_index', which will give the index of the next
@@ -493,6 +508,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
                            std::move(edge_geo_ptr), p0_ptr, p1_ptr);
   }  // end loop over all edges
   LF_ASSERT_MSG(edge_index == no_of_edges, "Edge index mismatch");
+
+  // ======================================================================
+  // NEXT STEP: Create cells
 
   const size_type no_of_cells = cells.size();
 
@@ -538,7 +556,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     const std::array<size_type, 4> &c_edge_indices(edge_indices[cell_index]);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // A triangle is marked by an invalid node number
-    // in the last position
+    // in the last position (also see above)
     size_type no_of_vertices;
     if (c_node_indices[3] == size_type(-1)) {
       no_of_vertices = 3;  // triangle
@@ -673,8 +691,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
 
   // Order the cells according to their indices!
   // First  fill the array with NIL pointers
-  entity_pointers_[0] = std::move(std::vector<const mesh::Entity*>
-				   (trias_.size() + quads_.size(),nullptr));
+  entity_pointers_[0] = std::move(std::vector<const mesh::Entity *>(
+      trias_.size() + quads_.size(), nullptr));
   size_type cell_ptr_cnt = 0;
 
   // First retrieve pointers to triangular cells
@@ -682,22 +700,22 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
     // Fetch index of a triangle  by a non-virtual call to Index()
     const glb_idx_t cell_index = lf::mesh::hybrid2dp::Mesh::Index(trias_[j]);
     LF_ASSERT_MSG(cell_index < entity_pointers_[0].size(),
-		  "Cell index out of range");
+                  "Cell index out of range");
     // This index must be unique !
     LF_ASSERT_MSG(entity_pointers_[0][cell_index] == nullptr,
-		  "Cell index " << cell_index << " occurs twice!");
+                  "Cell index " << cell_index << " occurs twice!");
     entity_pointers_[0][cell_index] = &(trias_[j]);
-  } // end loop over triangles
+  }  // end loop over triangles
 
   // Second deal with the quadrilateral cells
   for (int j = 0; j < quads_.size(); j++, cell_ptr_cnt++) {
     // Fetch index of a quadrilateral by a non-virtual call to Index()
     const glb_idx_t cell_index = lf::mesh::hybrid2dp::Mesh::Index(quads_[j]);
     LF_ASSERT_MSG(cell_index < entity_pointers_[0].size(),
-		  "Cell index out of range");
+                  "Cell index out of range");
     // This index must be unique !
     LF_ASSERT_MSG(entity_pointers_[0][cell_index] == nullptr,
-		  "Cell index " << cell_index << " occurs twice!");
+                  "Cell index " << cell_index << " occurs twice!");
     entity_pointers_[0][cell_index] = &(quads_[j]);
   }
   LF_VERIFY_MSG(cell_ptr_cnt == entity_pointers_[0].size(),
@@ -705,24 +723,26 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList &nodes, EdgeList edges,CellList cells)
 
   // Next the edges and nodes
 
-  entity_pointers_[1] = std::move(std::vector<const mesh::Entity*>
-				  (segments_.size(),nullptr));
-  entity_pointers_[2] = std::move(std::vector<const mesh::Entity*>
-				  (points_.size(),nullptr));
-  
+  entity_pointers_[1] =
+      std::move(std::vector<const mesh::Entity *>(segments_.size(), nullptr));
+  entity_pointers_[2] =
+      std::move(std::vector<const mesh::Entity *>(points_.size(), nullptr));
+
   for (dim_t codim = 1; codim <= 2; codim++) {
     // Loop over all entities of codimenson codim
     for (const Entity &e : lf::mesh::hybrid2dp::Mesh::Entities(codim)) {
       const glb_idx_t entity_index = lf::mesh::hybrid2dp::Mesh::Index(e);
       LF_ASSERT_MSG(entity_index < entity_pointers_[codim].size(),
-		    "Entity(" << codim << ") index out of range");
+                    "Entity(" << codim << ") index out of range");
       // This index must be unique !
-      LF_ASSERT_MSG(entity_pointers_[codim][entity_index] == nullptr,
-		    "Entity(" << codim << ") index " << entity_index << " occurs twice!");
-      entity_pointers_[codim][entity_index] = (const mesh::Entity *)&e;
-    } // loop over entities
-  } // loop over codim's
-  
-} // end of constructor
+      LF_ASSERT_MSG(
+          entity_pointers_[codim][entity_index] == nullptr,
+          "Entity(" << codim << ") index " << entity_index << " occurs twice!");
+      entity_pointers_[codim][entity_index] =
+          static_cast<const mesh::Entity *>(&e);
+    }  // loop over entities
+  }    // loop over codim's
+
+}  // end of constructor
 
 }  // namespace lf::mesh::hybrid2dp

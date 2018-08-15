@@ -3,11 +3,11 @@
 
 namespace lf::mesh::test_utils {
 
-std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(void) {
-    using coord_t = Eigen::Vector2d;
-    using size_type = lf::mesh::Mesh::size_type;
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh() {
+  using coord_t = Eigen::Vector2d;
+  using size_type = lf::mesh::Mesh::size_type;
   // Obtain mesh factory
-    std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
+  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
   // Setting point coordinate
   mesh_factory_ptr->AddPoint(coord_t({1.5, 2}));
@@ -61,6 +61,6 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(void) {
   // Inspect data
   mesh_factory_ptr->PrintLists(std::cout);
   return mesh_factory_ptr->Build();
-  }
-
 }
+
+}  // namespace lf::mesh::test_utils

@@ -3,9 +3,7 @@
 
 #include "lf/geometry/geometry.h"
 
-
 namespace lf::geometry {
-
 
 /**
  * @brief Diagnostic output operator for Geometry
@@ -20,6 +18,7 @@ namespace lf::geometry {
  */
 void PrintInfo(const Geometry &geom, std::ostream &o);
 
+}  // namespace lf::geometry
 
 /**
  * @brief Operator overload to print a `Geometry` to a stream, such as `std::cout`
@@ -36,3 +35,4 @@ void PrintInfo(const Geometry &geom, std::ostream &o);
 } // namespace lf::geometry
 
 #endif // PRINT_INFO_H
+

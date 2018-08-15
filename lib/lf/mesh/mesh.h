@@ -10,9 +10,7 @@
  *
  * @see lf::mesh::hybrid2d for a concrete implementation of a %mesh manager.
  */
-namespace lf::mesh {
-
-}
+namespace lf::mesh {}
 
 #include "entity.h"
 #include "mesh_factory.h"

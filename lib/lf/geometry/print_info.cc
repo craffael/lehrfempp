@@ -1,7 +1,7 @@
 #include "print_info.h"
 
-
 namespace lf::geometry {
+
 
 CONTROLDECLARECOMMENT(Geometry, output_ctrl_, "output_ctrl_", "Diagnostics control for Geometry");
 
@@ -39,3 +39,4 @@ std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
 
 
 } // namespace lf::geometry
+

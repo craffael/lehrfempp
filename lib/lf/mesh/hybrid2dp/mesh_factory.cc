@@ -9,37 +9,35 @@ CONTROLDECLARECOMMENT(MeshFactory, output_ctrl_, "hybrid2dpmf_output_ctrl",
                       "Enables printing of internal lists for MeshFactory");
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
-  LF_ASSERT_MSG(!built_, "Build() already called.");
   LF_ASSERT_MSG(coord.rows() == dim_world_,
                 "coord has incompatible number of rows.");
   // Create default geometry object for a point from location vector
-  hybrid2dp::Mesh::GeometryPtr point_geo = std::make_unique<geometry::Point>(coord);
+  hybrid2dp::Mesh::GeometryPtr point_geo =
+      std::make_unique<geometry::Point>(coord);
   nodes_.emplace_back(std::move(point_geo));
   return nodes_.size() - 1;
 }
-  
-  MeshFactory::size_type
-  MeshFactory::AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) {
-    LF_ASSERT_MSG(!built_, "Build() already called.");
-    // Note: For the sake of purely topological computations meshes without
-    // any geometry information may make sense.
-    // Moreover, the location of a point can in principle be deduced from
-    // geometry information supplied for edges or cells.
-    // Hence the next assertion should be removed in the medium run.
-    LF_ASSERT_MSG(geometry != nullptr,
-		  "No creation of a point without a valid geoetry");
-    LF_ASSERT_MSG(geometry->DimGlobal() == dim_world_,
-                  "geometry->DimGlobal() != dim_world_");
-    LF_ASSERT_MSG(geometry->RefEl() == lf::base::RefEl::kPoint(),
-		  "Geometry object must belong to a point");
-    nodes_.emplace_back(std::move(geometry));
-    return nodes_.size() - 1;
-  }
-    
+
+MeshFactory::size_type MeshFactory::AddPoint(
+    std::unique_ptr<geometry::Geometry>&& geometry) {
+  // Note: For the sake of purely topological computations meshes without
+  // any geometry information may make sense.
+  // Moreover, the location of a point can in principle be deduced from
+  // geometry information supplied for edges or cells.
+  // Hence the next assertion should be removed in the medium run.
+  LF_ASSERT_MSG(geometry != nullptr,
+                "No creation of a point without a valid geoetry");
+  LF_ASSERT_MSG(geometry->DimGlobal() == dim_world_,
+                "geometry->DimGlobal() != dim_world_");
+  LF_ASSERT_MSG(geometry->RefEl() == lf::base::RefEl::kPoint(),
+                "Geometry object must belong to a point");
+  nodes_.emplace_back(std::move(geometry));
+  return nodes_.size() - 1;
+}
+
 MeshFactory::size_type MeshFactory::AddEntity(
     base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
-  LF_ASSERT_MSG(!built_, "Build() already called. reset() first!");
   LF_ASSERT_MSG(ref_el.Dimension() > 0,
                 "Use AddPoint() to add a node to a mesh.");
   LF_ASSERT_MSG(ref_el.Dimension() <= 2, "ref_el.Dimension > 2");
@@ -68,7 +66,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
                   "ref_el = segment but size of nodes was " << count);
     edges_.emplace_back(ns, std::move(geometry));
     return edges_.size() - 1;
-  } // end insertion of an edge
+  }  // end insertion of an edge
 
   // otherwise its an element:
   // LF_ASSERT_MSG(geometry, "Geometry is required for elements (codim=0)");
@@ -80,7 +78,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
                               << "node indices");
     LF_ASSERT_MSG(n < nodes_.size(),
                   " Node " << n << " for " << ref_el.ToString()
-		  <<"  must be inserted with AddNode() first.");
+                           << "  must be inserted with AddNode() first.");
     ns[count] = n;
     ++count;
   }
@@ -105,30 +103,29 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
   // Obtain points to new mesh object; the actual construction of the
   // mesh is done by the constructor of that object
-  built_ = true;
   mesh::Mesh* mesh_ptr = new hybrid2dp::Mesh(
-      dim_world_, nodes_, std::move(edges_), std::move(elements_));
+      dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
 
-  if (mesh_ptr != nullptr) {
-    // Clear all information supplied to the MeshFactory object
-    nodes_.clear();
-    edges_.clear();
-    elements_.clear();
-    built_ = false;    
-  }
+  // Clear all information supplied to the MeshFactory object
+  nodes_ = hybrid2dp::Mesh::NodeCoordList{};  // .clear();
+  edges_ = hybrid2dp::Mesh::EdgeList{};       // .clear();
+  elements_ = hybrid2dp::Mesh::CellList{};    // clear();
+
   return std::shared_ptr<mesh::Mesh>(mesh_ptr);
 }
-  
+
 // For diagnostic output
 void MeshFactory::PrintLists(std::ostream& o) const {
   o << "hybrid2dp::MeshFactory: Internal information" << std::endl;
   o << nodes_.size() << " nodes:" << std::endl;
   for (size_type j = 0; j < nodes_.size(); j++) {
     o << "Node " << j << " at ";
-    if (nodes_[j] != nullptr)
-      o << (nodes_[j]->Global(Eigen::Matrix<double,0,1>())).transpose() << std::endl;
-    else
+    if (nodes_[j] != nullptr) {
+      o << (nodes_[j]->Global(Eigen::Matrix<double, 0, 1>())).transpose()
+        << std::endl;
+    } else {
       o << "with unknown location!" << std::endl;
+    }
   }
   o << edges_.size() << " edges " << std::endl;
   for (size_type j = 0; j < edges_.size(); j++) {
@@ -150,8 +147,7 @@ void MeshFactory::PrintLists(std::ostream& o) const {
     }
     if (elements_[j].second) {
       o << " with geometry";
-    }
-    else {
+    } else {
       o << "[no geometry]";
     }
     o << std::endl;

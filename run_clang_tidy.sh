@@ -31,4 +31,5 @@ if [ -z "$ct" ]; then
   echo "clang-tidy, clang-tidy-6.0 or clang-tidy-5.0 not found in path"
 fi
 echo $ct
+$ct --version
 $(dirname $0)/travis/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ '^((?!snippets|/test/|/test_utils/).)*$' $1

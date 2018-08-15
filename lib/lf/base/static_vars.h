@@ -78,11 +78,11 @@ using StaticVar = Track<int>;
  */
 /**@{*/
 #define CONTROLDECLARE(intvar, varname)                       \
-  static int intvar = 0;                                      \
+  int intvar = 0;                                             \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root)
-#define CONTROLDECLAREINFO(intvar, varname, info)	      \
-  static int intvar = 0;                                      \
+#define CONTROLDECLAREINFO(intvar, varname, info)             \
+  int intvar = 0;                                             \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 
@@ -101,17 +101,19 @@ using StaticVar = Track<int>;
  * @brief Macro for conditional output
  * @param ctrlvar integer control variable
  * @param level control level
- * @statement code to be executed 
+ * @statement code to be executed
  *
- * The code passed in statement is executed if the value of the 
+ * The code passed in statement is executed if the value of the
  * control variable is larger than the value passed in level
  *
- * @note The executable code must not involve a comma operator. 
+ * @note The executable code must not involve a comma operator.
  * Commas inside strings are ok.
  */
-#define CONTROLLEDSTATEMENT(ctrlvar,level,statement) \
-  if ((ctrlvar) >= (level)) { statement ; }
-  
+#define CONTROLLEDSTATEMENT(ctrlvar, level, statement) \
+  if ((ctrlvar) >= (level)) {                          \
+    statement;                                         \
+  }
+
 namespace lf::base {
 
 /**
@@ -133,7 +135,7 @@ unsigned int ListCtrlVars(std::ostream &out,
  * @param varname string containing the name of the global control variable
  * @param ctrl_var_root pointer to the beginning of the variable list
  */
-bool SetCtrlVar(const std::string &varname, int value,
+bool SetCtrlVar(const std::string varname, int value,
                 const StaticVar *ctrl_var_root = nullptr);
 
 /**
@@ -143,7 +145,7 @@ bool SetCtrlVar(const std::string &varname, int value,
  * that can be converted into an integer.
  * @param filename name of the file to read from
  */
-bool ReadCtrlVarsFile(const std::string &filename,
+bool ReadCtrlVarsFile(const std::string filename,
                       const StaticVar *ctrl_var_root = nullptr);
 
 /** @brief Process command line arguments to set variables

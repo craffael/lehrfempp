@@ -94,14 +94,9 @@ class Entity : public mesh::Entity {
 
   friend class Mesh;
 
-}; // class Mesh
+};  // class Mesh
 
 }  // namespace lf::mesh::hybrid2d
-
-
-
-
-
 
 #include "mesh.h"
 

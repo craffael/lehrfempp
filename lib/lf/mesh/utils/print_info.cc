@@ -11,24 +11,25 @@
 
 namespace lf::mesh::utils {
 
-  // Output control variable, maximum verbosity is default
-  int printinfo_ctrl = 100;
-  static lf::base::StaticVar ctrlvar_printinfo_ctrl
-  ("PrintInfo_ctrl",printinfo_ctrl,lf::base::ctrl_root,
-   "Output control for Mesh");
-  
-  void PrintInfo(const Mesh &mesh, std::ostream &o) {
-    using dim_t = lf::base::dim_t;
-    using size_type = lf::base::size_type;
+// Output control variable, maximum verbosity is default
+int printinfo_ctrl = 100;
+static lf::base::StaticVar ctrlvar_printinfo_ctrl("PrintInfo_ctrl",
+                                                  printinfo_ctrl,
+                                                  lf::base::ctrl_root,
+                                                  "Output control for Mesh");
 
-    const dim_t dim_mesh = mesh.DimMesh();
-    const dim_t dim_world = mesh.DimWorld();
-    o << "Mesh of dimension " << (int)dim_mesh << ", ambient dimension " << (int)dim_world
-      << std::endl;
+void PrintInfo(const Mesh &mesh, std::ostream &o) {
+  using dim_t = lf::base::dim_t;
+  using size_type = lf::base::size_type;
 
+  const dim_t dim_mesh = mesh.DimMesh();
+  const dim_t dim_world = mesh.DimWorld();
+  o << "Mesh of dimension " << static_cast<int>(dim_mesh)
+    << ", ambient dimension " << static_cast<int>(dim_world) << std::endl;
 
-    if (printinfo_ctrl > 10) {
+  if (printinfo_ctrl > 10) {
     // Loop over codimensions
+
       for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
 	const size_type no_ent = mesh.Size(co_dim);
 	o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
@@ -126,3 +127,5 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
   
 }  // end namespace lf::mesh::utils
 
+
+}  // namespace lf::mesh

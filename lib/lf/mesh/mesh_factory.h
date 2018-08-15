@@ -51,8 +51,9 @@ class MeshFactory {
    *         The first call to this method will return 0, the second call 1,
    *         ...
    */
-  virtual size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) = 0;
-  
+  virtual size_type AddPoint(
+      std::unique_ptr<geometry::Geometry>&& geometry) = 0;
+
   /**
    * @brief Add an an entity (codim>0) to the mesh.
    * @param ref_el The reference element of the entity.
@@ -111,7 +112,6 @@ class MeshFactory {
   /// @brief Virtual destructor.
   virtual ~MeshFactory() = default;
 };
-
 
 }  // namespace lf::mesh
 

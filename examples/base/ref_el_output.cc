@@ -25,5 +25,4 @@ int main() {
   std::cout << "\nInformation about quad: \n" << re_quad << std::endl;
 
   return 0L;
-
 }

@@ -2,6 +2,7 @@ set(sources
   geometry.h
   geometry.cc
   geometry_interface.h
+  geometry_interface.cc
   point.h
   point.cc
   quad_o1.h
