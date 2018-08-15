@@ -110,12 +110,6 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
   // ----------------------------------------
   // II: check parent-child relations for edges and cells
   // ----------------------------------------
-  // // Array with information about parents of edges (co-dimension = 1)
-  // const std::vector<lf::refinement::ParentInfo> &
-  //   edge_father_infos = mh.ParentInfos(father_level + 1, 1);
-  // // Array with information about parents of cells (co-dimension = 0)
-  // const std::vector<lf::refinement::ParentInfo> &
-  //   cell_father_infos = mh.ParentInfos(father_level + 1, 0);
 
   // Run through all edges/cells of the fine mesh
   for (lf::base::dim_t codim = 0; codim <= 1; ++codim) {
