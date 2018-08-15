@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdocsnippets.a  CMakeFiles/docsnippets.dir/forward_iterator.cc.o CMakeFiles/docsnippets.dir/gmsh_reader.cc.o CMakeFiles/docsnippets.dir/ref_el.cc.o
+/usr/bin/ranlib libdocsnippets.a

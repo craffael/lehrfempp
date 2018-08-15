@@ -6,6 +6,7 @@ set(sources
   lambda_mesh_data_set.cc
   ref_el.cc
   vtk_writer.cc
+  #mesh_utils.cc
 )
 
 add_library(docsnippets ${sources})

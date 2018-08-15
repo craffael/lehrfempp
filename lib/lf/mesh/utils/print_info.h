@@ -48,6 +48,4 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
 }  // namespace lf::mesh::utils
 
 
-}  // namespace lf::mesh
-
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

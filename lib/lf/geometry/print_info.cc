@@ -34,9 +34,9 @@ std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
        return stream << geom.RefEl();
    } else {
        PrintInfo(geom, stream);
+       return stream;
    }
 }
-
 
 } // namespace lf::geometry
 

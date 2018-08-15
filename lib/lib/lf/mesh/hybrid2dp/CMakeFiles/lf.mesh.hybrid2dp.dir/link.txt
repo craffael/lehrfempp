@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.mesh.hybrid2dp.a  CMakeFiles/lf.mesh.hybrid2dp.dir/mesh.cc.o CMakeFiles/lf.mesh.hybrid2dp.dir/mesh_factory.cc.o CMakeFiles/lf.mesh.hybrid2dp.dir/point.cc.o CMakeFiles/lf.mesh.hybrid2dp.dir/quad.cc.o CMakeFiles/lf.mesh.hybrid2dp.dir/segment.cc.o CMakeFiles/lf.mesh.hybrid2dp.dir/triangle.cc.o
+/usr/bin/ranlib liblf.mesh.hybrid2dp.a

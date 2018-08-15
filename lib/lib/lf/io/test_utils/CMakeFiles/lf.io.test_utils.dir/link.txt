@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.io.test_utils.a  CMakeFiles/lf.io.test_utils.dir/read_mesh.cc.o
+/usr/bin/ranlib liblf.io.test_utils.a

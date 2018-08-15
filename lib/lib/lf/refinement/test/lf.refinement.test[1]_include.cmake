@@ -1,0 +1,5 @@
+if(EXISTS "/u/magina/Documents/lehrfempp/lib/lib/lf/refinement/test/lf.refinement.test[1]_tests.cmake")
+  include("/u/magina/Documents/lehrfempp/lib/lib/lf/refinement/test/lf.refinement.test[1]_tests.cmake")
+else()
+  add_test(lf.refinement.test_NOT_BUILT lf.refinement.test_NOT_BUILT)
+endif()

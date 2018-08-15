@@ -114,10 +114,10 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
                           << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") node[] {3} -- cycle;\n";
               } else {
                   outfile << "\\draw[magenta] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") node[] {0} -- ("
-                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") node[] {1} -- ("
-                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") node[] {2} -- ("
-                          << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") node[] {3} -- cycle;\n";
+                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- ("
+                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") -- ("
+                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") -- ("
+                          << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") -- cycle;\n";
               }
 
               if(CellNumOn){

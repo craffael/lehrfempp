@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf.refinement.a  CMakeFiles/lf.refinement.dir/refinement.cc.o CMakeFiles/lf.refinement.dir/refinement_hierarchy.cc.o CMakeFiles/lf.refinement.dir/refutils.cc.o
+/usr/bin/ranlib liblf.refinement.a

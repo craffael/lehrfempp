@@ -122,10 +122,5 @@ void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
     } // if
 } // PrintInfo
 
-
-
-  
 }  // end namespace lf::mesh::utils
 
-
-}  // namespace lf::mesh

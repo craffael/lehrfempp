@@ -1,0 +1,5 @@
+if(EXISTS "/u/magina/Documents/lehrfempp/lib/lib/lf/mesh/test/lf.mesh.test[1]_tests.cmake")
+  include("/u/magina/Documents/lehrfempp/lib/lib/lf/mesh/test/lf.mesh.test[1]_tests.cmake")
+else()
+  add_test(lf.mesh.test_NOT_BUILT lf.mesh.test_NOT_BUILT)
+endif()
