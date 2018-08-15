@@ -32,8 +32,7 @@ class MeshFactory : public mesh::MeshFactory {
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
    */
-  explicit MeshFactory(dim_t dim_world)
-      : dim_world_(dim_world) {}
+  explicit MeshFactory(dim_t dim_world) : dim_world_(dim_world) {}
 
   /** @copydoc MeshFactory::DimWorld() */
   dim_t DimWorld() const override { return dim_world_; }
