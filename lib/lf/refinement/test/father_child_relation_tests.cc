@@ -34,12 +34,6 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
   // Array with information about parents of nodes (co-dimension = 2)
   const std::vector<lf::refinement::ParentInfo> &
     point_father_infos = mh.ParentInfos(father_level + 1, 2);
-  // Array with information about parents of edges (co-dimension = 1)
-  const std::vector<lf::refinement::ParentInfo> &
-    edge_father_infos = mh.ParentInfos(father_level + 1, 1);
-  // Array with information about parents of cells (co-dimension = 0)
-  const std::vector<lf::refinement::ParentInfo> &
-    cell_father_infos = mh.ParentInfos(father_level + 1, 0);
 
   // ----------------------------------------
   // I: check parent-child relations for nodes
@@ -114,24 +108,38 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
   } // end loop over nodes of fine mesh
 
   // ----------------------------------------
-  // I: check parent-child relations for nodes
+  // II: check parent-child relations for edges and cells
   // ----------------------------------------
-  // Run through all edges of the fine mesh
-  for (const lf::mesh::Entity &edge : child_mesh->Entities(1)) {
-    const lf::base::glb_idx_t edge_index = child_mesh->Index(edge);
-    const lf::refinement::ParentInfo &edge_parent_info =
-      edge_father_infos[edge_index];
-    const lf::mesh::Entity *edge_parent_ptr = edge_parent_info.parent_ptr;
-    EXPECT_NE(edge_parent_ptr,nullptr)
-      << "Invalid pointer to parent edge";
-      if (edge_parent_ptr != nullptr) {
-	const lf::base::glb_idx_t edge_parent_index = edge_parent_info.parent_index;
-	// Check consistency of index of father entity
-	EXPECT_EQ(edge_parent_index,father_mesh->Index(*edge_parent_ptr))
-	  << "Inconsistent parent index: " << edge_parent_index << " <-> "
-	  << father_mesh->Index(*edge_parent_ptr);
-	const lf::base::RefEl parent_type = edge_parent_ptr->RefEl();
+  // // Array with information about parents of edges (co-dimension = 1)
+  // const std::vector<lf::refinement::ParentInfo> &
+  //   edge_father_infos = mh.ParentInfos(father_level + 1, 1);
+  // // Array with information about parents of cells (co-dimension = 0)
+  // const std::vector<lf::refinement::ParentInfo> &
+  //   cell_father_infos = mh.ParentInfos(father_level + 1, 0);
 
+  // Run through all edges/cells of the fine mesh
+  for (lf::base::dim_t codim = 0; codim <= 1; ++codim) {
+    for (const lf::mesh::Entity &ent : child_mesh->Entities(codim)) {
+      const lf::base::glb_idx_t entity_index = child_mesh->Index(ent);
+      // Obtain info record about parent of current entity
+      const lf::refinement::ParentInfo &entity_parent_info =
+	(mh.ParentInfos(father_level+1,codim)).at(entity_index);
+      // One field gives a pointer to the parent entity
+      const lf::mesh::Entity *entity_parent_ptr = entity_parent_info.parent_ptr;
+      EXPECT_NE(entity_parent_ptr,nullptr)
+	<< "Invalid pointer to parent of entity " << entity_index;
+      if (entity_parent_ptr != nullptr) {
+	// The other field tells the index of the parent in the parent mesh
+	const lf::base::glb_idx_t entity_parent_index = entity_parent_info.parent_index;
+	// Check consistency of index of father entity
+	EXPECT_EQ(entity_parent_index,father_mesh->Index(*entity_parent_ptr))
+	  << "Inconsistent parent index: " << entity_parent_index << " <-> "
+	  << father_mesh->Index(*entity_parent_ptr);
+	const lf::base::RefEl parent_type = entity_parent_ptr->RefEl();
+	EXPECT_GE(codim,entity_parent_ptr->Codim())
+	  << "Parent co-dimenension " << (int)entity_parent_ptr->Codim()
+	  << " < " << (int)codim;
+	// The parent can be either an edge or a cell
 	switch (parent_type) {
 	case lf::base::RefEl::kPoint(): {
 	  ADD_FAILURE() << "A point cannot be the parent of an edge";
@@ -139,19 +147,34 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
 	}
 	case lf::base::RefEl::kSegment(): {
 	  // Parent is another edge
-	  const lf::refinement::EdgeChildInfo &eci(edge_child_infos[edge_parent_index]);
+	  const lf::refinement::EdgeChildInfo &
+	    eci(edge_child_infos.at(entity_parent_index));
 	  const std::vector<lf::base::glb_idx_t> &cei(eci.child_edge_idx);
-	  EXPECT_NE(std::find(cei.begin(),cei.end(),edge_index),cei.end())
-	    << "Child edge " << edge_index << " not registered with parent edge";
+	  EXPECT_NE(std::find(cei.begin(),cei.end(),entity_index),cei.end())
+	    << "Child entity " << entity_index << " not registered with edge";
 	  break;
 	}
 	case lf::base::RefEl::kTria():
 	case lf::base::RefEl::kQuad(): {
 	  // Parent is a cell
-	  const lf::refinement::CellChildInfo &cci(cell_child_infos[edge_parent_index]);
-	  const std::vector<lf::base::glb_idx_t> &cei(cci.child_edge_idx);
-	  EXPECT_NE(std::find(cei.begin(),cei.end(),edge_index),cei.end())
-	    << "Child edge " << edge_index << " not registered with parent cell";
+	  const lf::refinement::CellChildInfo &
+	    cci(cell_child_infos.at(entity_parent_index));
+	  switch (codim) {
+	  case 1: {
+	    // Child is an edge
+	    const std::vector<lf::base::glb_idx_t> &cei(cci.child_edge_idx);
+	    EXPECT_NE(std::find(cei.begin(),cei.end(),entity_index),cei.end())
+	      << "Child edge " << entity_index << " not registered with parent cell";
+	    break;
+	  }
+	  case 0: {
+	    // Child is a cell as well the parent
+	    const std::vector<lf::base::glb_idx_t> &ccidx(cci.child_cell_idx);
+	    EXPECT_NE(std::find(ccidx.begin(),ccidx.end(),entity_index),ccidx.end())
+	      << "Child cell " << entity_index << " not registered with parent cell";
+	    break;
+	  }
+	  } // end switch codim
 	  break;
 	}
 	default: {
@@ -160,7 +183,8 @@ void checkFatherChildRelations(const MeshHierarchy& mh,
 	}
 	} // end switch
       }
-  } // end loop over edges
+    } // end loop over entities
+  } // end loop over codimensions
 }
 
 TEST(lf_refinement, FatherChildRelations) {
