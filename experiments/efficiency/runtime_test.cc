@@ -5,7 +5,7 @@
 #include <iostream>
 #include "lf/base/base.h"
 
-int main(int argc, const char *[]) {
+int main(int /*argc*/, const char * /*unused*/ []) {
   std::cout << "Runtime test" << std::endl;
 
   return 0;

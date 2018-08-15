@@ -141,8 +141,8 @@ class Geometry {
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
    * The details of subdivisions corresponding to particular refinement patterns
-   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons` and should 
-   * be documented there. 
+   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons` and
+   * should be documented there.
    *
    */
   virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(

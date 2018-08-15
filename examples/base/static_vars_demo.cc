@@ -46,7 +46,7 @@ int main(int argc, const char *argv[]) {
   lf::base::SetCtrlVar("read_ctrl_vars_file", 1);
   lf::base::SetCtrlVar("read_ctrl_vars_args", 10);
 
-  int n_clvars = lf::base::ReadCtrVarsCmdArgs(argc, argv);
+  lf::base::ReadCtrVarsCmdArgs(argc, argv);
 
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
     std::cout << "No file specifyng control variables" << std::endl;
