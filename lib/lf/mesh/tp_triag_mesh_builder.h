@@ -10,7 +10,7 @@ namespace lf::mesh::hybrid2d {
  * @ brief Builder interface for creating structured meshes of rectangular
  * domains
  *
- * The design of the class compliees with the builder pattern.
+ * The design of the class complies with the builder pattern.
  *
  * The geometry of the rectangular domain can be set by specifying the corners
  */
@@ -24,7 +24,8 @@ class StructuredMeshBuilder {
    */
   explicit StructuredMeshBuilder(
       std::shared_ptr<mesh::MeshFactory> mesh_factory)
-      : mesh_factory_(std::move(mesh_factory)) {
+    : mesh_factory_(std::move(mesh_factory))
+  {
     LF_ASSERT_MSG(
         mesh_factory_->DimMesh() == 2,
         "TPTriagMeshBuilder can only construct meshes with DimMesh==2");
@@ -62,6 +63,18 @@ class StructuredMeshBuilder {
   }
   /** @} */
 
+  /** @brief periodic setting: identification and top and bottom and 
+   *          let and right boundary 
+   */
+  void setPeriodic(void) { periodic_ = true; }
+
+  /** @brief request construction of a 3D torus */
+  void setTorus(void) {
+    LF_VERIFY_MSG(mesh_factory_->DimWorld() == 3,
+		  "Torus can be built on with 3-dimensional mesh factory");
+    torus_ = true; periodic_ = true;
+  }
+  
   /**
    * @brief Interface for the actual construction of the mesh
    *
@@ -80,7 +93,10 @@ class StructuredMeshBuilder {
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
   /** Mesh resolution parameters */
   size_type no_of_x_cells_{0}, no_of_y_cells_{0};
-
+  /** Flag for toroidal = periodic setting */
+  bool periodic_{false};
+  /** Flag indicating that a 3D torus should be built. implies periodic construction */
+  bool torus_{false};
 };  // end class definition StructuredMeshBuilder
 
 /**
