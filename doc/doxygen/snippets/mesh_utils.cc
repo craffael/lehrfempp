@@ -1,4 +1,4 @@
-/*
+
 #include "lf/mesh/mesh.h"
 #include "lf/mesh/utils/utils.h"
 #include <cassert>
@@ -6,7 +6,7 @@
 
 namespace lf::mesh::utils {
 void foo() {
-  {
+
     //![writeTikzUsage]
     // Given a mesh object named mesh
     // With the use of the enum flag for node numbering
@@ -18,9 +18,8 @@ void foo() {
     // Without flags
 
     //![writeTikzUsage]
-  }
 
-  {
+
     //![TikzInLatex]
 
         // \documentclass{article}
@@ -32,8 +31,7 @@ void foo() {
         // \end{document}
     //![TikzInLatex]
 
-  }
 } // foo_utils
 }  // namespace lf::base
 
-*/
+

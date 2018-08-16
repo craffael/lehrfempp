@@ -16,6 +16,8 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
   bool NodeNumOn = output_ctrl & TikzOutputCtrl::NodeNumbering;
   bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
   bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
+  bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
+
 
   using size_type = std::size_t; //lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t; // lf::base::dim_t;
@@ -53,29 +55,39 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
           case lf::base::RefEl::kPoint():{
 
-              outfile << "\\draw[red, fill = white] (" << vertices(0,0) << "," << vertices(1,0) << ") node[draw, circle, fill = white] {";
-
-              // Node numbering
               if(NodeNumOn){
-                  outfile << obj_idx << "};\n";
-              } else {outfile << "};\n"; }
+                  outfile << "\\draw[red, fill = white] (" << vertices(0,0) << "," << vertices(1,0) << ") "
+                          << "node[draw, circle, fill = white] {" << obj_idx << "};\n";
+              } else {
+                  outfile << "\\draw[red] (" << vertices(0,0) << "," << vertices(1,0) << ") "
+                          << "node[] {*};\n";
+              } // if NodeNumOn
               break;
 
           } // case kPoint
 
           case lf::base::RefEl::kSegment():{
               center_mat << center, center;
-              const Eigen::MatrixXd scaled_vertices = vertices * 0.8 + center_mat * 0.2;
+              const Eigen::MatrixXd scaled_vertices = vertices * 0.85 + center_mat * 0.15;
+              const Eigen::MatrixXd semi_scaled_vertices = vertices * 0.95 + center_mat * 0.05;
 
-              if (EdgeNumOn){
+              if (EdgeNumOn && NodeNumOn){
                   outfile << "\\draw[->] ("
                           << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
                           << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
-              } else {
+              } else if (NodeNumOn && !EdgeNumOn){
                   outfile << "\\draw[->] ("
                           << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- "
                           << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
-              }
+              } else if (!NodeNumOn && EdgeNumOn){
+                  outfile << "\\draw[->] ("
+                          << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                          << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
+              } else if(!NodeNumOn && !EdgeNumOn){
+                  outfile << "\\draw[->] ("
+                          << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- "
+                          << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
+              } else {std::cout << "Check EdgeNumOn and NodeNumOn for kSegment " << obj_idx << std::endl;}
               break;
           } // case kSegment
 
@@ -83,21 +95,25 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
               center_mat << center, center, center;
               const Eigen::MatrixXd scaled_vertices = vertices * 0.8 + center_mat * 0.2;
 
-              if(VerticeNumOn){
-                  outfile << "\\draw[green] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") node[] {0} -- ("
-                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") node[] {1} -- ("
-                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") node[] {2} -- cycle;\n";
-              } else {
-                  outfile << "\\draw[green] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- ("
-                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") -- ("
-                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") -- cycle;\n";
-              } // if EdgeNumOn
+              if(RenderCellsOn){
 
-              if(CellNumOn){
-                  outfile << "\\draw[green] (" << center(0,0) << "," << center(1,0) << ") node[] {" << obj_idx << "};\n";
-              }
+                  if(VerticeNumOn){
+                      outfile << "\\draw[green] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") node[] {0} -- ("
+                              << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") node[] {1} -- ("
+                              << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") node[] {2} -- cycle;\n";
+                  } else {
+                      outfile << "\\draw[green] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- ("
+                              << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") -- ("
+                              << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") -- cycle;\n";
+                  } // if EdgeNumOn
+
+                  if(CellNumOn){
+                      outfile << "\\draw[green] (" << center(0,0) << "," << center(1,0) << ") node[] {" << obj_idx << "};\n";
+                  }
+
+              } // RenderCellsOn
               break;
           } // case kTria
 
@@ -105,24 +121,28 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
               center_mat << center, center, center, center;
               const Eigen::MatrixXd scaled_vertices = vertices * 0.8 + center_mat * 0.2;
 
+              if(RenderCellsOn){
 
-              if (VerticeNumOn){
-                  outfile << "\\draw[magenta] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") node[] {0} -- ("
-                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") node[] {1} -- ("
-                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") node[] {2} -- ("
-                          << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") node[] {3} -- cycle;\n";
-              } else {
-                  outfile << "\\draw[magenta] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- ("
-                          << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") -- ("
-                          << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") -- ("
-                          << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") -- cycle;\n";
-              }
+                  if (VerticeNumOn){
+                      outfile << "\\draw[magenta] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") node[] {0} -- ("
+                              << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") node[] {1} -- ("
+                              << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") node[] {2} -- ("
+                              << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") node[] {3} -- cycle;\n";
+                  } else {
+                      outfile << "\\draw[magenta] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- ("
+                              << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ") -- ("
+                              << scaled_vertices(0,2) << "," << scaled_vertices(1,2) << ") -- ("
+                              << scaled_vertices(0,3) << "," << scaled_vertices(1,3) << ") -- cycle;\n";
+                  }
 
-              if(CellNumOn){
-                  outfile << "\\draw[magenta] (" << center(0,0) << "," << center(1,0) << ") node[] {" << obj_idx << "};\n";
-              }
+                  if(CellNumOn){
+                      outfile << "\\draw[magenta] (" << center(0,0) << "," << center(1,0) << ") node[] {" << obj_idx << "};\n";
+                  }
+
+              } //RenderCellsOn
+
               break;
           } // case kQuad
 

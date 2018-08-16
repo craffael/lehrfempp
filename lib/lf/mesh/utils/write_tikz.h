@@ -24,14 +24,23 @@ namespace lf::mesh::utils {
  * Numbering of the aforementioned and local vertice numbering of cells can be enabled by using enum flags.
  * Combine the flags by using the binary or (|) operator to get a more detailed visualization of the mesh.\n
  *
- * @note If no local numbering is wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ().
  *
  * #### Output control flags:
  * - TikzOutputCtrl::EdgeNumbering to display edge numbering
  * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
- * - TikzOutputCtrl::CellNumbering to display numbering of cells / entities
+ * - TikzOutputCtrl::RenderCells to show the specific cells in the mesh in addition to the mesh grid.
+ * - TikzOutputCtrl::CellNumbering to display numbering of cells
  * - TikzOutputCtrl::VerticeNumbering to display local vertice numbering of cells
  *
+ *
+ * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh gird and nodes.
+ * @note TikzOutputCtrl::RenderCells must be enabled in order to use the flags for numbering of cells and of local vertices of cells.
+ *
+ *
+ *
+ */
+void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl);
+/* // Things that can be added in write_tikz documentation
  *
  * #### Example of use:
  * - How to use the function, with and without flags
@@ -40,21 +49,8 @@ namespace lf::mesh::utils {
  * - To visualize the mesh, include the produced the file in LaTex in the following way:
  * @snippet mesh_utils.cc TikzInLatex
  *
- *
- *
- *
- *
- *
- *
- * Local vertice numbering, edge numbering and numbering of cells is possible to enable.
- *
- * #### Output control options
- * Output control is determined by enum flags. Combine several flags by the binary or operator (|).
- * Possible enum flags are:
- *
- *
- */
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl);
+*/
+
 
 
 // enum
@@ -63,7 +59,8 @@ enum TikzOutputCtrl {
     EdgeNumbering = 1,
     CellNumbering = 2,
     NodeNumbering = 4,
-    VerticeNumbering = 8
+    VerticeNumbering = 8,
+    RenderCells = 16
 };
 
 
