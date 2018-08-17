@@ -3,17 +3,15 @@
 #include <iostream>
 
 #include "lf/base/base.h"
-#include "lf/mesh/mesh.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
+#include "lf/mesh/mesh.h"
+#include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
-#include "lf/mesh/test_utils/check_entity_indexing.h"
-#include "lf/mesh/test_utils/check_mesh_completeness.h"
 
-CONTROLDECLAREINFO(Nx,"Nx","No of cells in X direction");
-CONTROLDECLAREINFO(Ny,"Ny","No of cells in X direction");
-
+CONTROLDECLAREINFO(Nx, "Nx", "No of cells in X direction");
+CONTROLDECLAREINFO(Ny, "Ny", "No of cells in X direction");
 
 int main(int argc, const char *argv[]) {
   using size_type = lf::base::size_type;
@@ -28,15 +26,16 @@ int main(int argc, const char *argv[]) {
   }
   std::cout << "##### Control variables:" << std::endl;
   lf::base::ListCtrlVars(std::cout);
-  
+
   // Construct a triangular tensor product mesh with 2*Nx*Ny cells
-  lf::mesh::hybrid2d::TPTriagMeshBuilder builder
-    (std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
+  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-    .setNoXCells(Nx).setNoYCells(Ny);
+      .setNoXCells(Nx)
+      .setNoYCells(Ny);
   auto mesh_p = builder.Build();
 
   // Some consistency checks.
@@ -50,6 +49,6 @@ int main(int argc, const char *argv[]) {
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
 
   // Matlab output of mesh
-  lf::mesh::utils::writeMatlab(*mesh_p,"lf_tptriagmesh.m");
+  lf::mesh::utils::writeMatlab(*mesh_p, "lf_tptriagmesh.m");
   return 0;
 }

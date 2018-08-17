@@ -24,8 +24,7 @@ class StructuredMeshBuilder {
    */
   explicit StructuredMeshBuilder(
       std::shared_ptr<mesh::MeshFactory> mesh_factory)
-    : mesh_factory_(std::move(mesh_factory))
-  {
+      : mesh_factory_(std::move(mesh_factory)) {
     LF_ASSERT_MSG(
         mesh_factory_->DimMesh() == 2,
         "TPTriagMeshBuilder can only construct meshes with DimMesh==2");
@@ -62,7 +61,7 @@ class StructuredMeshBuilder {
     return *this;
   }
   /** @} */
- 
+
   /**
    * @brief Interface for the actual construction of the mesh
    *

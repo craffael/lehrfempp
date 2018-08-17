@@ -23,7 +23,7 @@
 // 1 -> global baryccentric refinement
 // 2 -> global marking of edges
 // 3 -> local marking of edges with midpoints in [0,1]^2
-CONTROLDECLAREINFO(refselector,"refselector",
+CONTROLDECLAREINFO(refselector, "refselector",
                    "Selector for refinement method");
 
 int main(int argc, const char *argv[]) {
