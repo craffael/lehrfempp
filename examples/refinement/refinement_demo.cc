@@ -12,8 +12,7 @@
 
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
-#include <iostream>
-#include "lf/base/base.h"
+
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
@@ -24,7 +23,7 @@
 // 1 -> global baryccentric refinement
 // 2 -> global marking of edges
 // 3 -> local marking of edges with midpoints in [0,1]^2
-CONTROLDECLAREINFO(refselector, "refselector",
+CONTROLDECLAREINFO(refselector,"refselector",
                    "Selector for refinement method");
 
 int main(int argc, const char *argv[]) {

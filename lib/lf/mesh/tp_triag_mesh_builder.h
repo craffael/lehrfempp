@@ -62,19 +62,7 @@ class StructuredMeshBuilder {
     return *this;
   }
   /** @} */
-
-  /** @brief periodic setting: identification and top and bottom and 
-   *          let and right boundary 
-   */
-  void setPeriodic(void) { periodic_ = true; }
-
-  /** @brief request construction of a 3D torus */
-  void setTorus(void) {
-    LF_VERIFY_MSG(mesh_factory_->DimWorld() == 3,
-		  "Torus can be built on with 3-dimensional mesh factory");
-    torus_ = true; periodic_ = true;
-  }
-  
+ 
   /**
    * @brief Interface for the actual construction of the mesh
    *
@@ -93,10 +81,6 @@ class StructuredMeshBuilder {
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
   /** Mesh resolution parameters */
   size_type no_of_x_cells_{0}, no_of_y_cells_{0};
-  /** Flag for toroidal = periodic setting */
-  bool periodic_{false};
-  /** Flag indicating that a 3D torus should be built. implies periodic construction */
-  bool torus_{false};
 };  // end class definition StructuredMeshBuilder
 
 /**

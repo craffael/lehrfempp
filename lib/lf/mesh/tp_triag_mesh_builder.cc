@@ -14,9 +14,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   const size_type nx = no_of_x_cells_;
   const size_type ny = no_of_y_cells_;
   // Total number of entities in the mesh
-  // Each triangle is split into two squares
+  // Each square is split into two triangles
   const int no_of_cells = 2 * nx * ny;
-  const int no_of_edges = no_of_cells + (nx + 1) * ny + nx * (ny + 1);
+  const int no_of_edges = nx*ny + (nx + 1) * ny + nx * (ny + 1);
   const int no_of_vertices = (nx + 1) * (ny + 1);
   // Diagnostics
   if (output_ctrl_ != 0) {
