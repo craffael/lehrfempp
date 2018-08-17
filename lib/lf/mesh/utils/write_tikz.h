@@ -9,7 +9,6 @@
 
 namespace lf::mesh::utils {
 
-
 /**
  * @brief Writes mesh to file in TikZ Graphics format. File as input in LaTeX will draw the mesh.
  *
@@ -26,11 +25,12 @@ namespace lf::mesh::utils {
  *
  *
  * #### Output control flags:
- * - TikzOutputCtrl::EdgeNumbering to display edge numbering
- * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
- * - TikzOutputCtrl::RenderCells to show the specific cells in the mesh in addition to the mesh grid.
+ * - TikzOutputCtrl::RenderCells to show the specific cells in the mesh in addition to the mesh grid
  * - TikzOutputCtrl::CellNumbering to display numbering of cells
  * - TikzOutputCtrl::VerticeNumbering to display local vertice numbering of cells
+ * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
+ * - TikzOutputCtrl::EdgeNumbering to display edge numbering
+ *
  *
  *
  * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh grid and nodes.
@@ -55,14 +55,30 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
 
 
 
-// enum
-enum TikzOutputCtrl {
+/**
+ * @brief writeTikZ: second version!
+ * @param mesh
+ * @param filename
+ * @param selector
+ * @param output_ctrl
+ */
+void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+               std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
 
-    EdgeNumbering = 1,
+
+
+
+
+
+/**
+ * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
+ */
+enum TikzOutputCtrl {
+    RenderCells = 1,
     CellNumbering = 2,
-    NodeNumbering = 4,
-    VerticeNumbering = 8,
-    RenderCells = 16
+    VerticeNumbering = 4,
+    NodeNumbering = 8,
+    EdgeNumbering = 16
 };
 
 

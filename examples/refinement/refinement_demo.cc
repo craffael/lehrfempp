@@ -9,10 +9,10 @@
  */
 
 #include <iostream>
+#include <sstream>
 
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
-#include <iostream>
 #include "lf/base/base.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
@@ -126,6 +126,10 @@ int main(int argc, const char *argv[]) {
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
               << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
               << " cells," << std::endl;
+    std::stringstream level_asc;
+    level_asc << refstep;
+    lf::mesh::utils::writeTikZ(*mesh,std::string("refinement_mesh")+level_asc.str()+".txt",0);
+
   }
 
   // Generate  MATLAB functions that provide a description of all

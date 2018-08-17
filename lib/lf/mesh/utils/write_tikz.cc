@@ -73,7 +73,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
               if (EdgeNumOn && NodeNumOn){
                   outfile << "\\draw[->] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {\\huge" << obj_idx << "} "
                           << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
               } else if (NodeNumOn && !EdgeNumOn){
                   outfile << "\\draw[->] ("
