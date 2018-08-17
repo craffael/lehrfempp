@@ -33,8 +33,10 @@ namespace lf::mesh::utils {
  * - TikzOutputCtrl::VerticeNumbering to display local vertice numbering of cells
  *
  *
- * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh gird and nodes.
+ * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh grid and nodes.
  * @note TikzOutputCtrl::RenderCells must be enabled in order to use the flags for numbering of cells and of local vertices of cells.
+ *
+ * In the LaTeX document, remember to include "\usepackage{tikz}". Use "\input{}" to include the code file and visualize the mesh.
  *
  *
  *
