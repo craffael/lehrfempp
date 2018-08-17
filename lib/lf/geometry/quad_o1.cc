@@ -92,7 +92,7 @@ Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
                       (coords_.col(2) - coords_.col(1)) * local(0, i);
 
     if (DimGlobal() == 2) {
-      result(i) = jacobian.determinant();
+      result(i) = std::abs(jacobian.determinant());
     } else {
       result(i) = std::sqrt((jacobian.transpose() * jacobian).determinant());
     }
@@ -122,17 +122,22 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
 }
 
 std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
-    const RefinementPattern& ref_pat) const {
+    const RefinementPattern& ref_pat, base::dim_t codim) const {
   // The refinement pattern must be for a quadrilateral
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
+  LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
   // Lattice meshwidth
   const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as lattice polygons
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-      child_polygons(ref_pat.ChildPolygons());
+      child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
   const int no_children = child_polygons.size();
+  LF_VERIFY_MSG(
+      no_children == ref_pat.noChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   // For each child cell create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
@@ -141,183 +146,45 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
     LF_VERIFY_MSG(
         child_polygons[l].rows() == 2,
         "child_polygons[" << l << "].rows() = " << child_polygons[l].rows());
-
     // Normalize lattice coordinates
     const Eigen::MatrixXd child_geo(
         Global(h_lattice * child_polygons[l].cast<double>()));
-    if (child_polygons[l].cols() == 3) {
-      // Child cell is a triangle
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
-    } else if (child_polygons[l].cols() == 4) {
-      // Child cell is a quadrilateral
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(child_geo));
-    } else {
-      LF_VERIFY_MSG(false, "child_polygons[" << l << "].cols() = "
-                                             << child_polygons[l].cols());
-    }
-  }
-  return std::move(child_geo_uptrs);
-}
-
-/* OLD IMPLEMENTATION based on enums
-std::vector<std::unique_ptr<Geometry>>
-QuadO1::ChildGeometry(const RefinementPattern &ref_pat) const {
-  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
-                "Refinement pattern not for triangle")
-  RefPat ref_pattern = ref_pat.refpat();
-  const int anchor = ref_pat.anchor();
-  // Vector for returning unique pointers to child geometries
-  std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
-  // Key properties of the current cell
-  const dim_t dim_global(DimGlobal());
-  const lf::base::RefEl ref_el = RefEl();
-  // Coordinates of corners and midpoints in reference quadrilateral
-  Eigen::Matrix<double,2,4> ref_corner_coords(ref_el.NodeCoords());
-  Eigen::Matrix<double,2,4> ref_midpoint_coords(2,4);
-  ref_midpoint_coords << 0.5,1.0,0.5,0.0,0.0,0.5,1.0,0.5;
-
-  // Physical coordinates of corners and midpoints
-  Eigen::MatrixXd corner_coords = Global(ref_corner_coords);
-  Eigen::MatrixXd midpoint_coords = Global(ref_midpoint_coords);
-  Eigen::MatrixXd tria_child_coords(2,3);
-  Eigen::MatrixXd quad_child_coords(2,4);
-
-  // Remap local indices according to anchor values
-  const int mod_0 = (0+anchor)%4;
-  const int mod_1 = (1+anchor)%4;
-  const int mod_2 = (2+anchor)%4;
-  const int mod_3 = (3+anchor)%4;
-
-  // Create child geometries according to refinement patterns and selection
-  switch (ref_pattern) {
-  case (int)RefPat::rp_nil: {
-    break;
-  }
-  case (int)RefPat::rp_copy: {
-    child_geo_uptrs.push_back(std::make_unique<QuadO1>(coords_));
-    break;
-  }
-  case (int)RefPat::rp_trisect: {
-    // Partition a quad into three triangle, the anchor edge
-    // being split in the process
-      tria_child_coords.col(0) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(1) = corner_coords.col(mod_2);
-      tria_child_coords.col(2) = corner_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(1) = corner_coords.col(mod_0);
-      tria_child_coords.col(2) = corner_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(1) = corner_coords.col(mod_1);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-      tria_child_coords.col(2) = corner_coords.col(mod_2);
-    break;
-  }
-  case (int)RefPat::rp_quadsect: {
-    // Partition a quad into four triangle, thus
-    // splitting two edges. The one with the smaller sub index is the
-    // anchor edge
-      tria_child_coords.col(0) = corner_coords.col(mod_0);
-      tria_child_coords.col(1) = corner_coords.col(mod_3);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_0);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = corner_coords.col(mod_1);
-      tria_child_coords.col(1) = midpoint_coords.col(mod_1);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_0);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = corner_coords.col(mod_2);
-      tria_child_coords.col(1) = corner_coords.col(mod_3);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_1);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(1) = midpoint_coords.col(mod_2);
-      tria_child_coords.col(2) = corner_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-    break;
-  }
-  case (int)RefPat::rp_bisect:
-  case (int)RefPat::rp_split: {
-    // Cut a quadrilateral into two
-      quad_child_coords.col(0) = corner_coords.col(mod_0);
-      quad_child_coords.col(1) = midpoint_coords.col(mod_0);
-      quad_child_coords.col(2) = midpoint_coords.col(mod_2);
-      quad_child_coords.col(3) = corner_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-
-      quad_child_coords.col(0) = corner_coords.col(mod_1);
-      quad_child_coords.col(1) = corner_coords.col(mod_2);
-      quad_child_coords.col(2) = midpoint_coords.col(mod_2);
-      quad_child_coords.col(3) = midpoint_coords.col(mod_0);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-    break;
-  }
-  case (int)RefPat::rp_threeedge: {
-      quad_child_coords.col(0) = corner_coords.col(mod_2);
-      quad_child_coords.col(1) = corner_coords.col(mod_3);
-      quad_child_coords.col(2) = midpoint_coords.col(mod_3);
-      quad_child_coords.col(3) = midpoint_coords.col(mod_1);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-
-      tria_child_coords.col(0) = corner_coords.col(mod_0);
-      tria_child_coords.col(1) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = corner_coords.col(mod_1);
-      tria_child_coords.col(1) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_1);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-
-      tria_child_coords.col(0) = midpoint_coords.col(mod_0);
-      tria_child_coords.col(1) = midpoint_coords.col(mod_1);
-      tria_child_coords.col(2) = midpoint_coords.col(mod_3);
-      child_geo_uptrs.push_back(std::make_unique<TriaO1>(tria_child_coords));
-    break;
-  }
-  case (int)RefPat::rp_barycentric:
-  case (int)RefPat::rp_regular: {
-    // Fully symmetric splitting into four quadrilaterals
-    // Obtain coordinates of center of gravity
-    Eigen::Matrix<double,2,1> ref_baryc_coords = Eigen::Vector2d({0.5,0.5});
-    Eigen::MatrixXd baryc_coords = Global(ref_baryc_coords);
-
-    quad_child_coords.col(0) = corner_coords.col(0);
-      quad_child_coords.col(1) = midpoint_coords.col(0);
-      quad_child_coords.col(2) = baryc_coords;
-      quad_child_coords.col(3) = midpoint_coords.col(3);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-
-      quad_child_coords.col(0) = corner_coords.col(1);
-      quad_child_coords.col(1) = midpoint_coords.col(1);
-      quad_child_coords.col(2) = baryc_coords;
-      quad_child_coords.col(3) = midpoint_coords.col(0);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-
-      quad_child_coords.col(0) = corner_coords.col(2);
-      quad_child_coords.col(1) = midpoint_coords.col(1);
-      quad_child_coords.col(2) = baryc_coords;
-      quad_child_coords.col(3) = midpoint_coords.col(2);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-
-      quad_child_coords.col(0) = corner_coords.col(3);
-      quad_child_coords.col(1) = midpoint_coords.col(2);
-      quad_child_coords.col(2) = baryc_coords;
-      quad_child_coords.col(3) = midpoint_coords.col(3);
-      child_geo_uptrs.push_back(std::make_unique<QuadO1>(quad_child_coords));
-    break;
-  }
-  default: {
-    LF_VERIFY_MSG(false,"No valid refinement pattern for a quad");
-    break;
-  }
-  } // end switch ref_pattern
-  return std::move(child_geo_uptrs);
-  } */
+    switch (codim) {
+      case 0: {
+        if (child_polygons[l].cols() == 3) {
+          // Child cell is a triangle
+          child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
+        } else if (child_polygons[l].cols() == 4) {
+          // Child cell is a quadrilateral
+          child_geo_uptrs.push_back(std::make_unique<QuadO1>(child_geo));
+        } else {
+          LF_VERIFY_MSG(false, "child_polygons[" << l << "].cols() = "
+                                                 << child_polygons[l].cols());
+        }
+        break;
+      }
+      case 1: {
+        // Child is an edge
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 2,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
+        break;
+      }
+      case 2: {
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 1,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
+        break;
+      }
+      default: {
+        LF_VERIFY_MSG(false, "Illegal co-dimension");
+        break;
+      }
+    }  // end switch codim
+  }    // end loop over children
+  return (child_geo_uptrs);
+}  // end ChildGeometry()
 
 }  // namespace lf::geometry

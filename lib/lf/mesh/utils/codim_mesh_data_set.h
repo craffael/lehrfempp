@@ -1,6 +1,7 @@
 #ifndef __bae24f2390174bff85f65c2c2e558a9e
 #define __bae24f2390174bff85f65c2c2e558a9e
 
+#include <boost/container/vector.hpp>
 #include "mesh_data_set.h"
 
 namespace lf::mesh::utils {
@@ -36,11 +37,24 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   }
 
  private:
-  std::shared_ptr<Mesh> mesh_;
-  std::vector<T> data_;
+  // template magic to not use std::vector<bool> but boost::dynamic_bitset
+  // instead
+  template <class X, class Y = int>
+  struct Container {
+    // static_assert(false, "gugus");
+    using type_t = std::vector<X>;
+  };
+
+  template <class Y>
+  struct Container<bool, Y> {
+    using type_t = boost::container::vector<bool>;
+  };
+
+  std::shared_ptr<const Mesh> mesh_;
+  typename Container<T, int>::type_t data_;
   dim_t codim_;
 
-  CodimMeshDataSet(std::shared_ptr<Mesh> mesh, dim_t codim)
+  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
         data_(mesh_->Size(codim)),
@@ -48,7 +62,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
 
   template <class = typename std::enable_if<
                 std::is_copy_constructible<T>::value>::type>
-  CodimMeshDataSet(std::shared_ptr<Mesh> mesh, dim_t codim, T init)
+  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
         data_(mesh_->Size(codim), init),
@@ -57,11 +71,11 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   // Friends:
   template <class S>
   friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(
-      std::shared_ptr<Mesh> mesh, base::dim_t codim);
+      std::shared_ptr<const Mesh> mesh, base::dim_t codim);
 
   template <class S, class>
   friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(
-      std::shared_ptr<Mesh> mesh, base::dim_t codim, S init);
+      std::shared_ptr<const Mesh> mesh, base::dim_t codim, S init);
 };
 
 /**
@@ -75,7 +89,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
  */
 template <class T>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
-    std::shared_ptr<Mesh> mesh, base::dim_t codim) {
+    std::shared_ptr<const Mesh> mesh, base::dim_t codim) {
   using impl_t = CodimMeshDataSet<T>;
   return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), codim));
 }
@@ -91,7 +105,7 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
 template <class T, class = typename std::enable_if<
                        std::is_copy_constructible<T>::value>::type>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
-    std::shared_ptr<Mesh> mesh, base::dim_t codim, T init) {
+    std::shared_ptr<const Mesh> mesh, base::dim_t codim, T init) {
   using impl_t = CodimMeshDataSet<T>;
   return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), codim, init));
 }

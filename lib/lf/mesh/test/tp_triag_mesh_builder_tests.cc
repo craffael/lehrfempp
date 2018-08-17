@@ -31,7 +31,7 @@ TEST(lf_mesh, buildStructuredMesh) {
 
   EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
-  EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
+  EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
   EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
   EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
@@ -59,7 +59,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
 
   EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
-  EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
+  EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
   EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
   EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
@@ -68,6 +68,18 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   test_utils::checkEntityIndexing(*mesh_p);
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
+  std::cout << "Checking geometry compatibulity: " << std::flush;
+  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
+  if (fails.size() == 0) {
+    std::cout << "consistent!" << std::endl;
+  } else {
+    std::cout << "INCONSISTENT!" << std::endl;
+    for (auto& geo_errs : fails) {
+      std::cout << geo_errs.first.ToString() << "(" << geo_errs.second << ")"
+                << std::endl;
+    }
+  }
   std::cout << "Writing MATLAB file" << std::endl;
   utils::writeMatlab(*mesh_p, "tp_triag_test.m");
 

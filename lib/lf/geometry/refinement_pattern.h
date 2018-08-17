@@ -8,9 +8,11 @@
 
 #ifndef __3178e8d1e7bf4366bcb00cdb4ebbf5fb
 #define __3178e8d1e7bf4366bcb00cdb4ebbf5fb
+#include <utility>
 #include "lf/base/base.h"
 
 namespace lf::geometry {
+
 /**
  * @brief Abstract interface class for topological local refinement
  *
@@ -42,31 +44,46 @@ class RefinementPattern {
   lf::base::RefEl RefEl() const { return ref_el_; }
   lf::base::size_type LatticeConst() const { return lattice_const_; }
   /**
-   * @brief provide number of child cells to be created by refinement
+   * @brief provide number of child entities of a given co-dimension
+   * to be created by refinement
    */
-  virtual lf::base::size_type noChildren() const = 0;
+  virtual lf::base::size_type noChildren(lf::base::dim_t codim) const = 0;
   /**
    * @brief provide lattice reference coordinates of vertices of child polygons
    *
-   * the shaoe of the children of a cell is defined through a convex lattice
-   * polygon in the reference element.
+   * @param codim _relative_ codimension of the children whose lattice polygons
+   *        are requested.
    *
-   * @return vector of integer 2xn matrices containing the lattice coordinates
+   * ### for a cell entity
+   *
+   * The shaoe of the children of relative co-dimension 0 of a cell is
+   * defined through a convex lattice polygon in the reference element.
+   * The children on co-dimension 1 are _interior_ edges. Their shape
+   * is described by lattice segments. Children of relative co-dimension 2
+   * are _interior_ points. Their position is given by a single lattice point.
+   *
+   * ### For a segment entity
+   *
+   * The shape of children with relative co-dimension 0 is given by
+   * lattice intervals. Children with relative co-dimension 1 are
+   * interior points and their location is given by single lattice points.
+   *
+   * @return vector of integer matrices containing the lattice coordinates
    * of the verticess of the child polygons. The length of this vector must
    * agree with the value returned by `noChildren()`. The integer entries of the
    * matrices must be non-negative and the column sums must be <= the lattice
    * constant.
    */
   virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
-  ChildPolygons() const = 0;
+  ChildPolygons(lf::base::dim_t codim) const = 0;
 
-  /** Virtual Destructor */
   virtual ~RefinementPattern() = default;
 
  protected:
   lf::base::RefEl ref_el_;            /**< cell type */
   lf::base::size_type lattice_const_; /**< defines spacing of integer lattice */
 };
+
 }  // namespace lf::geometry
 
 #endif  // __3178e8d1e7bf4366bcb00cdb4ebbf5fb

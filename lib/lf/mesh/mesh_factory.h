@@ -1,3 +1,4 @@
+
 #ifndef __5ac8f981f27e45d3b9d15fc9d52f7136
 #define __5ac8f981f27e45d3b9d15fc9d52f7136
 
@@ -42,6 +43,16 @@ class MeshFactory {
    *         ...
    */
   virtual size_type AddPoint(coord_t coord) = 0;
+
+  /**
+   * @brief Add a point to the mesh.
+   * @param geometry unique pointer to geometry object giving location of point
+   * @return The 0-based index of the entity that will be created.
+   *         The first call to this method will return 0, the second call 1,
+   *         ...
+   */
+  virtual size_type AddPoint(
+      std::unique_ptr<geometry::Geometry>&& geometry) = 0;
 
   /**
    * @brief Add an an entity (codim>0) to the mesh.
@@ -93,8 +104,8 @@ class MeshFactory {
    * @brief Construct a mesh out of the specified nodes and elements.
    * @return The created mesh.
    *
-   * @note After calling Build() you are not allowed to call AddPoint or
-   *       AddEntity() anymore.
+   * @note All data supplied to the MeshFactory will be cleared after
+   *       a mesh has been built successfully.
    */
   virtual std::shared_ptr<Mesh> Build() = 0;
 

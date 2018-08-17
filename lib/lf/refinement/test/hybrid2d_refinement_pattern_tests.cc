@@ -3,7 +3,6 @@
  */
 #include <gtest/gtest.h>
 #include <lf/refinement/refinement.h>
-#include <stdlib.h>
 #include <iostream>
 
 namespace lf::refinement::test {
@@ -76,7 +75,7 @@ unsigned int SumTwiceAreaPolygons(const lt_polys_t &polygons) {
 }
 
 // Test of topological refinement of a triangle
-TEST(TopRefTest, SegRef) {
+TEST(TopRefTest, TopSegRef) {
   // Set up refinement pattern
   Hybrid2DRefinementPattern rp_copy(lf::base::RefEl::kSegment(),
                                     RefPat::rp_copy);
@@ -84,27 +83,32 @@ TEST(TopRefTest, SegRef) {
                                      RefPat::rp_split);
 
   std::cout << "COPY(N=" << rp_copy.LatticeConst()
-            << "): " << rp_copy.ChildPolygons() << std::endl;
+            << "): " << rp_copy.ChildPolygons(0) << std::endl;
   std::cout << "SPLIT(N=" << rp_copy.LatticeConst()
-            << "): " << rp_split.ChildPolygons() << std::endl;
+            << "): " << rp_split.ChildPolygons(0) << std::endl;
 }
 
-TEST(TopRefTest, TriaRef) {
+TEST(TopRefTest, TopTriaRef) {
   // Copy "refinement"
   {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(), RefPat::rp_copy);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "COPY: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              std::pow(rp.LatticeConst(), 2));
   }
   // Bisection refinement
   for (int anchor = 0; anchor < 3; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(), RefPat::rp_bisect,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "BISECT(anchor = " << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              std::pow(rp.LatticeConst(), 2));
   }
   // Trisection refinement
   for (int anchor = 0; anchor < 3; anchor++) {
@@ -112,8 +116,8 @@ TEST(TopRefTest, TriaRef) {
                                   anchor);
     Hybrid2DRefinementPattern rp2(lf::base::RefEl::kTria(),
                                   RefPat::rp_trisect_left, anchor);
-    lt_polys_t child_polygons1(rp1.ChildPolygons());
-    lt_polys_t child_polygons2(rp2.ChildPolygons());
+    lt_polys_t child_polygons1(rp1.ChildPolygons(0));
+    lt_polys_t child_polygons2(rp2.ChildPolygons(0));
     std::cout << "TRISECT(anchor=" << anchor << ") : " << child_polygons1
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons1)
@@ -123,78 +127,109 @@ TEST(TopRefTest, TriaRef) {
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons2)
               << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons1),
+              std::pow(rp1.LatticeConst(), 2));
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons2),
+              std::pow(rp2.LatticeConst(), 2));
   }
   // Splitting into four triangles
   for (int anchor = 0; anchor < 3; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(), RefPat::rp_quadsect,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "QUADSECT(anchor=" << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              std::pow(rp.LatticeConst(), 2));
   }
   // Regular refinement
   {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(), RefPat::rp_regular);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "REGULAR: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              std::pow(rp.LatticeConst(), 2));
   }
   // Bayrcentric refinement
   {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kTria(),
                                  RefPat::rp_barycentric);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "BARYCENTRIC: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              std::pow(rp.LatticeConst(), 2));
   }
 }
 
-TEST(TopRefTest, QuadRef) {
+TEST(TopRefTest, TopQuadRef) {
   // Check the various refinements
   {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_copy);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "COPY: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
   for (int anchor = 0; anchor < 4; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_trisect,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "TRISECT(anchor=" << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
   for (int anchor = 0; anchor < 4; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_quadsect,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "QUADSECT(anchor=" << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
   for (int anchor = 0; anchor < 4; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_split,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "Split(anchor=" << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
   for (int anchor = 0; anchor < 4; anchor++) {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_threeedge,
                                  anchor);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "THREEEDGE(anchor=" << anchor << ") : " << child_polygons
               << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
   {
     Hybrid2DRefinementPattern rp(lf::base::RefEl::kQuad(), RefPat::rp_regular);
-    lt_polys_t child_polygons(rp.ChildPolygons());
+    lt_polys_t child_polygons(rp.ChildPolygons(0));
     std::cout << "BARYCENTRIC: " << child_polygons << std::endl;
     std::cout << "Area = " << SumTwiceAreaPolygons(child_polygons) << std::endl;
+
+    EXPECT_EQ(SumTwiceAreaPolygons(child_polygons),
+              2 * std::pow(rp.LatticeConst(), 2));
   }
 }
 

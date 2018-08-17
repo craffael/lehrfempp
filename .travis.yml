@@ -122,8 +122,9 @@ jobs:
             - graphviz
       script: |
         cd $TRAVIS_BUILD_DIR/doc/doxygen
-        doxygen --version
-        doxygen Doxyfile
+        cmake -H. -BBuild 
+        cd Build
+        make doxygen
       deploy:
         provider: pages
         skip_cleanup: true

@@ -27,6 +27,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     filename.pop_back();
     filename.pop_back();
     file << "function [x,y,TRI,QUAD,EDS] = " << filename << "()" << std::endl;
+    file << "% Data for an unstructure planar hybrid 2D mesh" << std::endl;
 
     // Obtain topological dimension of the mesh
     const dim_t dim_mesh = mesh.DimMesh();
@@ -43,11 +44,12 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     // Write node coordinates to file
     size_type node_cnt = 0;
     for (const Entity &node : mesh.Entities(node_codim)) {
+      const lf::base::glb_idx_t node_index = mesh.Index(node);
       const geometry::Geometry *geo_ptr = node.Geometry();
       Eigen::MatrixXd node_coord(geo_ptr->Global(zero));
-      file << "x(" << node_cnt + 1 << ") = " << node_coord(0, 0) << "; "
+      file << "x(" << node_index + 1 << ") = " << node_coord(0, 0) << "; "
            << std::endl;
-      file << "y(" << node_cnt + 1 << ") = " << node_coord(1, 0) << "; "
+      file << "y(" << node_index + 1 << ") = " << node_coord(1, 0) << "; "
            << std::endl;
       node_cnt++;
     }
@@ -58,13 +60,15 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     file << "EDS = zeros(" << no_of_edges << ",2);" << std::endl;
     size_type ed_cnt = 0;
     for (const Entity &edge : mesh.Entities(1)) {
+      const lf::base::glb_idx_t edge_index = mesh.Index(edge);
       base::RefEl ref_el = edge.RefEl();
       LF_VERIFY_MSG(ref_el == lf::base::RefEl::kSegment(),
                     "Edge must be a segment");
       // Access endpoints = sub-entities of relative co-dimension 1
       const auto sub_ent = edge.SubEntities(1);
-      file << "EDS(" << ed_cnt + 1 << ",:) = [" << mesh.Index(sub_ent[0]) + 1
-           << ", " << mesh.Index(sub_ent[1]) + 1 << "];" << std::endl;
+      file << "EDS(" << edge_index + 1 << ",:) = ["
+           << mesh.Index(sub_ent[0]) + 1 << ", " << mesh.Index(sub_ent[1]) + 1
+           << "];" << std::endl;
       ed_cnt++;
     }
 
@@ -74,6 +78,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     size_type triag_cnt = 0;
     size_type quad_cnt = 0;
     for (const Entity &e : mesh.Entities(0)) {
+      lf::base::glb_idx_t cell_index = mesh.Index(e);
       // Access vertices =  sub-entities of relative co-dimension 2
       const auto sub_ent = e.SubEntities(2);
       base::RefEl ref_el = e.RefEl();
@@ -82,7 +87,8 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
           file << "TRI(" << triag_cnt + 1 << ",:) = ["
                << mesh.Index(sub_ent[0]) + 1 << ", "
                << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << "];" << std::endl;
+               << mesh.Index(sub_ent[2]) + 1 << ", " << cell_index << " ];"
+               << std::endl;
           triag_cnt++;
           break;
         }
@@ -91,7 +97,8 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
                << mesh.Index(sub_ent[0]) + 1 << ", "
                << mesh.Index(sub_ent[1]) + 1 << ", "
                << mesh.Index(sub_ent[2]) + 1 << ", "
-               << mesh.Index(sub_ent[3]) + 1 << "];" << std::endl;
+               << mesh.Index(sub_ent[3]) + 1 << ", " << cell_index << " ];"
+               << std::endl;
           quad_cnt++;
           break;
         }

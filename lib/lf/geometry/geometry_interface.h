@@ -131,19 +131,22 @@ class Geometry {
    *
    * @param ref_pat A code indicating the particular refinement of the
    * element
-   * @paream selector A number selecting a particular child element
+   * @param codim _relative_ codimension of child entities whose
+   *         shape is requested
+   * @return an array of unique pointers pointers to geometry objects for child
+   *         entities of the specified co-dimension and the given refinement
+   *         pattern. The numbering of child entities is a convention.
    *
    * Implementation of local mesh refinement entails splitting of elements into
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
+   * The details of subdivisions corresponding to particular refinement patterns
+   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons` and
+   * should be documented there.
    *
-   * The arguments are unspecified integers to be interpreted correctly by
-   * specializations of this method. At the time of the definition of the
-   * interface all possible refinement patterns cannot be predicted. This is why
-   * vanilla integer arguments have been chosen for this method.
    */
   virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pat) const = 0;
+      const RefinementPattern& ref_pat, lf::base::dim_t codim) const = 0;
 
   /**
    * @brief element shape by affine mapping from reference element
@@ -164,8 +167,37 @@ class Geometry {
    * @brief Virtual destructor
    */
   virtual ~Geometry() = default;
-};
 
+  // Output control variable
+  /** @brief Output control variable */
+  static int output_ctrl_;
+
+};  // class Geometry
+
+/**
+ * @brief Operator overload to print a `Geometry` to a stream, such as
+ * `std::cout`
+ * @param stream The stream to which this function should output
+ * @param entity The geometry to write to `stream`.
+ * @return The stream itself.
+ *
+ * - If Geometry::output_ctrl_ == 0, type reference element of geometry is sent
+ * as output to stream
+ * - If Geometry::output_ctrl_ > 0, then lf::geometry::PrintInfo(const Geometry
+ * &geom, std::ostream &o) is called.
+ *
+ */
+std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
+
+/**
+ * @brief (Approximate) Volume of a shape
+ * @param geometry object
+ *
+ * @note the volume can be computed exactly only for planar affine/bilinear
+ * shapes Otherwise this functions returns a one-point quadrature approximation
+ */
+
+double Volume(const Geometry& geo);
 }  // namespace lf::geometry
 
 #endif  // __7ed6b0d4d9244155819c464fc4eb9bbb
