@@ -9,6 +9,7 @@ function plot_lf_mesh(mesh_data,opts)
 % opts.parents -> Add index numbers of parents
 %   In this case opts.parents must be a handle to a function
 %   produced by the LehrFEM++ function writeMatlabLevel()
+%   (available in the refinement module)    
 %
 
 % Get geometry information for (affine) 2D mesh 
