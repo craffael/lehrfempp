@@ -15,24 +15,10 @@ int main() {
 
   
   using namespace lf::mesh::utils;
-  /*
+
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
-  // NOTE TO SELF: There are several test folders in lf/mesh:
-  // - mesh/test
-  // - mesh/hybrid2d/test
-  // - mesh/hybrid2dp/test
-
-  // Don't use hybrid2d!
-
-  // Entities -------------------------------
-
-  // lf::mesh::utils::writeTikZ(lf::mesh::hybrid2dp::Triangle(),
-  // "tikztest.txt");
-  // file is saved in /Build/examples/mesh/
-  */
-
-  // Test ----------------------------------
+  // Build mesh ----------------------------------
   lf::mesh::hybrid2dp::MeshFactory test(2);  // MeshFactory object
 
   // add nodes
@@ -55,10 +41,8 @@ int main() {
 
   
   // build the mesh and retrieve a pointer
-  auto mesh = test.Build();  // mesh is Mesh object
+  auto mesh = test.Build();  // mesh is Mesh object // test is MeshFactory object
 
-  // int dim_mesh_MeshFactory = test.DimWorld();  // test is MeshFactory object
-  // int dim_mesh_Mesh = mesh->DimWorld();
 
 /*
   // Output information on mesh
@@ -83,10 +67,12 @@ int main() {
   }
 */
 
+  // Test mesh ---------------------------------------------------
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Testing of writeTikZ for mesh (test mesh)
-  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt", TikzOutputCtrl::RenderCells|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering);
+  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt",
+                             TikzOutputCtrl::RenderCells|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering|TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::NodeNumbering);
 
 
   return 0L;

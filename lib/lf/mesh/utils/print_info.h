@@ -28,6 +28,9 @@ extern int printinfo_ctrl;
  * @brief Diagnostic output operator. Prints info about a mesh.
  * @param &mesh The mesh to print info about
  * @param &o The stream to which this function should output
+ *
+ * #### Output levels
+ * See extern int printinfo_ctrl
  */
 void PrintInfo(const Mesh& mesh, std::ostream& o);
 

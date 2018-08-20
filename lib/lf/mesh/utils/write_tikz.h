@@ -19,7 +19,7 @@ namespace lf::mesh::utils {
  *
  * This function writes a file of code, which included in LaTeX draws a
  * mesh using TikZ Graphics.
- * In particular, edges, cells and nodes in the mesh can be written to file.
+ * In particular, edges, cells and nodes in the mesh can be written to file and visualized.
  * Numbering of the aforementioned and local vertice numbering of cells can be enabled by using enum flags.
  * Combine the flags by using the binary or (|) operator to get a more detailed visualization of the mesh.\n
  *
@@ -30,7 +30,6 @@ namespace lf::mesh::utils {
  * - TikzOutputCtrl::VerticeNumbering to display local vertice numbering of cells
  * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
  * - TikzOutputCtrl::EdgeNumbering to display edge numbering
- *
  *
  *
  * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh grid and nodes.
@@ -55,6 +54,7 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
 
 
 
+/*
 /**
  * @brief writeTikZ: second version!
  * @param mesh
@@ -62,10 +62,9 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
  * @param selector
  * @param output_ctrl
  */
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-               std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
 
-
+//void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+//               std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
 
 
 

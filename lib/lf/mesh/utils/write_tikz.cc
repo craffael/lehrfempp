@@ -18,7 +18,6 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
   bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
   bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
 
-
   using size_type = std::size_t; //lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t; // lf::base::dim_t;
   const Eigen::MatrixXd zero(Eigen::MatrixXd::Zero(0, 1));
@@ -35,11 +34,21 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
   // START writing to file
   outfile << "% TikZ document graphics \n";
-  outfile << "\\begin{tikzpicture}[scale=4, >= stealth, inner sep=0pt, minimum size=0.4cm]\n";
+
+  // Scale font size for large meshes
+  if (no_of_nodes > 50){
+      outfile << "\\begin{tikzpicture}[scale=4, >= stealth, inner sep=0pt, minimum size=0.2cm]\n";
+      outfile << "\\tikzstyle{every node}=[font=\\tiny]\n";
+  } else {
+      outfile << "\\begin{tikzpicture}[scale=4, >= stealth, inner sep=0pt, minimum size=0.35cm]\n";
+  }
+
   // outfile << "\\draw[grey, very thin] (-4.3,-4.3) grid (4.3, 4.3)\n";
 
+  // Loop through codimensions
   for (int co_dim = 0; co_dim <= dim_mesh; co_dim++){
 
+      // Loop through all types of entities
       for (const Entity &obj : mesh.Entities(co_dim)){
           size_type obj_idx = mesh.Index(obj);
           lf::base::RefEl obj_refel = obj.RefEl();
@@ -68,12 +77,12 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
           case lf::base::RefEl::kSegment():{
               center_mat << center, center;
-              const Eigen::MatrixXd scaled_vertices = vertices * 0.85 + center_mat * 0.15;
+              const Eigen::MatrixXd scaled_vertices = vertices * 0.80 + center_mat * 0.2;
               const Eigen::MatrixXd semi_scaled_vertices = vertices * 0.95 + center_mat * 0.05;
 
               if (EdgeNumOn && NodeNumOn){
                   outfile << "\\draw[->] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {\\huge" << obj_idx << "} "
+                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
                           << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
               } else if (NodeNumOn && !EdgeNumOn){
                   outfile << "\\draw[->] ("
@@ -93,7 +102,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
           case lf::base::RefEl::kTria():{
               center_mat << center, center, center;
-              const Eigen::MatrixXd scaled_vertices = vertices * 0.8 + center_mat * 0.2;
+              const Eigen::MatrixXd scaled_vertices = vertices * 0.70 + center_mat * 0.30;
 
               if(RenderCellsOn){
 
@@ -119,7 +128,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
           case lf::base::RefEl::kQuad():{
               center_mat << center, center, center, center;
-              const Eigen::MatrixXd scaled_vertices = vertices * 0.8 + center_mat * 0.2;
+              const Eigen::MatrixXd scaled_vertices = vertices * 0.70 + center_mat * 0.3;
 
               if(RenderCellsOn){
 
