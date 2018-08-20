@@ -54,20 +54,19 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
 
 
 
-/*
+
 /**
  * @brief writeTikZ: second version!
- * @param mesh
- * @param filename
+ * @param mesh The mesh to be stored to file
+ * @param filename Name of output file
  * @param selector
  * @param output_ctrl
  */
-
-//void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-//               std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
-
+void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
+              std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl);
 
 
+//
 
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.

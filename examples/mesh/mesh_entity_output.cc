@@ -74,6 +74,8 @@ int main() {
   lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt",
                              TikzOutputCtrl::RenderCells|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering|TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::NodeNumbering);
 
+  // write_tikz version 2.0 --------------------------------------
+
 
   return 0L;
 }

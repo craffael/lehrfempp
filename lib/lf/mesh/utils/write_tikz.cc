@@ -37,13 +37,11 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
   // Scale font size for large meshes
   if (no_of_nodes > 50){
-      outfile << "\\begin{tikzpicture}[scale=4, >= stealth, inner sep=0pt, minimum size=0.2cm]\n";
+      outfile << "\\begin{tikzpicture}[scale=6, >= stealth, inner sep=0pt, minimum size=0.2cm]\n";
       outfile << "\\tikzstyle{every node}=[font=\\tiny]\n";
   } else {
       outfile << "\\begin{tikzpicture}[scale=4, >= stealth, inner sep=0pt, minimum size=0.35cm]\n";
   }
-
-  // outfile << "\\draw[grey, very thin] (-4.3,-4.3) grid (4.3, 4.3)\n";
 
   // Loop through codimensions
   for (int co_dim = 0; co_dim <= dim_mesh; co_dim++){
@@ -173,5 +171,25 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
 
 
 } // writeTikZ mesh
+
+void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
+               std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7){
+    // Third argument: A function named 'selector' that takes in a reference to an Entity and returns 0 or 1.
+    // 1: Entity will be rendered, 0: Entity will no be rendered.
+
+    // List of desired entities
+    //std::vector<Entities> entitiesToPrint = {0,1,2};
+    //if (selector(entity?)){
+
+
+    //}
+
+    // Have to write some sort of selector function 'like swissGerman'
+    // Does the function take a list or a single entity
+
+
+
+} //writetikz2
+
 
 } // namespace lf::mesh::utils
