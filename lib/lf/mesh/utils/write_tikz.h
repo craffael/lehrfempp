@@ -6,6 +6,7 @@
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 
 #include <string>
+#include <vector>
 
 namespace lf::mesh::utils {
 
@@ -22,7 +23,7 @@ namespace lf::mesh::utils {
  * In particular, edges, cells and nodes in the mesh can be written to file and visualized.
  * Numbering of the aforementioned and local vertice numbering of cells can be enabled by using enum flags.
  * Combine the flags by using the binary or (|) operator to get a more detailed visualization of the mesh.\n
- *
+ * Another option is to pass the corresponding integer value directly as an argument. See the enum definition for correct value.\n
  *
  * #### Output control flags:
  * - TikzOutputCtrl::RenderCells to show the specific cells in the mesh in addition to the mesh grid
@@ -37,6 +38,38 @@ namespace lf::mesh::utils {
  *
  * In the LaTeX document, remember to include "\usepackage{tikz}". Use "\input{}" to include the code file and visualize the mesh.
  *
+ * #### Examples of use
+ *
+ *
+ * ##### Function call
+ *
+ * \verbatim
+
+    // Enum flag for node numbering
+    writeTikZ(*mesh, "filename.txt", TikzOutputCtrl::NodeNumbering);
+
+    // Combining enum flags, enabling more detailed output
+    // The two examples are equivalent:
+    writeTikZ(*mesh, "filename.txt", TikzOutputCtrl::RenderCells|TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::VerticeNumbering);
+    writeTikZ(*mesh, "filename.txt", 21);
+    // Note that ::VerticeNumbering only works because ::RenderCells is activated.
+
+    // Without flags
+    writeTikZ(*mesh, "filename.txt",0);
+
+ \endverbatim
+ *
+ * ##### LaTeX input
+ * \verbatim
+
+     \documentclass{article}
+     \usepackage{tikz}
+     \begin{document}
+
+     \input{"filename.txt"}
+
+     \end{document}
+\endverbatim
  *
  *
  */
@@ -51,7 +84,6 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
  * @snippet mesh_utils.cc TikzInLatex
  *
 */
-
 
 
 
@@ -76,7 +108,8 @@ enum TikzOutputCtrl {
     CellNumbering = 2,
     VerticeNumbering = 4,
     NodeNumbering = 8,
-    EdgeNumbering = 16
+    EdgeNumbering = 16,
+    ArrowTips = 32
 };
 
 

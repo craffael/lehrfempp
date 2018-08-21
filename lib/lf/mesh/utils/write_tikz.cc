@@ -17,6 +17,7 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
   bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
   bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
   bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
+  bool ArrowsOn = output_ctrl & TikzOutputCtrl::ArrowTips;
 
   using size_type = std::size_t; //lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t; // lf::base::dim_t;
@@ -78,23 +79,47 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl){
               const Eigen::MatrixXd scaled_vertices = vertices * 0.80 + center_mat * 0.2;
               const Eigen::MatrixXd semi_scaled_vertices = vertices * 0.95 + center_mat * 0.05;
 
-              if (EdgeNumOn && NodeNumOn){
-                  outfile << "\\draw[->] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
-                          << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
-              } else if (NodeNumOn && !EdgeNumOn){
-                  outfile << "\\draw[->] ("
-                          << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- "
-                          << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
-              } else if (!NodeNumOn && EdgeNumOn){
-                  outfile << "\\draw[->] ("
-                          << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
-                          << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
-              } else if(!NodeNumOn && !EdgeNumOn){
-                  outfile << "\\draw[->] ("
-                          << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- "
-                          << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
-              } else {std::cout << "Check EdgeNumOn and NodeNumOn for kSegment " << obj_idx << std::endl;}
+              if (ArrowsOn){
+
+                  if (EdgeNumOn && NodeNumOn){
+                      outfile << "\\draw[->] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                              << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
+                  } else if (NodeNumOn && !EdgeNumOn){
+                      outfile << "\\draw[->] ("
+                              << scaled_vertices(0,0) << "," << scaled_vertices(1,0) << ") -- "
+                              << "(" << scaled_vertices(0,1) << "," << scaled_vertices(1,1) << ");\n";
+                  } else if (!NodeNumOn && EdgeNumOn){
+                      outfile << "\\draw[->] ("
+                              << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                              << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
+                  } else if(!NodeNumOn && !EdgeNumOn){
+                      outfile << "\\draw[->] ("
+                              << semi_scaled_vertices(0,0) << "," << semi_scaled_vertices(1,0) << ") -- "
+                              << "(" << semi_scaled_vertices(0,1) << "," << semi_scaled_vertices(1,1) << ");\n";
+                  } else {std::cout << "Check EdgeNumOn and NodeNumOn for kSegment " << obj_idx << std::endl;}
+
+              } else {
+
+                  if (EdgeNumOn && NodeNumOn){
+                      outfile << "\\draw[] ("
+                              << vertices(0,0) << "," << vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                              << "(" << vertices(0,1) << "," << vertices(1,1) << ");\n";
+                  } else if (NodeNumOn && !EdgeNumOn){
+                      outfile << "\\draw[] ("
+                              << vertices(0,0) << "," << vertices(1,0) << ") -- "
+                              << "(" << vertices(0,1) << "," << vertices(1,1) << ");\n";
+                  } else if (!NodeNumOn && EdgeNumOn){
+                      outfile << "\\draw[] ("
+                              << vertices(0,0) << "," << vertices(1,0) << ") -- node[black] {" << obj_idx << "} "
+                              << "(" << vertices(0,1) << "," << vertices(1,1) << ");\n";
+                  } else if(!NodeNumOn && !EdgeNumOn){
+                      outfile << "\\draw[] ("
+                              << vertices(0,0) << "," << vertices(1,0) << ") -- "
+                              << "(" << vertices(0,1) << "," << vertices(1,1) << ");\n";
+                  } else {std::cout << "Check EdgeNumOn and NodeNumOn for kSegment " << obj_idx << std::endl;}
+              } // arrows on
+
               break;
           } // case kSegment
 
@@ -176,10 +201,11 @@ void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
                std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7){
     // Third argument: A function named 'selector' that takes in a reference to an Entity and returns 0 or 1.
     // 1: Entity will be rendered, 0: Entity will no be rendered.
+    // Here: Implement what the 'selector' function should do.
 
     // List of desired entities
     //std::vector<Entities> entitiesToPrint = {0,1,2};
-    //if (selector(entity?)){
+    //if (selector){
 
 
     //}
