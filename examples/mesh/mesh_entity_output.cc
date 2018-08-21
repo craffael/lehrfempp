@@ -12,7 +12,6 @@
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-
   
   using namespace lf::mesh::utils;
 

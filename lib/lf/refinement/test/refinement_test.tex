@@ -1,0 +1,45 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+
+\begin{document}
+
+\section{Test mesh}
+
+Test mesh comprises 7 triangles and 2 quadrilaterals. This mesh can be
+created with \texttt{lf::mesh::test\_utils::GenerateHybrid2DTestMesh()}.
+
+\includegraphics[width=\textwidth,clip]{multiref_L0}
+
+\section{Regular refinement}
+
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{fine_mesh}
+ \end{minipage}%
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{fine_mesh_pi}
+\end{minipage}%
+
+\section{Barycentric refinement}
+
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{barycentric_ref}
+ \end{minipage}%
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{barycentric_ref_pi}
+\end{minipage}%
+
+\section{Global bisection refinement}
+
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{allref}
+ \end{minipage}%
+\begin{minipage}[c]{0.5\textwidth}
+  \includegraphics[width=\textwidth]{allref_pi}
+\end{minipage}%
+ 
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
