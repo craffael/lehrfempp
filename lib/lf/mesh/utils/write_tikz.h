@@ -73,7 +73,7 @@ namespace lf::mesh::utils {
  *
  *
  */
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl);
+void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl = 7);
 /* // Things that can be added in write_tikz documentation
  *
  * #### Example of use:
@@ -95,8 +95,7 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl
  * @param output_ctrl
  */
 void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
-              std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl);
-
+                std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
 
 //
 
