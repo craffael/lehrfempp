@@ -34,6 +34,7 @@ namespace lf::mesh::utils {
  *
  *
  * @note If no details about nodes, cells or edges are wanted, simply pass 0 as the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh grid and nodes.
+ * @note Omitting the output_ctrl argument completely when calling the function: Cells, numbering of cells and numbering of vertices will be printed. (output_ctrl = 7)
  * @note TikzOutputCtrl::RenderCells must be enabled in order to use the flags for numbering of cells and of local vertices of cells.
  *
  * In the LaTeX document, remember to include "\usepackage{tikz}". Use "\input{}" to include the code file and visualize the mesh.
@@ -57,6 +58,9 @@ namespace lf::mesh::utils {
     // Without flags
     writeTikZ(*mesh, "filename.txt",0);
 
+    // Without specifying last argument
+    writeTikZ(*mesh, "filename.txt"); is equivalent to writeTikZ(*mesh, "filename.txt", 7);
+
  \endverbatim
  *
  * ##### LaTeX input
@@ -74,17 +78,6 @@ namespace lf::mesh::utils {
  *
  */
 void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl = 7);
-/* // Things that can be added in write_tikz documentation
- *
- * #### Example of use:
- * - How to use the function, with and without flags
- * @snippet mesh_utils.cc writeTikzUsage
- *
- * - To visualize the mesh, include the produced the file in LaTex in the following way:
- * @snippet mesh_utils.cc TikzInLatex
- *
-*/
-
 
 
 /**
