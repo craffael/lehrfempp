@@ -73,7 +73,7 @@ int main() {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Testing of writeTikZ for mesh (test mesh)
-  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt");
+  //lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt");
 
 /*
                              TikzOutputCtrl::RenderCells|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering|
@@ -85,27 +85,18 @@ int main() {
 
   // write_tikz version 2.0 --------------------------------------
 
-  // List of entities
-  std::vector<lf::mesh::Entity> entitiesToPrint = {};
-
-  // Q: How should the list of entities look?
-  // Q: How to look through list? std::find?
-  // Q: Add global object index?
-
   auto desiredEntities = [&] (const lf::mesh::Entity& entity){
-      //if(std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity) != entitiesToPrint.end()){
-      // if (entitiesToPrint.contains(entity)){return true;} else {return false;}
+      // If list contains entity, return true
+      //return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity) != entitiesToPrint.end();
 
-      if (entitiesToPrint.size() < 2) {
-          //std::cout << "true" << std::endl;
-          return true;
-      } else {
-          //std::cout << "false" << std::endl;
-          return false;
-      }
+      // Nodes only
+      return (entity.RefEl() == lf::base::RefEl::kPoint());
+      // Segments only
+      // return (entity.RefEl() == lf::base::RefEl::kSegment());
+
   }; //auto
 
-  int output_ctrl = 0; // Set default argument
+
   lf::mesh::utils::writeTikZ2(*mesh_p, "tikz_selector.txt", desiredEntities);
 
   return 0L;
