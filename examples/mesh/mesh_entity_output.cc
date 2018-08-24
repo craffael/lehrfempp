@@ -66,26 +66,27 @@ int main() {
   // Test mesh ---------------------------------------------------
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-
   // write_tikz version 2.0 --------------------------------------
 
-  auto desiredEntities = [&] (const lf::mesh::Entity& entity){
-      // If list contains entity, return true
-      //return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity) != entitiesToPrint.end();
+  auto desiredEntities = [&](const lf::mesh::Entity& entity) {
+    // If list contains entity, return true
+    // return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity)
+    // != entitiesToPrint.end();
 
-      // Nodes only
-      return (entity.RefEl() == lf::base::RefEl::kPoint());
-      // Segments only
-      //return (entity.RefEl() == lf::base::RefEl::kSegment());
-      //return true;
-
-  }; //auto
-
+    // Nodes only
+    return (entity.RefEl() == lf::base::RefEl::kPoint());
+    // Segments only
+    // return (entity.RefEl() == lf::base::RefEl::kSegment());
+    // return true;
+  };  // auto
 
   lf::mesh::utils::writeTikZ(*mesh_p, "tikz_selector.txt", desiredEntities);
 
-  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test.txt", desiredEntities, TikzOutputCtrl::RenderCells|TikzOutputCtrl::VerticeNumbering|
-                             TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::NodeNumbering|TikzOutputCtrl::ArrowTips);
+  lf::mesh::utils::writeTikZ(
+      *mesh_p, "tikz_mesh_test.txt", desiredEntities,
+      TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
+          TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
+          TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips);
 
   return 0L;
 }

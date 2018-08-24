@@ -97,8 +97,8 @@ activated.
  */
 
 void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-               std::function<bool(const lf::mesh::Entity &)> selector = 1, int output_ctrl = 7);
-
+               std::function<bool(const lf::mesh::Entity &)> selector = 1,
+               int output_ctrl = 7);
 
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
