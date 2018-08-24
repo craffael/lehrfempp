@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblf.mesh.utils.a  CMakeFiles/lf.mesh.utils.dir/print_info.o CMakeFiles/lf.mesh.utils.dir/write_matlab.o CMakeFiles/lf.mesh.utils.dir/write_tikz.o
-/usr/bin/ranlib liblf.mesh.utils.a

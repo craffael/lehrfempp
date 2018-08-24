@@ -174,6 +174,13 @@ class Geometry {
 
 };  // class Geometry
 
+/**
+ * @brief (Approximate) Volume of a shape
+ * @param geometry object
+ *
+ * @note the volume can be computed exactly only for planar affine/bilinear (2D)
+ * shapes Otherwise this functions returns a one-point quadrature approximation
+ */
 double Volume(const Geometry& geo);
 }  // namespace lf::geometry
 
