@@ -29,10 +29,9 @@ void PrintInfo(const Geometry& geom, std::ostream& o) {
 std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
   if (Geometry::output_ctrl_ == 0) {
     return stream << geom.RefEl();
-  } else {
-    PrintInfo(geom, stream);
-    return stream;
   }
+  PrintInfo(geom, stream);
+  return stream;
 }
 
 }  // namespace lf::geometry

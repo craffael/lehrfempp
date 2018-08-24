@@ -8,20 +8,19 @@
 
 namespace lf::mesh::utils {
 
-void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl) {
+void writeTikZ(const Mesh &mesh, const std::string &filename, int output_ctrl) {
   std::ofstream outfile(filename);
 
   // For the enum flags: TikzOutputCtrl
-  bool EdgeNumOn = output_ctrl & TikzOutputCtrl::EdgeNumbering;
-  bool NodeNumOn = output_ctrl & TikzOutputCtrl::NodeNumbering;
-  bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
-  bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
-  bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
-  bool ArrowsOn = output_ctrl & TikzOutputCtrl::ArrowTips;
+  bool EdgeNumOn = (output_ctrl & TikzOutputCtrl::EdgeNumbering) != 0;
+  bool NodeNumOn = (output_ctrl & TikzOutputCtrl::NodeNumbering) != 0;
+  bool CellNumOn = (output_ctrl & TikzOutputCtrl::CellNumbering) != 0;
+  bool VerticeNumOn = (output_ctrl & TikzOutputCtrl::VerticeNumbering) != 0;
+  bool RenderCellsOn = (output_ctrl & TikzOutputCtrl::RenderCells) != 0;
+  bool ArrowsOn = (output_ctrl & TikzOutputCtrl::ArrowTips) != 0;
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
-  const Eigen::MatrixXd zero(Eigen::MatrixXd::Zero(0, 1));
 
   // Obtain topological dimension of the mesh
   const dim_t dim_mesh = mesh.DimMesh();
@@ -223,8 +222,8 @@ void writeTikZ(const Mesh &mesh, std::string filename, int output_ctrl) {
 
 // #################################################################################
 
-void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
-                std::function<bool(const lf::mesh::Entity &)> selector,
+void writeTikZ2(const lf::mesh::Mesh &mesh, const std::string &filename,
+                const std::function<bool(const lf::mesh::Entity &)> &selector,
                 int output_ctrl) {
   // Third argument: A function named 'selector' that takes in a reference to an
   // Entity and returns 0 or 1. 1: Entity will be rendered, 0: Entity will no be
@@ -235,12 +234,12 @@ void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
   std::ofstream outfile(filename);
   // ----------------------------------------------------------------
   // For the enum flags: TikzOutputCtrl
-  bool EdgeNumOn = output_ctrl & TikzOutputCtrl::EdgeNumbering;
-  bool NodeNumOn = output_ctrl & TikzOutputCtrl::NodeNumbering;
-  bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
-  bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
-  bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
-  bool ArrowsOn = output_ctrl & TikzOutputCtrl::ArrowTips;
+  bool EdgeNumOn = (output_ctrl & TikzOutputCtrl::EdgeNumbering) != 0;
+  bool NodeNumOn = (output_ctrl & TikzOutputCtrl::NodeNumbering) != 0;
+  bool CellNumOn = (output_ctrl & TikzOutputCtrl::CellNumbering) != 0;
+  bool VerticeNumOn = (output_ctrl & TikzOutputCtrl::VerticeNumbering) != 0;
+  bool RenderCellsOn = (output_ctrl & TikzOutputCtrl::RenderCells) != 0;
+  bool ArrowsOn = (output_ctrl & TikzOutputCtrl::ArrowTips) != 0;
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;

@@ -10,10 +10,9 @@ CONTROLDECLARECOMMENT(Entity, output_ctrl_, "output_ctrl_",
 std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity) {
   if (Entity::output_ctrl_ == 0) {
     return stream << entity.RefEl();
-  } else {
-    lf::mesh::utils::PrintInfo(entity, stream);
-    return stream;
   }
+  utils::PrintInfo(entity, stream);
+  return stream;
 }  // end output  operator <<
 
 }  // namespace lf::mesh

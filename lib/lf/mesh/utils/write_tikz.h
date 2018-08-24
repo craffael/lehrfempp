@@ -93,7 +93,7 @@ activated.
  *
  *
  */
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+void writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                int output_ctrl = 7);
 
 /**
@@ -103,7 +103,7 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
  * @param selector
  * @param output_ctrl
  */
-void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
+void writeTikZ2(const lf::mesh::Mesh &mesh, const std::string &filename,
                 std::function<bool(const lf::mesh::Entity &)> selector,
                 int output_ctrl = 7);
 
