@@ -33,7 +33,26 @@ using quadOrder_t = unsigned char;
 class QuadRule {
  public:
   /**
-   * @brief The reference element \f$ K \f$ over which this QuadRule integrates.
+   * @brief Construct a new quadrature rule by specifying reference element,
+   * points, weights and order explicitly.
+   * @param ref_el The reference element for which the quadrature rule is.
+   * @param points The points of the quadrature rule, a matrix of size
+   * `ref_el.Dimension() x num_points` that contains the points as column
+   * vectors
+   * @param weights The weights of the quadrature rule, a vector of length
+   * `num_points`
+   * @param order The order of the quadrature rule, see Order() for more info.
+   */
+  explicit QuadRule(base::RefEl ref_el, Eigen::MatrixXd points,
+                    Eigen::VectorXd weights, quadOrder_t order)
+      : ref_el_(ref_el),
+        order_(order),
+        points_(std::move(points)),
+        weights_(std::move(weights)) {}
+
+  /**
+   * @brief The reference element \f$ K \f$ over which this QuadRule
+   * integrates.
    */
   base::RefEl RefEl() const { return ref_el_; }
 
