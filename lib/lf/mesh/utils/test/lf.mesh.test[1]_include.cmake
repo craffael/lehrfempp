@@ -1,5 +1,0 @@
-if(EXISTS "/hg/u/magina/Documents/lehrfempp/lib/lf/mesh/utils/test/lf.mesh.test[1]_tests.cmake")
-  include("/hg/u/magina/Documents/lehrfempp/lib/lf/mesh/utils/test/lf.mesh.test[1]_tests.cmake")
-else()
-  add_test(lf.mesh.test_NOT_BUILT lf.mesh.test_NOT_BUILT)
-endif()
