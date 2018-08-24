@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblf.io.a  CMakeFiles/lf.io.dir/gmsh_reader.cc.o CMakeFiles/lf.io.dir/vtk_writer.cc.o
-/usr/bin/ranlib liblf.io.a

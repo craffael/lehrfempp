@@ -1,5 +1,0 @@
-if(EXISTS "/u/magina/Documents/lehrfempp/lib/lib/lf/geometry/test/lf.geometry.test[1]_tests.cmake")
-  include("/u/magina/Documents/lehrfempp/lib/lib/lf/geometry/test/lf.geometry.test[1]_tests.cmake")
-else()
-  add_test(lf.geometry.test_NOT_BUILT lf.geometry.test_NOT_BUILT)
-endif()

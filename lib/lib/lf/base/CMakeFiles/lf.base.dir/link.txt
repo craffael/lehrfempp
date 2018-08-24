@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblf.base.a  CMakeFiles/lf.base.dir/lf_assert.cc.o CMakeFiles/lf.base.dir/ref_el.cc.o CMakeFiles/lf.base.dir/static_vars.cc.o
-/usr/bin/ranlib liblf.base.a

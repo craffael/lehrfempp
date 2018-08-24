@@ -16,6 +16,7 @@ namespace lf::mesh::utils {
  *
  * @param mesh the mesh to be stored to file
  * @param filename name of output file.
+ * @param selector entities chosen to print
  * @param output_ctrl enum flags controlling amount of output
  *
  * This function writes a file of code, which included in LaTeX draws a
@@ -24,6 +25,7 @@ namespace lf::mesh::utils {
  * Numbering of the aforementioned and local vertice numbering of cells can be enabled by using enum flags.
  * Combine the flags by using the binary or (|) operator to get a more detailed visualization of the mesh.\n
  * Another option is to pass the corresponding integer value directly as an argument. See the enum definition for correct value.\n
+ *
  *
  * #### Output control flags:
  * - TikzOutputCtrl::RenderCells to show the specific cells in the mesh in addition to the mesh grid
@@ -77,20 +79,9 @@ namespace lf::mesh::utils {
  *
  *
  */
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename, int output_ctrl = 7);
+void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+               std::function<bool(const lf::mesh::Entity &)> selector = 1, int output_ctrl = 7);
 
-
-/**
- * @brief writeTikZ: second version!
- * @param mesh The mesh to be stored to file
- * @param filename Name of output file
- * @param selector
- * @param output_ctrl
- */
-void writeTikZ2(const lf::mesh::Mesh &mesh, std::string filename,
-                std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl = 7);
-
-//
 
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.

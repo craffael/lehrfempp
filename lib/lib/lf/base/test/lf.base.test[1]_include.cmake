@@ -1,5 +1,0 @@
-if(EXISTS "/u/magina/Documents/lehrfempp/lib/lib/lf/base/test/lf.base.test[1]_tests.cmake")
-  include("/u/magina/Documents/lehrfempp/lib/lib/lf/base/test/lf.base.test[1]_tests.cmake")
-else()
-  add_test(lf.base.test_NOT_BUILT lf.base.test_NOT_BUILT)
-endif()

@@ -72,17 +72,6 @@ int main() {
   // Test mesh ---------------------------------------------------
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  // Testing of writeTikZ for mesh (test mesh)
-  //lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test2.txt");
-
-/*
-                             TikzOutputCtrl::RenderCells|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::VerticeNumbering|
-                             TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::NodeNumbering|TikzOutputCtrl::ArrowTips);
-*/
-
-
-
-
   // write_tikz version 2.0 --------------------------------------
 
   auto desiredEntities = [&] (const lf::mesh::Entity& entity){
@@ -90,14 +79,18 @@ int main() {
       //return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity) != entitiesToPrint.end();
 
       // Nodes only
-      return (entity.RefEl() == lf::base::RefEl::kPoint());
+      //return (entity.RefEl() == lf::base::RefEl::kPoint());
       // Segments only
       // return (entity.RefEl() == lf::base::RefEl::kSegment());
+      return true;
 
   }; //auto
 
 
-  lf::mesh::utils::writeTikZ2(*mesh_p, "tikz_selector.txt", desiredEntities);
+  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_selector.txt", desiredEntities);
+
+  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_mesh_test.txt", desiredEntities, TikzOutputCtrl::RenderCells|TikzOutputCtrl::VerticeNumbering|
+                             TikzOutputCtrl::EdgeNumbering|TikzOutputCtrl::CellNumbering|TikzOutputCtrl::NodeNumbering|TikzOutputCtrl::ArrowTips);
 
   return 0L;
 }
