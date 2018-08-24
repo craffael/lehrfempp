@@ -128,6 +128,7 @@ int main(int argc, const char *argv[]) {
               << " cells," << std::endl;
     std::stringstream level_asc;
     level_asc << refstep;
+
     lf::mesh::utils::writeTikZ(*mesh,std::string("refinement_mesh")+level_asc.str()+".txt", 31);
 
   }

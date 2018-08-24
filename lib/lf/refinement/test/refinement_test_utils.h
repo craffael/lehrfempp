@@ -18,9 +18,9 @@
 #include <lf/refinement/refinement.h>
 
 namespace lf::refinement::test {
-  void checkFatherChildRelations(const MeshHierarchy &mh,
-				 base::size_type father_level);
+void checkFatherChildRelations(const MeshHierarchy &mh,
+                               base::size_type father_level);
 
-} //
+}  // namespace lf::refinement::test
 
 #endif

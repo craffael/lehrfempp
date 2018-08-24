@@ -2,20 +2,17 @@
  * Demo for outputting information about mesh entity elements
  */
 
+#include <algorithm>  // for std::find
 #include <iostream>
 #include <vector>
-#include <algorithm> // for std::find
-
 
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
-#include "lf/mesh/utils/utils.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/print_info.h"
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-  
   using namespace lf::mesh::utils;
 
   std::cout << "Output of information for mesh entity elements" << std::endl;
@@ -41,36 +38,34 @@ int main() {
   test.AddEntity(lf::base::RefEl::kSegment(), {1, 2},
                  std::make_unique<lf::geometry::SegmentO1>(node_coord));
 
-  
   // build the mesh and retrieve a pointer
-  auto mesh = test.Build();  // mesh is Mesh object // test is MeshFactory object
+  auto mesh =
+      test.Build();  // mesh is Mesh object // test is MeshFactory object
 
+  /*
+    // Output information on mesh
+    std::cout << "##### Mesh information ######" << std::endl;
+    lf::mesh::utils::PrintInfo(*mesh, std::cout);
+    std::cout << "#####                   #####" << std::endl;
+  */
 
-/*
-  // Output information on mesh
-  std::cout << "##### Mesh information ######" << std::endl;
-  lf::mesh::utils::PrintInfo(*mesh, std::cout);
-  std::cout << "#####                   #####" << std::endl;
-*/
+  // lf::mesh::Entity::output_ctrl_ = 100;
 
-
- // lf::mesh::Entity::output_ctrl_ = 100;
-
-
-/*
-  std::cout << "****** Output of mesh entities *******" << std::endl;
-  // Loop over entities and print associated information
-  for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
-    std::cout << "******* Entities of codimension " << static_cast<int>(codim)
-              << " ******* " << std::endl;
-    for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
-      std::cout << entity << std::endl;
+  /*
+    std::cout << "****** Output of mesh entities *******" << std::endl;
+    // Loop over entities and print associated information
+    for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
+      std::cout << "******* Entities of codimension " << static_cast<int>(codim)
+                << " ******* " << std::endl;
+      for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
+        std::cout << entity << std::endl;
+      }
     }
-  }
-*/
+  */
 
   // Test mesh ---------------------------------------------------
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
 
   // write_tikz version 2.0 --------------------------------------
 
@@ -79,10 +74,10 @@ int main() {
       //return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity) != entitiesToPrint.end();
 
       // Nodes only
-      //return (entity.RefEl() == lf::base::RefEl::kPoint());
+      return (entity.RefEl() == lf::base::RefEl::kPoint());
       // Segments only
-      // return (entity.RefEl() == lf::base::RefEl::kSegment());
-      return true;
+      //return (entity.RefEl() == lf::base::RefEl::kSegment());
+      //return true;
 
   }; //auto
 

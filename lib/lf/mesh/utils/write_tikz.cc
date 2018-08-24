@@ -8,6 +8,7 @@
 
 namespace lf::mesh::utils {
 
+
 void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
                std::function<bool(const lf::mesh::Entity &)> selector, int output_ctrl){
     // Third argument: A function named 'selector' that takes in a reference to an Entity and returns 0 or 1.
