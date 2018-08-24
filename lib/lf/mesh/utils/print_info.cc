@@ -30,97 +30,97 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
   if (printinfo_ctrl > 10) {
     // Loop over codimensions
 
-      for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
-	const size_type no_ent = mesh.Size(co_dim);
-	o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
-	  << std::endl;
+    for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
+      const size_type no_ent = mesh.Size(co_dim);
+      o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
+        << std::endl;
 
-	// Loop over entities
-	for (const Entity &e : mesh.Entities(co_dim)) {
-	  size_type e_idx = mesh.Index(e);
-	  dim_t e_codim = e.Codim();
-	  const geometry::Geometry *e_geo_ptr = e.Geometry();
-	  lf::base::RefEl e_refel = e.RefEl();
+      // Loop over entities
+      for (const Entity &e : mesh.Entities(co_dim)) {
+        size_type e_idx = mesh.Index(e);
+        dim_t e_codim = e.Codim();
+        const geometry::Geometry *e_geo_ptr = e.Geometry();
+        lf::base::RefEl e_refel = e.RefEl();
 
-	  LF_VERIFY_MSG(e_geo_ptr,
-			co_dim << "-entity " << e_idx << ": missing geometry");
-	  LF_VERIFY_MSG(e_geo_ptr->DimLocal() == dim_mesh - co_dim,
-			co_dim << "-entity " << e_idx << ": wrong dimension");
-	  LF_VERIFY_MSG(e_geo_ptr->RefEl() == e_refel,
-			co_dim << "-entity " << e_idx << ": refEl mismatch");
-	  LF_VERIFY_MSG(e_codim == co_dim,
-			co_dim << "-entity " << e_idx << " co-dimension mismatch");
-	  const Eigen::MatrixXd &ref_el_corners(e_refel.NodeCoords());
-	  o << "entity " << e_idx << " (" << e_refel << "): ";
+        LF_VERIFY_MSG(e_geo_ptr,
+                      co_dim << "-entity " << e_idx << ": missing geometry");
+        LF_VERIFY_MSG(e_geo_ptr->DimLocal() == dim_mesh - co_dim,
+                      co_dim << "-entity " << e_idx << ": wrong dimension");
+        LF_VERIFY_MSG(e_geo_ptr->RefEl() == e_refel,
+                      co_dim << "-entity " << e_idx << ": refEl mismatch");
+        LF_VERIFY_MSG(e_codim == co_dim, co_dim << "-entity " << e_idx
+                                                << " co-dimension mismatch");
+        const Eigen::MatrixXd &ref_el_corners(e_refel.NodeCoords());
+        o << "entity " << e_idx << " (" << e_refel << "): ";
 
-	  // Loop over local co-dimensions
-	  if (printinfo_ctrl > 90) {
-	    for (int l = 1; l <= dim_mesh - co_dim; l++) {
-	      o << "rel codim-" << l << " subent: [";
-	      // Fetch subentities of co-dimension l
-	      base::RandomAccessRange<const Entity> sub_ent_range(e.SubEntities(l));
-	      for (const Entity &sub_ent : sub_ent_range) {
-		o << mesh.Index(sub_ent) << ' ';
-	      }
-	      o << "]";
-	    }
-	    o << std::endl << e_geo_ptr->Global(ref_el_corners);
-	  }
-	  o << std::endl;
-	}  // end loop over entities
-      }    // end loop over co-dimensions
-    } // end printinfo_ctrl > 10
-  } // end function PrintInfo
+        // Loop over local co-dimensions
+        if (printinfo_ctrl > 90) {
+          for (int l = 1; l <= dim_mesh - co_dim; l++) {
+            o << "rel codim-" << l << " subent: [";
+            // Fetch subentities of co-dimension l
+            base::RandomAccessRange<const Entity> sub_ent_range(
+                e.SubEntities(l));
+            for (const Entity &sub_ent : sub_ent_range) {
+              o << mesh.Index(sub_ent) << ' ';
+            }
+            o << "]";
+          }
+          o << std::endl << e_geo_ptr->Global(ref_el_corners);
+        }
+        o << std::endl;
+      }  // end loop over entities
+    }    // end loop over co-dimensions
+  }      // end printinfo_ctrl > 10
+}  // end function PrintInfo
 
 // Print function for Entity object
-void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream){
+void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
+  lf::base::RefEl e_ref_el = e.RefEl();
+  int dim_ref_el = e_ref_el.Dimension();
+  stream << "Entity type: " << e_ref_el << std::endl;
 
-    lf::base::RefEl e_ref_el = e.RefEl();
-    int dim_ref_el = e_ref_el.Dimension();
-    stream << "Entity type: " << e_ref_el << std::endl;
+  if (Entity::output_ctrl_ > 10) {
+    stream << "Dimension: " << dim_ref_el << std::endl;
 
+    // Geometry of entity and coordinates
+    const geometry::Geometry *e_geo_ptr = e.Geometry();
+    LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
+    const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
 
-    if (Entity::output_ctrl_ > 10 ) {
-        stream << "Dimension: " << dim_ref_el << std::endl;
+    // Loop over codimensions
+    for (int co_dim = dim_ref_el; co_dim > 0; co_dim--) {
+      int num_sub_ent = e_ref_el.NumSubEntities(co_dim);
+      stream << std::endl
+             << "Codimension " << co_dim << ": " << num_sub_ent
+             << " sub-entities" << std::endl;
 
-        // Geometry of entity and coordinates
-        const geometry::Geometry *e_geo_ptr = e.Geometry();
-        LF_ASSERT_MSG(e_geo_ptr != nullptr,
-              "Missing geometry information!");
-        const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
+      if (Entity::output_ctrl_ > 50) {
+        int sub_ent_num = 0;
+        // Loop over subentities
+        for (const Entity &sub_ent : e.SubEntities(co_dim)) {
+          lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
+          stream << "* Subentity " << sub_ent_num << " (" << sub_ent_refel
+                 << ")" << std::endl;
 
-        // Loop over codimensions
-        for (int co_dim = dim_ref_el; co_dim > 0; co_dim--){
-            int num_sub_ent = e_ref_el.NumSubEntities(co_dim);
-            stream << std::endl << "Codimension " << co_dim << ": "
-           << num_sub_ent << " sub-entities" << std::endl;
+          if (Entity::output_ctrl_ > 90) {
+            // Print coordinates
+            stream << e_geo_ptr->Global(ref_el_corners).col(sub_ent_num)
+                   << std::endl;
+          }
 
-            if (Entity::output_ctrl_ > 50){
-                int sub_ent_num = 0;
-                // Loop over subentities
-                for (const Entity &sub_ent : e.SubEntities(co_dim)){
-                    lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
-                    stream << "* Subentity " << sub_ent_num << " (" << sub_ent_refel << ")" << std::endl;
+          sub_ent_num += 1;
 
-                    if(Entity::output_ctrl_ > 90){
-                        // Print coordinates
-                        stream << e_geo_ptr->Global(ref_el_corners).col(sub_ent_num) << std::endl;
-                    }
+        }  // loop sub-ent
+      }    // if output ctrl
+    }      // loop codim
 
-                    sub_ent_num += 1;
+    if (e_ref_el == lf::base::RefEl::kPoint() && Entity::output_ctrl_ > 90) {
+      stream << e_geo_ptr->Global(ref_el_corners) << std::endl;
+    }
 
-                } // loop sub-ent
-            } // if output ctrl
-        } // loop codim
+    stream << "-----------------------" << std::endl;
 
-        if(e_ref_el == lf::base::RefEl::kPoint() && Entity::output_ctrl_ > 90){
-            stream << e_geo_ptr->Global(ref_el_corners) << std::endl;
-        }
-
-        stream << "-----------------------" << std::endl;
-
-    } // if
-} // PrintInfo
+  }  // if
+}  // PrintInfo
 
 }  // end namespace lf::mesh::utils
-

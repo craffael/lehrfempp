@@ -172,9 +172,7 @@ class Geometry {
   /** @brief Output control variable */
   static int output_ctrl_;
 
-
-}; // class Geometry
-
+};  // class Geometry
 
 double Volume(const Geometry& geo);
 }  // namespace lf::geometry

@@ -4,10 +4,10 @@
 
 #include <iostream>
 #include "lf/io/io.h"
-#include "refinement_test_utils.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
+#include "refinement_test_utils.h"
 
 namespace lf::refinement::test {
 
@@ -44,14 +44,14 @@ TEST(RegRefTest, RegRef) {
     }
   }
   // Verify that child mesh is properly connected to father mesh
-  checkFatherChildRelations(multi_mesh,0);
-  
+  checkFatherChildRelations(multi_mesh, 0);
+
   std::cout << "Writing MATLAB file" << std::endl;
   lf::mesh::utils::writeMatlab(*fine_mesh, "fine_mesh.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "fine_mesh_pi.m");
-  
+
   // Printing mesh information
   lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 
@@ -64,7 +64,7 @@ TEST(RegRefTest, RegRef) {
   // 			     lf::mesh::utils::TikzOutputCtrl::NodeNumbering |
   // 			     lf::mesh::utils::TikzOutputCtrl::EdgeNumbering
   // 			     );
-} // End RegRefTest::RegRef
+}  // End RegRefTest::RegRef
 
 TEST(RegRefTest, BarycentricRef) {
   std::cout << "TEST: Uniform barycentric refinement" << std::endl;
@@ -98,14 +98,14 @@ TEST(RegRefTest, BarycentricRef) {
     }
   }
   // Verify that child mesh is properly connected to father mesh
-  checkFatherChildRelations(multi_mesh,0);
-  
+  checkFatherChildRelations(multi_mesh, 0);
+
   std::cout << "Writing MATLAB file" << std::endl;
   lf::mesh::utils::writeMatlab(*fine_mesh, "barycentric_ref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "barycentric_ref_pi.m");
-  
+
   // Printing mesh information
   lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
 }
@@ -155,7 +155,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
     }
   }
   // Verify that child mesh is properly connected to father mesh
-  checkFatherChildRelations(multi_mesh,0);
+  checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
   lf::mesh::utils::writeMatlab(*fine_mesh, "allref.m");
@@ -216,8 +216,8 @@ TEST(LocRefTest, LocalRefinement) {
     }
   }
   // Verify that child mesh is properly connected to father mesh
-  checkFatherChildRelations(multi_mesh,0);
-  
+  checkFatherChildRelations(multi_mesh, 0);
+
   std::cout << "Writing MATLAB file" << std::endl;
   lf::mesh::utils::writeMatlab(*fine_mesh, "locref.m");
 

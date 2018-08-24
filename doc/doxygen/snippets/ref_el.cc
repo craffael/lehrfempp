@@ -50,5 +50,5 @@ void foo() {
     assert(point == RefEl::kPoint());
     //![refElUsage]
   }
-} // foo
+}  // foo
 }  // namespace lf::base

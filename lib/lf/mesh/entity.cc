@@ -7,16 +7,13 @@ namespace lf::mesh {
 CONTROLDECLARECOMMENT(Entity, output_ctrl_, "output_ctrl_",
                       "Diagnostics control for Mesh/Entity");
 
-
-std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity &entity) {
-  if (Entity::output_ctrl_ == 0){
+std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity) {
+  if (Entity::output_ctrl_ == 0) {
     return stream << entity.RefEl();
   } else {
     lf::mesh::utils::PrintInfo(entity, stream);
     return stream;
   }
-} // end output  operator <<
+}  // end output  operator <<
 
-
-
-} // namespace lf::mesh
+}  // namespace lf::mesh
