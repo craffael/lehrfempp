@@ -5,6 +5,7 @@ set(sources
   make_quad_rule.cc
   quad_rule.h
   quad_rule.cc
+  quad_rules_tria.cc
 )
 
 add_library(lf.quad ${sources})
