@@ -8,16 +8,12 @@
 
 namespace lf::mesh::utils {
 
-void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-               std::function<bool(const lf::mesh::Entity &)> selector,
+bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+               std::function<bool(const lf::mesh::Entity &)> &&selector,
                int output_ctrl) {
-  // Third argument: A function named 'selector' that takes in a reference to an
-  // Entity and returns 0 or 1. 1: Entity will be rendered, 0: Entity will no be
-  // rendered. Here: Implement what the 'selector' function should do.
-
-  // List of desired entities
-  // std::vector<Entities> entitiesToPrint = {0,1,2};
+  // Open output file for writing and quit in case of failure
   std::ofstream outfile(filename);
+  if (!outfile) return false;
   // ----------------------------------------------------------------
   // For the enum flags: TikzOutputCtrl
   bool EdgeNumOn = output_ctrl & TikzOutputCtrl::EdgeNumbering;
@@ -232,7 +228,14 @@ void writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
   }  // for codim
 
   outfile << "\\end{tikzpicture}\n";
+  return true;
+}  // writetikz
 
-}  // writetikz2
-
+  // Second version of writeTikZ using default selector
+  bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,int output_ctrl) {
+    return writeTikZ(mesh,filename,
+		     [](const lf::mesh::Entity &) { return true; },
+		     output_ctrl);
+  }
+  
 }  // namespace lf::mesh::utils
