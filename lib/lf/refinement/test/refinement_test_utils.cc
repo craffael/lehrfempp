@@ -7,7 +7,6 @@
  * @copyright MIT License
  */
 
-
 #include "refinement_test_utils.h"
 
 namespace lf::refinement::test {
@@ -194,4 +193,4 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
   }    // end loop over codimensions
 }
 
-} // end namespace
+}  // namespace lf::refinement::test
