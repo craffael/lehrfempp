@@ -24,90 +24,90 @@ stages:
   
 jobs:
   include:
-    # - stage: clang-format
-      # os: linux
-      # addons:
-        # apt:
-          # update: true
-          # sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-format-6.0']
-      # script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
-    # - stage: clang-tidy
-      # os: linux
-      # addons:
-        # apt:
-          # update: true
-          # sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-tidy-6.0', 'g++-7']
-      # script: "./travis/run_clang_tidy.sh"
-    # # Linux gcc
-    # - stage: compile_test
-      # os: linux 
-      # compiler: gcc
-      # env:
-        # - COMPILER=g++-7
-        # - BUILD_TYPE='Debug'
-      # addons: 
-        # apt:
-          # update: true
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - g++-7
-      # script: ./travis/compile_test.sh
+    - stage: clang-format
+      os: linux
+      addons:
+        apt:
+          update: true
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-format-6.0']
+      script: './travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always ./lib/'
+    - stage: clang-tidy
+      os: linux
+      addons:
+        apt:
+          update: true
+          sources: ['llvm-toolchain-trusty-6.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-tidy-6.0', 'g++-7']
+      script: "./travis/run_clang_tidy.sh"
+    # Linux gcc
+    - stage: compile_test
+      os: linux 
+      compiler: gcc
+      env:
+        - COMPILER=g++-7
+        - BUILD_TYPE='Debug'
+      addons: 
+        apt:
+          update: true
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-7
+      script: ./travis/compile_test.sh
       
-    # - stage: compile_test
-      # os: linux 
-      # compiler: gcc
-      # env:
-        # - COMPILER=g++-7
-        # - BUILD_TYPE='Release'
-      # addons: 
-        # apt:
-          # update: true
-          # sources: ['ubuntu-toolchain-r-test']
-          # packages: 
-            # - g++-7
-      # script: ./travis/compile_test.sh
+    - stage: compile_test
+      os: linux 
+      compiler: gcc
+      env:
+        - COMPILER=g++-7
+        - BUILD_TYPE='Release'
+      addons: 
+        apt:
+          update: true
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-7
+      script: ./travis/compile_test.sh
         
-    # # Linux Clang
-    # - stage: compile_test
-      # os: linux
-      # compiler: clang
-      # env: 
-        # - COMPILER='clang++-5.0'
-        # - BUILD_TYPE='Debug'
-      # addons: 
-        # apt:
-          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-5.0', 'g++-7']
-      # script: ./travis/compile_test.sh   
+    # Linux Clang
+    - stage: compile_test
+      os: linux
+      compiler: clang
+      env: 
+        - COMPILER='clang++-5.0'
+        - BUILD_TYPE='Debug'
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      script: ./travis/compile_test.sh   
      
-    # - stage: compile_test
-      # os: linux
-      # compiler: clang
-      # env: 
-        # - COMPILER='clang++-5.0'
-        # - BUILD_TYPE='Release'
-      # addons: 
-        # apt:
-          # sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
-          # packages: ['clang-5.0', 'g++-7']
-      # script: ./travis/compile_test.sh   
+    - stage: compile_test
+      os: linux
+      compiler: clang
+      env: 
+        - COMPILER='clang++-5.0'
+        - BUILD_TYPE='Release'
+      addons: 
+        apt:
+          sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
+          packages: ['clang-5.0', 'g++-7']
+      script: ./travis/compile_test.sh   
     
-    # # OSX Builds
-    # - stage: compile_test
-      # os: osx
-      # osx_image: xcode9.4
-      # compiler: clang
-      # env: COMPILER='clang++' BUILD_TYPE='Debug'
-      # script: ./travis/compile_test.sh
+    # OSX Builds
+    - stage: compile_test
+      os: osx
+      osx_image: xcode9.4
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Debug'
+      script: ./travis/compile_test.sh
     
-    # - stage: compile_test
-      # os: osx
-      # osx_image: xcode9.4
-      # compiler: clang
-      # env: COMPILER='clang++' BUILD_TYPE='Release'
-      # script: ./travis/compile_test.sh
+    - stage: compile_test
+      os: osx
+      osx_image: xcode9.4
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Release'
+      script: ./travis/compile_test.sh
         
     # Deploy doxygen documentation using builtin GitHub Pages support
     - stage: doxygen
