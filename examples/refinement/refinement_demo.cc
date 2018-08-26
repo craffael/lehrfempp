@@ -29,6 +29,7 @@ CONTROLDECLAREINFO(refselector, "refselector",
 
 int main(int argc, const char *argv[]) {
   using size_type = lf::base::size_type;
+  using lf::mesh::utils::TikzOutputCtrl;
 
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
@@ -130,7 +131,10 @@ int main(int argc, const char *argv[]) {
     level_asc << refstep;
 
     lf::mesh::utils::writeTikZ(
-        *mesh, std::string("refinement_mesh") + level_asc.str() + ".txt", 31);
+        *mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
+        TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
+            TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
+            TikzOutputCtrl::EdgeNumbering);
   }
 
   // Generate  MATLAB functions that provide a description of all

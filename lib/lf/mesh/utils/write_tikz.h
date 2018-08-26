@@ -13,7 +13,7 @@ namespace lf::mesh::utils {
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
  */
-enum TikzOutputCtrl : unsigned int {
+enum class TikzOutputCtrl : unsigned int {
   RenderCells = 1,
   CellNumbering = 2,
   VerticeNumbering = 4,
@@ -21,6 +21,9 @@ enum TikzOutputCtrl : unsigned int {
   EdgeNumbering = 16,
   ArrowTips = 32
 };
+
+TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
+TikzOutputCtrl operator&(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
 
 /**
  * @brief Writes mesh to file in TikZ Graphics format. File as input in LaTeX
@@ -110,7 +113,7 @@ activated.
  */
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
-               unsigned int output_ctrl = TikzOutputCtrl::RenderCells);
+               TikzOutputCtrl output_ctrl = TikzOutputCtrl::RenderCells);
 
 /**
  * @brief TikZ output of all entities
@@ -120,7 +123,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
  * `true` throughout.
  */
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
-               unsigned int output_ctrl = TikzOutputCtrl::RenderCells);
+               TikzOutputCtrl output_ctrl = TikzOutputCtrl::RenderCells);
 
 }  // namespace lf::mesh::utils
 

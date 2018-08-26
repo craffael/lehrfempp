@@ -8,9 +8,19 @@
 
 namespace lf::mesh::utils {
 
+TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {
+  return static_cast<TikzOutputCtrl>(static_cast<unsigned int>(lhs) |
+                                     static_cast<unsigned int>(rhs));
+}
+
+TikzOutputCtrl operator&(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {
+  return static_cast<TikzOutputCtrl>(static_cast<unsigned int>(lhs) &
+                                     static_cast<unsigned int>(rhs));
+}
+
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
-               unsigned int output_ctrl) {
+               TikzOutputCtrl output_ctrl) {
   // Open output file for writing and quit in case of failure
   std::ofstream outfile(filename);
   if (!outfile) {
@@ -18,12 +28,17 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   }
   // ----------------------------------------------------------------
   // For the enum flags: TikzOutputCtrl
-  bool EdgeNumOn = (output_ctrl & TikzOutputCtrl::EdgeNumbering) != 0;
-  bool NodeNumOn = (output_ctrl & TikzOutputCtrl::NodeNumbering) != 0;
-  bool CellNumOn = (output_ctrl & TikzOutputCtrl::CellNumbering) != 0;
-  bool VerticeNumOn = (output_ctrl & TikzOutputCtrl::VerticeNumbering) != 0;
-  bool RenderCellsOn = (output_ctrl & TikzOutputCtrl::RenderCells) != 0;
-  bool ArrowsOn = (output_ctrl & TikzOutputCtrl::ArrowTips) != 0;
+  bool EdgeNumOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::EdgeNumbering);
+  bool NodeNumOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::NodeNumbering);
+  bool CellNumOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::CellNumbering);
+  bool VerticeNumOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::VerticeNumbering);
+  bool RenderCellsOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::RenderCells);
+  bool ArrowsOn = static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
@@ -235,7 +250,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 
 // Second version of writeTikZ using default selector
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
-               unsigned int output_ctrl) {
+               TikzOutputCtrl output_ctrl) {
   return writeTikZ(mesh, filename,
                    [](const lf::mesh::Entity &) { return true; }, output_ctrl);
 }
