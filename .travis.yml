@@ -123,6 +123,7 @@ jobs:
             - g++-7
       script: |
         cd $TRAVIS_BUILD_DIR/doc/doxygen
+        export CXX=g++-7
         cmake -H. -BBuild 
         cd Build
         make doxygen
