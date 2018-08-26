@@ -10,7 +10,6 @@
 
 namespace lf::mesh::utils {
 
-
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
  */
@@ -22,7 +21,7 @@ enum TikzOutputCtrl {
   EdgeNumbering = 16,
   ArrowTips = 32
 };
-  
+
 /**
  * @brief Writes mesh to file in TikZ Graphics format. File as input in LaTeX
 will draw the mesh.
@@ -113,16 +112,16 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
                int output_ctrl = TikzOutputCtrl::RenderCells);
 
-  /**
-   * @brief TikZ output of all entities
-   * @sa writeTikZ
-   *
-   * Calls the general implementation with a selector that returns
-   * `true` throughout. 
-   */
+/**
+ * @brief TikZ output of all entities
+ * @sa writeTikZ
+ *
+ * Calls the general implementation with a selector that returns
+ * `true` throughout.
+ */
 bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
                int output_ctrl = TikzOutputCtrl::RenderCells);
-  
+
 }  // namespace lf::mesh::utils
 
 #endif  // WRITE_TIKZ_H

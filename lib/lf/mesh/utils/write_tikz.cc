@@ -231,11 +231,11 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
   return true;
 }  // writetikz
 
-  // Second version of writeTikZ using default selector
-  bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,int output_ctrl) {
-    return writeTikZ(mesh,filename,
-		     [](const lf::mesh::Entity &) { return true; },
-		     output_ctrl);
-  }
-  
+// Second version of writeTikZ using default selector
+bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+               int output_ctrl) {
+  return writeTikZ(mesh, filename,
+                   [](const lf::mesh::Entity &) { return true; }, output_ctrl);
+}
+
 }  // namespace lf::mesh::utils
