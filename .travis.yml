@@ -122,7 +122,7 @@ jobs:
             - graphviz
             - g++-7
       script: |
-        cd $TRAVIS_BUILD_DIR
+        cd $TRAVIS_BUILD_DIR/doc/doxygen
         export CXX=g++-7
         cmake -H. -BBuild 
         cd Build
@@ -130,7 +130,7 @@ jobs:
       deploy:
         provider: pages
         skip_cleanup: true
-        local_dir: ./Build/doc/doxygen/html
+        local_dir: ./doc/doxygen/Build/html
         github_token: $GITHUB_API_KEY
         on:
           branch: master
