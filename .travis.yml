@@ -122,7 +122,7 @@ jobs:
             - graphviz
             - g++-7
       script: |
-        cd $TRAVIS_BUILD_DIR/doc/doxygen
+        cd $TRAVIS_BUILD_DIR
         export CXX=g++-7
         cmake -H. -BBuild 
         cd Build
