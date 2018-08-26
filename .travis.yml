@@ -130,7 +130,7 @@ jobs:
       deploy:
         provider: pages
         skip_cleanup: true
-        local_dir: ./doc/doxygen/html
+        local_dir: ./Build/doc/doxygen/html
         github_token: $GITHUB_API_KEY
         on:
           branch: master
