@@ -28,6 +28,9 @@ extern int printinfo_ctrl;
  * @brief Diagnostic output operator. Prints info about a mesh.
  * @param &mesh The mesh to print info about
  * @param &o The stream to which this function should output
+ *
+ * #### Output levels
+ * See extern int printinfo_ctrl
  */
 void PrintInfo(const Mesh& mesh, std::ostream& o);
 
@@ -39,29 +42,12 @@ void PrintInfo(const Mesh& mesh, std::ostream& o);
  * @param stream The stream to which this function should output
  *
  * #### Output levels
- * - Entity::output_ctrl_ == 0: Derived type of entity and type of entity is
- * printed
- * - Entity::output_ctrl_ > 0: The above and geometry of the entity is printed
- * - Entity::output_ctrl_ > 10: The above and geometry of subentities is printed
+ * - Entity::output_ctrl_ == 0: Entity type is printed
+ * - Entity::output_ctrl_ > 10: The above and information of codimensions
+ * - Entity::output_ctrl_ > 50: The above and information about subentities
+ * - Entity::output_ctrl_ > 90: The above and coordinates
  */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
 }  // namespace lf::mesh::utils
-
-namespace lf::mesh {
-/**
- * @brief Operator overload to print a `Entity` to a stream, such as `std::cout`
- * @param stream The stream to which this function should output
- * @param entity The entity to write to `stream`.
- * @return The stream itself.
- *
- * - If Entity::output_ctrl_ == 0, type of reference element of entity is sent
- * as output to stream
- * - If Entity::output_ctrl_ > 0, then lf::mesh::utils::PrintInfo(const
- * lf::mesh::Entity& e, std::ostream& stream) is called.
- *
- */
-std::ostream& operator<<(std::ostream& stream, const Entity& entity);
-
-}  // namespace lf::mesh
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

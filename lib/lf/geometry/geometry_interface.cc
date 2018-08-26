@@ -7,14 +7,6 @@
 
 namespace lf::geometry {
 
-std::ostream& operator<<(std::ostream& stream, const Geometry& geom) {
-  if (Geometry::output_ctrl_ == 0) {
-    return stream << geom.RefEl();
-  }
-  PrintInfo(geom, stream);
-  return stream;
-}
-
 double Volume(const Geometry& geo) {
   const lf::base::dim_t refdim = geo.DimLocal();
 

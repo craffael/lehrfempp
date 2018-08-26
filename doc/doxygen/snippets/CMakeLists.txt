@@ -6,9 +6,10 @@ set(sources
   lambda_mesh_data_set.cc
   ref_el.cc
   vtk_writer.cc
+  mesh_utils.cc
 )
 
 add_library(docsnippets ${sources})
 get_target_property(OUT lf.base INCLUDE_DIRECTORIES)
-target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base)
+target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base lf.mesh)
 target_compile_features(docsnippets PUBLIC cxx_std_17)

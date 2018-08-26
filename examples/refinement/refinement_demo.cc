@@ -9,10 +9,11 @@
  */
 
 #include <iostream>
+#include <sstream>
 
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
-
+#include "lf/base/base.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
@@ -28,6 +29,7 @@ CONTROLDECLAREINFO(refselector, "refselector",
 
 int main(int argc, const char *argv[]) {
   using size_type = lf::base::size_type;
+  using lf::mesh::utils::TikzOutputCtrl;
 
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
@@ -125,6 +127,14 @@ int main(int argc, const char *argv[]) {
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
               << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
               << " cells," << std::endl;
+    std::stringstream level_asc;
+    level_asc << refstep;
+
+    lf::mesh::utils::writeTikZ(
+        *mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
+        TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
+            TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
+            TikzOutputCtrl::EdgeNumbering);
   }
 
   // Generate  MATLAB functions that provide a description of all

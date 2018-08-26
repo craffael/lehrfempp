@@ -1,8 +1,4 @@
-#ifndef LF_MFT_H
-#define LF_MFT_H
+#ifndef MESH_FACTORY_TESTS_H
+#define MESH_FACTORY_TESTS_H
 
-#include <lf/mesh/mesh.h>
-
-namespace lf::mesh::hybrid2dp::test {}
-
-#endif
+#endif  // MESH_FACTORY_TESTS_H

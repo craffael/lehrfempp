@@ -8,6 +8,7 @@
 #include "lf/geometry/print_info.h"
 
 int main() {
+  lf::geometry::Geometry::output_ctrl_ = 100;
   std::cout << "Output of information of geometry" << std::endl;
 
   // Create point

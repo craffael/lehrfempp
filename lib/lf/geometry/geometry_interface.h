@@ -175,28 +175,12 @@ class Geometry {
 };  // class Geometry
 
 /**
- * @brief Operator overload to print a `Geometry` to a stream, such as
- * `std::cout`
- * @param stream The stream to which this function should output
- * @param entity The geometry to write to `stream`.
- * @return The stream itself.
- *
- * - If Geometry::output_ctrl_ == 0, type reference element of geometry is sent
- * as output to stream
- * - If Geometry::output_ctrl_ > 0, then lf::geometry::PrintInfo(const Geometry
- * &geom, std::ostream &o) is called.
- *
- */
-std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
-
-/**
  * @brief (Approximate) Volume of a shape
  * @param geometry object
  *
- * @note the volume can be computed exactly only for planar affine/bilinear
+ * @note the volume can be computed exactly only for planar affine/bilinear (2D)
  * shapes Otherwise this functions returns a one-point quadrature approximation
  */
-
 double Volume(const Geometry& geo);
 }  // namespace lf::geometry
 
