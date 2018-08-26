@@ -8,20 +8,22 @@
 
 namespace lf::mesh::utils {
 
-bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
-               int output_ctrl) {
+               unsigned int output_ctrl) {
   // Open output file for writing and quit in case of failure
   std::ofstream outfile(filename);
-  if (!outfile) return false;
+  if (!outfile) {
+    return false;
+  }
   // ----------------------------------------------------------------
   // For the enum flags: TikzOutputCtrl
-  bool EdgeNumOn = output_ctrl & TikzOutputCtrl::EdgeNumbering;
-  bool NodeNumOn = output_ctrl & TikzOutputCtrl::NodeNumbering;
-  bool CellNumOn = output_ctrl & TikzOutputCtrl::CellNumbering;
-  bool VerticeNumOn = output_ctrl & TikzOutputCtrl::VerticeNumbering;
-  bool RenderCellsOn = output_ctrl & TikzOutputCtrl::RenderCells;
-  bool ArrowsOn = output_ctrl & TikzOutputCtrl::ArrowTips;
+  bool EdgeNumOn = (output_ctrl & TikzOutputCtrl::EdgeNumbering) != 0;
+  bool NodeNumOn = (output_ctrl & TikzOutputCtrl::NodeNumbering) != 0;
+  bool CellNumOn = (output_ctrl & TikzOutputCtrl::CellNumbering) != 0;
+  bool VerticeNumOn = (output_ctrl & TikzOutputCtrl::VerticeNumbering) != 0;
+  bool RenderCellsOn = (output_ctrl & TikzOutputCtrl::RenderCells) != 0;
+  bool ArrowsOn = (output_ctrl & TikzOutputCtrl::ArrowTips) != 0;
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
@@ -232,8 +234,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
 }  // writetikz
 
 // Second version of writeTikZ using default selector
-bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-               int output_ctrl) {
+bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
+               unsigned int output_ctrl) {
   return writeTikZ(mesh, filename,
                    [](const lf::mesh::Entity &) { return true; }, output_ctrl);
 }

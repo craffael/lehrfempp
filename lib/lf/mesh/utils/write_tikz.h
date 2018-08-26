@@ -13,7 +13,7 @@ namespace lf::mesh::utils {
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
  */
-enum TikzOutputCtrl {
+enum TikzOutputCtrl : unsigned int {
   RenderCells = 1,
   CellNumbering = 2,
   VerticeNumbering = 4,
@@ -108,9 +108,9 @@ activated.
  *
  *
  */
-bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
+bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
-               int output_ctrl = TikzOutputCtrl::RenderCells);
+               unsigned int output_ctrl = TikzOutputCtrl::RenderCells);
 
 /**
  * @brief TikZ output of all entities
@@ -119,8 +119,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
  * Calls the general implementation with a selector that returns
  * `true` throughout.
  */
-bool writeTikZ(const lf::mesh::Mesh &mesh, std::string filename,
-               int output_ctrl = TikzOutputCtrl::RenderCells);
+bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
+               unsigned int output_ctrl = TikzOutputCtrl::RenderCells);
 
 }  // namespace lf::mesh::utils
 

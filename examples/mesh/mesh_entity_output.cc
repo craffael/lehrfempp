@@ -13,8 +13,7 @@
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-  using namespace lf::mesh::utils;
-
+  using lf::mesh::utils::TikzOutputCtrl;
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // Build mesh ----------------------------------
