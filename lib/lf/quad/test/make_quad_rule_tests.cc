@@ -49,7 +49,7 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     for (int i = 0; i <= order; ++i) {
       for (int j = 0; j <= order - i; ++j) {
         // integrate x^i y^j
-        EXPECT_NEAR(integrate(qr, {i, j}), exact_value(i, j), precision);
+        EXPECT_NEAR(integrate(qr, {i, j}) / exact_value(i, j), 1, precision);
       }
     }
     if (check_order_exact) {
@@ -94,23 +94,23 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
   }
 }
 
-// TEST(qr_IntegrationTest, Segment) {
-//   for (int i = 1; i < 10; ++i) {
-//     checkQuadRule(make_QuadRule(base::RefEl::kSegment(), i));
-//   }
-// }
+TEST(qr_IntegrationTest, Segment) {
+  for (int i = 1; i < 10; ++i) {
+    checkQuadRule(make_QuadRule(base::RefEl::kSegment(), i));
+  }
+}
 
-// TEST(qr_IntegrationTest, Quad) {
-//   checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 1));
-//   checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 2));
-//   checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 3));
-// }
+TEST(qr_IntegrationTest, Quad) {
+  checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 1));
+  checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 2));
+  checkQuadRule(make_QuadRule(base::RefEl::kQuad(), 3));
+}
 
 TEST(qr_IntegrationTest, Tria) {
-  for (int i = 1; i < 51; ++i) {
+  // make sure that also the tensor product versions are tested.
+  for (int i = 1; i < 55; ++i) {
     checkQuadRule(make_QuadRule(base::RefEl::kTria(), i), 1e-12, i < 10);
   }
-  // checkQuadRule(make_QuadRule(base::RefEl::kTria(), 1));
 }
 
 }  // namespace lf::quad::test

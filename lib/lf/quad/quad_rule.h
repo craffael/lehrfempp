@@ -10,6 +10,7 @@
 #define __a7241ee797424d98ad339341b02bca70
 
 #include <lf/base/base.h>
+#include <utility>
 
 namespace lf::quad {
 
@@ -45,7 +46,7 @@ class QuadRule {
    */
   explicit QuadRule(base::RefEl ref_el, Eigen::MatrixXd points,
                     Eigen::VectorXd weights, quadOrder_t order)
-      : ref_el_(ref_el),
+      : ref_el_(std::move(ref_el)),
         order_(order),
         points_(std::move(points)),
         weights_(std::move(weights)) {}

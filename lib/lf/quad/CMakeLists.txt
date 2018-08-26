@@ -1,6 +1,6 @@
 set(sources
-  gauss_legendre.h
-  gauss_legendre.cc
+  gauss_quadrature.h
+  gauss_quadrature.cc
   make_quad_rule.h
   make_quad_rule.cc
   quad_rule.h

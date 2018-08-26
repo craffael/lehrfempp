@@ -20,6 +20,9 @@ namespace lf::quad {
  *
  * This method tries to return optimal quadrature rules when possible:
  * - For Segments it returns Gauss-Legendre quadrature rules
+ * - For Triangles, it returns specific, hard-coded quadrature rules up to order
+ * 50, afterwards, the Duffy-Transform to map a tensor Gaussian Quadrature on a
+ * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  */
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order);

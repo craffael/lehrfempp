@@ -8,7 +8,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/quad/gauss_legendre.h>
+#include <lf/quad/gauss_quadrature.h>
 
 namespace lf::quad::test {
 TEST(GaussLegendre, compareToTable) {

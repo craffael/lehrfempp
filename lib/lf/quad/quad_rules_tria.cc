@@ -18,7 +18,7 @@ template <base::RefElType REF_EL, int Order>
 QuadRule HardcodedQuadRule();
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 1>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 1>() { // NOLINT
   Eigen::MatrixXd points(2, 1);
   Eigen::VectorXd weights(1);
 
@@ -31,7 +31,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 1>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 2>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 2>() { // NOLINT
   Eigen::MatrixXd points(2, 3);
   Eigen::VectorXd weights(3);
 
@@ -50,7 +50,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 2>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 4>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 4>() { // NOLINT
   Eigen::MatrixXd points(2, 6);
   Eigen::VectorXd weights(6);
 
@@ -78,7 +78,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 4>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 5>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 5>() { // NOLINT
   Eigen::MatrixXd points(2, 7);
   Eigen::VectorXd weights(7);
 
@@ -109,7 +109,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 5>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 6>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 6>() { // NOLINT
   Eigen::MatrixXd points(2, 12);
   Eigen::VectorXd weights(12);
 
@@ -155,7 +155,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 6>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 7>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 7>() { // NOLINT
   Eigen::MatrixXd points(2, 15);
   Eigen::VectorXd weights(15);
 
@@ -210,7 +210,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 7>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 8>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 8>() { // NOLINT
   Eigen::MatrixXd points(2, 16);
   Eigen::VectorXd weights(16);
 
@@ -268,7 +268,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 8>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 9>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 9>() { // NOLINT
   Eigen::MatrixXd points(2, 19);
   Eigen::VectorXd weights(19);
 
@@ -335,7 +335,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 9>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 10>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 10>() { // NOLINT
   Eigen::MatrixXd points(2, 25);
   Eigen::VectorXd weights(25);
 
@@ -420,7 +420,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 10>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 11>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 11>() { // NOLINT
   Eigen::MatrixXd points(2, 28);
   Eigen::VectorXd weights(28);
 
@@ -514,7 +514,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 11>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 12>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 12>() { // NOLINT
   Eigen::MatrixXd points(2, 33);
   Eigen::VectorXd weights(33);
 
@@ -623,7 +623,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 12>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 13>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 13>() { // NOLINT
   Eigen::MatrixXd points(2, 37);
   Eigen::VectorXd weights(37);
 
@@ -744,7 +744,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 13>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 14>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 14>() { // NOLINT
   Eigen::MatrixXd points(2, 42);
   Eigen::VectorXd weights(42);
 
@@ -880,7 +880,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 14>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 15>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 15>() { // NOLINT
   Eigen::MatrixXd points(2, 49);
   Eigen::VectorXd weights(49);
 
@@ -1037,7 +1037,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 15>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 16>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 16>() { // NOLINT
   Eigen::MatrixXd points(2, 55);
   Eigen::VectorXd weights(55);
 
@@ -1212,7 +1212,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 16>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 17>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 17>() { // NOLINT
   Eigen::MatrixXd points(2, 60);
   Eigen::VectorXd weights(60);
 
@@ -1402,7 +1402,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 17>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 18>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 18>() { // NOLINT
   Eigen::MatrixXd points(2, 67);
   Eigen::VectorXd weights(67);
 
@@ -1613,7 +1613,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 18>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 19>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 19>() { // NOLINT
   Eigen::MatrixXd points(2, 73);
   Eigen::VectorXd weights(73);
 
@@ -1842,7 +1842,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 19>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 20>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 20>() { // NOLINT
   Eigen::MatrixXd points(2, 79);
   Eigen::VectorXd weights(79);
 
@@ -2089,7 +2089,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 20>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 21>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 21>() { // NOLINT
   Eigen::MatrixXd points(2, 87);
   Eigen::VectorXd weights(87);
 
@@ -2360,7 +2360,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 21>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 22>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 22>() { // NOLINT
   Eigen::MatrixXd points(2, 96);
   Eigen::VectorXd weights(96);
 
@@ -2658,7 +2658,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 22>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 23>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 23>() { // NOLINT
   Eigen::MatrixXd points(2, 103);
   Eigen::VectorXd weights(103);
 
@@ -2977,7 +2977,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 23>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 24>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 24>() { // NOLINT
   Eigen::MatrixXd points(2, 112);
   Eigen::VectorXd weights(112);
 
@@ -3323,7 +3323,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 24>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 25>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 25>() { // NOLINT
   Eigen::MatrixXd points(2, 120);
   Eigen::VectorXd weights(120);
 
@@ -3693,7 +3693,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 25>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 26>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 26>() { // NOLINT
   Eigen::MatrixXd points(2, 130);
   Eigen::VectorXd weights(130);
 
@@ -4093,7 +4093,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 26>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 27>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 27>() { // NOLINT
   Eigen::MatrixXd points(2, 141);
   Eigen::VectorXd weights(141);
 
@@ -4526,7 +4526,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 27>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 28>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 28>() { // NOLINT
   Eigen::MatrixXd points(2, 150);
   Eigen::VectorXd weights(150);
 
@@ -4986,7 +4986,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 28>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 29>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 29>() { // NOLINT
   Eigen::MatrixXd points(2, 159);
   Eigen::VectorXd weights(159);
 
@@ -5473,7 +5473,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 29>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 30>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 30>() { // NOLINT
   Eigen::MatrixXd points(2, 171);
   Eigen::VectorXd weights(171);
 
@@ -5996,7 +5996,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 30>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 31>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 31>() { // NOLINT
   Eigen::MatrixXd points(2, 181);
   Eigen::VectorXd weights(181);
 
@@ -6549,7 +6549,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 31>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 32>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 32>() { // NOLINT
   Eigen::MatrixXd points(2, 193);
   Eigen::VectorXd weights(193);
 
@@ -7138,7 +7138,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 32>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 33>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 33>() { // NOLINT
   Eigen::MatrixXd points(2, 204);
   Eigen::VectorXd weights(204);
 
@@ -7760,7 +7760,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 33>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 34>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 34>() { // NOLINT
   Eigen::MatrixXd points(2, 214);
   Eigen::VectorXd weights(214);
 
@@ -8412,7 +8412,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 34>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 35>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 35>() { // NOLINT
   Eigen::MatrixXd points(2, 228);
   Eigen::VectorXd weights(228);
 
@@ -9106,7 +9106,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 35>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 36>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 36>() { // NOLINT
   Eigen::MatrixXd points(2, 243);
   Eigen::VectorXd weights(243);
 
@@ -9845,7 +9845,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 36>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 37>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 37>() { // NOLINT
   Eigen::MatrixXd points(2, 252);
   Eigen::VectorXd weights(252);
 
@@ -10611,7 +10611,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 37>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 38>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 38>() { // NOLINT
   Eigen::MatrixXd points(2, 267);
   Eigen::VectorXd weights(267);
 
@@ -11422,7 +11422,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 38>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 39>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 39>() { // NOLINT
   Eigen::MatrixXd points(2, 282);
   Eigen::VectorXd weights(282);
 
@@ -12278,7 +12278,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 39>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 40>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 40>() { // NOLINT
   Eigen::MatrixXd points(2, 295);
   Eigen::VectorXd weights(295);
 
@@ -13173,7 +13173,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 40>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 41>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 41>() { // NOLINT
   Eigen::MatrixXd points(2, 309);
   Eigen::VectorXd weights(309);
 
@@ -14110,7 +14110,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 41>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 42>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 42>() { // NOLINT
   Eigen::MatrixXd points(2, 324);
   Eigen::VectorXd weights(324);
 
@@ -15092,7 +15092,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 42>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 43>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 43>() { // NOLINT
   Eigen::MatrixXd points(2, 339);
   Eigen::VectorXd weights(339);
 
@@ -16119,7 +16119,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 43>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 44>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 44>() { // NOLINT
   Eigen::MatrixXd points(2, 354);
   Eigen::VectorXd weights(354);
 
@@ -17191,7 +17191,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 44>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 45>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 45>() { // NOLINT
   Eigen::MatrixXd points(2, 370);
   Eigen::VectorXd weights(370);
 
@@ -18311,7 +18311,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 45>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 46>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 46>() { // NOLINT
   Eigen::MatrixXd points(2, 385);
   Eigen::VectorXd weights(385);
 
@@ -19476,7 +19476,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 46>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 47>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 47>() { // NOLINT
   Eigen::MatrixXd points(2, 399);
   Eigen::VectorXd weights(399);
 
@@ -20683,7 +20683,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 47>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 48>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 48>() { // NOLINT
   Eigen::MatrixXd points(2, 423);
   Eigen::VectorXd weights(423);
 
@@ -21962,7 +21962,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 48>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 49>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 49>() { // NOLINT
   Eigen::MatrixXd points(2, 435);
   Eigen::VectorXd weights(435);
 
@@ -23277,7 +23277,7 @@ QuadRule HardcodedQuadRule<base::RefEl::kTria(), 49>() {
 }
 
 template<>
-QuadRule HardcodedQuadRule<base::RefEl::kTria(), 50>() {
+QuadRule HardcodedQuadRule<base::RefEl::kTria(), 50>() { // NOLINT
   Eigen::MatrixXd points(2, 453);
   Eigen::VectorXd weights(453);
 

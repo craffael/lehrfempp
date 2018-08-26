@@ -8,7 +8,7 @@
 
 #include "make_quad_rule.h"
 #include <Eigen/KroneckerProduct>
-#include "gauss_legendre.h"
+#include "gauss_quadrature.h"
 
 namespace lf::quad {
 namespace detail {
@@ -32,7 +32,8 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
     points2d.row(1) = points1d.transpose().replicate(1, n);
     return QuadRule(base::RefEl::kQuad(), std::move(points2d),
                     Eigen::kroneckerProduct(weights1d, weights1d), 2 * n - 1);
-  } else if (ref_el == base::RefEl::kTria()) {
+  }
+  if (ref_el == base::RefEl::kTria()) {
     switch (order) {
       case 1:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 1>();
@@ -133,9 +134,20 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 49>();
       case 50:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 50>();
-        // default:
+      default:
         // Create a quadrule using tensor product quadrature rule + duffy
         // transform
+        quadOrder_t n = order / 2 + 1;
+        auto [leg_p, leg_w] = GaussLegendre(n);
+        auto [jac_p, jac_w] = GaussJacobi(n, 1, 0);
+        jac_p.array() = (jac_p.array() + 1) / 2.;  // rescale to [0,1]
+        jac_w.array() *= 0.25;
+        Eigen::MatrixXd points2d(2, n * n);
+        points2d.row(0) = Eigen::kroneckerProduct(
+            leg_p.transpose(), (1 - jac_p.transpose().array()).matrix());
+        points2d.row(1) = jac_p.transpose().replicate(1, n);
+        return QuadRule(base::RefEl::kTria(), std::move(points2d),
+                        Eigen::kroneckerProduct(leg_w, jac_w), 2 * n - 1);
     }
   }
   LF_VERIFY_MSG(
