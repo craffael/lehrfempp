@@ -78,9 +78,13 @@ using StaticVar = Track<int>;
  */
 /**@{*/
 #define CONTROLDECLARE(intvar, varname)                       \
-  static int intvar = 0;                                      \
+  int intvar = 0;                                             \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root)
+#define CONTROLDECLAREINFO(intvar, varname, info)             \
+  int intvar = 0;                                             \
+  static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
+                                             lf::base::ctrl_root, #info)
 
 #define CLASSCONTROLDECLARE(class, intvar, varname)                 \
   int class ::intvar = 0;                                           \
@@ -92,6 +96,23 @@ using StaticVar = Track<int>;
   static lf::base::StaticVar class##intvar(varname, class ::intvar, \
                                            lf::base::ctrl_root, #comment)
 /**@}*/
+
+/**
+ * @brief Macro for conditional output
+ * @param ctrlvar integer control variable
+ * @param level control level
+ * @statement code to be executed
+ *
+ * The code passed in statement is executed if the value of the
+ * control variable is larger than the value passed in level
+ *
+ * @note The executable code must not involve a comma operator.
+ * Commas inside strings are ok.
+ */
+#define CONTROLLEDSTATEMENT(ctrlvar, level, statement) \
+  if ((ctrlvar) >= (level)) {                          \
+    statement;                                         \
+  }
 
 namespace lf::base {
 

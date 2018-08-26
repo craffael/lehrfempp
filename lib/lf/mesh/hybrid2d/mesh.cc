@@ -259,6 +259,21 @@ Mesh::size_type Mesh::Index(const mesh::Entity &e) const {
   }
 }
 
+const mesh::Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
+  LF_ASSERT_MSG(codim >= 0 && codim <= 2, "codim out of bounds.");
+  LF_ASSERT_MSG(index >= 0, "index must be non-negative");
+  if (codim == 0) {
+    LF_ASSERT_MSG(index < entities0_.size(), "index too large.");
+    return &entities0_[index];
+  }
+  if (codim == 1) {
+    LF_ASSERT_MSG(index < entities1_.size(), "index too large");
+    return &entities1_[index];
+  }
+  LF_ASSERT_MSG(index < entities2_.size(), "index too large");
+  return &entities2_[index];
+}
+
 bool Mesh::Contains(const mesh::Entity &e) const {
   switch (e.Codim()) {
     case 0:

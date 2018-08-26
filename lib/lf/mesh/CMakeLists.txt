@@ -1,5 +1,6 @@
 set(sources
   entity.h
+  entity.cc
   mesh.h
   mesh.cc
   tp_triag_mesh_builder.h

@@ -40,8 +40,9 @@ class QuadO1 : public Geometry {
    * For a detailed description of the indexing of the vertices of child
    * entities see `Refinement.xoj`.
    */
+
   std::vector<std::unique_ptr<Geometry>> ChildGeometry(
-      const RefinementPattern& ref_pat) const override;
+      const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:
   /** @brief Coordinates of the a four vertices */

@@ -10,7 +10,7 @@ namespace lf::mesh::hybrid2d {
  * @ brief Builder interface for creating structured meshes of rectangular
  * domains
  *
- * The design of the class compliees with the builder pattern.
+ * The design of the class complies with the builder pattern.
  *
  * The geometry of the rectangular domain can be set by specifying the corners
  */
@@ -80,7 +80,6 @@ class StructuredMeshBuilder {
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
   /** Mesh resolution parameters */
   size_type no_of_x_cells_{0}, no_of_y_cells_{0};
-
 };  // end class definition StructuredMeshBuilder
 
 /**

@@ -141,6 +141,38 @@ class VtkFile {
 
 void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
 
+/**
+ * @brief Write a mesh along with mesh data into a vtk file.
+ *
+ *
+ * #### Sample usage:
+ * @snippet vtk_writer.cc usage
+ *
+ * #### Mesh
+ * VtkWriter can work with any mesh implementing the `mesh::Mesh` interface.
+ * By default, it will translate `codim=0` mesh entities into VTK cells.
+ * If necessary, VtkWriter can also write out all `codim=1` mesh entities
+ * (skeleton), see documentation of the Constructor.
+ *
+ *
+ * #### Data
+ * VtkWriter can attach different types of data to either cells (codim=0) or
+ * points (codim=dimMesh) of the mesh (see the different overloads of
+ * `WritePointData()` and `WriteCellData()`). Each dataset is translated into a
+ * VTK AttributeSet which can then be visualized in ParaView.
+ *
+ * In addition to point- and cell-data VtkWriter can also write out global data
+ * (in VTK terms this is called "field attribute sets"). This is useful e.g.
+ * to write along the current time of the simulation and visualize it with a
+ * label in ParaView.
+ *
+ *
+ * @note The actual Vtk file is written when the VtkWriter is destructed!
+ *       It is very important that this destructor is called.
+ *
+ * @note By default, VtkWriter outputs files in text-format. However, for
+ * larger meshes you can switch to the more efficient binary mode (setBinary()).
+ */
 class VtkWriter {
  public:
   using dim_t = base::dim_t;

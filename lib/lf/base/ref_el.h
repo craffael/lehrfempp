@@ -9,6 +9,7 @@
 //#include <boost/range.hpp>
 #include <Eigen/Eigen>
 #include "lf_assert.h"
+#include "static_vars.h"  // Added
 
 namespace lf::base {
 
@@ -134,7 +135,8 @@ class RefEl {
    * @brief Returns the (1-dimensional) reference segment.
    *
    * #### Node numbering with (1D) node coordinates
-   * @image html segment.png
+   *
+   * @image html segment_num_edg.svg
    */
   static constexpr RefEl kSegment() { return RefEl(RefElType::kSegment); }
 
@@ -142,7 +144,7 @@ class RefEl {
    * @brief Returns the reference triangle
    *
    * #### Node numbering with (2D) node coordinates and segment orientation.
-   * @image html tria.png
+   * @image html tria_num_edg.svg
    */
   static constexpr RefEl kTria() { return RefEl(RefElType::kTria); }
 
@@ -150,7 +152,7 @@ class RefEl {
    * @brief Returns the reference quadrilateral
    *
    * #### Node numbering with (2D) node coordinates and segment orientation
-   * @image html quad.png
+   * @image html quad_num_edg.svg
    */
   static constexpr RefEl kQuad() { return RefEl(RefElType::kQuad); }
 
@@ -328,6 +330,7 @@ class RefEl {
    * - The codim=0 subEntity of a triangle is the triangle itself, therefore
    *   `RefEl::kTria().SubType(0,0) == RefEl::kTria()`.
    *
+   *
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
    */
@@ -460,7 +463,32 @@ class RefEl {
   constexpr operator RefElType() const { return type_; }
 
   ~RefEl() = default;
-};
+
+  // Output control variable
+  /** @brief Diagnostics control variable */
+  static int output_ctrl_;
+
+};  // class RefEl
+
+// Declare print function
+/**
+ * @brief Diagnostic output operator. Prints info about a reference element.
+ * @param &ref_el The reference element to print info about
+ * @param &o The stream to which this function should output
+ *
+ * #### Output levels
+ * - RefEl::output_ctrl_ = 0: Type of reference element, dimension and number of
+ * nodes
+ * - RefEl::output_ctrl_ > 0: The above and number of subentities and their
+ * types for each codimension
+ * - RefEl::output_ctrl_ > 10: The above and type of subentity for each
+ * subentities in each codimension.
+ * - RefEl::output_ctrl_ > 20: The above and coordinates of the points of the
+ * reference element
+ *
+ *
+ */
+void PrintInfo(const RefEl& ref_el, std::ostream& o);
 
 /**
  * @brief Operator overload to print a `RefEl` to a stream, such as `std::cout`
@@ -468,11 +496,20 @@ class RefEl {
  * @param ref_el The reference element to write to `stream`.
  * @return The stream itself.
  *
+ * - If RefEl::output_ctrl_ == 0, type of reference element is sent as output to
+ * stream.
+ * - If RefEl::output_ctrl_ > 0, then lf::base::PrintInfo(const RefEl &ref_el,
+ * std::ostream &o) is called.
+ *
  * #### Usage example
  * @snippet ref_el.cc streamOutput
  */
 inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
-  return stream << ref_el.ToString();
+  if (RefEl::output_ctrl_ == 0) {
+    return stream << ref_el.ToString();
+  }
+  PrintInfo(ref_el, stream);
+  return stream;
 }
 
 }  // namespace lf::base

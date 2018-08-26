@@ -30,6 +30,10 @@ using dim_t = unsigned char;
 
 constexpr double kPi = 3.14159265358979323846;
 
+/**
+ * @brief Index flagged as invalid
+ */
+const unsigned int kIdxNil = static_cast<unsigned int>(-1);
 /** @} */
 }  // namespace lf::base
 

@@ -20,13 +20,16 @@ namespace lf::mesh::utils {
  * that initializes four variables
  * - _x_ the x-coordinates of the nodes if the affine triangular mesh
  * - _y_ the y-coordinates of the nodes if the affine triangular mesh
- * - _TRI_ an N x 3 -matrix whose rows contain the indices of the nodes
- *   of every triangle of the mesh
+ * - _TRI_ an N x 4 -matrix whose rows contain the indices of the nodes
+ *   of every triangle of the mesh in positions 1-3, the triangle index in
+ *   position 4.
+ * - _QUAD_ an N x 5 -matrix; each row contains the node indices of a quad as
+ *    first four entries, and the cell index as last entry.
  * - _EDS_ an Mx2 - matrix containing the indices of the endpoints of
  *   the edges of the mesh.
  *
- * The data _x_, _y_, _TRI_ can be processed by MATLAB's `triplot` and
- * 'trisurf' functions.
+ * The data returned by this function can be visualized by the MATLAB
+ * function plot_lf_mesh(), which is also  provided with LehrFEM++.
  *
  */
 void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename);
