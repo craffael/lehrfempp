@@ -106,7 +106,7 @@ int main(int argc, const char *argv[]) {
         break;
       }
       case 3: {
-        // Global regular refinement
+        // Local refinement
         std::cout << "#### local bisection refinement" << std::endl;
         multi_mesh.MarkEdges(locmarker);
         multi_mesh.RefineMarked();
