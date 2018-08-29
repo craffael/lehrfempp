@@ -26,11 +26,12 @@ using gdof_idx_t = Eigen::Index;
 using ldof_idx_t = Eigen::Index;
 /** Type for vector length/matrix sizes */
 using size_type = lf::base::size_type;
-
+  /** Type for (co-)dimensions */
+  using dim_t = lf::base::dim_t;
+  
 /**
  * @brief Defines local distribution of shape functions = degrees of freedom
  *
- * @tparam dim manifold dimension of cells
  *
  * This class should be used to set up dof handlers for uniform finite element
  * spaces, for which the same number of basis functions is associated to every
@@ -42,7 +43,46 @@ using size_type = lf::base::size_type;
  * 1 local dof per point, 1 local dof per edge, 0 local dof for triangles,
  * 1 local dof for quads
  */
-class LocalStaticDOFs2D {
+class LocalStaticDOFs {
+ public:
+  virtual ~LocalStaticDOFs(void) = default;
+  LocalStaticDOFs(void);
+  LocalStaticDOFs(const LocalStaticDOFs &) = delete;
+  LocalStaticDOFs(LocalStaticDOFs &&) = delete;
+  LocalStaticDOFs &operator=(const LocalStaticDOFs &) = delete;
+  LocalStaticDOFs &operator=(LocalStaticDOFs &&) = delete;
+
+  /**
+   * @brief Obtain number of local shape functions associated with
+   * (sub-)entities of a given type
+   * @param refel topological type of the entity.
+   *
+   * @note the method provides the number of _interior_ local shape functions
+   *
+   */
+  virtual size_type NoLocDofs(lf::base::RefEl refel) const = 0;
+  /**
+   * @brief The total number of local shape functions belonging to an entity
+   * type
+   *
+   * @param refel topological type of the entity.
+   *
+   * This method returns the number of all local shape functions whose trace
+   * does not vanish on entities of the specified type.
+   */
+  virtual size_type TotalNoLocDofs(lf::base::RefEl refel) const = 0;
+  /**
+   * @brief dimension of mesh 
+   */
+  virtual dim_t Dimension(void) const = 0;
+};
+
+/**
+ * @brief Description of uniform distribution of local shape functions for 2D
+ * mesh
+ * @sa LocalStaticDOFs
+ */
+class LocalStaticDOFs2D : public LocalStaticDOFs {
  public:
   /**
    * @brief set multiplicities for (sub-)entities of any type
@@ -66,25 +106,19 @@ class LocalStaticDOFs2D {
   LocalStaticDOFs2D &operator=(LocalStaticDOFs2D &&) = delete;
 
   /**
-   * @brief Obtain number of local shape functions associated with
-   * (sub-)entities of a given type
-   * @param refel topological type of the entity.
-   *
-   * @note the method provides the number of _interior_ local shape functions
+   * @copydoc LocalStaticDOFs::NoLocDofs()
    *
    */
-  size_type NoLocDofs(lf::base::RefEl refel) const;
+  virtual size_type NoLocDofs(lf::base::RefEl refel) const override;
   /**
-   * @brief The total number of local shape functions belonging to an entity
-   * type
-   *
-   * @param refel topological type of the entity.
-   *
-   * This method returns the number of all local shape functions whose trace
-   * does not vanish on entities of the specified type.
+   * @copydoc LocalStaticDOFs::TotalNoLocDofs()
    */
-  size_type TotalNoLocDofs(lf::base::RefEl refel) const;
-
+  virtual size_type TotalNoLocDofs(lf::base::RefEl refel) const override;
+  /**
+   * @copydoc LocalStaticDOFs::Dimension()
+   */
+  virtual dim_t Dimension(void) const override { return 2; }
+  
  private:
   /** number of local shape functions associated with each (sub-)entity
       of a particular co-dimension (multiplicity)*/

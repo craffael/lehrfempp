@@ -19,7 +19,7 @@
 
 namespace lf::assemble {
   /*
-   * @brief A general (interface) class for DOF handling
+   * @brief A general (_interface_) class for DOF handling
    *
    */
   class DofHandler {
@@ -87,7 +87,10 @@ namespace lf::assemble {
     size_type num_dof_{0};
   };
   
-
+  /**
+   * @brief Dofhandler for uniform finite element spaces
+   */
+  
 } // end namespace
 
 #endif
