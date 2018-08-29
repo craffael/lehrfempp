@@ -90,6 +90,13 @@ namespace lf::assemble {
   /**
    * @brief Dofhandler for uniform finite element spaces
    */
+  class UniformFEDofHandler: public DofHandler {
+  public:
+    /**
+     */ 
+    UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
+			const LocalStaticDOFs &&locdof);
+  };
   
 } // end namespace
 
