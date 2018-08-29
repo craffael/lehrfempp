@@ -73,6 +73,15 @@ class LocalStaticDOFs2D {
    *
    */
   size_type NoLocDofs(lf::base::RefEl refel) const;
+  /**
+   * @brief The total number of local shape functions belonging to an entity type
+   *
+   * @param refel topological type of the entity.
+   * 
+   * This method returns the number of all local shape functions whose trace
+   * does not vanish on entities of the specified type.
+   */
+  size_type TotalNoLocDofs(lf::base::RefEl refel) const;
  private:
   /** number of local shape functions associated with each (sub-)entity
       of a particular co-dimension (multiplicity)*/
