@@ -39,26 +39,24 @@ size_type LocalStaticDOFs2D::NoLocDofs(lf::base::RefEl refel) const {
   return 0;
 }  // end NoLocDofs
 
-  size_type LocalStaticDOFs2D::TotalNoLocDofs(lf::base::RefEl refel) const {
+size_type LocalStaticDOFs2D::TotalNoLocDofs(lf::base::RefEl refel) const {
   switch (refel) {
     case lf::base::RefEl::kPoint(): {
       return no_loc_dofs_per_refel_[0];
     }
     case lf::base::RefEl::kSegment(): {
       // An edge has two endpoints
-      return no_loc_dofs_per_refel_[1] + 2*no_loc_dofs_per_refel_[0];
+      return no_loc_dofs_per_refel_[1] + 2 * no_loc_dofs_per_refel_[0];
     }
     case lf::base::RefEl::kTria(): {
       // A triangle has three nodes and three edges
-      return (no_loc_dofs_per_refel_[2]+
-	      3*no_loc_dofs_per_refel_[1]+
-	      3*no_loc_dofs_per_refel_[0]);
+      return (no_loc_dofs_per_refel_[2] + 3 * no_loc_dofs_per_refel_[1] +
+              3 * no_loc_dofs_per_refel_[0]);
     }
     case lf::base::RefEl::kQuad(): {
       // A Quad has four edges and vertices
-      return (no_loc_dofs_per_refel_[3]+
-	      4*no_loc_dofs_per_refel_[1]+
-	      4*no_loc_dofs_per_refel_[0]);
+      return (no_loc_dofs_per_refel_[3] + 4 * no_loc_dofs_per_refel_[1] +
+              4 * no_loc_dofs_per_refel_[0]);
     }
     default: {
       LF_ASSERT_MSG(false, "Illegal refel type " << refel);
@@ -66,7 +64,6 @@ size_type LocalStaticDOFs2D::NoLocDofs(lf::base::RefEl refel) const {
     }
   }
   return 0;
-  }
-
+}
 
 }  // namespace lf::assemble

@@ -59,6 +59,7 @@ class LocalStaticDOFs2D {
     no_loc_dofs_per_refel_[2] = nodof_tria;
     no_loc_dofs_per_refel_[3] = nodof_quad;
   }
+  virtual ~LocalStaticDOFs2D(void) = default;
   LocalStaticDOFs2D(const LocalStaticDOFs2D &) = delete;
   LocalStaticDOFs2D(LocalStaticDOFs2D &&) = delete;
   LocalStaticDOFs2D &operator=(const LocalStaticDOFs2D &) = delete;
@@ -74,19 +75,27 @@ class LocalStaticDOFs2D {
    */
   size_type NoLocDofs(lf::base::RefEl refel) const;
   /**
-   * @brief The total number of local shape functions belonging to an entity type
+   * @brief The total number of local shape functions belonging to an entity
+   * type
    *
    * @param refel topological type of the entity.
-   * 
+   *
    * This method returns the number of all local shape functions whose trace
    * does not vanish on entities of the specified type.
    */
   size_type TotalNoLocDofs(lf::base::RefEl refel) const;
+
  private:
   /** number of local shape functions associated with each (sub-)entity
       of a particular co-dimension (multiplicity)*/
   std::array<size_type, 4> no_loc_dofs_per_refel_;
 };  // end class definition
+
+class LocalLinearLagrangianFE2D : public LocalStaticDOFs2D {
+ public:
+  LocalLinearLagrangianFE2D(void) : LocalStaticDOFs2D(1, 0, 0, 0) {}
+};
+
 }  // namespace lf::assemble
 
 #endif
