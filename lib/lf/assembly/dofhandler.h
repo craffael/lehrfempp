@@ -27,20 +27,17 @@ namespace lf::assemble {
     /** 
      * @brief The constructor just stores the mesh pointer
      */
-    DofHandler(std::shared_ptr<lf::mesh::Mesh> mesh):mesh_(std::move(mesh)) {
-      LF_VERIFY_MSG(mesh_ != nullptr,"Invalid mesh pointer");
-    }
+    DofHandler(void) {} 
     virtual ~DofHandler(void) = default;
-  protected:
-    DofHandler(const DofHandler &) = default;
-    DofHandler(DofHandler &&) = default;
-    DofHandler &operator=(const DofHandler &) = default;
-    DofHandler &operator=(DofHandler &&) = default;
-  public:
+
+    DofHandler(const DofHandler &) = delete;
+    DofHandler(DofHandler &&) = delete;
+    DofHandler &operator=(const DofHandler &) = delete;
+    DofHandler &operator=(DofHandler &&) = delete;
     /** 
      * @brief total number of dof's handled by the object
      */
-    size_type GetNoDofs(void) const { return num_dof_; }
+    virtual size_type GetNoDofs(void) const = 0; 
     
     /** 
      * @brief access to indices of global dof's belonging to an entity 
@@ -79,23 +76,72 @@ namespace lf::assemble {
      * @sa GetGlobalDofs()
      */
     virtual const lf::mesh::Entity &GetEntity(gdof_idx_t dofnum) const =  0;
-    
-  protected:
-    /** The mesh on which the degrees of freedom are defined */
-    std::shared_ptr<lf::mesh::Mesh> mesh_;
-    /** The total number of degrees of freedom */
-    size_type num_dof_{0};
+
+    /** @brief Acess to underlying mesh object 
+     *
+     * Every DofHandler object has to be associated with a unique mesh.
+     * All entities passed to the DofHandler object must belong to that mesh.
+     */
+    virtual const lf::mesh::Mesh &getMesh(void) const = 0;
   };
   
   /**
    * @brief Dofhandler for uniform finite element spaces
+   *
+   * This management class for indices of global shape functions
+   * is suitable for situations where every geometric entity of a particular
+   * type has exactly the same number of shape functions belonging to it. 
    */
   class UniformFEDofHandler: public DofHandler {
   public:
-    /**
+    /** @brief Initialization of global index arrays
      */ 
     UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
 			const LocalStaticDOFs &&locdof);
+
+     /** 
+     * @copydoc DofHandler::GetNoDofs()
+     */
+    virtual size_type GetNoDofs(void) const override { return num_dof_; }
+    
+    /** 
+     * @copydoc DofHandler::GetGlobalDofs()
+     */
+    virtual std::vector<gdof_idx_t>
+    GetGlobalDofs(const lf::mesh::Entity &entity) const override;
+
+    /**
+     * @copydoc DofHandler::GetNoDofs()
+     * @sa GetGlobalDofs()
+     */
+    virtual size_type GetNoDofs(const lf::mesh::Entity &entity) const override;
+    
+    /**
+     * @copydoc DofHandler::GetEntity()
+     * @sa GetGlobalDofs()
+     */
+    virtual const lf::mesh::Entity &GetEntity(gdof_idx_t dofnum) const override {
+      LF_VERIFY_MSG(dofnum < dof_entities_.size(),
+		    "Illegal dof index " << dofnum << ", max = " << num_dof_);
+      return *dof_entities_[dofnum];
+    }
+
+    /** @copydoc DofHandler::getMesh()
+     */
+    virtual const lf::mesh::Mesh &getMesh(void) const override { return *mesh_; }
+ 
+  private:
+    /** The mesh on which the degrees of freedom are defined */
+    std::shared_ptr<lf::mesh::Mesh> mesh_;
+    /** The total number of degrees of freedom */
+    size_type num_dof_{0};
+    /** Vector of entities to which global basis functions are associated */
+    std::vector<const lf::mesh::Entity *> dof_entities_;
+    /** Vectors of global indices of dofs belonging to entities of different
+        topological type */
+    std::array<std::vector<gdof_idx_t>,4> dofs_;
+    /** Number of dofs belonging to entities of a particular type */
+    std::array<size_type,4> no_dofs_;
   };
   
 } // end namespace

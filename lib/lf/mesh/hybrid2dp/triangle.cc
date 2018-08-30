@@ -62,6 +62,17 @@ Triangle::Triangle(size_type index,
     LF_VERIFY_MSG((ed_nodes[1] == *p0_ptr) || (ed_nodes[1] == *p1_ptr),
                   "Node 1 of edge " << ed_loc_idx << " not a triangle node");
   }
+  
+  // Finally set relative orientations for the edges. Edge i has positive
+  // orientation, if its first node agrees with vertex i
+  for (int ed_loc_idx = 0; ed_loc_idx < 3; ed_loc_idx++) {
+    // Fetch nodes of current edge
+    base::RandomAccessRange<const Entity> ed_nodes(
+        edges_[ed_loc_idx]->SubEntities(1));
+    edge_ori_[ed_loc_idx] = (ed_nodes[0] == *nodes_[ed_loc_idx])
+                                ? lf::mesh::Orientation::positive
+                                : lf::mesh::Orientation::negative;
+  }
 }
 
 // Acessing sub-entities

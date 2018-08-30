@@ -12,7 +12,32 @@
 #include "static_vars.h"  // Added
 
 namespace lf::base {
-
+/** @defgroup lftypes
+ * @brief various integral types meant to enhance readability of the code
+ */
+/** @{ */
+/**
+ * @brief general type for variables related to size of arrays
+ */
+using size_type = unsigned int;
+/**
+ * @brief type for global index of mesh entities (nodes, edges, cells)
+ */
+using glb_idx_t = unsigned int;
+/**
+ * @brief type for local indices of sub-entities
+ */
+using sub_idx_t = unsigned int;
+/**
+ * @brief type for dimensions and co-dimensions and numbers derived from them
+ */
+using dim_t = unsigned char;
+/**
+ * @brief Index flagged as invalid
+ */
+const unsigned int kIdxNil = static_cast<unsigned int>(-1);
+/** @} */
+  
 /*!
  * @brief An enum that defines all possible RefEl types.
  *
@@ -94,7 +119,8 @@ class RefEl {
   RefElType type_;
 
  public:
-  using dim_t = unsigned char;
+  using dim_t = lf::base::dim_t;
+  
   // subSubEntities, used by SubSubEntity2SubEntity
   static constexpr std::array<std::array<dim_t, 2>, 3>
       sub_sub_entity_index_tria_ = {{{0, 1}, {1, 2}, {2, 0}}};
@@ -196,7 +222,7 @@ class RefEl {
    *
    * @remark This is a shortcut for calling `NumSubEntities(Dimension())`
    */
-  constexpr dim_t NumNodes() const {
+  constexpr size_type NumNodes() const {
     switch (type_) {
       case RefElType::kPoint:
         return 1;
@@ -291,7 +317,7 @@ class RefEl {
    * - a Triangle has three subEntities of `codim=2` (all Points), therefore
    *   `RefEl::kTria().NumSubEntities(2) == 3`
    */
-  constexpr dim_t NumSubEntities(dim_t sub_codim) const {
+  constexpr size_type NumSubEntities(dim_t sub_codim) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(),
                             "sub_codim > Dimension()");
@@ -394,9 +420,9 @@ class RefEl {
    * - Similarly, for `sub_rel_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
-  constexpr dim_t SubSubEntity2SubEntity(dim_t sub_codim, dim_t sub_index,
+  constexpr sub_idx_t SubSubEntity2SubEntity(dim_t sub_codim, sub_idx_t sub_index,
                                          dim_t sub_rel_codim,
-                                         dim_t sub_rel_index) const {
+                                         sub_idx_t sub_rel_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");

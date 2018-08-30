@@ -57,7 +57,7 @@ class MeshFactory : public mesh::MeshFactory {
   /** @brief output function printing asssembled lists of entity information */
   void PrintLists(std::ostream& o = std::cout) const;
 
-  ~MeshFactory() override = default;
+  virtual ~MeshFactory() override = default;
 
  private:
   dim_t dim_world_;  // dimension of ambient space

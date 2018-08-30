@@ -80,6 +80,15 @@ class Triangle : public mesh::Entity {
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
 
+  /** @brief Access to relative orientations of edges
+   * @sa mesh::Orientation
+   */
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
+      void) const override {
+    return base::RandomAccessRange<const lf::mesh::Orientation>(
+        edge_ori_.begin(), edge_ori_.end());
+  }
+
   /** @defgroup Standard methods of an Entity object
    * @sa mesh::Entity
    * @{
@@ -98,6 +107,8 @@ class Triangle : public mesh::Entity {
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 3> nodes_{};           // nodes = corners of cell
   std::array<const Segment*, 3> edges_{};         // edges of the cells
+  std::array<lf::mesh::Orientation, 3>
+      edge_ori_;  // orientation of edges (set in constructor)
 };
 
 }  // namespace lf::mesh::hybrid2dp

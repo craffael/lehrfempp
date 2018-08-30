@@ -81,6 +81,17 @@ class Segment : public mesh::Entity {
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
 
+  /** @brief Access to relative orientations of endpoints
+   *
+   * This method just returns {+,-}, because points always have the intrinsic
+   * orientation + and the orientation of an edge is defined through the
+   * ordering of its vertices. */
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
+      void) const override {
+    return base::RandomAccessRange<const lf::mesh::Orientation>(endpoint_ori_.begin(),
+                                                endpoint_ori_.end());
+  }
+
   /** @brief access to index of an entity */
   size_type index() const { return index_; }
 
@@ -101,7 +112,11 @@ class Segment : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 2> nodes_{};           // nodes connected by edge
+  static constexpr std::array<lf::mesh::Orientation,2> endpoint_ori_ {
+      lf::mesh::Orientation::negative,
+      lf::mesh::Orientation::positive};  // orientation of endpoints
 };
+
 }  // namespace lf::mesh::hybrid2dp
 
 #endif  // __feff908010fa4d75a9c006c02b4fafe7

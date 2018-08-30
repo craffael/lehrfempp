@@ -64,10 +64,19 @@ class Point : public mesh::Entity {
 
   char Codim() const override { return 2; }
 
+  /** @copydoc Entity::SubEntities() */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
     return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
+  }
+
+  /** Must not be called: No sub-entities for a point */
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
+      void) const override {
+    LF_ASSERT_MSG(false, "A point has not sub-entities");
+    return base::RandomAccessRange<const lf::mesh::Orientation>(dummy_or_.begin(),
+                                                          dummy_or_.end());
   }
 
   /** @brief return _pointer_ to associated geometry object */
@@ -87,6 +96,8 @@ class Point : public mesh::Entity {
  private:
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
+  static constexpr std::array<lf::mesh::Orientation, 1> dummy_or_{
+      lf::mesh::Orientation::positive};
 };
 
 }  // namespace lf::mesh::hybrid2dp
