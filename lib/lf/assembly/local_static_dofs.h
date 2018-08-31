@@ -28,6 +28,8 @@ using ldof_idx_t = Eigen::Index;
 using size_type = lf::base::size_type;
   /** Type for (co-)dimensions */
   using dim_t = lf::base::dim_t;
+  /** Type for global index of entities */
+  using glb_idx_t = lf::base::glb_idx_t;
   
 /**
  * @brief Defines local distribution of shape functions = degrees of freedom

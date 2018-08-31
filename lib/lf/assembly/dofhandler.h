@@ -38,19 +38,30 @@ namespace lf::assemble {
      * @brief total number of dof's handled by the object
      */
     virtual size_type GetNoDofs(void) const = 0; 
-    
+
     /** 
      * @brief access to indices of global dof's belonging to an entity 
      * 
-     * @param entity reference to the entity for which the dof's are to be 
-     *        fetched. This entity must belong to the underlying mesh.
+     * @param ref_el_type type of entity for which to retrieve dof indices
+     * @param entity_index unique mesh index for an entity of the specified type
      *
      * The basis functions of every finite element space must be associated with a 
      * unique geometric entity. Conversely, every entity can possess a finite number
      * of basis functions = degrees of freedom. This functions return the global indices
      * of all basis functions associated with the entity _and its sub-entitites_.
      */
-    virtual std::vector<gdof_idx_t>
+    virtual lf::base::RandomAccessRange<const gdof_idx_t>
+    GetGlobalDofs(lf::base::RefEl ref_el_type,glb_idx_t entity_index) const = 0;
+      
+    /** 
+     * @brief access to indices of global dof's belonging to an entity 
+     * 
+     * @param entity reference to the entity for which the dof's are to be 
+     *        fetched. This entity must belong to the underlying mesh.
+     *
+     * @sa GetGlobalDofs()
+     */
+    virtual lf::base::RandomAccessRange<const gdof_idx_t>
     GetGlobalDofs(const lf::mesh::Entity &entity) const = 0;
 
     /**
@@ -97,7 +108,7 @@ namespace lf::assemble {
     /** @brief Initialization of global index arrays
      */ 
     UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
-			const LocalStaticDOFs &&locdof);
+			const LocalStaticDOFs &locdof);
 
      /** 
      * @copydoc DofHandler::GetNoDofs()
@@ -107,7 +118,10 @@ namespace lf::assemble {
     /** 
      * @copydoc DofHandler::GetGlobalDofs()
      */
-    virtual std::vector<gdof_idx_t>
+    virtual lf::base::RandomAccessRange<const gdof_idx_t>
+    GetGlobalDofs(lf::base::RefEl ref_el_type,glb_idx_t entity_index) const override;
+    
+    virtual lf::base::RandomAccessRange<const gdof_idx_t>
     GetGlobalDofs(const lf::mesh::Entity &entity) const override;
 
     /**
@@ -129,8 +143,12 @@ namespace lf::assemble {
     /** @copydoc DofHandler::getMesh()
      */
     virtual const lf::mesh::Mesh &getMesh(void) const override { return *mesh_; }
- 
+
   private:
+    const size_type kNodeOrd = 0;
+    const size_type kEdgeOrd = 1;
+    const size_type kCellOrd = 2;
+    
     /** The mesh on which the degrees of freedom are defined */
     std::shared_ptr<lf::mesh::Mesh> mesh_;
     /** The total number of degrees of freedom */
@@ -139,9 +157,11 @@ namespace lf::assemble {
     std::vector<const lf::mesh::Entity *> dof_entities_;
     /** Vectors of global indices of dofs belonging to entities of different
         topological type */
-    std::array<std::vector<gdof_idx_t>,4> dofs_;
+    std::array<std::vector<gdof_idx_t>,3> dofs_;
     /** Number of dofs belonging to entities of a particular type */
-    std::array<size_type,4> no_dofs_;
+    std::array<size_type,3> no_dofs_;
+    /** Number of shape functions covering different cell types */
+    size_type num_dofs_tria_{0},num_dofs_quad_{0};
   };
   
 } // end namespace
