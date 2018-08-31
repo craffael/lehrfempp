@@ -63,7 +63,7 @@ TEST(lf_assembly, dof_index_test) {
               << std::endl;
     for (const lf::mesh::Entity &e : mesh_p->Entities(codim)) {
       const lf::base::glb_idx_t e_idx = mesh_p->Index(e);
-      const lf::assemble::size_type no_dofs(dof_handler.GetNoDofs(e));
+      const lf::assemble::size_type no_dofs(dof_handler.GetNoLocalDofs(e));
       lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
           dof_handler.GetGlobalDofs(e));
       std::cout << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -80,7 +80,6 @@ TEST(lf_assembly, dof_index_test) {
     const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
     std::cout << "dof " << dof_idx << " -> " << e << " " << mesh_p->Index(e)
               << std::endl;
-
     lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
         dof_handler.GetGlobalDofs(e));
     bool dof_found = false;

@@ -74,17 +74,18 @@ UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
   // Step III: Set indices for shape functions on cells
   const size_type max_num_dof_cells = mesh_->Size(0) * no_dofs_[kCellOrd];
   dofs_[kCellOrd].resize(max_num_dof_cells);
-  
+
   // Number of (non-)interior shape functins for edges
-  const size_type no_int_dof_edge = locdof.NoLocDofs(lf::base::RefEl::kSegment());
+  const size_type no_int_dof_edge =
+      locdof.NoLocDofs(lf::base::RefEl::kSegment());
   const size_type num_ext_dof_edge = no_dofs_[kEdgeOrd] - no_int_dof_edge;
-  
+
   // Visit all cells
   for (const lf::mesh::Entity &cell : mesh_->Entities(0)) {
     const glb_idx_t cell_idx = mesh_->Index(cell);
     // Offset for cell dof indices in large dof index vector
     glb_idx_t cell_dof_offset = cell_idx * no_dofs_[kCellOrd];
-    
+
     // Obtain indices for basis functions in vertices
     for (const lf::mesh::Entity &vertex : cell.SubEntities(2)) {
       const glb_idx_t vt_idx(mesh_->Index(vertex));
@@ -94,45 +95,50 @@ UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
         dofs_[kCellOrd][cell_dof_offset++] = dofs_[kNodeOrd][vt_dof_offset++];
       }
     }
-    
+
     // Collect indices of interior shape functions of edges
     // Internal ordering will depend on the orientation of the edge
-    lf::base::RandomAccessRange<const lf::mesh::Orientation>
-      edge_orientations(cell.RelativeOrientations());
-    lf::base::RandomAccessRange<const lf::mesh::Entity>
-      edges(cell.SubEntities(1));
+    lf::base::RandomAccessRange<const lf::mesh::Orientation> edge_orientations(
+        cell.RelativeOrientations());
+    lf::base::RandomAccessRange<const lf::mesh::Entity> edges(
+        cell.SubEntities(1));
     // Loop over edges
-    for (int ed_sub_idx = 0; ed_sub_idx < cell.RefEl().NumSubEntities(1); ed_sub_idx++) {
+    for (int ed_sub_idx = 0; ed_sub_idx < cell.RefEl().NumSubEntities(1);
+         ed_sub_idx++) {
       const glb_idx_t edge_idx = mesh_->Index(edges[ed_sub_idx]);
-      glb_idx_t edge_int_dof_offset = edge_idx * no_dofs_[kEdgeOrd] + num_ext_dof_edge;
+      glb_idx_t edge_int_dof_offset =
+          edge_idx * no_dofs_[kEdgeOrd] + num_ext_dof_edge;
       // Copy indices of shape functions from edges to cell
-      // The order, in which they are copied depends on the relative orientation of
-      // the edge w.r.t. the cell
+      // The order, in which they are copied depends on the relative orientation
+      // of the edge w.r.t. the cell
       switch (edge_orientations[ed_sub_idx]) {
-      case lf::mesh::Orientation::positive: { 
-	for (int j = 0; j < no_int_dof_edge; j++) {
-	  dofs_[kCellOrd][cell_dof_offset++] = dofs_[kEdgeOrd][edge_int_dof_offset+j];
-	}
-	break;
-      }
-      case lf::mesh::Orientation::negative: { 
-	for (int j = no_int_dof_edge-1; j>=0; j--) {
-	  dofs_[kCellOrd][cell_dof_offset++] = dofs_[kEdgeOrd][edge_int_dof_offset+j];
-	}
-	break;
-      }
-      } // end switch
+        case lf::mesh::Orientation::positive: {
+          for (int j = 0; j < no_int_dof_edge; j++) {
+            dofs_[kCellOrd][cell_dof_offset++] =
+                dofs_[kEdgeOrd][edge_int_dof_offset + j];
+          }
+          break;
+        }
+        case lf::mesh::Orientation::negative: {
+          for (int j = no_int_dof_edge - 1; j >= 0; j--) {
+            dofs_[kCellOrd][cell_dof_offset++] =
+                dofs_[kEdgeOrd][edge_int_dof_offset + j];
+          }
+          break;
+        }
+      }  // end switch
     }
-    
-    // Set indices for interior edge degrees of freedom depending on the type of cell
-    // Here we add new degrees of freedom
+
+    // Set indices for interior edge degrees of freedom depending on the type of
+    // cell Here we add new degrees of freedom
     size_type num_int_dofs_cell;
     if (cell.RefEl() == lf::base::RefEl::kTria())
       num_int_dofs_cell = locdof.NoLocDofs(lf::base::RefEl::kTria());
     else if (cell.RefEl() == lf::base::RefEl::kQuad())
       num_int_dofs_cell = locdof.NoLocDofs(lf::base::RefEl::kQuad());
-    else LF_ASSERT_MSG(false,"Illegal entity type");
-      
+    else
+      LF_ASSERT_MSG(false, "Illegal entity type");
+
     for (int j = 0; j < num_int_dofs_cell; j++) {
       dofs_[kCellOrd][cell_dof_offset++] = dof_idx;
       dof_entities_.push_back(&cell);
@@ -141,7 +147,7 @@ UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
   }
   // Finally store total number of shape functions on the mesh.
   num_dof_ = dof_idx;
-} // end contructore
+}  // end contructore
 
 lf::base::RandomAccessRange<const gdof_idx_t>
 UniformFEDofHandler::GetGlobalDofs(lf::base::RefEl ref_el_type,
@@ -188,8 +194,14 @@ UniformFEDofHandler::GetGlobalDofs(const lf::mesh::Entity &entity) const {
   return GetGlobalDofs(entity.RefEl(), mesh_->Index(entity));
 }
 
-size_type UniformFEDofHandler::GetNoDofs(const lf::mesh::Entity &entity) const {
-  switch (entity.RefEl()) {
+size_type UniformFEDofHandler::GetNoLocalDofs(
+    const lf::mesh::Entity &entity) const {
+  return GetNoLocalDofs(entity.RefEl(), 0);
+}
+
+size_type UniformFEDofHandler::GetNoLocalDofs(lf::base::RefEl ref_el_type,
+                                              glb_idx_t) const {
+  switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
       return no_dofs_[kNodeOrd];
     }
