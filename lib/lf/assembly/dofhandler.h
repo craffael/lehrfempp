@@ -19,8 +19,10 @@
 
 namespace lf::assemble {
 /*
- * @brief A general (_interface_) class for DOF handling
+ * @brief A general (_interface_) class for DOF handling.
  *
+ * Objects of this class provide the local-to-global map for indices
+ * of local/global shape functions. 
  */
 class DofHandler {
  public:

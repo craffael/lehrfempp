@@ -26,11 +26,11 @@ using gdof_idx_t = Eigen::Index;
 using ldof_idx_t = Eigen::Index;
 /** Type for vector length/matrix sizes */
 using size_type = lf::base::size_type;
-  /** Type for (co-)dimensions */
-  using dim_t = lf::base::dim_t;
-  /** Type for global index of entities */
-  using glb_idx_t = lf::base::glb_idx_t;
-  
+/** Type for (co-)dimensions */
+using dim_t = lf::base::dim_t;
+/** Type for global index of entities */
+using glb_idx_t = lf::base::glb_idx_t;
+
 /**
  * @brief Defines local distribution of shape functions = degrees of freedom
  *
@@ -74,7 +74,7 @@ class LocalStaticDOFs {
    */
   virtual size_type TotalNoLocDofs(lf::base::RefEl refel) const = 0;
   /**
-   * @brief dimension of mesh 
+   * @brief dimension of mesh
    */
   virtual dim_t Dimension(void) const = 0;
 };
@@ -120,7 +120,7 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
    * @copydoc LocalStaticDOFs::Dimension()
    */
   virtual dim_t Dimension(void) const override { return 2; }
-  
+
  private:
   /** number of local shape functions associated with each (sub-)entity
       of a particular co-dimension (multiplicity)*/

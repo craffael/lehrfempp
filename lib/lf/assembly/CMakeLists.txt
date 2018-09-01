@@ -3,6 +3,8 @@ set(sources
   dofhandler.cc
   local_static_dofs.h
   local_static_dofs.cc
+  assembler.h
+  assembler.cc
 )
 
 add_library(lf.assembly ${sources})
