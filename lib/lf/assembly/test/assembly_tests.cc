@@ -18,7 +18,7 @@
 #include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 
-#include <lf/assembly/dofhandler.h>
+#include <lf/assembly/assembler.h>
 
 namespace lf::assemble::test {
 
@@ -94,5 +94,25 @@ TEST(lf_assembly, dof_index_test) {
   }
 
 }  // end dof_index_test
+
+TEST(lf_assembly, mat_assembly_test) {
+  std::cout << "### TEST: Assembly on test mesh" << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  lf::assemble::LocalStaticDOFs2D lin_fe_loc_dofs(1, 0, 0, 0);
+
+  // Construct dofhandler
+  lf::assemble::UniformFEDofHandler dof_handler(mesh_p, lin_fe_loc_dofs);
+  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+
+  // Dummy assembler
+  lf::assemble::LinearFiniteElementAssembler assembler();
+  lf::assemble::COOMatrix<double> mat(N_dofs,N_dofs);
+  
+  // mat = lf::assemble::AssembleMatrixCellwiseX<
+  //   lf::assemble::COOMatrix<double>, lf::assemble::LinearFiniteElementAssembler>(
+  //         dof_handler, assembler));
+}
 
 }  // namespace lf::assemble::test

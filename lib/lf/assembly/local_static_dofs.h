@@ -130,6 +130,7 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
 class LocalLinearLagrangianFE2D : public LocalStaticDOFs2D {
  public:
   LocalLinearLagrangianFE2D(void) : LocalStaticDOFs2D(1, 0, 0, 0) {}
+  virtual ~LocalLinearLagrangianFE2D(void) = default;
 };
 
 }  // namespace lf::assemble
