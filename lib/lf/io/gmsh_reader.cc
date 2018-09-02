@@ -756,6 +756,13 @@ MshFile readGMshFile(const std::string& filename) {
   return result;
 }
 
+bool GmshReader::IsPhysicalEntity(const mesh::Entity& e,
+                                  size_type physical_entity_nr) const {
+  auto physical_entities = PhysicalEntityNr(e);
+  return std::find(physical_entities.begin(), physical_entities.end(),
+                   physical_entity_nr) != physical_entities.end();
+}
+
 GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
                        const ::lf::io::MshFile& msh_file)
     : mesh_factory_(std::move(factory)) {
@@ -1004,6 +1011,16 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
   throw base::LfException(
       "Physical entity with number=" + std::to_string(number) +
       ", codim=" + std::to_string(codim) + " not found.");
+}
+
+std::vector<std::pair<size_type, std::string>> GmshReader::PhysicalEntities(
+    dim_t codim) const {
+  std::vector<std::pair<size_type, std::string>> result;
+  for (auto& p : nr_2_name_) {
+    if (p.second.second != codim) continue;
+    result.push_back({p.first, p.second.first});
+  }
+  return result;
 }
 
 std::vector<size_type> GmshReader::PhysicalEntityNr(

@@ -18,8 +18,8 @@ endif()
 enable_testing()
 
 # Get boost
-hunter_add_package(Boost)
-find_package(Boost CONFIG REQUIRED)
+hunter_add_package(Boost COMPONENTS system filesystem)
+find_package(Boost CONFIG REQUIRED system filesystem)
 
 # Get Eigen
 hunter_add_package(Eigen)
