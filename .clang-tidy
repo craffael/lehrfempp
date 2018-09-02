@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false

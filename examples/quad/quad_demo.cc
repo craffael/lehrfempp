@@ -23,9 +23,10 @@ double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadOrder_t order, F f) {
   auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), order);
   auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), order);
 
+  Eigen::MatrixXd points(1, 1);
+  Eigen::VectorXd weights(1);
+
   for (auto& e : mesh.Entities(0)) {
-    Eigen::MatrixXd points;
-    Eigen::VectorXd weights;
     if (e.RefEl() == lf::base::RefEl::kTria()) {
       points = qr_tria.Points();
       weights = qr_tria.Weights();
@@ -56,7 +57,7 @@ int main(int argc, char** argv) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
-  if (vm.count("help")) {
+  if (vm.count("help") != 0u) {
     std::cout << desc << std::endl;
     return 1;
   }

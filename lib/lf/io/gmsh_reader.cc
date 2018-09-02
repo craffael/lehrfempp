@@ -1017,8 +1017,10 @@ std::vector<std::pair<size_type, std::string>> GmshReader::PhysicalEntities(
     dim_t codim) const {
   std::vector<std::pair<size_type, std::string>> result;
   for (auto& p : nr_2_name_) {
-    if (p.second.second != codim) continue;
-    result.push_back({p.first, p.second.first});
+    if (p.second.second != codim) {
+      continue;
+    }
+    result.emplace_back(p.first, p.second.first);
   }
   return result;
 }
