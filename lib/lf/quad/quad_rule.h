@@ -49,7 +49,10 @@ class QuadRule {
       : ref_el_(std::move(ref_el)),
         order_(order),
         points_(std::move(points)),
-        weights_(std::move(weights)) {}
+        weights_(std::move(weights)) {
+    LF_ASSERT_MSG(points_.rows() == ref_el_.Dimension(), "Dimension mismatch");
+    LF_ASSERT_MSG(weights_.size() == points_.cols(), "Dimension mismatch");
+  }
 
   /**
    * @brief The reference element \f$ K \f$ over which this QuadRule
@@ -92,6 +95,12 @@ class QuadRule {
    * @return A vector of length \f$ n \f$
    */
   const Eigen::VectorXd& Weights() const { return weights_; }
+
+  /**
+   * @brief Return the total number \f$ n \f$ of quadrature points (num of
+   * columns of points/weights)
+   */
+  base::size_type NumPoints() const { return points_.cols(); }
 
  private:
   base::RefEl ref_el_;
