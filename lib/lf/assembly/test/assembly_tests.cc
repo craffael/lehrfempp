@@ -22,6 +22,27 @@
 
 namespace lf::assemble::test {
 
+/** Rudimentary implementation */
+class TestAssembler {
+ public:
+  using elem_mat_t = Eigen::Matrix<double, 4, 4>;
+  using ElemMat = elem_mat_t &;
+  
+  TestAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
+  bool isActive(const lf::mesh::Entity &) { return true; }
+  ElemMat Eval(const lf::mesh::Entity &cell);
+  
+  elem_mat_t mat_;
+  const lf::mesh::Mesh &mesh_;
+};
+
+  TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
+    const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
+    mat_ = elem_mat_t::Constant(-1.0);
+    mat_.diagonal() = (Eigen::Vector4d::Constant(1.0)*(double)cell_idx);
+    return mat_; 
+  }
+  
 // Simple test
 TEST(lf_assembly, dof_index_test) {
   std::cout << "### TEST: D.o.f. on test mesh" << std::endl;
@@ -107,12 +128,11 @@ TEST(lf_assembly, mat_assembly_test) {
   const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
 
   // Dummy assembler
-  lf::assemble::LinearFiniteElementAssembler assembler();
+  TestAssembler assembler { *mesh_p };
   lf::assemble::COOMatrix<double> mat(N_dofs,N_dofs);
   
-  // mat = lf::assemble::AssembleMatrixCellwiseX<
-  //   lf::assemble::COOMatrix<double>, lf::assemble::LinearFiniteElementAssembler>(
-  //         dof_handler, assembler));
+   mat = lf::assemble::AssembleMatrixCellwise<lf::assemble::COOMatrix<double>>(
+           dof_handler, assembler);
 }
 
 }  // namespace lf::assemble::test

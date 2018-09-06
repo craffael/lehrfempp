@@ -32,28 +32,32 @@ void getData_REF(double offset,std::vector<double> &res) {
 }
 
 int main(int /*argc*/, const char* /*unused*/ []) {
-  std::cout << "Runtime test" << std::endl;
+  std::cout << "Runtime test for range access" << std::endl;
 
+  std::cout << "I. Access through RandomAccessRange" << std::endl;
+  const long int reps = 100000000L;
   {
     boost::timer::auto_cpu_timer t;
-    for (long i=0;i<10000;i++) {
+    for (long int i=0;i<reps;i++) {
       auto res = getData_RAR((double)i);
       double s=0.0; for (int j=0;j<N;j++) { s += res[j]; }
     }
   }
-  
+
+  std::cout << "II. Returning std::vector's" << std::endl;
   {
     boost::timer::auto_cpu_timer t;
-    for (long i=0;i<10000;i++) {
+    for (long int i=0;i<reps;i++) {
       auto res = getData_VEC((double)i);
       double s=0.0; for (int j=0;j<N;j++) { s += res[j]; }
     }
   }
 
+  std::cout << "III. Returning result through reference" << std::endl;
   {
     boost::timer::auto_cpu_timer t;
     std::vector<double> res(N);
-    for (long i=0;i<10000;i++) {
+    for (long int i=0;i<reps;i++) {
       getData_REF((double)i,res);
       double s=0.0; for (int j=0;j<N;j++) { s += res[j]; }
     }

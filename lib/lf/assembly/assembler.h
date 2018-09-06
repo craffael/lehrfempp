@@ -23,8 +23,17 @@ namespace lf::assemble {
 /**
  * @brief A temporaery data structure for matrix in COO format.
  *
- * @tparam basic (usually atomic) scalar type for the matrix
- * Default implementation relies on COO/triplet format.
+ * @tparam SCALAR basic (usually atomic) scalar type for the matrix
+ *
+ *
+ * This class provides a container for a matrix in triplet 
+ * format, also known as COO format. It essentially manages 
+ * a vector of Eigen triplets. 
+ *
+ * #### type requirements for template arguments
+ *
+ * `SCALAR` must be a type that can serve as a scalar type
+ * for Eigen::Matrix.
  */
 template <typename SCALAR>
 struct COOMatrix {
@@ -63,6 +72,21 @@ struct COOMatrix {
  * @param dof_handler_test a dof handler object for row space @see DofHandler
  * @param assembler assembler object for passing all kinds of data
  * @param matrix matrix object to which the assembled matrix will be added
+ *
+ * This method performs cell-oriented assembly controlled by a local-to-global
+ * index map.
+ * 
+ * #### type requirements of template arguments
+ *
+ * - TMPMATRIX is a rudimentary matrix type and must
+ * + provide a constructor taking two matrix dimension arguments
+ * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
+ * + be copyable and assignable
+ * A model type is COOMatrix.
+ * - ASSEMBLER is a type capable of local assembly of element matrices. It must
+ * + have an `Eval()` method returning the element matrix for a cell
+ * + supply an `isActive()` method for selecting cells to be taken into account in 
+ *   assembly
  */
 template <typename TMPMATRIX, class ASSEMBLER>
 void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
@@ -79,7 +103,7 @@ void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
                 "Trial and test space must be defined on the same mesh");
 
   // Central assembly loop over cells
-  for (lf::mesh::Entity &cell : mesh.Entities(0)) {
+  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
     // Some cells may be skipped
     if (assembler.isActive(cell)) {
       // Size of element matrix
@@ -92,7 +116,7 @@ void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
       lf::base::RandomAccessRange<const gdof_idx_t> col_idx(
           dof_handler_trial.GetGlobalDofs(cell));
       // Request element matrix from assembler object
-      const elem_mat_t elem_mat(assembler.eval(cell));
+      const elem_mat_t elem_mat(assembler.Eval(cell));
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
                                       << ", cell " << mesh.Index(cell));
@@ -110,31 +134,21 @@ void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
 }  // end AssembleMatrixCellwise
 
 template <typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixCellwiseY(const DofHandler &dof_handler_trial,
+TMPMATRIX AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
                                   const DofHandler &dof_handler_test,
                                   ASSEMBLER &assembler) {
   TMPMATRIX matrix(dof_handler_test.GetNoDofs(), dof_handler_trial.GetNoDofs());
-  AssembleMatrixCellwise(dof_handler_trial, dof_handler_test, assembler,
+  AssembleMatrixCellwise<TMPMATRIX,ASSEMBLER>(dof_handler_trial, dof_handler_test, assembler,
                          matrix);
   return matrix;
 }
 template <typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixCellwiseX(const DofHandler &dof_handler,
+TMPMATRIX AssembleMatrixCellwise(const DofHandler &dof_handler,
                                   ASSEMBLER &assembler) {
-  return AssembleMatrixCellwiseY<TMPMATRIX, ASSEMBLER>(dof_handler, dof_handler,
+  return AssembleMatrixCellwise<TMPMATRIX, ASSEMBLER>(dof_handler, dof_handler,
                                                        assembler);
 }
 
-/** Rudimentary implementation */
-class LinearFiniteElementAssembler {
- public:
-  using elem_mat_t = Eigen::Matrix<double, 4, 4>;
-  using ElemMat = elem_mat_t &;
-  LinearFiniteElementAssembler(void) : mat_(elem_mat_t::Constant(1.0)) {}
-  bool isActive(lf::mesh::Entity &) { return true; }
-  ElemMat eval(lf::mesh::Entity &cell) { return mat_; }
-  elem_mat_t mat_;
-};
 
 }  // namespace lf::assemble
 
