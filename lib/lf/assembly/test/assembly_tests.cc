@@ -22,27 +22,33 @@
 
 namespace lf::assemble::test {
 
-/** Rudimentary implementation */
+/** Rudimentary implementation of an assembler for testing
+ *
+ * It returns an element matrix with the number of the cell
+ * on its diagonal and the negative number of the cell on
+ * all other positions.
+ */
 class TestAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 4, 4>;
   using ElemMat = elem_mat_t &;
-  
+
   TestAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
   ElemMat Eval(const lf::mesh::Entity &cell);
-  
+
+ private:
   elem_mat_t mat_;
   const lf::mesh::Mesh &mesh_;
 };
 
-  TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
-    const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
-    mat_ = elem_mat_t::Constant(-1.0);
-    mat_.diagonal() = (Eigen::Vector4d::Constant(1.0)*(double)cell_idx);
-    return mat_; 
-  }
-  
+TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
+  const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
+  mat_ = ((double)cell_idx * elem_mat_t::Constant(-1.0));
+  mat_.diagonal() = (Eigen::Vector4d::Constant(1.0) * (double)cell_idx);
+  return mat_;
+}
+
 // Simple test
 TEST(lf_assembly, dof_index_test) {
   std::cout << "### TEST: D.o.f. on test mesh" << std::endl;
@@ -127,12 +133,48 @@ TEST(lf_assembly, mat_assembly_test) {
   lf::assemble::UniformFEDofHandler dof_handler(mesh_p, lin_fe_loc_dofs);
   const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
 
-  // Dummy assembler
-  TestAssembler assembler { *mesh_p };
-  lf::assemble::COOMatrix<double> mat(N_dofs,N_dofs);
-  
-   mat = lf::assemble::AssembleMatrixCellwise<lf::assemble::COOMatrix<double>>(
-           dof_handler, assembler);
-}
+  std::cout << N_dofs << " degrees of freedom built" << std::endl;
+  EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
 
+  // Output/store index numbers of entities holding global shape functions
+  std::vector<lf::base::glb_idx_t> dof_to_entity_index{};
+  for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
+    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    EXPECT_EQ(e.RefEl(), lf::base::RefEl::kPoint()) << "dofs @ " << e.RefEl();
+    const lf::base::glb_idx_t e_idx(mesh_p->Index(e));
+    dof_to_entity_index.push_back(e_idx);
+    std::cout << "dof " << dof_idx << " @node " << e_idx << std::endl;
+  }
+
+  // Dummy assembler
+  TestAssembler assembler{*mesh_p};
+  lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
+
+  mat = lf::assemble::AssembleMatrixCellwise<lf::assemble::COOMatrix<double>>(
+      dof_handler, assembler);
+
+  std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
+            << std::endl;
+
+  // Build sparse matrix from COO format
+  Eigen::SparseMatrix<double> Galerkin_matrix(mat.rows(), mat.cols());
+  Galerkin_matrix.setFromTriplets(mat.triplets.begin(), mat.triplets.end());
+
+  // Output Galerkin matrix
+  std::cout << Galerkin_matrix << std::endl;
+
+  Eigen::MatrixXd ref_mat(10, 10);
+  ref_mat << 26, -13, -14, -5, 0, 0, -6, -13, -7, -5, -13, 16, -10, -6, -3, 0,
+      0, 0, 0, -5, -14, -10, 23, 0, -5, -7, -10, -6, 0, 0, -5, -6, 0, 6, -1, 0,
+      0, 0, 0, -5, 0, -3, -5, -1, 6, -3, 0, 0, 0, 0, 0, 0, -7, 0, -3, 7, -4, 0,
+      0, 0, -6, 0, -10, 0, 0, -4, 10, -6, 0, 0, -13, 0, -6, 0, 0, 0, -6, 13, -7,
+      0, -7, 0, 0, 0, 0, 0, 0, -7, 7, -0, -5, -5, 0, -5, 0, 0, 0, 0, -0, 5;
+
+  for (int i = 0; i < N_dofs; ++i) {
+    for (int j = 0; i < N_dofs; ++i) {
+      EXPECT_DOUBLE_EQ(Galerkin_matrix.coeffRef(i,j),ref_mat(i,j))
+		       << " mismatch in entry (" << i << ',' << j << ")";
+    }
+  }
+}
 }  // namespace lf::assemble::test

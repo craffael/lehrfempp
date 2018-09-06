@@ -47,6 +47,10 @@ struct COOMatrix {
   COOMatrix &operator=(const COOMatrix &) = default;
   COOMatrix &operator=(COOMatrix &&) = default;
 
+  /** @brief return number of rows */
+  Eigen::Index rows(void) const { return n; }
+  /** @brief return number of column */
+  Eigen::Index cols(void) const { return m; }
   /**
    * @brief Add a value to the specified entry
    * @param i row index
