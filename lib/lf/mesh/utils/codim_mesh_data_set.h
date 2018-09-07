@@ -50,8 +50,11 @@ class CodimMeshDataSet : public MeshDataSet<T> {
     using type_t = boost::container::vector<bool>;
   };
 
+  /** pointer to underlying mesh. Owned by the data set ! */
   std::shared_ptr<const Mesh> mesh_;
+  /** data vector */
   typename Container<T, int>::type_t data_;
+  /** co-dimension */
   dim_t codim_;
 
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
