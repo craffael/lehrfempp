@@ -35,28 +35,41 @@ using glb_idx_t = lf::base::glb_idx_t;
  * @brief Defines local distribution of shape functions = degrees of freedom
  *
  *
- * This class should be used to set up dof handlers for uniform finite element
- * spaces, for which the same number of basis functions is associated to every
- * mesh entity of a particular type. The prime example are Lagrangian finite
- * element spaces.
+ * This _interface_ class should be used to set up dof handlers for uniform
+ * finite element spaces, for which the same number of basis functions is
+ * associated to every mesh entity of a particular type. The prime example are
+ * Lagrangian finite element spaces.
  *
- * ###Example: 2D Quadratic Lagrangian finite elements
+ * ### Example: 2D Quadratic Lagrangian finite elements
  *
  * 1 local dof per point, 1 local dof per edge, 0 local dof for triangles,
  * 1 local dof for quads
+ *
+ * ### Example: 2D Crouzeix-Raviart element
+ *
+ * 0 local dof per point, 1 local dof per edge, 0 cell-based dof
+ *
+ * ### Example: 2D second-order edge elements
+ *
+ * 0 local dof per node, 2 local dof per edge, 2 local dof per cell
  */
 class LocalStaticDOFs {
  public:
-  virtual ~LocalStaticDOFs(void) = default;
   LocalStaticDOFs(void);
+  /** Disabled constructors and assignment operators */
+  /**@{*/
+  /** @name Disabled */
   LocalStaticDOFs(const LocalStaticDOFs &) = delete;
   LocalStaticDOFs(LocalStaticDOFs &&) = delete;
   LocalStaticDOFs &operator=(const LocalStaticDOFs &) = delete;
   LocalStaticDOFs &operator=(LocalStaticDOFs &&) = delete;
+  /**@}*/
+  virtual ~LocalStaticDOFs(void) = default;
 
   /**
    * @brief Obtain number of local shape functions associated with
    * (sub-)entities of a given type
+   *
    * @param refel topological type of the entity.
    *
    * @note the method provides the number of _interior_ local shape functions
@@ -70,11 +83,13 @@ class LocalStaticDOFs {
    * @param refel topological type of the entity.
    *
    * This method returns the number of all local shape functions whose trace
-   * does not vanish on entities of the specified type.
+   * does not vanish on entities of the specified type. This number is equal
+   * to the sum of the numbers of interior local shape functions for
+   * an entity and all its sub-entities.
    */
   virtual size_type TotalNoLocDofs(lf::base::RefEl refel) const = 0;
   /**
-   * @brief dimension of mesh
+   * @brief topological dimension of mesh
    */
   virtual dim_t Dimension(void) const = 0;
 };
@@ -82,6 +97,7 @@ class LocalStaticDOFs {
 /**
  * @brief Description of uniform distribution of local shape functions for 2D
  * mesh
+ *
  * @sa LocalStaticDOFs
  */
 class LocalStaticDOFs2D : public LocalStaticDOFs {
@@ -127,6 +143,11 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
   std::array<size_type, 4> no_loc_dofs_per_refel_;
 };  // end class definition
 
+/** @brief Local dof numbers for linear Lagrangian finite elements.
+ *
+ * For this simplest finite element methods every node owns exactly
+ * one global/local shape function.
+ */
 class LocalLinearLagrangianFE2D : public LocalStaticDOFs2D {
  public:
   LocalLinearLagrangianFE2D(void) : LocalStaticDOFs2D(1, 0, 0, 0) {}

@@ -85,8 +85,10 @@ class Mesh {
    * @param index an integer between 0 and number of entities of the given
    * co-dimension -1. It passes the index.
    *
-   * Based on the bijectition between entities of a givenco-dimension and an
-   * integer range
+   * Based on the bijectition between entities of a given co-dimension and an
+   * integer range.
+   *
+   * @note O(1) access complexity due to table lookup.
    */
   virtual const mesh::Entity* EntityByIndex(dim_t codim,
                                             glb_idx_t index) const = 0;

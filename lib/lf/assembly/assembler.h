@@ -26,9 +26,9 @@ namespace lf::assemble {
  * @tparam SCALAR basic (usually atomic) scalar type for the matrix
  *
  *
- * This class provides a container for a matrix in triplet 
- * format, also known as COO format. It essentially manages 
- * a vector of Eigen triplets. 
+ * This class provides a container for a matrix in triplet
+ * format, also known as COO format. It essentially manages
+ * a vector of Eigen triplets.
  *
  * #### type requirements for template arguments
  *
@@ -69,17 +69,20 @@ struct COOMatrix {
 /**
  * @brief Assembly function for standard assembly of finite element matrices
  *
+ * @tparam CODIM co-dimension of mesh entities which should be traversed 
+ *               in the course of assembly
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ASSEMBLER a type providing the computation of element matrices
  * @param dof_handler_trial a dof handler object for column space @see
  * DofHandler
  * @param dof_handler_test a dof handler object for row space @see DofHandler
  * @param assembler assembler object for passing all kinds of data
- * @param matrix matrix object to which the assembled matrix will be added
+ * @param matrix matrix object to which the assembled matrix will be added.
+ *               The matrix object is not set to zero in the beginning!
  *
  * This method performs cell-oriented assembly controlled by a local-to-global
- * index map.
- * 
+ * index map ("dof handler").
+ *
  * #### type requirements of template arguments
  *
  * - TMPMATRIX is a rudimentary matrix type and must
@@ -89,11 +92,11 @@ struct COOMatrix {
  * A model type is COOMatrix.
  * - ASSEMBLER is a type capable of local assembly of element matrices. It must
  * + have an `Eval()` method returning the element matrix for a cell
- * + supply an `isActive()` method for selecting cells to be taken into account in 
- *   assembly
+ * + supply an `isActive()` method for selecting cells to be taken into account
+ * in assembly
  */
-template <typename TMPMATRIX, class ASSEMBLER>
-void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
+template <int CODIM, typename TMPMATRIX, class ASSEMBLER>
+void AssembleMatrixLocally(const DofHandler &dof_handler_trial,
                             const DofHandler &dof_handler_test,
                             ASSEMBLER &assembler, TMPMATRIX &matrix) {
   // Type of matrix entries, usually either double or complex.
@@ -107,26 +110,27 @@ void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
                 "Trial and test space must be defined on the same mesh");
 
   // Central assembly loop over cells
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+  for (const lf::mesh::Entity &entity : mesh.Entities(CODIM)) {
     // Some cells may be skipped
-    if (assembler.isActive(cell)) {
+    if (assembler.isActive(entity)) {
       // Size of element matrix
-      const size_type nrows_loc = dof_handler_test.GetNoLocalDofs(cell);
-      const size_type ncols_loc = dof_handler_trial.GetNoLocalDofs(cell);
+      const size_type nrows_loc = dof_handler_test.GetNoLocalDofs(entity);
+      const size_type ncols_loc = dof_handler_trial.GetNoLocalDofs(entity);
       // row indices of for contributions of cells
       lf::base::RandomAccessRange<const gdof_idx_t> row_idx(
-          dof_handler_test.GetGlobalDofs(cell));
+          dof_handler_test.GlobalDofIndices(entity));
       // Column indices of for contributions of cells
       lf::base::RandomAccessRange<const gdof_idx_t> col_idx(
-          dof_handler_trial.GetGlobalDofs(cell));
-      // Request element matrix from assembler object
-      const elem_mat_t elem_mat(assembler.Eval(cell));
+          dof_handler_trial.GlobalDofIndices(entity));
+      // Request local matrix from assembler object. In the case CODIM = 0,
+      // when `entity` is a cell, this is the element matrix
+      const elem_mat_t elem_mat(assembler.Eval(entity));
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
-                                      << ", cell " << mesh.Index(cell));
+                                      << ", entity " << mesh.Index(entity));
       LF_ASSERT_MSG(elem_mat.cols() >= ncols_loc,
                     "ncols mismatch " << elem_mat.cols() << " <-> " << nrows_loc
-                                      << ", cell " << mesh.Index(cell));
+                                      << ", entity " << mesh.Index(entity));
       // Assembly double loop
       for (int i = 0; i < nrows_loc; i++) {
         for (int j = 0; j < ncols_loc; j++) {
@@ -135,24 +139,23 @@ void AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
       }  // end assembly local double loop
     }    // end if(isActive() )
   }      // end main assembly loop
-}  // end AssembleMatrixCellwise
+}  // end AssembleMatrixLocally
 
-template <typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixCellwise(const DofHandler &dof_handler_trial,
-                                  const DofHandler &dof_handler_test,
-                                  ASSEMBLER &assembler) {
+  template <int CODIM,typename TMPMATRIX, class ASSEMBLER>
+TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler_trial,
+                                 const DofHandler &dof_handler_test,
+                                 ASSEMBLER &assembler) {
   TMPMATRIX matrix(dof_handler_test.GetNoDofs(), dof_handler_trial.GetNoDofs());
-  AssembleMatrixCellwise<TMPMATRIX,ASSEMBLER>(dof_handler_trial, dof_handler_test, assembler,
-                         matrix);
+  AssembleMatrixLocally<CODIM,TMPMATRIX, ASSEMBLER>(
+      dof_handler_trial, dof_handler_test, assembler, matrix);
   return matrix;
 }
-template <typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixCellwise(const DofHandler &dof_handler,
-                                  ASSEMBLER &assembler) {
-  return AssembleMatrixCellwise<TMPMATRIX, ASSEMBLER>(dof_handler, dof_handler,
-                                                       assembler);
+  template <int CODIM,typename TMPMATRIX, class ASSEMBLER>
+TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler,
+                                 ASSEMBLER &assembler) {
+  return AssembleMatrixLocally<CODIM,TMPMATRIX, ASSEMBLER>(dof_handler, dof_handler,
+                                                      assembler);
 }
-
 
 }  // namespace lf::assemble
 
