@@ -33,12 +33,12 @@ namespace lf::mesh::utils {
  * ### Example
  *
  * If, for a 2D mesh we want to count the number of cells adjacent to edges,
- * we have to specify codim_sub = 1, codim_super = 1! 
+ * we have to specify codim_sub = 1, codim_super = 1!
  *
- * @note codim_super is _relative_ with flipped sign! 
+ * @note codim_super is _relative_ with flipped sign!
  */
 
-  std::shared_ptr<CodimMeshDataSet<lf::base::size_type>> countNoSuperEntities(
+CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
     std::shared_ptr<const Mesh> mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super);
 

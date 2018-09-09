@@ -3,7 +3,7 @@
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
-
+ 
 /**
  * @file
  * @brief Functions for the initialization of special data sets
@@ -15,25 +15,25 @@
 #include "special_entity_sets.h"
 
 namespace lf::mesh::utils {
-  std::shared_ptr<CodimMeshDataSet<lf::base::size_type>> countNoSuperEntities(
+CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
     std::shared_ptr<const Mesh> mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super) {
   LF_VERIFY_MSG((mesh_p->DimMesh() >= codim_sub),
                 "Illegal codim_sub = " << codim_sub);
   LF_VERIFY_MSG(codim_super <= codim_sub, "Codim_super to large");
 
-  std::shared_ptr<CodimMeshDataSet<lf::base::size_type>> sup_ent_cnt =
-    make_CodimMeshDataSet<lf::base::size_type>(mesh_p, codim_sub,0);
+  // Declare and initialize the data set
+  CodimMeshDataSet<lf::base::size_type> sup_ent_cnt{mesh_p, codim_sub, 0};
 
   const lf::base::dim_t super_codim = codim_sub - codim_super;
   // Run through all super entities
-  for(const lf::mesh::Entity &e: mesh_p->Entities(super_codim)) {
+  for (const lf::mesh::Entity &e : mesh_p->Entities(super_codim)) {
     // Traverse all sub-entities of a specific relative co-dimension
-    for(const lf::mesh::Entity &subent: e.SubEntities(codim_super)) {
-      (*sup_ent_cnt)(subent) += 1;
+    for (const lf::mesh::Entity &subent : e.SubEntities(codim_super)) {
+      sup_ent_cnt(subent) += 1;
     }
   }
   return sup_ent_cnt;
 }
-  
-}
+
+}  // namespace lf::mesh::utils

@@ -3,7 +3,7 @@
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
-
+ 
 /**
  * @file
  * @brief A general DOF handler interface
@@ -41,8 +41,9 @@ namespace lf::assemble {
  *  This means **First dofs on nodes, then dofs on edges, then dofs on cells**
  * -# Dofs owned by the same mesh entity are numbered contiguously.
  *
- * @note A priori the numbering of the global shape functions has nothing to do
- *       with the indexing of mesh entities of a particular co-dimension.
+ * -# if two entities have the same co-dimension, then the dofs of that 
+ *    with the lower index are numbered before the dofs of that with
+ *    the higher index: *dof numbering is compatible with indexing*
  *
  * # Rules for numbering local shape functions (local dof)
  *
@@ -325,17 +326,18 @@ class DynamicFEDofHandler : public DofHandler {
   // Traverse nodes based on indices
   for (glb_idx_t node_idx = 0; node_idx < no_nodes; node_idx++) {
     // Obtain pointer to node entity
-    const mesh::Entity *node { mesh_p_->EntityByIndex(2,node_idx) };
+    const mesh::Entity *node_p { mesh_p_->EntityByIndex(2,node_idx) };
+    LF_ASSERT_MSG(mesh_p->Index(*node_p) == node_idx,"Node index mismatch");
     // Offset for indices of node in index vector
     glb_idx_t node_dof_offset = dof_idx;
     offsets_[2][node_idx] = node_dof_offset;
-    size_type no_int_dof_node = locdof(*node);
+    size_type no_int_dof_node = locdof(*node_p);
     no_int_dofs_[2][node_idx] = no_int_dof_node;
 
     // Store dof indices in array
     for (int j = 0; j < no_int_dof_node; j++) {
       dofs_[2].push_back(dof_idx);
-      dof_entities_.push_back(node);  // Store entity for current dof
+      dof_entities_.push_back(node_p);  // Store entity for current dof
       dof_idx++;                       // Move on to next index
     }
   }
@@ -352,6 +354,7 @@ class DynamicFEDofHandler : public DofHandler {
   for (glb_idx_t edge_idx=0; edge_idx < no_edges; edge_idx++) {
     // Obtain pointer to edge entity
     const mesh::Entity *edge { mesh_p_->EntityByIndex(1,edge_idx) };
+    LF_ASSERT_MSG(mesh_p_->Index(*edge) == edge_idx,"Edge index mismatch");
     // Offset for indices of edge dof in index vector
     offsets_[1][edge_idx] = edge_dof_offset;
     size_type no_int_dof_edge = locdof(*edge);
