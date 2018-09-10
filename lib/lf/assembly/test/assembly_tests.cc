@@ -430,4 +430,113 @@ TEST(lf_assembly, edge_dof_dynamic) {
   edge_dof_assembly_test(*mesh_p, dof_handler);
 }
 
+// Auxiliary assembler class for asembly along the boundary
+class BoundaryAssembler {
+ public:
+  using elem_mat_t = Eigen::Matrix<double, 2, 2>;
+  using ElemMat = elem_mat_t &;
+
+  BoundaryAssembler(std::shared_ptr<lf::mesh::Mesh> mesh_p);
+  bool isActive(const lf::mesh::Entity &);
+  ElemMat Eval(const lf::mesh::Entity &cell);
+
+ private:
+  elem_mat_t mat_;
+  std::shared_ptr<lf::mesh::Mesh> mesh_p_;
+  lf::mesh::utils::CodimMeshDataSet<lf::base::size_type> cells_at_edges_;
+};
+
+BoundaryAssembler::BoundaryAssembler(std::shared_ptr<lf::mesh::Mesh> mesh_p)
+    : mesh_p_(std::move(mesh_p)),
+      cells_at_edges_(lf::mesh::utils::countNoSuperEntities(mesh_p_, 1, 1)) {}
+
+bool BoundaryAssembler::isActive(const lf::mesh::Entity &edge) {
+  LF_VERIFY_MSG(edge.Codim() == 1, "Argument must be edge");
+  return (cells_at_edges_(edge) == 1);
+}
+
+BoundaryAssembler::ElemMat BoundaryAssembler::Eval(
+    const lf::mesh::Entity &edge) {
+  const lf::base::glb_idx_t edge_idx = mesh_p_->Index(edge);
+  mat_(0, 0) = (double)edge_idx;
+  mat_(1, 1) = (double)edge_idx;
+  mat_(0, 1) = -(double)edge_idx;
+  mat_(1, 0) = -(double)edge_idx;
+  return mat_;
+}
+
+// Auxiliary function for testing
+void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
+                             const lf::assemble::DofHandler &dof_handler) {
+  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+
+  std::cout << N_dofs << " degrees of freedom in linear FE space" << std::endl;
+  EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
+
+  // Output/store index numbers of entities holding global shape functions
+  std::vector<lf::base::glb_idx_t> dof_to_entity_index{};
+  for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
+    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    EXPECT_EQ(e.RefEl(), lf::base::RefEl::kPoint()) << "dofs @ " << e.RefEl();
+    const lf::base::glb_idx_t e_idx(mesh_p->Index(e));
+    dof_to_entity_index.push_back(e_idx);
+    std::cout << "dof " << dof_idx << " @node " << e_idx << std::endl;
+  }
+
+  // Test assembler
+  BoundaryAssembler assembler{mesh_p};
+  lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
+
+  // Assembly over edges
+  mat = lf::assemble::AssembleMatrixLocally<1, lf::assemble::COOMatrix<double>>(
+      dof_handler, assembler);
+
+  std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
+            << std::endl;
+
+  // Build sparse matrix from COO format
+  Eigen::SparseMatrix<double> Galerkin_matrix(mat.rows(), mat.cols());
+  Galerkin_matrix.setFromTriplets(mat.triplets.begin(), mat.triplets.end());
+
+  // Convert Galerkin matrix to a dense matrix
+  Eigen::MatrixXd dense_Gal_mat = Galerkin_matrix;
+
+  // Output Galerkin matrix
+  std::cout << dense_Gal_mat << std::endl;
+  
+  // Reference Galerkin matrix
+  Eigen::MatrixXd ref_mat(10, 10);
+  ref_mat <<
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0, 23,-11,  0,  0,  0,  0,-12,
+    0,  0,  0,-11, 24,-13,  0,  0,  0,  0,
+    0,  0,  0,  0,-13, 27,-14,  0,  0,  0,
+    0,  0,  0,  0,  0,-14, 29,-15,  0,  0,
+    0,  0,  0,  0,  0,  0,-15, 31,-16,  0,
+    0,  0,  0,  0,  0,  0,  0,-16, 33,-17,
+    0,  0,  0,-12,  0,  0,  0,  0,-17, 29;
+
+  for (int i = 0; i < N_dofs; ++i) {
+    for (int j = 0; j < N_dofs; ++j) {
+      EXPECT_DOUBLE_EQ(dense_Gal_mat(i, j),
+                       ref_mat(dof_to_entity_index[i], dof_to_entity_index[j]))
+          << " mismatch in entry (" << i << ',' << j << ")";
+    }
+  }
+}
+
+TEST(lf_assembly, boundary_assembly) {
+  std::cout << "### TEST: Assembly along boundary of test mesh" << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Construct dofhandler for p.w. linear Lagrangian FE space
+  lf::assemble::UniformFEDofHandler dof_handler(
+      mesh_p, {{lf::base::RefEl::kPoint(), 1}});
+
+  linfe_boundary_assembly(mesh_p, dof_handler);
+}
+
 }  // namespace lf::assemble::test
