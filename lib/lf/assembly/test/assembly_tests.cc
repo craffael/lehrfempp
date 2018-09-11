@@ -241,6 +241,9 @@ TEST(lf_assembly, mat_assembly_test) {
   lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
 
+  DofHandler::output_ctrl_ = 30;
+  std::cout << dof_handler << std::endl;
+  
   linfe_mat_assembly(*mesh_p, dof_handler);
 }
 
@@ -258,6 +261,9 @@ TEST(lf_assembly, dynamic_dof_test) {
   };
 
   lf::assemble::DynamicFEDofHandler dof_handler(mesh_p, lin_fe_dof_layout);
+
+  DofHandler::output_ctrl_ = 30;
+  std::cout << dof_handler << std::endl;
 
   linfe_mat_assembly(*mesh_p, dof_handler);
 }
@@ -410,6 +416,9 @@ TEST(lf_assembly, edge_dof_static) {
   lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kSegment(), 2}});
 
+  DofHandler::output_ctrl_ = 30;
+  std::cout << dof_handler << std::endl;
+  
   edge_dof_assembly_test(*mesh_p, dof_handler);
 }
 
@@ -424,7 +433,7 @@ TEST(lf_assembly, edge_dof_dynamic) {
         return (e.RefEl() == lf::base::RefEl::kSegment()) ? 2 : 0;
       });
 
-  DofHandler::output_ctrl_ = 6;
+  DofHandler::output_ctrl_ = 30;
   std::cout << dof_handler << std::endl;
 
   edge_dof_assembly_test(*mesh_p, dof_handler);

@@ -3,7 +3,7 @@
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
- 
+
 /**
  * @file
  * @brief Rudimentary implementation of a general DOF handler interface
@@ -36,7 +36,17 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
           for (const lf::assemble::gdof_idx_t &dof : doflist) {
             o << dof << ' ';
           }
-          o << ']' << std::endl;
+          o << ']';
+          if (DofHandler::output_ctrl_ % 5 == 0) {
+            lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t>
+                intdoflist(dof_handler.InteriorGlobalDofIndices(e));
+            o << " int = [";
+            for (lf::assemble::gdof_idx_t int_dof : intdoflist) {
+              o << int_dof << ' ';
+            }
+            o << ']';
+          }
+          o << std::endl;
         }
       }
     }
@@ -276,35 +286,11 @@ void UniformFEDofHandler::initIndexArrays(void) {
 lf::base::RandomAccessRange<const gdof_idx_t>
 UniformFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
                                       glb_idx_t entity_index) const {
-  dim_t codim;  // Co-dimension of entity in a 2D mesh
-  size_type no_covered_dofs;
-  switch (ref_el_type) {
-    case lf::base::RefEl::kPoint(): {
-      codim = 0;
-      no_covered_dofs = no_dofs_[kNodeOrd];
-      break;
-    }
-    case lf::base::RefEl::kSegment(): {
-      codim = 1;
-      no_covered_dofs = no_dofs_[kEdgeOrd];
-      break;
-    }
-    case lf::base::RefEl::kTria(): {
-      codim = 2;
-      no_covered_dofs = num_dofs_tria_;
-      break;
-    }
-    case lf::base::RefEl::kQuad(): {
-      codim = 2;
-      no_covered_dofs = num_dofs_quad_;
-      break;
-    }
-    default: {
-      LF_VERIFY_MSG(false, "Illegal entity type");
-      break;
-    }
-  }
-  LF_ASSERT_MSG((mesh_->Size(codim) >= entity_index),
+  // Co-dimension of entity in a 2D mesh
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  const size_type no_covered_dofs = NoCoveredDofs(ref_el_type);
+
+  LF_ASSERT_MSG((mesh_->Size(codim) > entity_index),
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
@@ -318,6 +304,30 @@ UniformFEDofHandler::GlobalDofIndices(const lf::mesh::Entity &entity) const {
   return GlobalDofIndices(entity.RefEl(), mesh_->Index(entity));
 }
 
+lf::base::RandomAccessRange<const gdof_idx_t>
+UniformFEDofHandler::InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
+                                              glb_idx_t entity_index) const {
+  // Co-dimension of entity in a 2D mesh
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  const size_type no_covered_dofs = NoCoveredDofs(ref_el_type);
+  const size_type no_loc_dofs = NoInteriorDofs(ref_el_type);
+
+  LF_ASSERT_MSG((mesh_->Size(codim) > entity_index),
+                "Index " << entity_index << " out of range");
+  // Pointers to range of dof indices
+  const gdof_idx_t *begin =
+      dofs_[codim].data() + (no_dofs_[codim] * entity_index);
+  const gdof_idx_t *end = begin + no_covered_dofs;
+  begin += (no_covered_dofs - no_loc_dofs);
+  return {begin, end};
+}
+
+lf::base::RandomAccessRange<const gdof_idx_t>
+UniformFEDofHandler::InteriorGlobalDofIndices(
+    const lf::mesh::Entity &entity) const {
+  return InteriorGlobalDofIndices(entity.RefEl(), mesh_->Index(entity));
+}
+
 size_type UniformFEDofHandler::GetNoLocalDofs(
     const lf::mesh::Entity &entity) const {
   return GetNoLocalDofs(entity.RefEl(), 0);
@@ -325,26 +335,9 @@ size_type UniformFEDofHandler::GetNoLocalDofs(
 
 size_type UniformFEDofHandler::GetNoLocalDofs(lf::base::RefEl ref_el_type,
                                               glb_idx_t) const {
-  switch (ref_el_type) {
-    case lf::base::RefEl::kPoint(): {
-      return no_dofs_[kNodeOrd];
-    }
-    case lf::base::RefEl::kSegment(): {
-      return no_dofs_[kEdgeOrd];
-    }
-    case lf::base::RefEl::kTria(): {
-      return num_dofs_tria_;
-    }
-    case lf::base::RefEl::kQuad(): {
-      return num_dofs_quad_;
-    }
-    default: {
-      LF_VERIFY_MSG(false, "Illegal entity type");
-      break;
-    }
-  }
-  return (size_type)0;
+  return NoCoveredDofs(ref_el_type);
 }
+
 // ----------------------------------------------------------------------
 // Implementation DynamicFEDofHandler
 // ----------------------------------------------------------------------
@@ -354,7 +347,7 @@ DynamicFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
                                       glb_idx_t entity_index) const {
   // Co-dimension of entity in a 2D mesh
   dim_t codim = 2 - ref_el_type.Dimension();
-  LF_ASSERT_MSG((mesh_p_->Size(codim) >= entity_index),
+  LF_ASSERT_MSG((mesh_p_->Size(codim) > entity_index),
                 "Index " << entity_index << " out of range");
   // Offset of indices for current entity
   const size_type idx_offset = offsets_[codim][entity_index];
@@ -370,6 +363,33 @@ DynamicFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
 lf::base::RandomAccessRange<const gdof_idx_t>
 DynamicFEDofHandler::GlobalDofIndices(const lf::mesh::Entity &entity) const {
   return GlobalDofIndices(entity.RefEl(), mesh_p_->Index(entity));
+}
+
+lf::base::RandomAccessRange<const gdof_idx_t>
+DynamicFEDofHandler::InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
+                                              glb_idx_t entity_index) const {
+  // Co-dimension of entity in a 2D mesh
+  dim_t codim = 2 - ref_el_type.Dimension();
+  LF_ASSERT_MSG((mesh_p_->Size(codim) > entity_index),
+                "Index " << entity_index << " out of range");
+  // Offset of indices for current entity
+  const size_type idx_offset = offsets_[codim][entity_index];
+  // Number of shape functions covering current entity
+  const size_type no_covered_dofs =
+      offsets_[codim][entity_index + 1] - idx_offset;
+  // Number of shape functions associated with the current entity
+  const size_type no_loc_dofs = no_int_dofs_[codim][entity_index];
+  // Pointers to range of dof indices
+  const gdof_idx_t *begin = dofs_[codim].data() + idx_offset;
+  const gdof_idx_t *end = begin + no_covered_dofs;
+  begin += (no_covered_dofs - no_loc_dofs);
+  return {begin, end};
+}
+
+lf::base::RandomAccessRange<const gdof_idx_t>
+DynamicFEDofHandler::InteriorGlobalDofIndices(
+    const lf::mesh::Entity &entity) const {
+  return InteriorGlobalDofIndices(entity.RefEl(), mesh_p_->Index(entity));
 }
 
 size_type DynamicFEDofHandler::GetNoLocalDofs(
