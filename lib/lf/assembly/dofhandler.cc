@@ -333,9 +333,9 @@ size_type UniformFEDofHandler::GetNoLocalDofs(
   return GetNoLocalDofs(entity.RefEl(), 0);
 }
 
-size_type UniformFEDofHandler::GetNoLocalDofs(lf::base::RefEl ref_el_type,
-                                              glb_idx_t) const {
-  return NoCoveredDofs(ref_el_type);
+size_type UniformFEDofHandler::GetNoInteriorDofs(
+    const lf::mesh::Entity &entity) const {
+  return NoInteriorDofs(entity.RefEl());
 }
 
 // ----------------------------------------------------------------------
@@ -343,13 +343,14 @@ size_type UniformFEDofHandler::GetNoLocalDofs(lf::base::RefEl ref_el_type,
 // ----------------------------------------------------------------------
 
 lf::base::RandomAccessRange<const gdof_idx_t>
-DynamicFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
-                                      glb_idx_t entity_index) const {
+DynamicFEDofHandler::GlobalDofIndices(const lf::mesh::Entity &entity) const {
+  // Topological type
+  const lf::base::RefEl ref_el_type = entity.RefEl();
   // Co-dimension of entity in a 2D mesh
-  dim_t codim = 2 - ref_el_type.Dimension();
-  LF_ASSERT_MSG((mesh_p_->Size(codim) > entity_index),
-                "Index " << entity_index << " out of range");
-  // Offset of indices for current entity
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  // Index of current mesh entity
+  const glb_idx_t entity_index = mesh_p_->Index(entity);
+  // Offset of dof indices for current entity
   const size_type idx_offset = offsets_[codim][entity_index];
   // Number of shape functions covering current entity
   const size_type no_covered_dofs =
@@ -361,17 +362,14 @@ DynamicFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
 }
 
 lf::base::RandomAccessRange<const gdof_idx_t>
-DynamicFEDofHandler::GlobalDofIndices(const lf::mesh::Entity &entity) const {
-  return GlobalDofIndices(entity.RefEl(), mesh_p_->Index(entity));
-}
-
-lf::base::RandomAccessRange<const gdof_idx_t>
-DynamicFEDofHandler::InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
-                                              glb_idx_t entity_index) const {
+DynamicFEDofHandler::InteriorGlobalDofIndices(
+    const lf::mesh::Entity &entity) const {
+  // Topological type
+  const lf::base::RefEl ref_el_type = entity.RefEl();
   // Co-dimension of entity in a 2D mesh
-  dim_t codim = 2 - ref_el_type.Dimension();
-  LF_ASSERT_MSG((mesh_p_->Size(codim) > entity_index),
-                "Index " << entity_index << " out of range");
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  // Index of current mesh entity
+  const glb_idx_t entity_index = mesh_p_->Index(entity);
   // Offset of indices for current entity
   const size_type idx_offset = offsets_[codim][entity_index];
   // Number of shape functions covering current entity
@@ -382,27 +380,27 @@ DynamicFEDofHandler::InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
   // Pointers to range of dof indices
   const gdof_idx_t *begin = dofs_[codim].data() + idx_offset;
   const gdof_idx_t *end = begin + no_covered_dofs;
+  // Move pointer to location of indices for interior dofs
+  // This is the only difference to GlobalDofIndices()
   begin += (no_covered_dofs - no_loc_dofs);
   return {begin, end};
 }
 
-lf::base::RandomAccessRange<const gdof_idx_t>
-DynamicFEDofHandler::InteriorGlobalDofIndices(
-    const lf::mesh::Entity &entity) const {
-  return InteriorGlobalDofIndices(entity.RefEl(), mesh_p_->Index(entity));
-}
-
 size_type DynamicFEDofHandler::GetNoLocalDofs(
     const lf::mesh::Entity &entity) const {
-  return GetNoLocalDofs(entity.RefEl(), mesh_p_->Index(entity));
+  const lf::base::RefEl ref_el_type = entity.RefEl();
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  const glb_idx_t entity_index = mesh_p_->Index(entity);
+  return (offsets_[codim][entity_index + 1] - offsets_[codim][entity_index]);
 }
 
-size_type DynamicFEDofHandler::GetNoLocalDofs(lf::base::RefEl ref_el_type,
-                                              glb_idx_t entity_index) const {
-  dim_t codim = 2 - ref_el_type.Dimension();
-  LF_ASSERT_MSG((mesh_p_->Size(codim) >= entity_index),
-                "Index " << entity_index << " out of range");
-  return (offsets_[codim][entity_index + 1] - offsets_[codim][entity_index]);
+size_type DynamicFEDofHandler::GetNoInteriorDofs(
+    const lf::mesh::Entity &entity) const {
+  const lf::base::RefEl ref_el_type = entity.RefEl();
+  const dim_t codim = 2 - ref_el_type.Dimension();
+  const glb_idx_t entity_index = mesh_p_->Index(entity);
+  const size_type no_loc_dofs = no_int_dofs_[codim][entity_index];
+  return no_loc_dofs;
 }
 
 }  // namespace lf::assemble
