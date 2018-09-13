@@ -1,8 +1,11 @@
 set(sources
+  assembly_types.h
   dofhandler.h
   dofhandler.cc
   local_static_dofs.h
   local_static_dofs.cc
+  coomatrix.h
+  coomatrix.cc
   assembler.h
   assembler.cc
 )

@@ -18,18 +18,9 @@
 #include <lf/base/base.h>
 #include <lf/mesh/mesh.h>
 #include <lf/quad/quad.h>
+#include "assembly_types.h"
 
 namespace lf::assemble {
-/** Type for indices into global matrices/vectors */
-using gdof_idx_t = Eigen::Index;
-/** Type for indices referring to entity matrices/vectors */
-using ldof_idx_t = Eigen::Index;
-/** Type for vector length/matrix sizes */
-using size_type = lf::base::size_type;
-/** Type for (co-)dimensions */
-using dim_t = lf::base::dim_t;
-/** Type for global index of entities */
-using glb_idx_t = lf::base::glb_idx_t;
 
 /**
  * @brief Defines local distribution of shape functions = degrees of freedom
