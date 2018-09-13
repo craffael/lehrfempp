@@ -49,6 +49,28 @@ TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
   return mat_;
 }
 
+/** Vector assembler for testing */
+class TestVectorAssembler {
+ public:
+  using elem_vec_t = Eigen::Matrix<double, 4, 1>;
+  using ElemVec = elem_vec_t &;
+
+  TestVectorAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
+  bool isActive(const lf::mesh::Entity &) { return true; }
+  ElemVec Eval(const lf::mesh::Entity &cell);
+
+ private:
+  elem_vec_t vec_;
+  const lf::mesh::Mesh &mesh_;
+};
+
+TestVectorAssembler::ElemVec TestVectorAssembler::Eval(
+    const lf::mesh::Entity &cell) {
+  const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
+  vec_ = ((double)cell_idx * elem_vec_t::Constant(1.0));
+  return vec_;
+}
+
 // Simple output function for degrees of freedom
 void output_dofs_test(const lf::mesh::Mesh &mesh,
                       const lf::assemble::DofHandler &dof_handler) {
@@ -225,6 +247,22 @@ void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
           << " mismatch in entry (" << i << ',' << j << ")";
     }
   }
+
+  // test vector assembler
+  TestVectorAssembler vec_assembler{mesh};
+
+  // The actual assembly is done here
+  auto rhsvec = lf::assemble::AssembleVectorLocally<0, Eigen::VectorXd>(
+      dof_handler, vec_assembler);
+
+  // Output assembled vector
+  std::cout << "Assembled vector: " << rhsvec.transpose() << std::endl;
+
+  for (int i = 0; i < N_dofs; ++i) {
+    EXPECT_DOUBLE_EQ(rhsvec[i],
+                     ref_mat(dof_to_entity_index[i], dof_to_entity_index[i]))
+        << " mismatch in component " << i;
+  }
 }
 
 TEST(lf_assembly, mat_assembly_test) {
@@ -243,7 +281,7 @@ TEST(lf_assembly, mat_assembly_test) {
 
   DofHandler::output_ctrl_ = 30;
   std::cout << dof_handler << std::endl;
-  
+
   linfe_mat_assembly(*mesh_p, dof_handler);
 }
 
@@ -418,7 +456,7 @@ TEST(lf_assembly, edge_dof_static) {
 
   DofHandler::output_ctrl_ = 30;
   std::cout << dof_handler << std::endl;
-  
+
   edge_dof_assembly_test(*mesh_p, dof_handler);
 }
 
@@ -512,20 +550,14 @@ void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
 
   // Output Galerkin matrix
   std::cout << dense_Gal_mat << std::endl;
-  
+
   // Reference Galerkin matrix
   Eigen::MatrixXd ref_mat(10, 10);
-  ref_mat <<
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0, 23,-11,  0,  0,  0,  0,-12,
-    0,  0,  0,-11, 24,-13,  0,  0,  0,  0,
-    0,  0,  0,  0,-13, 27,-14,  0,  0,  0,
-    0,  0,  0,  0,  0,-14, 29,-15,  0,  0,
-    0,  0,  0,  0,  0,  0,-15, 31,-16,  0,
-    0,  0,  0,  0,  0,  0,  0,-16, 33,-17,
-    0,  0,  0,-12,  0,  0,  0,  0,-17, 29;
+  ref_mat << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, -11, 0, 0, 0, 0, -12, 0, 0, 0, -11,
+      24, -13, 0, 0, 0, 0, 0, 0, 0, 0, -13, 27, -14, 0, 0, 0, 0, 0, 0, 0, 0,
+      -14, 29, -15, 0, 0, 0, 0, 0, 0, 0, 0, -15, 31, -16, 0, 0, 0, 0, 0, 0, 0,
+      0, -16, 33, -17, 0, 0, 0, -12, 0, 0, 0, 0, -17, 29;
 
   for (int i = 0; i < N_dofs; ++i) {
     for (int j = 0; j < N_dofs; ++j) {
