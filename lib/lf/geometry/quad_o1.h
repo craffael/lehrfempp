@@ -49,6 +49,10 @@ class QuadO1 : public Geometry {
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords_;
 };
 
+  // ======================================================================
+  // TODO: Implementation of class Parallelogram
+  // ======================================================================
+  
 }  // namespace lf::geometry
 
 #endif  // __b193e889f4e245959d124b0ded8a3b68

@@ -17,7 +17,7 @@ class Point;
 class Segment;
 
 /**
- * @brief Describes a quadrilateral cell for a 2D hybrid mesh
+ * @brief Describes a general quadrilateral cell for a 2D hybrid mesh
  *
  * A quadrilateral cell stores and ordered list of four nodes and
  * of four edges, which have to be compatible.
