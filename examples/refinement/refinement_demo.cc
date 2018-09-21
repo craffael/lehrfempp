@@ -37,7 +37,7 @@ int main(int argc, const char *argv[]) {
   // Set control variables from command line or file "setup vars"
   lf::base::ReadCtrVarsCmdArgs(argc, argv);
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
-    std::cout << "No file specifyng control variables" << std::endl;
+    std::cout << "No file specifying control variables" << std::endl;
   }
   std::cout << "##### Control variables:" << std::endl;
   lf::base::ListCtrlVars(std::cout);
@@ -125,7 +125,7 @@ int main(int argc, const char *argv[]) {
         multi_mesh.getMesh(n_levels - 1);
     // Print number of entities of various co-dimensions
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
+              << " nodes, " << mesh->Size(1) << " edges, " << mesh->Size(0)
               << " cells," << std::endl;
     std::stringstream level_asc;
     level_asc << refstep;
