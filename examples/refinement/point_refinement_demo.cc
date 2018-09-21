@@ -22,7 +22,7 @@
 #include "lf/mesh/utils/utils.h"
 
 
-int main(int argc, const char *argv[]) {
+int main() {
     using size_type = lf::base::size_type;
     using lf::mesh::utils::TikzOutputCtrl;
 
@@ -89,8 +89,9 @@ int main(int argc, const char *argv[]) {
 
                 // Check if cell contains edge
                 auto edges = cell.SubEntities(1);
-                if (edges.end() != std::find(edges.begin(), edges.end(), edge))
+                if (edges.end() != std::find(edges.begin(),edges.end(),edge)) {
                     return true;
+                }
             }
         }
         return false;
