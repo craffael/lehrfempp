@@ -43,3 +43,4 @@ bin_gcc/
 bin_gcc_release/
 doc/doxygen/html
 Build/
+build/
