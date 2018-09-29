@@ -11,6 +11,7 @@
  * is stored in the form of MATLAB functions.
  */
 
+#include <functional>
 #include <iostream>
 
 #include <lf/refinement/mesh_hierarchy.h>
@@ -20,6 +21,64 @@
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
+
+using CodimMeshDataSet_t = std::shared_ptr<lf::mesh::utils::CodimMeshDataSet<bool>>;
+
+CodimMeshDataSet_t
+MarkMesh(const std::shared_ptr<const lf::mesh::Mesh> &mesh_ptr,
+         const Eigen::MatrixXd &point) {
+    // We use CodimMeshDataSet to store if the edges have to be marked
+    CodimMeshDataSet_t marked =
+            lf::mesh::utils::make_CodimMeshDataSet<bool>(mesh_ptr, 1, false);
+
+    // Loop through all cells to check if it contains the point
+    for (const lf::mesh::Entity &cell : mesh_ptr->Entities(0)) {
+        const lf::geometry::Geometry *geom_ptr = cell.Geometry();
+        lf::base::RefEl ref_el = cell.RefEl();
+        const Eigen::MatrixXd &ref_el_coords(ref_el.NodeCoords());
+        const Eigen::MatrixXd glob_coords(geom_ptr->Global(ref_el_coords));
+
+        // Cells adjacent to (0.5, 0.5) have to be quadrilaterals
+        if (glob_coords.cols() < 4) {
+            continue;
+        }
+
+        // As the refinement orders coordinates randomly we have to make
+        // sure that they are always ordered in the same way to check
+        // whether a point lies inside the cell or not:
+        // c ---- d
+        //   |  |
+        // a ---- b
+        std::vector<Eigen::MatrixXd> coord_vec = {glob_coords.col(0),
+                                                  glob_coords.col(1),
+                                                  glob_coords.col(2),
+                                                  glob_coords.col(3)};
+
+        auto coord_sort = [](Eigen::MatrixXd x, Eigen::MatrixXd y) {
+            return (x(1, 0) < y(1, 0)) ||
+                   ((x(1, 0) == y(1, 0)) && (x(0, 0) <= y(0, 0)));
+        };
+        std::sort(coord_vec.begin(), coord_vec.end(), coord_sort);
+
+        Eigen::MatrixXd glob_a = coord_vec[0];
+        Eigen::MatrixXd glob_b = coord_vec[1];
+        Eigen::MatrixXd glob_c = coord_vec[2];
+        Eigen::MatrixXd glob_d = coord_vec[3];
+
+        // Mark all edges if the point lies inside the cell
+        if (glob_a(0, 0) <= point(0, 0) && glob_a(1, 0) <= point(1, 0) &&
+            glob_b(0, 0) >= point(0, 0) && glob_b(1, 0) <= point(1, 0) &&
+            glob_c(0, 0) <= point(0, 0) && glob_c(1, 0) >= point(1, 0) &&
+            glob_d(0, 0) >= point(0, 0) && glob_d(1, 0) >= point(1, 0)) {
+
+            for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
+                marked->operator()(edge) = true;
+            }
+        }
+    }
+
+    return marked;
+}
 
 
 int main() {
@@ -45,62 +104,13 @@ int main() {
     // Build mesh hierarchy
     lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
 
-    // Mark cells containing point (0.5, 0.5) which should be refined
+    // Mark edges of cells containing point (0.5, 0.5) which should be refined
     Eigen::MatrixXd point(2, 1);
     point << .5, .5;
 
-    auto marker = [&point](const lf::mesh::Mesh &mesh,
-                           const lf::mesh::Entity &edge) {
-
-        for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
-            const lf::geometry::Geometry *geom_ptr = cell.Geometry();
-            lf::base::RefEl ref_el = cell.RefEl();
-            const Eigen::MatrixXd &ref_el_coords(ref_el.NodeCoords());
-            const Eigen::MatrixXd glob_coords(geom_ptr->Global(ref_el_coords));
-
-            // Cells adjacent to (0.5, 0.5) have to be quadrilaterals
-            if (glob_coords.cols() < 4) {
-                continue;
-            }
-
-            // As the refinement orders coordinates randomly we have to make
-            // sure that they are always ordered in the same way to check
-            // whether a point lies inside the cell or not:
-            // c ---- d
-            //   |  |
-            // a ---- b 
-            std::vector<Eigen::MatrixXd> coord_vec = {glob_coords.col(0),
-                                                      glob_coords.col(1),
-                                                      glob_coords.col(2),
-                                                      glob_coords.col(3)};
-
-            auto coord_sort = [](Eigen::MatrixXd x, Eigen::MatrixXd y) {
-                return (x(1, 0) < y(1, 0)) ||
-                       ((x(1, 0) == y(1, 0)) && (x(0, 0) <= y(0, 0)));
-            };
-            std::sort(coord_vec.begin(), coord_vec.end(), coord_sort);
-
-            Eigen::MatrixXd glob_a = coord_vec[0];
-            Eigen::MatrixXd glob_b = coord_vec[1];
-            Eigen::MatrixXd glob_c = coord_vec[2];
-            Eigen::MatrixXd glob_d = coord_vec[3];
-
-            // Check if point lies inside cell
-            if (glob_a(0, 0) <= point(0, 0) && glob_a(1, 0) <= point(1, 0) &&
-                glob_b(0, 0) >= point(0, 0) && glob_b(1, 0) <= point(1, 0) &&
-                glob_c(0, 0) <= point(0, 0) && glob_c(1, 0) >= point(1, 0) &&
-                glob_d(0, 0) >= point(0, 0) && glob_d(1, 0) >= point(1, 0)) {
-
-                // Check if cell contains edge
-                auto edges = cell.SubEntities(1);
-                if (edges.end() !=
-                    std::find(edges.begin(), edges.end(), edge)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+    auto marker = [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge,
+                     CodimMeshDataSet_t mesh_data) -> bool {
+        return mesh_data->operator()(edge);
     };
 
     std::cout << "refinement steps: ";
@@ -132,7 +142,11 @@ int main() {
                 TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::EdgeNumbering);
 
         if (point_refinement) {
-            multi_mesh.MarkEdges(marker);
+            CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
+            multi_mesh.MarkEdges(std::bind(marker,
+                                           std::placeholders::_1,
+                                           std::placeholders::_2,
+                                           marked_mesh));
             multi_mesh.RefineMarked();
         } else {
             multi_mesh.RefineRegular();
