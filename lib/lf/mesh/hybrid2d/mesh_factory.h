@@ -24,24 +24,18 @@ class MeshFactory : public mesh::MeshFactory {
   explicit MeshFactory(dim_t dim_world)
       : dim_world_(dim_world), built_(false) {}
 
-  /** @copydoc Mesh::DimWorld() */
   dim_t DimWorld() const override { return dim_world_; }
 
-  /** @copydoc Mesh::DimMesh() */
   dim_t DimMesh() const override { return 2; }
 
-  /** @copydoc Mesh::AddPoint() */
   size_type AddPoint(coord_t coord) override;
 
-  /** @copydoc Mesh::AddPoint() */
   size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) override;
 
-  /** @copydoc Mesh::AddEntity() */
   size_type AddEntity(base::RefEl ref_el,
                       const base::ForwardRange<const size_type>& nodes,
                       std::unique_ptr<geometry::Geometry>&& geometry) override;
 
-  /** @copydoc Mesh::Build() */
   std::shared_ptr<mesh::Mesh> Build() override;
 
  private:

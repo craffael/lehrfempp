@@ -97,11 +97,11 @@ class Mesh : public mesh::Mesh {
 /**
  * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
  * @param stream The stream to which this function should output
- * @param Mesh& The mesh to write to `stream`.
+ * @param mesh The mesh to write to `stream`.
  * @return The stream itself.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& /*mesh*/) {
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
   // stream << "mesh object";
   // utils::PrintInfo(mesh, stream);
   return stream;
