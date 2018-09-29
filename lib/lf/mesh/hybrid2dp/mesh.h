@@ -101,7 +101,7 @@ class Mesh : public mesh::Mesh {
  * @return The stream itself.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& /*mesh*/) {
   // stream << "mesh object";
   // utils::PrintInfo(mesh, stream);
   return stream;
