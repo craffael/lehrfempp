@@ -14,11 +14,15 @@
 namespace lf::geometry {
 
 /**
- * @brief Abstract interface class for topological local refinement
+ * @brief Abstract interface class for encoding topological local refinement
  *
  * This class defines a local topological refinement pattern by convex
- * polygon on an _integer lattice_ covering the reference element.
+ * polygons on an _integer lattice_ covering the reference element.
  *
+ * The rationale for using an integer lattice is the possibility of exact 
+ * arithmetic. It also emphasizes the hybrid character of refinement in
+ * between topological and geometric operations. 
+ * 
  */
 class RefinementPattern {
  protected:
@@ -31,6 +35,11 @@ class RefinementPattern {
   explicit RefinementPattern(lf::base::RefEl ref_el)
       : ref_el_(std::move(ref_el)), lattice_const_(6) {}
 
+  /** @brief Constructor fixing reference element and refinement resolution
+   * 
+   * @param ref_el topological reference element
+   */
+  
   RefinementPattern(lf::base::RefEl ref_el, lf::base::size_type lattice_const)
       : ref_el_(std::move(ref_el)), lattice_const_(lattice_const) {
     // Lattice constant N should be a multiple of six in order to be able to
@@ -68,11 +77,15 @@ class RefinementPattern {
    * lattice intervals. Children with relative co-dimension 1 are
    * interior points and their location is given by single lattice points.
    *
-   * @return vector of integer matrices containing the lattice coordinates
-   * of the verticess of the child polygons. The length of this vector must
-   * agree with the value returned by `noChildren()`. The integer entries of the
-   * matrices must be non-negative and the column sums must be <= the lattice
-   * constant.
+   * @return vector of _integer matrices_ containing the **lattice coordinates**
+   * of the verticess of the child polygons in their columns. 
+   * The size of the matrices is dxP, where d is the intrinsic dimension of the
+   * entity, and P stands for the number of vertices of a particular child 
+   * entity.
+   * The length of the returned vector must agree with the value returned 
+   * by `noChildren()`   
+   * The integer entries of the matrices must be non-negative and the 
+   * column sums must be <= the lattice constant.
    */
   virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
   ChildPolygons(lf::base::dim_t codim) const = 0;

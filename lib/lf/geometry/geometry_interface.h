@@ -127,10 +127,10 @@ class Geometry {
   virtual std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const = 0;
 
   /**
-   * @brief Generate a geometry object arising in the course of refinement
+   * @brief Generate geometry objects for child entities created in
+   *        the course of refinement.
    *
-   * @param ref_pat A code indicating the particular refinement of the
-   * element
+   * @param ref_pat An object encoding the details of refinement
    * @param codim _relative_ codimension of child entities whose
    *         shape is requested
    * @return an array of unique pointers pointers to geometry objects for child
@@ -141,8 +141,13 @@ class Geometry {
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
    * The details of subdivisions corresponding to particular refinement patterns
-   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons` and
+   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons()` and
    * should be documented there.
+   * 
+   * The interpretation of `ref_pat` will depend on the topology of the
+   * entity object. 
+   *
+   * @sa class lf::geometry::RefinementPattern
    *
    */
   virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(

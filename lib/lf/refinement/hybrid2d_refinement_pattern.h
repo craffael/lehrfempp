@@ -21,7 +21,7 @@ const unsigned int idx_nil = lf::base::kIdxNil;
  * @brief (possibly incomplete) list of refinement patterns
  *
  * _Non-symmetric_ refinement patterns have to be complemented by a subentity
- * index of an edge,  here called the anchor of the refinement.
+ * index of an edge,  here called the **anchor** of the refinement.
  *
  * The only symmetric refinement patterns are regular refinement and barycentric
  * refinement.
@@ -94,11 +94,89 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   }
 
   /**
-   * @copydoc RefinementPattern::noChildren
+   * @copydoc lf::geometry::RefinementPattern::noChildren()
+   *
+   * For a point: 0 (`rp_nil`), 1(`rp_copy`)
    */
   lf::base::size_type noChildren(lf::base::dim_t codim) const override;
   /**
-   * @copydoc RefinementPattern::ChildPolygons
+   * @copydoc lf::geometry::RefinementPattern::ChildPolygons()
+   * 
+   * ### Case of a point entity (dimension 0)
+   * 
+   * The method always returns an single "matrix" of size 0xP, where
+   * P=1 for `rp_copy`, and P=0 for `rp_nil`.
+   * 
+   * ### Case of a segment entity (dimension 1)
+   *
+   * - codim = 0, request information about child segments.
+   *              The method returns a Q-vector of 1xP integer matrices:
+   *     + Q=0 for `rp_nil`
+   *     + Q=1 for `rp_copy`, P=2, returns `[0 N]'
+   *     + Q=2 for `rp_split`, P=2, returns '{[0 N/2],[N/2 N]}`
+   *
+   * - codim = 1: provide information about new _interior_ points created
+   *              during refinement. 
+   * The method returns an empty vector unless `rp_split` is the refinement
+   * pattern, In this case a 1x1 matrix `[N/2]` is returned.
+   *
+   * Here, `N` denotes the lattice constant, corresponding to the float value 1.0
+   * in reference coordinates
+   *
+   * ### Case of triangular cell entity (dimension 2)
+   *
+   * The method returns a Q-vector of 2xP integer matrices. 
+   *
+   * - codim=0: request information about child cells
+   *
+   * Below the output is largely visualized by pictures. The big pink numbers
+   * give the local index of the child cells, the small orange number indicate
+   * the local vertex indices in the child cell.
+   *
+   *     + Q=0 for `rp_nil` (no refinement at all)
+   *     + Q=1 for `rp_copy`, returns `{[0 N 0;0 0 N]}`
+   *     + Q=2 for `rp_bisect`, anchor=0
+   * @image html refinement_tria/rp_bisect_0.png width=400px
+   *     + Q=2 for `rp_bisect`, anchor=1
+   * @image html refinement_tria/rp_bisect_1.png width=400px
+   *     + Q=2 for `rp_bisect`, anchor=2
+   * @image html refinement_tria/rp_bisect_2.png width=400px
+   *     + Q=3 for `rp_trisect`, anchor=0
+   * @image html refinement_tria/rp_trisect_0_1.png width=400px
+   *     + Q=3 for `rp_trisect`, anchor=1
+   * @image html refinement_tria/rp_trisect_1_2.png width=400px
+   *     + Q=3 for `rp_trisect`, anchor=2
+   * @image html refinement_tria/rp_trisect_2_0.png width=400px
+   *     + Q=3 for `rp_trisect_left`, anchor=0
+   * @image html refinement_tria/rp_trisect_0_2.png width=400px
+   *     + Q=3 for `rp_trisect_left`, anchor=1
+   * @image html refinement_tria/rp_trisect_1_0.png width=400px
+   *     + Q=3 for `rp_trisect_left`, anchor=2
+   * @image html refinement_tria/rp_trisect_2_1.png width=400px
+   *     + Q=4 for `rp_quadsect`, anchor=0
+   * @image html refinement_tria/rp_quadsect_0.png width=400px
+   *     + Q=4 for `rp_quadsect`, anchor=1
+   * @image html refinement_tria/rp_quadsect_1.png width=400px
+   *     + Q=4 for `rp_quadsect`, anchor=2
+   * @image html refinement_tria/rp_quadsect_2.png width=400px
+   *     + Q=4 for `rp_regular`:
+   * @image html refinement_tria/rp_regular.png width=400px
+   *     + Q=6 for `rp_barycentric`
+   * @image html refinement_tria/rp_barycentric.png width=400px
+   *
+   * - codim=1: return information about (new) _interior_ child edges
+   *
+   * - codim=0: tell about new _interior_ child nodes
+   *   Only for the refinement pattern `rp_barycentric` a new interior 
+   *   node is created (Q=1), Q=0 in all other cases.
+   *
+   * ### Case of quadrilateral cell (dimension 2)
+   * 
+   * A vector of 2xP integer matrices with lattice coordinates in their
+   * columns is returned. 
+   * 
+   * - codim=0: tell about all child cells
+   * 
    */
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> ChildPolygons(
       lf::base::dim_t codim) const override;
