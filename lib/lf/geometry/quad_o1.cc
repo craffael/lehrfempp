@@ -6,30 +6,58 @@
 
 namespace lf::geometry {
 
+bool assertNonDegenerateQuad(
+    const Eigen::Matrix<double, Eigen::Dynamic, 4> coords, double tol) {
+  // World dimension
+  const Geometry::dim_t wd = coords.rows();
+  // Length tests
+  double e0lensq = (coords.col(1) - coords.col(0)).squaredNorm();
+  double e1lensq = (coords.col(2) - coords.col(1)).squaredNorm();
+  double e2lensq = (coords.col(3) - coords.col(2)).squaredNorm();
+  double e3lensq = (coords.col(0) - coords.col(3)).squaredNorm();
+  // Test lengths of edges versus circumference.
+  double circum = e0lensq + e1lensq + e2lensq + e3lensq;
+  LF_VERIFY_MSG(e0lensq > tol * circum, "Collapsed edge 0");
+  LF_VERIFY_MSG(e1lensq > tol * circum, "Collapsed edge 1");
+  LF_VERIFY_MSG(e2lensq > tol * circum, "Collapsed edge 2");
+  LF_VERIFY_MSG(e3lensq > tol * circum, "Collapsed edge 3");
+  // Area test
+  switch (wd) {
+    case 2: {
+      double ar1 =
+          ((coords(0, 1) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
+           (coords(1, 1) - coords(1, 0)) * (coords(0, 2) - coords(0, 0)));
+      double ar2 =
+          ((coords(0, 3) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
+           (coords(1, 3) - coords(1, 0)) * (coords(0, 2) - coords(0, 0)));
+      double area = std::fabs(ar1) + std::fabs(ar2);
+      LF_VERIFY_MSG(std::sqrt(area) > tol * circum, "Degenerate 2D quad");
+      return true;
+      break;
+    }
+    case 3: {
+      const Eigen::Matrix<double, 3, 4> c3d(coords.block<3, 4>(0, 0));
+      double ar1 =
+          ((c3d.col(1) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
+      double ar2 =
+          ((c3d.col(3) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
+      double area = ar1 + ar2;
+      LF_VERIFY_MSG(std::sqrt(area) > tol * circum, "Degenerate 3D quad");
+      return true;
+      break;
+    }
+    default: {
+      LF_ASSERT_MSG(false, "Illegal world dimension" << wd);
+      break;
+    }
+  }
+  return false;
+}
+
 QuadO1::QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
     : coords_(std::move(coords)) {
   // Check validity of geometry (non-zero area)
-  double ar1 =
-      ((coords_(0, 1) - coords_(0, 0)) * (coords_(1, 2) - coords_(1, 0)) -
-       (coords_(1, 1) - coords_(1, 0)) * (coords_(0, 2) - coords_(0, 0)));
-  double ar2 =
-      ((coords_(0, 3) - coords_(0, 0)) * (coords_(1, 2) - coords_(1, 0)) -
-       (coords_(1, 3) - coords_(1, 0)) * (coords_(0, 2) - coords_(0, 0)));
-  double area = std::fabs(ar1) + std::fabs(ar2);
-  double e0lensq = (std::pow(coords_(0, 1) - coords_(0, 0), 2) +
-                    std::pow(coords_(1, 1) - coords_(1, 0), 2));
-  double e1lensq = (std::pow(coords_(0, 2) - coords_(0, 1), 2) +
-                    std::pow(coords_(1, 2) - coords_(1, 1), 2));
-  double e2lensq = (std::pow(coords_(0, 3) - coords_(0, 2), 2) +
-                    std::pow(coords_(1, 3) - coords_(1, 2), 2));
-  double e3lensq = (std::pow(coords_(0, 0) - coords_(0, 3), 2) +
-                    std::pow(coords_(1, 0) - coords_(1, 3), 2));
-  double circum = e0lensq + e1lensq + e2lensq + e3lensq;
-  LF_VERIFY_MSG(e0lensq > 1.0E-8 * circum, "Collapsed edge 0");
-  LF_VERIFY_MSG(e1lensq > 1.0E-8 * circum, "Collapsed edge 1");
-  LF_VERIFY_MSG(e2lensq > 1.0E-8 * circum, "Collapsed edge 2");
-  LF_VERIFY_MSG(e3lensq > 1.0E-8 * circum, "Collapsed edge 3");
-  LF_VERIFY_MSG(area > 1.0E-8 * circum, "Degenerate quad");
+  assertNonDegenerateQuad(coords_);
 }
 
 Eigen::MatrixXd QuadO1::Global(const Eigen::MatrixXd& local) const {
@@ -186,5 +214,100 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   }    // end loop over children
   return (child_geo_uptrs);
 }  // end ChildGeometry()
+
+//////////////////////////////////////////////////////////////////////
+// Implementation class Parallelogram
+//////////////////////////////////////////////////////////////////////
+
+Parallelogram::Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
+    : coords_(std::move(coords)),
+      jacobian_(coords_.rows(), 2),
+      jacobian_inverse_gramian_(coords_.rows(), 2),
+      integrationElement_(0) {
+  // Check validity of geometry (non-zero area)
+  assertNonDegenerateQuad(coords_);
+  // Check parallelogram property
+  LF_ASSERT_MSG(
+      (coords_.col(3) - coords_.col(2) + coords_.col(1) - coords_.col(0))
+              .norm() < 1.0E-8 * (coords_.col(2) - coords_.col(0)).norm(),
+      "No parallelogram!");
+  init();
+}
+
+Parallelogram::Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 3> spanvert)
+    : coords_(spanvert.rows(), 4),
+      jacobian_(spanvert.rows(), 2),
+      jacobian_inverse_gramian_(spanvert.rows(), 2),
+      integrationElement_(0) {
+  coords_.col(0) = spanvert.col(0);
+  coords_.col(1) = spanvert.col(1);
+  coords_.col(2) = spanvert.col(1) + (spanvert.col(2) - spanvert.col(0));
+  coords_.col(3) = spanvert.col(2);
+  assertNonDegenerateQuad(coords_);
+  init();
+}
+
+Eigen::MatrixXd Parallelogram::Global(const Eigen::MatrixXd& local) const {
+  return coords_.col(0) *
+             (1 - local.array().row(0) - local.array().row(1)).matrix() +
+         coords_.col(1) * local.row(0) + coords_.col(3) * local.row(1);
+}
+
+Eigen::MatrixXd Parallelogram::Jacobian(const Eigen::MatrixXd& local) const {
+  return jacobian_.replicate(1, local.cols());
+}
+
+Eigen::MatrixXd Parallelogram::JacobianInverseGramian(
+    const ::Eigen::MatrixXd& local) const {
+  return jacobian_inverse_gramian_.replicate(1, local.cols());
+}
+
+Eigen::VectorXd Parallelogram::IntegrationElement(
+    const Eigen::MatrixXd& local) const {
+  return Eigen::VectorXd::Constant(local.cols(), integrationElement_);
+}
+
+void Parallelogram::init(void) {
+  jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(3) - coords_.col(0);
+  // Distinguish between different world dimensions
+  if (coords_.rows() == 2) {
+    // 2D case: Simpler formula!
+    jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
+    integrationElement_ = std::abs(jacobian_.determinant());
+  } else {
+    // 3D case: complicated formula
+    jacobian_inverse_gramian_ = Eigen::MatrixXd(
+        jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
+    integrationElement_ =
+        std::sqrt((jacobian_.transpose() * jacobian_).determinant());
+  }
+}  // end init()
+
+std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,
+                                                     dim_t i) const {
+  using std::make_unique;
+  switch (codim) {
+    case 0:
+      LF_ASSERT_MSG(i == 0, "i is out of bounds.");
+      return std::make_unique<Parallelogram>(coords_);
+    case 1:
+      LF_ASSERT_MSG(i >= 0 && i < 4, "i is out of bounds.");
+      return make_unique<SegmentO1>(
+          (Eigen::Matrix<double, Eigen::Dynamic, 2>(DimGlobal(), 2)
+               << coords_.col(RefEl().SubSubEntity2SubEntity(1, i, 1, 0)),
+           coords_.col(RefEl().SubSubEntity2SubEntity(1, i, 1, 1)))
+              .finished());
+    case 2:
+      LF_ASSERT_MSG(i >= 0 && i < 4, "i is out of bounds.");
+      return make_unique<Point>(coords_.col(i));
+    default:
+      LF_VERIFY_MSG(false, "codim is out of bounds.");
+  }
+} // end SubGeometry
+
+std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
+    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
+  
+}
 
 }  // namespace lf::geometry

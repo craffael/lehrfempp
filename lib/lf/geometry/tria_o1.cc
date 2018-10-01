@@ -10,6 +10,9 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
       jacobian_inverse_gramian_(coords_.rows(), 2),
       integrationElement_(0) {
   // Check non-degenerate geometry through area
+  //////////////////////////////////////////////////////////////////////
+  // TODO: Extend to 3D
+  //////////////////////////////////////////////////////////////////////
   double area = std::fabs(
       (coords_(0, 1) - coords_(0, 0)) * (coords_(1, 2) - coords_(1, 0)) -
       (coords_(1, 1) - coords_(1, 0)) * (coords_(0, 2) - coords_(0, 0)));
