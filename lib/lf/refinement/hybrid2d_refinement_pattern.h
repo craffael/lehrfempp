@@ -101,12 +101,12 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   lf::base::size_type noChildren(lf::base::dim_t codim) const override;
   /**
    * @copydoc lf::geometry::RefinementPattern::ChildPolygons()
-   * 
+   *
    * ### Case of a point entity (dimension 0)
-   * 
+   *
    * The method always returns an single "matrix" of size 0xP, where
    * P=1 for `rp_copy`, and P=0 for `rp_nil`.
-   * 
+   *
    * ### Case of a segment entity (dimension 1)
    *
    * - codim = 0, request information about child segments.
@@ -116,22 +116,23 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    *     + Q=2 for `rp_split`, P=2, returns '{[0 N/2],[N/2 N]}`
    *
    * - codim = 1: provide information about new _interior_ points created
-   *              during refinement. 
+   *              during refinement.
    * The method returns an empty vector unless `rp_split` is the refinement
    * pattern, In this case a 1x1 matrix `[N/2]` is returned.
    *
-   * Here, `N` denotes the lattice constant, corresponding to the float value 1.0
-   * in reference coordinates
+   * Here, `N` denotes the lattice constant, corresponding to the float
+   * value 1.0 in reference coordinates
    *
    * ### Case of triangular cell entity (dimension 2)
    *
-   * The method returns a Q-vector of 2xP integer matrices. 
+   * The method returns a Q-vector of 2xP integer matrices.
    *
    * - codim=0: request information about child cells
    *
    * Below the output is largely visualized by pictures. The big pink numbers
-   * give the local index of the child cells, the small orange number indicate
-   * the local vertex indices in the child cell.
+   * give the local index of the child cells, which is also the index in the
+   * return vector. The small orange number indicate the local vertex indices in
+   * the child cell.
    *
    *     + Q=0 for `rp_nil` (no refinement at all)
    *     + Q=1 for `rp_copy`, returns `{[0 N 0;0 0 N]}`
@@ -167,16 +168,35 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    * - codim=1: return information about (new) _interior_ child edges
    *
    * - codim=0: tell about new _interior_ child nodes
-   *   Only for the refinement pattern `rp_barycentric` a new interior 
+   *   Only for the refinement pattern `rp_barycentric` a new interior
    *   node is created (Q=1), Q=0 in all other cases.
    *
    * ### Case of quadrilateral cell (dimension 2)
-   * 
-   * A vector of 2xP integer matrices with lattice coordinates in their
-   * columns is returned. 
-   * 
+   *
+   * A Q-vector of 2xP integer matrices with lattice coordinates in their
+   * columns is returned.
+   *
    * - codim=0: tell about all child cells
-   * 
+   *
+   * Below we visualize the output with large pink numbers indicating the
+   * the index of a child cell in the return vector. 
+   *
+   *    + Q=0 for `rp_nil` (no refinement)
+   *    + Q=1 for `rp_copy` (quadrilateral is duplicated)
+   *    + Q=2 for `rp_split'/`rp_bisect`, only visualized for anchor=0, the other numberings arise 
+   *                from cyclic permutations. 
+   * @image html refinement_quad/rp_split_0.png width=500px
+   *    + Q=3 for `rp_trisect`, image for anchor=0
+   * @image html refinement_quad/rp_trisect_0.png width=500px
+   *    + Q=4 for `rp_quadsect`, image for anchor=0
+   * @image html refinement_quad/rp_quadsect_0.png width=500px
+   *    + Q=4 for `rp_threeedge`
+   *    + Q=4 for `rp_regular`/`rp_barycentric`
+   *
+   * - codim=1: obtain information about _interior_ child edges
+   *
+   * - codim=2: information about _interior_ child nodes
+   *
    */
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> ChildPolygons(
       lf::base::dim_t codim) const override;

@@ -86,7 +86,8 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   // it.
   for (int l = 0; l < no_children; l++) {
     // A single child triangle is described by a lattice polygon with
-    // three vertices
+    // three vertices, a child segment by a polygon with two vertices,
+    // a child point by a single point = "polygon with one corner"
     LF_VERIFY_MSG(child_polygons[l].rows() == 2,
                   "child_polygons[l].rows() = " << child_polygons[l].rows());
     LF_VERIFY_MSG(child_polygons[l].cols() == 3 - codim,
