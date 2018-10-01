@@ -10,7 +10,9 @@ target_link_libraries(lf.examples.refinement.refinement_demo
   lf.mesh.test_utils
   lf.mesh.utils
   lf.mesh.hybrid2dp
-  lf.refinement )
+  lf.refinement
+  lf.io
+  )
 
 target_compile_features(lf.examples.refinement.refinement_demo PUBLIC cxx_std_17)
 

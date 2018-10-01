@@ -70,11 +70,11 @@ class CodimMeshDataSet : public MeshDataSet<T> {
 
   // Friends:
   template <class S>
-  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(
+  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
       std::shared_ptr<const Mesh> mesh, base::dim_t codim);
 
   template <class S, class>
-  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(
+  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
       std::shared_ptr<const Mesh> mesh, base::dim_t codim, S init);
 };
 

@@ -54,7 +54,7 @@ class LambdaMeshDataSet
   // Friends:
   template <class ValueLambda_, class DefinedOnPredicate_>
   friend std::shared_ptr<LambdaMeshDataSet<ValueLambda_, DefinedOnPredicate_>>
-  make_LambdaMeshDataSet(ValueLambda_ vl, DefinedOnPredicate_ dol);
+  make_LambdaMeshDataSet(ValueLambda_ vl, DefinedOnPredicate_ dol);  // NOLINT
 };
 
 /**

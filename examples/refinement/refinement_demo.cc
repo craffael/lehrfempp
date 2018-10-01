@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <lf/io/io.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
@@ -130,11 +131,14 @@ int main(int argc, const char *argv[]) {
     std::stringstream level_asc;
     level_asc << refstep;
 
-    lf::mesh::utils::writeTikZ(
-        *mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
-        TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
-            TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
-            TikzOutputCtrl::EdgeNumbering);
+    writeTikZ(*mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
+              TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
+                  TikzOutputCtrl::VerticeNumbering |
+                  TikzOutputCtrl::NodeNumbering |
+                  TikzOutputCtrl::EdgeNumbering);
+
+    lf::io::VtkWriter vtk_writer(mesh,
+                                 "refinement_mesh" + level_asc.str() + ".vtk");
   }
 
   // Generate  MATLAB functions that provide a description of all

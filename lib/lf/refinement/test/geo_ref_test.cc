@@ -44,10 +44,10 @@ TEST(RefineTest, SegRef) {
   std::vector<std::unique_ptr<lf::geometry::Geometry>> ed_split(
       edge_ptr->ChildGeometry(rp_split, 0));
   EXPECT_EQ(ed_copy.size(), 1);
-  EXPECT_NE(ed_copy[0], nullptr);
+  EXPECT_TRUE(ed_copy[0]);
   EXPECT_EQ(ed_split.size(), 2);
-  EXPECT_NE(ed_split[0], nullptr);
-  EXPECT_NE(ed_split[1], nullptr);
+  EXPECT_TRUE(ed_split[0]);
+  EXPECT_TRUE(ed_split[1]);
 
   // Retrieve coordinates of endpoints of children
   const Eigen::MatrixXd ref_seg_endpoints(
@@ -76,7 +76,7 @@ TEST(RefineTest, TriaRef) {
   std::unique_ptr<lf::geometry::TriaO1> tria_geo_ptr =
       std::make_unique<lf::geometry::TriaO1>(tria_coords);
 
-  EXPECT_NE(tria_geo_ptr, nullptr);
+  EXPECT_TRUE(tria_geo_ptr);
   std::cout << "Parent triangle " << std::endl
             << tria_geo_ptr->Global(ref_tria_corners) << std::endl;
 
@@ -136,7 +136,7 @@ TEST(RefineTest, QuadRef) {
   std::unique_ptr<lf::geometry::QuadO1> quad_geo_ptr =
       std::make_unique<lf::geometry::QuadO1>(quad_coords);
 
-  EXPECT_NE(quad_geo_ptr, nullptr);
+  EXPECT_TRUE(quad_geo_ptr);
   std::cout << "Parent quadrilateral " << std::endl
             << quad_geo_ptr->Global(ref_quad_corners) << std::endl;
 
