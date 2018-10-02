@@ -8,6 +8,7 @@
 
 //#include <boost/range.hpp>
 #include <Eigen/Eigen>
+#include "base.h"
 #include "lf_assert.h"
 #include "static_vars.h"  // Added
 
@@ -60,6 +61,25 @@ enum class RefElType : unsigned char {
   kQuad,
   //!< @copydoc RefEl::kQuad()
 };
+
+namespace internal {
+// Some utility methods that are needed to deduce compile time return types:
+constexpr dim_t DimensionImpl(RefElType type) {
+  switch (type) {
+    case RefElType::kPoint:
+      return 0;
+    case RefElType::kSegment:
+      return 1;
+    case RefElType::kTria:
+      return 2;
+    case RefElType::kQuad:
+      return 2;
+    default:
+      throw std::runtime_error(
+          "RefEl::Dimension() not implemented for this RefEl type.");
+  }
+}
+}  // namespace internal
 
 /** @class RefEl lf/base/base.h
  * @brief Represents a reference element with all its properties.
@@ -127,30 +147,14 @@ class RefEl {
   static constexpr std::array<std::array<dim_t, 2>, 4>
       sub_sub_entity_index_quad_ = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 
-  // Some utility methods that are needed to deduce compile time return types:
-  static constexpr dim_t DimensionImpl(RefElType type) {
-    switch (type) {
-      case RefElType::kPoint:
-        return 0;
-      case RefElType::kSegment:
-        return 1;
-      case RefElType::kTria:
-        return 2;
-      case RefElType::kQuad:
-        return 2;
-      default:
-        throw std::runtime_error(
-            "RefEl::Dimension() not implemented for this RefEl type.");
-    }
-  }
-
  public:
   /**
    * @brief Type of the node coordinate iterator that is returned from
    * NodeCoords()
    */
   template <RefElType type>
-  using NodeCoordVector = Eigen::Matrix<double, DimensionImpl(type), 1>;
+  using NodeCoordVector =
+      Eigen::Matrix<double, internal::DimensionImpl(type), 1>;
 
   /**
    * @brief Returns the (0-dimensional) reference point.
@@ -215,7 +219,7 @@ class RefEl {
    * - 2 for a RefEl::kTria()
    * - 2 for a RefEl::kQuad()
    */
-  constexpr dim_t Dimension() const { return DimensionImpl(type_); }
+  constexpr dim_t Dimension() const { return internal::DimensionImpl(type_); }
 
   /**
    * @brief The number of nodes of this reference element.

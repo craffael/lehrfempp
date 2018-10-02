@@ -29,7 +29,7 @@ TEST(lf_mesh, buildStructuredMesh) {
       .setNoYCells(2);
   auto mesh_p = builder.Build();
 
-  EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
+  EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
@@ -57,7 +57,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
       .setNoYCells(2);
   auto mesh_p = builder.Build();
 
-  EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
+  EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
@@ -105,7 +105,7 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
       .setNoYCells(2);
   auto mesh_p = builder.Build();
 
-  EXPECT_NE(mesh_p, nullptr) << "Oops! no mesh!";
+  EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 6) << "Mesh should comprise 6 squares";

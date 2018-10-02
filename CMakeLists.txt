@@ -21,6 +21,9 @@ enable_testing()
 hunter_add_package(Boost COMPONENTS chrono timer system)
 find_package(Boost CONFIG REQUIRED chrono timer system)
 
+hunter_add_package(Boost COMPONENTS system filesystem program_options)
+find_package(Boost CONFIG REQUIRED system filesystem program_options)
+
 # Get Eigen
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)

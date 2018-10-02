@@ -24,7 +24,8 @@ void checkEntityIndexing(const Mesh& mesh) {
 
       // Check consistency of indexing
       const lf::mesh::Entity* e_ptr = mesh.EntityByIndex(co_dim, current_idx);
-      EXPECT_NE(e_ptr, nullptr) << "Invalid pointer to entity " << current_idx;
+      EXPECT_TRUE(e_ptr) << "Invalid pointer to entity "
+                         << static_cast<int>(current_idx);
       if (e_ptr != nullptr) {
         EXPECT_EQ(current_idx, mesh.Index(*e_ptr))
             << "Index mismatch for codim " << co_dim << ", index "
