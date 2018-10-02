@@ -97,6 +97,18 @@ class RefinementPattern {
   lf::base::size_type lattice_const_; /**< defines spacing of integer lattice */
 };
 
+  /**
+   * @brief Test whether a lattice polygon describes a logical parallelogram
+   *
+   * @param polygon an integer matrix whose column contain the lattice coordinates
+   *        of the vertices of the polygon. 
+   *
+   * A polygon passes the parallelogram test, if 
+   * -# it has four vertices 
+   * -# the vectors \f$x_1-x_0\f$ and \f$x_2-x_3\f$ agree.
+   */
+  bool isParallelogram(const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &polygon);
+
 }  // namespace lf::geometry
 
 #endif  // __3178e8d1e7bf4366bcb00cdb4ebbf5fb

@@ -4,6 +4,21 @@
 #include "geometry_interface.h"
 
 namespace lf::geometry {
+
+/** @brief Asserting non-degenerate shape of a flat triangle
+ *
+ * @param coords w x 3 Eigen matrix whose columns contain the vertex coordinates
+ *        of the quadrilateral, w = world dimension
+ * @param tol relative tolerance for numerical tests of equality with zero
+ *
+ * Terminates execution in case degenerate shape is detected. 
+ */
+bool assertNonDegenerateTriangle(
+    const Eigen::Matrix<double, Eigen::Dynamic, 3>& coords, double tol = 1.0E-8);
+
+  /** 
+   * @brief An affine triangle in the plane or in 3D space
+   */
 class TriaO1 : public Geometry {
  public:
   explicit TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);

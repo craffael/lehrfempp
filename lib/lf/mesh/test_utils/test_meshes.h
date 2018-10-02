@@ -16,15 +16,19 @@ namespace lf::mesh::test_utils {
 /**
  * @brief Generates a simple 2D hybrid test mesh
  *
+ * @param selector integer parameter for the selection of test meshes
+ *
  * The following line of code provides a pointer to the test mesh:
  * ~~~
  *   #include "lf/mesh/test_utils/test_meshes.h"
  *   ...
  *   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
  * ~~~
+ *
+ * Test mesh selected with selector = 0:
  * @image html testmesh.png
  */
-std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh();
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0);
 
 }  // namespace lf::mesh::test_utils
 

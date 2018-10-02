@@ -11,11 +11,10 @@ namespace lf::geometry {
  *        of the quadrilateral, w = world dimension
  * @param tol relative tolerance for numerical tests of equality with zero
  *
- * @note current implementation works for world dimension = 2 only
+ * Terminates execution in case degenerate shape is detected. 
  */
 bool assertNonDegenerateQuad(
-    const Eigen::Matrix<double, Eigen::Dynamic, 4> coords,
-    double tol = 1.0E-8);
+    const Eigen::Matrix<double, Eigen::Dynamic, 4> &coords, double tol = 1.0E-8);
 
 /**
  * @brief Bilinear quadrilateral element shape
@@ -75,7 +74,7 @@ class QuadO1 : public Geometry {
  */
 class Parallelogram : public Geometry {
  public:
-   /**
+  /**
    * @brief Constructor building a parallelogram from _four_ vertex coordinates
    *
    * @param coords w x 4 matrix, w = world dimension, whose columns
@@ -85,14 +84,18 @@ class Parallelogram : public Geometry {
    *       by the three others in the case of a parallelogram
    */
   explicit Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 4> coords);
-   /**
+  /**
    * @brief Constructor building a parallelogram from _four_ vertex coordinates
    *
-   * @param spanvert w x 3 matrix, w = world dimension, whose columns
-   *        contain the world coordinates of the three _spanning_ vertices.
+   * @param p0 coordinate vector for vertex 0
+   * @param p1 coordinate vector for vertex 1
+   * @param p2 coordinate vector for vertex 2
    *
+   * Constructs a parallelogram from the coordinate vectors of three spanning
+   * vertices.
    */
-  explicit Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 3> spanvert);
+  explicit Parallelogram(const Eigen::VectorXd& p0, const Eigen::VectorXd& p1,
+                         const Eigen::VectorXd& p2);
 
   dim_t DimLocal() const override { return 2; }
   dim_t DimGlobal() const override { return coords_.rows(); }
@@ -108,10 +111,10 @@ class Parallelogram : public Geometry {
   /** @copydoc Geometry::SubGeometry() */
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
-  /** @copydoc Geometry::isAffine() 
+  /** @copydoc Geometry::isAffine()
    *
-   * @note In contrast to a general quadrilateral a parallelogram is 
-   *       is the **affine image** of a square. 
+   * @note In contrast to a general quadrilateral a parallelogram is
+   *       is the **affine image** of a square.
    */
   bool isAffine() const override { return true; }
 
@@ -127,15 +130,15 @@ class Parallelogram : public Geometry {
  private:
   /** @brief performs initialization of data members */
   void init(void);
-  
-  /** @brief Coordinates of the a four vertices, stored in matrix columns 
+
+  /** @brief Coordinates of the a four vertices, stored in matrix columns
    *
    * In fact, three vertex coordinates of the _spanning vertices_ would be
    * sufficient to define the shape of a parallelogram. For convenience all
-   * vertices are stored as in QuadO1. 
+   * vertices are stored as in QuadO1.
    */
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords_;
-  /** @brief Matrix of affine mapping generating the parallelogram, 
+  /** @brief Matrix of affine mapping generating the parallelogram,
    *        agrees with constant Jacobian */
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_;
   /** @brief Constant matrix (\f$ J (J^T J)^{-1}\f$) */

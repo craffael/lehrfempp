@@ -7,7 +7,7 @@
 namespace lf::geometry {
 
 bool assertNonDegenerateQuad(
-    const Eigen::Matrix<double, Eigen::Dynamic, 4> coords, double tol) {
+    const Eigen::Matrix<double, Eigen::Dynamic, 4> &coords, double tol) {
   // World dimension
   const Geometry::dim_t wd = coords.rows();
   // Length tests
@@ -31,7 +31,7 @@ bool assertNonDegenerateQuad(
           ((coords(0, 3) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
            (coords(1, 3) - coords(1, 0)) * (coords(0, 2) - coords(0, 0)));
       double area = std::fabs(ar1) + std::fabs(ar2);
-      LF_VERIFY_MSG(std::sqrt(area) > tol * circum, "Degenerate 2D quad");
+      LF_VERIFY_MSG(area > tol * circum, "Degenerate 2D quad");
       return true;
       break;
     }
@@ -42,7 +42,7 @@ bool assertNonDegenerateQuad(
       double ar2 =
           ((c3d.col(3) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
       double area = ar1 + ar2;
-      LF_VERIFY_MSG(std::sqrt(area) > tol * circum, "Degenerate 3D quad");
+      LF_VERIFY_MSG(area > tol * circum, "Degenerate 3D quad");
       return true;
       break;
     }
@@ -241,18 +241,38 @@ Parallelogram::Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
   init();
 }
 
-Parallelogram::Parallelogram(Eigen::Matrix<double, Eigen::Dynamic, 3> spanvert)
-    : coords_(spanvert.rows(), 4),
-      jacobian_(spanvert.rows(), 2),
-      jacobian_inverse_gramian_(spanvert.rows(), 2),
+Parallelogram::Parallelogram(const Eigen::VectorXd& p0,
+                             const Eigen::VectorXd& p1,
+                             const Eigen::VectorXd& p2)
+    : coords_(p0.rows(), 4),
+      jacobian_(p0.rows(), 2),
+      jacobian_inverse_gramian_(p0.rows(), 2),
       integrationElement_(0) {
-  coords_.col(0) = spanvert.col(0);
-  coords_.col(1) = spanvert.col(1);
-  coords_.col(2) = spanvert.col(1) + (spanvert.col(2) - spanvert.col(0));
-  coords_.col(3) = spanvert.col(2);
+  LF_ASSERT_MSG(p0.size() == p1.size(), "Vector length mismatch p0 <-> p1");
+  LF_ASSERT_MSG(p0.size() == p2.size(), "Vector length mismatch p0 <-> p2");
+  coords_.col(0) = p0;
+  coords_.col(1) = p1;
+  coords_.col(2) = p1 + (p2 - p0);
+  coords_.col(3) = p2;
   assertNonDegenerateQuad(coords_);
   init();
 }
+
+void Parallelogram::init(void) {
+  jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(3) - coords_.col(0);
+  // Distinguish between different world dimensions
+  if (coords_.rows() == 2) {
+    // 2D case: Simpler formula!
+    jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
+    integrationElement_ = std::abs(jacobian_.determinant());
+  } else {
+    // 3D case: complicated formula
+    jacobian_inverse_gramian_ = Eigen::MatrixXd(
+        jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
+    integrationElement_ =
+        std::sqrt((jacobian_.transpose() * jacobian_).determinant());
+  }
+}  // end init()
 
 Eigen::MatrixXd Parallelogram::Global(const Eigen::MatrixXd& local) const {
   return coords_.col(0) *
@@ -274,22 +294,8 @@ Eigen::VectorXd Parallelogram::IntegrationElement(
   return Eigen::VectorXd::Constant(local.cols(), integrationElement_);
 }
 
-void Parallelogram::init(void) {
-  jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(3) - coords_.col(0);
-  // Distinguish between different world dimensions
-  if (coords_.rows() == 2) {
-    // 2D case: Simpler formula!
-    jacobian_inverse_gramian_ = jacobian_.transpose().inverse();
-    integrationElement_ = std::abs(jacobian_.determinant());
-  } else {
-    // 3D case: complicated formula
-    jacobian_inverse_gramian_ = Eigen::MatrixXd(
-        jacobian_ * (jacobian_.transpose() * jacobian_).inverse());
-    integrationElement_ =
-        std::sqrt((jacobian_.transpose() * jacobian_).determinant());
-  }
-}  // end init()
 
+// essentially a copy of the same method for QuadO1
 std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,
                                                      dim_t i) const {
   using std::make_unique;
@@ -312,7 +318,90 @@ std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,
   }
 }  // end SubGeometry
 
+// Essentially a copy of the same code for QuadO1
 std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
-    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {}
+    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
+  // The refinement pattern must be for a quadrilateral
+  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
+                "Refinement pattern for " << ref_pat.RefEl().ToString());
+  // Allowed condimensions:
+  // 0 -> child cells, 1-> child edges, 2 -> child points
+  LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
+
+  // Lattice meshwidth
+  const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
+  // Obtain geometry of children as lattice polygons
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+      child_polygons(ref_pat.ChildPolygons(codim));
+  // Number of child segments
+  const int no_children = child_polygons.size();
+  // Check consistency of data
+  LF_ASSERT_MSG(
+      no_children == ref_pat.noChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+
+  // Variable for returning (unique pointers to) child geometries
+  std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
+  // For each child entity create a geometry object and a unique pointer to it.
+  for (int l = 0; l < no_children; l++) {
+    // A single child entity is described by a lattice polygon with
+    // a certain number of corners
+    LF_VERIFY_MSG(
+        child_polygons[l].rows() == 2,
+        "child_polygons[" << l << "].rows() = " << child_polygons[l].rows());
+    // Obtain physical (world) coordinates of the vertices of
+    // of the child entities after normalizing lattice coordinates
+    const Eigen::MatrixXd child_geo(
+        Global(h_lattice * child_polygons[l].cast<double>()));
+    // Treat child entities of different dimension
+    switch (codim) {
+      case 0: {  // Child cells
+        if (child_polygons[l].cols() == 3) {
+          // Child cell is a triangle
+          child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
+        } else if (child_polygons[l].cols() == 4) {
+          // Child cell is a quadrilateral
+          ////////////////////////////////////////////////////
+          // Code specific for a parallleogram
+          // If the lattice polygon is a parallelogram
+          // then create another parallelogram, otherwise
+          // a general quadrilateral
+          if (isParallelogram(child_polygons[l])) {
+            // Child cell is parallelogram as well
+            child_geo_uptrs.push_back(
+                std::make_unique<Parallelogram>(child_geo));
+          } else {
+            // General quadrilateral
+            child_geo_uptrs.push_back(std::make_unique<QuadO1>(child_geo));
+          }
+        } else {
+          LF_VERIFY_MSG(false, "child_polygons[" << l << "].cols() = "
+                                                 << child_polygons[l].cols());
+        }
+        break;
+      }
+      case 1: {
+        // Child is an edge
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 2,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<SegmentO1>(child_geo));
+        break;
+      }
+      case 2: {
+        LF_VERIFY_MSG(
+            child_polygons[l].cols() == 1,
+            "child_polygons[l].cols() = " << child_polygons[l].cols());
+        child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
+        break;
+      }
+      default: {
+        LF_VERIFY_MSG(false, "Illegal co-dimension");
+        break;
+      }
+    }  // end switch codim
+  }    // end loop over children
+  return (child_geo_uptrs);
+}  // end ChildGeometry()
 
 }  // namespace lf::geometry
