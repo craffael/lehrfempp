@@ -144,9 +144,6 @@ class Geometry {
    * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons()` and
    * should be documented there.
    * 
-   * The interpretation of `ref_pat` will depend on the topology of the
-   * entity object. 
-   *
    * @sa class lf::geometry::RefinementPattern
    *
    */

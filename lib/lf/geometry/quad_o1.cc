@@ -154,7 +154,10 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   // The refinement pattern must be for a quadrilateral
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
+  // Allowed condimensions:
+  // 0 -> child cells, 1-> child edges, 2 -> child points
   LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
+
   // Lattice meshwidth
   const double h_lattice = 1.0 / static_cast<double>(ref_pat.LatticeConst());
   // Obtain geometry of children as lattice polygons
@@ -162,23 +165,27 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
   const int no_children = child_polygons.size();
-  LF_VERIFY_MSG(
+  // Check consistency of data
+  LF_ASSERT_MSG(
       no_children == ref_pat.noChildren(codim),
       "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
 
+  // Variable for returning (unique pointers to) child geometries
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
-  // For each child cell create a geometry object and a unique pointer to it.
+  // For each child entity create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
-    // A single child cell is described by a lattice polygon with
-    // three or four vertices
+    // A single child entity is described by a lattice polygon with
+    // a certain number of corners
     LF_VERIFY_MSG(
         child_polygons[l].rows() == 2,
         "child_polygons[" << l << "].rows() = " << child_polygons[l].rows());
-    // Normalize lattice coordinates
+    // Obtain physical (world) coordinates of the vertices of
+    // of the child entities after normalizing lattice coordinates
     const Eigen::MatrixXd child_geo(
         Global(h_lattice * child_polygons[l].cast<double>()));
+    // Treat child entities of different dimension
     switch (codim) {
-      case 0: {
+      case 0: {  // Child cells
         if (child_polygons[l].cols() == 3) {
           // Child cell is a triangle
           child_geo_uptrs.push_back(std::make_unique<TriaO1>(child_geo));
@@ -303,11 +310,9 @@ std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,
     default:
       LF_VERIFY_MSG(false, "codim is out of bounds.");
   }
-} // end SubGeometry
+}  // end SubGeometry
 
 std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
-    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
-  
-}
+    const RefinementPattern& ref_pat, lf::base::dim_t codim) const {}
 
 }  // namespace lf::geometry
