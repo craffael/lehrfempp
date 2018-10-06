@@ -8,6 +8,8 @@ set(sources
   utils.h
   write_matlab.cc
   write_matlab.h
+  write_matplotlib.cc
+  write_matplotlib.h
   write_tikz.cc
   write_tikz.h
 )
