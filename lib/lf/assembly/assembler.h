@@ -17,8 +17,8 @@
 #define _LF_ASSEMBLE_H
 
 #include <Eigen/Sparse>
-#include "dofhandler.h"
 #include "coomatrix.h"
+#include "dofhandler.h"
 
 namespace lf::assemble {
 /**
@@ -43,7 +43,6 @@ namespace lf::assemble {
  * - TMPMATRIX is a rudimentary matrix type and must
  * + provide a constructor taking two matrix dimension arguments
  * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
- * + be copyable and assignable
  * A model type is COOMatrix.
  * - ASSEMBLER is a type capable of local assembly of element matrices. It must
  * + have an `Eval()` method returning the element matrix for a cell

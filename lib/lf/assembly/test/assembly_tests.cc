@@ -223,8 +223,7 @@ void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
             << std::endl;
 
   // Build sparse matrix from COO format
-  Eigen::SparseMatrix<double> Galerkin_matrix(mat.rows(), mat.cols());
-  Galerkin_matrix.setFromTriplets(mat.triplets.begin(), mat.triplets.end());
+  Eigen::SparseMatrix<double> Galerkin_matrix = mat.makeSparse();
 
   // Output Galerkin matrix
   std::cout << Galerkin_matrix << std::endl;
@@ -368,8 +367,7 @@ void edge_dof_assembly_test(const lf::mesh::Mesh &mesh,
             << std::endl;
 
   // Build sparse matrix from COO format
-  Eigen::SparseMatrix<double> Galerkin_matrix(mat.rows(), mat.cols());
-  Galerkin_matrix.setFromTriplets(mat.triplets.begin(), mat.triplets.end());
+  Eigen::SparseMatrix<double> Galerkin_matrix = mat.makeSparse();
 
   // Convert Galerkin matrix to a dense matrix
   Eigen::MatrixXd dense_Gal_mat = Galerkin_matrix;
@@ -542,8 +540,7 @@ void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
             << std::endl;
 
   // Build sparse matrix from COO format
-  Eigen::SparseMatrix<double> Galerkin_matrix(mat.rows(), mat.cols());
-  Galerkin_matrix.setFromTriplets(mat.triplets.begin(), mat.triplets.end());
+  Eigen::SparseMatrix<double> Galerkin_matrix = mat.makeSparse();
 
   // Convert Galerkin matrix to a dense matrix
   Eigen::MatrixXd dense_Gal_mat = Galerkin_matrix;
