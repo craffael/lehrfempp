@@ -86,8 +86,8 @@ class Segment : public mesh::Entity {
    * This method just returns {+,-}, because points always have the intrinsic
    * orientation + and the orientation of an edge is defined through the
    * ordering of its vertices. */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
-      void) const override {
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         endpoint_ori_.begin(), endpoint_ori_.end());
   }

@@ -79,8 +79,8 @@ class Entity {
    * @brief return array of relative orientations of sub-entities
    *        of the next hight co-dimension.
    */
-  virtual base::RandomAccessRange<const Orientation> RelativeOrientations(
-      void) const = 0;
+  virtual base::RandomAccessRange<const Orientation> RelativeOrientations()
+      const = 0;
 
   /**
    * @brief Describes the geometry of this entity.

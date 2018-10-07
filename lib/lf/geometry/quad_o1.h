@@ -130,7 +130,7 @@ class Parallelogram : public Geometry {
 
  private:
   /** @brief performs initialization of data members */
-  void init(void);
+  void init();
 
   /** @brief Coordinates of the a four vertices, stored in matrix columns
    *

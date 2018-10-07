@@ -47,9 +47,10 @@ class COOMatrix {
       : rows_(num_rows), cols_(num_cols) {}
 
   COOMatrix(const COOMatrix &) = default;
-  COOMatrix(COOMatrix &&) = default;
+  COOMatrix(COOMatrix &&) noexcept = default;
   COOMatrix &operator=(const COOMatrix &) = default;
-  COOMatrix &operator=(COOMatrix &&) = default;
+  COOMatrix &operator=(COOMatrix &&) noexcept = default;
+  ~COOMatrix() = default;
 
   /** @brief return number of rows */
   Eigen::Index rows() const { return rows_; }

@@ -63,7 +63,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
 
 UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
                                          const LocalStaticDOFs &locdof)
-    : mesh_(std::move(mesh)) {
+    : mesh_(std::move(mesh)), no_dofs_() {
   LF_VERIFY_MSG((mesh_->DimMesh() == 2),
                 "UniformFEDofHandler implemented for 2D only");
 
@@ -85,33 +85,32 @@ UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
 
 UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
                                          dof_map_t dofmap)
-    : mesh_(std::move(mesh)) {
+    : mesh_(std::move(mesh)), no_dofs_() {
   LF_ASSERT_MSG((mesh_->DimMesh() == 2), "Can handle 2D meshes only");
 
   // For checking whether a key was found
-  dof_map_t::const_iterator map_end = dofmap.end();
+  auto map_end = dofmap.end();
 
   // Get no of interior dof specified for nodes
-  dof_map_t::const_iterator map_el_pt = dofmap.find(lf::base::RefEl::kPoint());
+  auto map_el_pt = dofmap.find(lf::base::RefEl::kPoint());
   if (map_el_pt != map_end) {
     no_loc_dof_point_ = map_el_pt->second;
   }
 
   // Get no of interior dof specified for edges
-  dof_map_t::const_iterator map_el_ed =
-      dofmap.find(lf::base::RefEl::kSegment());
+  auto map_el_ed = dofmap.find(lf::base::RefEl::kSegment());
   if (map_el_ed != map_end) {
     no_loc_dof_segment_ = map_el_ed->second;
   }
 
   // Get no of interior dof specified for triangles
-  dof_map_t::const_iterator map_el_tr = dofmap.find(lf::base::RefEl::kTria());
+  auto map_el_tr = dofmap.find(lf::base::RefEl::kTria());
   if (map_el_tr != map_end) {
     no_loc_dof_tria_ = map_el_tr->second;
   }
 
   // Get no of interior dof specified for quads
-  dof_map_t::const_iterator map_el_qd = dofmap.find(lf::base::RefEl::kQuad());
+  auto map_el_qd = dofmap.find(lf::base::RefEl::kQuad());
   if (map_el_qd != map_end) {
     no_loc_dof_quad_ = map_el_qd->second;
   }
@@ -126,7 +125,7 @@ UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
   initIndexArrays();
 }
 
-void UniformFEDofHandler::initTotalNoDofs(void) {
+void UniformFEDofHandler::initTotalNoDofs() {
   no_dofs_[kNodeOrd] = no_loc_dof_point_;
   no_dofs_[kEdgeOrd] = 2 * no_loc_dof_point_ + no_loc_dof_segment_;
   num_dofs_tria_ =
@@ -136,7 +135,7 @@ void UniformFEDofHandler::initTotalNoDofs(void) {
   no_dofs_[kCellOrd] = std::max(num_dofs_tria_, num_dofs_quad_);
 }
 
-void UniformFEDofHandler::initIndexArrays(void) {
+void UniformFEDofHandler::initIndexArrays() {
   // This method assumes a proper initialization
   // of the data in no_loc_dof_* and no_dofs_, num_dof_trie, num_dofs_quad_
   gdof_idx_t dof_idx = 0;
@@ -264,13 +263,14 @@ void UniformFEDofHandler::initIndexArrays(void) {
     // Set indices for interior cell degrees of freedom depending on the type of
     // cell. Here we add new degrees of freedom
     size_type num_int_dofs_cell;
-    if (cell_p->RefEl() == lf::base::RefEl::kTria())
+    if (cell_p->RefEl() == lf::base::RefEl::kTria()) {
       num_int_dofs_cell = no_loc_dof_tria_;
-    else if (cell_p->RefEl() == lf::base::RefEl::kQuad())
+    } else if (cell_p->RefEl() == lf::base::RefEl::kQuad()) {
       num_int_dofs_cell = no_loc_dof_quad_;
-    else
+    } else {
       LF_ASSERT_MSG(
           false, "Illegal cell type; only triangles and quads are supported");
+    }
 
     // enlist new interior cell-associated dofs
     for (int j = 0; j < num_int_dofs_cell; j++) {

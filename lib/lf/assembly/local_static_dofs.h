@@ -16,8 +16,6 @@
 #define _LF_LOCSTATDOFH_H
 
 #include <lf/base/base.h>
-#include <lf/mesh/mesh.h>
-#include <lf/quad/quad.h>
 #include "assembly_types.h"
 
 namespace lf::assemble {
@@ -46,7 +44,7 @@ namespace lf::assemble {
  */
 class LocalStaticDOFs {
  public:
-  LocalStaticDOFs(void);
+  LocalStaticDOFs() = default;
   /** Disabled constructors and assignment operators */
   /**@{*/
   /** @name Disabled */
@@ -55,7 +53,7 @@ class LocalStaticDOFs {
   LocalStaticDOFs &operator=(const LocalStaticDOFs &) = delete;
   LocalStaticDOFs &operator=(LocalStaticDOFs &&) = delete;
   /**@}*/
-  virtual ~LocalStaticDOFs(void) = default;
+  virtual ~LocalStaticDOFs() = default;
 
   /**
    * @brief Obtain number of local shape functions associated with
@@ -82,7 +80,7 @@ class LocalStaticDOFs {
   /**
    * @brief topological dimension of mesh
    */
-  virtual dim_t Dimension(void) const = 0;
+  virtual dim_t Dimension() const = 0;
 };
 
 /**
@@ -102,13 +100,14 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
    * @param nodof_quad
    */
   LocalStaticDOFs2D(size_type nodof_point, size_type nodof_segment,
-                    size_type nodof_tria, size_type nodof_quad) {
+                    size_type nodof_tria, size_type nodof_quad)
+      : no_loc_dofs_per_refel_() {
     no_loc_dofs_per_refel_[0] = nodof_point;
     no_loc_dofs_per_refel_[1] = nodof_segment;
     no_loc_dofs_per_refel_[2] = nodof_tria;
     no_loc_dofs_per_refel_[3] = nodof_quad;
   }
-  virtual ~LocalStaticDOFs2D(void) = default;
+  ~LocalStaticDOFs2D() override = default;
   LocalStaticDOFs2D(const LocalStaticDOFs2D &) = delete;
   LocalStaticDOFs2D(LocalStaticDOFs2D &&) = delete;
   LocalStaticDOFs2D &operator=(const LocalStaticDOFs2D &) = delete;
@@ -118,20 +117,20 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
    * @copydoc LocalStaticDOFs::NoLocDofs()
    *
    */
-  virtual size_type NoLocDofs(lf::base::RefEl refel) const override;
+  size_type NoLocDofs(lf::base::RefEl refel) const override;
   /**
    * @copydoc LocalStaticDOFs::TotalNoLocDofs()
    */
-  virtual size_type TotalNoLocDofs(lf::base::RefEl refel) const override;
+  size_type TotalNoLocDofs(lf::base::RefEl refel) const override;
   /**
    * @copydoc LocalStaticDOFs::Dimension()
    */
-  virtual dim_t Dimension(void) const override { return 2; }
+  dim_t Dimension() const override { return 2; }
 
  private:
   /** number of local shape functions associated with each (sub-)entity
       of a particular co-dimension (multiplicity)*/
-  std::array<size_type, 4> no_loc_dofs_per_refel_;
+  std::array<size_type, 4> no_loc_dofs_per_refel_{};
 };  // end class definition
 
 /** @brief Local dof numbers for linear Lagrangian finite elements.
@@ -141,8 +140,13 @@ class LocalStaticDOFs2D : public LocalStaticDOFs {
  */
 class LocalLinearLagrangianFE2D : public LocalStaticDOFs2D {
  public:
-  LocalLinearLagrangianFE2D(void) : LocalStaticDOFs2D(1, 0, 0, 0) {}
-  virtual ~LocalLinearLagrangianFE2D(void) = default;
+  LocalLinearLagrangianFE2D() : LocalStaticDOFs2D(1, 0, 0, 0) {}
+  LocalLinearLagrangianFE2D(const LocalLinearLagrangianFE2D &) = delete;
+  LocalLinearLagrangianFE2D(LocalLinearLagrangianFE2D &&) = delete;
+  LocalLinearLagrangianFE2D &operator=(const LocalLinearLagrangianFE2D &) =
+      delete;
+  LocalLinearLagrangianFE2D &operator=(LocalLinearLagrangianFE2D &&) = delete;
+  ~LocalLinearLagrangianFE2D() override = default;
 };
 
 }  // namespace lf::assemble

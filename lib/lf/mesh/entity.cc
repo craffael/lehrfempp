@@ -17,7 +17,7 @@ char to_char(Orientation o) {
       return '-';
     }
   }
-  return (char)0;
+  return 0;
 }
 
 std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity) {

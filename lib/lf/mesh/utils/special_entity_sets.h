@@ -22,9 +22,9 @@ namespace lf::mesh::utils {
 /**
  * @brief store number of adjacent super-entities
  *
- * @param mesh reference to underlying mesh
+ * @param mesh_p reference to underlying mesh
  * @param codim_sub co-dimension of the queried entities
- * @param rel_cod_super _relative_ co-dimension (with positive sign) of
+ * @param codim_super _relative_ co-dimension (with positive sign) of
  *                      super entities.
  *
  * For each entity of a given co-dimension, this function counts the number of
@@ -39,7 +39,7 @@ namespace lf::mesh::utils {
  */
 
 CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
-    std::shared_ptr<const Mesh> mesh_p, lf::base::dim_t codim_sub,
+    const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super);
 
 }  // namespace lf::mesh::utils

@@ -15,7 +15,6 @@
 #include "local_static_dofs.h"
 
 namespace lf::assemble {
-LocalStaticDOFs::LocalStaticDOFs(void) {}
 
 size_type LocalStaticDOFs2D::NoLocDofs(lf::base::RefEl refel) const {
   switch (refel) {

@@ -16,7 +16,7 @@
 
 namespace lf::mesh::utils {
 CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
-    std::shared_ptr<const Mesh> mesh_p, lf::base::dim_t codim_sub,
+    const std::shared_ptr<const Mesh> &mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super) {
   LF_VERIFY_MSG((mesh_p->DimMesh() >= codim_sub),
                 "Illegal codim_sub = " << codim_sub);

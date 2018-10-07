@@ -20,7 +20,8 @@ Quadrilateral::Quadrilateral(size_type index,
     : index_(index),
       geometry_(std::move(geometry)),
       nodes_({corner0, corner1, corner2, corner3}),
-      edges_({edge0, edge1, edge2, edge3}) {
+      edges_({edge0, edge1, edge2, edge3}),
+      edge_ori_() {
   LF_VERIFY_MSG(corner0 != nullptr, "Invalid pointer to corner 0");
   LF_VERIFY_MSG(corner1 != nullptr, "Invalid pointer to corner 1");
   LF_VERIFY_MSG(corner2 != nullptr, "Invalid pointer to corner 2");

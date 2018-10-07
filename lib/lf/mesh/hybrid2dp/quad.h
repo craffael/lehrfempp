@@ -85,8 +85,8 @@ class Quadrilateral : public mesh::Entity {
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
-      void) const override {
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         edge_ori_.begin(), edge_ori_.end());
   }
@@ -113,7 +113,7 @@ class Quadrilateral : public mesh::Entity {
   std::array<const Point*, 4> nodes_{};           // nodes = corners of quad
   std::array<const Segment*, 4> edges_{};         // edges of quad
   std::array<lf::mesh::Orientation, 4>
-      edge_ori_;  // orientation of edges (set in constructor)
+      edge_ori_{};  // orientation of edges (set in constructor)
 };
 
 }  // namespace lf::mesh::hybrid2dp

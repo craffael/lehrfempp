@@ -258,7 +258,7 @@ Parallelogram::Parallelogram(const Eigen::VectorXd& p0,
   init();
 }
 
-void Parallelogram::init(void) {
+void Parallelogram::init() {
   jacobian_ << coords_.col(1) - coords_.col(0), coords_.col(3) - coords_.col(0);
   // Distinguish between different world dimensions
   if (coords_.rows() == 2) {
