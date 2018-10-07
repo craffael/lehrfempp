@@ -20,6 +20,7 @@ namespace lf::mesh::utils {}
 #include "mesh_data_set.h"
 #include "print_info.h"
 #include "write_matlab.h"
+#include "write_matplotlib.h"
 #include "write_tikz.h"
 
 #endif  // __ecc2ab2ad7184f42a672a2b9d490f541
