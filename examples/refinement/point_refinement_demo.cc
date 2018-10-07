@@ -1,18 +1,16 @@
 /**
- * @file point_refinement_demo.cc
- * @brief example code for building and pointwise refining of a tensor product
- *        mesh
- *
- * This code generates a tensor-product mesh and performs a user specified
- * number of steps of pointwise uniform refinement on the cell containing the
- * point (0.5, 0.5).
- *
- * In the end the information about all meshes created in the process
- * is stored in the form of MATLAB functions.
+ * @file
+ * @brief We build a tensor product mesh on the unit square and use pointwise
+ * refinement to refine it.
+ * @author Anian Ruoss
+ * @date   2018-10-06 16:37:17
+ * @copyright MIT License
  */
 
+#include <boost/program_options.hpp>
 #include <functional>
 #include <iostream>
+#include <vector>
 
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
@@ -24,56 +22,56 @@
 
 using CodimMeshDataSet_t = std::shared_ptr<lf::mesh::utils::CodimMeshDataSet<bool>>;
 
+
+bool PointInTriangle(const Eigen::MatrixXd &tria_coords,
+                     const Eigen::Vector2d &point) {
+    // calculate barycentric coordinates of point using affine transformation
+    // from reference triangle: phi(x_hat) = alpha + beta * x_hat
+    Eigen::Vector2d alpha = tria_coords.col(0);
+    Eigen::Matrix2d beta;
+    beta << tria_coords.col(1) - tria_coords.col(0),
+            tria_coords.col(2) - tria_coords.col(0);
+
+    Eigen::Vector2d loc_coords = beta.inverse() * (point - alpha);
+
+    return (0 <= loc_coords(0) && 0 <= loc_coords(1) && loc_coords.sum() <= 1);
+}
+
 CodimMeshDataSet_t
 MarkMesh(const std::shared_ptr<const lf::mesh::Mesh> &mesh_ptr,
          const Eigen::MatrixXd &point) {
-    // We use CodimMeshDataSet to store if the edges have to be marked
+    // we use CodimMeshDataSet to store whether an edge has to be marked or not
     CodimMeshDataSet_t marked =
             lf::mesh::utils::make_CodimMeshDataSet<bool>(mesh_ptr, 1, false);
 
-    // Loop through all cells to check if it contains the point
+    // loop through all cells to check if it contains the point
     for (const lf::mesh::Entity &cell : mesh_ptr->Entities(0)) {
         const lf::geometry::Geometry *geom_ptr = cell.Geometry();
         lf::base::RefEl ref_el = cell.RefEl();
         const Eigen::MatrixXd &ref_el_coords(ref_el.NodeCoords());
-        const Eigen::MatrixXd glob_coords(geom_ptr->Global(ref_el_coords));
+        const Eigen::MatrixXd vtx_coords(geom_ptr->Global(ref_el_coords));
 
-        // Cells adjacent to (0.5, 0.5) have to be quadrilaterals
-        if (glob_coords.cols() < 4) {
-            continue;
-        }
-
-        // As the refinement orders coordinates randomly we have to make
-        // sure that they are always ordered in the same way to check
-        // whether a point lies inside the cell or not:
-        // c ---- d
-        //   |  |
-        // a ---- b
-        std::vector<Eigen::MatrixXd> coord_vec = {glob_coords.col(0),
-                                                  glob_coords.col(1),
-                                                  glob_coords.col(2),
-                                                  glob_coords.col(3)};
-
-        auto coord_sort = [](Eigen::MatrixXd x, Eigen::MatrixXd y) {
-            return (x(1, 0) < y(1, 0)) ||
-                   ((x(1, 0) == y(1, 0)) && (x(0, 0) <= y(0, 0)));
-        };
-        std::sort(coord_vec.begin(), coord_vec.end(), coord_sort);
-
-        Eigen::MatrixXd glob_a = coord_vec[0];
-        Eigen::MatrixXd glob_b = coord_vec[1];
-        Eigen::MatrixXd glob_c = coord_vec[2];
-        Eigen::MatrixXd glob_d = coord_vec[3];
-
-        // Mark all edges if the point lies inside the cell
-        if (glob_a(0, 0) <= point(0, 0) && glob_a(1, 0) <= point(1, 0) &&
-            glob_b(0, 0) >= point(0, 0) && glob_b(1, 0) <= point(1, 0) &&
-            glob_c(0, 0) <= point(0, 0) && glob_c(1, 0) >= point(1, 0) &&
-            glob_d(0, 0) >= point(0, 0) && glob_d(1, 0) >= point(1, 0)) {
-
-            for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
-                marked->operator()(edge) = true;
+        // mark all edges if the point lies inside the cell
+        if (ref_el == lf::base::RefEl::kTria()) {
+            if (PointInTriangle(vtx_coords, point)) {
+                for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
+                    marked->operator()(edge) = true;
+                }
             }
+        } else if (ref_el == lf::base::RefEl::kQuad()) {
+            // split quadrilateral into two triangles and check each separately
+            Eigen::MatrixXd tria1 = vtx_coords.block(0, 0, 2, 3);
+            Eigen::MatrixXd tria2(2, 3);
+            tria2 << vtx_coords.col(0), vtx_coords.col(2), vtx_coords.col(3);
+
+            if (PointInTriangle(tria1, point) ||
+                PointInTriangle(tria2, point)) {
+                for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
+                    marked->operator()(edge) = true;
+                }
+            }
+        } else {
+            std::cerr << "unknown cell geometry" << std::endl;
         }
     }
 
@@ -81,14 +79,44 @@ MarkMesh(const std::shared_ptr<const lf::mesh::Mesh> &mesh_ptr,
 }
 
 
-int main() {
+int main(int argc, char **argv) {
+    // define allowed command line arguments:
+    namespace po = boost::program_options;
+    po::options_description desc("Allowed options");
+    desc.add_options()
+            ("help", "Produce this help message")
+            ("num_steps",
+             po::value<size_t>()->default_value(5),
+             "Number of refinement steps")
+            ("pointwise",
+             po::value<bool>()->default_value(true),
+             "Whether to use pointwise refinement or not")
+            ("point",
+             po::value<std::vector<double>>()->multitoken()
+                     ->default_value(std::vector<double>{.5, .5}, ".5, .5"),
+             "Point coordinates in unit square (ignored if pointwise=false)");
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+
+    if (vm.count("help") != 0u) {
+        std::cout << desc << std::endl;
+        return 1;
+    }
+
+    size_t num_steps = vm["num_steps"].as<size_t>();
+    bool pointwise = vm["pointwise"].as<bool>();
+    std::vector<double> point_coords = vm["point"].as<std::vector<double>>();
+    Eigen::Vector2d point(point_coords.data());
+
     using size_type = lf::base::size_type;
     using lf::mesh::utils::TikzOutputCtrl;
 
     std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
             std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
 
-    // Build single-cell tensor product mesh on unit square
+    // build single-cell tensor product mesh on unit square
     lf::mesh::hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
     builder.setBottomLeftCorner(Eigen::Vector2d{0, 0});
     builder.setTopRightCorner(Eigen::Vector2d{1, 1});
@@ -96,39 +124,28 @@ int main() {
     builder.setNoYCells(1);
     std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
 
-    // Output mesh information
+    // output mesh information
     const lf::mesh::Mesh &mesh = *mesh_ptr;
     lf::mesh::utils::PrintInfo(mesh, std::cout);
     std::cout << std::endl;
 
-    // Build mesh hierarchy
+    // build mesh hierarchy
     lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
 
-    // Mark edges of cells containing point (0.5, 0.5) which should be refined
-    Eigen::MatrixXd point(2, 1);
-    point << .5, .5;
-
-    auto marker = [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge,
+    // mark edges of cells containing point
+    auto marker = [](const lf::mesh::Mesh &mesh,
+                     const lf::mesh::Entity &edge,
                      CodimMeshDataSet_t mesh_data) -> bool {
         return mesh_data->operator()(edge);
     };
 
-    std::cout << "refinement steps: ";
-    size_t refinement_steps;
-    std::cin >> refinement_steps;
-
-    std::cout << "pointwise refinement [0/1]: ";
-    bool point_refinement;
-    std::cin >> point_refinement;
-    std::cout << std::endl;
-
-    for (int step = 0; step < refinement_steps; ++step) {
-        // Obtain pointer to mesh on finest level
+    for (int step = 0; step < num_steps; ++step) {
+        // obtain pointer to mesh on finest level
         const size_type n_levels = multi_mesh.NumLevels();
         std::shared_ptr<const lf::mesh::Mesh> mesh_fine =
                 multi_mesh.getMesh(n_levels - 1);
 
-        // Print number of entities of various co-dimensions
+        // print number of entities of various co-dimensions
         std::cout << "Mesh on level " << n_levels - 1 << ": "
                   << mesh_fine->Size(2) << " nodes, "
                   << mesh_fine->Size(1) << " edges, "
@@ -141,7 +158,7 @@ int main() {
                 TikzOutputCtrl::VerticeNumbering |
                 TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::EdgeNumbering);
 
-        if (point_refinement) {
+        if (pointwise) {
             CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
             multi_mesh.MarkEdges(std::bind(marker,
                                            std::placeholders::_1,
@@ -153,12 +170,8 @@ int main() {
         }
     }
 
-    // Generate  MATLAB functions that provide a description of all
-    // levels of the mesh hierarchy
-    std::cout << std::endl << "basename for MATLAB output: ";
-    std::string basename;
-    std::cin >> basename;
-    lf::refinement::WriteMatlab(multi_mesh, basename);
+    // generate MATLAB functions describing all levels of mesh hierarchy
+    lf::refinement::WriteMatlab(multi_mesh, "pointwise_refinement");
 
     return 0;
 }
