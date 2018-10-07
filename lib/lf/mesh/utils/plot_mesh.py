@@ -30,8 +30,10 @@ with open(argv[1]) as f:
 
 vertices = np.vstack(vertices)
 segments = np.vstack(segments)
-triangles = np.vstack(triangles)
-quads = np.vstack(quads)
+if triangles != []:
+    triangles = np.vstack(triangles)
+if quads != []:
+    quads = np.vstack(quads)
 
 # plot vertices
 for i, num in enumerate(vertices[:, 1]):
