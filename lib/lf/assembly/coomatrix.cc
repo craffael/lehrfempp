@@ -14,7 +14,4 @@
 
 #include "coomatrix.h"
 
-namespace lf::assemble {
-  
-  
-}
+namespace lf::assemble {}

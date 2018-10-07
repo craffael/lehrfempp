@@ -179,12 +179,12 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    * - codim=0: tell about all child cells
    *
    * Below we visualize the output with large pink numbers indicating the
-   * the index of a child cell in the return vector. 
+   * the index of a child cell in the return vector.
    *
    *    + Q=0 for `rp_nil` (no refinement)
    *    + Q=1 for `rp_copy` (quadrilateral is duplicated)
-   *    + Q=2 for `rp_split'/`rp_bisect`, only visualized for anchor=0, the other numberings arise 
-   *                from cyclic permutations. 
+   *    + Q=2 for `rp_split'/`rp_bisect`, only visualized for anchor=0, the
+   * other numberings arise from cyclic permutations.
    * @image html refinement_quad/rp_split_0.png width=500px
    *    + Q=3 for `rp_trisect`, image for anchor=0
    * @image html refinement_quad/rp_trisect_0.png width=500px

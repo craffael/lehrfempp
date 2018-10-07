@@ -88,8 +88,8 @@ class Segment : public mesh::Entity {
    * ordering of its vertices. */
   base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
       void) const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(endpoint_ori_.begin(),
-                                                endpoint_ori_.end());
+    return base::RandomAccessRange<const lf::mesh::Orientation>(
+        endpoint_ori_.begin(), endpoint_ori_.end());
   }
 
   /** @brief access to index of an entity */
@@ -112,7 +112,7 @@ class Segment : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 2> nodes_{};           // nodes connected by edge
-  static constexpr std::array<lf::mesh::Orientation,2> endpoint_ori_ {
+  static constexpr std::array<lf::mesh::Orientation, 2> endpoint_ori_{
       lf::mesh::Orientation::negative,
       lf::mesh::Orientation::positive};  // orientation of endpoints
 };

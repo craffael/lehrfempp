@@ -143,7 +143,7 @@ class Geometry {
    * The details of subdivisions corresponding to particular refinement patterns
    * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons()` and
    * should be documented there.
-   * 
+   *
    * @sa class lf::geometry::RefinementPattern
    *
    */

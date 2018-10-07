@@ -3,7 +3,7 @@
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
- 
+
 /**
  * @file
  * @brief Functions for the initialization of special data sets

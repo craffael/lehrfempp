@@ -75,7 +75,7 @@ Quadrilateral::Quadrilateral(size_type index,
                                 ? lf::mesh::Orientation::positive
                                 : lf::mesh::Orientation::negative;
   }
-  
+
 }  // end constructor
 
 // Access to sub-entities

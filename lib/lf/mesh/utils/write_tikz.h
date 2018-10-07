@@ -29,7 +29,7 @@ TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
 TikzOutputCtrl operator&(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
 
 /**
- * @brief Writes mesh to file in TikZ Graphics format. 
+ * @brief Writes mesh to file in TikZ Graphics format.
  * File as input in LaTeX will draw the mesh.
  *
  * @param mesh the mesh to be stored to file
@@ -48,8 +48,10 @@ enabled by using enum flags.
 visualization of the mesh.\n
  * Another option is to pass the corresponding integer value directly as an
 argument. See the enum definition for correct value.\n
- * The selector function goes through all entities and returns either `true` or `false`. 
- * An entity is printed iff selector returns `true`. For instance, selector can check and return `true` if an entity is a point. 
+ * The selector function goes through all entities and returns either `true` or
+`false`.
+ * An entity is printed iff selector returns `true`. For instance, selector can
+check and return `true` if an entity is a point.
  * Then only nodes in the mesh are printed. See example below.\n
  *
  *
@@ -71,7 +73,8 @@ Cells, numbering of cells and numbering of vertices will be printed.
 (output_ctrl = 7)
  * @note TikzOutputCtrl::RenderCells must be enabled in order to use the flags
 for numbering of cells and of local vertices of cells.
- * @note If the selector argument is omitted, all entities in the mesh are printed.
+ * @note If the selector argument is omitted, all entities in the mesh are
+printed.
  *
  * In the LaTeX document, remember to include "\usepackage{tikz}". Use
 "\input{}" to include the code file and visualize the mesh.
@@ -113,7 +116,7 @@ activated.
     auto desiredEntities = [&](const lf::mesh::Entity& entity) {
       // Nodes only
       return (entity.RefEl() == lf::base::RefEl::kPoint());
-    };  
+    };
 
 \endverbatim
  */

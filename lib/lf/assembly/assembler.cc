@@ -14,8 +14,4 @@
 
 #include "assembler.h"
 
-namespace lf::assemble {
-
-
-  
-} // end namespace
+namespace lf::assemble {}  // namespace lf::assemble

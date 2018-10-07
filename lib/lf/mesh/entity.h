@@ -28,7 +28,7 @@ using glb_idx_t = lf::base::glb_idx_t;
 enum class Orientation : int { positive = 1, negative = -1 };
 
 int to_sign(Orientation o);
-  char to_char(Orientation o);
+char to_char(Orientation o);
 
 /** @brief Representation of a topological entity in a cellular complex
  *

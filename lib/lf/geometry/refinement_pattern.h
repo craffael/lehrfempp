@@ -19,10 +19,10 @@ namespace lf::geometry {
  * This class defines a local topological refinement pattern by convex
  * polygons on an _integer lattice_ covering the reference element.
  *
- * The rationale for using an integer lattice is the possibility of exact 
+ * The rationale for using an integer lattice is the possibility of exact
  * arithmetic. It also emphasizes the hybrid character of refinement in
- * between topological and geometric operations. 
- * 
+ * between topological and geometric operations.
+ *
  */
 class RefinementPattern {
  protected:
@@ -36,10 +36,10 @@ class RefinementPattern {
       : ref_el_(std::move(ref_el)), lattice_const_(6) {}
 
   /** @brief Constructor fixing reference element and refinement resolution
-   * 
+   *
    * @param ref_el topological reference element
    */
-  
+
   RefinementPattern(lf::base::RefEl ref_el, lf::base::size_type lattice_const)
       : ref_el_(std::move(ref_el)), lattice_const_(lattice_const) {
     // Lattice constant N should be a multiple of six in order to be able to
@@ -78,13 +78,13 @@ class RefinementPattern {
    * interior points and their location is given by single lattice points.
    *
    * @return vector of _integer matrices_ containing the **lattice coordinates**
-   * of the verticess of the child polygons in their columns. 
+   * of the verticess of the child polygons in their columns.
    * The size of the matrices is dxP, where d is the intrinsic dimension of the
-   * entity, and P stands for the number of vertices of a particular child 
+   * entity, and P stands for the number of vertices of a particular child
    * entity.
-   * The length of the returned vector must agree with the value returned 
-   * by `noChildren()`   
-   * The integer entries of the matrices must be non-negative and the 
+   * The length of the returned vector must agree with the value returned
+   * by `noChildren()`
+   * The integer entries of the matrices must be non-negative and the
    * column sums must be <= the lattice constant.
    */
   virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
@@ -97,17 +97,18 @@ class RefinementPattern {
   lf::base::size_type lattice_const_; /**< defines spacing of integer lattice */
 };
 
-  /**
-   * @brief Test whether a lattice polygon describes a logical parallelogram
-   *
-   * @param polygon an integer matrix whose column contain the lattice coordinates
-   *        of the vertices of the polygon. 
-   *
-   * A polygon passes the parallelogram test, if 
-   * -# it has four vertices 
-   * -# the vectors \f$x_1-x_0\f$ and \f$x_2-x_3\f$ agree.
-   */
-  bool isParallelogram(const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &polygon);
+/**
+ * @brief Test whether a lattice polygon describes a logical parallelogram
+ *
+ * @param polygon an integer matrix whose column contain the lattice coordinates
+ *        of the vertices of the polygon.
+ *
+ * A polygon passes the parallelogram test, if
+ * -# it has four vertices
+ * -# the vectors \f$x_1-x_0\f$ and \f$x_2-x_3\f$ agree.
+ */
+bool isParallelogram(
+    const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& polygon);
 
 }  // namespace lf::geometry
 

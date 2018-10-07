@@ -15,9 +15,11 @@
 #include "refinement_pattern.h"
 
 namespace lf::geometry {
-  bool isParallelogram(const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &polygon) {
-    // A parallelogram must have four vertices
-    if (polygon.cols() != 4) return false;
-    return ((polygon*(Eigen::Vector4i() << 1,-1,-1,1).finished()).squaredNorm() == 0);
-  }
+bool isParallelogram(
+    const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &polygon) {
+  // A parallelogram must have four vertices
+  if (polygon.cols() != 4) return false;
+  return ((polygon * (Eigen::Vector4i() << 1, -1, -1, 1).finished())
+              .squaredNorm() == 0);
 }
+}  // namespace lf::geometry

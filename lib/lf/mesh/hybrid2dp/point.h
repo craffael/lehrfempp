@@ -75,8 +75,8 @@ class Point : public mesh::Entity {
   base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations(
       void) const override {
     LF_ASSERT_MSG(false, "A point has not sub-entities");
-    return base::RandomAccessRange<const lf::mesh::Orientation>(dummy_or_.begin(),
-                                                          dummy_or_.end());
+    return base::RandomAccessRange<const lf::mesh::Orientation>(
+        dummy_or_.begin(), dummy_or_.end());
   }
 
   /** @brief return _pointer_ to associated geometry object */

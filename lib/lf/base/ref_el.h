@@ -38,7 +38,7 @@ using dim_t = unsigned char;
  */
 const unsigned int kIdxNil = static_cast<unsigned int>(-1);
 /** @} */
-  
+
 /*!
  * @brief An enum that defines all possible RefEl types.
  *
@@ -140,7 +140,7 @@ class RefEl {
 
  public:
   using dim_t = lf::base::dim_t;
-  
+
   // subSubEntities, used by SubSubEntity2SubEntity
   static constexpr std::array<std::array<dim_t, 2>, 3>
       sub_sub_entity_index_tria_ = {{{0, 1}, {1, 2}, {2, 0}}};
@@ -424,9 +424,10 @@ class RefEl {
    * - Similarly, for `sub_rel_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
-  constexpr sub_idx_t SubSubEntity2SubEntity(dim_t sub_codim, sub_idx_t sub_index,
-                                         dim_t sub_rel_codim,
-                                         sub_idx_t sub_rel_index) const {
+  constexpr sub_idx_t SubSubEntity2SubEntity(dim_t sub_codim,
+                                             sub_idx_t sub_index,
+                                             dim_t sub_rel_codim,
+                                             sub_idx_t sub_rel_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");

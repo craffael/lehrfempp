@@ -3,7 +3,7 @@
 
 #include <boost/container/vector.hpp>
 #include "mesh_data_set.h"
- 
+
 namespace lf::mesh::utils {
 
 /**
@@ -18,25 +18,26 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   using dim_t = base::RefEl::dim_t;
 
   /**
-   * @brief construct data vector indexed by entities of a particula co-dimension
+   * @brief construct data vector indexed by entities of a particula
+   * co-dimension
    * @param mesh pointer to underlying mesh
    * @param codim co-dimension of indexing entities for the given mesh
    */
 
-    CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
+  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
         data_(mesh_->Size(codim)),
         codim_(codim) {}
 
-   /**
-   * @brief construct and initialize data vector indexed by entities of a 
+  /**
+   * @brief construct and initialize data vector indexed by entities of a
    *        particula co-dimension
    * @param mesh pointer to underlying mesh
    * @param codim co-dimension of indexing entities for the given mesh
    * @param init value to be copied into all data elements
    */
- template <class = typename std::enable_if<
+  template <class = typename std::enable_if<
                 std::is_copy_constructible<T>::value>::type>
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
       : MeshDataSet<T>(),
@@ -83,7 +84,6 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   typename Container<T, int>::type_t data_;
   /** co-dimension */
   dim_t codim_;
-
 
   // Friends:
   template <class S>

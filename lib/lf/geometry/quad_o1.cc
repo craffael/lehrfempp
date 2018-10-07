@@ -7,7 +7,7 @@
 namespace lf::geometry {
 
 bool assertNonDegenerateQuad(
-    const Eigen::Matrix<double, Eigen::Dynamic, 4> &coords, double tol) {
+    const Eigen::Matrix<double, Eigen::Dynamic, 4>& coords, double tol) {
   // World dimension
   const Geometry::dim_t wd = coords.rows();
   // Length tests
@@ -293,7 +293,6 @@ Eigen::VectorXd Parallelogram::IntegrationElement(
     const Eigen::MatrixXd& local) const {
   return Eigen::VectorXd::Constant(local.cols(), integrationElement_);
 }
-
 
 // essentially a copy of the same method for QuadO1
 std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,

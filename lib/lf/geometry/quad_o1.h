@@ -11,10 +11,11 @@ namespace lf::geometry {
  *        of the quadrilateral, w = world dimension
  * @param tol relative tolerance for numerical tests of equality with zero
  *
- * Terminates execution in case degenerate shape is detected. 
+ * Terminates execution in case degenerate shape is detected.
  */
 bool assertNonDegenerateQuad(
-    const Eigen::Matrix<double, Eigen::Dynamic, 4> &coords, double tol = 1.0E-8);
+    const Eigen::Matrix<double, Eigen::Dynamic, 4>& coords,
+    double tol = 1.0E-8);
 
 /**
  * @brief Bilinear quadrilateral element shape

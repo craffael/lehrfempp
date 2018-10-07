@@ -231,7 +231,6 @@ class UniformFEDofHandler : public DofHandler {
   virtual size_type GetNoInteriorDofs(
       const lf::mesh::Entity &entity) const override;
 
-
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
@@ -278,12 +277,10 @@ class UniformFEDofHandler : public DofHandler {
   lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
-  lf::base::RandomAccessRange<const gdof_idx_t>
-  InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
-                           glb_idx_t entity_index) const;
+  lf::base::RandomAccessRange<const gdof_idx_t> InteriorGlobalDofIndices(
+      lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
-  size_type GetNoLocalDofs(lf::base::RefEl ref_el_type,
-			   glb_idx_t) const {
+  size_type GetNoLocalDofs(lf::base::RefEl ref_el_type, glb_idx_t) const {
     return NoCoveredDofs(ref_el_type);
   }
 
@@ -559,12 +556,13 @@ class DynamicFEDofHandler : public DofHandler {
    */
   virtual size_type GetNoDofs(void) const override { return num_dof_; }
 
-  /** 
+  /**
    * @copydoc DofHandler::GetNoInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
-  virtual size_type GetNoInteriorDofs(const lf::mesh::Entity &entity) const override;
-  
+  virtual size_type GetNoInteriorDofs(
+      const lf::mesh::Entity &entity) const override;
+
   /**
    * @copydoc DofHandler::GetNoLocalDofs()
    * @sa GlobalDofIndices()

@@ -29,6 +29,6 @@ using dim_t = lf::base::dim_t;
 /** Type for global index of entities */
 using glb_idx_t = lf::base::glb_idx_t;
 
-}
+}  // namespace lf::assemble
 
 #endif

@@ -259,9 +259,9 @@ class MeshHierarchy {
   void RefineMarked();
   /**
    * @brief _Destroy_ the mesh on the finest level unless it is the base mesh
-   * 
+   *
    * @note the use of shared pointers prevents destruction if the finest mesh
-   *       is still in use somewhere else in the code. 
+   *       is still in use somewhere else in the code.
    */
   void Coarsen();
 
@@ -276,19 +276,20 @@ class MeshHierarchy {
    * vectors `point_child_infos_`, `edge_child_infos_` and `cell_child_infos_`
    * have been initialized consistently for the finest mesh. According to this
    * information, refinement is carried out using the object pointed to by
-   * mesh_factory_ to created new entities by calling lf::mesh::MeshFactory::Build().
-   * 
-   * The vectors  `point_child_infos_`, `edge_child_infos_` and `cell_child_infos_` will
-   * be augmented with information about the indices of the child entities 
-   * contained  in the newly created finest mesh. 
+   * mesh_factory_ to created new entities by calling
+   * lf::mesh::MeshFactory::Build().
+   *
+   * The vectors  `point_child_infos_`, `edge_child_infos_` and
+   * `cell_child_infos_` will be augmented with information about the indices of
+   * the child entities contained  in the newly created finest mesh.
    *
    * This method relies on lf::geometry::Geometry::ChildGeometry() to obtain
-   * information about the shape fo child entities in the form of lf::geometry::Geometry
-   * objects. 
-   * 
-   * The method also initializes the data vectors in `_parent_infos_` for 
+   * information about the shape fo child entities in the form of
+   * lf::geometry::Geometry objects.
+   *
+   * The method also initializes the data vectors in `_parent_infos_` for
    * the newly created now finest mesh.
-   * 
+   *
    */
   void PerformRefinement();
 

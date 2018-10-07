@@ -62,7 +62,7 @@ TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
     integrationElement_ =
         std::sqrt((jacobian_.transpose() * jacobian_).determinant());
   }
-} // end constructor
+}  // end constructor
 
 Eigen::MatrixXd TriaO1::Global(const Eigen::MatrixXd& local) const {
   return coords_.col(0) *
