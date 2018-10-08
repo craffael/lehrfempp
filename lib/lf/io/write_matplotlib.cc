@@ -59,8 +59,9 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
             break;
           }
           default: {
-            std::cerr << "Error for object " << obj_idx << " in co-dim "
-                      << codim << " of type " << obj_ref_el << std::endl;
+            LF_VERIFY_MSG(false, "Error for object " + std::to_string(obj_idx) +
+                                     " in codim " + std::to_string(codim) +
+                                     " of type " + obj_ref_el.ToString());
             break;
           }
         }
