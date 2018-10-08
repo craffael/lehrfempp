@@ -1,11 +1,17 @@
-/** @file */
+/**
+ * @file
+ * @brief Implementation of writeMatplotlib
+ * @author Anian Ruoss
+ * @date   2018-10-08 18:27:17
+ * @copyright MIT License
+ */
 
 #include "write_matplotlib.h"
 
 #include <fstream>
 #include <iostream>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 
 void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
   using dim_t = lf::base::RefEl::dim_t;
@@ -70,4 +76,4 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
   }
 }
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io

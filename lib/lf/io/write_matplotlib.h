@@ -1,3 +1,12 @@
+/**
+ * @file
+ * @brief Declares the writeMatplotlib function which writes a mesh to a .csv
+ *        file which can be visualized with matplotlib
+ * @author Anian Ruoss
+ * @date   2018-10-08 18:27:17
+ * @copyright MIT License
+ */
+
 #ifndef WRITE_MATPLOTLIB_H
 #define WRITE_MATPLOTLIB_H
 
@@ -5,7 +14,7 @@
 
 #include <string>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 /**
  * @brief Write affine triangulation data to file in matplotlib format
  * @param mesh the mesh to be stored to file
@@ -27,6 +36,6 @@ namespace lf::mesh::utils {
  */
 void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename);
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io
 
 #endif /* WRITE_MATPLOTLIB_H */
