@@ -23,6 +23,7 @@ add_executable(lf.examples.refinement.point_refinement_demo ${point_refinement_d
 
 target_link_libraries(lf.examples.refinement.point_refinement_demo
         PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+        lf.io
         lf.mesh
         lf.mesh.test_utils
         lf.mesh.utils
