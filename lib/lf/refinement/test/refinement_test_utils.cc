@@ -46,8 +46,8 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
     // Pointer to potential parent; every node of a child mesh must have a
     // parent
     const lf::mesh::Entity *fp = father_info.parent_ptr;
-    EXPECT_NE(fp, nullptr) << "Mising parent for node " << node_index
-                           << " of child mesh";
+    EXPECT_TRUE(fp) << "Mising parent for node " << node_index
+                    << " of child mesh";
     // Index of father
     const lf::base::glb_idx_t father_index = father_mesh->Index(*fp);
     EXPECT_EQ(father_index, father_info.parent_index)
@@ -123,7 +123,7 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
           (mh.ParentInfos(father_level + 1, codim)).at(entity_index);
       // One field gives a pointer to the parent entity
       const lf::mesh::Entity *entity_parent_ptr = entity_parent_info.parent_ptr;
-      EXPECT_NE(entity_parent_ptr, nullptr)
+      EXPECT_TRUE(entity_parent_ptr)
           << "Invalid pointer to parent of entity " << entity_index;
       if (entity_parent_ptr != nullptr) {
         // The other field tells the index of the parent in the parent mesh

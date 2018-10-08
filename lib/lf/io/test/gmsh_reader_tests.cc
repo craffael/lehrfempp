@@ -51,6 +51,14 @@ void checkTwoElementMesh(const GmshReader& reader) {
   EXPECT_THROW(reader.PhysicalEntityNr2Name(100), base::LfException);
   EXPECT_THROW(reader.PhysicalEntityName2Nr("gugus"), base::LfException);
 
+  auto pe2 = reader.PhysicalEntities(2);
+  using pe_t = std::pair<size_type, std::string>;
+  EXPECT_EQ(pe2.size(), 2);
+  EXPECT_NE(std::find(pe2.begin(), pe2.end(), pe_t{1, "physicalEntity1"}),
+            pe2.end());
+  EXPECT_NE(std::find(pe2.begin(), pe2.end(), pe_t{2, "physicalEntity2"}),
+            pe2.end());
+
   for (auto& e : entities2) {
     if (e == *origin) {
       continue;
@@ -71,6 +79,11 @@ void checkTwoElementMesh(const GmshReader& reader) {
   EXPECT_EQ(reader.PhysicalEntityNr2Name(diagonal_nr), "diagonal");
   EXPECT_EQ(reader.PhysicalEntityNr(*diagonal_edge).size(), 1);
   EXPECT_EQ(reader.PhysicalEntityNr(*diagonal_edge)[0], diagonal_nr);
+
+  auto pe1 = reader.PhysicalEntities(1);
+  EXPECT_EQ(pe1.size(), 1);
+  EXPECT_EQ(pe1[0].first, 4);
+  EXPECT_EQ(pe1[0].second, "diagonal");
 
   for (auto& e : entities1) {
     if (e == *diagonal_edge) {
@@ -105,6 +118,14 @@ void checkTwoElementMesh(const GmshReader& reader) {
   EXPECT_EQ(reader.PhysicalEntityNr(*triangle).size(), 2);
   EXPECT_EQ(reader.PhysicalEntityNr(*triangle)[0], 1);
   EXPECT_EQ(reader.PhysicalEntityNr(*triangle)[1], 3);
+
+  auto pe0 = reader.PhysicalEntities(0);
+  EXPECT_EQ(pe0.size(), 3);
+  EXPECT_NE(std::find(pe0.begin(), pe0.end(), pe_t{1, "physicalEntity1"}),
+            pe0.end());
+  EXPECT_NE(std::find(pe0.begin(), pe0.end(), pe_t{3, "physicalEntity3"}),
+            pe0.end());
+  EXPECT_NE(std::find(pe0.begin(), pe0.end(), pe_t{5, "square"}), pe0.end());
 
   for (auto& e : entities0) {
     mesh::test_utils::checkGeometryOrientation(e);

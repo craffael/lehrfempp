@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <lf/io/io.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
@@ -37,7 +38,7 @@ int main(int argc, const char *argv[]) {
   // Set control variables from command line or file "setup vars"
   lf::base::ReadCtrVarsCmdArgs(argc, argv);
   if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
-    std::cout << "No file specifyng control variables" << std::endl;
+    std::cout << "No file specifying control variables" << std::endl;
   }
   std::cout << "##### Control variables:" << std::endl;
   lf::base::ListCtrlVars(std::cout);
@@ -125,16 +126,19 @@ int main(int argc, const char *argv[]) {
         multi_mesh.getMesh(n_levels - 1);
     // Print number of entities of various co-dimensions
     std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
+              << " nodes, " << mesh->Size(1) << " edges, " << mesh->Size(0)
               << " cells," << std::endl;
     std::stringstream level_asc;
     level_asc << refstep;
 
-    lf::mesh::utils::writeTikZ(
-        *mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
-        TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
-            TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
-            TikzOutputCtrl::EdgeNumbering);
+    writeTikZ(*mesh, std::string("refinement_mesh") + level_asc.str() + ".txt",
+              TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
+                  TikzOutputCtrl::VerticeNumbering |
+                  TikzOutputCtrl::NodeNumbering |
+                  TikzOutputCtrl::EdgeNumbering);
+
+    lf::io::VtkWriter vtk_writer(mesh,
+                                 "refinement_mesh" + level_asc.str() + ".vtk");
   }
 
   // Generate  MATLAB functions that provide a description of all

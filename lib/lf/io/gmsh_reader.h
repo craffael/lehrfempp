@@ -322,6 +322,14 @@ class GmshReader {
   std::string PhysicalEntityNr2Name(size_type number, dim_t codim = -1) const;
 
   /**
+   * @brief Retrieve a list of all (Gmsh) physical entities of the given codim.
+   * @param codim The codimension
+   * @return A list of physical entities (number, name)
+   */
+  std::vector<std::pair<size_type, std::string>> PhysicalEntities(
+      dim_t codim) const;
+
+  /**
    * \brief Return the Physical Entity Numbers associated with this mesh entity,
    *        sorted ascending.
    * \param e  The entity of the grid.

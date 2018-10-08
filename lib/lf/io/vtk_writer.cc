@@ -479,8 +479,8 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
   }
 }
 
-VtkWriter::VtkWriter(std::shared_ptr<mesh::Mesh> mesh, std::string filename,
-                     dim_t codim)
+VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
+                     std::string filename, dim_t codim)
     : mesh_(std::move(mesh)), filename_(std::move(filename)), codim_(codim) {
   auto dim_mesh = mesh_->DimMesh();
   auto dim_world = mesh_->DimWorld();
