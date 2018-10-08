@@ -22,7 +22,7 @@ namespace lf::assemble {
 /**
  * @brief A temporaery data structure for matrix in COO format.
  *
- * @tparam SCALAR basic (usually atomic) scalar type for the matrix
+ * @tparam SCALAR basic scalar type for the matrix
  *
  *
  * This class provides a container for a matrix in triplet

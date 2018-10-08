@@ -16,15 +16,8 @@
 #define _LF_DOFHD_H
 
 #include <lf/mesh/mesh.h>
+#include "assembly_types.h"
 
-#include "local_static_dofs.h"
-
-/** @brief Local assembly facilities
- *
- * This module comprises classes and functions supporting the generation of
- * (Galerkin) finite element matrices and right-hand-side vectors from
- * local contributions of geometric entities.
- */
 namespace lf::assemble {
 /**
  * @brief A general (_interface_) class for DOF handling.
@@ -88,18 +81,18 @@ class DofHandler {
   /**
    * @brief total number of dof's handled by the object
    */
-  virtual size_type GetNoDofs() const = 0;
+  virtual size_type NoDofs() const = 0;
 
   /**
    * @brief tells the number of degrees of freedom subordinated to an entity
    *
    * @param entity reference to an entity of the underlying mesh
    *
-   * This method informs about the lenght of the vector returned by
+   * This method informs about the length of the vector returned by
    * GlobalDofIndices().
    * @sa GlobalDofIndices()
    */
-  virtual size_type GetNoLocalDofs(const lf::mesh::Entity &entity) const = 0;
+  virtual size_type NoLocalDofs(const lf::mesh::Entity &entity) const = 0;
 
   /**
    * @brief provides number of shape functions associated with an entity
@@ -110,7 +103,7 @@ class DofHandler {
    * The return value of this method must be equal to the length of the range
    * built by GlobalDofIndices().
    */
-  virtual size_type GetNoInteriorDofs(const lf::mesh::Entity &entity) const = 0;
+  virtual size_type NoInteriorDofs(const lf::mesh::Entity &entity) const = 0;
 
   /**
    * @brief access to indices of global dof's belonging to an entity
@@ -126,7 +119,7 @@ class DofHandler {
    * sub-entitites_.
    *
    * The size of the returned range must agree with the value returned
-   * by GetNoLocalDofs() when supplied with the same arguments.
+   * by NoLocalDofs() when supplied with the same arguments.
    */
   virtual lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
@@ -156,14 +149,14 @@ class DofHandler {
    * for debugging purposes.
    * @sa GlobalDofIndices()
    */
-  virtual const lf::mesh::Entity &GetEntity(gdof_idx_t dofnum) const = 0;
+  virtual const lf::mesh::Entity &Entity(gdof_idx_t dofnum) const = 0;
 
   /** @brief Acess to underlying mesh object
    *
    * Every DofHandler object has to be associated with a unique mesh.
    * All entities passed to the DofHandler object must belong to that mesh.
    */
-  virtual const lf::mesh::Mesh &getMesh() const = 0;
+  virtual std::shared_ptr<const lf::mesh::Mesh> Mesh() const = 0;
 
   /** @brief output control variable
    *
@@ -197,39 +190,31 @@ class UniformFEDofHandler : public DofHandler {
   /** Construction from local dof layout */
   /**@{*/
   /** @name Constructors */
-  /**
-   * @brief construction from a dof layout object
-   * @param mesh pointer to underlying mesh
-   * @param locdof object containing information about the numbers of dofs
-   *        associated with/covered by the different type of entities.
-   */
-  UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
-                      const LocalStaticDOFs &locdof);
 
   /** @brief Construction from a map object
    *
    * @param dofmap map telling number of interior dofs for every type of entity
    */
-  using dof_map_t = std::map<lf::base::RefEl, size_type>;
+  using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
   UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh, dof_map_t dofmap);
   /**@}*/
 
   /**
    * @copydoc DofHandler::GetNoDofs()
    */
-  size_type GetNoDofs() const override { return num_dof_; }
+  size_type NoDofs() const override { return num_dof_; }
 
   /**
    * @copydoc DofHandler::GetNoLocalDofs()
    * @sa GlobalDofIndices()
    */
-  size_type GetNoLocalDofs(const lf::mesh::Entity &entity) const override;
+  size_type NoLocalDofs(const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GetNoInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
-  size_type GetNoInteriorDofs(const lf::mesh::Entity &entity) const override;
+  size_type NoInteriorDofs(const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GlobalDofIndices()
@@ -248,15 +233,15 @@ class UniformFEDofHandler : public DofHandler {
    * @copydoc DofHandler::GetEntity()
    * @sa GlobalDofIndices()
    */
-  const lf::mesh::Entity &GetEntity(gdof_idx_t dofnum) const override {
+  const lf::mesh::Entity &Entity(gdof_idx_t dofnum) const override {
     LF_VERIFY_MSG(dofnum < dof_entities_.size(),
                   "Illegal dof index " << dofnum << ", max = " << num_dof_);
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::getMesh()
+  /** @copydoc DofHandler::mesh()
    */
-  const lf::mesh::Mesh &getMesh() const override { return *mesh_; }
+  std::shared_ptr<const lf::mesh::Mesh> Mesh() const override { return mesh_; }
 
  private:
   /**
@@ -387,7 +372,7 @@ class DynamicFEDofHandler : public DofHandler {
    *
    * @tparam LOCALDOFINFO type for object telling number of interior local shape
    * functions
-   * @param mesh pointer to underlying mesh
+   * @param mesh_p pointer to underlying mesh
    * @param locdof functor object telling number of _interior_ dofs for every
    * entity of the mesh.
    *
@@ -555,19 +540,19 @@ class DynamicFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GetNoDofs()
    */
-  size_type GetNoDofs() const override { return num_dof_; }
+  size_type NoDofs() const override { return num_dof_; }
 
   /**
    * @copydoc DofHandler::GetNoInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
-  size_type GetNoInteriorDofs(const lf::mesh::Entity &entity) const override;
+  size_type NoInteriorDofs(const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GetNoLocalDofs()
    * @sa GlobalDofIndices()
    */
-  size_type GetNoLocalDofs(const lf::mesh::Entity &entity) const override;
+  size_type NoLocalDofs(const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GlobalDofIndices()
@@ -585,15 +570,17 @@ class DynamicFEDofHandler : public DofHandler {
    * @copydoc DofHandler::GetEntity()
    * @sa GlobalDofIndices()
    */
-  const lf::mesh::Entity &GetEntity(gdof_idx_t dofnum) const override {
+  const lf::mesh::Entity &Entity(gdof_idx_t dofnum) const override {
     LF_VERIFY_MSG(dofnum < dof_entities_.size(),
                   "Illegal dof index " << dofnum << ", max = " << num_dof_);
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::getMesh()
+  /** @copydoc DofHandler::mesh()
    */
-  const lf::mesh::Mesh &getMesh() const override { return *mesh_p_; }
+  std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
+    return mesh_p_;
+  }
 
  private:
   /** The mesh on which the degrees of freedom are defined */

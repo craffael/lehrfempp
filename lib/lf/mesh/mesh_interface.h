@@ -91,7 +91,7 @@ class Mesh {
    * @note O(1) access complexity due to table lookup.
    */
   virtual const mesh::Entity* EntityByIndex(dim_t codim,
-                                            glb_idx_t index) const = 0;
+                                            base::glb_idx_t index) const = 0;
 
   /**
    * @brief Check if the given entity is a part of this mesh.

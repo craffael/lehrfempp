@@ -20,16 +20,16 @@ int DofHandler::output_ctrl_ = 0;
 
 // Implementation of output operator for interface class
 std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
-  const lf::mesh::Mesh &mesh(dof_handler.getMesh());
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
-  o << "DofHandler(" << dof_handler.GetNoDofs() << " dofs)";
+  auto mesh = dof_handler.Mesh();
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  o << "DofHandler(" << dof_handler.NoDofs() << " dofs)";
   if (DofHandler::output_ctrl_ > 0) {
     o << std::endl;
     if (DofHandler::output_ctrl_ % 2 == 0) {
-      for (lf::base::dim_t codim = 0; codim <= mesh.DimMesh(); codim++) {
-        for (const lf::mesh::Entity &e : mesh.Entities(codim)) {
-          const lf::base::glb_idx_t e_idx = mesh.Index(e);
-          const lf::assemble::size_type no_dofs(dof_handler.GetNoLocalDofs(e));
+      for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
+        for (const lf::mesh::Entity &e : mesh->Entities(codim)) {
+          const lf::base::glb_idx_t e_idx = mesh->Index(e);
+          const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(e));
           lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
               dof_handler.GlobalDofIndices(e));
           o << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -52,36 +52,14 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
     }
     if (DofHandler::output_ctrl_ % 3 == 0) {
       for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
-        const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
-        o << "dof " << dof_idx << " -> " << e << " " << mesh.Index(e)
+        const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
+        o << "dof " << dof_idx << " -> " << e << " " << mesh->Index(e)
           << std::endl;
       }
     }
   }
   return o;
 }
-
-UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
-                                         const LocalStaticDOFs &locdof)
-    : mesh_(std::move(mesh)), no_dofs_() {
-  LF_VERIFY_MSG((mesh_->DimMesh() == 2),
-                "UniformFEDofHandler implemented for 2D only");
-
-  // First fetch number of local shape functions covering each entity type
-  no_dofs_[kNodeOrd] = locdof.TotalNoLocDofs(lf::base::RefEl::kPoint());
-  no_dofs_[kEdgeOrd] = locdof.TotalNoLocDofs(lf::base::RefEl::kSegment());
-  num_dofs_tria_ = locdof.TotalNoLocDofs(lf::base::RefEl::kTria());
-  num_dofs_quad_ = locdof.TotalNoLocDofs(lf::base::RefEl::kQuad());
-  no_dofs_[kCellOrd] = std::max(num_dofs_tria_, num_dofs_quad_);
-  // Next fetch number of local shape functions associated with each entity type
-  no_loc_dof_point_ = locdof.NoLocDofs(lf::base::RefEl::kPoint());
-  no_loc_dof_segment_ = locdof.NoLocDofs(lf::base::RefEl::kSegment());
-  no_loc_dof_tria_ = locdof.NoLocDofs(lf::base::RefEl::kTria());
-  no_loc_dof_quad_ = locdof.NoLocDofs(lf::base::RefEl::kQuad());
-
-  // Initializatin of dof index arrays
-  initIndexArrays();
-}  // end constructor
 
 UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
                                          dof_map_t dofmap)
@@ -281,7 +259,7 @@ void UniformFEDofHandler::initIndexArrays() {
   }
   // Finally store total number of shape functions on the mesh.
   num_dof_ = dof_idx;
-}  // end contructore
+}  // end constructor
 
 lf::base::RandomAccessRange<const gdof_idx_t>
 UniformFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
@@ -328,12 +306,12 @@ UniformFEDofHandler::InteriorGlobalDofIndices(
   return InteriorGlobalDofIndices(entity.RefEl(), mesh_->Index(entity));
 }
 
-size_type UniformFEDofHandler::GetNoLocalDofs(
+size_type UniformFEDofHandler::NoLocalDofs(
     const lf::mesh::Entity &entity) const {
   return GetNoLocalDofs(entity.RefEl(), 0);
 }
 
-size_type UniformFEDofHandler::GetNoInteriorDofs(
+size_type UniformFEDofHandler::NoInteriorDofs(
     const lf::mesh::Entity &entity) const {
   return NoInteriorDofs(entity.RefEl());
 }
@@ -386,7 +364,7 @@ DynamicFEDofHandler::InteriorGlobalDofIndices(
   return {begin, end};
 }
 
-size_type DynamicFEDofHandler::GetNoLocalDofs(
+size_type DynamicFEDofHandler::NoLocalDofs(
     const lf::mesh::Entity &entity) const {
   const lf::base::RefEl ref_el_type = entity.RefEl();
   const dim_t codim = 2 - ref_el_type.Dimension();
@@ -394,7 +372,7 @@ size_type DynamicFEDofHandler::GetNoLocalDofs(
   return (offsets_[codim][entity_index + 1] - offsets_[codim][entity_index]);
 }
 
-size_type DynamicFEDofHandler::GetNoInteriorDofs(
+size_type DynamicFEDofHandler::NoInteriorDofs(
     const lf::mesh::Entity &entity) const {
   const lf::base::RefEl ref_el_type = entity.RefEl();
   const dim_t codim = 2 - ref_el_type.Dimension();

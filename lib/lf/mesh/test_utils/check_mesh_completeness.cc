@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
 #include <iostream>
+#include "lf/mesh/hybrid2dp/mesh.h"
 
 namespace lf::mesh::test_utils {
 bool checkMeshCompleteness(const Mesh& mesh) {
@@ -13,7 +14,7 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   for (size_type co_dim = 0; co_dim < dim_mesh; ++co_dim) {
     // Count occurrences of sub-entities of relative co-dimension 1
     // To that end allocate a vector of counters
-    std::vector<size_type> entity_link_cnt(mesh.Size(co_dim + 1), (size_type)0);
+    std::vector<size_type> entity_link_cnt(mesh.Size(co_dim + 1), 0);
 
     // Diagnostic output
     // std::cout << "co-dim " << co_dim + 1 << ": " << mesh.Size(co_dim + 1)
@@ -47,13 +48,15 @@ bool checkMeshCompleteness(const Mesh& mesh) {
     // for (size_type cnt : entity_link_cnt) {
     //   if (cnt > max_subent_cnt) max_subent_cnt = cnt;
     // }
-    std::vector<size_type> occurrence_cnt(max_subent_cnt + 1, (size_type)0);
+    std::vector<size_type> occurrence_cnt(max_subent_cnt + 1, 0);
     size_type entity_index = 0;
     for (size_type i : entity_link_cnt) {
       occurrence_cnt[i]++;
       EXPECT_GT(i, 0) << "Entity " << entity_index << ", co-dimension "
                       << co_dim + 1 << "not linked";
-      if (i == 0) status = false;
+      if (i == 0) {
+        status = false;
+      }
       entity_index++;
     }
     // Output of diagnostic information
@@ -70,17 +73,17 @@ bool checkMeshCompleteness(const Mesh& mesh) {
 
 CONTROLDECLARE(watertight_mesh_ctrl, "watertight_mesh");
 
-std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
+std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only) {
-  const dim_t dim_mesh = mesh.DimMesh();
-  std::vector<std::pair<lf::base::RefEl, glb_idx_t>> ret_vals{};
+  base::dim_t dim_mesh = mesh.DimMesh();
+  std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> ret_vals{};
 
   // "Reference coordinates" for a point: dummy argument
   Eigen::Matrix<double, 0, 1> pt_ref_coord;
 
   // Loop over cells and edges
   for (int co_dim = dim_mesh; co_dim > 0; co_dim--) {
-    const dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
+    base::dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
     // Loop over entities of the specified co-dimension
     for (const Entity& e : mesh.Entities(co_dim)) {
       const lf::base::RefEl e_refel = e.RefEl();
@@ -90,7 +93,7 @@ std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
           (e.Geometry()->IntegrationElement(ref_el_corners))[0];
       // Visit all nodes
       base::RandomAccessRange<const Entity> sub_ents(e.SubEntities(codim_pt));
-      for (sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
+      for (base::sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
         const Eigen::VectorXd node_coords(
             sub_ents[j].Geometry()->Global(pt_ref_coord));
         // Check agreement of coordinates up to roundoff

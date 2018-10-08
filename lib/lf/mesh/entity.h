@@ -6,14 +6,6 @@
 #include <lf/geometry/geometry.h>
 
 namespace lf::mesh {
-/** type for length of arrays/vectors */
-using size_type = lf::base::size_type;
-/** type for (co-)dimensions */
-using dim_t = lf::base::dim_t;
-/** type for local index numbers on the entity level */
-using sub_idx_t = lf::base::sub_idx_t;
-/** type for global index numbers referring to the mesh */
-using glb_idx_t = lf::base::glb_idx_t;
 
 /** @brief Relative orientation of a sub-entity
  *

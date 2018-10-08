@@ -18,7 +18,7 @@
 #include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 
-#include <lf/assembly/assembler.h>
+#include <lf/assemble/assemble.h>
 
 namespace lf::assemble::test {
 
@@ -76,13 +76,13 @@ void output_dofs_test(const lf::mesh::Mesh &mesh,
                       const lf::assemble::DofHandler &dof_handler) {
   EXPECT_EQ(mesh.DimMesh(), 2) << "Only for 2D meshes";
 
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
   for (lf::base::dim_t codim = 0; codim <= 2; codim++) {
     std::cout << "#### DOFs for entities of co-dimension " << (int)codim
               << std::endl;
     for (const lf::mesh::Entity &e : mesh.Entities(codim)) {
       const lf::base::glb_idx_t e_idx = mesh.Index(e);
-      const lf::assemble::size_type no_dofs(dof_handler.GetNoLocalDofs(e));
+      const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(e));
       lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
           dof_handler.GlobalDofIndices(e));
       std::cout << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -99,10 +99,10 @@ void output_entities_dofs(const lf::mesh::Mesh &mesh,
                           const lf::assemble::DofHandler &dof_handler) {
   EXPECT_EQ(mesh.DimMesh(), 2) << "Only for 2D meshes";
 
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
   std::cout << "#### Entities associated with DOFs" << std::endl;
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
-    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
     std::cout << "dof " << dof_idx << " -> " << e << " " << mesh.Index(e)
               << std::endl;
     lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
@@ -131,25 +131,11 @@ TEST(lf_assembly, dof_index_test) {
 
   // Describe local (uniform!) distribution of degrees of freedom
   // 1 dof per node, 2 dofs per edge, 3 dofs per triangle, 4 dofs per quad
-  LocalStaticDOFs2D local_dof_distribution(1, 2, 3, 4);
-
-  EXPECT_EQ(local_dof_distribution.NoLocDofs(lf::base::RefEl::kPoint()), 1)
-      << "1 dof per point expected";
-  EXPECT_EQ(local_dof_distribution.NoLocDofs(lf::base::RefEl::kSegment()), 2)
-      << "2 dof per edge expected";
-  EXPECT_EQ(local_dof_distribution.NoLocDofs(lf::base::RefEl::kTria()), 3)
-      << "3 dof per triangle expected";
-  EXPECT_EQ(local_dof_distribution.NoLocDofs(lf::base::RefEl::kQuad()), 4)
-      << "4 dof per quad expected";
-  EXPECT_EQ(local_dof_distribution.TotalNoLocDofs(lf::base::RefEl::kPoint()), 1)
-      << "1 shape function per point expected";
-  EXPECT_EQ(local_dof_distribution.TotalNoLocDofs(lf::base::RefEl::kSegment()),
-            4)
-      << "4 shape function  per edge expected";
-  EXPECT_EQ(local_dof_distribution.TotalNoLocDofs(lf::base::RefEl::kTria()), 12)
-      << "13 shape function  per triangle expected";
-  EXPECT_EQ(local_dof_distribution.TotalNoLocDofs(lf::base::RefEl::kQuad()), 16)
-      << "16 shape function  per quad expected";
+  std::map<base::RefEl, base::size_type> local_dof_distribution{
+      {base::RefEl::kPoint(), 1},
+      {base::RefEl::kSegment(), 2},
+      {base::RefEl::kTria(), 3},
+      {base::RefEl::kQuad(), 4}};
 
   // Construct dofhandler
   UniformFEDofHandler dof_handler(mesh_p, local_dof_distribution);
@@ -197,7 +183,7 @@ TEST(lf_assembly, dynamic_dof_index_test) {
 // Auxiliary function for testing
 void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
                         const lf::assemble::DofHandler &dof_handler) {
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
 
   std::cout << N_dofs << " degrees of freedom built" << std::endl;
   EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
@@ -205,7 +191,7 @@ void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
   // Output/store index numbers of entities holding global shape functions
   std::vector<lf::base::glb_idx_t> dof_to_entity_index{};
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
-    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
     EXPECT_EQ(e.RefEl(), lf::base::RefEl::kPoint()) << "dofs @ " << e.RefEl();
     const lf::base::glb_idx_t e_idx(mesh.Index(e));
     dof_to_entity_index.push_back(e_idx);
@@ -216,8 +202,8 @@ void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
   TestAssembler assembler{mesh};
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
 
-  mat = lf::assemble::AssembleMatrixLocally<0, lf::assemble::COOMatrix<double>>(
-      dof_handler, assembler);
+  mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+      0, dof_handler, assembler);
 
   std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
             << std::endl;
@@ -251,8 +237,8 @@ void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
   TestVectorAssembler vec_assembler{mesh};
 
   // The actual assembly is done here
-  auto rhsvec = lf::assemble::AssembleVectorLocally<0, Eigen::VectorXd>(
-      dof_handler, vec_assembler);
+  auto rhsvec = lf::assemble::AssembleVectorLocally<Eigen::VectorXd>(
+      0, dof_handler, vec_assembler);
 
   // Output assembled vector
   std::cout << "Assembled vector: " << rhsvec.transpose() << std::endl;
@@ -341,7 +327,7 @@ void edge_dof_assembly_test(const lf::mesh::Mesh &mesh,
   output_dofs_test(mesh, dof_handler);
   output_entities_dofs(mesh, dof_handler);
 
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
 
   std::cout << N_dofs << " degrees of freedom built" << std::endl;
   EXPECT_EQ(N_dofs, 36) << "Dubious numbers of dofs";
@@ -349,7 +335,7 @@ void edge_dof_assembly_test(const lf::mesh::Mesh &mesh,
   // Output/store index numbers of entities holding global shape functions
   std::vector<lf::base::glb_idx_t> dof_to_entity_index{};
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
-    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
     EXPECT_EQ(e.RefEl(), lf::base::RefEl::kSegment()) << "dofs @ " << e.RefEl();
     const lf::base::glb_idx_t e_idx(mesh.Index(e));
     dof_to_entity_index.push_back(e_idx);
@@ -360,8 +346,8 @@ void edge_dof_assembly_test(const lf::mesh::Mesh &mesh,
   EdgeDofAssembler assembler{mesh};
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
 
-  mat = lf::assemble::AssembleMatrixLocally<0, lf::assemble::COOMatrix<double>>(
-      dof_handler, assembler);
+  mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+      0, dof_handler, assembler);
 
   std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
             << std::endl;
@@ -513,7 +499,7 @@ BoundaryAssembler::ElemMat BoundaryAssembler::Eval(
 // Auxiliary function for testing
 void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
                              const lf::assemble::DofHandler &dof_handler) {
-  const lf::assemble::size_type N_dofs(dof_handler.GetNoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
 
   std::cout << N_dofs << " degrees of freedom in linear FE space" << std::endl;
   EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
@@ -521,7 +507,7 @@ void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
   // Output/store index numbers of entities holding global shape functions
   std::vector<lf::base::glb_idx_t> dof_to_entity_index{};
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
-    const lf::mesh::Entity &e(dof_handler.GetEntity(dof_idx));
+    const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
     EXPECT_EQ(e.RefEl(), lf::base::RefEl::kPoint()) << "dofs @ " << e.RefEl();
     const lf::base::glb_idx_t e_idx(mesh_p->Index(e));
     dof_to_entity_index.push_back(e_idx);
@@ -533,8 +519,8 @@ void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
 
   // Assembly over edges
-  mat = lf::assemble::AssembleMatrixLocally<1, lf::assemble::COOMatrix<double>>(
-      dof_handler, assembler);
+  mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+      1, dof_handler, assembler);
 
   std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
             << std::endl;

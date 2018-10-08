@@ -16,18 +16,16 @@
 #ifndef _LF_ASSEMBLE_H
 #define _LF_ASSEMBLE_H
 
-#include <Eigen/Sparse>
-#include "coomatrix.h"
 #include "dofhandler.h"
 
 namespace lf::assemble {
 /**
  * @brief Assembly function for standard assembly of finite element matrices
  *
- * @tparam CODIM co-dimension of mesh entities which should be traversed
- *               in the course of assembly
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ASSEMBLER a type providing the computation of element matrices
+ * @param codim co-dimension of mesh entities which should be traversed
+ *              in the course of assembly
  * @param dof_handler_trial a dof handler object for column space @see
  * DofHandler
  * @param dof_handler_test a dof handler object for row space @see DofHandler
@@ -51,8 +49,8 @@ namespace lf::assemble {
  * + provide a matrix type `ElemMat` for objects containing the element
  * matrices.
  */
-template <int CODIM, typename TMPMATRIX, class ASSEMBLER>
-void AssembleMatrixLocally(const DofHandler &dof_handler_trial,
+template <typename TMPMATRIX, class ASSEMBLER>
+void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                            const DofHandler &dof_handler_test,
                            ASSEMBLER &assembler, TMPMATRIX &matrix) {
   // Type of matrix entries, usually either double or complex.
@@ -60,34 +58,34 @@ void AssembleMatrixLocally(const DofHandler &dof_handler_trial,
   // Type for element matrix
   using elem_mat_t = typename ASSEMBLER::ElemMat;
   // Underlying mesh
-  const lf::mesh::Mesh &mesh(dof_handler_trial.getMesh());
+  auto mesh = dof_handler_trial.Mesh();
 
-  LF_ASSERT_MSG(&mesh == &dof_handler_test.getMesh(),
+  LF_ASSERT_MSG(mesh == dof_handler_test.Mesh(),
                 "Trial and test space must be defined on the same mesh");
 
   // Central assembly loop over entities of co-dimension specified by
   // the template argument CODIM
-  for (const lf::mesh::Entity &entity : mesh.Entities(CODIM)) {
+  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
     // Some entities may be skipped
     if (assembler.isActive(entity)) {
       // Size, aka number of rows and columns, of element matrix
-      const size_type nrows_loc = dof_handler_test.GetNoLocalDofs(entity);
-      const size_type ncols_loc = dof_handler_trial.GetNoLocalDofs(entity);
+      const size_type nrows_loc = dof_handler_test.NoLocalDofs(entity);
+      const size_type ncols_loc = dof_handler_trial.NoLocalDofs(entity);
       // row indices of for contributions of cells
       lf::base::RandomAccessRange<const gdof_idx_t> row_idx(
           dof_handler_test.GlobalDofIndices(entity));
       // Column indices of for contributions of cells
       lf::base::RandomAccessRange<const gdof_idx_t> col_idx(
           dof_handler_trial.GlobalDofIndices(entity));
-      // Request local matrix from assembler object. In the case CODIM = 0,
+      // Request local matrix from assembler object. In the case codim = 0,
       // when `entity` is a cell, this is the element matrix
       const elem_mat_t elem_mat(assembler.Eval(entity));
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
-                                      << ", entity " << mesh.Index(entity));
+                                      << ", entity " << mesh->Index(entity));
       LF_ASSERT_MSG(elem_mat.cols() >= ncols_loc,
                     "ncols mismatch " << elem_mat.cols() << " <-> " << nrows_loc
-                                      << ", entity " << mesh.Index(entity));
+                                      << ", entity " << mesh->Index(entity));
       // Assembly double loop
       for (int i = 0; i < nrows_loc; i++) {
         for (int j = 0; j < ncols_loc; j++) {
@@ -108,13 +106,14 @@ void AssembleMatrixLocally(const DofHandler &dof_handler_trial,
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
  * DofHandler &dof_handler_test,ASSEMBLER &assembler, TMPMATRIX &matrix)
  */
-template <int CODIM, typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler_trial,
+template <typename TMPMATRIX, class ASSEMBLER>
+TMPMATRIX AssembleMatrixLocally(dim_t codim,
+                                const DofHandler &dof_handler_trial,
                                 const DofHandler &dof_handler_test,
                                 ASSEMBLER &assembler) {
-  TMPMATRIX matrix{dof_handler_test.GetNoDofs(), dof_handler_trial.GetNoDofs()};
-  AssembleMatrixLocally<CODIM, TMPMATRIX, ASSEMBLER>(
-      dof_handler_trial, dof_handler_test, assembler, matrix);
+  TMPMATRIX matrix{dof_handler_test.NoDofs(), dof_handler_trial.NoDofs()};
+  AssembleMatrixLocally<TMPMATRIX, ASSEMBLER>(
+      codim, dof_handler_trial, dof_handler_test, assembler, matrix);
   return matrix;
 }
 
@@ -131,21 +130,21 @@ TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler_trial,
  * DofHandler &dof_handler_test,ASSEMBLER &assembler, TMPMATRIX &matrix)
  */
 
-template <int CODIM, typename TMPMATRIX, class ASSEMBLER>
-TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler,
+template <typename TMPMATRIX, class ASSEMBLER>
+TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
                                 ASSEMBLER &assembler) {
-  return AssembleMatrixLocally<CODIM, TMPMATRIX, ASSEMBLER>(
-      dof_handler, dof_handler, assembler);
+  return AssembleMatrixLocally<TMPMATRIX, ASSEMBLER>(codim, dof_handler,
+                                                     dof_handler, assembler);
 }
 
 /**
  * @brief entity-local assembly of (right-hand-side) vectors from element
  * vectors
  *
- * @tparam CODIM co-dimension of entities over which assembly should be carried
- * out
  * @tparam VECTOR a generic vector type with component access through []
  * @tparam VECTORASSEMBLER type for objects computing entity-local vectors
+ * @param codim co-dimension of entities over which assembly should be carried
+ * out
  * @param dof_handler object providing local-to-global dof index mapping, see
  * DofHandler
  * @param assembler local assembler object (passed as non-const!)
@@ -162,23 +161,23 @@ TMPMATRIX AssembleMatrixLocally(const DofHandler &dof_handler,
  * + provide a type `ElemVec` suitable for holding an element vector
  *
  */
-template <int CODIM, typename VECTOR, class VECTORASSEMBLER>
-void AssembleVectorLocally(const DofHandler &dof_handler,
+template <typename VECTOR, class VECTORASSEMBLER>
+void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                            VECTORASSEMBLER &assembler, VECTOR &resultvector) {
   // Type of matrix entries, usually either double or complex.
   using scalar_t = typename VECTOR::Scalar;
   // Type for element matrix
   using elem_vec_t = typename VECTORASSEMBLER::ElemVec;
   // Underlying mesh
-  const lf::mesh::Mesh &mesh(dof_handler.getMesh());
+  auto mesh = dof_handler.Mesh();
 
   // Central assembly loop over entities of the co-dimension specified via
   // the template argument CODIM
-  for (const lf::mesh::Entity &entity : mesh.Entities(CODIM)) {
+  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
     // Some cells may be skipped
     if (assembler.isActive(entity)) {
       // Length of element vector
-      const size_type veclen = dof_handler.GetNoLocalDofs(entity);
+      const size_type veclen = dof_handler.NoLocalDofs(entity);
       // global dof indices for contribution of the entity
       lf::base::RandomAccessRange<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(entity));
@@ -187,7 +186,7 @@ void AssembleVectorLocally(const DofHandler &dof_handler,
       const elem_vec_t elem_vec(assembler.Eval(entity));
       LF_ASSERT_MSG(elem_vec.size() >= veclen,
                     "length mismatch " << elem_vec.size() << " <-> " << veclen
-                                       << ", entity " << mesh.Index(entity));
+                                       << ", entity " << mesh->Index(entity));
       // Assembly (single) loop
       for (int i = 0; i < veclen; i++) {
         resultvector[dof_idx[i]] += elem_vec[i];
@@ -204,12 +203,12 @@ void AssembleVectorLocally(const DofHandler &dof_handler,
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
  *                           VECTORASSEMBLER &assembler, VECTOR &resultvector)
  */
-template <int CODIM, typename VECTOR, class VECTORASSEMBLER>
-VECTOR AssembleVectorLocally(const DofHandler &dof_handler,
+template <typename VECTOR, class VECTORASSEMBLER>
+VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                              VECTORASSEMBLER &assembler) {
-  VECTOR resultvector{dof_handler.GetNoDofs()};
-  AssembleVectorLocally<CODIM, VECTOR, VECTORASSEMBLER>(dof_handler, assembler,
-                                                        resultvector);
+  VECTOR resultvector{dof_handler.NoDofs()};
+  AssembleVectorLocally<VECTOR, VECTORASSEMBLER>(codim, dof_handler, assembler,
+                                                 resultvector);
   return resultvector;
 }  // end AssembleVectorLocally
 

@@ -18,12 +18,14 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   using dim_t = base::RefEl::dim_t;
 
   /**
-   * @brief construct data vector indexed by entities of a particula
+   * @brief construct data vector indexed by entities of a particular
    * co-dimension
    * @param mesh pointer to underlying mesh
    * @param codim co-dimension of indexing entities for the given mesh
+   *
+   * @note This constructor does not initialize the data that is attached to the
+   * entities. They are initialized arbitrarily!
    */
-
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
