@@ -4,6 +4,8 @@ set(sources
   io.h
   vtk_writer.h
   vtk_writer.cc
+  write_matplotlib.h
+  write_matplotlib.cc
 )
 
 add_library(lf.io ${sources})
