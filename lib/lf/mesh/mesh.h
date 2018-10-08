@@ -1,4 +1,4 @@
-/** @file mesh.h
+/** @file mesh/mesh.h
  * @brief Header file for the mesh topology facilities of LehrFEM++
  */
 #ifndef __7fd0772dc0d1474492ad46dc2b8cebbb

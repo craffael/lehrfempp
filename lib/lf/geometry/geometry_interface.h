@@ -153,7 +153,7 @@ class Geometry {
   /**
    * @brief element shape by affine mapping from reference element
    *
-   * @retrurn true, if the element is the affine image of a reference element
+   * @return true, if the element is the affine image of a reference element
    *
    * An affine map is a linear mapping plus a translation. For a 2D mesh
    * an entity has an affine geometry, if

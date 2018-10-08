@@ -24,7 +24,7 @@ void PrintInfo(const Geometry& geom, std::ostream& o);
  * @brief Operator overload to print a `Geometry` to a stream, such as
  * `std::cout`
  * @param stream The stream to which this function should output
- * @param entity The geometry to write to `stream`.
+ * @param geom The geometry to write to `stream`.
  * @return The stream itself.
  *
  * - If Geometry::output_ctrl_ == 0, type reference element of geometry is sent
