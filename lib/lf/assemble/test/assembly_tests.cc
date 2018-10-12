@@ -255,12 +255,7 @@ TEST(lf_assembly, mat_assembly_test) {
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  // Construct dofhandler
-  // Building a dof handler for linear finite elements
-  // Variant I: encoding layout of local dofs in an object
-  // lf::assemble::LocalLinearLagrangianFE2D lin_fe_loc_dofs {};
-  // lf::assemble::UniformFEDofHandler dof_handler(mesh_p, lin_fe_loc_dofs);
-  // Variant II using a map for local dof layout
+  // Construct dofhandler using a map for local dof layout
   lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
 
