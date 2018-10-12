@@ -152,14 +152,17 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  *
  * ### Type requirements for template arguments
  *
- * - VECTOR must provide a size() method telling its length and
- *   read/write access through the [] operator.
+ * - VECTOR must provide a `size()` method telling its length and
+ *   read/write access through the `[]` operator.
  * - ASSEMBLER must
  * + offer an `Eval()` method that returns an element vector.
  * + supply an `isActive()` method for selecting cells to be taken into account
  * in assembly
  * + provide a type `ElemVec` suitable for holding an element vector
  *
+ * @note Contributions of element vectors are added to the entries of the 
+ *       `resultvector` argument. This means that `resultvector` has to be
+ *       initialized before calling this function!
  */
 template <typename VECTOR, class VECTORASSEMBLER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
@@ -202,11 +205,21 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
  *                           VECTORASSEMBLER &assembler, VECTOR &resultvector)
+ *
+ * ### Additional type requirements for VECTOR template argument
+ *
+ * VECTOR must supply a `setZero` method for initialization with zero.
+ * All matrix types of Eigen have such a method see
+ * [Eigen documentation](https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html) 
  */
 template <typename VECTOR, class VECTORASSEMBLER>
 VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                              VECTORASSEMBLER &assembler) {
+  // Allocated vector holding r.h.s. vector to be assembled 
   VECTOR resultvector{dof_handler.NoDofs()};
+  // Initialize to zero: assembly of new vector
+  resultvector.setZero();
+  // Perform actual assembly
   AssembleVectorLocally<VECTOR, VECTORASSEMBLER>(codim, dof_handler, assembler,
                                                  resultvector);
   return resultvector;
