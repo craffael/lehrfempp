@@ -160,7 +160,7 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  * in assembly
  * + provide a type `ElemVec` suitable for holding an element vector
  *
- * @note Contributions of element vectors are added to the entries of the 
+ * @note Contributions of element vectors are added to the entries of the
  *       `resultvector` argument. This means that `resultvector` has to be
  *       initialized before calling this function!
  */
@@ -210,12 +210,13 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  *
  * VECTOR must supply a `setZero` method for initialization with zero.
  * All matrix types of Eigen have such a method see
- * [Eigen documentation](https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html) 
+ * [Eigen
+ * documentation](https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html)
  */
 template <typename VECTOR, class VECTORASSEMBLER>
 VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                              VECTORASSEMBLER &assembler) {
-  // Allocated vector holding r.h.s. vector to be assembled 
+  // Allocated vector holding r.h.s. vector to be assembled
   VECTOR resultvector{dof_handler.NoDofs()};
   // Initialize to zero: assembly of new vector
   resultvector.setZero();

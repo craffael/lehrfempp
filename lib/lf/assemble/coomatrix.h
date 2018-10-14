@@ -1,3 +1,5 @@
+#ifndef _LF_COOMATRIX_H
+#define _LF_COOMATRIX_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -11,9 +13,6 @@
  * @date August 2018
  * @copyright MIT License
  */
-
-#ifndef _LF_COOMATRIX_H
-#define _LF_COOMATRIX_H
 
 #include <Eigen/Sparse>
 #include "assembly_types.h"

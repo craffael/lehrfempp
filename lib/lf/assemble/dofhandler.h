@@ -1,3 +1,5 @@
+#ifndef _LF_DOFHD_H
+#define _LF_DOFHD_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -11,9 +13,6 @@
  * @date August 2018
  * @copyright MIT License
  */
-
-#ifndef _LF_DOFHD_H
-#define _LF_DOFHD_H
 
 #include <lf/mesh/mesh.h>
 #include "assembly_types.h"
