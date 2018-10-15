@@ -13,9 +13,9 @@ void PrintInfo(const Geometry& geom, std::ostream& o) {
     // Dimensions and the derived type
     int dim_glob = geom.DimGlobal();
     int dim_local = geom.DimLocal();
-    o << "Global dimension: " << dim_glob << std::endl;
-    o << "Local dimension: " << dim_local << std::endl;
-    o << "Derived type: " << typeid(geom).name() << std::endl;
+    o << "world dim. = " << dim_glob << std::flush;
+    o << ", loc dim =  " << dim_local << std::flush;
+    o << "type: " << typeid(geom).name() << std::endl;
 
     if (Geometry::output_ctrl_ > 90) {
       // Geometry (coordinates of vertices)

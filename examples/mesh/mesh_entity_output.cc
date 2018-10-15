@@ -41,27 +41,24 @@ int main() {
   auto mesh =
       test.Build();  // mesh is Mesh object // test is MeshFactory object
 
-  /*
-    // Output information on mesh
-    std::cout << "##### Mesh information ######" << std::endl;
-    lf::mesh::utils::PrintInfo(*mesh, std::cout);
-    std::cout << "#####                   #####" << std::endl;
-  */
+  // Output information on mesh
+  std::cout << "##### Mesh information ######" << std::endl;
+  lf::mesh::utils::PrintInfo(*mesh, std::cout);
+  std::cout << "#####                   #####" << std::endl;
 
-  // lf::mesh::Entity::output_ctrl_ = 100;
+  lf::mesh::Entity::output_ctrl_ = 100;
 
-  /*
-    std::cout << "****** Output of mesh entities *******" << std::endl;
-    // Loop over entities and print associated information
-    for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
-      std::cout << "******* Entities of codimension " << static_cast<int>(codim)
-                << " ******* " << std::endl;
-      for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
-        std::cout << entity << std::endl;
-      }
+  std::cout << "****** Output of mesh entities *******" << std::endl;
+  // Loop over entities and print associated information
+  for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
+    std::cout << "******* Entities of codimension " << static_cast<int>(codim)
+              << " ******* " << std::endl;
+    for (const lf::mesh::Entity& entity : mesh->Entities(codim)) {
+      std::cout << entity << std::endl;
     }
-  */
+  }
 
+  // Another example
   // Test mesh ---------------------------------------------------
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 

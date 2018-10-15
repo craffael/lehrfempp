@@ -102,7 +102,7 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
           ret_vals.emplace_back(e_refel, mesh.Index(e));
           if (watertight_mesh_ctrl > 0) {
             std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-                      << mesh.Index(e) << "): position  mismath" << std::endl;
+                      << mesh.Index(e) << "): position  mismatch" << std::endl;
           }
         }  // end geometry test
       }    // end loop over nodes

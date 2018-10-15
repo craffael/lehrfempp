@@ -122,7 +122,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector) {
       quad_coord << 0, 2, 2, 0, 3, 3, 4, 4;
       mesh_factory_ptr->AddEntity(
           lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({6, 4, 12, 5}),
+          lf::base::ForwardRange<const size_type>({4, 12, 5, 6}),
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       // Seventh cell: a quadrilateral
       mesh_factory_ptr->AddEntity(
@@ -151,6 +151,11 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector) {
           lf::base::RefEl::kQuad(),
           lf::base::ForwardRange<const size_type>({13, 9, 14, 12}),
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
+      break;
+    }
+    default: {
+      LF_VERIFY_MSG(false, "Illegal selector for test meshes");
+      break;
     }
   }  // end switch
   // Inspect data

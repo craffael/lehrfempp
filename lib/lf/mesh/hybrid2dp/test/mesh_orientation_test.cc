@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Tests for the lf::mesh::hybrid2dp::MeshFactory
+ * @brief Tests for RelativeOrientations() method
  * @author Raffael Casagrande
  * @date   2018-07-01 01:15:55
  * @copyright MIT License

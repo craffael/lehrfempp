@@ -28,8 +28,11 @@ namespace lf::mesh::test_utils {
  *   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
  * ~~~
  *
- * Test mesh selected with selector = 0:
+ * - Test mesh selected with selector = 0:
  * @image html testmesh.png
+ * - Test mesh generated when selector = 1;
+ * @image html testmesh1.png
+ * This mesh contains parallelograms, that is, affine quadrilaterals.
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0);
 
