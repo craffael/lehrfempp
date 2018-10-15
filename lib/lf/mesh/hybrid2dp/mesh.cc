@@ -122,7 +122,7 @@ class EndpointIndexPair {
                                        : (e1.cmp_p0_ < e2.cmp_p0_));
   }
   // Reorienting an edge
-  void flip(void) { std::swap(p0_, p1_); }
+  void flip() { std::swap(p0_, p1_); }
   // Checking topological equality (taking into account orientation)
   friend bool coincide(const EndpointIndexPair &e1,
                        const EndpointIndexPair &e2) {
@@ -492,7 +492,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
 
     // Swap the indices of the endpoints in case of a geometry mismatch
     // that requires a reversal of orientation.
-    if (edge.second.reversed) std::swap(p0, p1);
+    if (edge.second.reversed) {
+      std::swap(p0, p1);
+    }
 
     const Point *p0_ptr = &points_[p0];  // pointer to first endpoint
     const Point *p1_ptr = &points_[p1];  // pointer to second endpoint
