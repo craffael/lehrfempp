@@ -11,12 +11,13 @@
 
 namespace lf::refinement::test {
 
-  static const int testmesh_selector = 1;
-  
+static const int testmesh_selector = 1;
+
 TEST(RegRefTest, RegRef) {
   std::cout << "TEST: Uniform regular refinement" << std::endl;
   // Generate test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -59,19 +60,20 @@ TEST(RegRefTest, RegRef) {
 
   // Output mesh geometry in TikZ format
   // Enable, once function is available in master branch
-  lf::mesh::utils::writeTikZ(*fine_mesh, "fine_mesh.tikz",
-  			     lf::mesh::utils::TikzOutputCtrl::RenderCells |
-  			     lf::mesh::utils::TikzOutputCtrl::CellNumbering |
-  			     lf::mesh::utils::TikzOutputCtrl::VerticeNumbering |
-  			     lf::mesh::utils::TikzOutputCtrl::NodeNumbering |
-  			     lf::mesh::utils::TikzOutputCtrl::EdgeNumbering
-  			     );
+  lf::mesh::utils::writeTikZ(
+      *fine_mesh, "fine_mesh.tikz",
+      lf::mesh::utils::TikzOutputCtrl::RenderCells |
+          lf::mesh::utils::TikzOutputCtrl::CellNumbering |
+          lf::mesh::utils::TikzOutputCtrl::VerticeNumbering |
+          lf::mesh::utils::TikzOutputCtrl::NodeNumbering |
+          lf::mesh::utils::TikzOutputCtrl::EdgeNumbering);
 }  // End RegRefTest::RegRef
 
 TEST(RegRefTest, BarycentricRef) {
   std::cout << "TEST: Uniform barycentric refinement" << std::endl;
   // Generate test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -117,7 +119,8 @@ TEST(RegRefTest, AllMarkedRefinement) {
   std::cout << "TEST: All edges marked" << std::endl;
 
   // Generate test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -174,7 +177,8 @@ TEST(LocRefTest, LocalRefinement) {
   std::cout << "TEST: Marked edges in the unit square" << std::endl;
 
   // Generate test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -273,7 +277,8 @@ TEST(LocRefTest, MultipleRefinement) {
             << std::endl;
 
   // Generate the standard hybrid test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -337,7 +342,8 @@ TEST(LocRefTest, MixedRefinement) {
   std::cout << "TEST: Mixed local/global refinement" << std::endl;
 
   // Generate the standard hybrid test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  auto mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
