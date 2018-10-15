@@ -1,5 +1,8 @@
 /** @file test_meshes.h
  * @brief generation routines for test meshes
+ * @author Ralf Hiptmair
+ * @date August 2018
+ * @copyright MIT License
  */
 
 #ifndef LF_MFT_H
