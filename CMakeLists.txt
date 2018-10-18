@@ -18,8 +18,8 @@ endif()
 enable_testing()
 
 # Get boost
-hunter_add_package(Boost COMPONENTS system filesystem program_options)
-find_package(Boost CONFIG REQUIRED system filesystem program_options)
+hunter_add_package(Boost COMPONENTS chrono timer system filesystem program_options)
+find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_options)
 
 # Get Eigen
 hunter_add_package(Eigen)

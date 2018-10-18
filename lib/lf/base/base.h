@@ -7,6 +7,7 @@
  * @brief Contains basic functionality that is used by other parts of LehrFEM++
  */
 namespace lf::base {
+
 /** @defgroup lftypes
  * @brief various integral types meant to enhance readability of the code
  */
@@ -27,14 +28,14 @@ using sub_idx_t = unsigned int;
  * @brief type for dimensions and co-dimensions and numbers derived from them
  */
 using dim_t = unsigned char;
-
-constexpr double kPi = 3.14159265358979323846;
-
 /**
  * @brief Index flagged as invalid
  */
 const unsigned int kIdxNil = static_cast<unsigned int>(-1);
 /** @} */
+
+constexpr double kPi = 3.14159265358979323846;
+
 }  // namespace lf::base
 
 // public header files that make up the base library:

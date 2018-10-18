@@ -121,6 +121,13 @@ class EndpointIndexPair {
     return ((e1.cmp_p0_ == e2.cmp_p0_) ? (e1.cmp_p1_ < e2.cmp_p1_)
                                        : (e1.cmp_p0_ < e2.cmp_p0_));
   }
+  // Reorienting an edge
+  void flip() { std::swap(p0_, p1_); }
+  // Checking topological equality (taking into account orientation)
+  friend bool coincide(const EndpointIndexPair &e1,
+                       const EndpointIndexPair &e2) {
+    return ((e1.p0_ == e2.p0_) && (e1.p1_ == e2.p1_));
+  }
 
  private:
   size_type p0_, p1_;  // indices of endpoints
@@ -154,12 +161,14 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     EdgeData(GeometryPtr geo_uptr, AdjCellsList _adj_cells_list)
         : geo_uptr(std::move(geo_uptr)),
           adj_cells_list(std::move(_adj_cells_list)),
-          edge_global_index(-1) {}
+          edge_global_index(-1),
+          reversed(false) {}
     EdgeData(GeometryPtr geo_uptr, AdjCellsList _adj_cells_list,
              glb_idx_t global_index)
         : geo_uptr(std::move(geo_uptr)),
           adj_cells_list(std::move(_adj_cells_list)),
-          edge_global_index(global_index) {}
+          edge_global_index(global_index),
+          reversed(false) {}
     EdgeData(const EdgeData &) = delete;
     EdgeData(EdgeData &&) = default;
     EdgeData &operator=(const EdgeData &) = delete;
@@ -171,6 +180,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     AdjCellsList adj_cells_list;
     // Index of the edge
     glb_idx_t edge_global_index;
+    // Flag indicating reversed orientation
+    bool reversed;
   };
 
   // Type of associative auxiliary array for edge information
@@ -372,10 +383,19 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         GeometryPtr &edge_supplied_geo_uptr((*edge_ptr).second.geo_uptr);
         if (edge_supplied_geo_uptr == nullptr) {
           // Edge does not know its geometry yet. Try to obtain it from the
-          // cell
+          // cell.
           if (cell_geometry) {
             edge_supplied_geo_uptr =
                 std::move(cell_geometry->SubGeometry(1, j));
+            // NOTE: the local orientation of the edge of the cell and that
+            // pointed to by edge_ptr can differ. In this case the
+            // endpoints of the edge have to be swapped. To detect orientation
+            // mismatch, compare c_edge_vertex_indices (cell infomation) and
+            // edge_ptr->first (edge information)
+            if (!coincide(c_edge_vertex_indices, edge_ptr->first)) {
+              // Reverse the direction of the edge
+              (edge_ptr->second).reversed = true;
+            }
           }
         }
       }
@@ -467,10 +487,17 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
     // Indices of the two endpoints of the current edge
     // Use this to obtain pointers/references to nodes
     // from the vector of nodes
-    const size_type p0(edge.first.first_node());   // index of first endpoint
-    const Point *p0_ptr = &points_[p0];            // pointer to first endpoint
-    const size_type p1(edge.first.second_node());  // index of second endpoint
-    const Point *p1_ptr = &points_[p1];            // pointer to second endpoint
+    size_type p0(edge.first.first_node());   // index of first endpoint
+    size_type p1(edge.first.second_node());  // index of second endpoint
+
+    // Swap the indices of the endpoints in case of a geometry mismatch
+    // that requires a reversal of orientation.
+    if (edge.second.reversed) {
+      std::swap(p0, p1);
+    }
+
+    const Point *p0_ptr = &points_[p0];  // pointer to first endpoint
+    const Point *p1_ptr = &points_[p1];  // pointer to second endpoint
 
     // obtain geometry of the edge
     GeometryPtr edge_geo_ptr(std::move(edge.second.geo_uptr));

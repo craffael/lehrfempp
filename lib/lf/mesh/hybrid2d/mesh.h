@@ -24,7 +24,7 @@ class Mesh : public mesh::Mesh {
   size_type Index(const mesh::Entity& e) const override;
 
   const mesh::Entity* EntityByIndex(dim_t codim,
-                                    glb_idx_t index) const override;
+                                    base::glb_idx_t index) const override;
 
   bool Contains(const mesh::Entity& e) const override;
 

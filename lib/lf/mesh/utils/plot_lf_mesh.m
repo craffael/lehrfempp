@@ -46,7 +46,15 @@ bb = [bb(1)-0.1*dims(1) bb(2)+0.1*dims(1) ...
 figure('name','LehreFEM++ mesh'); axis(bb); hold on;
 
 % plot vertices
-plot(x,y,'r*');
+if (isfield(opts,'vertexmark'))
+    plot(x,y,'r*');
+else
+    num_vertices = length(x);
+    for k=1:num_vertices
+        text(x(k),y(k),sprintf('%i',k-1),'Color','red',...
+             'horizontalalignment','center','fontsize',8);
+    end
+end 
 
 % plot edges
 num_edges = size(EDS,1);
@@ -58,7 +66,7 @@ for k=1:num_edges
     baryc = sum(ed,2)/2;
     if (isfield(opts,'numbers'))
         text(baryc(1),baryc(2),sprintf('%2i',k-1),...
-             'fontsize',8,'color','k','horizontalalignment','center');
+             'fontsize',8,'color','b','horizontalalignment','center');
     end
     if (parplot)
         text(baryc(1),baryc(2),sprintf('P=%2i',EDPAR(k,1)),...
@@ -88,10 +96,12 @@ for  k=1:num_tri
         refedge = CELLPAR(TRI(k,4)+1,3);
         refedgepos = (shrunk_tri(:,refedge+1)+shrunk_tri(:,refedge+2))/2;
         plot(refedgepos(1),refedgepos(2),'r^');
-    end        
-    str = {'0','1','2'};
-    text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,...
-         'fontsize',8,'color','k','fontsize',6,'horizontalalignment','center');
+    end    
+    if (isfield(opts,'numbers'))
+        str = {'0','1','2'};
+        text(shrunk_tri(1,1:3),shrunk_tri(2,1:3),str,...
+             'fontsize',8,'color','k','fontsize',6,'horizontalalignment','center');
+    end
 end
 
 % Plot quads
@@ -111,5 +121,10 @@ for  k=1:num_quad
     if (parplot)
         text(baryc(1),baryc(2),sprintf('P=%2i',CELLPAR(QUAD(k,5)+1,1)),...
              'fontsize',8,'color','m','horizontalalignment','center');
+    end
+    if (isfield(opts,'numbers'))
+        str = {'0','1','2','3'};
+        text(shrunk_quad(1,1:4),shrunk_quad(2,1:4),str,...
+             'fontsize',8,'color','k','fontsize',6,'horizontalalignment','center');
     end
 end

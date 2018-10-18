@@ -65,6 +65,8 @@ void PrintInfo(const Mesh &mesh, std::ostream &o) {
             }
             o << "]";
           }
+        }
+        if (printinfo_ctrl > 50) {
           o << std::endl << e_geo_ptr->Global(ref_el_corners);
         }
         o << std::endl;

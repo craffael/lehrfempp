@@ -16,7 +16,7 @@ std::string getMeshPath(std::string mesh_name) {
   int index = 0;
   char separator;
   char count = 2;
-  for (unsigned int i = file_path.length() - 1; i >= 0; --i) {
+  for (int i = file_path.length() - 1; i >= 0; --i) {
     if (file_path[i] == '/' || file_path[i] == '\\') {
       --count;
       if (count == 0) {
