@@ -78,30 +78,42 @@ class Mesh : public mesh::Mesh {
    * @param cells sequential container of pairs of
                   (i) vectors of indices of the nodes of a cell
                   (ii) pointers to the geometry object for the cell
-   *	
+   *
    * ### Shape guessing
-   *	  
-   * Shape information usually supplied by a unique pointer to a lf::geometry::Geometry 
-   * object attached to an entity may be missing for some of the entities. In  this
-   * case the constructor tries to reconstruct the shape from that of other entities.
    *
-   * The main example is missing geometry information for nodes or edges. In this case 
-   * a call to the lf::geometry::SubGeometry() method of cell entities is used to 
-   * generate shape information for its lower-dimensional sub-entities. Note that
-   * any adjacent cell can be used and no selection rule is given. 
+   * Shape information usually supplied by a unique pointer to a
+   lf::geometry::Geometry
+   * object attached to an entity may be missing for some of the entities. In
+   this
+   * case the constructor tries to reconstruct the shape from that of other
+   entities.
    *
-   * Even cells without shape information may be passed. In this case the current implementation
-   * builds a cell with straight edges of type lf::geometry::TriaO1 (in the case of a topological
-   * triangle) or lf::geometry::QuadO1 (in the case of a quadrilateral) from the node positions.
+   * The main example is missing geometry information for nodes or edges. In
+   this case
+   * a call to the lf::geometry::SubGeometry() method of cell entities is used
+   to
+   * generate shape information for its lower-dimensional sub-entities. Note
+   that
+   * any adjacent cell can be used and no selection rule is given.
+   *
+   * Even cells without shape information may be passed. In this case the
+   current implementation
+   * builds a cell with straight edges of type lf::geometry::TriaO1 (in the case
+   of a topological
+   * triangle) or lf::geometry::QuadO1 (in the case of a quadrilateral) from the
+   node positions.
    * The shape of edges is not taken into account.
    *
-   * An extreme situation is marked by passing node positions as the only geometric information
-   * together with topological node-cell incidence relationships. In this case the constructor
-   * will build a mesh with straight edges throughout, type lf::geometry::SegmentO1.
-   * 
+   * An extreme situation is marked by passing node positions as the only
+   geometric information
+   * together with topological node-cell incidence relationships. In this case
+   the constructor
+   * will build a mesh with straight edges throughout, type
+   lf::geometry::SegmentO1.
+   *
    * ### Missing entities
    *
-   * @note not all edges of the mesh have to be passed in the `edges` argument; 
+   * @note not all edges of the mesh have to be passed in the `edges` argument;
    *       missing edges are inserted based on the information about the cells.
    *
    * @note the position of node information the `nodes` array and of cell
@@ -126,9 +138,8 @@ class Mesh : public mesh::Mesh {
  * @return The stream itself.
  *
  */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& /*mesh*/) {
-  // stream << "mesh object";
-  // utils::PrintInfo(mesh, stream);
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
+  lf::mesh::utils::PrintInfo(mesh, stream);
   return stream;
 }
 
