@@ -48,6 +48,14 @@ namespace lf::assemble {
  * in assembly
  * + provide a matrix type `ElemMat` for objects containing the element
  * matrices.
+ * - ElemMat as provided by ASSEMBLER is a dense matrix type modelled after Eigen::Matrix.
+ *   It must provide:
+ * + methods `rows()` and `cols()` telling the number of rows and columns 
+ * + access to entries via `operator (int,int) const`
+ *
+ * @note The element matrix returned by the `Eval()` method of `assembler` may have
+ *       a size larger than that suggested by the number of local shape functions.
+ *       In this case only its upper left block is accessed. 
  */
 template <typename TMPMATRIX, class ASSEMBLER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
