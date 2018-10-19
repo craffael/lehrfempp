@@ -13,7 +13,7 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   for (size_type co_dim = 0; co_dim < dim_mesh; ++co_dim) {
     // Count occurrences of sub-entities of relative co-dimension 1
     // To that end allocate a vector of counters
-    std::vector<size_type> entity_link_cnt(mesh.Size(co_dim + 1), (size_type)0);
+    std::vector<size_type> entity_link_cnt(mesh.Size(co_dim + 1), 0);
 
     // Diagnostic output
     // std::cout << "co-dim " << co_dim + 1 << ": " << mesh.Size(co_dim + 1)
@@ -47,13 +47,15 @@ bool checkMeshCompleteness(const Mesh& mesh) {
     // for (size_type cnt : entity_link_cnt) {
     //   if (cnt > max_subent_cnt) max_subent_cnt = cnt;
     // }
-    std::vector<size_type> occurrence_cnt(max_subent_cnt + 1, (size_type)0);
+    std::vector<size_type> occurrence_cnt(max_subent_cnt + 1, 0);
     size_type entity_index = 0;
     for (size_type i : entity_link_cnt) {
       occurrence_cnt[i]++;
       EXPECT_GT(i, 0) << "Entity " << entity_index << ", co-dimension "
                       << co_dim + 1 << "not linked";
-      if (i == 0) status = false;
+      if (i == 0) {
+        status = false;
+      }
       entity_index++;
     }
     // Output of diagnostic information
