@@ -1,0 +1,39 @@
+/***************************************************************************
+ * LehrFEM++ - A simple C++ finite element libray for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
+
+/**
+ * @file
+ * @brief Functions for the initialization of special data sets
+ * @author Ralf Hiptmair
+ * @date August 2018
+ * @copyright MIT License
+ */
+
+#include "special_entity_sets.h"
+
+namespace lf::mesh::utils {
+CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
+    const std::shared_ptr<const Mesh> &mesh_p, lf::base::dim_t codim_sub,
+    lf::base::dim_t codim_super) {
+  LF_VERIFY_MSG((mesh_p->DimMesh() >= codim_sub),
+                "Illegal codim_sub = " << codim_sub);
+  LF_VERIFY_MSG(codim_super <= codim_sub, "Codim_super to large");
+
+  // Declare and initialize the data set
+  CodimMeshDataSet<lf::base::size_type> sup_ent_cnt{mesh_p, codim_sub, 0};
+
+  const lf::base::dim_t super_codim = codim_sub - codim_super;
+  // Run through all super entities
+  for (const lf::mesh::Entity &e : mesh_p->Entities(super_codim)) {
+    // Traverse all sub-entities of a specific relative co-dimension
+    for (const lf::mesh::Entity &subent : e.SubEntities(codim_super)) {
+      sup_ent_cnt(subent) += 1;
+    }
+  }
+  return sup_ent_cnt;
+}
+
+}  // namespace lf::mesh::utils

@@ -18,6 +18,36 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   using dim_t = base::RefEl::dim_t;
 
   /**
+   * @brief construct data vector indexed by entities of a particular
+   * co-dimension
+   * @param mesh pointer to underlying mesh
+   * @param codim co-dimension of indexing entities for the given mesh
+   *
+   * @note This constructor does not initialize the data that is attached to the
+   * entities. They are initialized arbitrarily!
+   */
+  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
+      : MeshDataSet<T>(),
+        mesh_(std::move(mesh)),
+        data_(mesh_->Size(codim)),
+        codim_(codim) {}
+
+  /**
+   * @brief construct and initialize data vector indexed by entities of a
+   *        particula co-dimension
+   * @param mesh pointer to underlying mesh
+   * @param codim co-dimension of indexing entities for the given mesh
+   * @param init value to be copied into all data elements
+   */
+  template <class = typename std::enable_if<
+                std::is_copy_constructible<T>::value>::type>
+  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
+      : MeshDataSet<T>(),
+        mesh_(std::move(mesh)),
+        data_(mesh_->Size(codim), init),
+        codim_(codim) {}
+
+  /**
    * @brief Get a (modifiable) reference to the data stored with entity e.
    * @param e The entity whose data should be retrieved/modified
    * @return  A reference to the stored data.
@@ -50,23 +80,12 @@ class CodimMeshDataSet : public MeshDataSet<T> {
     using type_t = boost::container::vector<bool>;
   };
 
+  /** pointer to underlying mesh. Owned by the data set ! */
   std::shared_ptr<const Mesh> mesh_;
+  /** data vector */
   typename Container<T, int>::type_t data_;
+  /** co-dimension */
   dim_t codim_;
-
-  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
-      : MeshDataSet<T>(),
-        mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim)),
-        codim_(codim) {}
-
-  template <class = typename std::enable_if<
-                std::is_copy_constructible<T>::value>::type>
-  CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
-      : MeshDataSet<T>(),
-        mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim), init),
-        codim_(codim) {}
 
   // Friends:
   template <class S>

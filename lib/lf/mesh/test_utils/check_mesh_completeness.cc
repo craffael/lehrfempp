@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
 #include <iostream>
+#include "lf/mesh/hybrid2dp/mesh.h"
 
 namespace lf::mesh::test_utils {
 bool checkMeshCompleteness(const Mesh& mesh) {
@@ -72,17 +73,17 @@ bool checkMeshCompleteness(const Mesh& mesh) {
 
 CONTROLDECLARE(watertight_mesh_ctrl, "watertight_mesh");
 
-std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
+std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only) {
-  const dim_t dim_mesh = mesh.DimMesh();
-  std::vector<std::pair<lf::base::RefEl, glb_idx_t>> ret_vals{};
+  base::dim_t dim_mesh = mesh.DimMesh();
+  std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> ret_vals{};
 
   // "Reference coordinates" for a point: dummy argument
   Eigen::Matrix<double, 0, 1> pt_ref_coord;
 
   // Loop over cells and edges
   for (int co_dim = dim_mesh; co_dim > 0; co_dim--) {
-    const dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
+    base::dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
     // Loop over entities of the specified co-dimension
     for (const Entity& e : mesh.Entities(co_dim)) {
       const lf::base::RefEl e_refel = e.RefEl();
@@ -92,7 +93,7 @@ std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
           (e.Geometry()->IntegrationElement(ref_el_corners))[0];
       // Visit all nodes
       base::RandomAccessRange<const Entity> sub_ents(e.SubEntities(codim_pt));
-      for (sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
+      for (base::sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
         const Eigen::VectorXd node_coords(
             sub_ents[j].Geometry()->Global(pt_ref_coord));
         // Check agreement of coordinates up to roundoff
@@ -101,7 +102,7 @@ std::vector<std::pair<lf::base::RefEl, glb_idx_t>> isWatertightMesh(
           ret_vals.emplace_back(e_refel, mesh.Index(e));
           if (watertight_mesh_ctrl > 0) {
             std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-                      << mesh.Index(e) << "): position  mismath" << std::endl;
+                      << mesh.Index(e) << "): position  mismatch" << std::endl;
           }
         }  // end geometry test
       }    // end loop over nodes

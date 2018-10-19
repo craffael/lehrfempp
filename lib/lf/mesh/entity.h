@@ -1,17 +1,37 @@
 #ifndef __37e385afbd3b4b1dba8611fb71787822
 #define __37e385afbd3b4b1dba8611fb71787822
+
 #include <lf/base/base.h>
 #include <lf/base/static_vars.h>
 #include <lf/geometry/geometry.h>
-//#include <lf/mesh/utils/utils.h>
 
 namespace lf::mesh {
 
-using size_type = lf::base::size_type;
-using dim_t = lf::base::dim_t;
-using sub_idx_t = lf::base::sub_idx_t;
-using glb_idx_t = lf::base::glb_idx_t;
+/** @brief Relative orientation of a sub-entity
+ *
+ * Relative orientation is a fundamental topological concept describing the
+ * relationship of of an entity and its subentities.
+ *
+ * For 2D meshes it is mainly relevant for edges: If the intrinsic orientation
+ * of an edge defined by the ordering of its vertices agrees with the local
+ * orientation of that edge in a cell, its relative orientation is positive,
+ * otherwise negative.
+ */
+enum class Orientation : int { positive = 1, negative = -1 };
 
+int to_sign(Orientation o);
+char to_char(Orientation o);
+
+/** @brief Representation of a topological entity in a cellular complex
+ *
+ * Example: a 2D hybrid mesh consists of cells (entities of co-dimension 0),
+ * edges (entities of co-dimension 1), and nodes (entities of co-dimension 2).
+ * The set of these entities endowed with _incidence relations_ defines the
+ * topology of the mesh.
+ *
+ * The core purpose of this class is to provide methods for accessing incidence
+ * relations.
+ */
 class Entity {
  protected:
   Entity() = default;
@@ -46,6 +66,13 @@ class Entity {
    */
   virtual base::RandomAccessRange<const Entity> SubEntities(
       char rel_codim) const = 0;
+
+  /**
+   * @brief return array of relative orientations of sub-entities
+   *        of the next hight co-dimension.
+   */
+  virtual base::RandomAccessRange<const Orientation> RelativeOrientations()
+      const = 0;
 
   /**
    * @brief Describes the geometry of this entity.

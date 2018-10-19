@@ -18,23 +18,16 @@
 
 namespace lf::mesh::hybrid2dp::test {
 
-// Test for generating a mesh with reconstruction of edge information
-TEST(lf_edge_create, MeshFactory_p) {
-  using coord_t = Eigen::Vector2d;
-  using size_type = mesh::Mesh::size_type;
+bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
+  std::cout << "Mesh sanity: Checking entity indexing" << std::endl;
+  test_utils::checkEntityIndexing(mesh);
 
-  // Building the mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  std::cout << "Mesh sanity: Checking mesh completeness" << std::endl;
+  test_utils::checkMeshCompleteness(mesh);
 
-  std::cout << "Checking entity indexing" << std::endl;
-  test_utils::checkEntityIndexing(*mesh_p);
-
-  std::cout << "Checking mesh completeness" << std::endl;
-  test_utils::checkMeshCompleteness(*mesh_p);
-
-  std::cout << "Checking geometry compatibulity: " << std::flush;
+  std::cout << "Mesh sanity: Checking geometry compatibility: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
+  auto fails = lf::mesh::test_utils::isWatertightMesh(mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
     std::cout << "consistent!" << std::endl;
@@ -44,23 +37,48 @@ TEST(lf_edge_create, MeshFactory_p) {
       std::cout << geo_errs.first.ToString() << "(" << geo_errs.second << ")"
                 << std::endl;
     }
+    return false;
   }
 
   // Compute volumes
   double total_area = 0.0;
-  for (const mesh::Entity& cell : mesh_p->Entities(0)) {
+  for (const mesh::Entity& cell : mesh.Entities(0)) {
     const double vol = Volume(*cell.Geometry());
-    std::cout << cell.RefEl().ToString() << ' ' << mesh_p->Index(cell)
+    std::cout << cell.RefEl().ToString() << ' ' << mesh.Index(cell)
               << ": volume = " << vol << std::endl;
     total_area += vol;
   }
   std::cout << ">>> Total area = " << total_area << std::endl;
 
-  std::cout << "Writing MATLAB file" << std::endl;
-  utils::writeMatlab(*mesh_p, "test_mesh.m");
+  std::cout << "Mesh sanity: Writing MATLAB file" << std::endl;
+  utils::writeMatlab(mesh, "test_mesh.m");
 
   // Printing mesh information
-  utils::PrintInfo(*mesh_p, std::cout);
+  lf::geometry::Geometry::output_ctrl_ = 20;
+  lf::mesh::utils::printinfo_ctrl = 100;
+  utils::PrintInfo(mesh, std::cout);
+  return true;
+}
+
+// Test for generating a mesh with reconstruction of edge information
+TEST(lf_edge_create, MeshFactory_p) {
+  using coord_t = Eigen::Vector2d;
+  using size_type = mesh::Mesh::size_type;
+
+  // Building the mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  EXPECT_TRUE(mesh_sanity_check(*mesh_p)) << "First test mesh with problems!";
+}
+
+TEST(lf_edge_create, TestMesh1) {
+  using coord_t = Eigen::Vector2d;
+  using size_type = mesh::Mesh::size_type;
+
+  // Building the mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
+
+  EXPECT_TRUE(mesh_sanity_check(*mesh_p)) << "Second test mesh with problems!";
 }
 
 // TODO Enable this once issue #33 is resolved

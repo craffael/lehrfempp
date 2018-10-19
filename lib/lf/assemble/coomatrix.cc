@@ -6,14 +6,12 @@
 
 /**
  * @file
- * @brief Rudimentary implementation of a general DOF handler interface
+ * @brief Implementations for rudimentary triplet based matrix format
  * @author Ralf Hiptmair
  * @date August 2018
  * @copyright MIT License
  */
 
-#include "dofhandler.h"
+#include "coomatrix.h"
 
-namespace lf::assemble {
-  
-}
+namespace lf::assemble {}

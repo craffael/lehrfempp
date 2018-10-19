@@ -83,7 +83,7 @@ void MeshHierarchy::RefineRegular(RefPat ref_pat) {
   for (const mesh::Entity &point : finest_mesh.Entities(2)) {
     const lf::base::glb_idx_t point_index = finest_mesh.Index(point);
     PointChildInfo &pt_child_info(finest_point_ci[point_index]);
-    // Set the information about a points children except the child pointer
+    // Set the information about a point's children except the child pointer
     pt_child_info.ref_pat = RefPat::rp_copy;
   }
   // Flag all edges as to be split
@@ -144,6 +144,7 @@ void MeshHierarchy::RefineMarked() {
   // Now all edges are initially marked to be split or copied
 
   // To keep the mesh conforming refinement might have to propagate
+  // This is achieved in the following REPEAT ... UNTIL loop.
   bool refinement_complete;
   do {
     refinement_complete = true;
@@ -164,6 +165,8 @@ void MeshHierarchy::RefineMarked() {
           cell.SubEntities(1));
       const size_type num_edges = cell.RefEl().NumSubEntities(1);
       LF_VERIFY_MSG(num_edges <= 4, "Too many edges = " << num_edges);
+      // Obtain information about current splitting pattern of
+      // the edges of the cell
       size_type split_edge_cnt = 0;
       for (int k = 0; k < num_edges; k++) {
         const glb_idx_t edge_index = finest_mesh.Index(sub_edges[k]);

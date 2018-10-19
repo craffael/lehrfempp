@@ -6,20 +6,12 @@
 
 /**
  * @file
- * @brief Unit tests for assembly facilities
+ * @brief Implementation of local assembly
  * @author Ralf Hiptmair
  * @date August 2018
  * @copyright MIT License
  */
 
-#include <gtest/gtest.h>
-#include <lf/assembly/dofhandler.h>
+#include "assembler.h"
 
-namespace lf::assemble::test {
-
-// Simple test
-TEST(lf_assembly,dof_index_test) {
-
-} // end dof_index_test
-
-} // end namespace
+namespace lf::assemble {}  // namespace lf::assemble

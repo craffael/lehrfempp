@@ -259,7 +259,8 @@ Mesh::size_type Mesh::Index(const mesh::Entity &e) const {
   }
 }
 
-const mesh::Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
+const mesh::Entity *Mesh::EntityByIndex(dim_t codim,
+                                        base::glb_idx_t index) const {
   LF_ASSERT_MSG(codim >= 0 && codim <= 2, "codim out of bounds.");
   LF_ASSERT_MSG(index >= 0, "index must be non-negative");
   if (codim == 0) {

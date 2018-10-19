@@ -90,6 +90,15 @@ class MeshHierarchy {
    *
    * @param base_mesh valid pointer to coarsest mesh
    * @param mesh_factory factory object creating new meshes during refinement
+   *
+   * - Stores shared pointer to coarsest mesh.
+   * - Sets _refinement edges_ of all cells according to the
+   * longest-edge criterion.
+   * - Initializes `ChildInfo` data structures of all entities to indicate
+   * absence of children, since no refinement has been done yet.
+   * - Fills void `ParentInfo` data structure, since the mesh has not been
+   * created by refinement.
+   * - Unmarks all edges, see RefineMarked().
    */
   MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,
                 std::shared_ptr<mesh::MeshFactory> mesh_factory);
@@ -105,12 +114,18 @@ class MeshHierarchy {
 
   /**
    * @brief access the mesh on a particular level
+   *
+   * @param level specifies level of interest, 0 stands for coarsest level
+   * @return shared pointer to mesh on specified level
    */
   std::shared_ptr<const mesh::Mesh> getMesh(size_type level) const {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
   }
+  /**
+   * @copydoc lf::refinement::MeshHierarchy::getMesh()
+   */
   std::shared_ptr<mesh::Mesh> getMesh(size_type level) {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
@@ -119,6 +134,11 @@ class MeshHierarchy {
 
   /**
    * @brief Obtain refinement information for all points
+   *
+   * @param level refinement level to be queried
+   * @return vector for PointChildInfo record for every node
+   *
+   * @sa PointChildInfo
    */
   const std::vector<PointChildInfo> &PointChildInfos(size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
@@ -126,13 +146,23 @@ class MeshHierarchy {
   }
   /**
    * @brief Obtain refinement information for all edges
+   *
+   * @param level refinement level to be queried
+   * @return vector for EdgeChildInfo record for every node
+   *
+   * @sa EdgeChildInfo
    */
   const std::vector<EdgeChildInfo> &EdgeChildInfos(size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return edge_child_infos_[level];
   }
   /**
-   e* @brief Obtain refinement information for all
+   * @brief Obtain refinement information for all
+   *
+   * @param level refinement level to be queried
+   * @return vector for CellChildInfo record for every node
+   *
+   * @sa CellChildInfo
    */
   const std::vector<CellChildInfo> &CellChildInfos(size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
@@ -140,6 +170,12 @@ class MeshHierarchy {
   }
   /**
    * @brief Fetch information about parents
+   *
+   * @param level refinement level of interest
+   * @param codim co-dimension of entities to be queried
+   * @return vector for ParentInfo record for every entity
+   *
+   * @sa ParentInfo
    */
   const std::vector<ParentInfo> &ParentInfos(size_type level,
                                              dim_t codim) const {
@@ -149,8 +185,12 @@ class MeshHierarchy {
   }
   /**
    * @brief Access refinement edge indices
+   *
+   * @param level refinement level of interest
+   * @return vector of (local) sub-entity index of refinement edge for every
+   * cell
    */
-  const std::vector<glb_idx_t> &RefinementEdges(size_type level) const {
+  const std::vector<sub_idx_t> &RefinementEdges(size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return refinement_edges_[level];
   }
@@ -165,9 +205,15 @@ class MeshHierarchy {
    * This method carries out uniform refinement of all cells of a mesh according
    * to the `rp_regular` or `rp_barycentric` refinement patterns.
    *
+   * A new mesh is added to the bottom of the hierarchy by regularly refining
+   * the _finest mesh_ in the hierarchy.
    * Regular refinement means that every node is copied, every edge is split
    * and every cell is subdivided into four or six smaller ones of the same
    * shape.
+   *
+   * Internally, this method flags all nodes as to be copied, all edges as to be
+   * split and all cells as to be refined according to the passed refinement
+   * pattern. Then it calls PerformRefinement().
    */
   void RefineRegular(RefPat ref_pat = RefPat::rp_regular);
   /**
@@ -180,16 +226,42 @@ class MeshHierarchy {
    * The _marker_ object also takes a reference to a mesh, because
    * marking makes sense only for the finest level. The mesh on the
    * finest level is provided to the marker object by the `MeshHierarchy`.
+   *
+   * Of course, marking will always affect the finest mesh in hierarchy.
    */
   template <typename Marker>
   void MarkEdges(Marker &&marker);
 
   /**
    * @brief Conduct local refinement of the mesh splitting all marked edges
+   *
+   * This method creates a new mesh by selectively (locally) refining entities
+   * of the current finest mesh in the hierarchy. Refinement is controlled by
+   * the boolean vector edge_marked_  that indicates, which edges must be
+   * refined (= split) in the course of refinement.
+   *
+   * ### Algorithm
+   *
+   * - First all marked edges are labelled as "to be split".
+   * - REPEAT
+   *   + Set refinement pattern of all cells to accommodate edges to be split
+   *   + Add "to be split" tag to edges according to local refinement pattern
+   * for cells
+   *
+   *   UNTIL no _extra_ edges had to be tagged as "to be split"
+   *
+   * For details please consult the comments in mesh_hierarchy.cc
+   *
+   * This algorithm ends with a set of local refinement patterns for every
+   * entity that is compatible with a _conforming_ finite element mesh, that is,
+   * hanging nodes are avoided.
    */
   void RefineMarked();
   /**
-   * @brief Destroy the mesh on the finest level unless it is the base mesh
+   * @brief _Destroy_ the mesh on the finest level unless it is the base mesh
+   *
+   * @note the use of shared pointers prevents destruction if the finest mesh
+   *       is still in use somewhere else in the code.
    */
   void Coarsen();
 
@@ -200,30 +272,50 @@ class MeshHierarchy {
    * @brief Create new mesh according to refinement pattern
    *        provided for entities
    *
-   * This method assumes that a refinement pattern has already be set
-   * in the `ChildInfo` structure for each entity. According to this
-   * information, refinement is carried out.
+   * This function expects that the refinement patterns  stored in the
+   * vectors `point_child_infos_`, `edge_child_infos_` and `cell_child_infos_`
+   * have been initialized consistently for the finest mesh. According to this
+   * information, refinement is carried out using the object pointed to by
+   * mesh_factory_ to created new entities by calling
+   * lf::mesh::MeshFactory::Build().
+   *
+   * The vectors  `point_child_infos_`, `edge_child_infos_` and
+   * `cell_child_infos_` will be augmented with information about the indices of
+   * the child entities contained  in the newly created finest mesh.
+   *
+   * This method relies on lf::geometry::Geometry::ChildGeometry() to obtain
+   * information about the shape fo child entities in the form of
+   * lf::geometry::Geometry objects.
+   *
+   * The method also initializes the data vectors in `_parent_infos_` for
+   * the newly created now finest mesh.
+   *
    */
   void PerformRefinement();
 
  private:
-  /** the meshes managed by the MeshHierarchy object */
+  /** @brief the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;
-  /** The mesh factory to be used to creating a new mesh */
+  /** @brief The mesh factory to be used to creating a new mesh */
   std::shared_ptr<mesh::MeshFactory> mesh_factory_;
-  /** information about children for each level and each class of entities */
+  /** @brief information about children of nodes for each level */
   std::vector<std::vector<PointChildInfo>> point_child_infos_;
+  /** @brief information about children of edges for each level */
   std::vector<std::vector<EdgeChildInfo>> edge_child_infos_;
+  /** @brief information about children of cells for each level */
   std::vector<std::vector<CellChildInfo>> cell_child_infos_;
-  /** information about parent entities on each level */
+  /** @brief information about parent entities on each level */
   std::vector<std::array<std::vector<ParentInfo>, 3>> parent_infos_;
-  /** Information about marked edges */
+  /** @brief Information about marked edges */
   std::vector<std::vector<bool>> edge_marked_;
-  /** Information about local refinement edges of triangles */
+  /** @brief Information about local refinement edges of triangles */
   std::vector<std::vector<sub_idx_t>> refinement_edges_;
 
   /**
    * @brief Finds the index of the longest edge of a triangle
+   *
+   * This method is used for setting refinement edges on coarsest meshes.
+   * Called in the constructor of MeshHierarchy.
    */
   sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 
