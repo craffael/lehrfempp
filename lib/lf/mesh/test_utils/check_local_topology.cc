@@ -24,6 +24,7 @@ void checkLocalTopology(const Entity &e) {
     base::RandomAccessRange<const Entity> sub_ent_range(
         e.SubEntities(sub_codim));
     // Run through sub-entities
+    size_type sub_ent_cnt{0};
     for (const Entity &sub_ent : sub_ent_range) {
       const RefEl sub_ref_el = sub_ent.RefEl();
       const dim_t sub_dim = sub_ref_el.Dimension();
@@ -48,7 +49,10 @@ void checkLocalTopology(const Entity &e) {
           EXPECT_EQ(found, 1) << "Sub-sub-entity hit " << found << " times";
         }
       }
-    }
+      sub_ent_cnt++;
+    }  // end loop over sub-entities
+    EXPECT_EQ(num_sub_entities, sub_ent_cnt)
+        << "Subent cnt mismatch " << num_sub_entities << " <-> " << sub_ent_cnt;
   }
 }
 
