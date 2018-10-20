@@ -15,9 +15,6 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-using namespace lf::mesh::hybrid2dp;
-using namespace lf::mesh;
-
 int main(int argc, char** argv) {
   // The following code is modeled after the example from
   // https://theboostcpplibraries.com/boost.program_options
