@@ -68,10 +68,10 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   test_utils::checkEntityIndexing(*mesh_p);
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
-  std::cout << "Checking geometry compatibulity: " << std::flush;
+  std::cout << "Checking geometry compatibility: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -107,10 +107,40 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
 
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
-  EXPECT_EQ(mesh_p->DimWorld(), 2) << "Wolrd dimension must be 2";
+  EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
   EXPECT_EQ(mesh_p->Size(0), 6) << "Mesh should comprise 6 squares";
   EXPECT_EQ(mesh_p->Size(1), 17) << "Mesh should comprise 17 edges";
   EXPECT_EQ(mesh_p->Size(2), 12) << "Mesh should have 12 vertices";
+
+  std::cout << "Checking entity indexing" << std::endl;
+  test_utils::checkEntityIndexing(*mesh_p);
+  std::cout << "Checking mesh completeness" << std::endl;
+  test_utils::checkMeshCompleteness(*mesh_p);
+  std::cout << "Printing mesh information" << std::endl;
+  utils::PrintInfo(*mesh_p, std::cout);
+}
+
+// Test for creation of tensor product grid on torus
+TEST(lf_mesh_p, buildTorusMesh) {
+  // Enable copious output
+  hybrid2d::TPQuadMeshBuilder::output_ctrl_ = 100;
+  // Construct a tensor-product grid with 15 cells
+  std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
+      std::make_shared<hybrid2dp::MeshFactory>(3);
+  hybrid2d::TorusMeshBuilder builder(mesh_factory_ptr);
+  // Set mesh parameters following the Builder pattern
+  builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
+      .setTopRightCorner(Eigen::Vector2d{1, 4})
+      .setNoXCells(3)
+      .setNoYCells(5);
+  auto mesh_p = builder.Build();
+
+  EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
+  EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
+  EXPECT_EQ(mesh_p->DimWorld(), 3) << "World dimension must be 3";
+  EXPECT_EQ(mesh_p->Size(0), 15) << "Mesh should comprise 15 cells";
+  EXPECT_EQ(mesh_p->Size(1), 30) << "Mesh should comprise 30 edges";
+  EXPECT_EQ(mesh_p->Size(2), 15) << "Mesh should have 15 vertices";
 
   std::cout << "Checking entity indexing" << std::endl;
   test_utils::checkEntityIndexing(*mesh_p);
