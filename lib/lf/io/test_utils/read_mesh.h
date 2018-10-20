@@ -15,10 +15,17 @@
 
 namespace lf::io::test_utils {
 
-/// Retrieves the name of a mesh that lies in the lib/lf/io/test/msh_files/
-/// folder
+/**
+ * @brief Retrieve the full path to the file
+ * `lib/lf/io/test/msh_files/<mesh_name>`
+ */
 std::string getMeshPath(std::string mesh_name);
 
+/**
+ * @brief Get a GmshReader from the file `lib/lf/io/test/msh_files/<mesh_name>`.
+ * @param mesh_name The name of the mesh file.
+ * @param dim_world The world dimension of the mesh.
+ */
 GmshReader getGmshReader(std::string mesh_name, base::dim_t dim_world);
 
 }  // namespace lf::io::test_utils

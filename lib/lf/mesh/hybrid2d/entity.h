@@ -64,6 +64,14 @@ class Entity : public mesh::Entity {
   base::RandomAccessRange<const mesh::Entity> SubEntities(
       char rel_codim) const override;
 
+  /** Not implemented */
+  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    LF_ASSERT_MSG(false, "relative orientations not implemented");
+    return base::RandomAccessRange<const lf::mesh::Orientation>(
+        dummy_or_.begin(), dummy_or_.end());
+  }
+
   geometry::Geometry* Geometry() const override { return geometry_.get(); }
 
   base::RefEl RefEl() const override {
@@ -91,6 +99,8 @@ class Entity : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;
   std::array<std::vector<size_type>, 2 - CODIM> sub_entities_;
+  static constexpr std::array<lf::mesh::Orientation, 1> dummy_or_{
+      lf::mesh::Orientation::positive};
 
   friend class Mesh;
 

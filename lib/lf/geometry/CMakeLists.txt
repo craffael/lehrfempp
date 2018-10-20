@@ -8,6 +8,7 @@ set(sources
   quad_o1.h
   quad_o1.cc
   refinement_pattern.h
+  refinement_pattern.cc
   segment_o1.h
   segment_o1.cc
   tria_o1.h

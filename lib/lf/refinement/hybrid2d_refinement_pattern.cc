@@ -344,13 +344,13 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             case RefPat::rp_nil: {
               break;
             }
-            case RefPat::rp_copy: {
+            case RefPat::rp_copy: {  // copy of segment, 1 child
               Eigen::Matrix<int, 1, 2> seg_ref_coord;
               seg_ref_coord << 0, lt_one;
               child_poly.emplace_back(seg_ref_coord);
               break;
             }
-            case RefPat::rp_split: {
+            case RefPat::rp_split: {  // splitting of segment, 2 children
               Eigen::Matrix<int, 1, 2> part_ref_coord;
               part_ref_coord << 0, lt_half;
               child_poly.emplace_back(part_ref_coord);
@@ -366,7 +366,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             }
           }  // end switch ref_pat
           break;
-        }          // case codeim = 0
+        }          // case codim = 0
         case 1: {  // child entities are points
           if (ref_pat_ == RefPat::rp_split) {
             // child is the midpoint
