@@ -8,6 +8,7 @@ target_link_libraries(lf.examples.assemble.dof_demo
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
+  lf.mesh.test_utils
   lf.mesh.hybrid2dp
   lf.refinement
   lf.assemble
