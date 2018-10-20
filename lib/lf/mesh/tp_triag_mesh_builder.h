@@ -91,12 +91,12 @@ class StructuredMeshBuilder {
  * subdividing the domain into equal squares and splitting each of them
  * along the diagonal.
  *
- * The nodes and cells of the resulting mesh are numbered lexikographically
+ * The nodes and cells of the resulting mesh are numbered lexicographically
  * from bottom left to  top right. The super-diagonal cells have even indices
  * the sub-diagonal cells odd indices.
  *
  * The horizontal edges are numbered first, the vertical edges next; both groups
- * lexikographically.
+ * lexicographically.
  */
 class TPTriagMeshBuilder : public StructuredMeshBuilder {
  public:
@@ -135,7 +135,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
  * cells)
  *
  * The generated grid will be uniform, which means that all cells are congruent.
- * The geoemtry of the rectangular domain and the number of cells can be
+ * The geometry of the rectangular domain and the number of cells can be
  * specified by setting Builder state parameters.
  *
  */
@@ -170,6 +170,46 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
   /** Diagnostics control variable */
   static int output_ctrl_;
 };  // end class definition TPQuadMeshBuilder
+
+/**
+ * @brief Implements a MeshBuilder for a tensor product grid of a torus
+ *
+ * The torus is built from a tensor product mesh covering a rectangle with
+ * opposite sides identified. The major radius of the torus is proportional
+ * to the rectangle's width (x-axis), the minor radius is proportional to the
+ * rectangle's height (y-axis). The parametrization is described here:
+ * https://en.wikipedia.org/wiki/Torus#Geometry
+ *
+ */
+class TorusMeshBuilder : public StructuredMeshBuilder {
+ public:
+  /**
+   * @brief Constructor: set factory object to be used by the builder
+   */
+  explicit TorusMeshBuilder(std::shared_ptr<mesh::MeshFactory> mesh_factory)
+      : StructuredMeshBuilder(std::move(mesh_factory)) {
+    LF_ASSERT_MSG(
+        mesh_factory_->DimWorld() == 3,
+        "TorusMeshBuilder can only construct meshes with DimWorld==3");
+  }
+
+  /**
+   * @brief actual construction of the mesh
+   */
+  std::shared_ptr<mesh::Mesh> Build() override;
+
+ private:
+  /**
+   * @brief vertex index from grid position
+   */
+  size_type VertexIndex(size_type i, size_type j) const {
+    return i + j * no_of_x_cells_;
+  }
+
+ public:
+  /** Diagnostics control variable */
+  static int output_ctrl_;
+};  // end class definition TorusMeshBuilder
 
 }  // namespace lf::mesh::hybrid2d
 
