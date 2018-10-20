@@ -273,7 +273,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   const double hx = x_size / nx;
   const double hy = y_size / ny;
 
-  // parametrise torus: https://en.wikipedia.org/wiki/Torus#Geometry
+  // parametrize torus: https://en.wikipedia.org/wiki/Torus#Geometry
   const double r = x_size / (2. * M_PI);
   const double R = y_size / (2. * M_PI);
   auto theta = [r, hx](double i) -> double { return (i * hx) / r; };
