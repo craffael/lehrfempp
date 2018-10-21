@@ -72,7 +72,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
   return o;
 }
 
-UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh,
+UniformFEDofHandler::UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,
                                          dof_map_t dofmap)
     : mesh_(std::move(mesh)), no_dofs_() {
   LF_ASSERT_MSG((mesh_->DimMesh() == 2), "Can handle 2D meshes only");

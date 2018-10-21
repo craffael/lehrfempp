@@ -195,7 +195,7 @@ class UniformFEDofHandler : public DofHandler {
    * @param dofmap map telling number of interior dofs for every type of entity
    */
   using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
-  UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh, dof_map_t dofmap);
+  UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh, dof_map_t dofmap);
   /**@}*/
 
   /**
@@ -333,7 +333,7 @@ class UniformFEDofHandler : public DofHandler {
   }
 
   /** The mesh on which the degrees of freedom are defined */
-  std::shared_ptr<lf::mesh::Mesh> mesh_;
+  std::shared_ptr<const lf::mesh::Mesh> mesh_;
   /** The total number of degrees of freedom */
   size_type num_dof_{0};
   /** Vector of entities to which global basis functions are associated */
@@ -386,7 +386,7 @@ class DynamicFEDofHandler : public DofHandler {
    * that returns the number of local shape functions associated with an entity.
    */
   template <typename LOCALDOFINFO>
-  DynamicFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh_p,
+  DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
                       LOCALDOFINFO &&locdof)
       : mesh_p_(std::move(mesh_p)) {
     LF_ASSERT_MSG((mesh_p_->DimMesh() == 2), "Can handle 2D meshes only");
@@ -583,7 +583,7 @@ class DynamicFEDofHandler : public DofHandler {
 
  private:
   /** The mesh on which the degrees of freedom are defined */
-  std::shared_ptr<lf::mesh::Mesh> mesh_p_;
+  std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
   /** The total number of degrees of freedom */
   size_type num_dof_{0};
   /** Vector of entities to which global basis functions are associated */

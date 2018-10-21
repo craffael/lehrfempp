@@ -10,10 +10,26 @@ target_link_libraries(lf.examples.assemble.dof_demo
   lf.mesh.utils
   lf.mesh.test_utils
   lf.mesh.hybrid2dp
-  lf.refinement
   lf.assemble
   )
 
-target_compile_features(lf.examples.io.io_demo PUBLIC cxx_std_17)
+target_compile_features(lf.examples.assemble.dof_demo PUBLIC cxx_std_17)
+
+set (Dirichlet_Laplacian_demo Dirichlet_Laplacian_demo.cc)
+
+add_executable(lf.examples.assemble.Dirichlet_Laplacian_demo ${Dirichlet_Laplacian_demo})
+
+target_link_libraries(lf.examples.assemble.Dirichlet_Laplacian_demo
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2dp
+  lf.refinement
+  lf.assemble
+  lf.io
+  )
+
+target_compile_features(lf.examples.assemble.Dirichlet_Laplacian_demo PUBLIC cxx_std_17)
 
 
