@@ -3,8 +3,6 @@ set(sources
   entity.cc
   mesh.h
   mesh.cc
-  tp_triag_mesh_builder.h
-  tp_triag_mesh_builder.cc
   mesh_factory.h
   mesh_interface.h
   mesh_interface.cc
@@ -16,6 +14,5 @@ target_compile_features(lf.mesh PUBLIC cxx_std_17)
 
 add_subdirectory(hybrid2d)
 add_subdirectory(hybrid2dp)
-add_subdirectory(test)
 add_subdirectory(utils)
 add_subdirectory(test_utils)
