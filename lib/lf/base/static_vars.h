@@ -98,7 +98,7 @@ using StaticVar = Track<int>;
 /**@}*/
 
 /**
- * @brief Macro for conditional output
+ * @brief Macro for threshold-conditional output
  * @param ctrlvar integer control variable
  * @param level control level
  * @statement code to be executed
@@ -112,6 +112,23 @@ using StaticVar = Track<int>;
 #define CONTROLLEDSTATEMENT(ctrlvar, level, statement) \
   if ((ctrlvar) >= (level)) {                          \
     statement;                                         \
+  }
+
+/**
+ * @brief Macro for bit-flag-conditional output
+ * @param ctrlvar integer control variable
+ * @param flagpat selection bit pattern for flags
+ * @statement code to be executed
+ *
+ * The code passed in statement is executed if the value of the
+ * control variable is larger than the value passed in level
+ *
+ * @note The executable code must not involve a comma operator.
+ * Commas inside strings are ok.
+ */
+#define SWITCHEDSTATEMENT(ctrlvar, flagpat, statement) \
+  if (((ctrlvar) & (flagpat)) > 0) {			 \
+    statement;                                           \
   }
 
 namespace lf::base {
