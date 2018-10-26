@@ -33,6 +33,9 @@ namespace lf::mesh::test_utils {
  * - Test mesh generated when selector = 1;
  * @image html testmesh1.png
  * This mesh contains parallelograms, that is, affine quadrilaterals.
+ * - Test mesh generated when selector = 3;
+ * @image html testmesh3.png
+ * This is a purely triangular mesh
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0);
 

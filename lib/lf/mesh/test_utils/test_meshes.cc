@@ -173,13 +173,93 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector) {
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       break;
     }
+    case 3: {
+      // Triangular mesh
+      // Set coordinates of nodes
+      mesh_factory_ptr->AddPoint(coord_t({0, 0}));    // 0
+      mesh_factory_ptr->AddPoint(coord_t({1.5, 0}));  // 1
+      mesh_factory_ptr->AddPoint(coord_t({3, 0}));    // 2
+      mesh_factory_ptr->AddPoint(coord_t({1, 1}));    // 3
+      mesh_factory_ptr->AddPoint(coord_t({2, 1}));    // 4
+      mesh_factory_ptr->AddPoint(coord_t({3, 1}));    // 5
+      mesh_factory_ptr->AddPoint(coord_t({0, 1.5}));  // 6
+      mesh_factory_ptr->AddPoint(coord_t({2, 1.5}));  // 7
+      mesh_factory_ptr->AddPoint(coord_t({1, 2}));    // 8
+      mesh_factory_ptr->AddPoint(coord_t({3, 2}));    // 9
+      mesh_factory_ptr->AddPoint(coord_t({0, 3}));    // 10
+      mesh_factory_ptr->AddPoint(coord_t({1.5, 3}));  // 11
+      mesh_factory_ptr->AddPoint(coord_t({3, 3}));    // 12
+
+      // Setting vertices of triangular cells but not their geometry
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({0, 1, 3}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({1, 2, 4}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({0, 3, 6}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({1, 3, 4}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({4, 2, 5}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({3, 4, 7}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({4, 5, 7}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({3, 6, 8}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({7, 8, 3}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({5, 7, 9}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({6, 8, 10}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({8, 7, 11}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({7, 9, 12}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({10, 8, 11}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({7, 12, 11}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      break;
+    }
     default: {
       LF_VERIFY_MSG(false, "Illegal selector for test meshes");
       break;
     }
   }  // end switch
-  // Inspect data
-  mesh_factory_ptr->PrintLists(std::cout);
+  // Optional: Inspect data
+  // mesh_factory_ptr->PrintLists(std::cout);
   return mesh_factory_ptr->Build();
 }
 

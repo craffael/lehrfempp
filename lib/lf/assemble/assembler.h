@@ -23,7 +23,7 @@ namespace lf::assemble {
  * @brief Assembly function for standard assembly of finite element matrices
  *
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
- * @tparam ASSEMBLER a type providing the computation of element matrices
+ * @tparam ELEM_MAT_COMP a type providing the computation of element matrices
  * @param codim co-dimension of mesh entities which should be traversed
  *              in the course of assembly
  * @param dof_handler_trial a dof handler object for column space @see
@@ -42,13 +42,13 @@ namespace lf::assemble {
  * + provide a constructor taking two matrix dimension arguments
  * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
  * A model type is COOMatrix.
- * - ASSEMBLER is a type capable of local assembly of element matrices. It must
+ * - ELEM_MAT_COMP is a type capable of local assembly of element matrices. It must
  * + have an `Eval()` method returning the element matrix for a cell
  * + supply an `isActive()` method for selecting cells to be taken into account
  * in assembly
  * + provide a matrix type `ElemMat` for objects containing the element
  * matrices.
- * - ElemMat as provided by ASSEMBLER is a dense matrix type modelled after
+ * - ElemMat as provided by ELEM_MAT_COMP is a dense matrix type modelled after
  * Eigen::Matrix. It must provide:
  * + methods `rows()` and `cols()` telling the number of rows and columns
  * + access to entries via `operator (int,int) const`
@@ -57,14 +57,14 @@ namespace lf::assemble {
  * have a size larger than that suggested by the number of local shape
  * functions. In this case only its upper left block is accessed.
  */
-template <typename TMPMATRIX, class ASSEMBLER>
+template <typename TMPMATRIX, class ELEM_MAT_COMP>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                            const DofHandler &dof_handler_test,
-                           ASSEMBLER &assembler, TMPMATRIX &matrix) {
+                           ELEM_MAT_COMP &assembler, TMPMATRIX &matrix) {
   // Type of matrix entries, usually either double or complex.
   using scalar_t = typename TMPMATRIX::Scalar;
   // Type for element matrix
-  using elem_mat_t = typename ASSEMBLER::ElemMat;
+  using elem_mat_t = typename ELEM_MAT_COMP::ElemMat;
   // Underlying mesh
   auto mesh = dof_handler_trial.Mesh();
 
@@ -112,15 +112,15 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
- * DofHandler &dof_handler_test,ASSEMBLER &assembler, TMPMATRIX &matrix)
+ * DofHandler &dof_handler_test,ELEM_MAT_COMP &assembler, TMPMATRIX &matrix)
  */
-template <typename TMPMATRIX, class ASSEMBLER>
+template <typename TMPMATRIX, class ELEM_MAT_COMP>
 TMPMATRIX AssembleMatrixLocally(dim_t codim,
                                 const DofHandler &dof_handler_trial,
                                 const DofHandler &dof_handler_test,
-                                ASSEMBLER &assembler) {
+                                ELEM_MAT_COMP &assembler) {
   TMPMATRIX matrix{dof_handler_test.NoDofs(), dof_handler_trial.NoDofs()};
-  AssembleMatrixLocally<TMPMATRIX, ASSEMBLER>(
+  AssembleMatrixLocally<TMPMATRIX, ELEM_MAT_COMP>(
       codim, dof_handler_trial, dof_handler_test, assembler, matrix);
   return matrix;
 }
@@ -135,13 +135,13 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim,
  * space are the same.
  *
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
- * DofHandler &dof_handler_test,ASSEMBLER &assembler, TMPMATRIX &matrix)
+ * DofHandler &dof_handler_test,ELEM_MAT_COMP &assembler, TMPMATRIX &matrix)
  */
 
-template <typename TMPMATRIX, class ASSEMBLER>
+template <typename TMPMATRIX, class ELEM_MAT_COMP>
 TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
-                                ASSEMBLER &assembler) {
-  return AssembleMatrixLocally<TMPMATRIX, ASSEMBLER>(codim, dof_handler,
+                                ELEM_MAT_COMP &assembler) {
+  return AssembleMatrixLocally<TMPMATRIX, ELEM_MAT_COMP>(codim, dof_handler,
                                                      dof_handler, assembler);
 }
 
@@ -150,7 +150,7 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  * vectors
  *
  * @tparam VECTOR a generic vector type with component access through []
- * @tparam VECTORASSEMBLER type for objects computing entity-local vectors
+ * @tparam ELEM_VEC_COMP type for objects computing entity-local vectors
  * @param codim co-dimension of entities over which assembly should be carried
  * out
  * @param dof_handler object providing local-to-global dof index mapping, see
@@ -172,13 +172,13 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  *       `resultvector` argument. This means that `resultvector` has to be
  *       initialized before calling this function!
  */
-template <typename VECTOR, class VECTORASSEMBLER>
+template <typename VECTOR, class ELEM_VEC_COMP>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
-                           VECTORASSEMBLER &assembler, VECTOR &resultvector) {
+                           ELEM_VEC_COMP &assembler, VECTOR &resultvector) {
   // Type of matrix entries, usually either double or complex.
   using scalar_t = typename VECTOR::Scalar;
   // Type for element matrix
-  using elem_vec_t = typename VECTORASSEMBLER::ElemVec;
+  using elem_vec_t = typename ELEM_VEC_COMP::ElemVec;
   // Underlying mesh
   auto mesh = dof_handler.Mesh();
 
@@ -212,7 +212,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  * @return assembled vector as an object of a type specified by the
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
- *                           VECTORASSEMBLER &assembler, VECTOR &resultvector)
+ *                           ELEM_VEC_COMP &assembler, VECTOR &resultvector)
  *
  * ### Additional type requirements for VECTOR template argument
  *
@@ -221,15 +221,15 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  * [Eigen
  * documentation](https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html)
  */
-template <typename VECTOR, class VECTORASSEMBLER>
+template <typename VECTOR, class ELEM_VEC_COMP>
 VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
-                             VECTORASSEMBLER &assembler) {
+                             ELEM_VEC_COMP &assembler) {
   // Allocated vector holding r.h.s. vector to be assembled
   VECTOR resultvector{dof_handler.NoDofs()};
   // Initialize to zero: assembly of new vector
   resultvector.setZero();
   // Perform actual assembly
-  AssembleVectorLocally<VECTOR, VECTORASSEMBLER>(codim, dof_handler, assembler,
+  AssembleVectorLocally<VECTOR, ELEM_VEC_COMP>(codim, dof_handler, assembler,
                                                  resultvector);
   return resultvector;
 }  // end AssembleVectorLocally

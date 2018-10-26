@@ -86,6 +86,38 @@ class COOMatrix {
   const TripletVec &triplets() const { return triplets_; }
 
   /**
+   * @brief Computes the product of a vector with the matrix in COO format
+   * @tparam VECTOR a basic vector type for the argument vector
+   * @param vec constant reference to a vector of type VECTOR
+   * @return result vector, a dense vector of Eigen
+   *
+   * ### Requirements for type VECTOR
+   * An object of type VECTOR must provide a method `Size()` telling the length
+   * of the vector and `operator []` for read access to vector entries.
+   */
+  template <typename VECTOR>
+  Eigen::Matrix<SCALAR,Eigen::Dynamic,1> MatVecMult(const VECTOR &vec) const;
+
+  /**
+   * @brief In-situ computes the product of a vector with the matrix in COO
+   * format
+   * @tparam VECTOR a basic vector type for the argument vector
+   * @tparam RESULTVECTOR another vector type for returning the result
+   * @param vec constant reference to a vector of type VECTOR
+   * @param result reference to an object of type RESULTVECTOR.
+   *
+   * @note the result of the matrix-vector product will be added to the entries
+   * of `result`!
+   *
+   * ### Requirements for types VECTOR and RESULTVECTOR
+   * An object of type VECTOR or RESULTVECTOR must provide a method `Size()`
+   * telling the length of the vector and `operator []` for read/write access to
+   * vector entries.
+   */
+  template <typename VECTOR, typename RESULTVECTOR>
+  void MatVecMult(const VECTOR &vec, RESULTVECTOR &resvec) const;
+
+  /**
    * @brief Create an Eigen::SparseMatrix out of the COO format.
    * @return The created sparse matrix
    *
@@ -107,9 +139,9 @@ class COOMatrix {
     Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> mat(rows_, cols_);
     mat.setZero();
     for (const Triplet &trp : triplets_) {
-      LF_ASSERT_MSG(((trp.col() < cols_) && (trp.row() < rows_)),
-                    "Illegal triplet index (" << trp.col() << ',' <<
-                    trp.row() << ")");
+      LF_ASSERT_MSG(
+          ((trp.col() < cols_) && (trp.row() < rows_)),
+          "Illegal triplet index (" << trp.col() << ',' << trp.row() << ")");
       mat(trp.row(), trp.col()) += trp.value();
     }
     return mat;
@@ -119,6 +151,33 @@ class COOMatrix {
   size_type rows_, cols_; /**< dimensions of matrix */
   TripletVec triplets_;   /**< COO format data */
 };
+
+template <typename SCALAR>
+template <typename VECTOR>
+Eigen::Matrix<SCALAR,Eigen::Dynamic,1> COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec) const {
+  LF_ASSERT_MSG(vec.size() >= cols_,
+                "size mismatch: " << cols_ << " <-> " << vec.size());
+  Eigen::VectorXd result(rows_);
+  result.setZero();
+  for (const Triplet &trp : triplets_) {
+    result[trp.row()] += trp.value() * vec[trp.col()];
+  }
+  return result;
+}
+
+template <typename SCALAR>
+template <typename VECTOR,typename RESULTVECTOR>
+void COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec,
+                                   RESULTVECTOR &result) const {
+  LF_ASSERT_MSG(vec.size() >= cols_,
+                "Vector vec size mismatch: " << cols_ << " <-> " << vec.size());
+  LF_ASSERT_MSG(
+      result.size() >= rows_,
+      "Vector result size mismatch: " << cols_ << " <-> " << result.size());
+  for (const Triplet &trp : triplets_) {
+    result[trp.row()] += trp.value() * vec[trp.col()];
+  }
+}
 
 }  // namespace lf::assemble
 

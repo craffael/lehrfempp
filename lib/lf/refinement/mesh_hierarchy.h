@@ -88,7 +88,7 @@ class MeshHierarchy {
   /**
    * @brief Initialize mesh hierarchy with an existing coarsest mesh
    *
-   * @param base_mesh valid pointer to coarsest mesh
+   * @param base_mesh valid pointer to _non-const_ coarsest mesh
    * @param mesh_factory factory object creating new meshes during refinement
    *
    * - Stores shared pointer to coarsest mesh.

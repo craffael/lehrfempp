@@ -195,7 +195,8 @@ class UniformFEDofHandler : public DofHandler {
    * @param dofmap map telling number of interior dofs for every type of entity
    */
   using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
-  UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh, dof_map_t dofmap);
+  UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,
+                      dof_map_t dofmap);
   /**@}*/
 
   /**

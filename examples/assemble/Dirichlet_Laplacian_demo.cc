@@ -16,10 +16,11 @@
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/refinement/refinement.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-/** @brief Assembler model class for linear Lagrangian finite elements
+/** @brief Local assembler model class for linear Lagrangian finite elements
  *
  * The main purpose of this class is to compute the element matrix for
  * the Laplacian on affine triangles or bilinearly mapped quadrilaterals.
@@ -31,15 +32,13 @@
 class LinearFELaplaceElementMatrix {
  public:
   using elem_mat_t = Eigen::Matrix<double, 4, 4>;
-  using ElemMat = const elem_mat_t &;
+  using ElemMat = const elem_mat_t;
 
   LinearFELaplaceElementMatrix(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &cell) { return true; }
   ElemMat Eval(const lf::mesh::Entity &cell);
 
  private:
-  /// For storing element matrices
-  elem_mat_t mat_;
   /// Reference to current mesh
   const lf::mesh::Mesh &mesh_;
   /// quadrature points on reference quadrilateral
@@ -100,6 +99,9 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
                     std::cout << ref_el << ", shape = \n"
                               << vertices << std::endl);
 
+  // 4x4 dense matrix for returning result
+  elem_mat_t elem_mat = elem_mat_t::Zero(4, 4);
+
   // Computations differ depending on the type of the cell
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
@@ -129,7 +131,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
       Eigen::Matrix<double, 2, 3> grad_bary_coords{
           X.inverse().block<2, 3>(1, 0)};
       // Since the gradients are constant local integration is easy
-      mat_.block<3, 3>(0, 0) =
+      elem_mat.block<3, 3>(0, 0) =
           area * grad_bary_coords.transpose() * grad_bary_coords;
       break;
     }
@@ -185,7 +187,6 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
       // For a quadrilateral we have to use numerical quadrature based on
       // a 2-2 tensor-product Gauss rule.
       // Sum over quadrature points (weight= 0.5)
-      mat_.setZero();
       for (int q = 0; q < 4; ++q) {
         // Obtain reference coordinates of current quadrature point
         const Eigen::Vector2d qp(kQuadPoints[q]);
@@ -195,10 +196,10 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
                                             DervRefShapFncts(qp).transpose());
         // Update of element matrix by contribution from current quadrature
         // point, whose entries are dot products of gradients
-        mat_ += gradmat.transpose() * gradmat / detDPhi(qp);
+        elem_mat += gradmat.transpose() * gradmat / detDPhi(qp);
       }
       // Scaling with quadrature weights
-      mat_ *= 0.25;
+      elem_mat *= 0.25;
       break;
     }
     default: { LF_ASSERT_MSG(false, "Illegal cell type"); }
@@ -207,14 +208,14 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_locmat, lf::base::size_type nv = vertices.cols();
       std::cout << "Element matrix\n"
-                << mat_.block(0, 0, nv, nv) << std::endl;
-      std::cout << "Row sums = " << mat_.block(0, 0, nv, nv).colwise().sum()
+                << elem_mat.block(0, 0, nv, nv) << std::endl;
+      std::cout << "Row sums = " << elem_mat.block(0, 0, nv, nv).colwise().sum()
                 << ",\n col sums = "
-                << mat_.block(0, 0, nv, nv).rowwise().sum().transpose()
+                << elem_mat.block(0, 0, nv, nv).rowwise().sum().transpose()
                 << std::endl);
 
   // Return the element matrix
-  return mat_;
+  return elem_mat;
 }
 
 /** @brief Class for computation of local load vector for linear finite
@@ -233,7 +234,7 @@ template <typename FUNCTOR>
 class LinearFELocalLoadVector {
  public:
   using elem_vec_t = Eigen::Matrix<double, 4, 1>;
-  using ElemVec = const elem_vec_t &;
+  using ElemVec = const elem_vec_t;
 
   LinearFELocalLoadVector(const lf::mesh::Mesh &mesh, FUNCTOR f)
       : mesh_(mesh), f_(f) {}
@@ -241,7 +242,6 @@ class LinearFELocalLoadVector {
   ElemVec Eval(const lf::mesh::Entity &cell);
 
  private:
-  elem_vec_t vec_;
   const lf::mesh::Mesh &mesh_;
   FUNCTOR f_;
 
@@ -275,14 +275,18 @@ LinearFELocalLoadVector<FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
                               << vertices << std::endl);
   const double area = lf::geometry::Volume(*geo_ptr);
 
+  // Vector for returning element vector
+
+  elem_vec_t elem_vec = elem_vec_t::Zero();
   // get function values in the vertices
   for (int k = 0; k < num_nodes; k++) {
-    vec_[k] = area * f_(vertices.col(k)) / num_nodes;
+    elem_vec[k] = area * f_(vertices.col(k)) / num_nodes;
   }
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_locvec,
-                    std::cout << "element vector = "
-                              << vec_.head(num_nodes).transpose() << std::endl);
-  return vec_;
+  SWITCHEDSTATEMENT(
+      dbg_ctrl, dbg_locvec,
+      std::cout << "element vector = " << elem_vec.head(num_nodes).transpose()
+                << std::endl);
+  return elem_vec;
 }
 
 static unsigned int dbg_ctrl = 0;
@@ -292,6 +296,7 @@ const unsigned int dbg_mat = 4;
 const unsigned int dbg_vec = 8;
 const unsigned int dbg_bdf = 16;
 const unsigned int dbg_elim = 32;
+const unsigned int dbg_basic = 64;
 
 /**
  * @brief Build a vector of boundary flags for degrees of freedom
@@ -396,7 +401,15 @@ void insertDirichletDataRHS(const lf::assemble::DofHandler &dofh,
 template <typename SOLFUNC, typename RHSFUNC>
 double L2ErrorLinearFEDirichletLaplacian(
     std::shared_ptr<const lf::mesh::Mesh> mesh_p, SOLFUNC &&u, RHSFUNC &&f) {
+  LF_ASSERT_MSG(mesh_p != nullptr, "Invalid mesh pointer");
+  LF_ASSERT_MSG((mesh_p->DimMesh() == 2) && (mesh_p->DimWorld() == 2),
+                "For 2D planar meshes only!");
   // Debugging output
+  SWITCHEDSTATEMENT(
+      dbg_ctrl, dbg_basic,
+      std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
+                << mesh_p->Size(0) << " cells, " << mesh_p->Size(1) << " edges, "
+                << mesh_p->Size(2) << " nodes" << std::endl;)
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_mesh,
       const int tmp_mesh_ctrl = lf::mesh::hybrid2dp::Mesh::output_ctrl_;
@@ -481,9 +494,40 @@ double L2ErrorLinearFEDirichletLaplacian(
   return std::sqrt(nodal_err);
 }
 
+/** @brief Solves Dirichlet problem for the Laplacian on a sequence of
+ *         regularly refined meshes
+ * @param coarse_mesh_p pointer to coarsest mesh
+ * @param reflevels number of refinements
+ * @param u exact solution of the boundary value problem
+ * @param f right hand side source function
+ * @return L2 norms of discretization errors on each refinement level
+ *
+ */
+template <typename SOLFUNCTOR, typename RHSFUNCTOR>
+std::vector<double> SolveDirLaplSeqMesh(
+    std::shared_ptr<lf::mesh::Mesh> coarse_mesh_p, unsigned int reflevels,
+    SOLFUNCTOR &&u, RHSFUNCTOR &&f) {
+  // Prepare for creating a hierarchy of meshes
+  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(coarse_mesh_p, mesh_factory_ptr);
+
+  // Perform several steps of regular refinement of the given mesh
+  for (int refstep = 0; refstep < reflevels; ++refstep) {
+    multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
+  }
+  // Solve Dirichlet boundary value problem on every level
+  std::vector<double> errors{};
+  for (int level = 0; level < multi_mesh.NumLevels(); level++) {
+    errors.push_back(
+        L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));
+  }
+  return errors;
+}
+
 int main(int argc, char **argv) {
   // Pointer to the current mesh
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p;
+  std::shared_ptr<lf::mesh::Mesh> mesh_p;
 
   // Processing command line arguments
   bool verbose = false;
@@ -495,6 +539,7 @@ int main(int argc, char **argv) {
   ("filename,f", po::value<std::string>()->default_value(""),
      "File to load coarse mesh from ")
   ("selector,s", po::value<int>()->default_value(0), "Selection of test mesh")
+  ("reflevels,r", po::value<int>()->default_value(2), "Number of refinement levels")
   ("verbose,v", po::bool_switch(&verbose),"Enable verbose mode");
   // clang-format on
   po::variables_map vm;
@@ -502,12 +547,15 @@ int main(int argc, char **argv) {
   if (vm.count("help") > 0) {
     std::cout << desc << std::endl;
   } else {
+    std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
+              << std::endl;
     // Retrieve number of degrees of freedom for each entity type from
     // command line arguments
     if (vm.count("filename") > 0) {
       // A filename was specified
       std::string filename{vm["filename"].as<std::string>()};
       if (filename.length() > 0) {
+        std::cout << "Reading mesh from file " << filename << std::endl;
         boost::filesystem::path here = __FILE__;
         auto mesh_file_path = here.parent_path() / filename.c_str();
         auto mesh_factory =
@@ -524,32 +572,45 @@ int main(int argc, char **argv) {
         }
       }
     }
+    // Set number of refinement levels
+    unsigned int reflevels = 2;
+    if (vm.count("reflevels") > 0) {
+      reflevels = vm["reflevels"].as<int>();
+    }
+    // Default mesh
     if (mesh_p == nullptr) {
       mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
     }
+    // At this point a pointer to the mesh is stored in mesh_p
+    // Output summary information about the coarsest mesh
+    std::cout << "Coarse mesh: " << mesh_p->Size(0) << " cells, "
+              << mesh_p->Size(1) << " edges, " << mesh_p->Size(2) << " vertices"
+              << std::endl;
+    std::cout << reflevels << " refinement levels requested" << std::endl;
+
+    // Define right hand side
+    auto f = [](const Eigen::Vector2d &) {
+      // return 4.0;
+      return 0.0;
+    };
+    auto u = [](const Eigen::Vector2d &x) {
+      // return (std::sin(x[0]) * std::sinh(x[1]));
+      // return (std::pow(x[0], 2) + std::pow(x[1], 2));
+      return (x[0] + 2.0 * x[1]);
+    };
+
+    // Set debugging switches
+    LinearFELaplaceElementMatrix::dbg_ctrl = 0;
+    LinearFELocalLoadVector<decltype(f)>::dbg_ctrl = 0;
+    dbg_ctrl = dbg_basic;
+
+    // Compute finite element solution and error
+    auto L2errs = SolveDirLaplSeqMesh(mesh_p,reflevels,u,f);
+    int level = 0;
+    for (auto & err : L2errs) {
+      std::cout << "L2 rrror on level " << level << " = " << err << std::endl;
+      level++;
+    }
   }
-  // At this point a pointer to the mesh is stored in mesh_p
-  // Output summary information about the coarsest mesh
-  std::cout << "Mesh: " << mesh_p->Size(0) << " cells, " << mesh_p->Size(1)
-            << " edges, " << mesh_p->Size(2) << " vertices" << std::endl;
-
-  // Define right hand side
-  auto f = [](const Eigen::Vector2d &) {
-	     //return 4.0;
-	     return 0.0; };
-  auto u = [](const Eigen::Vector2d &x) {
-    // return (std::sin(x[0]) * std::sinh(x[1]));
-    // return (std::pow(x[0], 2) + std::pow(x[1], 2));
-	     return (x[0] + 2.0*x[1]);
-  };
-
-  // Set debugging switches
-  // LinearFELaplaceElementMatrix::dbg_ctrl = 15;
-  // LinearFELocalLoadVector<decltype(f)>::dbg_ctrl = 15;
-  dbg_ctrl = dbg_mat;
-  // Compute finite element solution and error
-  double L2err = L2ErrorLinearFEDirichletLaplacian(mesh_p, u, f);
-  std::cout << "Nodal L2 norm of FE error = " << L2err << std::endl;
-
   return 0;
 }
