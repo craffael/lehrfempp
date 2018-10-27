@@ -14,4 +14,8 @@
 
 #include "assembler.h"
 
-namespace lf::assemble {}  // namespace lf::assemble
+namespace lf::assemble {
+// Debugging output control variable, switched off by default
+int ass_mat_dbg_ctrl = 0;
+
+}  // namespace lf::assemble

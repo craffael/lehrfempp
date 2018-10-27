@@ -85,6 +85,10 @@ using StaticVar = Track<int>;
   int intvar = 0;                                             \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
+#define EXTERNDECLAREINFO(intvar, varname, info)              \
+  extern int intvar;                                          \
+  static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
+                                             lf::base::ctrl_root, #info)
 
 #define CLASSCONTROLDECLARE(class, intvar, varname)                 \
   int class ::intvar = 0;                                           \
@@ -127,8 +131,8 @@ using StaticVar = Track<int>;
  * Commas inside strings are ok.
  */
 #define SWITCHEDSTATEMENT(ctrlvar, flagpat, statement) \
-  if (((ctrlvar) & (flagpat)) > 0) {			 \
-    statement;                                           \
+  if (((ctrlvar) & (flagpat)) > 0) {                   \
+    statement;                                         \
   }
 
 namespace lf::base {

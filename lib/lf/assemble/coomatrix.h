@@ -79,6 +79,13 @@ class COOMatrix {
     triplets_.push_back(Eigen::Triplet<SCALAR>(i, j, increment));
   }
   /**
+   * @brief Erase all entries of the matrix
+   *
+   * This method clears the vector of triplets, effectively setting the
+   * matrix to zero. It does not affect the size information about the matrix.
+   */
+  void setZero() { triplets_.clear(); }
+  /**
    * @brief Gives access to the vector of triplets
    * @return reference to internal vector of triplets
    */
@@ -96,7 +103,7 @@ class COOMatrix {
    * of the vector and `operator []` for read access to vector entries.
    */
   template <typename VECTOR>
-  Eigen::Matrix<SCALAR,Eigen::Dynamic,1> MatVecMult(const VECTOR &vec) const;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> MatVecMult(const VECTOR &vec) const;
 
   /**
    * @brief In-situ computes the product of a vector with the matrix in COO
@@ -147,14 +154,41 @@ class COOMatrix {
     return mat;
   }
 
+  /** @brief Ouput of triplet list describing COO matrix
+   *
+   * @parm o output stream
+   */
+  void PrintInfo(std::ostream &o) const {
+    o << rows_ << " x " << cols_ << " COO matrix" << std::endl;
+    for (const Triplet &trp : triplets_) {
+      o << "(" << trp.row() << ',' << trp.col() << ") -> " << trp.value()
+        << std::endl;
+    }
+  }
+
+  /**
+   * @brief Output operator for COO matrix
+   *
+   * This function prints matrix size and the list of triplets
+   */
+  friend std::ostream &operator<<(std::ostream &o,
+                                  const COOMatrix<SCALAR> &mat);
+
  private:
   size_type rows_, cols_; /**< dimensions of matrix */
   TripletVec triplets_;   /**< COO format data */
 };
 
 template <typename SCALAR>
+std::ostream &operator<<(std::ostream &o, const COOMatrix<SCALAR> &mat) {
+  mat.PrintInfo();
+  return o;
+}
+
+template <typename SCALAR>
 template <typename VECTOR>
-Eigen::Matrix<SCALAR,Eigen::Dynamic,1> COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec) const {
+Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> COOMatrix<SCALAR>::MatVecMult(
+    const VECTOR &vec) const {
   LF_ASSERT_MSG(vec.size() >= cols_,
                 "size mismatch: " << cols_ << " <-> " << vec.size());
   Eigen::VectorXd result(rows_);
@@ -166,7 +200,7 @@ Eigen::Matrix<SCALAR,Eigen::Dynamic,1> COOMatrix<SCALAR>::MatVecMult(const VECTO
 }
 
 template <typename SCALAR>
-template <typename VECTOR,typename RESULTVECTOR>
+template <typename VECTOR, typename RESULTVECTOR>
 void COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec,
                                    RESULTVECTOR &result) const {
   LF_ASSERT_MSG(vec.size() >= cols_,
