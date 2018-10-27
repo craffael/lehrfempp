@@ -18,7 +18,7 @@ namespace lf::mesh::utils {
 /**
  * @brief Assigns to every entity(all codims) in a mesh a value of type `T`
  * @tparam T The type of value to store with every entity
- * 
+ *
  * @sa MeshDataSet
  */
 template <class T>
@@ -27,7 +27,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   using size_type = Mesh::size_type;
   using dim_t = base::RefEl::dim_t;
   using entry_ref_t = typename std::vector<T>::reference;
-  
+
   AllCodimMeshDataSet(const AllCodimMeshDataSet&) = delete;
   AllCodimMeshDataSet(AllCodimMeshDataSet&&) noexcept = default;
   AllCodimMeshDataSet& operator=(const AllCodimMeshDataSet&) = delete;
@@ -43,7 +43,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    */
   entry_ref_t operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
-    std::vector<T> &ref_data_vec{data_[e.Codim()]};
+    std::vector<T>& ref_data_vec{data_[e.Codim()]};
     entry_ref_t entry{ref_data_vec[mesh_->Index(e)]};
     return entry;
   }

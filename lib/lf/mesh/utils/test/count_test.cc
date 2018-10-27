@@ -56,7 +56,7 @@ TEST(test_mesh_utils, bd_flag_test) {
               << std::endl;
   }
   for (const lf::mesh::Entity &node : mesh_p->Entities(2)) {
-    std::cout << node << ' ' << mesh_p->Index(node)    
+    std::cout << node << ' ' << mesh_p->Index(node)
               << (bd_flags(node) ? (" ON BOUNDARY") : (" INTERIOR"))
               << std::endl;
   }

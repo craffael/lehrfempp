@@ -260,9 +260,9 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector) {
       // Set mesh parameters following the Builder pattern
       // Domain is the unit square
       builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
-	.setTopRightCorner(Eigen::Vector2d{1, 1})
-	.setNoXCells(3)
-	.setNoYCells(3);
+          .setTopRightCorner(Eigen::Vector2d{1, 1})
+          .setNoXCells(3)
+          .setNoYCells(3);
       return builder.Build();
       break;
     }

@@ -32,7 +32,7 @@ extern int printinfo_ctrl;
  * #### Output levels
  * See extern int printinfo_ctrl
  */
-  void PrintInfo(const lf::mesh::Mesh& mesh, std::ostream& o);
+void PrintInfo(const lf::mesh::Mesh& mesh, std::ostream& o);
 
 // Print function for Entity object
 /**
@@ -61,7 +61,7 @@ inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
   lf::mesh::utils::PrintInfo(mesh, stream);
   return stream;
 }
-   
+
 }  // namespace lf::mesh::utils
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

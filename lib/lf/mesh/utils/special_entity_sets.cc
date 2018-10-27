@@ -60,7 +60,7 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
   return bd_flags;
 }
 
-  AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
+AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
     const std::shared_ptr<const Mesh>& mesh_p) {
   // count cells adjacent to entities of co-dimension 1
   CodimMeshDataSet<lf::base::size_type> no_adjacent_cells{
@@ -76,7 +76,7 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
       const lf::base::dim_t dim_mesh = mesh_p->DimMesh();
       for (lf::base::dim_t rel_codim = 0; rel_codim < dim_mesh; rel_codim++) {
         for (const lf::mesh::Entity& subent : edge.SubEntities(rel_codim)) {
-	  bd_flags(subent) = true;
+          bd_flags(subent) = true;
         }
       }
     }

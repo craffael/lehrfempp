@@ -15,8 +15,8 @@
 #ifndef _LF_SPEC_DATA_
 #define _LF_SPEC_DATA_
 
-#include "codim_mesh_data_set.h"
 #include "all_codim_mesh_data_set.h"
+#include "codim_mesh_data_set.h"
 
 namespace lf::mesh::utils {
 
@@ -79,7 +79,7 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
  * @note the current implementation returns an integer array, because
  *       of an error in the implementation of AllCodimMeshDataSet.
  */
-  AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
+AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
     const std::shared_ptr<const Mesh>& mesh_p);
 
 }  // namespace lf::mesh::utils

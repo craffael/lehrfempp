@@ -117,7 +117,7 @@ TEST(lf_assembly, fix_dof_test) {
   std::cout << "Solution x = " << x.transpose() << std::endl;
   Eigen::VectorXd exact(N);
   exact << 1, 1, -1, 0.5, -2, 7.75, 11.5, 8.25, -3, 3.5;
-  EXPECT_NEAR((x-exact).norm(),0.0,1.0E-12) << "Wrong result!";
+  EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
 }
 
 }  // namespace lf::assemble::test

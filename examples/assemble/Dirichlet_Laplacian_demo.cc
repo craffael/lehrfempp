@@ -615,12 +615,8 @@ int main(int argc, const char **argv) {
     switch (bvpsel) {
       case 0: {
         // A linear solution, no error, if contained in FE space
-        f = [](const Eigen::Vector2d &) {
-          return 0.0;
-        };
-        u = [](const Eigen::Vector2d &x) {
-          return (x[0] + 2.0 * x[1]);
-        };
+        f = [](const Eigen::Vector2d &) { return 0.0; };
+        u = [](const Eigen::Vector2d &x) { return (x[0] + 2.0 * x[1]); };
         break;
       }
       case 1: {
