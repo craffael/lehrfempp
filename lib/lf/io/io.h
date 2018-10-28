@@ -11,5 +11,6 @@
 
 #include "gmsh_reader.h"
 #include "vtk_writer.h"
+#include "write_matplotlib.h"
 
 #endif  // __22f8165024874bb58675c694b54c52b5
