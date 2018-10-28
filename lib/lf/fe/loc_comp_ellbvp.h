@@ -464,16 +464,44 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
       break;
     }
     case lf::base::RefEl::kQuad(): {
+      // Quadrature points
+      const Eigen::Matrix quadpts(qr_quad_.Points());
+      // Quadrature weights
+      const Eigen::VectorXd quadw(qr_quad_.Weights());
+      // Obtain the metric factors for the quadrature points
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
+      // Fetch the transformation matrices for the gradients
+      const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(quadpts));
+      // Compute the coefficients at quadrature points
+      std::vector<diff_coeff_t> alphavals{};
+      std::vector<reac_coeff_t> gammavals{};
+      for (int i = 0; i < Nqp_quad_; ++i) {
+        alphavals.push_back(alpha_(quadpts.col(i)));
+        gammavals.push_back(gamma_(quadpts.col(i)));
+      }
 
-            // Element matrix
-      Eigen::MatrixXd mat(Nrsf_tria_, Nrsf_tria_);
+      // Element matrix
+      Eigen::MatrixXd mat(Nrsf_quad_, Nrsf_quad_);
       mat.setZero();
 
+      // Loop over quadrature points
+      for (int k = 0; k < Nqp_quad_; ++k) {
+        const double w = quadw[k] * determinants[k];
+        // Transformed gradients
+        const auto trf_grad(JinvT.block(0, 2 * k, 2, 2) *
+                            grad_quadpoint_quad_[k]);
+        // Transformed gradients multiplied with coefficient
+        const auto alpha_trf_grad(alphavals[k] * trf_grad);
+        mat += w * (alpha_trf_grad.transpose() * trf_grad +
+                    (gammavals[k] * rsf_quadpoints_quad_.col(k)) *
+                        (rsf_quadpoints_quad_.col(k).transpose()));
+      }
       return mat;
       break;
     }
     default: { LF_ASSERT_MSG(false, "Illegal cell type"); }
   }  // end switch
+  return Eigen::MatrixXd(0,0);
 }
 }  // namespace lf::fe
 
