@@ -131,7 +131,7 @@ class ScalarReferenceFiniteElement {
    *         specified sub-entity.
    */
   virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t subidx) const = 0;
+                                         sub_idx_t subidx = 0) const = 0;
 
   /**
    * @brief Evaluation of _all_ reference shape functions in a number of points
@@ -220,22 +220,20 @@ class ScalarReferenceFiniteElement {
  * Refer to its documentation.
  */
 template <typename SCALAR>
-class TriaLinearLagrangeFE : public ScalarReferenceFiniteElement<SCALAR> {
- private:
+class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
   TriaLinearLagrangeFE(const TriaLinearLagrangeFE&) = default;
   TriaLinearLagrangeFE(TriaLinearLagrangeFE&&) = default;
   TriaLinearLagrangeFE& operator=(const TriaLinearLagrangeFE&) = default;
   TriaLinearLagrangeFE& operator=(TriaLinearLagrangeFE&&) = default;
-
- public:
-  explicit TriaLinearLagrangeFE()
+  TriaLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kTria(), 1) {}
   virtual ~TriaLinearLagrangeFE() = default;
 
   virtual size_type NumRefShapeFunctions() const override { return 3; }
 
   virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t) const override {
+                                         sub_idx_t = 0) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
@@ -260,7 +258,7 @@ class TriaLinearLagrangeFE : public ScalarReferenceFiniteElement<SCALAR> {
     const size_type n_pts(refcoords.cols());
 
     std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ret{
-        (Eigen::Vector2d::Constant(1.0).replicate(1, n_pts)),
+        (Eigen::Vector2d::Constant(-1.0).replicate(1, n_pts)),
         ((Eigen::Vector2d() << 1.0, 0.0).finished()).replicate(1, n_pts),
         ((Eigen::Vector2d() << 0.0, 1.0).finished()).replicate(1, n_pts)};
     return ret;
@@ -282,15 +280,13 @@ class TriaLinearLagrangeFE : public ScalarReferenceFiniteElement<SCALAR> {
  * Refer to its documentation.
  */
 template <typename SCALAR>
-class QuadLinearLagrangeFE : public ScalarReferenceFiniteElement<SCALAR> {
- private:
+class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
   QuadLinearLagrangeFE(const QuadLinearLagrangeFE&) = default;
   QuadLinearLagrangeFE(QuadLinearLagrangeFE&&) = default;
   QuadLinearLagrangeFE& operator=(const QuadLinearLagrangeFE&) = default;
   QuadLinearLagrangeFE& operator=(QuadLinearLagrangeFE&&) = default;
-
- public:
-  explicit QuadLinearLagrangeFE()
+  QuadLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kQuad(), 1) {}
   virtual ~QuadLinearLagrangeFE() = default;
 

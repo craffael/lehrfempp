@@ -16,10 +16,10 @@
 #include "loc_comp_ellbvp.h"
 
 namespace lf::fe {
-  // Implementation for LinearFELaplaceElementMatrix
-  unsigned int LinearFELaplaceElementMatrix::dbg_ctrl{0};
+// Implementation for LinearFELaplaceElementMatrix
+unsigned int LinearFELaplaceElementMatrix::dbg_ctrl{0};
 
-  inline Eigen::Matrix<double, 4, 2>
+inline Eigen::Matrix<double, 4, 2>
 LinearFELaplaceElementMatrix::DervRefShapFncts(const Eigen::Vector2d &xh) {
   // clang-format off
   return (Eigen::Matrix<double, 4, 2>(4, 2) <<
@@ -47,8 +47,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
   // Debugging output
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_geo,
-                    std::cout << ref_el << '(' << mesh_.Index(cell)
-                              << "), shape = \n"
+                    std::cout << ref_el << ", shape = \n"
                               << vertices << std::endl);
 
   // 4x4 dense matrix for returning result
@@ -170,8 +169,6 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   return elem_mat;
 }
 
-  // Implementation of LinearFELocalLoadVector
-  
+// Implementation of LinearFELocalLoadVector
 
-  
-} // end namespace lf::fe
+}  // end namespace lf::fe

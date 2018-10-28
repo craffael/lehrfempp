@@ -150,8 +150,8 @@ double L2ErrorLinearFEDirichletLaplacian(
       lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
       lf::mesh::hybrid2dp::Mesh::output_ctrl_ = tmp_mesh_ctrl);
   // Initialize objects for local computations
-  lf::fe::LinearFELaplaceElementMatrix loc_mat_laplace(*mesh_p);
-  lf::fe::LinearFELocalLoadVector loc_vec_sample(*mesh_p, f);
+  lf::fe::LinearFELaplaceElementMatrix loc_mat_laplace{};
+  lf::fe::LinearFELocalLoadVector<double,decltype(f)> loc_vec_sample(f);
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
@@ -364,7 +364,7 @@ int main(int argc, const char **argv) {
     lf::fe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
     // LinearFELaplaceElementMatrix::dbg_geo |
     // LinearFELaplaceElementMatrix::dbg_locmat;
-    lf::fe::LinearFELocalLoadVector<decltype(f)>::dbg_ctrl = 0;
+    lf::fe::LinearFELocalLoadVector<double,decltype(f)>::dbg_ctrl = 0;
     lf::assemble::DofHandler::output_ctrl_ = 6;
     dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
     // lf::assemble::ass_mat_dbg_ctrl = 255;
