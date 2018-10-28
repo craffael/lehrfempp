@@ -12,19 +12,11 @@
 using GeometryObjects =
     testing::Types<lf::geometry::TriaO1, lf::geometry::QuadO1>;
 
-static const Eigen::Matrix2d map_ = [] {
-  Eigen::Matrix2d tmp;
-  tmp << 1, 2, 3, 4;
-  return tmp;
-}();
-static const Eigen::Vector2d offset_ = [] {
-  Eigen::Vector2d tmp;
-  tmp << 1, 2;
-  return tmp;
-}();
+static const Eigen::Matrix2d map = (Eigen::Matrix2d() << 1, 2, 3, 4).finished();
+static const Eigen::Vector2d offset = (Eigen::Vector2d() << 1, 2).finished();
 
 static Eigen::Vector2d affineMap(const Eigen::Vector2d &x) {
-  return map_ * x + offset_;
+  return map * x + offset;
 }
 
 template <class T>
@@ -63,7 +55,7 @@ TYPED_TEST(GeometryTest, checkJacobian) {
   Eigen::MatrixXd jacobian = this->object_->Jacobian(*this->refElCoords_);
 
   for (int i = 0; i < this->refElCoords_->cols(); ++i) {
-    EXPECT_EQ(jacobian.block(0, i * 2, 2, 2), map_)
+    EXPECT_EQ(jacobian.block(0, i * 2, 2, 2), map)
         << "Jacobian incorrect at vertex " << i;
   }
 }
@@ -74,7 +66,7 @@ TYPED_TEST(GeometryTest, checkJacobianInverseGramian) {
 
   for (int i = 0; i < this->refElCoords_->cols(); ++i) {
     EXPECT_EQ(jacInvGram.block(0, i * 2, 2, 2),
-              map_ * (map_.transpose() * map_).inverse())
+              map * (map.transpose() * map).inverse())
         << "JacobianInverseGramian incorrect at vertex " << i;
   }
 }
@@ -85,7 +77,7 @@ TYPED_TEST(GeometryTest, checkIntegrationElement) {
 
   for (int i = 0; i < this->refElCoords_->cols(); ++i) {
     EXPECT_EQ(integrationElement(i),
-              std::sqrt((map_.transpose() * map_).determinant()))
+              std::sqrt((map.transpose() * map).determinant()))
         << "IntegrationElement incorrect at vertex " << i;
   }
 }
