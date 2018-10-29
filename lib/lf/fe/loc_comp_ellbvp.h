@@ -159,7 +159,6 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   const double area = lf::geometry::Volume(*geo_ptr);
 
   // Vector for returning element vector
-
   elem_vec_t elem_vec = elem_vec_t::Zero();
   // get function values in the vertices
   for (int k = 0; k < num_nodes; k++) {
@@ -203,6 +202,9 @@ class LagrangeFEEllBVPElementMatrix {
       REACTION_COEFF gamma);
   /**
    * @brief All cells are considered active in the default implementation
+   *
+   * This method is meant to be overloaded if assembly should be restricted to a
+   * subset of cells.
    */
   virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
   /*
@@ -293,7 +295,7 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::
   // We choose the order twice the polynomial degree of the finite element
   // space. This is slightly more than required for an admissible variational
   // crime.
-  lf::quad::quadOrder_t quad_order = 2 * poly_order;
+  lf::quad::quadOrder_t quad_order = 2 * poly_order; 
 
   {
     // Preprocessing for triangles
@@ -432,6 +434,8 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
       const Eigen::Matrix quadpts(qr_tria_.Points());
       // Quadrature weights
       const Eigen::VectorXd quadw(qr_tria_.Weights());
+      // Quadrature points in actual cell
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
       // Obtain the metric factors for the quadrature points
       const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
       // Fetch the transformation matrices for the gradients
@@ -440,12 +444,12 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
       std::vector<diff_coeff_t> alphavals{};
       std::vector<reac_coeff_t> gammavals{};
       for (int i = 0; i < Nqp_tria_; ++i) {
-        alphavals.push_back(alpha_(quadpts.col(i)));
-        gammavals.push_back(gamma_(quadpts.col(i)));
+        alphavals.push_back(alpha_(mapped_qpts.col(i)));
+        gammavals.push_back(gamma_(mapped_qpts.col(i)));
       }
 
       // Element matrix
-      Eigen::MatrixXd mat(Nrsf_tria_, Nrsf_tria_);
+      elem_mat_t mat(Nrsf_tria_, Nrsf_tria_);
       mat.setZero();
 
       // Loop over quadrature points
@@ -468,6 +472,8 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
       const Eigen::Matrix quadpts(qr_quad_.Points());
       // Quadrature weights
       const Eigen::VectorXd quadw(qr_quad_.Weights());
+      // Quadrature points in actual cell
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
       // Obtain the metric factors for the quadrature points
       const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
       // Fetch the transformation matrices for the gradients
@@ -476,12 +482,12 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
       std::vector<diff_coeff_t> alphavals{};
       std::vector<reac_coeff_t> gammavals{};
       for (int i = 0; i < Nqp_quad_; ++i) {
-        alphavals.push_back(alpha_(quadpts.col(i)));
-        gammavals.push_back(gamma_(quadpts.col(i)));
+        alphavals.push_back(alpha_(mapped_qpts.col(i)));
+        gammavals.push_back(gamma_(mapped_qpts.col(i)));
       }
 
       // Element matrix
-      Eigen::MatrixXd mat(Nrsf_quad_, Nrsf_quad_);
+      elem_mat_t mat(Nrsf_quad_, Nrsf_quad_);
       mat.setZero();
 
       // Loop over quadrature points
@@ -501,8 +507,251 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
     }
     default: { LF_ASSERT_MSG(false, "Illegal cell type"); }
   }  // end switch
-  return Eigen::MatrixXd(0,0);
+  return Eigen::MatrixXd(0, 0);
 }
+
+/**
+ * @brief Local computation of general element vector for scalar finite elements
+ *
+ * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam FUNCTOR object with an evaluation operator of signature
+ *         std::function<double(const Eigen::Vector2d &)>, which supplies
+ *         the source function
+ *
+ * Computation is based on a quadrature rules supplied by the LehrFEM++
+ * lf::quad::QuadRule module.
+ *
+ * This class complies with the requirements for the template parameter
+ * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ */
+template <typename SCALAR, typename FUNCTOR>
+class ScalarFELocalLoadVector {
+ public:
+  using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  using ElemVec = const elem_vec_t;
+
+  /** @brief Constructor performs precomputations
+   *
+   */
+  ScalarFELocalLoadVector(const ScalarReferenceFiniteElement<SCALAR> &fe_tria,
+                          const ScalarReferenceFiniteElement<SCALAR> &fe_quad,
+                          FUNCTOR f);
+  /** @brief Default implement: all cells are active */
+  virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
+  /*
+   * @brief Main method for computing the element vector
+   *
+   * @param cell current cell for which the element vector is desired
+   *
+   *
+   */
+  ElemVec Eval(const lf::mesh::Entity &cell);
+
+ private:
+  /** An object providing the source function */
+  FUNCTOR f_;
+  /**
+   * @brief references to finite elements
+   */
+  const ScalarReferenceFiniteElement<double> &fe_tria_, &fe_quad_;
+  /**
+   * @brief Numbers of local shape functions
+   */
+  size_type Nrsf_tria_, Nrsf_quad_;
+  /**
+   * @brief Numbers of quadrature points
+   */
+  size_type Nqp_tria_, Nqp_quad_;
+  /**
+   * @brief quadrature rules for both admissible types of cells
+   */
+  lf::quad::QuadRule qr_tria_, qr_quad_;
+  /**
+   * @brief Matrix of values of all reference shape functions at all quadrature
+   * points
+   *
+   * The rows correspond to the RSFs, the columns to the quadrature points
+   */
+  Eigen::MatrixXd rsf_quadpoints_tria_, rsf_quadpoints_quad_;
+
+ public:
+  /*
+   * @brief static variable for controlling (debugging) output
+   */
+  static unsigned int ctrl_;
+  static const unsigned int kout_qr = 1;
+  static const unsigned int kout_rsfvals = 2;
+  static const unsigned int kout_gradvals = 4;
+  static const unsigned int kout_cell = 8;
+  static const unsigned int kout_locvec = 16;
+};
+
+template <typename SCALAR, typename FUNCTOR>
+unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
+
+template <typename SCALAR, typename FUNCTOR>
+ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
+    const ScalarReferenceFiniteElement<SCALAR> &fe_tria,
+    const ScalarReferenceFiniteElement<SCALAR> &fe_quad, FUNCTOR f)
+    : f_(f), fe_tria_(fe_tria), fe_quad_(fe_quad) {
+  LF_ASSERT_MSG((fe_tria_.Dimension() == 2) && (fe_quad_.Dimension() == 2),
+                "Implemented only in 2D!");
+  LF_ASSERT_MSG((fe_tria_.RefEl() == lf::base::RefEl::kTria()) ||
+                    (fe_quad_.RefEl() == lf::base::RefEl::kQuad()),
+                "Unexpected type of reference cell");
+  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2) == 1) &&
+                    (fe_quad_.NumRefShapeFunctions(2) == 1),
+                "Exactly one shape function must be assigned to each vertex");
+  LF_ASSERT_MSG(
+      (fe_tria_.NumRefShapeFunctions(1) == fe_quad_.NumRefShapeFunctions(1)),
+      "#RSF mismatch on edges " << fe_tria_.NumRefShapeFunctions(1) << " <-> "
+                                << fe_quad_.NumRefShapeFunctions(1));
+  // Maximal order of both finite elements
+  const unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
+
+  // Obtain quadrature rules for both triangles and quadrilaterals
+  // We choose the order twice the polynomial degree of the finite element
+  // space. This is slightly more than required for an admissible variational
+  // crime.
+  lf::quad::quadOrder_t quad_order = 2 * poly_order /* + 3*/;
+
+  {
+    // Preprocessing for triangles
+    Nrsf_tria_ = fe_tria_.NumRefShapeFunctions();
+
+    // Fetch suitable predefined quadrature rule
+    qr_tria_ = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quad_order);
+    Nqp_tria_ = qr_tria_.NumPoints();
+    SWITCHEDSTATEMENT(ctrl_, kout_qr,
+                      std::cout << "LagrEM(Tria): " << qr_tria_ << std::endl);
+
+    // Obtain value of reference shape functions in all quadrature points
+    const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
+        fe_tria_.EvalReferenceShapeFunctions(qr_tria_.Points())};
+    LF_ASSERT_MSG(Nrsf_tria_ == rsf_val.size(),
+                  "Mismatch in length of value vector " << Nrsf_tria_ << " <-> "
+                                                        << rsf_val.size());
+    // Store the values for reuse for all cells
+    rsf_quadpoints_tria_.resize(Nrsf_tria_, Nqp_tria_);
+
+    for (int i = 0; i < Nrsf_tria_; ++i) {
+      LF_ASSERT_MSG(
+          (rsf_val[i].cols() == Nqp_tria_),
+          "Length mismatch " << rsf_val[i].cols() << " <-> " << Nqp_tria_);
+      for (int j = 0; j < Nqp_tria_; ++j) {
+        rsf_quadpoints_tria_(i, j) = rsf_val[i][j];
+      }
+    }
+    SWITCHEDSTATEMENT(ctrl_, kout_rsfvals,
+                      std::cout << "LagrEM(Tria): values of RSFs\n"
+                                << rsf_quadpoints_tria_ << std::endl);
+  }  // end preprocessing for triangles
+
+  {
+    // Preprocessing for quadrilaterals
+    Nrsf_quad_ = fe_quad_.NumRefShapeFunctions();
+
+    // Fetch suitable predefined quadrature rule
+    qr_quad_ = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), quad_order);
+    Nqp_quad_ = qr_quad_.NumPoints();
+    SWITCHEDSTATEMENT(ctrl_, kout_qr,
+                      std::cout << "LagrEM(Quad): " << qr_quad_ << std::endl);
+
+    // Obtain value of reference shape functions in all quadrature points
+    const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
+        fe_quad_.EvalReferenceShapeFunctions(qr_quad_.Points())};
+    LF_ASSERT_MSG(Nrsf_quad_ == rsf_val.size(),
+                  "Mismatch in length of value vector " << Nrsf_quad_ << " <-> "
+                                                        << rsf_val.size());
+    // Store the values for reuse for all cells
+    rsf_quadpoints_quad_.resize(Nrsf_quad_, Nqp_quad_);
+
+    for (int i = 0; i < Nrsf_quad_; ++i) {
+      LF_ASSERT_MSG(
+          (rsf_val[i].cols() == Nqp_quad_),
+          "Length mismatch " << rsf_val[i].cols() << " <-> " << Nqp_quad_);
+      for (int j = 0; j < Nqp_quad_; ++j) {
+        rsf_quadpoints_quad_(i, j) = rsf_val[i][j];
+      }
+    }
+    SWITCHEDSTATEMENT(ctrl_, kout_rsfvals,
+                      std::cout << "LagrEM(Quad): values of RSFs\n"
+                                << rsf_quadpoints_quad_ << std::endl);
+  }  // end preprocessing for quadrilaterals
+}
+
+template <typename SCALAR, typename FUNCTOR>
+typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec
+ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
+  // Type for source function
+  using source_fn_t = decltype(f_(Eigen::Vector2d::Zero()));
+  // Topological type of the cell
+  const lf::base::RefEl ref_el{cell.RefEl()};
+  // Query the shape of the cell
+  const lf::geometry::Geometry *geo_ptr = cell.Geometry();
+  LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
+  LF_ASSERT_MSG((geo_ptr->DimGlobal() == 2) && (geo_ptr->DimLocal() == 2),
+                "Only 2D implementation available!");
+  SWITCHEDSTATEMENT(ctrl_, kout_cell,
+                    std::cout << ref_el << ", shape = \n"
+                              << geo_ptr->Global(ref_el.NodeCoords())
+                              << std::endl);
+
+  // Computations differ depending on the type of the cell
+  switch (ref_el) {
+    case lf::base::RefEl::kTria(): {
+      // Quadrature points
+      const Eigen::Matrix quadpts(qr_tria_.Points());
+      // Quadrature weights
+      const Eigen::VectorXd quadw(qr_tria_.Weights());
+      // Quadrature points in actual cell
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+      // Obtain the metric factors for the quadrature points
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
+
+      // Element vector
+      elem_vec_t vec(Nrsf_tria_);
+      vec.setZero();
+
+      // Loop over quadrature points
+      for (int k = 0; k < Nqp_tria_; ++k) {
+        // Source function value at quadrature point
+        const auto fval = f_(mapped_qpts.col(k));
+        // Contribution of current quadrature point
+        vec += (quadw[k] * determinants[k] * fval) * rsf_quadpoints_tria_.col(k);
+      }
+      return vec;
+      break;
+    }
+    case lf::base::RefEl::kQuad(): {
+      // Quadrature points
+      const Eigen::Matrix quadpts(qr_quad_.Points());
+      // Quadrature weights
+      const Eigen::VectorXd quadw(qr_quad_.Weights());
+      // Quadrature points in actual cell
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+      // Obtain the metric factors for the quadrature points
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
+
+      // Element vector
+      elem_vec_t vec(Nrsf_quad_);
+      vec.setZero();
+
+      // Loop over quadrature points
+      for (int k = 0; k < Nqp_quad_; ++k) {
+        // Source function value at quadrature point
+        const auto fval = f_(mapped_qpts.col(k));
+        // Contribution of current quadrature point
+        vec += (quadw[k] * determinants[k] * fval) * rsf_quadpoints_quad_.col(k);
+      }
+      return vec;
+      break;
+    }
+    default: { LF_ASSERT_MSG(false, "Illegal cell type"); }
+  }  // end switch
+  return Eigen::VectorXd(0);
+}
+
 }  // namespace lf::fe
 
 #endif

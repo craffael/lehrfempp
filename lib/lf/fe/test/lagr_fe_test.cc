@@ -67,6 +67,28 @@ TEST(lf_fe, lf_fe_linfe) {
   }
 }
 
+TEST(lf_fe, lf_fe_segment) {
+  // Three points in unit interval
+  Eigen::MatrixXd refcoords{
+      (Eigen::MatrixXd(1, 3) << 0.3, 0.1, 0.7).finished()};
+  std::cout << "Points in reference cell\n" << refcoords << std::endl;
+
+  SegmentLinearLagrangeFE<double> slfe{};
+  EXPECT_EQ(slfe.NumRefShapeFunctions(), 2);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(0), 0);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(1), 1);
+
+  auto rsf_vals = slfe.EvalReferenceShapeFunctions(refcoords);
+  for (const auto &v : rsf_vals) {
+    std::cout << "Segment: RSF values: " << v << std::endl;
+  }
+  for (const auto &v : slfe.GradientsReferenceShapeFunctions(refcoords)) {
+    std::cout << "Segment: RSF gradients:\n " << v << std::endl;
+  }
+  std::cout << "Segment: Evaluation nodes\n"
+            << slfe.EvaluationNodes() << std::endl;
+}
+
 TEST(lf_fe, lf_fe_ellbvp) {
   std::cout << "### TEST: Computation of element matrices" << std::endl;
   // Building the test mesh
@@ -81,21 +103,66 @@ TEST(lf_fe, lf_fe_ellbvp) {
   auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
   using loc_comp_t =
       LagrangeFEEllBVPElementMatrix<decltype(alpha), decltype(gamma)>;
-  loc_comp_t::ctrl_ = 255;
-  lf::quad::QuadRule::out_ctrl_ = 1;
+  // Set debugging flags
+  // loc_comp_t::ctrl_ = 255;
+  // lf::quad::QuadRule::out_ctrl_ = 1;
 
   loc_comp_t comp_elem_mat(tlfe, qlfe, alpha, gamma);
 
   // For comparison
   LinearFELaplaceElementMatrix lfe_elem_mat{};
-  
+
   // Loop over cells and compute element matrices;
   for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+    const lf::base::size_type n(cell.RefEl().NumNodes());
     std::cout << "CELL " << cell << ":" << std::endl;
-    std::cout << "Element matrix from LinearFELaplaceElementMatrix:" << std::endl;
-    std::cout << lfe_elem_mat.Eval(cell) << std::endl;
-    std::cout << "Element matrix from LagrangeFEEllBVPElementMatrix:" << std::endl;
-    std::cout << comp_elem_mat.Eval(cell) << std::endl;
+    std::cout << "Element matrix from LinearFELaplaceElementMatrix:"
+              << std::endl;
+    LinearFELaplaceElementMatrix::ElemMat lfe_mat{lfe_elem_mat.Eval(cell)};
+    std::cout << lfe_mat << std::endl;
+    std::cout << "Element matrix from LagrangeFEEllBVPElementMatrix:"
+              << std::endl;
+    loc_comp_t::ElemMat quad_mat{comp_elem_mat.Eval(cell)};
+    std::cout << quad_mat << std::endl;
+    EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
+  }
+}
+
+TEST(lf_fe, lf_fe_loadvec) {
+  std::cout << "### TEST: Computation of element vectors" << std::endl;
+  // Building the test mesh: a purely triangular mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+
+  // Set up finite elements
+  TriaLinearLagrangeFE<double> tlfe{};
+  QuadLinearLagrangeFE<double> qlfe{};
+
+  // Set up objects taking care of local computations
+  auto f = [](Eigen::Vector2d x) -> double { return (2*x[0] + x[1]); };
+  using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
+
+  // Set debugging flags
+  loc_comp_t::ctrl_ = 255;
+  lf::quad::QuadRule::out_ctrl_ = 1;
+
+  // Instantiate object for local computations
+  loc_comp_t comp_elem_vec(tlfe, qlfe, f);
+
+  // For comparison
+  LinearFELocalLoadVector<double,decltype(f)> lfe_elem_vec(f);
+
+  // Loop over cells and compute element matrices;
+  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+    const lf::base::size_type n(cell.RefEl().NumNodes());
+    std::cout << "CELL " << cell << ":" << std::endl;
+    std::cout << "Element vector from LinearFELaplaceElementMatrix:"
+              << std::endl;
+    LinearFELocalLoadVector<double,decltype(f)>::ElemVec lfe_vec{lfe_elem_vec.Eval(cell)};
+    std::cout << lfe_vec << std::endl;
+    std::cout << "Element vector from ScalarFELocalLoadVector:" << std::endl;
+    loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};
+    std::cout << quad_vec << std::endl;
+    EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
   }
 }
 
