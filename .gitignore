@@ -47,4 +47,5 @@ doc/doxygen/html
 Build/
 build/
 .idea/
+venv/
 

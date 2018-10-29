@@ -15,6 +15,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
+#include "lf/io/io.h"
 #include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
@@ -150,6 +151,9 @@ int main(int argc, char **argv) {
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
             TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
             TikzOutputCtrl::EdgeNumbering);
+
+    lf::io::writeMatplotlib(*mesh_fine, std::string("refinement_mesh") +
+                                            std::to_string(step) + ".csv");
 
     if (pointwise) {
       CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
