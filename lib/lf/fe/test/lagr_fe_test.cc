@@ -142,8 +142,9 @@ TEST(lf_fe, lf_fe_loadvec) {
   using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
 
   // Set debugging flags
-  loc_comp_t::ctrl_ = 255;
-  lf::quad::QuadRule::out_ctrl_ = 1;
+  loc_comp_t::ctrl_ = 0; //255;
+  lf::quad::QuadRule::out_ctrl_ = 0; // 1;
+  LinearFELocalLoadVector<double,decltype(f)>::dbg_ctrl = 0; // 3;
 
   // Instantiate object for local computations
   loc_comp_t comp_elem_vec(tlfe, qlfe, f);
@@ -158,10 +159,10 @@ TEST(lf_fe, lf_fe_loadvec) {
     std::cout << "Element vector from LinearFELaplaceElementMatrix:"
               << std::endl;
     LinearFELocalLoadVector<double,decltype(f)>::ElemVec lfe_vec{lfe_elem_vec.Eval(cell)};
-    std::cout << lfe_vec << std::endl;
+    std::cout << "[ " << lfe_vec.transpose() << "] " << std::endl;
     std::cout << "Element vector from ScalarFELocalLoadVector:" << std::endl;
     loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};
-    std::cout << quad_vec << std::endl;
+    std::cout << "[ " << quad_vec.transpose() << "] " << std::endl;
     EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
   }
 }

@@ -20,6 +20,7 @@ namespace lf::mesh::test_utils {
  * @brief Generates a simple 2D hybrid test mesh
  *
  * @param selector integer parameter for the selection of test meshes
+ * @param scale factor for scaling all the coordinates in the meshes
  *
  * The following line of code provides a pointer to the test mesh:
  * ~~~
@@ -37,7 +38,8 @@ namespace lf::mesh::test_utils {
  * @image html testmesh3.png
  * This is a purely triangular mesh
  */
-std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0);
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
+                                                         double scale = 1.0);
 
 }  // namespace lf::mesh::test_utils
 

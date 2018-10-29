@@ -151,24 +151,53 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   LF_ASSERT_MSG((geo_ptr->DimGlobal() == 2) && (geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
   const Eigen::MatrixXd &ref_el_corners(ref_el.NodeCoords());
-  const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
+  // World coordinates of vertices
+  // const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
   // Debugging output
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_geo,
                     std::cout << ref_el << ", shape = \n"
-                              << vertices << std::endl);
+                              << (geo_ptr->Global(ref_el_corners))
+                              << std::endl);
+  // Midpoints of edges in the reference cell
+  Eigen::MatrixXd ref_mp(2, 4);
+  switch (ref_el) {
+    case lf::base::RefEl::kTria(): {
+      // clang-format off
+      ref_mp << 0.5,0.5,0.0,-1.0,
+                0.0,0.5,0.5,-1.0;
+      // clang-format on
+      break;
+    }
+    case lf::base::RefEl::kQuad(): {
+      // clang-format off
+      ref_mp << 0.5,1,0.5,0.0,
+                0.0,0.5,1.0,0.5;
+    // clang format on
+    break; 
+  }
+  default: {
+    LF_ASSERT_MSG(false,"Illegal entity type!");
+    break;
+  }
+  } //end switch
+  // Midpoints of edges in world coordinates
+  const Eigen::MatrixXd mp(geo_ptr->Global(ref_mp));
+  
   const double area = lf::geometry::Volume(*geo_ptr);
 
   // Vector for returning element vector
   elem_vec_t elem_vec = elem_vec_t::Zero();
-  // get function values in the vertices
+  // Run over the midpoints of edges and fetch values of the source function there
   for (int k = 0; k < num_nodes; k++) {
-    elem_vec[k] = area * f_(vertices.col(k)) / num_nodes;
+    const auto fval_half = 0.5*f_(mp.col(k));
+    elem_vec[k] += fval_half;
+    elem_vec[(k+1)%num_nodes] += fval_half;
   }
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_locvec,
       std::cout << "element vector = " << elem_vec.head(num_nodes).transpose()
                 << std::endl);
-  return elem_vec;
+  return (area/num_nodes)*elem_vec;
 }
 
 /**
@@ -295,7 +324,7 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::
   // We choose the order twice the polynomial degree of the finite element
   // space. This is slightly more than required for an admissible variational
   // crime.
-  lf::quad::quadOrder_t quad_order = 2 * poly_order; 
+  lf::quad::quadOrder_t quad_order = 2 * poly_order;
 
   {
     // Preprocessing for triangles
@@ -430,61 +459,44 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
   // Computations differ depending on the type of the cell
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
-      // Quadrature points
-      const Eigen::Matrix quadpts(qr_tria_.Points());
-      // Quadrature weights
-      const Eigen::VectorXd quadw(qr_tria_.Weights());
       // Quadrature points in actual cell
-      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_tria_.Points()));
       // Obtain the metric factors for the quadrature points
-      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_tria_.Points()));
       // Fetch the transformation matrices for the gradients
-      const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(quadpts));
-      // Compute the coefficients at quadrature points
-      std::vector<diff_coeff_t> alphavals{};
-      std::vector<reac_coeff_t> gammavals{};
-      for (int i = 0; i < Nqp_tria_; ++i) {
-        alphavals.push_back(alpha_(mapped_qpts.col(i)));
-        gammavals.push_back(gamma_(mapped_qpts.col(i)));
-      }
-
+      const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(qr_tria_.Points()));
+      
       // Element matrix
       elem_mat_t mat(Nrsf_tria_, Nrsf_tria_);
       mat.setZero();
 
       // Loop over quadrature points
       for (int k = 0; k < Nqp_tria_; ++k) {
-        const double w = quadw[k] * determinants[k];
+	// Evaluate diffusion and reaction coefficient
+	// at quadrature points in actual cell
+	const auto alphaval = alpha_(mapped_qpts.col(k));
+	const auto gammaval = gamma_(mapped_qpts.col(k));
+	
+        const double w = qr_tria_.Weights()[k] * determinants[k];
         // Transformed gradients
         const auto trf_grad(JinvT.block(0, 2 * k, 2, 2) *
                             grad_quadpoint_tria_[k]);
         // Transformed gradients multiplied with coefficient
-        const auto alpha_trf_grad(alphavals[k] * trf_grad);
+        const auto alpha_trf_grad(alphaval * trf_grad);
         mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                    (gammavals[k] * rsf_quadpoints_tria_.col(k)) *
+                    (gammaval * rsf_quadpoints_tria_.col(k)) *
                         (rsf_quadpoints_tria_.col(k).transpose()));
       }
       return mat;
       break;
     }
     case lf::base::RefEl::kQuad(): {
-      // Quadrature points
-      const Eigen::Matrix quadpts(qr_quad_.Points());
-      // Quadrature weights
-      const Eigen::VectorXd quadw(qr_quad_.Weights());
       // Quadrature points in actual cell
-      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_quad_.Points()));
       // Obtain the metric factors for the quadrature points
-      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_quad_.Points()));
       // Fetch the transformation matrices for the gradients
-      const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(quadpts));
-      // Compute the coefficients at quadrature points
-      std::vector<diff_coeff_t> alphavals{};
-      std::vector<reac_coeff_t> gammavals{};
-      for (int i = 0; i < Nqp_quad_; ++i) {
-        alphavals.push_back(alpha_(mapped_qpts.col(i)));
-        gammavals.push_back(gamma_(mapped_qpts.col(i)));
-      }
+      const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(qr_quad_.Points()));
 
       // Element matrix
       elem_mat_t mat(Nrsf_quad_, Nrsf_quad_);
@@ -492,14 +504,19 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::Eval(
 
       // Loop over quadrature points
       for (int k = 0; k < Nqp_quad_; ++k) {
-        const double w = quadw[k] * determinants[k];
+ 	// Evaluate diffusion and reaction coefficient
+	// at quadrature points in actual cell
+	const auto alphaval{alpha_(mapped_qpts.col(k))};
+	const auto gammaval{gamma_(mapped_qpts.col(k))};
+
+	const double w = qr_quad_.Weights()[k] * determinants[k];
         // Transformed gradients
         const auto trf_grad(JinvT.block(0, 2 * k, 2, 2) *
                             grad_quadpoint_quad_[k]);
         // Transformed gradients multiplied with coefficient
-        const auto alpha_trf_grad(alphavals[k] * trf_grad);
+        const auto alpha_trf_grad(alphaval * trf_grad);
         mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                    (gammavals[k] * rsf_quadpoints_quad_.col(k)) *
+                    (gammaval * rsf_quadpoints_quad_.col(k)) *
                         (rsf_quadpoints_quad_.col(k).transpose()));
       }
       return mat;
@@ -584,6 +601,9 @@ class ScalarFELocalLoadVector {
   static const unsigned int kout_gradvals = 4;
   static const unsigned int kout_cell = 8;
   static const unsigned int kout_locvec = 16;
+  static const unsigned int kout_dets = 32;
+  static const unsigned int kout_loop = 64;
+  static const unsigned int kout_qpts = 128;
 };
 
 template <typename SCALAR, typename FUNCTOR>
@@ -700,15 +720,16 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   // Computations differ depending on the type of the cell
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
-      // Quadrature points
-      const Eigen::Matrix quadpts(qr_tria_.Points());
-      // Quadrature weights
-      const Eigen::VectorXd quadw(qr_tria_.Weights());
-      // Quadrature points in actual cell
-      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+      // World coordinates of quadrature points 
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_tria_.Points()));
+      SWITCHEDSTATEMENT(ctrl_, kout_qpts,
+                        std::cout << "LOCVEC(Tria): Mapped quadrature points:\n"
+                                  << mapped_qpts << std::endl);
       // Obtain the metric factors for the quadrature points
-      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
-
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_tria_.Points()));
+      SWITCHEDSTATEMENT(ctrl_, kout_dets,
+                        std::cout << "LOCVEC(Tria): Metric factors:\n"
+                                  << determinants.transpose() << std::endl);
       // Element vector
       elem_vec_t vec(Nrsf_tria_);
       vec.setZero();
@@ -717,22 +738,33 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
       for (int k = 0; k < Nqp_tria_; ++k) {
         // Source function value at quadrature point
         const auto fval = f_(mapped_qpts.col(k));
+        SWITCHEDSTATEMENT(
+            ctrl_, kout_loop,
+            std::cout << "LOCVEC(Tria): ["
+                      << qr_tria_.Points().col(k).transpose() << "] -> ["
+                      << mapped_qpts.col(k).transpose() << "], f = " << fval
+                      << ", weight = " << qr_tria_.Weights()[k] << std::endl);
         // Contribution of current quadrature point
-        vec += (quadw[k] * determinants[k] * fval) * rsf_quadpoints_tria_.col(k);
+        vec +=
+            (qr_tria_.Weights()[k] * determinants[k] * fval) * rsf_quadpoints_tria_.col(k);
       }
+      SWITCHEDSTATEMENT(ctrl_, kout_locvec,
+                        std::cout << "LOCVEC(Tria) = \n"
+                                  << vec.transpose() << std::endl);
       return vec;
       break;
     }
     case lf::base::RefEl::kQuad(): {
-      // Quadrature points
-      const Eigen::Matrix quadpts(qr_quad_.Points());
-      // Quadrature weights
-      const Eigen::VectorXd quadw(qr_quad_.Weights());
-      // Quadrature points in actual cell
-      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(quadpts));
+       // Quadrature points in world coordinates
+      const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_quad_.Points()));
+      SWITCHEDSTATEMENT(ctrl_, kout_qpts,
+                        std::cout << "LOCVEC(Quad): Mapped quadrature points:\n"
+                                  << mapped_qpts << std::endl);
       // Obtain the metric factors for the quadrature points
-      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(quadpts));
-
+      const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_quad_.Points()));
+      SWITCHEDSTATEMENT(ctrl_, kout_dets,
+                        std::cout << "LOCVEC(Quad): Metric factors:\n"
+                                  << determinants.transpose() << std::endl);
       // Element vector
       elem_vec_t vec(Nrsf_quad_);
       vec.setZero();
@@ -741,9 +773,19 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
       for (int k = 0; k < Nqp_quad_; ++k) {
         // Source function value at quadrature point
         const auto fval = f_(mapped_qpts.col(k));
+        SWITCHEDSTATEMENT(
+            ctrl_, kout_loop,
+            std::cout << "LOCVEC(Quad): ["
+                      << qr_quad_.Points().col(k).transpose() << "] -> ["
+                      << mapped_qpts.col(k).transpose() << "], f = " << fval
+                      << ", weight = " << qr_quad_.Weights()[k] << std::endl);
         // Contribution of current quadrature point
-        vec += (quadw[k] * determinants[k] * fval) * rsf_quadpoints_quad_.col(k);
+        vec +=
+            (qr_quad_.Weights()[k] * determinants[k] * fval) * rsf_quadpoints_quad_.col(k);
       }
+      SWITCHEDSTATEMENT(ctrl_, kout_locvec,
+                        std::cout << "LOCVEC(Quad) = \n"
+                                  << vec.transpose() << std::endl);
       return vec;
       break;
     }
