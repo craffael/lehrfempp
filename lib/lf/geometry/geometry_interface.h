@@ -85,10 +85,10 @@ class Geometry {
    *
    * ### Example for recovering a single transposed inverse Jacobian.
    *
-   * If both dimensions agree and have the value D, then the method 
-   * returns the transposed of the inverse Jacobians of the transformation at 
+   * If both dimensions agree and have the value D, then the method
+   * returns the transposed of the inverse Jacobians of the transformation at
    * the passed points. These are square DxD matrices.
-   * 
+   *
    * To retrieve the j-th inverse transposed Jacobian from the returned matrix,
    * use the `block` methdod of `Eigen`:
    * ~~~

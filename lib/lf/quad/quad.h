@@ -14,8 +14,6 @@
 /** @brief Rules for numerical quadrature on reference entity shapes
  *
  */
-namespace lf::quad {
-  
-}
+namespace lf::quad {}
 
 #endif  // __1f1e78e74a804e5490813ec6a9148231

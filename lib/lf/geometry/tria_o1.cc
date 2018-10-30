@@ -23,7 +23,8 @@ bool assertNonDegenerateTriangle(
       double area = std::fabs(
           ((coords(0, 1) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
            (coords(1, 1) - coords(1, 0)) * (coords(0, 2) - coords(0, 0))));
-      LF_VERIFY_MSG(area > tol * circum, "Degenerate 2D triangle, geo = " << coords);
+      LF_VERIFY_MSG(area > tol * circum,
+                    "Degenerate 2D triangle, geo = " << coords);
       return true;
       break;
     }

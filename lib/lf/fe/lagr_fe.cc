@@ -14,6 +14,4 @@
 
 #include "lagr_fe.h"
 
-namespace lf::fe {
-
-}  // namespace lf::fe
+namespace lf::fe {}  // namespace lf::fe

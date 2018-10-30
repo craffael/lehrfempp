@@ -53,10 +53,11 @@ class QuadRule {
         order_(0),
         points_(0, 0),
         weights_(0) {}
-  
+
   /**
    * @brief Construct a new quadrature rule by specifying reference element,
    * points, weights and order explicitly.
+   *
    * @param ref_el The reference element for which the quadrature rule is.
    * @param points The points of the quadrature rule, a matrix of size
    * `ref_el.Dimension() x num_points` that contains the points as column
@@ -129,18 +130,20 @@ class QuadRule {
    * If the lsb of out_ctrl_ is set also print weights and nodes, otherwise
    * just output the number of nodes.
    */
-  void PrintInfo(std::ostream &o) const {
+  void PrintInfo(std::ostream& o) const {
     o << weights_.size() << "-point QR";
     if ((out_ctrl_ & kout_ext) != 0) {
       o << ", weights = " << weights_.transpose() << ", nodes = \n" << points_;
     }
   }
+
  private:
   base::RefEl ref_el_;
   quadOrder_t order_;
   Eigen::MatrixXd points_;
   Eigen::VectorXd weights_;
-public:
+
+ public:
   /** @brief Output control variable */
   static int out_ctrl_;
   static const int kout_ext = 1;
@@ -155,8 +158,9 @@ public:
  * @sa QuadRule::PrintInfo()
  *
  */
-std::ostream& operator<<(std::ostream& stream, const lf::quad::QuadRule& quadrule);
-  
+std::ostream& operator<<(std::ostream& stream,
+                         const lf::quad::QuadRule& quadrule);
+
 }  // namespace lf::quad
 
 #endif  // __a7241ee797424d98ad339341b02bca70

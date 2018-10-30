@@ -10,7 +10,8 @@
 
 namespace lf::mesh::test_utils {
 
-  std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,double scale) {
+std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
+                                                         double scale) {
   using coord_t = Eigen::Vector2d;
   using size_type = lf::mesh::Mesh::size_type;
   using quad_coord_t = Eigen::Matrix<double, 2, 4>;
@@ -23,16 +24,16 @@ namespace lf::mesh::test_utils {
   switch (selector) {
     case 0: {
       // Setting point coordinate
-      mesh_factory_ptr->AddPoint(coord_t({1.5*scale,  2*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  1*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  1*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  0*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({1.5*scale,  0*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  0*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  2*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  3*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  3*scale}));
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  1*scale}));
+      mesh_factory_ptr->AddPoint(coord_t({1.5 * scale, 2 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 1 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 1 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 0 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({1.5 * scale, 0 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 0 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 2 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 3 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 3 * scale}));
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 1 * scale}));
 
       // Setting vertices of cells but not their geometry
       mesh_factory_ptr->AddEntity(
@@ -75,21 +76,21 @@ namespace lf::mesh::test_utils {
     }
     case 1: {
       // Set coordinates of nodes
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  0*scale}));  // 0
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  0*scale}));  // 1
-      mesh_factory_ptr->AddPoint(coord_t({4*scale,  0*scale}));  // 2
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  2*scale}));  // 3
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  3*scale}));  // 4
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  4*scale}));  // 5
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  4*scale}));  // 6
-      mesh_factory_ptr->AddPoint(coord_t({4*scale,  4*scale}));  // 7
-      mesh_factory_ptr->AddPoint(coord_t({4*scale,  2*scale}));  // 8
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  1*scale}));  // 9
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  1*scale}));  // 10
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  2*scale}));  // 11
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  3*scale}));  // 12
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  2*scale}));  // 13
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  2*scale}));  // 14
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 0 * scale}));  // 0
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 0 * scale}));  // 1
+      mesh_factory_ptr->AddPoint(coord_t({4 * scale, 0 * scale}));  // 2
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 2 * scale}));  // 3
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 3 * scale}));  // 4
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 4 * scale}));  // 5
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 4 * scale}));  // 6
+      mesh_factory_ptr->AddPoint(coord_t({4 * scale, 4 * scale}));  // 7
+      mesh_factory_ptr->AddPoint(coord_t({4 * scale, 2 * scale}));  // 8
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 1 * scale}));  // 9
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 1 * scale}));  // 10
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 2 * scale}));  // 11
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 3 * scale}));  // 12
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 2 * scale}));  // 13
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 2 * scale}));  // 14
 
       quad_coord_t quad_coord(2, 4);
       // First cell: a parallelogram
@@ -158,11 +159,11 @@ namespace lf::mesh::test_utils {
       break;
     }
     case 2: {
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  0*scale}));      // 0
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  0*scale}));      // 1
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  1*scale}));      // 2
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  1*scale}));      // 3
-      mesh_factory_ptr->AddPoint(coord_t({1.5*scale,  0.5*scale}));  // 4
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 0 * scale}));      // 0
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 0 * scale}));      // 1
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 1 * scale}));      // 2
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 1 * scale}));      // 3
+      mesh_factory_ptr->AddPoint(coord_t({1.5 * scale, 0.5 * scale}));  // 4
       quad_coord_t quad_coord(2, 4);
       // First cell: the unit square
       quad_coord << 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0;
@@ -180,19 +181,19 @@ namespace lf::mesh::test_utils {
     case 3: {
       // Triangular mesh
       // Set coordinates of nodes
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  0*scale}));    // 0
-      mesh_factory_ptr->AddPoint(coord_t({1.5*scale,  0*scale}));  // 1
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  0*scale}));    // 2
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  1*scale}));    // 3
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  1*scale}));    // 4
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  1*scale}));    // 5
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  1.5*scale}));  // 6
-      mesh_factory_ptr->AddPoint(coord_t({2*scale,  1.5*scale}));  // 7
-      mesh_factory_ptr->AddPoint(coord_t({1*scale,  2*scale}));    // 8
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  2*scale}));    // 9
-      mesh_factory_ptr->AddPoint(coord_t({0*scale,  3*scale}));    // 10
-      mesh_factory_ptr->AddPoint(coord_t({1.5*scale,  3*scale}));  // 11
-      mesh_factory_ptr->AddPoint(coord_t({3*scale,  3*scale}));    // 12
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 0 * scale}));    // 0
+      mesh_factory_ptr->AddPoint(coord_t({1.5 * scale, 0 * scale}));  // 1
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 0 * scale}));    // 2
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 1 * scale}));    // 3
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 1 * scale}));    // 4
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 1 * scale}));    // 5
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 1.5 * scale}));  // 6
+      mesh_factory_ptr->AddPoint(coord_t({2 * scale, 1.5 * scale}));  // 7
+      mesh_factory_ptr->AddPoint(coord_t({1 * scale, 2 * scale}));    // 8
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 2 * scale}));    // 9
+      mesh_factory_ptr->AddPoint(coord_t({0 * scale, 3 * scale}));    // 10
+      mesh_factory_ptr->AddPoint(coord_t({1.5 * scale, 3 * scale}));  // 11
+      mesh_factory_ptr->AddPoint(coord_t({3 * scale, 3 * scale}));    // 12
 
       // Setting vertices of triangular cells but not their geometry
       mesh_factory_ptr->AddEntity(
@@ -263,8 +264,8 @@ namespace lf::mesh::test_utils {
       hybrid2d::TPTriagMeshBuilder builder(mesh_factory_ptr);
       // Set mesh parameters following the Builder pattern
       // Domain is the unit square
-      builder.setBottomLeftCorner(Eigen::Vector2d{0*scale,  0*scale})
-          .setTopRightCorner(Eigen::Vector2d{1*scale,  1*scale})
+      builder.setBottomLeftCorner(Eigen::Vector2d{0 * scale, 0 * scale})
+          .setTopRightCorner(Eigen::Vector2d{1 * scale, 1 * scale})
           .setNoXCells(3)
           .setNoYCells(3);
       return builder.Build();
