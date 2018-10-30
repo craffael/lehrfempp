@@ -92,17 +92,20 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
-      std::remove_if(
-          A.triplets().begin(), A.triplets().end(),
-          [&fixed_comp_flags](
-              typename lf::assemble::COOMatrix<double>::Triplet &triplet) {
-            return (fixed_comp_flags[triplet.row()] ||
-                    fixed_comp_flags[triplet.col()]);
-          });
-  // Adjust size of triplet vector
-  A.triplets().erase(new_last, A.triplets().end());
-  // Add unit diagonal entries corrresponding to fixed components
+  A.setZero([&fixed_comp_flags](gdof_idx_t i, gdof_idx_t j) {
+    return (fixed_comp_flags[i] || fixed_comp_flags[j]);
+  });
+  // lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
+  //     std::remove_if(
+  //         A.triplets().begin(), A.triplets().end(),
+  //         [&fixed_comp_flags](
+  //             typename lf::assemble::COOMatrix<double>::Triplet &triplet) {
+  //           return (fixed_comp_flags[triplet.row()] ||
+  //                   fixed_comp_flags[triplet.col()]);
+  //         });
+  // // Adjust size of triplet vector
+  // A.triplets().erase(new_last, A.triplets().end());
+  // Add Unit diagonal entries corrresponding to fixed components
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     if (fixed_comp_flags[dofnum]) {
       A.AddToEntry(dofnum, dofnum, 1.0);
@@ -166,16 +169,19 @@ void fix_flagged_solution_comp_alt(std::vector<bool> &fixed_comp_flags,
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
-      std::remove_if(
-          A.triplets().begin(), A.triplets().end(),
-          [&fixed_comp_flags](
-              typename lf::assemble::COOMatrix<double>::Triplet &triplet) {
-            return (fixed_comp_flags[triplet.row()]);
-          });
-  // Adjust size of triplet vector
-  A.triplets().erase(new_last, A.triplets().end());
-  // Add unit diagonal entries corrresponding to fixed components
+  A.setZero([&fixed_comp_flags](gdof_idx_t i, gdof_idx_t j) {
+    return (fixed_comp_flags[i]);
+  });
+  // lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
+  //     std::remove_if(
+  //         A.triplets().begin(), A.triplets().end(),
+  //         [&fixed_comp_flags](
+  //             typename lf::assemble::COOMatrix<double>::Triplet &triplet) {
+  //           return (fixed_comp_flags[triplet.row()]);
+  //         });
+  // // Adjust size of triplet vector
+  // A.triplets().erase(new_last, A.triplets().end());
+  // Add Unit diagonal entries corrresponding to fixed components
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     if (fixed_comp_flags[dofnum]) {
       A.AddToEntry(dofnum, dofnum, 1.0);
@@ -228,7 +234,8 @@ void fix_solution_components_lse(
     fixed_vec[idx_val_pair.first] -= idx_val_pair.second;
     fixed_comp_flags[idx_val_pair.first] = true;
   }
-  // fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  // fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A,
+  // b);
   fix_flagged_solution_comp_alt<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
 }
 

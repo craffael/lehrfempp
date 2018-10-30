@@ -22,14 +22,14 @@ namespace lf::mesh::test_utils {
  * @param selector integer parameter for the selection of test meshes
  * @param scale factor for scaling all the coordinates in the meshes
  *
- * The following line of code provides a pointer to the test mesh:
+ * The following line of code provides a pointer to the default test mesh:
  * ~~~
  *   #include "lf/mesh/test_utils/test_meshes.h"
  *   ...
  *   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
  * ~~~
  *
- * - Test mesh selected with selector = 0:
+ * - Test mesh selected with selector = 0: domain \f$[0.3]^2\f$*scale
  * @image html testmesh.png
  * - Test mesh generated when selector = 1;
  * @image html testmesh1.png

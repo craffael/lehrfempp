@@ -86,8 +86,29 @@ class COOMatrix {
    */
   void setZero() { triplets_.clear(); }
   /**
+   * @brief Erase specific entries of the COO matrix, that is, set them to zero
+   * @tparam PREDICATE a predicate type compliant with
+   *                   std::function<bool(gdof_idx_t,gdof_idx_t)>
+   * @param pred selector predicate
+   *
+   * Removes all triplets `trp` for which `pred(trp.row(),trp.col())` is `true`.
+   * This amounts to setting the corresponding matrix entries to zero.
+   */
+  template <typename PREDICATE>
+  void setZero(PREDICATE &&pred) {
+    const typename TripletVec::iterator new_last = std::remove_if(
+        triplets_.begin(), triplets_.end(),
+        [pred](Triplet &trp) { return (pred(trp.row(), trp.col())); });
+    // Adjust size of triplet vector
+    triplets_.erase(new_last, triplets_.end());
+  }
+
+  /**
    * @brief Gives access to the vector of triplets
    * @return reference to internal vector of triplets
+   *
+   * Use of this method is deprecated. Use setZero(pred) and AddToEntry()
+   * instead.
    */
   TripletVec &triplets() { return triplets_; }
   const TripletVec &triplets() const { return triplets_; }
