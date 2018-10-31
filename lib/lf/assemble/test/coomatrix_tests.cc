@@ -56,12 +56,12 @@ TEST(lf_assembly, coomatrix_test) {
             << ",\nresult = " << exact.transpose() << std::endl;
 
   std::cout << "Matrix x Vector product M*(x+y):" << std::endl;
-  std::cout << (M.MatVecMult(x + y)).transpose() << std::endl;
-  Eigen::VectorXd diff1 = M.MatVecMult(x + y) - exact;
+  std::cout << (M.MatVecMult(1.0,x + y)).transpose() << std::endl;
+  Eigen::VectorXd diff1 = M.MatVecMult(1.0,x + y) - exact;
   EXPECT_DOUBLE_EQ(diff1.norm(), 0.0) << "diff1 = " << diff1.transpose();
-  EXPECT_DOUBLE_EQ((M.MatVecMult(x + y) - alt).norm(), 0.0)
+  EXPECT_DOUBLE_EQ((M.MatVecMult(1.0,x + y) - alt).norm(), 0.0)
       << "Mismatch with dense matrix arithmetic";
-  M.MatVecMult(x + y, result);
+  M.MatVecMult(1.0,x + y, result);
   std::cout << result.transpose() << std::endl;
   Eigen::VectorXd diff2 = result - exact;
   EXPECT_DOUBLE_EQ(diff2.norm(), 0.0) << "diff2 = " << diff2.transpose();

@@ -26,9 +26,9 @@ namespace lf::assemble {
  * @tparam SCALAR underlying scalar type, e.g. double
  * @tparam RHSVEC generic vector type for right hand side
  * @param fixed_comp_flags boolean vector whose length agrees with the matrix
- * dimension A value of `true` indicates that the corresponding solution
+ * dimension. A value of `true` indicates that the corresponding solution
  * component is prescribed
- * @param fixed_vec _negative_ prescribed values are stored in the corresponding
+ * @param fixed_vec prescribed values are stored in the corresponding
  * components of this vector
  * @param mat reference to the _square_ coefficient matrix in COO format
  * @param rhs reference to the right-hand-side vector
@@ -83,11 +83,11 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
 
   // Multiply sparse matrix with the vector of fixed components and subtract
   // result from right hand side
-  A.MatVecMult(fixed_vec, b);
+  A.MatVecMult(-1.0, fixed_vec, b);
   // Set vector components of right-hand-side vector for prescribed values
   for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
     if (fixed_comp_flags[k]) {
-      b[k] = -fixed_vec[k];
+      b[k] = fixed_vec[k];
     }
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
@@ -164,7 +164,7 @@ void fix_flagged_solution_comp_alt(std::vector<bool> &fixed_comp_flags,
   // Set vector components of right-hand-side vector for prescribed values
   for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
     if (fixed_comp_flags[k]) {
-      b[k] = -fixed_vec[k];  // negative values!
+      b[k] = fixed_vec[k];
     }
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
@@ -231,12 +231,11 @@ void fix_solution_components_lse(
        fixed_components) {
     LF_ASSERT_MSG(idx_val_pair.first < N,
                   "Index " << idx_val_pair.first << " >= N = " << N);
-    fixed_vec[idx_val_pair.first] -= idx_val_pair.second;
+    fixed_vec[idx_val_pair.first] += idx_val_pair.second;
     fixed_comp_flags[idx_val_pair.first] = true;
   }
-  // fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A,
-  // b);
-  fix_flagged_solution_comp_alt<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  // fix_flagged_solution_comp_alt<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
 }
 
 }  // namespace lf::assemble

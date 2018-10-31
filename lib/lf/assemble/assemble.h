@@ -13,6 +13,7 @@
 #include "assembly_types.h"
 #include "coomatrix.h"
 #include "dofhandler.h"
+#include "fix_dof.h"
 
 /** @brief Local assembly facilities
  *

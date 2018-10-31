@@ -67,13 +67,13 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
 
 /** @brief Eliminate degrees of freedom located on the boundary
  *
+ * No longer in use. Replaced with lf::assemble::fix_flagged_solution_components
  */
-void eliminateBoundaryDofs(const lf::assemble::DofHandler &dofh,
+void eliminateBoundaryDofs(std::vector<bool> &tmp_bd_flags,
                            lf::assemble::COOMatrix<double> &A) {
-  const lf::base::size_type N{dofh.NoDofs()};
+  const lf::base::size_type N = tmp_bd_flags.size();
   LF_ASSERT_MSG((A.cols() == N) && (A.rows() == N), "Matrix dimension mismath");
-  // Identify dof indices associated with the boundary
-  std::vector<bool> tmp_bd_flags{flagBoundaryDOFs(dofh)};
+
   // Remove rows associated with dofs on the boundary
   lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
       std::remove_if(
@@ -101,14 +101,13 @@ void eliminateBoundaryDofs(const lf::assemble::DofHandler &dofh,
  * vector
  *
  */
-void insertDirichletDataRHS(const lf::assemble::DofHandler &dofh,
+void insertDirichletDataRHS(std::vector<bool> &tmp_bd_flags,
                             Eigen::VectorXd &rhs,
                             const Eigen::VectorXd &dirichlet_values) {
-  const lf::base::size_type N{dofh.NoDofs()};
+  const lf::base::size_type N = tmp_bd_flags.size();
   LF_VERIFY_MSG((rhs.size() == N), "rhs vector size mismatch");
   LF_VERIFY_MSG((dirichlet_values.size() == N), "data vector size mismatch");
-  // Identify dof indices associated with the boundary
-  std::vector<bool> tmp_bd_flags{flagBoundaryDOFs(dofh)};
+
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     if (tmp_bd_flags[dofnum]) {
       // Shape function associated with the boundary
@@ -151,7 +150,7 @@ double L2ErrorLinearFEDirichletLaplacian(
       lf::mesh::hybrid2dp::Mesh::output_ctrl_ = tmp_mesh_ctrl);
   // Initialize objects for local computations
   lf::fe::LinearFELaplaceElementMatrix loc_mat_laplace{};
-  lf::fe::LinearFELocalLoadVector<double,decltype(f)> loc_vec_sample(f);
+  lf::fe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
@@ -194,7 +193,16 @@ double L2ErrorLinearFEDirichletLaplacian(
   }
 
   // modify linear system in order to take into account boundary data
-  eliminateBoundaryDofs(loc_glob_map, mat);
+  std::vector<bool> tmp_bd_flags{flagBoundaryDOFs(loc_glob_map)};
+  // >> Old version
+  // eliminateBoundaryDofs(tmp_bd_flags, mat);
+  // insertDirichletDataRHS(tmp_bd_flags, rhsvec, dirichlet_data);
+  // Identify dof indices associated with the boundary
+  // >>
+  // >> New version
+  lf::assemble::fix_flagged_solution_comp_alt<double>(
+      tmp_bd_flags, dirichlet_data, mat, rhsvec);
+  // >>
   // Debugging output
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
                     std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
@@ -202,7 +210,6 @@ double L2ErrorLinearFEDirichletLaplacian(
                               << " triplets:\n"
                               << mat.makeDense() << std::endl);
 
-  insertDirichletDataRHS(loc_glob_map, rhsvec, dirichlet_data);
   // Initialize sparse matrix
   Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
   // Solve linear system
@@ -364,7 +371,7 @@ int main(int argc, const char **argv) {
     lf::fe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
     // LinearFELaplaceElementMatrix::dbg_geo |
     // LinearFELaplaceElementMatrix::dbg_locmat;
-    lf::fe::LinearFELocalLoadVector<double,decltype(f)>::dbg_ctrl = 0;
+    lf::fe::LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;
     lf::assemble::DofHandler::output_ctrl_ = 6;
     dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
     // lf::assemble::ass_mat_dbg_ctrl = 255;

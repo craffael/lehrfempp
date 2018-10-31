@@ -42,7 +42,7 @@ class LinearFELaplaceElementMatrix {
   /**
    * @brief Idle constructor
    */
-  LinearFELaplaceElementMatrix() {}
+  LinearFELaplaceElementMatrix() = default;
   /**
    * @brief All cells are considered active in the default implementation
    */
@@ -108,7 +108,7 @@ class LinearFELocalLoadVector {
   using ElemVec = const elem_vec_t;
 
   /** @brief Constructor storing the right hand side function */
-  LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
+  explicit LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
   /*

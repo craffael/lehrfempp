@@ -40,6 +40,7 @@ class QuadRule {
   QuadRule(QuadRule&&) = default;
   QuadRule& operator=(const QuadRule&) = default;
   QuadRule& operator=(QuadRule&&) = default;
+  ~QuadRule() = default;
   /** @} */
   /**
    * @brief Default constructor creating an "invalid quadrature rule"
@@ -146,7 +147,7 @@ class QuadRule {
  public:
   /** @brief Output control variable */
   static int out_ctrl_;
-  static const int kout_ext = 1;
+  static const unsigned int kout_ext = 1;
 };
 
 /**

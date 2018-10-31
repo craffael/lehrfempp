@@ -124,13 +124,16 @@ class COOMatrix {
    * of the vector and `operator []` for read access to vector entries.
    */
   template <typename VECTOR>
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> MatVecMult(const VECTOR &vec) const;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> MatVecMult(SCALAR alpha,
+                                                      const VECTOR &vec) const;
 
   /**
    * @brief In-situ computes the product of a vector with the matrix in COO
    * format
    * @tparam VECTOR a basic vector type for the argument vector
    * @tparam RESULTVECTOR another vector type for returning the result
+   * @param alpha scalar with which to multiply the argument vector
+   *        before the matrix x vector multiplication.
    * @param vec constant reference to a vector of type VECTOR
    * @param result reference to an object of type RESULTVECTOR.
    *
@@ -143,7 +146,7 @@ class COOMatrix {
    * vector entries.
    */
   template <typename VECTOR, typename RESULTVECTOR>
-  void MatVecMult(const VECTOR &vec, RESULTVECTOR &resvec) const;
+  void MatVecMult(SCALAR alpha, const VECTOR &vec, RESULTVECTOR &resvec) const;
 
   /**
    * @brief Create an Eigen::SparseMatrix out of the COO format.
@@ -209,20 +212,20 @@ std::ostream &operator<<(std::ostream &o, const COOMatrix<SCALAR> &mat) {
 template <typename SCALAR>
 template <typename VECTOR>
 Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> COOMatrix<SCALAR>::MatVecMult(
-    const VECTOR &vec) const {
+    SCALAR alpha, const VECTOR &vec) const {
   LF_ASSERT_MSG(vec.size() >= cols_,
                 "size mismatch: " << cols_ << " <-> " << vec.size());
   Eigen::VectorXd result(rows_);
   result.setZero();
   for (const Triplet &trp : triplets_) {
-    result[trp.row()] += trp.value() * vec[trp.col()];
+    result[trp.row()] += trp.value() * (alpha * vec[trp.col()]);
   }
   return result;
 }
 
 template <typename SCALAR>
 template <typename VECTOR, typename RESULTVECTOR>
-void COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec,
+void COOMatrix<SCALAR>::MatVecMult(SCALAR alpha, const VECTOR &vec,
                                    RESULTVECTOR &result) const {
   LF_ASSERT_MSG(vec.size() >= cols_,
                 "Vector vec size mismatch: " << cols_ << " <-> " << vec.size());
@@ -230,7 +233,7 @@ void COOMatrix<SCALAR>::MatVecMult(const VECTOR &vec,
       result.size() >= rows_,
       "Vector result size mismatch: " << cols_ << " <-> " << result.size());
   for (const Triplet &trp : triplets_) {
-    result[trp.row()] += trp.value() * vec[trp.col()];
+    result[trp.row()] += trp.value() * (alpha * vec[trp.col()]);
   }
 }
 
