@@ -56,12 +56,12 @@ TEST(lf_assembly, coomatrix_test) {
             << ",\nresult = " << exact.transpose() << std::endl;
 
   std::cout << "Matrix x Vector product M*(x+y):" << std::endl;
-  std::cout << (M.MatVecMult(1.0,x + y)).transpose() << std::endl;
-  Eigen::VectorXd diff1 = M.MatVecMult(1.0,x + y) - exact;
+  std::cout << (M.MatVecMult(1.0, x + y)).transpose() << std::endl;
+  Eigen::VectorXd diff1 = M.MatVecMult(1.0, x + y) - exact;
   EXPECT_DOUBLE_EQ(diff1.norm(), 0.0) << "diff1 = " << diff1.transpose();
-  EXPECT_DOUBLE_EQ((M.MatVecMult(1.0,x + y) - alt).norm(), 0.0)
+  EXPECT_DOUBLE_EQ((M.MatVecMult(1.0, x + y) - alt).norm(), 0.0)
       << "Mismatch with dense matrix arithmetic";
-  M.MatVecMult(1.0,x + y, result);
+  M.MatVecMult(1.0, x + y, result);
   std::cout << result.transpose() << std::endl;
   Eigen::VectorXd diff2 = result - exact;
   EXPECT_DOUBLE_EQ(diff2.norm(), 0.0) << "diff2 = " << diff2.transpose();
@@ -120,7 +120,7 @@ TEST(lf_assembly, fix_dof_test) {
   EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
 }
 
-  TEST(lf_assembly, fix_dof_flags_alt) {
+TEST(lf_assembly, fix_dof_flags_alt) {
   std::cout << "Test for fixing solution components" << std::endl;
   // Size of matrix
   const int N = 10;
@@ -142,12 +142,16 @@ TEST(lf_assembly, fix_dof_test) {
   std::cout << "rhs = " << b.transpose() << std::endl;
 
   // pass fixed solution components and flags as vectors
-  std::vector<bool> flagvec(N,false);
-  flagvec[2] = true; flagvec[4] = true; flagvec[8] = true;
-  std::vector<double> valvec(N,1.0);
-  valvec[2] = -1.0; valvec[4] = -2.0; valvec[8] = -3.0;
-    
-  fix_flagged_solution_comp_alt<double>(flagvec,valvec,A,b);
+  std::vector<bool> flagvec(N, false);
+  flagvec[2] = true;
+  flagvec[4] = true;
+  flagvec[8] = true;
+  std::vector<double> valvec(N, 1.0);
+  valvec[2] = -1.0;
+  valvec[4] = -2.0;
+  valvec[8] = -3.0;
+
+  fix_flagged_solution_comp_alt<double>(flagvec, valvec, A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 
@@ -167,7 +171,7 @@ TEST(lf_assembly, fix_dof_test) {
   EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
 }
 
-  TEST(lf_assembly, fix_dof_flags) {
+TEST(lf_assembly, fix_dof_flags) {
   std::cout << "Test for fixing solution components" << std::endl;
   // Size of matrix
   const int N = 10;
@@ -189,12 +193,16 @@ TEST(lf_assembly, fix_dof_test) {
   std::cout << "rhs = " << b.transpose() << std::endl;
 
   // pass fixed solution components and flags as vectors
-  std::vector<bool> flagvec(N,false);
-  flagvec[2] = true; flagvec[4] = true; flagvec[8] = true;
-  std::vector<double> valvec(N,1.0);
-  valvec[2] = -1.0; valvec[4] = -2.0; valvec[8] = -3.0;
-    
-  fix_flagged_solution_components<double>(flagvec,valvec,A,b);
+  std::vector<bool> flagvec(N, false);
+  flagvec[2] = true;
+  flagvec[4] = true;
+  flagvec[8] = true;
+  std::vector<double> valvec(N, 1.0);
+  valvec[2] = -1.0;
+  valvec[4] = -2.0;
+  valvec[8] = -3.0;
+
+  fix_flagged_solution_components<double>(flagvec, valvec, A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 
@@ -213,5 +221,5 @@ TEST(lf_assembly, fix_dof_test) {
   exact << 1, 1, -1, 0.5, -2, 7.75, 11.5, 8.25, -3, 3.5;
   EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
 }
-  
+
 }  // namespace lf::assemble::test
