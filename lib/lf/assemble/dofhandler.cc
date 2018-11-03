@@ -127,7 +127,7 @@ void UniformFEDofHandler::initTotalNoDofs() {
 
 void UniformFEDofHandler::initIndexArrays() {
   // This method assumes a proper initialization
-  // of the data in no_loc_dof_* and no_dofs_, num_dof_trie, num_dofs_quad_
+  // of the data in no_loc_dof_* and no_dofs_, num_dof_tria, num_dofs_quad_
   gdof_idx_t dof_idx = 0;
 
   // Step I: Set indices for shape functions on nodes
@@ -135,11 +135,7 @@ void UniformFEDofHandler::initIndexArrays() {
   const size_type no_nodes = mesh_->Size(2);
   const size_type num_dofs_nodes = no_nodes * no_dofs_[kNodeOrd];
   dofs_[kNodeOrd].resize(num_dofs_nodes);
-  // Run through nodes
-  // Old implementation: in this case the ordering of the global
-  // shape function may not have anything to do with the
-  // node indices.
-  // for (const lf::mesh::Entity &node : mesh_->Entities(2)) {
+  // Run through nodes in the order given by their numbering
   for (glb_idx_t node_idx = 0; node_idx < no_nodes; node_idx++) {
     const mesh::Entity *node_p{mesh_->EntityByIndex(2, node_idx)};
     LF_ASSERT_MSG(mesh_->Index(*node_p) == node_idx, "Node index mismatch");

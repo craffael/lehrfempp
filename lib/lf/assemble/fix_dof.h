@@ -81,9 +81,20 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
       N == fixed_vec.size(),
       "Mismatch N = " << N << " <-> fixed_vec.size() = " << fixed_vec.size());
 
-  // Multiply sparse matrix with the vector of fixed components and subtract
-  // result from right hand side
-  A.MatVecMult(-1.0, fixed_vec, b);
+  {
+    // Multiply sparse matrix with the vector of fixed components and subtract
+    // result from right hand side
+    // To skip irrelevant components of fixed_vec rely on a temporary vector
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> tmp_vec(N);
+    for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
+      if (fixed_comp_flags[k]) {
+        tmp_vec[k] = fixed_vec[k];
+      } else {
+        tmp_vec[k] = SCALAR();
+      }
+    }
+    A.MatVecMult(-1.0, tmp_vec, b);
+  }
   // Set vector components of right-hand-side vector for prescribed values
   for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
     if (fixed_comp_flags[k]) {
@@ -239,4 +250,5 @@ void fix_solution_components_lse(
 }
 
 }  // namespace lf::assemble
+
 #endif

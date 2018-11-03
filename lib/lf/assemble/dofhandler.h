@@ -385,6 +385,10 @@ class DynamicFEDofHandler : public DofHandler {
    *      size_type operator (const lf::mesh::Entity &);
    *
    * that returns the number of local shape functions associated with an entity.
+   * Note that this gives the number of so-called interior local shape functions
+   * belonging to an entity and not the number of local shape functions whose supports
+   * will include the entity. Also refer to the documentation of DynamicFEDofHandler::NoLocalDofs()
+   * and DynamicFEDofHandler::NoInteriorDofs(). 
    */
   template <typename LOCALDOFINFO>
   DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
@@ -400,7 +404,7 @@ class DynamicFEDofHandler : public DofHandler {
     const size_type no_nodes = mesh_p_->Size(2);
     no_int_dofs_[2].resize(no_nodes, 0);
     offsets_[2].resize(no_nodes + 1, 0);
-    // Traverse nodes based on indices
+    // Traverse nodes (co-dimension-2 entities) based on indices
     for (glb_idx_t node_idx = 0; node_idx < no_nodes; node_idx++) {
       // Obtain pointer to node entity
       const mesh::Entity *node_p{mesh_p_->EntityByIndex(2, node_idx)};
@@ -408,6 +412,7 @@ class DynamicFEDofHandler : public DofHandler {
       // Offset for indices of node in index vector
       glb_idx_t node_dof_offset = dof_idx;
       offsets_[2][node_idx] = node_dof_offset;
+      // Request number of local shape functions associated with the node
       size_type no_int_dof_node = locdof(*node_p);
       no_int_dofs_[2][node_idx] = no_int_dof_node;
 

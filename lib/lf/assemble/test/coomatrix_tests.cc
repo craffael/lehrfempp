@@ -120,4 +120,98 @@ TEST(lf_assembly, fix_dof_test) {
   EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
 }
 
+  TEST(lf_assembly, fix_dof_flags_alt) {
+  std::cout << "Test for fixing solution components" << std::endl;
+  // Size of matrix
+  const int N = 10;
+  // Create 8x10 matrix in COO format: all zero in the beginning
+  COOMatrix<double> A(N, N);
+  // Right-hand-side vector
+  Eigen::VectorXd b(N);
+  for (int k = 0; k < N; k++) {
+    if (k > 0) {
+      A.AddToEntry(k, k - 1, -1.0);
+    }
+    if (k < N - 1) {
+      A.AddToEntry(k, k + 1, -1.0);
+    }
+    A.AddToEntry(k, k, 2);
+    b[k] = k + 1;
+  }
+  std::cout << "Matrix A = \n" << A.makeDense() << std::endl;
+  std::cout << "rhs = " << b.transpose() << std::endl;
+
+  // pass fixed solution components and flags as vectors
+  std::vector<bool> flagvec(N,false);
+  flagvec[2] = true; flagvec[4] = true; flagvec[8] = true;
+  std::vector<double> valvec(N,1.0);
+  valvec[2] = -1.0; valvec[4] = -2.0; valvec[8] = -3.0;
+    
+  fix_flagged_solution_comp_alt<double>(flagvec,valvec,A,b);
+  std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
+  std::cout << "Modified rhs = " << b.transpose() << std::endl;
+
+  // Solve linear system
+  // Initialize sparse matrix
+  Eigen::SparseMatrix<double> stiffness_matrix(A.makeSparse());
+  // Solve linear system
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(stiffness_matrix);
+  Eigen::VectorXd x = solver.solve(b);
+  if (solver.info() != Eigen::Success) {
+    std::cout << "solver failed!" << std::endl;
+  }
+  std::cout << "Solution x = " << x.transpose() << std::endl;
+  Eigen::VectorXd exact(N);
+  exact << 1, 1, -1, 0.5, -2, 7.75, 11.5, 8.25, -3, 3.5;
+  EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
+}
+
+  TEST(lf_assembly, fix_dof_flags) {
+  std::cout << "Test for fixing solution components" << std::endl;
+  // Size of matrix
+  const int N = 10;
+  // Create 8x10 matrix in COO format: all zero in the beginning
+  COOMatrix<double> A(N, N);
+  // Right-hand-side vector
+  Eigen::VectorXd b(N);
+  for (int k = 0; k < N; k++) {
+    if (k > 0) {
+      A.AddToEntry(k, k - 1, -1.0);
+    }
+    if (k < N - 1) {
+      A.AddToEntry(k, k + 1, -1.0);
+    }
+    A.AddToEntry(k, k, 2);
+    b[k] = k + 1;
+  }
+  std::cout << "Matrix A = \n" << A.makeDense() << std::endl;
+  std::cout << "rhs = " << b.transpose() << std::endl;
+
+  // pass fixed solution components and flags as vectors
+  std::vector<bool> flagvec(N,false);
+  flagvec[2] = true; flagvec[4] = true; flagvec[8] = true;
+  std::vector<double> valvec(N,1.0);
+  valvec[2] = -1.0; valvec[4] = -2.0; valvec[8] = -3.0;
+    
+  fix_flagged_solution_components<double>(flagvec,valvec,A,b);
+  std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
+  std::cout << "Modified rhs = " << b.transpose() << std::endl;
+
+  // Solve linear system
+  // Initialize sparse matrix
+  Eigen::SparseMatrix<double> stiffness_matrix(A.makeSparse());
+  // Solve linear system
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(stiffness_matrix);
+  Eigen::VectorXd x = solver.solve(b);
+  if (solver.info() != Eigen::Success) {
+    std::cout << "solver failed!" << std::endl;
+  }
+  std::cout << "Solution x = " << x.transpose() << std::endl;
+  Eigen::VectorXd exact(N);
+  exact << 1, 1, -1, 0.5, -2, 7.75, 11.5, 8.25, -3, 3.5;
+  EXPECT_NEAR((x - exact).norm(), 0.0, 1.0E-12) << "Wrong result!";
+}
+  
 }  // namespace lf::assemble::test

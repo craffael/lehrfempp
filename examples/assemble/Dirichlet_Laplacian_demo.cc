@@ -199,8 +199,10 @@ double L2ErrorLinearFEDirichletLaplacian(
   // insertDirichletDataRHS(tmp_bd_flags, rhsvec, dirichlet_data);
   // Identify dof indices associated with the boundary
   // >>
-  // >> New version
-  lf::assemble::fix_flagged_solution_comp_alt<double>(
+  // >> Equivalent new versions
+  // lf::assemble::fix_flagged_solution_comp_alt<double>(
+  //    tmp_bd_flags, dirichlet_data, mat, rhsvec);
+  lf::assemble::fix_flagged_solution_components<double>(
       tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output
