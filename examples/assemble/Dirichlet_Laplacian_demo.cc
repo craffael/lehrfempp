@@ -200,10 +200,16 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Identify dof indices associated with the boundary
   // >>
   // >> Equivalent new versions
-  // lf::assemble::fix_flagged_solution_comp_alt<double>(
-  //    tmp_bd_flags, dirichlet_data, mat, rhsvec);
-  lf::assemble::fix_flagged_solution_components<double>(
-      tmp_bd_flags, dirichlet_data, mat, rhsvec);
+  lf::assemble::fix_flagged_solution_comp_alt<double>(
+      [&tmp_bd_flags,
+       &dirichlet_data](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
+        LF_ASSERT_MSG((i < tmp_bd_flags.size()) && (i < dirichlet_data.size()),
+                      "Illegal index " << i);
+        return std::make_pair(tmp_bd_flags[i], dirichlet_data[i]);
+      },
+      mat, rhsvec);
+  // lf::assemble::fix_flagged_solution_components<double>(
+  //   tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
@@ -365,6 +371,10 @@ int main(int argc, const char **argv) {
         u = [](const Eigen::Vector2d &x) {
           return (std::pow(x[0], 2) + std::pow(x[1], 2));
         };
+        break;
+      }
+      default: {
+        LF_VERIFY_MSG(false, "Illegal problem number");
         break;
       }
     }

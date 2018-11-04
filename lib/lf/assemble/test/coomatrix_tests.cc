@@ -151,7 +151,14 @@ TEST(lf_assembly, fix_dof_flags_alt) {
   valvec[4] = -2.0;
   valvec[8] = -3.0;
 
-  fix_flagged_solution_comp_alt<double>(flagvec, valvec, A, b);
+  fix_flagged_solution_comp_alt<double>(
+      [&flagvec,
+       &valvec](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
+        LF_ASSERT_MSG((i < flagvec.size()) && (i < valvec.size()),
+                      "Illegal index " << i);
+        return std::make_pair(flagvec[i], valvec[i]);
+      },
+      A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 
@@ -202,7 +209,14 @@ TEST(lf_assembly, fix_dof_flags) {
   valvec[4] = -2.0;
   valvec[8] = -3.0;
 
-  fix_flagged_solution_components<double>(flagvec, valvec, A, b);
+  auto setvals = [&flagvec, &valvec](
+                     lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
+    LF_ASSERT_MSG((i < flagvec.size()) && (i < valvec.size()),
+                  "Illegal index " << i);
+    return std::make_pair(flagvec[i], valvec[i]);
+  };
+
+  fix_flagged_solution_components<double>(setvals, A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 

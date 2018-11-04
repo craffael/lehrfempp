@@ -24,7 +24,10 @@ namespace lf::assemble {
  * @sa fix_solution_components_lse()
  *
  * @tparam SCALAR underlying scalar type, e.g. double
- * @tparam RHSVEC generic vector type for right hand side
+ * @tparam SELECTOR both predicate for selection of vector components and
+ *                  supplier of prescribed values
+ * @tparam RHSVECTOR generic vector type for right hand side
+ *
  * @param fixed_comp_flags boolean vector whose length agrees with the matrix
  * dimension. A value of `true` indicates that the corresponding solution
  * component is prescribed
@@ -33,10 +36,20 @@ namespace lf::assemble {
  * @param mat reference to the _square_ coefficient matrix in COO format
  * @param rhs reference to the right-hand-side vector
  *
- * ### Requirements for type RHSVECTOR and FIXEDVALVEC
- * An object of type VECTOR or RESULTVECTOR must provide a method `Size()`
- * telling the length of the vector and `operator []` for read/write access to
+ * ### Requirements for type RHSVECTOR and SELECTOR
+ *
+ * SCALAR is a numeric type, e.g., `double`
+ *
+ * An object of type RHSVECTOR must provide a method `Size()` telling
+ * the length of the vector and `operator []` for read/write access to
  * vector entries.
+ *
+ * The type selector must provide
+ * ~~~
+ * std::pair<bool,scalar_t> operator (unsigned int idx)
+ * ~~~
+ * which returns the prescribed value in the second component of the pair, if
+ * the first evaluates to `true`. `scalar_t` must be convertible into SCALAR
  *
  * ### Algorithm
  *
@@ -66,29 +79,22 @@ namespace lf::assemble {
       \end{array}\right]
    \f]
  */
-template <typename SCALAR, typename FIXEDVALVEC, typename RHSVECTOR>
-void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
-                                     const FIXEDVALVEC &fixed_vec,
+template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
+void fix_flagged_solution_components(SELECTOR &&selectvals,
                                      COOMatrix<SCALAR> &A, RHSVECTOR &b) {
   const lf::assemble::size_type N(A.cols());
   LF_ASSERT_MSG(A.rows() == N, "Matrix must be square!");
   LF_ASSERT_MSG(N == b.size(),
                 "Mismatch N = " << N << " <-> b.size() = " << b.size());
-  LF_ASSERT_MSG(N == fixed_comp_flags.size(),
-                "Mismatch N = " << N << " <-> fixed_comp_flags.size() = "
-                                << fixed_comp_flags.size());
-  LF_ASSERT_MSG(
-      N == fixed_vec.size(),
-      "Mismatch N = " << N << " <-> fixed_vec.size() = " << fixed_vec.size());
-
   {
     // Multiply sparse matrix with the vector of fixed components and subtract
     // result from right hand side
     // To skip irrelevant components of fixed_vec rely on a temporary vector
     Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> tmp_vec(N);
     for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
-      if (fixed_comp_flags[k]) {
-        tmp_vec[k] = fixed_vec[k];
+      const auto selval{selectvals(k)};
+      if (selval.first) {
+        tmp_vec[k] = selval.second;
       } else {
         tmp_vec[k] = SCALAR();
       }
@@ -97,15 +103,17 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
   }
   // Set vector components of right-hand-side vector for prescribed values
   for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
-    if (fixed_comp_flags[k]) {
-      b[k] = fixed_vec[k];
+    const auto selval{selectvals(k)};
+    if (selval.first) {
+      b[k] = selval.second;
     }
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  A.setZero([&fixed_comp_flags](gdof_idx_t i, gdof_idx_t j) {
-    return (fixed_comp_flags[i] || fixed_comp_flags[j]);
+  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t j) {
+    return (selectvals(i).first || selectvals(j).first);
   });
+  // Old implementation, demonstrating what is going on
   // lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
   //     std::remove_if(
   //         A.triplets().begin(), A.triplets().end(),
@@ -118,7 +126,8 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
   // A.triplets().erase(new_last, A.triplets().end());
   // Add Unit diagonal entries corrresponding to fixed components
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
-    if (fixed_comp_flags[dofnum]) {
+    const auto selval{selectvals(dofnum)};
+    if (selval.first) {
       A.AddToEntry(dofnum, dofnum, 1.0);
     }
   }
@@ -157,32 +166,27 @@ void fix_flagged_solution_components(std::vector<bool> &fixed_comp_flags,
  \end{array}\right]
  \f]
 */
-template <typename SCALAR, typename FIXEDVALVEC, typename RHSVECTOR>
-void fix_flagged_solution_comp_alt(std::vector<bool> &fixed_comp_flags,
-                                   const FIXEDVALVEC &fixed_vec,
-                                   COOMatrix<SCALAR> &A, RHSVECTOR &b) {
+template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
+void fix_flagged_solution_comp_alt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
+                                   RHSVECTOR &b) {
   const lf::assemble::size_type N(A.cols());
   LF_ASSERT_MSG(A.rows() == N, "Matrix must be square!");
   LF_ASSERT_MSG(N == b.size(),
                 "Mismatch N = " << N << " <-> b.size() = " << b.size());
-  LF_ASSERT_MSG(N == fixed_comp_flags.size(),
-                "Mismatch N = " << N << " <-> fixed_comp_flags.size() = "
-                                << fixed_comp_flags.size());
-  LF_ASSERT_MSG(
-      N == fixed_vec.size(),
-      "Mismatch N = " << N << " <-> fixed_vec.size() = " << fixed_vec.size());
 
   // Set vector components of right-hand-side vector for prescribed values
   for (lf::assemble::gdof_idx_t k = 0; k < N; ++k) {
-    if (fixed_comp_flags[k]) {
-      b[k] = fixed_vec[k];
+    const auto selval{selectvals(k)};
+    if (selval.first) {
+      b[k] = selval.second;
     }
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  A.setZero([&fixed_comp_flags](gdof_idx_t i, gdof_idx_t j) {
-    return (fixed_comp_flags[i]);
+  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t) {
+    return (selectvals(i).first);
   });
+  // Old implementation showing the algorithm:
   // lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
   //     std::remove_if(
   //         A.triplets().begin(), A.triplets().end(),
@@ -194,7 +198,7 @@ void fix_flagged_solution_comp_alt(std::vector<bool> &fixed_comp_flags,
   // A.triplets().erase(new_last, A.triplets().end());
   // Add Unit diagonal entries corrresponding to fixed components
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
-    if (fixed_comp_flags[dofnum]) {
+    if (selectvals(dofnum).first) {
       A.AddToEntry(dofnum, dofnum, 1.0);
     }
   }
@@ -245,8 +249,15 @@ void fix_solution_components_lse(
     fixed_vec[idx_val_pair.first] += idx_val_pair.second;
     fixed_comp_flags[idx_val_pair.first] = true;
   }
-  fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
-  // fix_flagged_solution_comp_alt<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  // fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  fix_flagged_solution_comp_alt<SCALAR>(
+      [&fixed_comp_flags,
+       &fixed_vec](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
+        LF_ASSERT_MSG((i < fixed_comp_flags.size()) && (i < fixed_vec.size()),
+                      "Illegal index " << i);
+        return std::make_pair(fixed_comp_flags[i], fixed_vec[i]);
+      },
+      A, b);
 }
 
 }  // namespace lf::assemble
