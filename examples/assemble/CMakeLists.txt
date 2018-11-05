@@ -9,7 +9,7 @@ target_link_libraries(lf.examples.assemble.dof_demo
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
-  lf.mesh.hybrid2dp
+  lf.mesh.hybrid2d
   lf.assemble
   )
 
@@ -24,7 +24,7 @@ target_link_libraries(lf.examples.assemble.Dirichlet_Laplacian_demo
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
-  lf.mesh.hybrid2dp
+  lf.mesh.hybrid2d
   lf.refinement
   lf.assemble
   lf.io

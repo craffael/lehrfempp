@@ -195,16 +195,17 @@ class COOMatrix {
    *
    * This function prints matrix size and the list of triplets
    */
+  template <typename SCALARTYPE>
   friend std::ostream &operator<<(std::ostream &o,
-                                  const COOMatrix<SCALAR> &mat);
+                                  const COOMatrix<SCALARTYPE> &mat);
 
  private:
   size_type rows_, cols_; /**< dimensions of matrix */
   TripletVec triplets_;   /**< COO format data */
 };
 
-template <typename SCALAR>
-std::ostream &operator<<(std::ostream &o, const COOMatrix<SCALAR> &mat) {
+template <typename SCALARTYPE>
+std::ostream &operator<<(std::ostream &o, const COOMatrix<SCALARTYPE> &mat) {
   mat.PrintInfo();
   return o;
 }

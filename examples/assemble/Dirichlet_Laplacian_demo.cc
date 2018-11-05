@@ -15,7 +15,7 @@
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
 #include "lf/fe/fe.h"
 #include "lf/mesh/test_utils/test_meshes.h"
@@ -144,10 +144,10 @@ double L2ErrorLinearFEDirichletLaplacian(
                 << " edges, " << mesh_p->Size(2) << " nodes" << std::endl;)
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_mesh,
-      const int tmp_mesh_ctrl = lf::mesh::hybrid2dp::Mesh::output_ctrl_;
-      lf::mesh::hybrid2dp::Mesh::output_ctrl_ = 100;
+      const int tmp_mesh_ctrl = lf::mesh::hybrid2d::Mesh::output_ctrl_;
+      lf::mesh::hybrid2d::Mesh::output_ctrl_ = 100;
       lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
-      lf::mesh::hybrid2dp::Mesh::output_ctrl_ = tmp_mesh_ctrl);
+      lf::mesh::hybrid2d::Mesh::output_ctrl_ = tmp_mesh_ctrl);
   // Initialize objects for local computations
   lf::fe::LinearFELaplaceElementMatrix loc_mat_laplace{};
   lf::fe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
@@ -259,8 +259,8 @@ std::vector<double> SolveDirLaplSeqMesh(
     std::shared_ptr<lf::mesh::Mesh> coarse_mesh_p, unsigned int reflevels,
     SOLFUNCTOR &&u, RHSFUNCTOR &&f) {
   // Prepare for creating a hierarchy of meshes
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(coarse_mesh_p, mesh_factory_ptr);
 
   // Perform several steps of regular refinement of the given mesh
@@ -316,7 +316,7 @@ int main(int argc, const char **argv) {
         boost::filesystem::path here = __FILE__;
         auto mesh_file_path = here.parent_path() / filename.c_str();
         auto mesh_factory =
-            std::make_unique<lf::mesh::hybrid2dp::MeshFactory>(2);
+            std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
         lf::io::GmshReader reader(std::move(mesh_factory),
                                   mesh_file_path.string());
         mesh_p = reader.mesh();
