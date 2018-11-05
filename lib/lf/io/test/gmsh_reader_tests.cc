@@ -10,7 +10,7 @@
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/test_utils/check_entity_indexing.h>
 #include <lf/mesh/test_utils/check_geometry_orientation.h>
 #include <lf/mesh/test_utils/check_local_topology.h>
@@ -144,7 +144,7 @@ TEST(lf_io, readTwoElementMesh) {
                  test_utils::getMeshPath("two_element_hybrid_2d_binary.msh")));
 
   checkTwoElementMesh(
-      GmshReader(std::make_unique<mesh::hybrid2dp::MeshFactory>(2),
+      GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  test_utils::getMeshPath("two_element_hybrid_2d.msh")));
 }
 }  // namespace lf::io::test

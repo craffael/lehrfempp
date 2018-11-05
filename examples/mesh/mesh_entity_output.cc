@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "lf/mesh/hybrid2d/hybrid2d.h"
-#include "lf/mesh/hybrid2dp/hybrid2dp.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/print_info.h"
 #include "lf/mesh/utils/utils.h"
@@ -17,7 +16,7 @@ int main() {
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // Build mesh ----------------------------------
-  lf::mesh::hybrid2dp::MeshFactory test(2);  // MeshFactory object
+  lf::mesh::hybrid2d::MeshFactory test(2);  // MeshFactory object
 
   // add nodes
   test.AddPoint(Eigen::Vector2d(0, 0));

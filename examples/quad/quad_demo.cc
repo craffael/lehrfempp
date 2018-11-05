@@ -12,7 +12,7 @@
 
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/quad/quad.h>
 
 #include "lf/refinement/test/refinement_test_utils.h"
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 
   // Create a three element mesh that contains two triangles and one
   // quadrilateral
-  lf::mesh::hybrid2dp::MeshFactory mesh_factory(2);
+  lf::mesh::hybrid2d::MeshFactory mesh_factory(2);
   mesh_factory.AddPoint(Eigen::Vector2d{0, 0});
   mesh_factory.AddPoint(Eigen::Vector2d{0.5, 0});
   mesh_factory.AddPoint(Eigen::Vector2d{1, 0});
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     errors(level) = std::abs(approx - exact_integral);
 
     lf::refinement::MeshHierarchy mh(
-        mesh, std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2));
+        mesh, std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
     mh.RefineRegular();
     mesh = mh.getMesh(1);
   }

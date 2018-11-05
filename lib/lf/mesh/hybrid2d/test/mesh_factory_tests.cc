@@ -1,13 +1,13 @@
 /**
  * @file
- * @brief Tests for the lf::mesh::hybrid2dp::MeshFactory
+ * @brief Tests for the lf::mesh::hybrid2d::MeshFactory
  * @author Raffael Casagrande
  * @date   2018-07-01 01:15:55
  * @copyright MIT License
  */
 
 #include <gtest/gtest.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <Eigen/Eigen>
@@ -16,7 +16,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_factory_test.h"
 
-namespace lf::mesh::hybrid2dp::test {
+namespace lf::mesh::hybrid2d::test {
 
 bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
   std::cout << "Mesh sanity: Checking entity indexing" << std::endl;
@@ -82,7 +82,7 @@ TEST(lf_edge_create, TestMesh1) {
 }
 
 // TODO Enable this once issue #33 is resolved
-TEST(lf_hybrid2dp, EdgeNumbering) {
+TEST(lf_hybrid2d, EdgeNumbering) {
   // Construct a one element mesh that consists of a quad:
   MeshFactory mf(2);
 
@@ -154,4 +154,4 @@ TEST(lf_hybrid2dp, EdgeNumbering) {
   EXPECT_EQ(mesh->Index(*mesh->Entities(0).begin()), 0);
 }
 
-}  // namespace lf::mesh::hybrid2dp::test
+}  // namespace lf::mesh::hybrid2d::test
