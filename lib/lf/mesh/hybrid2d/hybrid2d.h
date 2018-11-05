@@ -1,16 +1,22 @@
-#ifndef __40562f97bbba46f696fc946fd53dea86
-#define __40562f97bbba46f696fc946fd53dea86
+#ifndef HYBRID2D_P_H_
+#define HYBRID2D_P_H_
 
+#include "mesh.h"
+#include "mesh_factory.h"
 /**
- * @brief Implements a mesh manager for hybrid 2d meshes.
+ * @brief An alternative implementation of a hybrid2d mesh manager that uses
+ *        Pointers to store sub-entity relations.
  *
- * The mesh that is described by this mesh manager can be embedded in an
- * arbitrary-dimensional space, i.e. Mesh::DimWorld() can be specified.
+ * At the moment this mesh manager doesn't work yet completly but it is destined
+ * to replace the `lf::mesh::hybrid2d` mesh manager.
  */
 namespace lf::mesh::hybrid2d {}
 
-#include "entity.h"
 #include "mesh.h"
 #include "mesh_factory.h"
+#include "point.h"
+#include "quad.h"
+#include "segment.h"
+#include "triangle.h"
 
-#endif  // __40562f97bbba46f696fc946fd53dea86
+#endif  // HYBRID2D_P_H_

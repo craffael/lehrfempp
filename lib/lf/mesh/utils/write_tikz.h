@@ -4,7 +4,6 @@
 
 #include <lf/mesh/mesh.h>
 #include "lf/mesh/hybrid2d/hybrid2d.h"
-#include "lf/mesh/hybrid2dp/hybrid2dp.h"
 
 #include <string>
 #include <vector>

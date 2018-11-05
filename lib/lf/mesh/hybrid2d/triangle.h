@@ -11,7 +11,7 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::mesh::hybrid2dp {
+namespace lf::mesh::hybrid2d {
 
 class Point;
 class Segment;
@@ -111,6 +111,6 @@ class Triangle : public mesh::Entity {
       edge_ori_{};  // orientation of edges (set in constructor)
 };
 
-}  // namespace lf::mesh::hybrid2dp
+}  // namespace lf::mesh::hybrid2d
 
 #endif  // __6f934bca210e4020914d12e0910fab42

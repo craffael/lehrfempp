@@ -15,7 +15,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
-#include "lf/mesh/hybrid2dp/hybrid2dp.h"
+#include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
@@ -57,8 +57,8 @@ int main(int argc, const char *argv[]) {
   std::cout << "########################################" << std::endl;
   std::cout << "Initialization of data structure for mesh hierarchy"
             << std::endl;
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
 
   // lambda functions for (local) marking

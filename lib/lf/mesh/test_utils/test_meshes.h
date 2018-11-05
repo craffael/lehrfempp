@@ -8,7 +8,7 @@
 #ifndef LF_MFT_H
 #define LF_MFT_H
 
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 
 /**

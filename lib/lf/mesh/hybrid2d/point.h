@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Implementation of the 0-dimensional node entity for the hybrid2dp
+ * @brief Implementation of the 0-dimensional node entity for the hybrid2d
  *        manager
  * @author Raffael Casagrande
  * @date   2018-06-22 03:54:24
@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-namespace lf::mesh::hybrid2dp {
+namespace lf::mesh::hybrid2d {
 
 /**
  * @brief A node object for a 2D hybrid mesh
@@ -54,7 +54,7 @@ class Point : public mesh::Entity {
                  std::unique_ptr<geometry::Geometry>&& geometry)
       : index_(index), geometry_(std::move(geometry)) {
     // DIAGNOSTICS
-    // std::cout << "hybrid2dp::Point(" << index_ << ") " << std::endl;
+    // std::cout << "hybrid2d::Point(" << index_ << ") " << std::endl;
     LF_VERIFY_MSG(geometry_, "Point must be supplied with a geometry");
     LF_VERIFY_MSG(geometry_->DimLocal() == 0,
                   "Geometry must be that of a point");
@@ -100,6 +100,6 @@ class Point : public mesh::Entity {
       lf::mesh::Orientation::positive};
 };
 
-}  // namespace lf::mesh::hybrid2dp
+}  // namespace lf::mesh::hybrid2d
 
 #endif  // __818709b0104548a7b5e6f47bdba89f69

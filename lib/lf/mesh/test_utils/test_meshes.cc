@@ -18,8 +18,8 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
   using tria_coord_t = Eigen::Matrix<double, 2, 3>;
 
   // Obtain mesh factory
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
   switch (selector) {
     case 0: {
