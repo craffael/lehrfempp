@@ -131,18 +131,6 @@ class Mesh : public mesh::Mesh {
   static int output_ctrl_;
 };
 
-/**
- * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
- * @param stream The stream to which this function should output
- * @param mesh The mesh to write to `stream`.
- * @return The stream itself.
- *
- */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
-  lf::mesh::utils::PrintInfo(mesh, stream);
-  return stream;
-}
-
 }  // namespace lf::mesh::hybrid2dp
 
 #endif  // __62731052ee4a4a2d9f256c2caac43835
