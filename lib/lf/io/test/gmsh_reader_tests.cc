@@ -10,7 +10,6 @@
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/test_utils/check_entity_indexing.h>
 #include <lf/mesh/test_utils/check_geometry_orientation.h>
 #include <lf/mesh/test_utils/check_local_topology.h>

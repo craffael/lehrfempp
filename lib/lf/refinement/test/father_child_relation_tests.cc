@@ -16,8 +16,7 @@ TEST(lf_refinement, FatherChildRelations) {
       io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
   auto base_mesh = gmsh_reader.mesh();
 
-  MeshHierarchy mh(base_mesh,
-                   std::make_shared<mesh::hybrid2d::MeshFactory>(2));
+  MeshHierarchy mh(base_mesh, std::make_shared<mesh::hybrid2d::MeshFactory>(2));
 
   // mark all edges of the triangle for refinement:
   auto marks = mesh::utils::make_CodimMeshDataSet(base_mesh, 1, false);
