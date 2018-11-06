@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/geometry/geometry.h>
 #include <lf/quad/quad.h>
+#include <lf/refinement/refinement.h>
 
 /**
  * Checks if Jacobian() is implemented correctly by comparing it with the
@@ -144,11 +145,43 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
   checkSubGeometry(geom);
 }
 
+/**
+ * Check if the total volume is conserved after call to ChildGeometry()
+ */
+void checkChildGeometry(const lf::geometry::Geometry &geom,
+                        const lf::refinement::RefPat &refPat) {
+  const double volume = lf::geometry::Volume(geom);
+  double refinedVolume = 0.;
+  auto children = geom.ChildGeometry(
+      lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat), 0);
+
+  for (auto &childGeom : children) {
+    refinedVolume += lf::geometry::Volume(*childGeom);
+  }
+
+  switch (refPat) {
+    case lf::refinement::RefPat::rp_nil:
+      EXPECT_EQ(refinedVolume, 0.)
+          << refPat << " should not produce any children";
+      break;
+    default:
+      EXPECT_EQ(volume, refinedVolume)
+          << "Parent and children volumes differ for " << refPat;
+  }
+}
+
 TEST(Geometry, Point) {
   lf::geometry::Point geom((Eigen::MatrixXd(2, 1) << 1, 1).finished());
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   runGeometryChecks(geom, points, 1e-9);
+
+  std::vector<lf::refinement::RefPat> pointSymmetricRefPats = {
+      lf::refinement::RefPat::rp_copy};
+
+  for (const auto &refPat : pointSymmetricRefPats) {
+    checkChildGeometry(geom, refPat);
+  }
 }
 
 TEST(Geometry, SegmentO1) {
@@ -156,6 +189,14 @@ TEST(Geometry, SegmentO1) {
       (Eigen::MatrixXd(2, 2) << 1, 1, 0, 4).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> segSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_split};
+
+  for (const auto &refPat : segSymmetricRefPats) {
+    checkChildGeometry(geom, refPat);
+  }
 }
 
 TEST(Geometry, TriaO1) {
@@ -163,6 +204,15 @@ TEST(Geometry, TriaO1) {
       (Eigen::MatrixXd(2, 3) << 1, 4, 3, 1, 2, 5).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> triaSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_regular,
+      lf::refinement::RefPat::rp_barycentric};
+
+  for (const auto &refPat : triaSymmetricRefPats) {
+    checkChildGeometry(geom, refPat);
+  }
 }
 
 TEST(Geometry, QuadO1) {
@@ -170,4 +220,13 @@ TEST(Geometry, QuadO1) {
       (Eigen::MatrixXd(2, 4) << -1, 3, 2, 1, -2, 0, 2, 1).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> quadSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_regular,
+      lf::refinement::RefPat::rp_barycentric};
+
+  for (const auto &refPat : quadSymmetricRefPats) {
+    checkChildGeometry(geom, refPat);
+  }
 }
