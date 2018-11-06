@@ -108,7 +108,7 @@ void checkSubGeometry(const lf::geometry::Geometry &geom) {
   const Eigen::MatrixXd &nodeCoords = refEl.NodeCoords();
 
   // iterate over all relative codimensions
-  for (size_t codim = 1; codim <= geom.RefEl().Dimension(); ++codim) {
+  for (size_t codim = 0; codim <= geom.RefEl().Dimension(); ++codim) {
     // iterate over all subEntities in given codimension
     const auto numSubEntities = refEl.NumSubEntities(codim);
     for (size_t subEntity = 0; subEntity < numSubEntities; ++subEntity) {
