@@ -8,7 +8,6 @@
 
 #include <gtest/gtest.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
 #include <lf/mesh/utils/torus_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
 #include <memory>
@@ -22,8 +21,8 @@ TEST(lf_mesh_p, buildTorusMesh) {
   // Enable copious output
   hybrid2d::TorusMeshBuilder::output_ctrl_ = 100;
   // Construct a tensor-product grid with 15 cells
-  std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<hybrid2dp::MeshFactory>(3);
+  std::shared_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<hybrid2d::MeshFactory>(3);
   hybrid2d::TorusMeshBuilder builder(mesh_factory_ptr);
   // Set mesh parameters following the Builder pattern
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})

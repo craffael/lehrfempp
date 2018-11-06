@@ -41,7 +41,7 @@ target_link_libraries(lf.examples.refinement.torus_refinement_demo
         PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
         lf.io
         lf.mesh
-        lf.mesh.hybrid2dp
+        lf.mesh.hybrid2d
         lf.refinement
         )
 
