@@ -1,7 +1,10 @@
-#ifndef __e98a803fac5b430a8ff634ceb2f809a1
-#define __e98a803fac5b430a8ff634ceb2f809a1
+#ifndef __e98a803fac5b430a8ff634ceb2f809aX
+#define __e98a803fac5b430a8ff634ceb2f809aX
 
 #include <lf/mesh/mesh.h>
+#include "mesh.h"
+
+#include <iostream>
 
 namespace lf::mesh::hybrid2d {
 
@@ -10,19 +13,26 @@ namespace lf::mesh::hybrid2d {
  *        a hybrid mesh with `dimMesh=2`.
  *
  * A planar triangular mesh with affine triangles as cells can be completely
- * specified by giving the list of vertex coordinates and a list of triangles in
- * the form of a 3-tuple of vertex indices.
+ * specified by giving the list of vertex coordinates, an optional list
+ * of edges, and a list of cells (triangles, quadrilaterals). All entities
+ * can be supplied with a geometry. If this is missing, the mesh builder
+ * tries to infer it from sub-entities or super-entities. If this is not
+ * possible, an affine entity is built.
  */
 class MeshFactory : public mesh::MeshFactory {
  public:
+  MeshFactory(const MeshFactory&) = delete;
+  MeshFactory(MeshFactory&&) = delete;
+  MeshFactory& operator=(const MeshFactory&) = delete;
+  MeshFactory& operator=(MeshFactory&&) = delete;
+
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
    *        mesh.
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
    */
-  explicit MeshFactory(dim_t dim_world)
-      : dim_world_(dim_world), built_(false) {}
+  explicit MeshFactory(dim_t dim_world) : dim_world_(dim_world) {}
 
   dim_t DimWorld() const override { return dim_world_; }
 
@@ -38,18 +48,29 @@ class MeshFactory : public mesh::MeshFactory {
 
   std::shared_ptr<mesh::Mesh> Build() override;
 
+  /** @brief output function printing asssembled lists of entity information */
+  void PrintLists(std::ostream& o = std::cout) const;
+
+  ~MeshFactory() override = default;
+
  private:
   dim_t dim_world_;  // dimension of ambient space
-  bool built_;
-  std::vector<Eigen::VectorXd> nodes_;
-  std::vector<
-      std::tuple<std::array<size_type, 2>, std::unique_ptr<geometry::Geometry>>>
-      edges_;
-  std::vector<
-      std::tuple<std::array<size_type, 4>, std::unique_ptr<geometry::Geometry>>>
-      elements_;
+  hybrid2d::Mesh::NodeCoordList nodes_;
+  hybrid2d::Mesh::EdgeList edges_;
+  hybrid2d::Mesh::CellList elements_;
+
+ public:
+  // Switch for verbosity level of output
+  /** @brief Diagnostics control variable */
+  static int output_ctrl_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream,
+                                const MeshFactory& /*mesh_factory*/) {
+  stream << "mesh factory object";
+  return stream;
+}
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __e98a803fac5b430a8ff634ceb2f809a1
+#endif  // __e98a803fac5b430a8ff634ceb2f809aX

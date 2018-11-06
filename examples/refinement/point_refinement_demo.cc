@@ -105,8 +105,8 @@ int main(int argc, char **argv) {
   using size_type = lf::base::size_type;
   using lf::mesh::utils::TikzOutputCtrl;
 
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
   // build single-cell tensor product mesh on unit square
   lf::mesh::hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
