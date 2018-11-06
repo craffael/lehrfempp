@@ -135,46 +135,39 @@ void checkSubGeometry(const lf::geometry::Geometry &geom) {
   }
 }
 
+void runGeometryChecks(const lf::geometry::Geometry &geom,
+                       const Eigen::MatrixXd &eval_points,
+                       const double tolerance) {
+  checkJacobians(geom, eval_points, tolerance);
+  checkJacobianInverseGramian(geom, eval_points);
+  checkIntegrationElement(geom, eval_points);
+  checkSubGeometry(geom);
+}
+
 TEST(Geometry, Point) {
   lf::geometry::Point geom((Eigen::MatrixXd(2, 1) << 1, 1).finished());
-
-  // testing with the Jacobian is of limited value as it is a (2,0) matrix
+  // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
-  checkJacobians(geom, points, 1e-9);
-  checkJacobianInverseGramian(geom, points);
-  checkIntegrationElement(geom, points);
-  checkSubGeometry(geom);
+  runGeometryChecks(geom, points, 1e-9);
 }
 
 TEST(Geometry, SegmentO1) {
   lf::geometry::SegmentO1 geom(
       (Eigen::MatrixXd(2, 2) << 1, 1, 0, 4).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
-
-  checkJacobians(geom, qr.Points(), 1e-9);
-  checkJacobianInverseGramian(geom, qr.Points());
-  checkIntegrationElement(geom, qr.Points());
-  checkSubGeometry(geom);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
 }
 
 TEST(Geometry, TriaO1) {
   lf::geometry::TriaO1 geom(
       (Eigen::MatrixXd(2, 3) << 1, 4, 3, 1, 2, 5).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
-
-  checkJacobians(geom, qr.Points(), 1e-9);
-  checkJacobianInverseGramian(geom, qr.Points());
-  checkIntegrationElement(geom, qr.Points());
-  checkSubGeometry(geom);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
 }
 
 TEST(Geometry, QuadO1) {
   lf::geometry::QuadO1 geom(
       (Eigen::MatrixXd(2, 4) << -1, 3, 2, 1, -2, 0, 2, 1).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
-
-  checkJacobians(geom, qr.Points(), 1e-9);
-  checkJacobianInverseGramian(geom, qr.Points());
-  checkIntegrationElement(geom, qr.Points());
-  checkSubGeometry(geom);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
 }
