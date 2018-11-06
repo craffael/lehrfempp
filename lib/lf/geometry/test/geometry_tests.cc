@@ -148,12 +148,14 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
 /**
  * Check if the total volume is conserved after call to ChildGeometry()
  */
-void checkChildGeometry(const lf::geometry::Geometry &geom,
-                        const lf::refinement::RefPat &refPat) {
+void checkChildGeometryVolume(
+    const lf::geometry::Geometry &geom, const lf::refinement::RefPat &refPat,
+    const lf::base::sub_idx_t &anchor = lf::refinement::idx_nil) {
   const double volume = lf::geometry::Volume(geom);
   double refinedVolume = 0.;
   auto children = geom.ChildGeometry(
-      lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat), 0);
+      lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat, anchor),
+      0);
 
   for (auto &childGeom : children) {
     refinedVolume += lf::geometry::Volume(*childGeom);
@@ -180,7 +182,7 @@ TEST(Geometry, Point) {
       lf::refinement::RefPat::rp_copy};
 
   for (const auto &refPat : pointSymmetricRefPats) {
-    checkChildGeometry(geom, refPat);
+    checkChildGeometryVolume(geom, refPat);
   }
 }
 
@@ -195,7 +197,7 @@ TEST(Geometry, SegmentO1) {
       lf::refinement::RefPat::rp_split};
 
   for (const auto &refPat : segSymmetricRefPats) {
-    checkChildGeometry(geom, refPat);
+    checkChildGeometryVolume(geom, refPat);
   }
 }
 
@@ -211,7 +213,18 @@ TEST(Geometry, TriaO1) {
       lf::refinement::RefPat::rp_barycentric};
 
   for (const auto &refPat : triaSymmetricRefPats) {
-    checkChildGeometry(geom, refPat);
+    checkChildGeometryVolume(geom, refPat);
+  }
+
+  std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
+      lf::refinement::RefPat::rp_bisect, lf::refinement::RefPat::rp_trisect,
+      lf::refinement::RefPat::rp_trisect_left,
+      lf::refinement::RefPat::rp_quadsect};
+
+  for (const auto &refPat : triaAsymmetricRefPats) {
+    for (size_t anchor = 0; anchor < 3; ++anchor) {
+      checkChildGeometryVolume(geom, refPat, anchor);
+    }
   }
 }
 
@@ -227,6 +240,17 @@ TEST(Geometry, QuadO1) {
       lf::refinement::RefPat::rp_barycentric};
 
   for (const auto &refPat : quadSymmetricRefPats) {
-    checkChildGeometry(geom, refPat);
+    checkChildGeometryVolume(geom, refPat);
+  }
+
+  std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
+      lf::refinement::RefPat::rp_split, lf::refinement::RefPat::rp_bisect,
+      lf::refinement::RefPat::rp_trisect, lf::refinement::RefPat::rp_quadsect,
+      lf::refinement::RefPat::rp_threeedge};
+
+  for (const auto &refPat : triaAsymmetricRefPats) {
+    for (size_t anchor = 0; anchor < 4; ++anchor) {
+      checkChildGeometryVolume(geom, refPat, anchor);
+    }
   }
 }
