@@ -37,7 +37,7 @@ TEST(RegRefTest, RegRef) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -92,7 +92,7 @@ TEST(RegRefTest, BarycentricRef) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -150,7 +150,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -212,7 +212,7 @@ TEST(LocRefTest, LocalRefinement) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -320,7 +320,7 @@ TEST(LocRefTest, MultipleRefinement) {
               << ": Checking geometry compatibulity: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-    if (fails.size() == 0) {
+    if (fails.empty()) {
       std::cout << "consistent!" << std::endl;
     } else {
       std::cout << "INCONSISTENT!" << std::endl;
@@ -390,7 +390,7 @@ TEST(LocRefTest, MixedRefinement) {
     std::cout << ": Checking geometry compatibulity: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-    if (fails.size() == 0) {
+    if (fails.empty()) {
       std::cout << "consistent!" << std::endl;
     } else {
       std::cout << "INCONSISTENT!" << std::endl;

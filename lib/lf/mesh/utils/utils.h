@@ -20,6 +20,10 @@ namespace lf::mesh::utils {}
 #include "mesh_data_set.h"
 #include "print_info.h"
 #include "special_entity_sets.h"
+#include "structured_mesh_builder.h"
+#include "torus_mesh_builder.h"
+#include "tp_quad_mesh_builder.h"
+#include "tp_triag_mesh_builder.h"
 #include "write_matlab.h"
 #include "write_tikz.h"
 
