@@ -105,8 +105,7 @@ TEST(Geometry, Point) {
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   checkJacobians(geom, points, 1e-9);
   checkJacobianInverseGramian(geom, points);
-  // TODO: fix inconsistent dimensions for IntegrationElement()
-  // checkIntegrationElement(geom, points);
+  checkIntegrationElement(geom, points);
 }
 
 TEST(Geometry, SegmentO1) {
