@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "lf/base/base.h"
-#include "lf/mesh/hybrid2dp/hybrid2dp.h"
+#include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/mesh.h"
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"

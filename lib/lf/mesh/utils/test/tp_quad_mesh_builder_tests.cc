@@ -8,7 +8,6 @@
 
 #include <gtest/gtest.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
 #include <lf/mesh/utils/tp_quad_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
 #include <memory>
@@ -23,8 +22,8 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   hybrid2d::TPQuadMeshBuilder::output_ctrl_ = 100;
   // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
-  std::shared_ptr<hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<hybrid2d::MeshFactory>(2);
   hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square

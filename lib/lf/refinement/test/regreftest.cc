@@ -21,8 +21,8 @@ TEST(RegRefTest, RegRef) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   std::cout << "RegRefTEST: Regular refinement" << std::endl;
@@ -37,7 +37,7 @@ TEST(RegRefTest, RegRef) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -77,8 +77,8 @@ TEST(RegRefTest, BarycentricRef) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
@@ -92,7 +92,7 @@ TEST(RegRefTest, BarycentricRef) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -124,8 +124,8 @@ TEST(RegRefTest, AllMarkedRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark all edges
@@ -150,7 +150,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -182,8 +182,8 @@ TEST(LocRefTest, LocalRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose center lies inside a square
@@ -212,7 +212,7 @@ TEST(LocRefTest, LocalRefinement) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-  if (fails.size() == 0) {
+  if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
   } else {
     std::cout << "INCONSISTENT!" << std::endl;
@@ -282,8 +282,8 @@ TEST(LocRefTest, MultipleRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
@@ -320,7 +320,7 @@ TEST(LocRefTest, MultipleRefinement) {
               << ": Checking geometry compatibulity: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-    if (fails.size() == 0) {
+    if (fails.empty()) {
       std::cout << "consistent!" << std::endl;
     } else {
       std::cout << "INCONSISTENT!" << std::endl;
@@ -347,8 +347,8 @@ TEST(LocRefTest, MixedRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2dp::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2dp::MeshFactory>(2);
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
   // Mark edges whose midpoints are located in a certain region
@@ -390,7 +390,7 @@ TEST(LocRefTest, MixedRefinement) {
     std::cout << ": Checking geometry compatibulity: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
-    if (fails.size() == 0) {
+    if (fails.empty()) {
       std::cout << "consistent!" << std::endl;
     } else {
       std::cout << "INCONSISTENT!" << std::endl;

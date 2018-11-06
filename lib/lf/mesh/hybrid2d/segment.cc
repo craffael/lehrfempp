@@ -9,7 +9,7 @@
 #include "segment.h"
 #include "point.h"
 
-namespace lf::mesh::hybrid2dp {
+namespace lf::mesh::hybrid2d {
 base::RandomAccessRange<const mesh::Entity> Segment::SubEntities(
     char rel_codim) const {
   // An impressive way to do double dereferencing!
@@ -24,4 +24,4 @@ base::RandomAccessRange<const mesh::Entity> Segment::SubEntities(
   }
   LF_VERIFY_MSG(false, "Segment: rel_codim out of range");
 }
-}  // namespace lf::mesh::hybrid2dp
+}  // namespace lf::mesh::hybrid2d
