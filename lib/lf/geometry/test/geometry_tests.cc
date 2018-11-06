@@ -9,75 +9,134 @@
 #include <gtest/gtest.h>
 #include <lf/geometry/geometry.h>
 
-using GeometryObjects =
-    testing::Types<lf::geometry::TriaO1, lf::geometry::QuadO1>;
+/**
+ * Checks if Jacobian() is implemented correctly by comparing it with the
+ * symmetric difference quotient approximation
+ */
+void checkJacobians(const lf::geometry::Geometry &geom,
+                    const Eigen::MatrixXd &eval_points,
+                    const double tolerance) {
+    const double h = 1e-6;
 
-static const Eigen::Matrix2d map = (Eigen::Matrix2d() << 1, 2, 3, 4).finished();
-static const Eigen::Vector2d offset = (Eigen::Vector2d() << 1, 2).finished();
+    const size_t num_points = eval_points.cols();
+    const size_t dim_local = geom.DimLocal();
+    const size_t dim_global = geom.DimGlobal();
 
-static Eigen::Vector2d affineMap(const Eigen::Vector2d &x) {
-  return map * x + offset;
-}
+    Eigen::MatrixXd jacobians = geom.Jacobian(eval_points);
 
-template <class T>
-class GeometryTest : public testing::Test {
- protected:
-  std::shared_ptr<T> object_;
-  std::shared_ptr<Eigen::MatrixXd> refElCoords_;
+    for (size_t j = 0; j < num_points; ++j) {
+        auto point = eval_points.col(j);
 
-  GeometryTest() {
-    std::shared_ptr<lf::base::RefEl> refEl;
+        Eigen::MatrixXd jacobian =
+                jacobians.block(0, j * dim_local, dim_global, dim_local);
+        Eigen::MatrixXd approx_jacobian =
+                Eigen::MatrixXd::Zero(dim_global, dim_local);
 
-    if (std::is_same<lf::geometry::Point, T>::value) {
-      refEl = std::make_shared<lf::base::RefEl>(lf::base::RefEl::kPoint());
-    } else if (std::is_same<lf::geometry::SegmentO1, T>::value) {
-      refEl = std::make_shared<lf::base::RefEl>(lf::base::RefEl::kSegment());
-    } else if (std::is_same<lf::geometry::TriaO1, T>::value) {
-      refEl = std::make_shared<lf::base::RefEl>(lf::base::RefEl::kTria());
-    } else if (std::is_same<lf::geometry::QuadO1, T>::value) {
-      refEl = std::make_shared<lf::base::RefEl>(lf::base::RefEl::kQuad());
+        for (size_t i = 0; i < dim_local; ++i) {
+            Eigen::VectorXd h_vec = Eigen::VectorXd::Zero(dim_local);
+            h_vec(i) = h;
+
+            // approximate gradient with symmetric difference quotient
+            approx_jacobian.col(i) =
+                    (geom.Global(point + h_vec) - geom.Global(point - h_vec)) /
+                    (2. * h);
     }
 
-    refElCoords_ = std::make_shared<Eigen::MatrixXd>(refEl->NodeCoords());
-    Eigen::MatrixXd coords(2, refElCoords_->cols());
-
-    for (int j = 0; j < refElCoords_->cols(); ++j) {
-      coords.col(j) = affineMap(refElCoords_->col(j));
+        EXPECT_TRUE(jacobian.isApprox(approx_jacobian, tolerance))
+                            << "Jacobian incorrect at point " << point;
     }
+}
 
-    object_ = std::make_shared<T>(coords);
-  }
-};
+/**
+ * Checks if JacobianInverseGramian() is implemented correctly under the
+ * assumption that Jacobian() is correct
+ */
+void checkJacobianInverseGramian(const lf::geometry::Geometry &geom,
+                                 const Eigen::MatrixXd &eval_points) {
+    const size_t num_points = eval_points.cols();
+    const size_t dim_local = geom.DimLocal();
+    const size_t dim_global = geom.DimGlobal();
 
-TYPED_TEST_CASE(GeometryTest, GeometryObjects);
+    Eigen::MatrixXd jacobians = geom.Jacobian(eval_points);
+    Eigen::MatrixXd jacInvGrams = geom.JacobianInverseGramian(eval_points);
 
-TYPED_TEST(GeometryTest, checkJacobian) {
-  Eigen::MatrixXd jacobian = this->object_->Jacobian(*this->refElCoords_);
+    for (int j = 0; j < num_points; ++j) {
+        Eigen::MatrixXd jacInvGram =
+                jacInvGrams.block(0, j * dim_local, dim_global, dim_local);
+        Eigen::MatrixXd jacobian =
+                jacobians.block(0, j * dim_local, dim_global, dim_local);
 
-  for (int i = 0; i < this->refElCoords_->cols(); ++i) {
-    EXPECT_EQ(jacobian.block(0, i * 2, 2, 2), map)
-        << "Jacobian incorrect at vertex " << i;
+        EXPECT_TRUE(jacInvGram.isApprox(
+                jacobian * (jacobian.transpose() * jacobian).inverse()))
+                            << "JacobianInverseGramian incorrect at point "
+                            << eval_points.col(j);
   }
 }
 
-TYPED_TEST(GeometryTest, checkJacobianInverseGramian) {
-  Eigen::MatrixXd jacInvGram =
-      this->object_->JacobianInverseGramian(*this->refElCoords_);
+/**
+ * Checks if IntegrationElement() is implemented correctly under the assumption
+ * that Jacobian() is correct
+ */
+void checkIntegrationElement(const lf::geometry::Geometry &geom,
+                             const Eigen::MatrixXd &eval_points) {
+    const size_t num_points = eval_points.cols();
+    const size_t dim_local = geom.DimLocal();
+    const size_t dim_global = geom.DimGlobal();
 
-  for (int i = 0; i < this->refElCoords_->cols(); ++i) {
-    EXPECT_EQ(jacInvGram.block(0, i * 2, 2, 2),
-              map * (map.transpose() * map).inverse())
-        << "JacobianInverseGramian incorrect at vertex " << i;
-  }
+    Eigen::MatrixXd jacobians = geom.Jacobian(eval_points);
+    Eigen::VectorXd integrationElements = geom.IntegrationElement(eval_points);
+
+    for (int j = 0; j < num_points; ++j) {
+        Eigen::MatrixXd jacobian =
+                jacobians.block(0, j * dim_local, dim_global, dim_local);
+
+        const double integrationElement = integrationElements(j);
+        const double approx_integrationElement =
+                std::sqrt((jacobian.transpose() * jacobian).determinant());
+
+        EXPECT_DOUBLE_EQ(integrationElement, approx_integrationElement)
+                            << "IntegrationElement incorrect at point "
+                            << eval_points.col(j);
+    }
 }
 
-TYPED_TEST(GeometryTest, checkIntegrationElement) {
-  Eigen::VectorXd integrationElement =
-      this->object_->IntegrationElement(*this->refElCoords_);
+TEST(Geometry, Point) {
+    lf::geometry::Point geom((Eigen::MatrixXd(2, 1) << 1, 1).finished());
 
-  for (int i = 0; i < this->refElCoords_->cols(); ++i) {
-    EXPECT_EQ(integrationElement(i),
-              std::sqrt((map.transpose() * map).determinant()))
-        << "IntegrationElement incorrect at vertex " << i;
-  }
+    // testing with the Jacobian is of limited value as it is a (2,0) matrix
+    Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
+    checkJacobians(geom, points, 1e-9);
+    checkJacobianInverseGramian(geom, points);
+    // TODO: fix inconsistent dimensions for IntegrationElement()
+    // checkIntegrationElement(geom, points);
+}
+
+TEST(Geometry, SegmentO1) {
+    lf::geometry::SegmentO1 geom(
+            (Eigen::MatrixXd(2, 2) << 1, 1, 0, 4).finished());
+    auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
+
+    checkJacobians(geom, qr.Points(), 1e-9);
+    checkJacobianInverseGramian(geom, qr.Points());
+    checkIntegrationElement(geom, qr.Points());
+}
+
+TEST(Geometry, TriaO1) {
+    lf::geometry::TriaO1 geom(
+            (Eigen::MatrixXd(2, 3) << 1, 4, 3, 1, 2, 5).finished());
+    auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
+
+    checkJacobians(geom, qr.Points(), 1e-9);
+    checkJacobianInverseGramian(geom, qr.Points());
+    checkIntegrationElement(geom, qr.Points());
+}
+
+TEST(Geometry, QuadO1) {
+    lf::geometry::QuadO1 geom(
+            (Eigen::MatrixXd(2, 4) << -1, 3, 2, 1, -2, 0, 2, 1).finished());
+    auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
+
+    checkJacobians(geom, qr.Points(), 1e-9);
+    checkJacobianInverseGramian(geom, qr.Points());
+    checkIntegrationElement(geom, qr.Points());
 }
