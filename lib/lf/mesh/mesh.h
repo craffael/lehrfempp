@@ -15,6 +15,5 @@ namespace lf::mesh {}
 #include "entity.h"
 #include "mesh_factory.h"
 #include "mesh_interface.h"
-#include "tp_triag_mesh_builder.h"
 
 #endif  // __7fd0772dc0d1474492ad46dc2b8cebbb
