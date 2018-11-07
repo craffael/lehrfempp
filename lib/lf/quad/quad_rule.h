@@ -51,7 +51,6 @@ class QuadRule {
    */
   QuadRule()
       : ref_el_(lf::base::RefEl::kPoint()),
-        order_(0),
         points_(0, 0),
         weights_(0) {}
 
@@ -140,7 +139,7 @@ class QuadRule {
 
  private:
   base::RefEl ref_el_;
-  quadOrder_t order_;
+  quadOrder_t order_{0};
   Eigen::MatrixXd points_;
   Eigen::VectorXd weights_;
 

@@ -10,6 +10,7 @@
 
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
+#include <lf/mesh/utils/utils.h>
 
 /**
  * @brief Utilities for testing sanity of mesh data structures and

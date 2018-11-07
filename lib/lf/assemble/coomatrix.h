@@ -116,6 +116,8 @@ class COOMatrix {
   /**
    * @brief Computes the product of a vector with the matrix in COO format
    * @tparam VECTOR a basic vector type for the argument vector
+   * @param alpha scalar with which to multiply the argument vector
+   *        before the matrix x vector multiplication.
    * @param vec constant reference to a vector of type VECTOR
    * @return result vector, a dense vector of Eigen
    *
@@ -227,7 +229,7 @@ Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> COOMatrix<SCALAR>::MatVecMult(
 template <typename SCALAR>
 template <typename VECTOR, typename RESULTVECTOR>
 void COOMatrix<SCALAR>::MatVecMult(SCALAR alpha, const VECTOR &vec,
-                                   RESULTVECTOR &result) const {
+                                   RESULTVECTOR &resvec) const {
   LF_ASSERT_MSG(vec.size() >= cols_,
                 "Vector vec size mismatch: " << cols_ << " <-> " << vec.size());
   LF_ASSERT_MSG(

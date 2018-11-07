@@ -61,10 +61,10 @@ class ScalarReferenceFiniteElement {
  protected:
   ScalarReferenceFiniteElement() = default;
   ScalarReferenceFiniteElement(const ScalarReferenceFiniteElement&) = default;
-  ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) = default;
+  ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) noexcept = default;
   ScalarReferenceFiniteElement& operator=(const ScalarReferenceFiniteElement&) =
       default;
-  ScalarReferenceFiniteElement& operator=(ScalarReferenceFiniteElement&&) =
+  ScalarReferenceFiniteElement& operator=(ScalarReferenceFiniteElement&&) noexcept =
       default;
 
  public:
@@ -131,7 +131,7 @@ class ScalarReferenceFiniteElement {
    *         specified sub-entity.
    */
   virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t subidx = 0) const = 0;
+                                         sub_idx_t subidx) const = 0;
 
   /**
    * @brief Evaluation of _all_ reference shape functions in a number of points
@@ -232,9 +232,9 @@ template <typename SCALAR>
 class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   TriaLinearLagrangeFE(const TriaLinearLagrangeFE&) = default;
-  TriaLinearLagrangeFE(TriaLinearLagrangeFE&&) = default;
+  TriaLinearLagrangeFE(TriaLinearLagrangeFE&&) noexcept = default;
   TriaLinearLagrangeFE& operator=(const TriaLinearLagrangeFE&) = default;
-  TriaLinearLagrangeFE& operator=(TriaLinearLagrangeFE&&) = default;
+  TriaLinearLagrangeFE& operator=(TriaLinearLagrangeFE&&) noexcept = default;
   TriaLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kTria(), 1) {}
   virtual ~TriaLinearLagrangeFE() = default;
@@ -242,19 +242,18 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
-  virtual size_type NumRefShapeFunctions() const override { return 3; }
+  size_type NumRefShapeFunctions() const override { return 3; }
 
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t = 0) const override {
+  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t /*subidx*/) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  virtual std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
@@ -267,7 +266,7 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  virtual std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -284,14 +283,14 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   /** @brief Evalutation nodes are just the vertices of the triangle
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
-  virtual Eigen::MatrixXd EvaluationNodes() const override {
+  Eigen::MatrixXd EvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  virtual size_type NumEvaluationNodes() const override {
+  size_type NumEvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
   }
 };
@@ -306,22 +305,21 @@ template <typename SCALAR>
 class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   QuadLinearLagrangeFE(const QuadLinearLagrangeFE&) = default;
-  QuadLinearLagrangeFE(QuadLinearLagrangeFE&&) = default;
+  QuadLinearLagrangeFE(QuadLinearLagrangeFE&&) noexcept = default;
   QuadLinearLagrangeFE& operator=(const QuadLinearLagrangeFE&) = default;
-  QuadLinearLagrangeFE& operator=(QuadLinearLagrangeFE&&) = default;
+  QuadLinearLagrangeFE& operator=(QuadLinearLagrangeFE&&) noexcept = default;
   QuadLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kQuad(), 1) {}
   virtual ~QuadLinearLagrangeFE() = default;
 
-  virtual size_type NumRefShapeFunctions() const override { return 4; }
+  size_type NumRefShapeFunctions() const override { return 4; }
 
-  virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t) const override {
+  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t /*subidx*/) const override {
     return (codim == 2) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  virtual std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
@@ -336,7 +334,7 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  virtual std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -363,11 +361,11 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
     return ret;
   }
 
-  virtual Eigen::MatrixXd EvaluationNodes() const override {
+  Eigen::MatrixXd EvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
   }
 
-  virtual size_type NumEvaluationNodes() const override {
+  size_type NumEvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
   }
 };
@@ -391,9 +389,9 @@ class SegmentLinearLagrangeFE final
     : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   SegmentLinearLagrangeFE(const SegmentLinearLagrangeFE&) = default;
-  SegmentLinearLagrangeFE(SegmentLinearLagrangeFE&&) = default;
+  SegmentLinearLagrangeFE(SegmentLinearLagrangeFE&&) noexcept = default;
   SegmentLinearLagrangeFE& operator=(const SegmentLinearLagrangeFE&) = default;
-  SegmentLinearLagrangeFE& operator=(SegmentLinearLagrangeFE&&) = default;
+  SegmentLinearLagrangeFE& operator=(SegmentLinearLagrangeFE&&) noexcept = default;
   SegmentLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kSegment(), 1) {}
   virtual ~SegmentLinearLagrangeFE() = default;
@@ -401,19 +399,18 @@ class SegmentLinearLagrangeFE final
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
-  virtual size_type NumRefShapeFunctions() const override { return 2; }
+  size_type NumRefShapeFunctions() const override { return 2; }
 
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t = 0) const override {
+  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  virtual std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
@@ -426,7 +423,7 @@ class SegmentLinearLagrangeFE final
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  virtual std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
@@ -444,14 +441,14 @@ class SegmentLinearLagrangeFE final
   /** @brief Evalutation nodes are just the vertices of the triangle
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
-  virtual Eigen::MatrixXd EvaluationNodes() const override {
+  Eigen::MatrixXd EvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  virtual size_type NumEvaluationNodes() const override {
+  size_type NumEvaluationNodes() const override {
     return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
   }
 };

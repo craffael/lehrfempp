@@ -46,7 +46,7 @@ class LinearFELaplaceElementMatrix {
   /**
    * @brief All cells are considered active in the default implementation
    */
-  virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
+  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
    * @brief main routine for the computation of element matrices
    *
@@ -110,7 +110,7 @@ class LinearFELocalLoadVector {
   /** @brief Constructor storing the right hand side function */
   explicit LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
   /** @brief Default implement: all cells are active */
-  virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
+  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
    * @brief Main method for computing the element vector
    *
@@ -235,7 +235,7 @@ class LagrangeFEEllBVPElementMatrix {
    * This method is meant to be overloaded if assembly should be restricted to a
    * subset of cells.
    */
-  virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
+  virtual bool isActive(const lf::mesh::Entity &/*cell*/) { return true; }
   /*
    * @brief main routine for the computation of element matrices
    *
@@ -309,13 +309,13 @@ LagrangeFEEllBVPElementMatrix<DIFF_COEFF, REACTION_COEFF>::
   LF_ASSERT_MSG((fe_tria_.RefEl() == lf::base::RefEl::kTria()) ||
                     (fe_quad_.RefEl() == lf::base::RefEl::kQuad()),
                 "Unexpected type of reference cell");
-  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2) == 1) &&
-                    (fe_quad_.NumRefShapeFunctions(2) == 1),
+  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2,0) == 1) &&
+		(fe_quad_.NumRefShapeFunctions(2,0) == 1),
                 "Exactly one shape function must be assigned to each vertex");
   LF_ASSERT_MSG(
-      (fe_tria_.NumRefShapeFunctions(1) == fe_quad_.NumRefShapeFunctions(1)),
-      "#RSF mismatch on edges " << fe_tria_.NumRefShapeFunctions(1) << " <-> "
-                                << fe_quad_.NumRefShapeFunctions(1));
+		(fe_tria_.NumRefShapeFunctions(1,0) == fe_quad_.NumRefShapeFunctions(1,0)),
+		"#RSF mismatch on edges " << fe_tria_.NumRefShapeFunctions(1,0) << " <-> "
+		<< fe_quad_.NumRefShapeFunctions(1,0));
 
   // Maximal order of both finite elements
   const unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
@@ -554,7 +554,7 @@ class ScalarFELocalLoadVector {
                           const ScalarReferenceFiniteElement<SCALAR> &fe_quad,
                           FUNCTOR f);
   /** @brief Default implement: all cells are active */
-  virtual bool isActive(const lf::mesh::Entity &cell) { return true; }
+  virtual bool isActive(const lf::mesh::Entity &/*cell*/) { return true; }
   /*
    * @brief Main method for computing the element vector
    *
@@ -619,13 +619,13 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
   LF_ASSERT_MSG((fe_tria_.RefEl() == lf::base::RefEl::kTria()) ||
                     (fe_quad_.RefEl() == lf::base::RefEl::kQuad()),
                 "Unexpected type of reference cell");
-  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2) == 1) &&
-                    (fe_quad_.NumRefShapeFunctions(2) == 1),
+  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2,0) == 1) &&
+		(fe_quad_.NumRefShapeFunctions(2,0) == 1),
                 "Exactly one shape function must be assigned to each vertex");
   LF_ASSERT_MSG(
-      (fe_tria_.NumRefShapeFunctions(1) == fe_quad_.NumRefShapeFunctions(1)),
-      "#RSF mismatch on edges " << fe_tria_.NumRefShapeFunctions(1) << " <-> "
-                                << fe_quad_.NumRefShapeFunctions(1));
+		(fe_tria_.NumRefShapeFunctions(1,0) == fe_quad_.NumRefShapeFunctions(1,0)),
+		"#RSF mismatch on edges " << fe_tria_.NumRefShapeFunctions(1,0) << " <-> "
+		<< fe_quad_.NumRefShapeFunctions(1,0));
   // Maximal order of both finite elements
   const unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
 

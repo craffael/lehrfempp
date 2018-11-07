@@ -75,8 +75,8 @@ TEST(lf_fe, lf_fe_segment) {
 
   SegmentLinearLagrangeFE<double> slfe{};
   EXPECT_EQ(slfe.NumRefShapeFunctions(), 2);
-  EXPECT_EQ(slfe.NumRefShapeFunctions(0), 0);
-  EXPECT_EQ(slfe.NumRefShapeFunctions(1), 1);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(0,0), 0);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(1,0), 1);
 
   auto rsf_vals = slfe.EvalReferenceShapeFunctions(refcoords);
   for (const auto &v : rsf_vals) {
