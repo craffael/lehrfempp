@@ -321,7 +321,7 @@ class MeshHierarchy {
 
  public:
   /** @brief diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };
 
 template <typename Marker>

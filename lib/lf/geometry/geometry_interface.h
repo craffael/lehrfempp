@@ -184,7 +184,7 @@ class Geometry {
 
   // Output control variable
   /** @brief Output control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 
 };  // class Geometry
 

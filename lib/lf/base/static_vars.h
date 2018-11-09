@@ -70,7 +70,7 @@ Track<T>::~Track() {
 }
 
 // Type for managing static variables
-using StaticVar = Track<int>;
+using StaticVar = Track<unsigned int>;
 }  // namespace lf::base
 
 /**
@@ -78,25 +78,25 @@ using StaticVar = Track<int>;
  */
 /**@{*/
 #define CONTROLDECLARE(intvar, varname)                       \
-  int intvar = 0;                                             \
+  unsigned int intvar = 0;                                    \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root)
 #define CONTROLDECLAREINFO(intvar, varname, info)             \
-  int intvar = 0;                                             \
+  unsigned int intvar = 0;                                    \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 #define EXTERNDECLAREINFO(intvar, varname, info)              \
-  extern int intvar;                                          \
+  extern unsigned intvar;                                     \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 
 #define CLASSCONTROLDECLARE(class, intvar, varname)                 \
-  int class ::intvar = 0;                                           \
+  unsigned int class ::intvar = 0;                                  \
   static lf::base::StaticVar class##intvar(varname, class ::intvar, \
                                            lf::base::ctrl_root)
 
 #define CONTROLDECLARECOMMENT(class, intvar, varname, comment)      \
-  int class ::intvar = 0;                                           \
+  unsigned int class ::intvar = 0;                                  \
   static lf::base::StaticVar class##intvar(varname, class ::intvar, \
                                            lf::base::ctrl_root, #comment)
 /**@}*/

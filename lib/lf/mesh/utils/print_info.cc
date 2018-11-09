@@ -12,13 +12,13 @@
 namespace lf::mesh::utils {
 
 // Output control variable, maximum verbosity is default
-int printinfo_ctrl = 100;
+unsigned int printinfo_ctrl = 100;
 static lf::base::StaticVar ctrlvar_printinfo_ctrl("PrintInfo_ctrl",
                                                   printinfo_ctrl,
                                                   lf::base::ctrl_root,
                                                   "Output control for Mesh");
 
-  void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
+void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
   using dim_t = lf::base::dim_t;
   using size_type = lf::base::size_type;
 

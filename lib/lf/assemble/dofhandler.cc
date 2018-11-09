@@ -17,7 +17,7 @@
 namespace lf::assemble {
 
 // Default output flag
-int DofHandler::output_ctrl_ = 0;
+unsigned int DofHandler::output_ctrl_ = 0;
 
 // Implementation of output operator for interface class
 std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {

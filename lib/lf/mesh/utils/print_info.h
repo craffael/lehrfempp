@@ -22,7 +22,7 @@ namespace lf::mesh::utils {
  *
  * @note: this static variable is intialized to the value 100
  */
-extern int printinfo_ctrl;
+extern unsigned int printinfo_ctrl;
 
 /**
  * @brief Diagnostic output operator. Prints info about a mesh.

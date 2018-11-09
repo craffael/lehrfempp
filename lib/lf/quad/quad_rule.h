@@ -49,10 +49,7 @@ class QuadRule {
    * in member variables of classes, whose initialization cannot be
    * done in an initialization section of a constructor.
    */
-  QuadRule()
-      : ref_el_(lf::base::RefEl::kPoint()),
-        points_(0, 0),
-        weights_(0) {}
+  QuadRule() : ref_el_(lf::base::RefEl::kPoint()), points_(0, 0), weights_(0) {}
 
   /**
    * @brief Construct a new quadrature rule by specifying reference element,
@@ -145,7 +142,7 @@ class QuadRule {
 
  public:
   /** @brief Output control variable */
-  static int out_ctrl_;
+  static unsigned int out_ctrl_;
   static const unsigned int kout_ext = 1;
 };
 

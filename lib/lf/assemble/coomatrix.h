@@ -137,7 +137,7 @@ class COOMatrix {
    * @param alpha scalar with which to multiply the argument vector
    *        before the matrix x vector multiplication.
    * @param vec constant reference to a vector of type VECTOR
-   * @param result reference to an object of type RESULTVECTOR.
+   * @param resvec reference to an object of type RESULTVECTOR.
    *
    * @note the result of the matrix-vector product will be added to the entries
    * of `result`!
@@ -233,10 +233,10 @@ void COOMatrix<SCALAR>::MatVecMult(SCALAR alpha, const VECTOR &vec,
   LF_ASSERT_MSG(vec.size() >= cols_,
                 "Vector vec size mismatch: " << cols_ << " <-> " << vec.size());
   LF_ASSERT_MSG(
-      result.size() >= rows_,
-      "Vector result size mismatch: " << cols_ << " <-> " << result.size());
+      resvec.size() >= rows_,
+      "Vector result size mismatch: " << cols_ << " <-> " << resvec.size());
   for (const Triplet &trp : triplets_) {
-    result[trp.row()] += trp.value() * (alpha * vec[trp.col()]);
+    resvec[trp.row()] += trp.value() * (alpha * vec[trp.col()]);
   }
 }
 

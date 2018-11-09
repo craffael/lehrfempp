@@ -169,7 +169,7 @@ class DofHandler {
    * - if > 0 and divisible by 3: print entities belonging to dofs
    * - if > 0 and divisible by 10: also print interior dof indices
    */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };
 
 /** @brief output operator for DofHandler objects */
@@ -386,9 +386,10 @@ class DynamicFEDofHandler : public DofHandler {
    *
    * that returns the number of local shape functions associated with an entity.
    * Note that this gives the number of so-called interior local shape functions
-   * belonging to an entity and not the number of local shape functions whose supports
-   * will include the entity. Also refer to the documentation of DynamicFEDofHandler::NoLocalDofs()
-   * and DynamicFEDofHandler::NoInteriorDofs(). 
+   * belonging to an entity and not the number of local shape functions whose
+   * supports will include the entity. Also refer to the documentation of
+   * DynamicFEDofHandler::NoLocalDofs() and
+   * DynamicFEDofHandler::NoInteriorDofs().
    */
   template <typename LOCALDOFINFO>
   DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
