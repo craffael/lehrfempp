@@ -42,9 +42,8 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimGlobal() == 2) && (geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  const Eigen::MatrixXd &ref_el_corners(ref_el.NodeCoords());
   // Matrix storing corner coordinates in its columns
-  const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
+  auto vertices = geo_ptr->Global(ref_el.NodeCoords());
   // Debugging output
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_geo,
                     std::cout << ref_el << ", shape = \n"

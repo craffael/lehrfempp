@@ -31,25 +31,25 @@ int main(int argc, char** argv) {
   // clang-format on
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
-  if (vm.count("help")) {
+  if (vm.count("help") > 0) {
     std::cout << desc << std::endl;
   } else {
     // Retrieve number of degrees of freedom for each entity type from command
     // line arguments
     lf::base::size_type ndof_node = 1;
-    if (vm.count("ndof_node")) {
+    if (vm.count("ndof_node") > 0) {
       ndof_node = vm["ndof_node"].as<int>();
     }
     lf::base::size_type ndof_edge = 2;
-    if (vm.count("ndof_edge")) {
+    if (vm.count("ndof_edge") > 0) {
       ndof_edge = vm["ndof_edge"].as<int>();
     }
     lf::base::size_type ndof_tria = 1;
-    if (vm.count("ndof_tria")) {
+    if (vm.count("ndof_tria") > 0) {
       ndof_tria = vm["ndof_tria"].as<int>();
     }
     lf::base::size_type ndof_quad = 4;
-    if (vm.count("ndof_quad")) {
+    if (vm.count("ndof_quad") > 0) {
       ndof_quad = vm["ndof_quad"].as<int>();
     }
     std::cout << "LehrFEM++ demo: assignment of global shape functions"

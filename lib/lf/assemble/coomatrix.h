@@ -96,7 +96,7 @@ class COOMatrix {
    */
   template <typename PREDICATE>
   void setZero(PREDICATE &&pred) {
-    const typename TripletVec::iterator new_last = std::remove_if(
+    auto new_last = std::remove_if(
         triplets_.begin(), triplets_.end(),
         [pred](Triplet &trp) { return (pred(trp.row(), trp.col())); });
     // Adjust size of triplet vector
@@ -198,7 +198,7 @@ class COOMatrix {
    * This function prints matrix size and the list of triplets
    */
   template <typename SCALARTYPE>
-  friend std::ostream &operator<<(std::ostream &o,
+  friend std::ostream &operator<<(std::ostream &o,  //NOLINT
                                   const COOMatrix<SCALARTYPE> &mat);
 
  private:

@@ -59,12 +59,14 @@ using sub_idx_t = lf::base::sub_idx_t;
 template <typename SCALAR>
 class ScalarReferenceFiniteElement {
  protected:
-  ScalarReferenceFiniteElement() = default;
   ScalarReferenceFiniteElement(const ScalarReferenceFiniteElement&) = default;
+  // NOLINTNEXTLINE
   ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) noexcept =
       default;
+  // NOLINTNEXTLINE
   ScalarReferenceFiniteElement& operator=(const ScalarReferenceFiniteElement&) =
       default;
+  // NOLINTNEXTLINE
   ScalarReferenceFiniteElement& operator=(
       ScalarReferenceFiniteElement&&) noexcept = default;
 
@@ -82,7 +84,7 @@ class ScalarReferenceFiniteElement {
    */
   explicit ScalarReferenceFiniteElement(lf::base::RefEl ref_el,
                                         unsigned int order)
-      : ref_el_(ref_el), order_(order) {}
+      : ref_el_(std::move(ref_el)), order_(order) {}
 
   virtual ~ScalarReferenceFiniteElement() = default;
 
@@ -326,7 +328,6 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    const size_type n_pts(refcoords.cols());
     const std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>> ret{
         ((1 - refcoords.row(0).array()) * (1 - refcoords.row(1).array()))
             .matrix(),
@@ -408,7 +409,8 @@ class SegmentLinearLagrangeFE final
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t) const override {
+  size_type NumRefShapeFunctions(dim_t codim,
+                                 sub_idx_t /*subidx*/) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }

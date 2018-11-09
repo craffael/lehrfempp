@@ -69,30 +69,27 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
  *
  * No longer in use. Replaced with lf::assemble::fix_flagged_solution_components
  */
-void eliminateBoundaryDofs(std::vector<bool> &tmp_bd_flags,
-                           lf::assemble::COOMatrix<double> &A) {
+void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
+                           lf::assemble::COOMatrix<double> *A) {
   const lf::base::size_type N = tmp_bd_flags.size();
-  LF_ASSERT_MSG((A.cols() == N) && (A.rows() == N), "Matrix dimension mismath");
+  LF_ASSERT_MSG((A->cols() == N) && (A->rows() == N),
+                "Matrix dimension mismath");
 
   // Remove rows associated with dofs on the boundary
-  lf::assemble::COOMatrix<double>::TripletVec::iterator new_last =
-      std::remove_if(
-          A.triplets().begin(), A.triplets().end(),
-          [&tmp_bd_flags](
-              typename lf::assemble::COOMatrix<double>::Triplet &triplet) {
-            SWITCHEDSTATEMENT(
-                dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
-                  std::cout << "EBD: removing " << triplet.row() << ','
-                            << triplet.col() << "[" << triplet.value() << "]"
-                            << std::endl;
-                });
-            return tmp_bd_flags[triplet.row()];
-          });
-  A.triplets().erase(new_last, A.triplets().end());
+  auto new_last = std::remove_if(
+      A->triplets().begin(), A->triplets().end(),
+      [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
+        SWITCHEDSTATEMENT(dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
+          std::cout << "EBD: removing " << triplet.row() << ',' << triplet.col()
+                    << "[" << triplet.value() << "]" << std::endl;
+        });
+        return tmp_bd_flags[triplet.row()];
+      });
+  A->triplets().erase(new_last, A->triplets().end());
   // Add unit diagonal entries to rows belonging to dofs on the boundary
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     if (tmp_bd_flags[dofnum]) {
-      A.AddToEntry(dofnum, dofnum, 1.0);
+      A->AddToEntry(dofnum, dofnum, 1.0);
     }
   }
 }
@@ -101,17 +98,17 @@ void eliminateBoundaryDofs(std::vector<bool> &tmp_bd_flags,
  * vector
  *
  */
-void insertDirichletDataRHS(std::vector<bool> &tmp_bd_flags,
-                            Eigen::VectorXd &rhs,
+void insertDirichletDataRHS(const std::vector<bool> &tmp_bd_flags,
+                            Eigen::VectorXd *rhs,
                             const Eigen::VectorXd &dirichlet_values) {
   const lf::base::size_type N = tmp_bd_flags.size();
-  LF_VERIFY_MSG((rhs.size() == N), "rhs vector size mismatch");
+  LF_VERIFY_MSG((rhs->size() == N), "rhs vector size mismatch");
   LF_VERIFY_MSG((dirichlet_values.size() == N), "data vector size mismatch");
 
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     if (tmp_bd_flags[dofnum]) {
       // Shape function associated with the boundary
-      rhs[dofnum] = dirichlet_values[dofnum];
+      (*rhs)[dofnum] = dirichlet_values[dofnum];
     }
   }
 }
@@ -132,7 +129,8 @@ void insertDirichletDataRHS(std::vector<bool> &tmp_bd_flags,
  */
 template <typename SOLFUNC, typename RHSFUNC>
 double L2ErrorLinearFEDirichletLaplacian(
-    std::shared_ptr<const lf::mesh::Mesh> mesh_p, SOLFUNC &&u, RHSFUNC &&f) {
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, SOLFUNC &&u,
+    RHSFUNC &&f) {
   LF_ASSERT_MSG(mesh_p != nullptr, "Invalid mesh pointer");
   LF_ASSERT_MSG((mesh_p->DimMesh() == 2) && (mesh_p->DimWorld() == 2),
                 "For 2D planar meshes only!");
@@ -261,7 +259,8 @@ std::vector<double> SolveDirLaplSeqMesh(
   // Prepare for creating a hierarchy of meshes
   std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(coarse_mesh_p, mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(std::move(coarse_mesh_p),
+                                           mesh_factory_ptr);
 
   // Perform several steps of regular refinement of the given mesh
   for (int refstep = 0; refstep < reflevels; ++refstep) {
@@ -269,7 +268,7 @@ std::vector<double> SolveDirLaplSeqMesh(
   }
   // Solve Dirichlet boundary value problem on every level
   lf::assemble::size_type L = multi_mesh.NumLevels();
-  std::vector<double> errors{};
+  std::vector<double> errors(L);
   for (int level = 0; level < L; level++) {
     errors.push_back(
         L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));
