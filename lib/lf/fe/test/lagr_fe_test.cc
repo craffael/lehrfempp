@@ -75,8 +75,8 @@ TEST(lf_fe, lf_fe_segment) {
 
   SegmentLinearLagrangeFE<double> slfe{};
   EXPECT_EQ(slfe.NumRefShapeFunctions(), 2);
-  EXPECT_EQ(slfe.NumRefShapeFunctions(0,0), 0);
-  EXPECT_EQ(slfe.NumRefShapeFunctions(1,0), 1);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(0, 0), 0);
+  EXPECT_EQ(slfe.NumRefShapeFunctions(1, 0), 1);
 
   auto rsf_vals = slfe.EvalReferenceShapeFunctions(refcoords);
   for (const auto &v : rsf_vals) {
@@ -138,19 +138,19 @@ TEST(lf_fe, lf_fe_loadvec) {
   QuadLinearLagrangeFE<double> qlfe{};
 
   // Set up objects taking care of local computations
-  auto f = [](Eigen::Vector2d x) -> double { return (2*x[0] + x[1]); };
+  auto f = [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); };
   using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
 
   // Set debugging flags
-  loc_comp_t::ctrl_ = 0; //255;
-  lf::quad::QuadRule::out_ctrl_ = 0; // 1;
-  LinearFELocalLoadVector<double,decltype(f)>::dbg_ctrl = 0; // 3;
+  loc_comp_t::ctrl_ = 0;                                       // 255;
+  lf::quad::QuadRule::out_ctrl_ = 0;                           // 1;
+  LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;  // 3;
 
   // Instantiate object for local computations
   loc_comp_t comp_elem_vec(tlfe, qlfe, f);
 
   // For comparison
-  LinearFELocalLoadVector<double,decltype(f)> lfe_elem_vec(f);
+  LinearFELocalLoadVector<double, decltype(f)> lfe_elem_vec(f);
 
   // Loop over cells and compute element matrices;
   for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
@@ -158,7 +158,8 @@ TEST(lf_fe, lf_fe_loadvec) {
     std::cout << "CELL " << cell << ":" << std::endl;
     std::cout << "Element vector from LinearFELaplaceElementMatrix:"
               << std::endl;
-    LinearFELocalLoadVector<double,decltype(f)>::ElemVec lfe_vec{lfe_elem_vec.Eval(cell)};
+    LinearFELocalLoadVector<double, decltype(f)>::ElemVec lfe_vec{
+        lfe_elem_vec.Eval(cell)};
     std::cout << "[ " << lfe_vec.transpose() << "] " << std::endl;
     std::cout << "Element vector from ScalarFELocalLoadVector:" << std::endl;
     loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};

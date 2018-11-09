@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     // Output information about the mesh
     lf::mesh::utils::printinfo_ctrl = 100;
     lf::mesh::Entity::output_ctrl_ = 0;
-    lf::mesh::utils::PrintInfo(*mesh_p,std::cout);
+    lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
 
     // Create a dof handler object describing a uniform distribution
     // of shape functions
@@ -76,5 +76,5 @@ int main(int argc, char** argv) {
                  {lf::base::RefEl::kQuad(), ndof_quad}});
     lf::assemble::DofHandler::output_ctrl_ = 30;
     std::cout << dof_handler << std::endl;
-  } 
+  }
 }  // end main

@@ -61,11 +61,12 @@ class ScalarReferenceFiniteElement {
  protected:
   ScalarReferenceFiniteElement() = default;
   ScalarReferenceFiniteElement(const ScalarReferenceFiniteElement&) = default;
-  ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) noexcept = default;
+  ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) noexcept =
+      default;
   ScalarReferenceFiniteElement& operator=(const ScalarReferenceFiniteElement&) =
       default;
-  ScalarReferenceFiniteElement& operator=(ScalarReferenceFiniteElement&&) noexcept =
-      default;
+  ScalarReferenceFiniteElement& operator=(
+      ScalarReferenceFiniteElement&&) noexcept = default;
 
  public:
   /**
@@ -247,7 +248,8 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t /*subidx*/) const override {
+  size_type NumRefShapeFunctions(dim_t codim,
+                                 sub_idx_t /*subidx*/) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
@@ -314,7 +316,8 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
 
   size_type NumRefShapeFunctions() const override { return 4; }
 
-  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t /*subidx*/) const override {
+  size_type NumRefShapeFunctions(dim_t codim,
+                                 sub_idx_t /*subidx*/) const override {
     return (codim == 2) ? 1 : 0;
   }
 
@@ -391,7 +394,8 @@ class SegmentLinearLagrangeFE final
   SegmentLinearLagrangeFE(const SegmentLinearLagrangeFE&) = default;
   SegmentLinearLagrangeFE(SegmentLinearLagrangeFE&&) noexcept = default;
   SegmentLinearLagrangeFE& operator=(const SegmentLinearLagrangeFE&) = default;
-  SegmentLinearLagrangeFE& operator=(SegmentLinearLagrangeFE&&) noexcept = default;
+  SegmentLinearLagrangeFE& operator=(SegmentLinearLagrangeFE&&) noexcept =
+      default;
   SegmentLinearLagrangeFE()
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kSegment(), 1) {}
   virtual ~SegmentLinearLagrangeFE() = default;

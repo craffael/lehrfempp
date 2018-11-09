@@ -18,7 +18,7 @@ namespace lf::quad {
 
 CONTROLDECLARECOMMENT(QuadRule, out_ctrl_, "out_ctrl_",
                       "Output control for QuadRule");
-  
+
 std::ostream& operator<<(std::ostream& stream,
                          const lf::quad::QuadRule& quadrule) {
   quadrule.PrintInfo(stream);

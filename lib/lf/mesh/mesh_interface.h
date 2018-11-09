@@ -106,7 +106,6 @@ class Mesh {
   virtual ~Mesh() = default;
 };
 
- 
 }  // namespace lf::mesh
 
 #endif  // __b86b0c9cb0fd48da931a1f24421b8842
