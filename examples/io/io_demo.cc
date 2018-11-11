@@ -7,7 +7,7 @@
  */
 
 #include <lf/io/io.h>
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
 #include <boost/filesystem.hpp>
 #include "lf/mesh/utils/lambda_mesh_data_set.h"
@@ -18,7 +18,7 @@ int main() {
   auto smiley_path = here.parent_path() / "smiley.msh";
 
   // load the smiley mesh
-  auto mesh_factory = std::make_unique<lf::mesh::hybrid2dp::MeshFactory>(2);
+  auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::io::GmshReader reader(std::move(mesh_factory), smiley_path.string());
 
   // print all physical entities:

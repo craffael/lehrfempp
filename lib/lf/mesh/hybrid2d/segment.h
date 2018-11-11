@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Implementation for 1d Segments for hybrid2dp mesh manager
+ * @brief Implementation for 1d Segments for hybrid2d mesh manager
  * @author Raffael Casagrande
  * @date   2018-06-22 03:56:25
  * @copyright MIT License
@@ -11,7 +11,7 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::mesh::hybrid2dp {
+namespace lf::mesh::hybrid2d {
 
 // Forward declaration:
 class Point;
@@ -117,6 +117,6 @@ class Segment : public mesh::Entity {
       lf::mesh::Orientation::positive};  // orientation of endpoints
 };
 
-}  // namespace lf::mesh::hybrid2dp
+}  // namespace lf::mesh::hybrid2d
 
 #endif  // __feff908010fa4d75a9c006c02b4fafe7

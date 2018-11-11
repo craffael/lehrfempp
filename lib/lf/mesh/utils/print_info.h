@@ -50,4 +50,24 @@ void PrintInfo(const Mesh& mesh, std::ostream& o);
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
 }  // namespace lf::mesh::utils
 
+// Put the overloaded operators into lf::mesh so they are found when needed
+// https://de.wikipedia.org/wiki/Argument_dependent_name_lookup
+namespace lf::mesh {
+
+/**
+ * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`.
+ *
+ * This method just calls `PrintInfo(const Mesh&, std::ostream&)`
+ *
+ * @param stream The stream to which this function should output
+ * @param mesh The mesh to write to `stream`.
+ * @return The stream itself.
+ */
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
+  lf::mesh::utils::PrintInfo(mesh, stream);
+  return stream;
+}
+
+}  // namespace lf::mesh
+
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

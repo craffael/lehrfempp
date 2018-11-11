@@ -10,15 +10,15 @@
 #include <Eigen/Eigen>
 #include <iostream>
 
-#include <lf/mesh/hybrid2dp/hybrid2dp.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_factory_test.h"
 
-namespace lf::mesh::hybrid2dp::test {
+namespace lf::mesh::hybrid2d::test {
 // Output orientations of edges for test mesh
-TEST(lf_hybrid2dp, lf_orientation) {
+TEST(lf_hybrid2d, lf_orientation) {
   std::cout << "### TEST: mesh orientation" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
@@ -67,4 +67,4 @@ TEST(lf_hybrid2dp, lf_orientation) {
   }
 }
 
-}  // namespace lf::mesh::hybrid2dp::test
+}  // namespace lf::mesh::hybrid2d::test

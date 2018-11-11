@@ -9,7 +9,7 @@ target_link_libraries(lf.examples.io.io_demo
   lf.mesh
   lf.mesh.test_utils
   lf.mesh.utils
-  lf.mesh.hybrid2dp
+  lf.mesh.hybrid2d
   lf.refinement
   lf.io
   )
