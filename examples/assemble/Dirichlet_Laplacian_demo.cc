@@ -233,12 +233,13 @@ double L2ErrorLinearFEDirichletLaplacian(
         cell_dof_idx(loc_glob_map.GlobalDofIndices(cell));
     LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
                   "Inconsistent node number");
+    const lf::base::size_type num_nodes = cell.RefEl().NumNodes();
     double sum = 0.0;
-    for (int k = 0; k < cell.RefEl().NumNodes(); ++k) {
+    for (int k = 0; k < num_nodes; ++k) {
       sum += std::pow(
           sol_vec[cell_dof_idx[k]] - dirichlet_data[cell_dof_idx[k]], 2);
     }
-    nodal_err += lf::geometry::Volume(*cell.Geometry()) * sum;
+    nodal_err += lf::geometry::Volume(*cell.Geometry()) * (sum / num_nodes);
   }
   return std::sqrt(nodal_err);
 }
