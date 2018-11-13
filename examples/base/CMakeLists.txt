@@ -15,3 +15,5 @@ add_executable(lf.examples.base.boost_po_demo ${bpo_demo_sources})
 target_link_libraries(lf.examples.base.boost_po_demo PUBLIC
                       Boost::program_options
                       lf.mesh.utils)
+
+add_subdirectory(comm)

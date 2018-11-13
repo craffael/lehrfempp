@@ -52,8 +52,8 @@ void print_variables(po::options_description& desc, po::variables_map& vm) {
 
 class StaticVarsDemoClass {
  public:
-  static int ctrl_var_;
-  static int other_var_;
+  static unsigned int ctrl_var_;
+  static unsigned int other_var_;
 };
 CLASSCONTROLDECLARE(StaticVarsDemoClass, ctrl_var_, "ctrl_var");
 CLASSCONTROLDECLARE(StaticVarsDemoClass, other_var_, "other_var");
