@@ -265,11 +265,12 @@ std::vector<double> SolveDirLaplSeqMesh(
 
   // Perform several steps of regular refinement of the given mesh
   for (int refstep = 0; refstep < reflevels; ++refstep) {
+    // Barycentric refinement is the other option
     multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
   }
   // Solve Dirichlet boundary value problem on every level
   lf::assemble::size_type L = multi_mesh.NumLevels();
-  std::vector<double> errors(L);
+  std::vector<double> errors{};
   for (int level = 0; level < L; level++) {
     errors.push_back(
         L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));
@@ -392,7 +393,7 @@ int main(int argc, const char **argv) {
     auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u, f);
     int level = 0;
     for (auto &err : L2errs) {
-      std::cout << "L2 rrror on level " << level << " = " << err << std::endl;
+      std::cout << "L2 error on level " << level << " = " << err << std::endl;
       level++;
     }
   }
