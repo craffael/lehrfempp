@@ -18,14 +18,16 @@ namespace lf::mesh::utils {
 /**
  * @brief Assigns to every entity(all codims) in a mesh a value of type `T`
  * @tparam T The type of value to store with every entity
+ *
  * @sa MeshDataSet
  */
 template <class T>
 class AllCodimMeshDataSet : public MeshDataSet<T> {
+ public:
   using size_type = Mesh::size_type;
   using dim_t = base::RefEl::dim_t;
+  using entry_ref_t = typename std::vector<T>::reference;
 
- public:
   AllCodimMeshDataSet(const AllCodimMeshDataSet&) = delete;
   AllCodimMeshDataSet(AllCodimMeshDataSet&&) noexcept = default;
   AllCodimMeshDataSet& operator=(const AllCodimMeshDataSet&) = delete;
@@ -39,9 +41,11 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  T& operator()(const Entity& e) {
+  entry_ref_t operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
-    return data_[e.Codim()][mesh_->Index(e)];
+    std::vector<T>& ref_data_vec{data_[e.Codim()]};
+    entry_ref_t entry{ref_data_vec[mesh_->Index(e)]};
+    return entry;
   }
   const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
@@ -49,13 +53,14 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   }
   bool DefinedOn(const Entity& e) const override { return mesh_->Contains(e); }
 
- private:
-  dim_t dim_mesh_;
-  std::shared_ptr<Mesh> mesh_;
-  std::vector<std::vector<T>> data_;
-
-  /** Private constructor, use make_AllCodimMeshDataSet function! */
-  explicit AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh)
+  /** @brief set up default-initialized data arrays
+   *
+   * @param mesh shared pointer to underlying mesh
+   *
+   * allocates arrays containing a value of type T for _every_ entity of the
+   * mesh
+   */
+  explicit AllCodimMeshDataSet(std::shared_ptr<const lf::mesh::Mesh> mesh)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
         mesh_(std::move(mesh)),
@@ -65,10 +70,17 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
     }
   }
 
-  /** Private constructor, use make_AllCodimMeshDataSet function! */
+  /** @brief Set up data array for entities and initialize it with a given value
+   *
+   * @param mesh shared pointer to underlying mesh
+   * @param init_value value to be copied in every cell of the array
+   *
+   * Allocates an array for data of type T index by _all_ entities of the
+   * mesh.
+   */
   template <class = typename std::enable_if<
                 std::is_copy_constructible<T>::value>::type>
-  AllCodimMeshDataSet(std::shared_ptr<Mesh> mesh, T init_value)
+  AllCodimMeshDataSet(std::shared_ptr<const lf::mesh::Mesh> mesh, T init_value)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
         mesh_(std::move(mesh)),
@@ -78,16 +90,21 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
     }
   }
 
+ private:
+  dim_t dim_mesh_;
+  std::shared_ptr<const lf::mesh::Mesh> mesh_;
+  std::vector<std::vector<T>> data_;
+
   // Friends
   template <class S>
   friend std::shared_ptr<AllCodimMeshDataSet<S>>
   make_AllCodimMeshDataSet(  // NOLINT
-      std::shared_ptr<Mesh> mesh);
+      std::shared_ptr<const lf::mesh::Mesh> mesh);
 
   template <class S, class>
   friend std::shared_ptr<AllCodimMeshDataSet<S>>
   make_AllCodimMeshDataSet(  // NOLINT
-      std::shared_ptr<Mesh> mesh, S init_value);
+      std::shared_ptr<const lf::mesh::Mesh> mesh, S init_value);
 };
 
 /**
@@ -99,7 +116,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
  */
 template <class T>
 std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
-    std::shared_ptr<Mesh> mesh) {
+    std::shared_ptr<const lf::mesh::Mesh> mesh) {
   using impl_t = AllCodimMeshDataSet<T>;
   return std::shared_ptr<impl_t>(new impl_t(std::move(mesh)));
 }
@@ -114,7 +131,7 @@ std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
 template <class T, class = typename std::enable_if<
                        std::is_copy_constructible<T>::value>::type>
 std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
-    std::shared_ptr<Mesh> mesh, T init_value) {
+    std::shared_ptr<const lf::mesh::Mesh> mesh, T init_value) {
   using impl_t = AllCodimMeshDataSet<T>;
   return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), init_value));
 }

@@ -62,7 +62,7 @@ class MeshFactory : public mesh::MeshFactory {
  public:
   // Switch for verbosity level of output
   /** @brief Diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream,

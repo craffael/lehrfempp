@@ -15,6 +15,7 @@ namespace lf::mesh::utils {
 template <class T>
 class CodimMeshDataSet : public MeshDataSet<T> {
  public:
+  using size_type = Mesh::size_type;
   using dim_t = base::RefEl::dim_t;
 
   /**
@@ -55,7 +56,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
   T& operator()(const Entity& e) {
-    LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
+    LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
   const T operator()(const Entity& e) const override {
@@ -90,11 +91,11 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   // Friends:
   template <class S>
   friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const Mesh> mesh, base::dim_t codim);
+      std::shared_ptr<const lf::mesh::Mesh> mesh, base::dim_t codim);
 
   template <class S, class>
   friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const Mesh> mesh, base::dim_t codim, S init);
+      std::shared_ptr<const lf::mesh::Mesh> mesh, base::dim_t codim, S init);
 };
 
 /**

@@ -9,12 +9,12 @@ namespace lf::base::test {
 class StaticVarsTest {
  public:
   StaticVarsTest() = default;
-  ~StaticVarsTest(void) = default;
+  ~StaticVarsTest() = default;
 
-  static int ctrl_var_;
-  static int other_var_;
-  static int arg_var_;
-  static int output_ctrl_;  // Added
+  static unsigned int ctrl_var_;
+  static unsigned int other_var_;
+  static unsigned int arg_var_;
+  static unsigned int output_ctrl_;  // Added
 };
 
 CONTROLDECLARE(testvar, "testvar");

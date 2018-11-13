@@ -82,6 +82,18 @@ class Geometry {
    *
    * @note If `DimLocal() == DimGlobal()` then \f$ J (J^T J)^{-1} = J^{-T} \f$,
    *       i.e. this method returns the inverse of the transposed jacobian.
+   *
+   * ### Example for recovering a single transposed inverse Jacobian.
+   *
+   * If both dimensions agree and have the value D, then the method
+   * returns the transposed of the inverse Jacobians of the transformation at
+   * the passed points. These are square DxD matrices.
+   *
+   * To retrieve the j-th inverse transposed Jacobian from the returned matrix,
+   * use the `block` methdod of `Eigen`:
+   * ~~~
+   * JacobianInverseGramian(local).block(0,i*D,D,D)
+   * ~~~
    */
   virtual Eigen::MatrixXd JacobianInverseGramian(
       const ::Eigen::MatrixXd& local) const = 0;
@@ -172,7 +184,7 @@ class Geometry {
 
   // Output control variable
   /** @brief Output control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 
 };  // class Geometry
 

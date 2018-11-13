@@ -6,23 +6,12 @@
 
 /**
  * @file
- * @brief No implementation here
+ * @brief No implementation so far
  * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License
  */
 
-#include "quad_rule.h"
+#include "fix_dof.h"
 
-namespace lf::quad {
-
-CONTROLDECLARECOMMENT(QuadRule, out_ctrl_, "out_ctrl_",
-                      "Output control for QuadRule");
-
-std::ostream& operator<<(std::ostream& stream,
-                         const lf::quad::QuadRule& quadrule) {
-  quadrule.PrintInfo(stream);
-  return stream;
-}
-
-}  // namespace lf::quad
+namespace lf::assemble {}
