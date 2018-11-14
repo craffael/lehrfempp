@@ -13,6 +13,11 @@ void sub() {
 }
 
 int main(int argc, char** argv) {
+  // namespace overview:
+  // ci (comm::input) for reading in variables from cmdline or file
+  // cc (comm::check) for debug messages
+  // cv (comm::variables) for global variables
+
   if (argc <= 1) {
     std::cout << "Demo for lf::base::comm.\n" \
                  " * Try setting the variables v1,v2,v3,v4 by --v1 <val>\n" \
@@ -27,6 +32,7 @@ int main(int argc, char** argv) {
   ci::Init(argc, argv); // argc, argv optional. can be specified later
 
   // add some variables
+  //
   ci::Add<int>("v1", "Set variable #1"); // directly
   ci::Add<double>("v2", "Set variable #2", 42.1); // with default value
   ci::Add("help", "Print this help message.");  // add help message
@@ -57,9 +63,6 @@ int main(int argc, char** argv) {
   // get "v4", but if it isn't set it return "empty". Used to avoid errors.
   std::cout << "Value of v4 is " << ci::Get<std::string>("v4", "empty") << "\n";
   // std::cout << ci::Get<double>("v5") << "\n"; // invalid_argument exception!
-
-  // verify a certain statement
-  cc::Verify(ci::Get<double>("v2") == 42.1, "v2 must be 42.1!");
 
   // debug messages of different levels
   cc::Debug(0, "A level 0 debug message.");
