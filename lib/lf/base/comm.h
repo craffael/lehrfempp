@@ -91,34 +91,37 @@ extern void ParseCommandLine(int argc = 0, char** argv = nullptr);
 extern void ParseFile(const std::string& file = "");
 
 
+/**
+ * @brief Add possible input for variable called `name` with description
+ *        `comment`.
+ * @param name The name of the variable.
+ * @param comment Description of the variable.
+ */
 template <typename T>
 void Add(const std::string& name, const std::string& comment) {
-  // @brief Add possible input for variable called `name` with description
-  //        `comment`
-  // @param name: std::string, name of the variable
-  // @param comment: std::string, description of the variable
-
   kDesc.add_options()(name.c_str(), po::value<T>(), comment.c_str());
 }
 
+/**
+ * @brief Add possible input for variable called `name` with description
+ *        `comment` with default value `def`.
+ * @param name The name of the variable.
+ * @param comment Description of the variable.
+ * @param def T The default value.
+ */
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def) {
-  // @brief Add possible input for variable called `name` with description
-  //        `comment` with default value `def`
-  // @param name: std::string, name of the variable
-  // @param comment: std::string, description of the variable
-  // @param def: T, default value
-
   kDesc.add_options()
     (name.c_str(), po::value<T>()->default_value(def), comment.c_str());
 }
 
+/**
+ * @brief Get the value of the variable `name`.
+ * @param name The name of the variable.
+ * @note Throws an invalid_argument exception if `name` doens't exist.
+ */
 template <typename T>
 T Get(const std::string& name) {
-  // @brief Get the value of the variable `name`
-  // @param name: std::string, name of the variable
-  // @note: Throws an invalid_argument exception if `name` doens't exist
-
   if (kVM.count(name) > 0) {
     return kVM[name].as<T>();
   }
@@ -129,13 +132,14 @@ T Get(const std::string& name) {
   }
 }
 
+/**
+ * @brief Get the value of the variable `name`, return `alt` if `name` doesn't
+ *        exist. 'Safe' version of Get<T>(name).
+ * @param name The name of the variable.
+ * @param alt T Value that's returned, if `name` doesn't exist.
+ */
 template <typename T>
 T Get(const std::string& name, const T& alt) {
-  // @brief Get the value of the variable `name`, return `alt` if `name` doesn't
-  //        exist. 'Safe' version of Get<T>(name).
-  // @param name: std::string, name of the variable
-  // @param alt: T, value that's returned, if `name` doesn't exist
-
   try {
     return Get<T>(name);
   }
