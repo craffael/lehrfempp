@@ -26,4 +26,25 @@ namespace lf::quad {
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  */
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order);
+
+/** @brief edge midpoint quadrature rule for reference triangles
+ *
+ * This quadrature rule relies on point evaluations at the midpoints of
+ * all edges with equal weights = 1/6 for the reference triangle.
+ *
+ * The rule is exact for quadratic bi-variate polynomials
+ */
+QuadRule make_TriaQR_EdgeMidpointRule();
+
+/** @brief edge midpoint quadrature rule for unit square (= reference quad)
+ *
+ * This quadrature rule relies on point evaluations at the midpoints of
+ * all edges with equal weights = 1/4 for the unit square.
+ *
+ * The rule is exact for bilinear polynomials.
+ */
+QuadRule make_QuadQR_EdgeMidpointRule();
+
+/** @brief Seven point triangular quadrature rule of order 6 */
+QuadRule make_TriaQR_P7O6();
 }  // namespace lf::quad

@@ -113,4 +113,10 @@ TEST(qr_IntegrationTest, Tria) {
   }
 }
 
+// Test midpoint quadrature rule for triangles
+TEST(qr_IntegrationTest, mp) {
+  checkQuadRule(make_TriaQR_EdgeMidpointRule(), 1e-12, true);
+  checkQuadRule(make_QuadQR_EdgeMidpointRule(), 1e-12, true);
+}
+
 }  // namespace lf::quad::test
