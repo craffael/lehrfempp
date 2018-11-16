@@ -270,7 +270,7 @@ std::vector<double> SolveDirLaplSeqMesh(
   }
   // Solve Dirichlet boundary value problem on every level
   lf::assemble::size_type L = multi_mesh.NumLevels();
-  std::vector<double> errors{};
+  std::vector<double> errors(L);
   for (int level = 0; level < L; level++) {
     errors.push_back(
         L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));

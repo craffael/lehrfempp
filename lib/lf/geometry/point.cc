@@ -16,9 +16,8 @@ Eigen::MatrixXd Point::JacobianInverseGramian(
   return Eigen::MatrixXd::Zero(DimGlobal(), 0);
 }
 
-// NOLINTNEXTLINE(misc-unused-parameters)
 Eigen::VectorXd Point::IntegrationElement(const Eigen::MatrixXd& local) const {
-  return Eigen::Matrix<double, 1, 1>::Constant(1.0);
+  return Eigen::MatrixXd::Ones(local.cols(), 1);
 }
 
 std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
