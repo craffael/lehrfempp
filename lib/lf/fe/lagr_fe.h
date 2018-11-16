@@ -125,6 +125,23 @@ class ScalarReferenceFiniteElement {
   }
 
   /**
+   * @brief The number of _interior_ reference shape functions for sub-entities
+   *        of a particular co-dimension
+   *
+   * @param codim do-dimension of the subentity
+   * @return number of _interior_ reference shape function belonging to the
+   *         specified sub-entity.
+   *
+   * @note this method will throw an exception when different numbers of
+   *       reference shape functions are assigned to different sub-entities
+   *       of the same co-dimension
+   */
+  virtual size_type NumRefShapeFunctions(dim_t codim) const {
+    LF_VERIFY_MSG(false,"Illegal call for non-uniform sub-entity dof numbers");
+    return 0;
+  }
+
+  /**
    * @brief The number of _interior_ reference shape functions for every
    * sub-entity
    *
@@ -247,8 +264,18 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
    */
   size_type NumRefShapeFunctions() const override { return 3; }
 
-  /** @brief All shape functions attached to nodes
+  /** @brief Exactly one shape function attached to each node, none to other
+   * sub-entities
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  size_type NumRefShapeFunctions(dim_t codim) const override {
+    LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
+    return (codim == 2) ? 1 : 0;
+  }
+  /** @brief Exactly one shape function attached to each node, none to other
+   * sub-entities
+   * @copydoc
+   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
   size_type NumRefShapeFunctions(dim_t codim,
                                  sub_idx_t /*subidx*/) const override {
@@ -316,8 +343,22 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
       : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kQuad(), 1) {}
   virtual ~QuadLinearLagrangeFE() = default;
 
+  /** @brief The local shape functions: four bilinear basis functions
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   */
   size_type NumRefShapeFunctions() const override { return 4; }
 
+  /** @brief Exactly one shape function attached to each node, none to other
+   * sub-entities
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  size_type NumRefShapeFunctions(dim_t codim) const override {
+    return (codim == 2) ? 1 : 0;
+  }
+  /** @brief Exactly one shape function attached to each node, none to other
+   * sub-entities
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
   size_type NumRefShapeFunctions(dim_t codim,
                                  sub_idx_t /*subidx*/) const override {
     return (codim == 2) ? 1 : 0;
@@ -408,6 +449,14 @@ class SegmentLinearLagrangeFE final
 
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  size_type NumRefShapeFunctions(dim_t codim) const override {
+    LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
+    return (codim == 1) ? 1 : 0;
+  }
+  /** @brief All shape functions attached to nodes
+   * @copydoc
+   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
   size_type NumRefShapeFunctions(dim_t codim,
                                  sub_idx_t /*subidx*/) const override {

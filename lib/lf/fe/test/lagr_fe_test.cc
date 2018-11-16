@@ -102,7 +102,7 @@ TEST(lf_fe, lf_fe_ellbvp) {
   auto alpha = [](Eigen::Vector2d) -> double { return 1.0; };
   auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
   using loc_comp_t =
-      LagrangeFEEllBVPElementMatrix<decltype(alpha), decltype(gamma)>;
+      LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>;
   // Set debugging flags
   // loc_comp_t::ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;

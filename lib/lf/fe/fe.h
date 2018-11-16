@@ -17,6 +17,7 @@
 
 #include "lagr_fe.h"
 #include "loc_comp_ellbvp.h"
+#include "fe_tools.h"
 
 namespace lf::fe {}  // namespace lf::fe
 
