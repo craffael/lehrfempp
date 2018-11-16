@@ -286,7 +286,7 @@ class LocCompLagrFEPreprocessor {
   /** @brief Matrix of values of reference shape functions at theorem
    *        quadrature points in the reference element
    * @param type of reference element (triangle or quadrilateral)
-   * @return an N_rsf x N_qpt matrix, each corresponding to a reference
+   * @return an N_rsf x N_qpt matrix, each row corresponding to a reference
    *         shape function, each column to a quadrature point.
    */
   const Eigen::MatrixXd &rsf_at_quadpts(lf::base::RefEl ref_el) {
