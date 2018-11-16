@@ -12,133 +12,139 @@ branches:
   except:
   - gh-pages
 stages:
-# - clang-format
-# - clang-tidy
+- clang-format
+- clang-tidy
 - compile_test
-# - doxygen
+- doxygen
 jobs:
   include:
-  # - stage: clang-format
-    # os: linux
-    # addons:
-      # apt:
-        # update: true
-        # sources:
-        # - llvm-toolchain-trusty-6.0
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - clang-format-6.0
-    # script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-6.0
-      # --color always ./lib/"
-  # - stage: clang-tidy
-    # os: linux
-    # addons:
-      # apt:
-        # update: true
-        # sources:
-        # - llvm-toolchain-trusty-6.0
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - clang-tidy-6.0
-        # - g++-7
-    # script: "./travis/run_clang_tidy.sh"
-  # - stage: compile_test
-    # os: linux
-    # compiler: gcc
-    # env:
-    # - COMPILER=g++-7
-    # - BUILD_TYPE='Debug'
-    # addons:
-      # apt:
-        # update: true
-        # sources:
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - g++-7
-    # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: linux
-    # compiler: gcc
-    # env:
-    # - COMPILER=g++-7
-    # - BUILD_TYPE='Release'
-    # addons:
-      # apt:
-        # update: true
-        # sources:
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - g++-7
-    # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: linux
-    # compiler: clang
-    # env:
-    # - COMPILER='clang++-5.0'
-    # - BUILD_TYPE='Debug'
-    # addons:
-      # apt:
-        # sources:
-        # - llvm-toolchain-trusty-5.0
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - clang-5.0
-        # - g++-7
-    # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: linux
-    # compiler: clang
-    # env:
-    # - COMPILER='clang++-5.0'
-    # - BUILD_TYPE='Release'
-    # addons:
-      # apt:
-        # sources:
-        # - llvm-toolchain-trusty-5.0
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - clang-5.0
-        # - g++-7
-    # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: osx
-    # osx_image: xcode9.4
-    # compiler: clang
-    # env: COMPILER='clang++' BUILD_TYPE='Debug'
-    # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: osx
-    # osx_image: xcode9.4
-    # compiler: clang
-    # env: COMPILER='clang++' BUILD_TYPE='Release'
-    # script: "./travis/compile_test.sh"
+  - stage: clang-format
+    os: linux
+    addons:
+      apt:
+        update: true
+        sources:
+        - llvm-toolchain-trusty-6.0
+        - ubuntu-toolchain-r-test
+        packages:
+        - clang-format-6.0
+    script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-6.0
+      --color always ./lib/"
+  - stage: clang-tidy
+    os: linux
+    addons:
+      apt:
+        update: true
+        sources:
+        - llvm-toolchain-trusty-6.0
+        - ubuntu-toolchain-r-test
+        packages:
+        - clang-tidy-6.0
+        - g++-7
+    script: "./travis/run_clang_tidy.sh"
+  - stage: compile_test
+    os: linux
+    compiler: gcc
+    env:
+    - COMPILER=g++-7
+    - BUILD_TYPE='Debug'
+    addons:
+      apt:
+        update: true
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-7
+    script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: linux
+    compiler: gcc
+    env:
+    - COMPILER=g++-7
+    - BUILD_TYPE='Release'
+    addons:
+      apt:
+        update: true
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-7
+    script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: linux
+    compiler: clang
+    env:
+    - COMPILER='clang++-5.0'
+    - BUILD_TYPE='Debug'
+    addons:
+      apt:
+        sources:
+        - llvm-toolchain-trusty-5.0
+        - ubuntu-toolchain-r-test
+        packages:
+        - clang-5.0
+        - g++-7
+    script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: linux
+    compiler: clang
+    env:
+    - COMPILER='clang++-5.0'
+    - BUILD_TYPE='Release'
+    addons:
+      apt:
+        sources:
+        - llvm-toolchain-trusty-5.0
+        - ubuntu-toolchain-r-test
+        packages:
+        - clang-5.0
+        - g++-7
+    script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: osx
+    osx_image: xcode9.4
+    compiler: clang
+    env: COMPILER='clang++' BUILD_TYPE='Debug'
+    script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: osx
+    osx_image: xcode9.4
+    compiler: clang
+    env: COMPILER='clang++' BUILD_TYPE='Release'
+    script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
     osx_image: xcode10.1
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
-  # - stage: doxygen
-    # if: branch = master AND type IN (push)
-    # os: linux
-    # compiler: gcc
-    # addons:
-      # apt:
-        # sources:
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - doxygen
-        # - graphviz
-        # - g++-7
-    # script: "cd $TRAVIS_BUILD_DIR/doc/doxygen\nexport CXX=g++-7\ncmake -H. -BBuild
-      # \ncd Build\nmake doxygen\n"
-    # deploy:
-      # provider: pages
-      # skip_cleanup: true
-      # local_dir: "./doc/doxygen/Build/html"
-      # github_token: "$GITHUB_API_KEY"
-      # on:
-        # branch: master
+  - stage: compile_test
+    os: osx
+    osx_image: xcode10.1
+    compiler: clang
+    env: COMPILER='clang++' BUILD_TYPE='Release'
+    script: "./travis/compile_test.sh"
+  - stage: doxygen
+    if: branch = master AND type IN (push)
+    os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - doxygen
+        - graphviz
+        - g++-7
+    script: "cd $TRAVIS_BUILD_DIR/doc/doxygen\nexport CXX=g++-7\ncmake -H. -BBuild
+      \ncd Build\nmake doxygen\n"
+    deploy:
+      provider: pages
+      skip_cleanup: true
+      local_dir: "./doc/doxygen/Build/html"
+      github_token: "$GITHUB_API_KEY"
+      on:
+        branch: master
 notifications:
   slack:
     secure: EnZoql1AbDEDOMoXeTQZuxDbD2rTCsg9MI74IS3zYIulc9v+65mtIh7fL1M5UX9LiSe+AZyymwGklwBBoGA4/nAG1STxHOBC4QR0zRSRRtsp36kVGWwZzaHnBSIdj4uyQrlNmkS7VNR8/svaiUiizlmvzEYiMiDX/xvXt+TrdB1Gya2mQQtkL6vWLtFTjkKhnRIz/JKEcRaxwzFMAwtKKcZE66RucKYvuUMfVPeCFioRmp1BW6C8pgHdUrq/Aq5Yi7Oa8QQxwe6Jqf6DMpBXb63O8vPuzdv29QKc/hfME1ZSCf4yxTCPCUFjFa0UOrfDEoTP5cQ/vczFgr8rj+K8fLoASAFBGkDwBK2IRO4KZSfoZfLJVhPJSQ9GitLP6RN2AKMlja4uRHTwYhBC/Slu8qdWZEmLfCA1wYUfwprSnoZ9xvB58P/BpL2kgLW1bD6S9r9CQ3+5bxh0xz51Rr8VAuZIOE1EtNPXCfucz+LGlMHCX3gUFF8ONtTt+ESuoB1Y2nfeahWPWweN/AyiedIpjHQdrVsu4L/DKf7NOl+O2gl7L5lKyhowUby57DTDdebdbP5cdMZWOGA5xRBd2x4q5wCC5dEY+nqQc09rjuoYYdfxKvPCK6lcTHOWoMVRYydG5Ga2e7sY40k4shn8Y4PCzR+62fry23lnyn+ta9dWJck=
