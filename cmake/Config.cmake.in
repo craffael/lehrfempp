@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+foreach(target @LEHRFEMPP_TARGETS@)
+  include("${CMAKE_CURRENT_LIST_DIR}/${target}.cmake")
+endforeach()
+check_required_components("@PROJECT_NAME@")
