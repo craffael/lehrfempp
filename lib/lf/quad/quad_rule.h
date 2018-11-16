@@ -10,6 +10,7 @@
 #define __a7241ee797424d98ad339341b02bca70
 
 #include <lf/base/base.h>
+#include <iostream>
 #include <utility>
 
 namespace lf::quad {
@@ -33,9 +34,27 @@ using quadOrder_t = unsigned char;
  */
 class QuadRule {
  public:
+  /** @name Default constructors */
+  /** @{ */
+  QuadRule(const QuadRule&) = default;
+  QuadRule(QuadRule&&) = default;
+  QuadRule& operator=(const QuadRule&) = default;
+  QuadRule& operator=(QuadRule&&) = default;
+  ~QuadRule() = default;
+  /** @} */
+  /**
+   * @brief Default constructor creating an "invalid quadrature rule"
+   *
+   * This default constructor is needed when storing quadrature rules
+   * in member variables of classes, whose initialization cannot be
+   * done in an initialization section of a constructor.
+   */
+  QuadRule() : ref_el_(lf::base::RefEl::kPoint()), points_(0, 0), weights_(0) {}
+
   /**
    * @brief Construct a new quadrature rule by specifying reference element,
    * points, weights and order explicitly.
+   *
    * @param ref_el The reference element for which the quadrature rule is.
    * @param points The points of the quadrature rule, a matrix of size
    * `ref_el.Dimension() x num_points` that contains the points as column
@@ -102,12 +121,42 @@ class QuadRule {
    */
   base::size_type NumPoints() const { return points_.cols(); }
 
+  /**
+   * @brief Output function controlled by variable out_ctrl_;
+   *
+   * If the lsb of out_ctrl_ is set also print weights and nodes, otherwise
+   * just output the number of nodes.
+   */
+  void PrintInfo(std::ostream& o) const {
+    o << weights_.size() << "-point QR";
+    if ((out_ctrl_ & kout_ext) != 0) {
+      o << ", weights = " << weights_.transpose() << ", nodes = \n" << points_;
+    }
+  }
+
  private:
   base::RefEl ref_el_;
-  quadOrder_t order_;
+  quadOrder_t order_{0};
   Eigen::MatrixXd points_;
   Eigen::VectorXd weights_;
+
+ public:
+  /** @brief Output control variable */
+  static unsigned int out_ctrl_;
+  static const unsigned int kout_ext = 1;
 };
+
+/**
+ * @brief Output operator for quadrature rules
+ * @param stream The stream to which this function should output
+ * @param quadrule the quadrature rule to be printed
+ * @return The stream itself.
+ *
+ * @sa QuadRule::PrintInfo()
+ *
+ */
+std::ostream& operator<<(std::ostream& stream,
+                         const lf::quad::QuadRule& quadrule);
 
 }  // namespace lf::quad
 

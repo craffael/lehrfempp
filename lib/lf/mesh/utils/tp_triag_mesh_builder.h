@@ -52,7 +52,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
 
  public:
   /** Diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };  // end class definition TPTriagMeshBuilder
 
 }  // namespace lf::mesh::hybrid2d

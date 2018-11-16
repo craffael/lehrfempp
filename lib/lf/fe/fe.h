@@ -1,3 +1,5 @@
+#ifndef LF_FE_H
+#define LF_FE_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -6,23 +8,16 @@
 
 /**
  * @file
- * @brief No implementation here
+ * @brief Finite elements: local definition and assembly
+ * elliptic BVPs
  * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License
  */
 
-#include "quad_rule.h"
+#include "lagr_fe.h"
+#include "loc_comp_ellbvp.h"
 
-namespace lf::quad {
+namespace lf::fe {}  // namespace lf::fe
 
-CONTROLDECLARECOMMENT(QuadRule, out_ctrl_, "out_ctrl_",
-                      "Output control for QuadRule");
-
-std::ostream& operator<<(std::ostream& stream,
-                         const lf::quad::QuadRule& quadrule) {
-  quadrule.PrintInfo(stream);
-  return stream;
-}
-
-}  // namespace lf::quad
+#endif

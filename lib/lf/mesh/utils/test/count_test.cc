@@ -44,4 +44,22 @@ TEST(test_mesh_utils, count_test) {
   }
 }
 
+TEST(test_mesh_utils, bd_flag_test) {
+  std::cout << "Test for flagging of boundary entities" << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  auto bd_flags{flagEntitiesOnBoundary(mesh_p)};
+  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
+    std::cout << edge << ' ' << mesh_p->Index(edge)
+              << (bd_flags(edge) ? (" ON BOUNDARY") : (" INTERIOR"))
+              << std::endl;
+  }
+  for (const lf::mesh::Entity &node : mesh_p->Entities(2)) {
+    std::cout << node << ' ' << mesh_p->Index(node)
+              << (bd_flags(node) ? (" ON BOUNDARY") : (" INTERIOR"))
+              << std::endl;
+  }
+}
+
 }  // namespace lf::mesh::utils::test

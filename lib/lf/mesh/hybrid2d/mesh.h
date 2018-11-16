@@ -128,7 +128,7 @@ class Mesh : public mesh::Mesh {
 
  public:
   /** @brief Diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };
 
 }  // namespace lf::mesh::hybrid2d

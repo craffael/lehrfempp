@@ -169,7 +169,7 @@ class DofHandler {
    * - if > 0 and divisible by 3: print entities belonging to dofs
    * - if > 0 and divisible by 10: also print interior dof indices
    */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };
 
 /** @brief output operator for DofHandler objects */
@@ -195,7 +195,8 @@ class UniformFEDofHandler : public DofHandler {
    * @param dofmap map telling number of interior dofs for every type of entity
    */
   using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
-  UniformFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh, dof_map_t dofmap);
+  UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,
+                      dof_map_t dofmap);
   /**@}*/
 
   /**
@@ -333,7 +334,7 @@ class UniformFEDofHandler : public DofHandler {
   }
 
   /** The mesh on which the degrees of freedom are defined */
-  std::shared_ptr<lf::mesh::Mesh> mesh_;
+  std::shared_ptr<const lf::mesh::Mesh> mesh_;
   /** The total number of degrees of freedom */
   size_type num_dof_{0};
   /** Vector of entities to which global basis functions are associated */
@@ -384,9 +385,14 @@ class DynamicFEDofHandler : public DofHandler {
    *      size_type operator (const lf::mesh::Entity &);
    *
    * that returns the number of local shape functions associated with an entity.
+   * Note that this gives the number of so-called interior local shape functions
+   * belonging to an entity and not the number of local shape functions whose
+   * supports will include the entity. Also refer to the documentation of
+   * DynamicFEDofHandler::NoLocalDofs() and
+   * DynamicFEDofHandler::NoInteriorDofs().
    */
   template <typename LOCALDOFINFO>
-  DynamicFEDofHandler(std::shared_ptr<lf::mesh::Mesh> mesh_p,
+  DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
                       LOCALDOFINFO &&locdof)
       : mesh_p_(std::move(mesh_p)) {
     LF_ASSERT_MSG((mesh_p_->DimMesh() == 2), "Can handle 2D meshes only");
@@ -399,7 +405,7 @@ class DynamicFEDofHandler : public DofHandler {
     const size_type no_nodes = mesh_p_->Size(2);
     no_int_dofs_[2].resize(no_nodes, 0);
     offsets_[2].resize(no_nodes + 1, 0);
-    // Traverse nodes based on indices
+    // Traverse nodes (co-dimension-2 entities) based on indices
     for (glb_idx_t node_idx = 0; node_idx < no_nodes; node_idx++) {
       // Obtain pointer to node entity
       const mesh::Entity *node_p{mesh_p_->EntityByIndex(2, node_idx)};
@@ -407,6 +413,7 @@ class DynamicFEDofHandler : public DofHandler {
       // Offset for indices of node in index vector
       glb_idx_t node_dof_offset = dof_idx;
       offsets_[2][node_idx] = node_dof_offset;
+      // Request number of local shape functions associated with the node
       size_type no_int_dof_node = locdof(*node_p);
       no_int_dofs_[2][node_idx] = no_int_dof_node;
 
@@ -583,7 +590,7 @@ class DynamicFEDofHandler : public DofHandler {
 
  private:
   /** The mesh on which the degrees of freedom are defined */
-  std::shared_ptr<lf::mesh::Mesh> mesh_p_;
+  std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
   /** The total number of degrees of freedom */
   size_type num_dof_{0};
   /** Vector of entities to which global basis functions are associated */
