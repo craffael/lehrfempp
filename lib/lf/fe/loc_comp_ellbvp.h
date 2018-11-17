@@ -217,6 +217,9 @@ class LocCompLagrFEPreprocessor {
    *
    * @param fe_trie finite element to be used on triangles
    * @param fe_quad finite element for quadrilaterals
+   * @param loc_quad_order desired order of local quadrature, default value = 0.
+   *        If = 0, the quadrature order is determined from the polynomial
+   *        degree of the reference shape functions.
    *
    * The two parametric finite elements for triangles and quadrilaterals have to
    * be compatible in the sense that they all assign exactly one reference shape
@@ -227,9 +230,9 @@ class LocCompLagrFEPreprocessor {
    * gradients of references local shape functions in the quadrature points (on
    * the reference element)
    */
-  LocCompLagrFEPreprocessor(
-      const ScalarReferenceFiniteElement<double> &fe_tria,
-      const ScalarReferenceFiniteElement<double> &fe_quad);
+  LocCompLagrFEPreprocessor(const ScalarReferenceFiniteElement<double> &fe_tria,
+                            const ScalarReferenceFiniteElement<double> &fe_quad,
+                                lf::quad::quadOrder_t loc_quad_order = 0);
 
   /** @brief type-dependent query of quadrature points */
   Eigen::MatrixXd qr_points(lf::base::RefEl ref_el) {

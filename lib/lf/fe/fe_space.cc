@@ -16,6 +16,12 @@
 #include "fe_space.h"
 
 namespace lf::fe {
+// Output control variable
+CONTROLDECLARECOMMENT(
+    UniformScalarFiniteElementSpace, ctrl_,
+    "UniformScalarFiniteElementSpace_ctrl",
+    "Output control for class UniformScalarFiniteElementSpace");
+
 // Constructor
 UniformScalarFiniteElementSpace::UniformScalarFiniteElementSpace(
     std::shared_ptr<const lf::mesh::Mesh> mesh_p,

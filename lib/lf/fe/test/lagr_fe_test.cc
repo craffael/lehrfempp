@@ -15,6 +15,8 @@
 #include "lf/fe/lagr_fe.h"
 #include <gtest/gtest.h>
 #include <iostream>
+#include "lf/fe/fe_space.h"
+#include "lf/fe/fe_tools.h"
 #include "lf/fe/loc_comp_ellbvp.h"
 
 #include <lf/mesh/utils/utils.h>
@@ -166,6 +168,40 @@ TEST(lf_fe, lf_fe_loadvec) {
     std::cout << "[ " << quad_vec.transpose() << "] " << std::endl;
     EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
   }
+}
+
+TEST(lf_fe, lf_fe_l2norm) {
+  LocCompLagrFEPreprocessor::ctrl_ = 255;
+  std::cout << "### TEST Computation of L2 norm" << std::endl;
+  // This test computes an approximation of the L2 norm of a function
+  // by local quadrature on a finite element mesh, using the facilities
+  // for computation of norms of differences of functions.
+
+  // Building the test mesh: a purely affine mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
+      std::make_unique<QuadLinearLagrangeFE<double>>());
+
+  // Dummy vector for coefficients of FE function
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
+
+  // Function whose L2 should be computed
+  auto u = [](Eigen::Vector2d x) -> double { return (x[0] * (1.0 - x[1])); };
+
+  // Helper object for computation of norm
+  LocalL2NormDifference<decltype(u)> loc_comp(
+      fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(), u,
+      2);
+  loc_comp.ctrl_ = 255;
+  
+  // Actual compuation of norm
+  double norm = NormOfDifference(dofh, loc_comp, zerovec);
+  std::cout << "Norm = " << norm << std::endl;
+  EXPECT_NEAR(norm, -6.75, 1E-10);
 }
 
 }  // end namespace lf::fe::test

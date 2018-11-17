@@ -178,7 +178,8 @@ CONTROLDECLARECOMMENT(LocCompLagrFEPreprocessor, ctrl_,
 
 LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
     const ScalarReferenceFiniteElement<double> &fe_tria,
-    const ScalarReferenceFiniteElement<double> &fe_quad)
+    const ScalarReferenceFiniteElement<double> &fe_quad,
+    lf::quad::quadOrder_t loc_quad_order)
     : fe_tria_(fe_tria), fe_quad_(fe_quad) {
   LF_ASSERT_MSG((fe_tria_.Dimension() == 2) && (fe_quad_.Dimension() == 2),
                 "Implemented only in 2D!");
@@ -195,14 +196,18 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
                     << fe_tria_.NumRefShapeFunctions(1, 0) << " <-> "
                     << fe_quad_.NumRefShapeFunctions(1, 0));
 
-  // Maximal order of both finite elements
-  const unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
+  // Maximal degree of both finite elements
+  unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
 
   // Obtain quadrature rules for both triangles and quadrilaterals
-  // We choose the order twice the polynomial degree of the finite element
+  // If no quadrature order has been preselected,
+  // we choose the order twice the polynomial degree of the finite element
   // space. This is slightly more than required for an admissible variational
   // crime.
-  lf::quad::quadOrder_t quad_order = 2 * poly_order;
+  lf::quad::quadOrder_t quad_order = loc_quad_order;
+  if (quad_order == 0) {
+    quad_order = 2 * poly_order;
+  }
 
   {
     // Preprocessing for triangles
