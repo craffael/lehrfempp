@@ -5,8 +5,7 @@ set(sources
   refutils.h refutils.cc
   )
 
-add_library(lf.refinement ${sources})
-target_link_libraries(lf.refinement PUBLIC Eigen3::Eigen lf.base lf.geometry)
-target_compile_features(lf.refinement PUBLIC cxx_std_17)
+add_library(refinement ${sources})
+target_link_libraries(refinement PUBLIC Eigen3::Eigen base geometry)
 
 add_subdirectory(test)

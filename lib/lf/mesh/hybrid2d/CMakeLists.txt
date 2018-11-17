@@ -14,8 +14,7 @@ set(sources
   triangle.cc
 )
 
-add_library(lf.mesh.hybrid2d ${sources})
-target_link_libraries(lf.mesh.hybrid2d PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.utils)
-target_compile_features(lf.mesh.hybrid2d PUBLIC cxx_std_17)
+lf_add_library(mesh.hybrid2d ${sources})
+target_link_libraries(mesh.hybrid2d PUBLIC Eigen3::Eigen base mesh mesh.utils)
 
 add_subdirectory(test)

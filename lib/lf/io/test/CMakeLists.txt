@@ -6,7 +6,6 @@ set(sources
   vtk_writer_tests.cc
 )
 
-add_executable(lf.io.test ${sources})
-target_link_libraries(lf.io.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.io lf.io.test_utils lf.mesh.hybrid2d lf.mesh.test_utils)
-target_compile_features(lf.io.test PUBLIC cxx_std_17)
-gtest_discover_tests(lf.io.test)
+add_executable(io.test ${sources})
+target_link_libraries(io.test PUBLIC Eigen3::Eigen Boost::boost GTest::main io io.test_utils mesh.hybrid2d mesh.test_utils)
+gtest_discover_tests(io.test)

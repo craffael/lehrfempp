@@ -9,18 +9,18 @@ set(sources
     regreftest.cc
 )
 
-add_executable(lf.refinement.test ${sources})
-target_link_libraries(lf.refinement.test
+add_executable(refinement.test ${sources})
+target_link_libraries(refinement.test
   PUBLIC Eigen3::Eigen Boost::boost GTest::main
-  lf.refinement
-  lf.mesh.hybrid2d
-  lf.mesh.test_utils
-  lf.mesh.utils
-  lf.io
-  lf.io.test_utils
+  refinement
+  mesh.hybrid2d
+  mesh.test_utils
+  mesh.utils
+  io
+  io.test_utils
   )
-target_compile_features(lf.refinement.test PUBLIC cxx_std_17)
-gtest_discover_tests(lf.refinement.test)
+
+gtest_discover_tests(refinement.test)
 
 set(rrt_sources 
   refinement_test_utils.h
@@ -28,15 +28,15 @@ set(rrt_sources
   regreftest.cc
 )
 
-add_executable(lf.refinement.rrt_test ${rrt_sources})
-target_link_libraries(lf.refinement.rrt_test
+add_executable(refinement.rrt_test ${rrt_sources})
+target_link_libraries(refinement.rrt_test
   PUBLIC Eigen3::Eigen Boost::boost GTest::main
-  lf.refinement
-  lf.mesh.hybrid2d
-  lf.mesh.test_utils
-  lf.mesh.utils
-  lf.io
-  lf.io.test_utils
+  refinement
+  mesh.hybrid2d
+  mesh.test_utils
+  mesh.utils
+  io
+  io.test_utils
   )
-target_compile_features(lf.refinement.rrt_test PUBLIC cxx_std_17)
-gtest_discover_tests(lf.refinement.rrt_test)
+
+gtest_discover_tests(refinement.rrt_test)

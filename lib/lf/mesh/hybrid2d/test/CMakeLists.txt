@@ -6,13 +6,13 @@ set(sources
   mesh_orientation_test.cc
 )
 
-add_executable(lf.mesh.hybrid2d.test ${sources})
-target_link_libraries(lf.mesh.hybrid2d.test PUBLIC Eigen3::Eigen Boost::boost GTest::main
-  lf.mesh.hybrid2d
-  lf.mesh.test_utils
-  lf.mesh.utils)
-target_compile_features(lf.mesh.hybrid2d.test PUBLIC cxx_std_17)
-gtest_discover_tests(lf.mesh.hybrid2d.test)
+add_executable(mesh.hybrid2d.test ${sources})
+target_link_libraries(mesh.hybrid2d.test PUBLIC Eigen3::Eigen Boost::boost GTest::main
+  mesh.hybrid2d
+  mesh.test_utils
+  mesh.utils)
+target_compile_features(mesh.hybrid2d.test PUBLIC cxx_std_17)
+gtest_discover_tests(mesh.hybrid2d.test)
 
 # set(orisources
 #   mesh_factory_test.h

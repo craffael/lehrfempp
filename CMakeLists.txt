@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.10)
 
-include("cmake/HunterGate.cmake")
+include("cmake/functions.cmake")
 
 HunterGate(
     URL "https://github.com/ruslo/hunter/archive/v0.20.35.tar.gz"
@@ -33,6 +33,14 @@ find_package(Eigen3 CONFIG REQUIRED)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
+# Settings for installation
+###############################################################################
+set(LF_VERSION 0.7.0)
+set(LF_ALL_TARGETS  CACHE INTERNAL "" FORCE) # A list of all targets that have been added (set by add_hydi_library)
+set(config_install_dir "lib/cmake/lehrfempp")
+
+# Include Subdirectories
+###############################################################################
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)
 add_subdirectory(examples)
@@ -40,14 +48,13 @@ add_subdirectory(experiments)
 
 
 # Installation
-set(config_install_dir "lib/cmake/lehrfempp")
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(version_config "${generated_dir}/lehrfemppConfigVersion.cmake")
 set(project_config "${generated_dir}/lehrfemppConfig.cmake")
 
 include(CMakePackageConfigHelpers)
 
-write_basic_package_version_file("${version_config}" VERSION 0.7.0 COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file("${version_config}" VERSION ${LF_VERSION} COMPATIBILITY SameMajorVersion)
 configure_package_config_file(
   "cmake/Config.cmake.in"
   "${project_config}"
@@ -58,6 +65,9 @@ install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
 )
+
+set(LOCAL_GENERATED_INCLUDE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+install(EXPORT LFTargets DESTINATION ${config_install_dir} NAMESPACE LF::)
 
 
 

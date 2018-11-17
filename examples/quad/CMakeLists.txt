@@ -2,20 +2,18 @@
 
 set(quad_demo quad_demo.cc)
 
-add_executable(lf.examples.quad.quad_demo ${quad_demo})
+add_executable(examples.quad.quad_demo ${quad_demo})
 
-target_link_libraries(lf.examples.quad.quad_demo
+target_link_libraries(examples.quad.quad_demo
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
-  lf.mesh
-  lf.mesh.test_utils
-  lf.mesh.utils
-  lf.mesh.hybrid2d
-  lf.refinement
-  lf.io
-  lf.quad
+  mesh
+  mesh.test_utils
+  mesh.utils
+  mesh.hybrid2d
+  refinement
+  io
+  quad
   )
-
-target_compile_features(lf.examples.quad.quad_demo PUBLIC cxx_std_17)
   
     
 
