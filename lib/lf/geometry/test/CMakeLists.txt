@@ -8,6 +8,7 @@ target_link_libraries(lf.geometry.test
   PUBLIC Eigen3::Eigen Boost::boost GTest::main
   lf.geometry
   lf.quad
+  lf.refinement
 )
 
 target_compile_features(lf.geometry.test PUBLIC cxx_std_17)
