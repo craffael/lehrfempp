@@ -29,8 +29,9 @@ class SegmentO1 : public Geometry {
    * @see Geometry::ChildGeometry()
    * @see RefinementPattern
    * @param ref_pat three refinement patterns are supported
+   * - rp_nil: empty refinement
    * - rp_copy: just copies the geometry information of the segment
-   * - rp_split, rp_regular: split edge in the middle.
+   * - rp_split: split edge in the middle.
    * @param codim _relative_ codimension of children whose shape is
    *        requested
    */

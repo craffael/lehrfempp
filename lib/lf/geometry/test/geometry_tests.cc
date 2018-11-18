@@ -15,9 +15,8 @@
  * Checks if Jacobian() is implemented correctly by comparing it with the
  * symmetric difference quotient approximation
  */
-void checkJacobians(const lf::geometry::Geometry &geom,
-                    const Eigen::MatrixXd &eval_points,
-                    const double tolerance) {
+void checkJacobian(const lf::geometry::Geometry &geom,
+                   const Eigen::MatrixXd &eval_points, const double tolerance) {
   const double h = 1e-6;
 
   const size_t num_points = eval_points.cols();
@@ -200,7 +199,7 @@ void checkSubGeometry(
 void runGeometryChecks(const lf::geometry::Geometry &geom,
                        const Eigen::MatrixXd &eval_points,
                        const double tolerance) {
-  checkJacobians(geom, eval_points, tolerance);
+  checkJacobian(geom, eval_points, tolerance);
   // JacobianInverseGramian is not defined for points
   if (geom.RefEl() != lf::base::RefEl::kPoint()) {
     checkJacobianInverseGramian(geom, eval_points);
@@ -266,6 +265,13 @@ TEST(Geometry, SegmentO1) {
   for (const auto &refPat : segSymmetricRefPats) {
     checkChildGeometryVolume(geom, refPat);
   }
+}
+
+TEST(Geometry, SegmentO2) {
+  lf::geometry::SegmentO2 geom(
+      (Eigen::MatrixXd(2, 3) << 1, 2, 3, 1, 4, 2).finished());
+  auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
 }
 
 TEST(Geometry, TriaO1) {
