@@ -12,4 +12,6 @@ lf_add_library(assemble ${sources})
 target_link_libraries(assemble PUBLIC
                       Eigen3::Eigen mesh base geometry mesh.utils)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

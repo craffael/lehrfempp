@@ -14,6 +14,7 @@ if(WIN32)
   target_compile_options(io PRIVATE "/bigobj")
 endif()
 
-
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
 add_subdirectory(test_utils)

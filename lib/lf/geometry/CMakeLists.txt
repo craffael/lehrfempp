@@ -20,4 +20,6 @@ set(sources
 lf_add_library(geometry ${sources})
 target_link_libraries(geometry PUBLIC Eigen3::Eigen base)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

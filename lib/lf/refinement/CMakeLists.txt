@@ -8,4 +8,6 @@ set(sources
 add_library(refinement ${sources})
 target_link_libraries(refinement PUBLIC Eigen3::Eigen base geometry)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

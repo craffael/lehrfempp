@@ -11,4 +11,6 @@ set(sources
 add_library(quad ${sources})
 target_link_libraries(quad PUBLIC Eigen3::Eigen base)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

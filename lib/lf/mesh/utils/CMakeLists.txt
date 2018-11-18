@@ -25,4 +25,6 @@ lf_add_library(mesh.utils ${sources})
 target_link_libraries(mesh.utils PUBLIC Eigen3::Eigen Boost::boost mesh)
 target_compile_features(mesh.utils PUBLIC cxx_std_17)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

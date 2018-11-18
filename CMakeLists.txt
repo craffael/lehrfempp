@@ -14,9 +14,9 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
    message(SEND_ERROR "In-source builds are not allowed.")
 endif()
 
-option(ENABLE_TESTING "Whether the tests should be built as well" ON)
+option(LF_ENABLE_TESTING "Whether the tests should be built as well" ON)
 
-if(ENABLE_TESTING) 
+if(LF_ENABLE_TESTING) 
   # Enable testing
   enable_testing()
 endif()
@@ -36,7 +36,6 @@ find_package(GTest CONFIG REQUIRED)
 # Settings for installation
 ###############################################################################
 set(LF_VERSION 0.7.0)
-set(LF_ALL_TARGETS  CACHE INTERNAL "" FORCE) # A list of all targets that have been added (set by add_hydi_library)
 set(config_install_dir "lib/cmake/lehrfempp")
 
 # Include Subdirectories

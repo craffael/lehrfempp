@@ -17,4 +17,6 @@ set(sources
 lf_add_library(mesh.hybrid2d ${sources})
 target_link_libraries(mesh.hybrid2d PUBLIC Eigen3::Eigen base mesh mesh.utils)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
