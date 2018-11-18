@@ -184,7 +184,8 @@ class ScalarReferenceFiniteElement {
   GradientsReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
-   * @brief Returns positions of "reference" points for nodal interpolation
+   * @brief Returns positions of "reference" points for evaluation of parametric
+   *       degrees of freedom, nodal interpolation in the simplest case.
    *
    * @return A d x N matrix, where d is the dimension of the reference cell,
    * and N the number of interpolation nodes. The columns of this matrix contain
@@ -194,17 +195,32 @@ class ScalarReferenceFiniteElement {
    * interpolation operator by duality with the reference shape functions.
    * This interpolation operator can be realized through evaluations at certain
    * evaluation nodes, which are provided by this method.
+   *
+   * ### Example: Principal lattice
+   * For triangular Lagrangian finite elements of degree p the evaluation nodes, 
+   * usually called "interpolation nodes" in this context, can be chosen as
+   * \f$\left(\frac{j}{p},\frac{k}{p}\right),\; 0\leq j,k \leq p, j+k\leq p\f$.
+   * 
+   * ### Moment-based degrees of freedom
+   * For some finite element spaces the interpolation functional may be defined 
+   * based on integrals over edges. In this case the evaluation nodes will be 
+   * quadrature nodes for the approximate evaluation of these integrals.
+   * 
+   * The quadrature rule must be exact for the polynomials contained in the 
+   * local finite element spaces.
    */
   virtual Eigen::MatrixXd EvaluationNodes() const = 0;
 
   /**
-   * @brief Tell the number of evaluation nodes
+   * @brief Tell the number of evaluation (interpolation) nodes
    */
   virtual size_type NumEvaluationNodes() const = 0;
 
   /**
    * @brief Computes the local nodal interpolant from function values at
    * interpolation nodes.
+   *
+   * @tparam NV_SCALAR Scalar type for nodal values and resulting coefficients
    *
    * @param nodvals row vector of function values at interpolation nodes
    * The length of this vector must agree with NumEvaluationNodes().

@@ -30,8 +30,9 @@ namespace lf::fe {
  *   topological type. This is indicated by the attribute *Uniform* in the class
  *   name, cf., the class lf::assemble::UniformFEDofHandler.
  *
- * This class just contains (pointers to) objects representing the various building 
- * blocks of a finite element space. It does not offer elaborate methods. 
+ * This class just contains (pointers to) objects representing the various
+ * building blocks of a finite element space. It does not offer elaborate
+ * methods.
  */
 class UniformScalarFiniteElementSpace {
  public:
@@ -55,17 +56,31 @@ class UniformScalarFiniteElementSpace {
    * functions on triangular cells
    * @param rfs_quad_p pointer to layout description for reference shape
    * functions on quadrilateral cells
+   * @param rfs_edge_p pointer to layout description for reference shape
+   * functions on the edges
    *
    * The schemes for local shape have to satisfy certain _compatibility
    * conditions_:
    * - nodes may carry at most one local/global shape function
    * - The number of interior shape functions for edges of triangles and
-   * quadrilaterals must agree
+   * quadrilaterals must agree.
+   *
+   * @note none of the shape function layouts needs to be specified; just pass
+   *       a null pointer. This will then restrict the applicability of
+   *       the resulting finite element space objects to particular meshes.
    */
   UniformScalarFiniteElementSpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
       std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p);
+      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
+      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
+          nullptr)
+      : mesh_p_(mesh_p),
+        rfs_tria_p_(std::move(rfs_tria_p)),
+        rfs_quad_p_(std::move(rfs_quad_p)),
+        rfs_edge_p_(std::move(rfs_edge_p)) {
+    init();
+  }
 
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
@@ -83,28 +98,23 @@ class UniformScalarFiniteElementSpace {
                   "No valid FE space object: no dof handler");
     return *dofh_p_;
   }
-  /** @brief access to layout of reference shape functions
-   * @return a pair of references to ScalarReferenceFiniteElement<double>
-   * objects. The first gives the reference shape function layou for triangular
-   * cells, the second for quadrilateral cells.
-   */
-  std::pair<const ScalarReferenceFiniteElement<double> &,
-            const ScalarReferenceFiniteElement<double> &>
-  ShapeFunctionLayouts() const;
-  
-  /** @brief access to shape function layout for triangular cells */
-  const ScalarReferenceFiniteElement<double> &TriaShapeFunctionLayout() const;
-  
-  /** @brief access to shape function layout for quadrilateral cells */
-  const ScalarReferenceFiniteElement<double> &QuadShapeFunctionLayout() const;
 
-  /** @brief number of _interior_ shape functions associated to entities of various types
+  /** @brief access to shape function layout for cells
+   *
+   * @param ref_el_type type of entity, must be either triangle
+   * (`lf::base::RefEl::kTria()`) or quadrilateral (`lf::base::RefEl::kQuad()`)
+   */
+  const ScalarReferenceFiniteElement<double> &ShapeFunctionLayout(
+      lf::base::RefEl rel_el_type) const;
+
+  /** @brief number of _interior_ shape functions associated to entities of
+   * various types
    */
   size_type NumRefShapeFunctions(lf::base::RefEl ref_el_type) const;
-  
+
   /** @brief No special destructor */
   virtual ~UniformScalarFiniteElementSpace() = default;
-  
+
  private:
   /** Underlying mesh */
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
@@ -112,8 +122,16 @@ class UniformScalarFiniteElementSpace {
   std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p_;
   /** Description of reference shape functions on quadrilateral cells */
   std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p_;
+  /** Description of reference shape functions on an edge */
+  std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p_;
+  /** Numbers of local shape functions for different types of entities */
+  size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
+      num_rsf_quad_{0};
   /** Local-to-global index map for the finite element space */
   std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
+
+  /** Initialization of class member variables and consistency checks */
+  void init(void);
   /** Checks whether some pointer are not valid */
   bool check_ptr() const {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
@@ -123,6 +141,7 @@ class UniformScalarFiniteElementSpace {
                   "No valid FE space object: no rsfs");
     return true;
   }
+
  public:
   /** Output control variable */
   static unsigned int ctrl_;
@@ -131,9 +150,18 @@ class UniformScalarFiniteElementSpace {
   static const unsigned int kout_rsfs = 4;
 };  // end class definition UniformScalarFiniteElementSpace
 
-  /** @brief output operator for scalar parametric finite element space */
-  std::ostream &operator<<(std::ostream &o, const UniformScalarFiniteElementSpace &fes);
-  
+/** @brief output operator for scalar parametric finite element space */
+std::ostream &operator<<(std::ostream &o,
+                         const UniformScalarFiniteElementSpace &fes);
+
+/**
+ * @brief Linear Lagrangian Finite Element space
+ *
+ * Just a special incarnation of UniformScalarFiniteElementSpace based on
+ * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
+ *
+ */
+
 }  // namespace lf::fe
 
 #endif

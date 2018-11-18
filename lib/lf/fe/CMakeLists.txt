@@ -1,6 +1,8 @@
 set(sources
   lagr_fe.h
   lagr_fe.cc
+  lin_fe.h
+  lin_fe.cc
   loc_comp_ellbvp.h
   loc_comp_ellbvp.cc
   loc_comp_norms.h

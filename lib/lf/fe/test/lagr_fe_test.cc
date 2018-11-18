@@ -12,11 +12,11 @@
  * @copyright MIT License
  */
 
-#include "lf/fe/lagr_fe.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include "lf/fe/fe_space.h"
 #include "lf/fe/fe_tools.h"
+#include "lf/fe/lin_fe.h"
 #include "lf/fe/loc_comp_ellbvp.h"
 
 #include <lf/mesh/utils/utils.h>
@@ -171,7 +171,7 @@ TEST(lf_fe, lf_fe_loadvec) {
 }
 
 TEST(lf_fe, lf_fe_l2norm) {
-  LocCompLagrFEPreprocessor::ctrl_ = 255;
+  // LocCompLagrFEPreprocessor::ctrl_ = 255;
   std::cout << "### TEST Computation of L2 norm" << std::endl;
   // This test computes an approximation of the L2 norm of a function
   // by local quadrature on a finite element mesh, using the facilities
@@ -189,19 +189,121 @@ TEST(lf_fe, lf_fe_l2norm) {
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
   std::vector<double> zerovec(dofh.NoDofs(), 0.0);
 
-  // Function whose L2 should be computed
-  auto u = [](Eigen::Vector2d x) -> double { return (x[0] * (1.0 - x[1])); };
-
   // Helper object for computation of norm
-  LocalL2NormDifference<decltype(u)> loc_comp(
-      fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(), u,
-      2);
-  loc_comp.ctrl_ = 255;
-  
+  // Function passed as a generic lambda expression
+  LocalL2NormDifference loc_comp(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+      [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
+  // loc_comp.ctrl_ = 255;
+
+  /*
+  // Alternative implementation
+  // Function whose L2 should be computed; a generic lambda here
+  auto u = [](auto x) { return (x[0] * (1.0 - x[1])); };
+   LocalL2NormDifference<decltype(u)> loc_comp(
+        fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(),
+        [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
+  */
+
   // Actual compuation of norm
   double norm = NormOfDifference(dofh, loc_comp, zerovec);
   std::cout << "Norm = " << norm << std::endl;
-  EXPECT_NEAR(norm, -6.75, 1E-10);
+  EXPECT_NEAR(norm, 5.19615, 1E-4);
+}
+
+TEST(lf_fe, lf_fe_l2norm_vf) {
+  // LocCompLagrFEPreprocessor::ctrl_ = 255;
+  std::cout << "### TEST Computation of L2 norm of vectorfield" << std::endl;
+  // This test computes an approximation of the L2 norm of a function
+  // by local quadrature on a finite element mesh, using the facilities
+  // for computation of norms of differences of functions.
+
+  // Building the test mesh: a purely affine mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
+      std::make_unique<QuadLinearLagrangeFE<double>>());
+
+  // Dummy vector for coefficients of FE function
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
+
+  // Helper object for computation of norm
+  // Function passed as a generic lambda expression
+  LocL2GradientFEDifference loc_comp(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+      [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); }, 4);
+  // loc_comp.ctrl_ = 255;
+
+  // Actual compuation of norm
+  double norm = NormOfDifference(dofh, loc_comp, zerovec);
+  std::cout << "Norm of vectorfield = " << norm << std::endl;
+  EXPECT_NEAR(norm, 7.34847, 1E-4);
+}
+
+TEST(lf_fe, lf_fe_lintp) {
+  std::cout << "### TEST: Linear Interpolation" << std::endl;
+  // Building the test mesh: a general hybrid mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
+      std::make_unique<QuadLinearLagrangeFE<double>>());
+
+  auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
+  auto coeffvec{NodalProjection(fe_space, u)};
+
+  // Local-to-global index mapped
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  EXPECT_EQ(coeffvec.size(), dofh.NoDofs())
+      << "Coefficient vector length mismatch";
+
+  // Check agreement of nodal values
+  for (lf::assemble::gdof_idx_t j = 0; j < coeffvec.size(); ++j) {
+    const lf::mesh::Entity &node{dofh.Entity(j)};
+    EXPECT_TRUE(node.RefEl() == lf::base::RefEl::kPoint());
+    auto tmp_coord(
+        node.Geometry()->Global(lf::base::RefEl::kPoint().NodeCoords()));
+    auto pt_coord(tmp_coord.col(0));
+    // std::cout << "@ [" << pt_coord.transpose() << "]: u = " << u(pt_coord)
+    //           << " <-> u_h = " << coeffvec[j] << std::endl;
+    EXPECT_DOUBLE_EQ(coeffvec[j], u(pt_coord))
+        << " @ [" << pt_coord.transpose() << "]:";
+  }
+}
+
+// check whether linear function is interpolated exactly
+bool checkInterpolationLinear(const UniformScalarFiniteElementSpace &fe_space) {
+  // Model linear function
+  auto u = [](auto x) { return (x[0] - 2 * x[1]); };
+  // Interpolation
+  auto coeffvec{NodalProjection(fe_space, u)};
+  // Helper class for error computation
+  LocalL2NormDifference loc_comp(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), u, 4);
+  // Actual compuation of error norm
+  double norm = NormOfDifference(fe_space.LocGlobMap(), loc_comp, coeffvec);
+  std::cout << "Norm = " << norm << std::endl;
+  EXPECT_NEAR(norm, 0.0, 1E-6);
+  return (std::fabs(norm) < 1.0E-6);
+}
+
+TEST(lf_fe, lf_fe_lintp_exact) {
+  std::cout << "### TEST: Reproduction of linear functions" << std::endl;
+  // Building the test mesh: a general hybrid mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
+      std::make_unique<QuadLinearLagrangeFE<double>>());
+  EXPECT_TRUE(checkInterpolationLinear(fe_space));
 }
 
 }  // end namespace lf::fe::test
