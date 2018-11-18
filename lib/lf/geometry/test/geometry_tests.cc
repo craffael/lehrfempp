@@ -194,9 +194,14 @@ void checkChildGeometryVolume(
 
 TEST(Geometry, Point) {
   lf::geometry::Point geom((Eigen::MatrixXd(2, 1) << 1, 1).finished());
+
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
-  runGeometryChecks(geom, points, 1e-9);
+
+  // JacobianInverseGramian is not defined for points
+  checkJacobians(geom, points, 1e-9);
+  checkIntegrationElement(geom, points);
+  checkSubGeometry(geom);
 
   std::vector<lf::refinement::RefPat> pointSymmetricRefPats = {
       lf::refinement::RefPat::rp_copy};
