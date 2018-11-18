@@ -160,7 +160,10 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
                        const Eigen::MatrixXd &eval_points,
                        const double tolerance) {
   checkJacobians(geom, eval_points, tolerance);
-  checkJacobianInverseGramian(geom, eval_points);
+  // JacobianInverseGramian is not defined for points
+  if (geom.RefEl() != lf::base::RefEl::kPoint()) {
+    checkJacobianInverseGramian(geom, eval_points);
+  }
   checkIntegrationElement(geom, eval_points);
   checkSubGeometry(geom);
 }
@@ -197,11 +200,7 @@ TEST(Geometry, Point) {
 
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
-
-  // JacobianInverseGramian is not defined for points
-  checkJacobians(geom, points, 1e-9);
-  checkIntegrationElement(geom, points);
-  checkSubGeometry(geom);
+  runGeometryChecks(geom, points, 1e-9);
 
   std::vector<lf::refinement::RefPat> pointSymmetricRefPats = {
       lf::refinement::RefPat::rp_copy};
