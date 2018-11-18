@@ -157,7 +157,7 @@ void checkSubGeometry(
 
       // check points inside subEntity
       if (subRefEl != lf::base::RefEl::kPoint()) {
-        // select interpolating nodes in RefEl.Dimension
+        // select nodes of RefEl referenced by subEntity
         Eigen::MatrixXd mapNodeCoords(nodeCoords.rows(), subRefEl.NumNodes());
         for (size_t subNode = 0; subNode < subRefEl.NumNodes(); ++subNode) {
           const auto subSubIdx = refEl.SubSubEntity2SubEntity(
@@ -165,14 +165,28 @@ void checkSubGeometry(
           mapNodeCoords.col(subNode) = nodeCoords.col(subSubIdx);
         }
 
-        // compute interpolation coefficients
         auto points = qrProvider(subRefEl).Points();
-        Eigen::MatrixXd mapCoeff = subNodeCoords.fullPivLu().solve(points);
+
+        // compute mapping: alpha * subNodeCoords + beta = mapNodeCoords
+        Eigen::MatrixXd paddedSubNodeCoords = Eigen::MatrixXd::Ones(
+            subNodeCoords.rows() + 1, subNodeCoords.cols());
+        paddedSubNodeCoords.block(0, 0, subNodeCoords.rows(),
+                                  subNodeCoords.cols()) = subNodeCoords;
+        Eigen::MatrixXd alphaBeta = paddedSubNodeCoords.transpose()
+                                        .fullPivLu()
+                                        .solve(mapNodeCoords.transpose())
+                                        .transpose();
+
+        // map points onto RefEl
+        Eigen::MatrixXd paddedPoints =
+            Eigen::MatrixXd::Ones(points.rows() + 1, points.cols());
+        paddedPoints.block(0, 0, points.rows(), points.cols()) = points;
+        const Eigen::MatrixXd mappedPoints = alphaBeta * paddedPoints;
 
         // map coordinates in subRefEl.Dimension to geom.DimGlobal
         auto globalPointsFromSub = subGeom->Global(points);
         // map coordinates in RefEl.Dimension to geom.DimGlobal
-        auto globalPoints = geom.Global(mapNodeCoords * mapCoeff);
+        auto globalPoints = geom.Global(mappedPoints);
 
         EXPECT_EQ(globalPointsFromSub, globalPoints)
             << "Global mapping of points " << points << " from subEntity "
