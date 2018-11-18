@@ -2,5 +2,10 @@
 #foreach(target @LF_ALL_TARGETS@)
 #  include("${CMAKE_CURRENT_LIST_DIR}/${target}.cmake")
 #endforeach()
+
+find_package(Boost CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/LFTargets.cmake")
 check_required_components("@PROJECT_NAME@")
