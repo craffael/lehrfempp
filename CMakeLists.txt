@@ -3,24 +3,32 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.20.35.tar.gz"
-    SHA1 "6e3cb4c333b76803a83c56fcbca3b0bfd9f96f27"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.53.tar.gz"
+    SHA1 "5d9feddb1ebeca27e32634954fe4de37cf36f97d"
+    LOCAL # use cmake/Hunter/config.cmake
 )
 
 project(LehrFEMpp VERSION 1.0.0 LANGUAGES CXX)
 
-# Check that there is no in-source build:
+# Check that this is not an in-source build:
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
    message(SEND_ERROR "In-source builds are not allowed.")
 endif()
 
+# CMake Options
+###############################################################################
 option(LF_ENABLE_TESTING "Whether the tests should be built as well" ON)
-
 if(LF_ENABLE_TESTING) 
   # Enable testing
   enable_testing()
 endif()
 
+option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" ON)
+
+
+
+# Get Dependencies
+###############################################################################
 # Get boost
 hunter_add_package(Boost COMPONENTS chrono timer system filesystem program_options)
 find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_options)
@@ -29,9 +37,11 @@ find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_option
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
 
-# Get Google Test
+
+# Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
+
 
 # Settings for installation
 ###############################################################################
@@ -42,8 +52,10 @@ set(config_install_dir "lib/cmake/lehrfempp")
 ###############################################################################
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)
-add_subdirectory(examples)
-add_subdirectory(experiments)
+if(LF_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+  add_subdirectory(experiments)
+endif()
 
 
 # Installation
