@@ -21,7 +21,7 @@ Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
   // polynomial of degree 2: alpha * x^2 + beta * x + gamma
   const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
   const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
-  const Eigen::VectorXd gamma = vtx0;
+  const Eigen::VectorXd& gamma = vtx0;
 
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
@@ -47,7 +47,6 @@ Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
   // polynomial of degree 2: alpha * x^2 + beta * x + gamma
   const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
   const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
-  const Eigen::VectorXd gamma = vtx0;
 
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
