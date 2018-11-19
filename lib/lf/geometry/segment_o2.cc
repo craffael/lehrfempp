@@ -103,16 +103,17 @@ std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
   if (codim == 0) {
     LF_ASSERT_MSG(i == 0, "i is out of bounds");
     return std::make_unique<SegmentO2>(coords_);
-  } else if (codim == 1) {
+  }
+  if (codim == 1) {
     LF_ASSERT_MSG(0 <= i and i <= 2, "i is out of bounds");
     return std::make_unique<Point>(coords_.col(i));
-  } else {
-    LF_VERIFY_MSG(false, "codim is out of bounds");
   }
+  LF_VERIFY_MSG(false, "codim is out of bounds");
 }
 
 std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
-    const RefinementPattern& ref_pat, base::dim_t codim) const {
+    const RefinementPattern& ref_pat,  // NOLINT(misc-unused-parameters)
+    base::dim_t codim) const {         // NOLINT(misc-unused-parameters)
   LF_VERIFY_MSG(false, "refinement for SegmentO2 not implemented yet");
 }
 
