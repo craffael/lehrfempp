@@ -14,8 +14,8 @@
 namespace lf::geometry {
 
 /**
- * @brief A piecewise straight edge defined by the location of its two
- * endpoints and its midpoint
+ * @brief A curved edge parametrized by means of polynomial of degree 2 defined
+ * by the location of its two endpoints and its midpoint
  */
 class SegmentO2 : public Geometry {
  public:

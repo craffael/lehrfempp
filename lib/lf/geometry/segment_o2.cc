@@ -18,13 +18,16 @@ Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
   const Eigen::VectorXd vtx1 = coords_.col(1);
   const Eigen::VectorXd midp = coords_.col(2);
 
+  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
+  const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
+  const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
+  const Eigen::VectorXd gamma = vtx0;
+
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
 
-    if (0. <= x and x <= 0.5) {
-      global.col(point) = 2. * (midp - vtx0) * x + vtx0;
-    } else if (0.5 < x and x <= 1.) {
-      global.col(point) = 2. * (vtx1 - midp) * x + (2. * midp - vtx1);
+    if (0. <= x and x <= 1.) {
+      global.col(point) = alpha * x * x + beta * x + gamma;
     } else {
       LF_VERIFY_MSG(false,
                     "local coordinate out of bounds for reference element");
@@ -41,15 +44,16 @@ Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
   const Eigen::VectorXd vtx1 = coords_.col(1);
   const Eigen::VectorXd midp = coords_.col(2);
 
+  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
+  const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
+  const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
+  const Eigen::VectorXd gamma = vtx0;
+
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
 
-    if (0. <= x and x < 0.5) {
-      jacobian.col(point) = 2. * (midp - vtx0);
-    } else if (x == 0.5) {
-      jacobian.col(point) = (vtx1 - vtx0);
-    } else if (0.5 < x and x <= 1.) {
-      jacobian.col(point) = 2. * (vtx1 - midp);
+    if (0. <= x and x <= 1.) {
+      jacobian.col(point) = 2. * alpha * x + beta;
     } else {
       LF_VERIFY_MSG(false,
                     "local coordinate out of bounds for reference element");
