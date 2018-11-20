@@ -26,7 +26,7 @@ Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
 
-    if (0. <= x and x <= 1.) {
+    if (0. <= x && x <= 1.) {
       global.col(point) = alpha * x * x + beta * x + gamma;
     } else {
       LF_VERIFY_MSG(false,
@@ -51,7 +51,7 @@ Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
   for (size_t point = 0; point < local.cols(); ++point) {
     const double x = local(point);
 
-    if (0. <= x and x <= 1.) {
+    if (0. <= x && x <= 1.) {
       jacobian.col(point) = 2. * alpha * x + beta;
     } else {
       LF_VERIFY_MSG(false,
@@ -108,7 +108,7 @@ std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
     return std::make_unique<SegmentO2>(coords_);
   }
   if (codim == 1) {
-    LF_ASSERT_MSG(0 <= i and i <= 2, "i is out of bounds");
+    LF_ASSERT_MSG(0 <= i && i <= 2, "i is out of bounds");
     return std::make_unique<Point>(coords_.col(i));
   }
   LF_VERIFY_MSG(false, "codim is out of bounds");
