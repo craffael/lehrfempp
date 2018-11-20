@@ -49,6 +49,14 @@ namespace lf::fe {
 template <typename FUNCTOR>
 class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
  public:
+  /** @brief standard constructors */
+  /** @{ */
+  LocalL2NormDifference(const LocalL2NormDifference &) = delete;
+  LocalL2NormDifference(LocalL2NormDifference &&) noexcept = default;
+  LocalL2NormDifference &operator=(const LocalL2NormDifference &) = delete;
+  LocalL2NormDifference &operator=(LocalL2NormDifference &&) = default;
+  /** @} */
+
   /** @brief Constructor
    *
    * @param fe_tria reference to layout description for reference shape
@@ -199,6 +207,14 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
  public:
   /** @brief type of return value of generic function */
   using vecval_t = typename std::invoke_result<VEC_FUNC, Eigen::Vector2d>::type;
+
+  /** @brief standard constructors */
+  /** @{ */
+  LocL2GradientFEDifference(const LocL2GradientFEDifference &) = delete;
+  LocL2GradientFEDifference(LocL2GradientFEDifference &&) noexcept = default;
+  LocL2GradientFEDifference &operator=(const LocL2GradientFEDifference &) = delete;
+  LocL2GradientFEDifference &operator=(LocL2GradientFEDifference &&) = default;
+  /** @} */
 
   /** @brief Constructor
    *

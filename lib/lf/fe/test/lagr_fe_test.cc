@@ -103,13 +103,11 @@ TEST(lf_fe, lf_fe_ellbvp) {
   // Set up objects taking care of local computations
   auto alpha = [](Eigen::Vector2d) -> double { return 1.0; };
   auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
-  using loc_comp_t =
-      LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>;
+  LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
+      comp_elem_mat{tlfe, qlfe, alpha, gamma};
   // Set debugging flags
-  // loc_comp_t::ctrl_ = 255;
+  // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
-
-  loc_comp_t comp_elem_mat(tlfe, qlfe, alpha, gamma);
 
   // For comparison
   LinearFELaplaceElementMatrix lfe_elem_mat{};
@@ -124,9 +122,43 @@ TEST(lf_fe, lf_fe_ellbvp) {
     std::cout << lfe_mat << std::endl;
     std::cout << "Element matrix from LagrangeFEEllBVPElementMatrix:"
               << std::endl;
-    loc_comp_t::ElemMat quad_mat{comp_elem_mat.Eval(cell)};
+    typename decltype(comp_elem_mat)::ElemMat quad_mat{
+        comp_elem_mat.Eval(cell)};
     std::cout << quad_mat << std::endl;
     EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
+  }
+}
+
+TEST(lf_fe, lf_fe_edgemass) {
+  std::cout << "### TEST: Computation of local edge" << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Set up finite elements
+  SegmentLinearLagrangeFE<double> fe{};
+
+  // Set up objects taking care of local computations
+  auto gamma = [](Eigen::Vector2d) -> double { return 1.0; };
+  LagrangeFEEdgeMassMatrix<double, decltype(gamma)> comp_elem_mat{fe, gamma};
+  // Set debugging flags
+  // comp_elem_mat.ctrl_ = 255;
+  // lf::quad::QuadRule::out_ctrl_ = 1;
+
+  // Reference mass matrix
+  Eigen::Matrix2d RefM(
+      (Eigen::Matrix2d() << 1.0 / 3.0, 1.0 / 6.0, 1.0 / 6.0, 1.0 / 3.0)
+          .finished());
+
+  // Loop over edges and compute element matrices;
+  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
+    const lf::base::size_type n(edge.RefEl().NumNodes());
+    std::cout << "Edge " << edge << ":" << std::endl;
+    typename decltype(comp_elem_mat)::ElemMat quad_mat{
+        comp_elem_mat.Eval(edge)};
+    std::cout << quad_mat << std::endl;
+    const double diffnorm =
+        (quad_mat - lf::geometry::Volume(*edge.Geometry()) * RefM).norm();
+    EXPECT_NEAR(diffnorm, 0.0, 1E-6);
   }
 }
 
