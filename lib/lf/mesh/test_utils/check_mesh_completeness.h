@@ -31,7 +31,7 @@ bool checkMeshCompleteness(const Mesh& mesh);
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only = true);
 
-extern int watertight_mesh_ctrl;
+extern unsigned int watertight_mesh_ctrl;
 
 }  // namespace lf::mesh::test_utils
 
