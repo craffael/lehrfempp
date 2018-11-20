@@ -122,7 +122,9 @@ void checkIntegrationElement(const lf::geometry::Geometry &geom,
 /**
  * Checks that SubGeometry and Geometry map the same nodes to the same points
  */
-void checkSubGeometry(const lf::geometry::Geometry &geom) {
+void checkSubGeometry(
+    const lf::geometry::Geometry &geom,
+    const std::function<lf::quad::QuadRule(lf::base::RefEl)> &qrProvider) {
   // nodeCoords is a (refEl.Dimension, refEl.NumNodes) matrix
   const auto refEl = geom.RefEl();
   const Eigen::MatrixXd &nodeCoords = refEl.NodeCoords();
@@ -152,6 +154,45 @@ void checkSubGeometry(const lf::geometry::Geometry &geom) {
             << subEntity << " in relative codim " << codim
             << " differs from global mapping of node " << subSubIdx;
       }
+
+      // check points inside subEntity
+      if (subRefEl != lf::base::RefEl::kPoint()) {
+        // select nodes of RefEl referenced by subEntity
+        Eigen::MatrixXd mapNodeCoords(nodeCoords.rows(), subRefEl.NumNodes());
+        for (size_t subNode = 0; subNode < subRefEl.NumNodes(); ++subNode) {
+          const auto subSubIdx = refEl.SubSubEntity2SubEntity(
+              codim, subEntity, geom.DimLocal() - codim, subNode);
+          mapNodeCoords.col(subNode) = nodeCoords.col(subSubIdx);
+        }
+
+        auto points = qrProvider(subRefEl).Points();
+
+        // compute mapping: alpha * subNodeCoords + beta = mapNodeCoords
+        Eigen::MatrixXd paddedSubNodeCoords = Eigen::MatrixXd::Ones(
+            subNodeCoords.rows() + 1, subNodeCoords.cols());
+        paddedSubNodeCoords.block(0, 0, subNodeCoords.rows(),
+                                  subNodeCoords.cols()) = subNodeCoords;
+        Eigen::MatrixXd alphaBeta = paddedSubNodeCoords.transpose()
+                                        .fullPivLu()
+                                        .solve(mapNodeCoords.transpose())
+                                        .transpose();
+
+        // map points onto RefEl
+        Eigen::MatrixXd paddedPoints =
+            Eigen::MatrixXd::Ones(points.rows() + 1, points.cols());
+        paddedPoints.block(0, 0, points.rows(), points.cols()) = points;
+        const Eigen::MatrixXd mappedPoints = alphaBeta * paddedPoints;
+
+        // map coordinates in subRefEl.Dimension to geom.DimGlobal
+        auto globalPointsFromSub = subGeom->Global(points);
+        // map coordinates in RefEl.Dimension to geom.DimGlobal
+        auto globalPoints = geom.Global(mappedPoints);
+
+        EXPECT_EQ(globalPointsFromSub, globalPoints)
+            << "Global mapping of points " << points << " from subEntity "
+            << subEntity << " in relative codim " << codim
+            << " differs from global mapping";
+      }
     }
   }
 }
@@ -165,7 +206,9 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
     checkJacobianInverseGramian(geom, eval_points);
   }
   checkIntegrationElement(geom, eval_points);
-  checkSubGeometry(geom);
+  checkSubGeometry(geom, [](lf::base::RefEl refEl) -> lf::quad::QuadRule {
+    return lf::quad::make_QuadRule(refEl, 5);
+  });
 }
 
 /**
