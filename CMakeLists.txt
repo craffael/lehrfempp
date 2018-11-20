@@ -28,6 +28,7 @@ option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" 
 
 
 # Get Dependencies
+# (don't forget to update cmake/Config.cmake.in !
 ###############################################################################
 # Get boost
 hunter_add_package(Boost COMPONENTS chrono timer system filesystem program_options)
@@ -45,7 +46,7 @@ find_package(GTest CONFIG REQUIRED)
 
 # Settings for installation
 ###############################################################################
-set(LF_VERSION 0.7.0)
+set(LF_VERSION 0.7.3)
 set(config_install_dir "lib/cmake/lehrfempp")
 
 # Include Subdirectories

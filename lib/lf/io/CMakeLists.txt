@@ -10,7 +10,7 @@ set(sources
 
 lf_add_library(io ${sources})
 target_link_libraries(io PUBLIC Eigen3::Eigen base mesh mesh.utils)
-if(WIN32) 
+if(WIN32 AND NOT MINGW) 
   target_compile_options(io PRIVATE "/bigobj")
 endif()
 
