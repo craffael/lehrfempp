@@ -341,7 +341,7 @@ TEST(lf_fe, lf_fe_lintp_exact) {
 
 TEST(lf_fe, lf_fe_intperrcvg) {
   // Four levels of refinement
-  const int reflevels = 4;
+  const int reflevels = 6;
   std::cout << "### TEST: Convergence of interpolation error" << std::endl;
   // Building the test mesh: a general hybrid mesh
   // This serves as the coarsest mesh of the hierarchy
