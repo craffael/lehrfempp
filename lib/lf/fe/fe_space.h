@@ -71,14 +71,14 @@ class UniformScalarFiniteElementSpace {
    */
   UniformScalarFiniteElementSpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
-      std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
           nullptr)
       : mesh_p_(mesh_p),
-        rfs_tria_p_(std::move(rfs_tria_p)),
-        rfs_quad_p_(std::move(rfs_quad_p)),
-        rfs_edge_p_(std::move(rfs_edge_p)) {
+        rfs_tria_p_(rfs_tria_p),
+        rfs_quad_p_(rfs_quad_p),
+        rfs_edge_p_(rfs_edge_p) {
     init();
   }
 
@@ -119,11 +119,11 @@ class UniformScalarFiniteElementSpace {
   /** Underlying mesh */
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
   /** Description of reference shape functions on triangular cells */
-  std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p_;
   /** Description of reference shape functions on quadrilateral cells */
-  std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p_;
   /** Description of reference shape functions on an edge */
-  std::unique_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p_;
   /** Numbers of local shape functions for different types of entities */
   size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
       num_rsf_quad_{0};

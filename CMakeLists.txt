@@ -29,6 +29,10 @@ find_package(Eigen3 CONFIG REQUIRED)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
+# Add cling support
+find_library (LIBDL_PATH NAMES dl)
+set(CMAKE_CXX_STANDARD_LIBRARIES "${LIBDL_PATH}")
+
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)
 add_subdirectory(examples)

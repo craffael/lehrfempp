@@ -11,6 +11,8 @@ set(sources
   fe_space.cc
   fe_tools.h
   fe_tools.cc
+  fe_testutils.h
+  fe_testutils.cc
   fe.h
 )
 

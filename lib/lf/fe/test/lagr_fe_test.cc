@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "lf/fe/fe_space.h"
+#include "lf/fe/fe_testutils.h"
 #include "lf/fe/fe_tools.h"
 #include "lf/fe/lin_fe.h"
 #include "lf/fe/loc_comp_ellbvp.h"
@@ -214,8 +215,8 @@ TEST(lf_fe, lf_fe_l2norm) {
 
   // Set up global FE space
   UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
-      std::make_unique<QuadLinearLagrangeFE<double>>());
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
 
   // Dummy vector for coefficients of FE function
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
@@ -256,8 +257,8 @@ TEST(lf_fe, lf_fe_l2norm_vf) {
 
   // Set up global FE space
   UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
-      std::make_unique<QuadLinearLagrangeFE<double>>());
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
 
   // Dummy vector for coefficients of FE function
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
@@ -284,8 +285,8 @@ TEST(lf_fe, lf_fe_lintp) {
 
   // Set up global FE space
   UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
-      std::make_unique<QuadLinearLagrangeFE<double>>());
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
 
   auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
   auto coeffvec{NodalProjection(fe_space, u)};
@@ -333,9 +334,47 @@ TEST(lf_fe, lf_fe_lintp_exact) {
 
   // Set up global FE space
   UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_unique<TriaLinearLagrangeFE<double>>(),
-      std::make_unique<QuadLinearLagrangeFE<double>>());
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
   EXPECT_TRUE(checkInterpolationLinear(fe_space));
+}
+
+TEST(lf_fe, lf_fe_intperrcvg) {
+  // Four levels of refinement
+  const int reflevels = 4;
+  std::cout << "### TEST: Convergence of interpolation error" << std::endl;
+  // Building the test mesh: a general hybrid mesh
+  // This serves as the coarsest mesh of the hierarchy
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  // Prepare for creating a hierarchy of meshes
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(std::move(mesh_p), mesh_factory_ptr);
+
+  // Perform several steps of regular refinement of the given mesh
+  for (int refstep = 0; refstep < reflevels; ++refstep) {
+    // Barycentric refinement is the other option
+    multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
+  }
+
+  // Function
+  auto f = [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); };
+  auto grad_f = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+    return (std::exp(x[0] * x[1]) *
+            (Eigen::Vector2d() << x[1], x[0]).finished())
+        .eval();
+  };
+
+  auto errs{InterpolationErrors(
+      multi_mesh, f, grad_f, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>())};
+
+  size_type L = errs.size();
+  for (int l = 0; l < L; ++l) {
+    std::cout << "Level" << l << ": L2 error = " << errs[l].first
+              << ", H1 error = " << errs[l].second << std::endl;
+  }
 }
 
 }  // end namespace lf::fe::test

@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <type_traits>
 
 #include <lf/quad/quad.h>
 #include "loc_comp_ellbvp.h"
