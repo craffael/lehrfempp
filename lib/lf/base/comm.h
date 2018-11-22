@@ -82,13 +82,15 @@ T Get(const std::string&);
 template <typename T>
 T Get(const std::string&, const T&);
 
-extern void Help();
+extern bool Help();
 
 extern bool IsSet(const std::string&);
 
 extern void ParseCommandLine(int argc = 0, char** argv = nullptr);
 
 extern void ParseFile(const std::string& file = "");
+
+extern bool MakeGlobal(const std::string& name);
 
 
 /**

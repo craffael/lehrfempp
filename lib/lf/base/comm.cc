@@ -273,11 +273,14 @@ void Add(const std::string& name, const std::string& comment) {
 
 /**
  * @brief Print help, if it exists in options_description.
+ * @return true, if "help" was set, false otherwise.
  */
-void Help() {
+bool Help() {
   if (kVM.count("help") > 0) {
     std::cout << kDesc << "\n";
+    return true;
   }
+  return false;
 }
 
 /**
@@ -334,6 +337,30 @@ void ParseFile(const std::string& file) {
   }
   else if (IsSet("debug_code")) {
     cc::SetDebugCode(Get<int>("debug_code"));
+  }
+}
+
+/**
+ * @brief Make a int-variable global in the sense of cv::Add
+ * @param name The name of the variable, as specified in ci::Add
+ * @return true, if the variable existed and is int, false otherwise.
+ */
+bool MakeGlobal(const std::string& name) {
+  if (IsSet(name)) {
+    int val;
+    try {
+      val = Get<int>(name);
+    }
+    catch (const boost::bad_any_cast& e) {
+      // Get calls vm[name].as<int>, which throws a bad_any_cast
+      // error, if the types mismatch (hence no int)
+      return false;
+    }
+    cv::Add(name, val); // int version of Add
+  }
+  else {
+    std::cout << "Variable " << name << " is not set, cannot make it global.\n";
+    return false;
   }
 }
 
