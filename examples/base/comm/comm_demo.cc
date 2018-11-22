@@ -32,9 +32,9 @@ int main(int argc, char** argv) {
   ci::Init(argc, argv); // argc, argv optional. can be specified later
 
   // add some variables
-  //
-  ci::Add<int>("v1", "Set variable #1"); // directly
-  ci::Add<double>("v2", "Set variable #2", 42.1); // with default value
+
+  ci::Add<int>("v1", "Set variable #1", 0); // with default value
+  ci::Add<double>("v2", "Set variable #2"); // no default value
   ci::Add("help", "Print this help message.");  // add help message
 
   bool verbose = false;
@@ -47,19 +47,26 @@ int main(int argc, char** argv) {
   ci::ParseCommandLine(); // can also take argc, argv as arguments
   ci::ParseFile("params.par"); // get value from params.par
 
-  ci::Help();  // print help & var names, if -h was specified
+  if (ci::Help())  // print help & var names, if -h was specified
+    return 0;      // and stop here! No need to go through the program :)
+
+  ci::MakeGlobal("v1"); // v1 is int, like this we set it as global variable
+
   if (verbose)
     std::cout << "Verbosity on.\n";
   else
     std::cout << "Verbose not set.\n";
 
-  // print only if "v1" is set. If it isn't set and Get is called a invalid
+
+  // print only if "v2" is set. If it isn't set and Get is called a invalid
   // argument exception is thrown
-  if (ci::IsSet("v1"))
-    std::cout << "Value of v1 is " << ci::Get<int>("v1") << "\n";
+  if (ci::IsSet("v2"))
+    std::cout << "Value of v2 is " << ci::Get<double>("v2") << "\n";
+  else
+    std::cout << "Variable v2 is not set.\n";
 
   // Safe, since it has a default value
-  std::cout << "Value of v2 is " << ci::Get<double>("v2") << "\n";
+  std::cout << "Value of v1 is " << ci::Get<int>("v1") << "\n";
   // get "v4", but if it isn't set it return "empty". Used to avoid errors.
   std::cout << "Value of v4 is " << ci::Get<std::string>("v4", "empty") << "\n";
   // std::cout << ci::Get<double>("v5") << "\n"; // invalid_argument exception!
