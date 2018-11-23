@@ -197,7 +197,7 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u,
 
     // Information about local shape functions on reference element
     const ScalarReferenceFiniteElement<double> &ref_shape_fns{
-        fe_space.ShapeFunctionLayout(ref_el)};
+        *fe_space.ShapeFunctionLayout(ref_el)};
     // Number of evaluation nodes
     const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
     // Obtain reference coordinates for evaluation nodes
@@ -230,11 +230,62 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u,
   return glob_dofvec;
 }
 
+/** @sa NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR
+ * u, SELECTOR &&pred)
+ *
+ * Nodal projection applied to all cells
+ */
 template <typename FUNCTOR>
 Eigen::Matrix<typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type,
               Eigen::Dynamic, 1>
 NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u) {
   return NodalProjection(fe_space, u, DefaultEntitySelector());
+}
+
+/** @brief Incremental assembly of global finite element Galerkin matrix
+ *
+ * @tparam TMPMATRIX matrix type suitable for assembly
+ * @tparam DIFF_COEFF a functor providing point evaluation for the diffusion
+ * tensor
+ * @tparam REACTION_COEFF a functor for point evaluation of the reaction
+ * coefficient
+ * @param fe_space a Lagrangian finite element space of uniform polynomial
+ * degree
+ * @param alpha diffusion coefficient
+ * @param gamma reaction coefficient
+ * @param A a mutable reference to the Galerkin matrix. This argument is used to
+ *        return the matrix. The new entries will be added to any previous set
+ *        entries.
+ *
+ * ### Template parameter type requirements
+ * - TMPMATRIX is a rudimentary matrix type and must
+ *   + provide a constructor taking two matrix dimension arguments
+ *   + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
+ *   A model type is lf::assemble::COOMatrix.
+ * - DIFF_COEFF must comply with `std::function<T(Eigen::Vector2d)>`, where `T`
+ * is either a SCALAR compatible type of a matrix type like
+ * `Eigen::Matrix<SCALAR,...>`.
+ * - REACTION_COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
+ *
+ * This function can be used to assemble the global finite element Galerkin
+ * matrix for a second-order elliptic boundary value problem.
+ */
+template <typename TMPMATRIX, typename DIFF_COEFF, typename REACTION_COEFF>
+void SecOrdBVPLagrFEFullInteriorGalMat(
+    const UniformScalarFiniteElementSpace &fe_space, DIFF_COEFF alpha,
+    REACTION_COEFF gamma, TMPMATRIX &A) {
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
+      elmat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+                    fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+                    alpha, gamma);
+  // Invoke assembly on cells
+  AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
 }
 
 }  // namespace lf::fe

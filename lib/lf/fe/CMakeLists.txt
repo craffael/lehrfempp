@@ -5,6 +5,8 @@ set(sources
   lin_fe.cc
   loc_comp_ellbvp.h
   loc_comp_ellbvp.cc
+  sec_ord_ell_bvp.h
+  sec_ord_ell_bvp.cc
   loc_comp_norms.h
   loc_comp_norms.cc
   fe_space.h

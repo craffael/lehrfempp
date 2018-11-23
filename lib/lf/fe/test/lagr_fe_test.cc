@@ -98,14 +98,16 @@ TEST(lf_fe, lf_fe_ellbvp) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Set up finite elements
-  TriaLinearLagrangeFE<double> tlfe{};
-  QuadLinearLagrangeFE<double> qlfe{};
+  std::shared_ptr<TriaLinearLagrangeFE<double>> tlfe_p{
+      std::make_shared<TriaLinearLagrangeFE<double>>()};
+  std::shared_ptr<QuadLinearLagrangeFE<double>> qlfe_p{
+      std::make_shared<QuadLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
   auto alpha = [](Eigen::Vector2d) -> double { return 1.0; };
   auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
   LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
-      comp_elem_mat{tlfe, qlfe, alpha, gamma};
+      comp_elem_mat{tlfe_p, qlfe_p, alpha, gamma};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -136,11 +138,12 @@ TEST(lf_fe, lf_fe_edgemass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Set up finite elements
-  SegmentLinearLagrangeFE<double> fe{};
+  std::shared_ptr<SegmentLinearLagrangeFE<double>> fe_p{
+      std::make_shared<SegmentLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
   auto gamma = [](Eigen::Vector2d) -> double { return 1.0; };
-  LagrangeFEEdgeMassMatrix<double, decltype(gamma)> comp_elem_mat{fe, gamma};
+  LagrangeFEEdgeMassMatrix<double, decltype(gamma)> comp_elem_mat{fe_p, gamma};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -169,8 +172,11 @@ TEST(lf_fe, lf_fe_loadvec) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up finite elements
-  TriaLinearLagrangeFE<double> tlfe{};
-  QuadLinearLagrangeFE<double> qlfe{};
+  // Set up finite elements
+  std::shared_ptr<TriaLinearLagrangeFE<double>> tlfe_p{
+      std::make_shared<TriaLinearLagrangeFE<double>>()};
+  std::shared_ptr<QuadLinearLagrangeFE<double>> qlfe_p{
+      std::make_shared<QuadLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
   auto f = [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); };
@@ -182,7 +188,7 @@ TEST(lf_fe, lf_fe_loadvec) {
   LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;  // 3;
 
   // Instantiate object for local computations
-  loc_comp_t comp_elem_vec(tlfe, qlfe, f);
+  loc_comp_t comp_elem_vec(tlfe_p, qlfe_p, f);
 
   // For comparison
   LinearFELocalLoadVector<double, decltype(f)> lfe_elem_vec(f);
@@ -243,6 +249,110 @@ TEST(lf_fe, lf_fe_l2norm) {
   double norm = NormOfDifference(dofh, loc_comp, zerovec);
   std::cout << "Norm = " << norm << std::endl;
   EXPECT_NEAR(norm, 5.19615, 1E-4);
+}
+
+TEST(lf_fe, lf_fe_L2assnorm) {
+  // LocCompLagrFEPreprocessor::ctrl_ = 255;
+  std::cout << "### TEST Compute L2 norm in two different ways" << std::endl;
+  // This test computes the L2 norm of a FE function in two ways
+
+  // Building the test mesh: a purely affine mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
+
+  // Local-to-global index map
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+
+  // Dimension of finite element space`
+  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  // Matrix in triplet format holding Galerkin matrix
+  lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
+  // Assemble finite element Galerkin matrix
+  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
+      fe_space, [](auto x) -> double { return 0.0; },
+      [](auto x) -> double { return 1.0; }, A);
+
+  // First optin for setting the coefficient vector
+  // Model linear function
+  // auto u = [](auto x) { return (x[0] - 2 * x[1]); };
+  // Interpolation
+  // auto coeffvec{NodalProjection(fe_space, u)};
+
+  // Alternative:
+  // Random coefficient vector of FE function
+  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
+
+  const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
+
+  // Directly compute L2 norm of FE function
+  // Helper object for computation of norm
+  // Function passed as a generic lambda expression
+  LocalL2NormDifference loc_comp(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+      [](auto x) -> double { return 0.0; });
+
+  const double normsq_direct =
+      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
+
+  std::cout << "Norm^2 through A = " << normsq_from_A << std::endl;
+  std::cout << "Norm^2 directly = " << normsq_direct << std::endl;
+  EXPECT_NEAR(normsq_from_A, normsq_direct, 1E-4);
+}
+
+TEST(lf_fe, lf_fe_H1assnorm) {
+  // LocCompLagrFEPreprocessor::ctrl_ = 255;
+  std::cout << "### TEST Compute H1 seminorm in two different ways"
+            << std::endl;
+  // This test computes the H1 seminorm of a FE function in two ways
+
+  // Building the test mesh: a purely affine mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+
+  // Set up global FE space
+  LinearLagrangianFESpace fe_space(mesh_p);
+
+  // Local-to-global index map
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+
+  // Dimension of finite element space`
+  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  // Matrix in triplet format holding Galerkin matrix
+  lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
+  // Assemble finite element Galerkin matrix
+  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
+      fe_space, [](auto x) -> double { return 1.0; },
+      [](auto x) -> double { return 0.0; }, A);
+
+  // First optin for setting the coefficient vector
+  // Model linear function
+  // auto u = [](auto x) { return (x[0] - 2 * x[1]); };
+  // Interpolation
+  // auto coeffvec{NodalProjection(fe_space, u)};
+
+  // Alternative:
+  // Random coefficient vector of FE function
+  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
+
+  const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
+
+  // Directly compute H1 seminorm of FE function
+  // Helper object for computation of norm
+  LocL2GradientFEDifference loc_comp(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+      [](auto x) { return Eigen::Vector2d::Zero(2); });
+
+  const double normsq_direct =
+      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
+
+  std::cout << "H1 norm^2 through A = " << normsq_from_A << std::endl;
+  std::cout << "H1 norm^2 directly = " << normsq_direct << std::endl;
+  EXPECT_NEAR(normsq_from_A, normsq_direct, 1E-4);
 }
 
 TEST(lf_fe, lf_fe_l2norm_vf) {

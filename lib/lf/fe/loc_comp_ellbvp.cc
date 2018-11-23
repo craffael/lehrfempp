@@ -23,27 +23,42 @@ CONTROLDECLARECOMMENT(LocCompLagrFEPreprocessor, ctrl_,
                       "Output control for LocCompLagrFEPreprocessor");
 
 LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
-    const ScalarReferenceFiniteElement<double> &fe_tria,
-    const ScalarReferenceFiniteElement<double> &fe_quad,
+    std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+    std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
     lf::quad::quadOrder_t loc_quad_order)
-    : fe_tria_(fe_tria), fe_quad_(fe_quad) {
-  LF_ASSERT_MSG((fe_tria_.Dimension() == 2) && (fe_quad_.Dimension() == 2),
-                "Implemented only in 2D!");
-  // Compatibility check for numbers of local shape functions
-  LF_ASSERT_MSG((fe_tria_.RefEl() == lf::base::RefEl::kTria()) ||
-                    (fe_quad_.RefEl() == lf::base::RefEl::kQuad()),
-                "Unexpected type of reference cell");
-  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(2, 0) == 1) &&
-                    (fe_quad_.NumRefShapeFunctions(2, 0) == 1),
-                "Exactly one shape function must be assigned to each vertex");
-  LF_ASSERT_MSG((fe_tria_.NumRefShapeFunctions(1, 0) ==
-                 fe_quad_.NumRefShapeFunctions(1, 0)),
-                "#RSF mismatch on edges "
-                    << fe_tria_.NumRefShapeFunctions(1, 0) << " <-> "
-                    << fe_quad_.NumRefShapeFunctions(1, 0));
+    : fe_tria_p_(fe_tria_p), fe_quad_p_(fe_quad_p) {
+  LF_ASSERT_MSG((fe_tria_p != 0) || (fe_quad_p_ != nullptr),
+                "Missing FE specification");
+  if (fe_tria_p != 0) {
+    LF_ASSERT_MSG((fe_tria_p_->Dimension() == 2), "Implemented only in 2D!");
+    // Compatibility check for numbers of local shape functions
+    LF_ASSERT_MSG(fe_tria_p_->RefEl() == lf::base::RefEl::kTria(),
+                  "Unexpected type of reference cell");
+    LF_ASSERT_MSG((fe_tria_p_->NumRefShapeFunctions(2, 0) == 1),
+                  "Exactly one shape function must be assigned to each vertex");
+  }
+  if (fe_quad_p_ != nullptr) {
+    LF_ASSERT_MSG(fe_quad_p_->Dimension() == 2, "Implemented only in 2D!");
+    // Compatibility check for numbers of local shape functions
+    LF_ASSERT_MSG(fe_quad_p_->RefEl() == lf::base::RefEl::kQuad(),
+                  "Unexpected type of reference cell");
+    LF_ASSERT_MSG(fe_quad_p_->NumRefShapeFunctions(2, 0) == 1,
+                  "Exactly one shape function must be assigned to each vertex");
+  }
+  if ((fe_tria_p_ != 0) && (fe_quad_p_ != nullptr)) {
+    LF_ASSERT_MSG((fe_tria_p_->NumRefShapeFunctions(1, 0) ==
+                   fe_quad_p_->NumRefShapeFunctions(1, 0)),
+                  "#RSF mismatch on edges "
+                      << fe_tria_p_->NumRefShapeFunctions(1, 0) << " <-> "
+                      << fe_quad_p_->NumRefShapeFunctions(1, 0));
+  }
 
   // Maximal degree of both finite elements
-  unsigned int poly_order = std::max(fe_tria_.order(), fe_quad_.order());
+  const lf::quad::quadOrder_t tria_ord =
+      (fe_tria_p_ != nullptr) ? fe_tria_p_->order() : 0;
+  const lf::quad::quadOrder_t quad_ord =
+      (fe_quad_p_ != nullptr) ? fe_quad_p_->order() : 0;
+  const lf::quad::quadOrder_t poly_order = std::max(tria_ord, quad_ord);
 
   // Obtain quadrature rules for both triangles and quadrilaterals
   // If no quadrature order has been preselected,
@@ -55,9 +70,9 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
     quad_order = 2 * poly_order;
   }
 
-  {
+  if (fe_tria_p_ != nullptr) {
     // Preprocessing for triangles
-    Nrsf_tria_ = fe_tria_.NumRefShapeFunctions();
+    Nrsf_tria_ = fe_tria_p_->NumRefShapeFunctions();
 
     // Fetch suitable predefined quadrature rule
     qr_tria_ = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quad_order);
@@ -67,7 +82,7 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
 
     // Obtain value of reference shape functions in all quadrature points
     const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
-        fe_tria_.EvalReferenceShapeFunctions(qr_tria_.Points())};
+        fe_tria_p_->EvalReferenceShapeFunctions(qr_tria_.Points())};
     LF_ASSERT_MSG(Nrsf_tria_ == rsf_val.size(),
                   "Mismatch in length of value vector " << Nrsf_tria_ << " <-> "
                                                         << rsf_val.size());
@@ -88,7 +103,7 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
 
     // Store the gradients for the reference shape functions
     std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> rsf_grad{
-        fe_tria_.GradientsReferenceShapeFunctions(qr_tria_.Points())};
+        fe_tria_p_->GradientsReferenceShapeFunctions(qr_tria_.Points())};
     LF_ASSERT_MSG(Nrsf_tria_ == rsf_grad.size(),
                   "Mismatch in length of gradient vector"
                       << Nrsf_tria_ << " <-> " << rsf_grad.size());
@@ -107,11 +122,14 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
                         std::cout << "QP " << i << " = \n"
                                   << grad_quadpoint_tria_[i] << std::endl;
                       });
+  } else {
+    // No valid FE specification on triangles
+    // Zero quadrature points
   }
 
-  {
+  if (fe_quad_p_ != nullptr) {
     // Preprocessing for quadrilaterals
-    Nrsf_quad_ = fe_quad_.NumRefShapeFunctions();
+    Nrsf_quad_ = fe_quad_p_->NumRefShapeFunctions();
 
     // Fetch suitable predefined quadrature rule
     qr_quad_ = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), quad_order);
@@ -121,7 +139,7 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
 
     // Obtain value of reference shape functions in all quadrature points
     const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
-        fe_quad_.EvalReferenceShapeFunctions(qr_quad_.Points())};
+        fe_quad_p_->EvalReferenceShapeFunctions(qr_quad_.Points())};
     LF_ASSERT_MSG(Nrsf_quad_ == rsf_val.size(),
                   "Mismatch in length of value vector " << Nrsf_quad_ << " <-> "
                                                         << rsf_val.size());
@@ -142,7 +160,7 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
 
     // Store the gradients for the reference shape functions
     std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> rsf_grad{
-        fe_quad_.GradientsReferenceShapeFunctions(qr_quad_.Points())};
+        fe_quad_p_->GradientsReferenceShapeFunctions(qr_quad_.Points())};
     LF_ASSERT_MSG(Nrsf_quad_ == rsf_grad.size(),
                   "Mismatch in length of gradient vector"
                       << Nrsf_quad_ << " <-> " << rsf_grad.size());
@@ -161,6 +179,10 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
                         std::cout << "QP " << i << " = \n"
                                   << grad_quadpoint_quad_[i] << std::endl;
                       });
+  }
+  else {
+    // No valid finite element specification for quadrilaterals
+    // No quadrature points available
   }
 }
 

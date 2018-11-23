@@ -37,6 +37,7 @@ class Mesh : public mesh::Mesh {
 
   base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
   size_type Size(char codim) const override;
+  size_type NumEntities(lf::base::RefEl ref_el_type) const override;
   size_type Index(const Entity& e) const override;
   const mesh::Entity* EntityByIndex(dim_t codim,
                                     glb_idx_t index) const override;

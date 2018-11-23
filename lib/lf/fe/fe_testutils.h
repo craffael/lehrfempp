@@ -8,9 +8,9 @@
 
 /**
  * @file
- * @brief Data structures representing simple finite elements
+ * @brief Functions for testing finite element facilities
  * @author Ralf Hiptmair
- * @date October 2018
+ * @date November 2018
  * @copyright MIT License
  */
 
@@ -49,9 +49,9 @@ std::vector<std::pair<double, double>> InterpolationErrors(
   std::vector<std::pair<double, double>> err_norms{};
 
   // Helper class for L2 error computation
-  LocalL2NormDifference lc_L2(*rfs_tria_p, *rfs_quad_p, f);
+  LocalL2NormDifference lc_L2(rfs_tria_p, rfs_quad_p, f);
   // Helper class for H1 semi norm
-  LocL2GradientFEDifference lc_H1(*rfs_tria_p, *rfs_quad_p, grad_f);
+  LocL2GradientFEDifference lc_H1(rfs_tria_p, rfs_quad_p, grad_f);
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
@@ -71,19 +71,19 @@ std::vector<std::pair<double, double>> InterpolationErrors(
 }
 
 template <typename FFUNC, typename GRADFUNC>
-std::vector<std::pair<double, double>> InterpolationErrors(
+inline std::vector<std::pair<double, double>> InterpolationErrors(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, GRADFUNC grad_f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
   // Set up array of pointers to the meshes contained in the mesh hierarchy
-  std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs{};
-  // Number of levels in the hierarchy
-  lf::assemble::size_type L = multi_mesh.NumLevels();
-  for (int level = 0; level < L; level++) {
-    // Retrieve pointer to mesh on a particular level
-    mesh_ptrs.push_back(multi_mesh.getMesh(level));
-  }
-  return InterpolationErrors(mesh_ptrs, f, grad_f, rfs_tria_p, rfs_quad_p);
+  // std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs{};
+  // // Number of levels in the hierarchy
+  // lf::assemble::size_type L = multi_mesh.NumLevels();
+  // for (int level = 0; level < L; level++) {
+  //   // Retrieve pointer to mesh on a particular level
+  //   mesh_ptrs.push_back(multi_mesh.getMesh(level));
+  // }
+  return InterpolationErrors(multi_mesh.getMeshes(), f, grad_f, rfs_tria_p, rfs_quad_p);
 }
 
 }  // namespace lf::fe

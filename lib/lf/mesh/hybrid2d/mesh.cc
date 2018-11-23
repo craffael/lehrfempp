@@ -53,6 +53,28 @@ Mesh::size_type Mesh::Size(char codim) const {
   }
 }
 
+Mesh::size_type Mesh::NumEntities(lf::base::RefEl ref_el_type) const {
+  switch (ref_el_type) {
+    case lf::base::RefEl::kPoint(): {
+      return points_.size();
+    }
+    case lf::base::RefEl::kSegment(): {
+      return segments_.size();
+    }
+    case lf::base::RefEl::kTria(): {
+      return trias_.size();
+    }
+    case lf::base::RefEl::kQuad(): {
+      return quads_.size();
+    }
+    default: {
+      LF_ASSERT_MSG(false, "Illegal entity type");
+      break;
+    }
+  }
+  return 0;
+}
+
 Mesh::size_type Mesh::Index(const Entity &e) const {
   switch (e.Codim()) {
     case 0: {

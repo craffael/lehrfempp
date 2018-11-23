@@ -70,10 +70,12 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
    *        degree of the reference shape functions.
    *
    */
-  LocalL2NormDifference(const ScalarReferenceFiniteElement<double> &fe_tria,
-                        const ScalarReferenceFiniteElement<double> &fe_quad,
-                        FUNCTOR u, lf::quad::quadOrder_t loc_quad_order = 0)
-      : LocCompLagrFEPreprocessor(fe_tria, fe_quad, loc_quad_order), u_(u) {}
+  LocalL2NormDifference(
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+      FUNCTOR u, lf::quad::quadOrder_t loc_quad_order = 0)
+      : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
+        u_(u) {}
   /*
    * @brief main function for the computation of **squared** local L2 norms
    *
@@ -213,7 +215,8 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
   /** @{ */
   LocL2GradientFEDifference(const LocL2GradientFEDifference &) = delete;
   LocL2GradientFEDifference(LocL2GradientFEDifference &&) noexcept = default;
-  LocL2GradientFEDifference &operator=(const LocL2GradientFEDifference &) = delete;
+  LocL2GradientFEDifference &operator=(const LocL2GradientFEDifference &) =
+      delete;
   LocL2GradientFEDifference &operator=(LocL2GradientFEDifference &&) = default;
   /** @} */
 
@@ -229,11 +232,11 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
    *        degree of the reference shape functions.
    *
    */
-  LocL2GradientFEDifference(const ScalarReferenceFiniteElement<double> &fe_tria,
-                            const ScalarReferenceFiniteElement<double> &fe_quad,
-                            VEC_FUNC vecfield,
-                            lf::quad::quadOrder_t loc_quad_order = 0)
-      : LocCompLagrFEPreprocessor(fe_tria, fe_quad, loc_quad_order),
+  LocL2GradientFEDifference(
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+      VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order = 0)
+      : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
         vecfield_(vecfield) {}
   /*
    * @brief main function for the computation of **squared** local L2 norms

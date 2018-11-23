@@ -104,8 +104,8 @@ class UniformScalarFiniteElementSpace {
    * @param ref_el_type type of entity, must be either triangle
    * (`lf::base::RefEl::kTria()`) or quadrilateral (`lf::base::RefEl::kQuad()`)
    */
-  const ScalarReferenceFiniteElement<double> &ShapeFunctionLayout(
-      lf::base::RefEl rel_el_type) const;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>>
+  ShapeFunctionLayout(lf::base::RefEl rel_el_type) const;
 
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
@@ -161,6 +161,45 @@ std::ostream &operator<<(std::ostream &o,
  * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
  *
  */
+class LinearLagrangianFESpace : public UniformScalarFiniteElementSpace {
+ public:
+  /** @brief default constructors, needed by std::vector
+   * @note creates an invalid object that cannot be used. */
+  LinearLagrangianFESpace() = default;
+  LinearLagrangianFESpace(const LinearLagrangianFESpace &) = delete;
+  LinearLagrangianFESpace(LinearLagrangianFESpace &&) noexcept = default;
+  LinearLagrangianFESpace &operator=(const LinearLagrangianFESpace &) = delete;
+  LinearLagrangianFESpace &operator=(LinearLagrangianFESpace &&) noexcept =
+      default;
+  /**
+   * @brief Main constructor: sets up the local-to-global index mapping (dof
+   * handler)
+   *
+   * @param mesh_p shared pointer to underlying mesh (immutable)
+   * @param rfs_tria_p pointer to layout description for reference shape
+   * functions on triangular cells
+   * @param rfs_quad_p pointer to layout description for reference shape
+   * functions on quadrilateral cells
+   * @param rfs_edge_p pointer to layout description for reference shape
+   * functions on the edges
+   *
+   * The schemes for local shape have to satisfy certain _compatibility
+   * conditions_:
+   * - nodes may carry at most one local/global shape function
+   * - The number of interior shape functions for edges of triangles and
+   * quadrilaterals must agree.
+   *
+   * @note none of the shape function layouts needs to be specified; just pass
+   *       a null pointer. This will then restrict the applicability of
+   *       the resulting finite element space objects to particular meshes.
+   */
+  LinearLagrangianFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
+      : UniformScalarFiniteElementSpace(
+            mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+            std::make_shared<QuadLinearLagrangeFE<double>>(),
+            std::make_shared<SegmentLinearLagrangeFE<double>>()) {}
+  virtual ~LinearLagrangianFESpace() {}
+};
 
 }  // namespace lf::fe
 

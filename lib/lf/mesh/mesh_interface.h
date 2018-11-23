@@ -65,6 +65,13 @@ class Mesh {
   virtual size_type Size(char codim) const = 0;
 
   /**
+   * @brief Tells number of entities of a particular topological/geometric type
+   * @param ref_el_type topological/geometric type
+   * @return number of entities of that type
+   */
+  virtual size_type NumEntities(lf::base::RefEl ref_el_type) const = 0; 
+  
+  /**
    * @brief Acess to the index of a mesh entity of any co-dimension
    * @param e Entity whose index is requested
    * @return index ranging from 0 to no. of entities of the same co-dimension-1

@@ -50,9 +50,10 @@ class LocCompLagrFEPreprocessor {
    * gradients of references local shape functions in the quadrature points (on
    * the reference element)
    */
-  LocCompLagrFEPreprocessor(const ScalarReferenceFiniteElement<double> &fe_tria,
-                            const ScalarReferenceFiniteElement<double> &fe_quad,
-                            lf::quad::quadOrder_t loc_quad_order = 0);
+  LocCompLagrFEPreprocessor(
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+      lf::quad::quadOrder_t loc_quad_order = 0);
 
   /** @brief type-dependent query of quadrature points */
   inline Eigen::MatrixXd qr_points(lf::base::RefEl ref_el) {
@@ -136,15 +137,16 @@ class LocCompLagrFEPreprocessor {
   /**
    * @brief references to arrangement of local shape functions
    */
-  const ScalarReferenceFiniteElement<double> &fe_tria_, &fe_quad_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p_;
   /**
    * @brief Numbers of local shape functions
    */
-  size_type Nrsf_tria_, Nrsf_quad_;
+  size_type Nrsf_tria_{0}, Nrsf_quad_{0};
   /**
    * @brief Numbers of quadrature points
    */
-  size_type Nqp_tria_, Nqp_quad_;
+  size_type Nqp_tria_{0}, Nqp_quad_{0};
   /**
    * @brief quadrature rules for both admissible types of cells
    */
@@ -234,9 +236,9 @@ class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
    * the reference element.
    */
   LagrangeFEEllBVPElementMatrix(
-      const ScalarReferenceFiniteElement<double> &fe_tria,
-      const ScalarReferenceFiniteElement<double> &fe_quad, DIFF_COEFF alpha,
-      REACTION_COEFF gamma);
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+      DIFF_COEFF alpha, REACTION_COEFF gamma);
   /**
    * @brief All cells are considered active in the default implementation
    *
@@ -282,10 +284,10 @@ unsigned int
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     LagrangeFEEllBVPElementMatrix(
-        const ScalarReferenceFiniteElement<double> &fe_tria,
-        const ScalarReferenceFiniteElement<double> &fe_quad, DIFF_COEFF alpha,
-        REACTION_COEFF gamma)
-    : LocCompLagrFEPreprocessor(fe_tria, fe_quad),
+        std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
+        std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+        DIFF_COEFF alpha, REACTION_COEFF gamma)
+    : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p),
       alpha_(alpha),
       gamma_(gamma) {}
 
@@ -400,8 +402,7 @@ class LagrangeFEEdgeMassMatrix {
  public:
   using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
   using ElemMat = const elem_mat_t;
-  using coeff_t =
-      typename std::invoke_result<COEFF, Eigen::Vector2d>::type;
+  using coeff_t = typename std::invoke_result<COEFF, Eigen::Vector2d>::type;
 
   /** @brief standard constructors */
   /** @{ */
@@ -411,8 +412,9 @@ class LagrangeFEEdgeMassMatrix {
       delete;
   LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = default;
   /** @} */
-  LagrangeFEEdgeMassMatrix(const ScalarReferenceFiniteElement<double> &fe_edge,
-                           COEFF gamma);
+  LagrangeFEEdgeMassMatrix(
+      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
+      COEFF gamma);
   /**
    * @brief All edges are assumed to be active in the default implementation
    *
@@ -444,7 +446,7 @@ class LagrangeFEEdgeMassMatrix {
   /**
    * @brief references to arrangement of local shape functions
    */
-  const ScalarReferenceFiniteElement<double> &fe_edge_;
+  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p_;
 
   /**
    * @brief Matrix of values of all reference shape functions at all quadrature
@@ -466,27 +468,29 @@ unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::ctrl_ = 0;
 
 template <typename SCALAR, typename COEFF>
 LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::LagrangeFEEdgeMassMatrix(
-    const ScalarReferenceFiniteElement<double> &fe_edge, COEFF gamma)
-    : fe_edge_(fe_edge), gamma_(gamma) {
+    std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
+    COEFF gamma)
+    : fe_edge_p_(fe_edge_p), gamma_(gamma) {
+  LF_ASSERT_MSG(fe_edge_p_ != nullptr, "FE specification missing");
   // Check topological type compatibility
-  LF_ASSERT_MSG(fe_edge_.RefEl() == lf::base::RefEl::kSegment(),
-		"local FE space must belong to edge");
-  
+  LF_ASSERT_MSG(fe_edge_p_->RefEl() == lf::base::RefEl::kSegment(),
+                "local FE space must belong to edge");
+
   // Fetch suitable predefined quadrature rule
   // Its order is linked to the polynomial degree of the finite element
   // functions
-  lf::quad::quadOrder_t quad_order = 2 * fe_edge_.order();
+  lf::quad::quadOrder_t quad_order = 2 * fe_edge_p_->order();
   qr_ = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), quad_order);
   Nqp_ = qr_.NumPoints();
   SWITCHEDSTATEMENT(ctrl_, kout_qr,
                     std::cout << "LagrEM(Edge): " << qr_ << std::endl);
 
   // Number of local shape functions
-  Nrsf_ = fe_edge_.NumRefShapeFunctions();
+  Nrsf_ = fe_edge_p_->NumRefShapeFunctions();
 
   // Obtain value of reference shape functions in all quadrature points
   const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
-      fe_edge_.EvalReferenceShapeFunctions(qr_.Points())};
+      fe_edge_p_->EvalReferenceShapeFunctions(qr_.Points())};
   LF_ASSERT_MSG(Nrsf_ == rsf_val.size(), "Mismatch in length of value vector "
                                              << Nrsf_ << " <-> "
                                              << rsf_val.size());
@@ -534,7 +538,8 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::Eval(const lf::mesh::Entity &edge) {
     // from quadrature points.
     const double w = qr_.Weights()[k] * determinants[k];
     mat += ((gammaval * rsf_quadpoints_.col(k)) *
-	    (rsf_quadpoints_.col(k).transpose()))*w;
+            (rsf_quadpoints_.col(k).transpose())) *
+           w;
   }
   return mat;
 }
@@ -573,9 +578,10 @@ class ScalarFELocalLoadVector : public LocCompLagrFEPreprocessor {
    * @param fe_trie local shape functions to be used on triangles
    * @param fe_quad local shape functions for quadrilaterals
    */
-  ScalarFELocalLoadVector(const ScalarReferenceFiniteElement<SCALAR> &fe_tria,
-                          const ScalarReferenceFiniteElement<SCALAR> &fe_quad,
-                          FUNCTOR f);
+  ScalarFELocalLoadVector(
+      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_tria_p,
+      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_quad_p,
+      FUNCTOR f);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -609,9 +615,10 @@ unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
-    const ScalarReferenceFiniteElement<SCALAR> &fe_tria,
-    const ScalarReferenceFiniteElement<SCALAR> &fe_quad, FUNCTOR f)
-    : LocCompLagrFEPreprocessor(fe_tria, fe_quad), f_(f) {}
+    std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_tria_p,
+    std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_quad_p,
+    FUNCTOR f)
+    : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p), f_(f) {}
 
 template <typename SCALAR, typename FUNCTOR>
 typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec

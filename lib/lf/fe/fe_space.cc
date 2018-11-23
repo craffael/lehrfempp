@@ -24,7 +24,19 @@ CONTROLDECLARECOMMENT(
 
 // Initialization methods
 void UniformScalarFiniteElementSpace::init() {
+  LF_VERIFY_MSG(mesh_p_ != nullptr, "Missing mesh!");
+  LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
+                "Missing FE specification for cells");
   LF_VERIFY_MSG((mesh_p_->DimMesh() == 2), "Only for 2D meshes");
+
+  // Check whether all required finite element specifications are provided
+  LF_VERIFY_MSG((mesh_p_->NumEntities(lf::base::RefEl::kTria()) == 0) ||
+                    (rfs_tria_p_ != nullptr),
+                "Missing FE specification for triangles");
+  LF_VERIFY_MSG((mesh_p_->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
+                    (rfs_quad_p_ != nullptr),
+                "Missing FE specification for quads");
+
   // Compatibility checks and initialization of numbers of shape functions
   // In particular only a single shape function may be associated to a node
   if (rfs_tria_p_ != nullptr) {
@@ -104,9 +116,9 @@ void UniformScalarFiniteElementSpace::init() {
       std::make_unique<lf::assemble::UniformFEDofHandler>(mesh_p_, rsf_layout);
 }
 
-const ScalarReferenceFiniteElement<double>
-    &UniformScalarFiniteElementSpace::ShapeFunctionLayout(
-        lf::base::RefEl ref_el_type) const {
+std::shared_ptr<const ScalarReferenceFiniteElement<double>>
+UniformScalarFiniteElementSpace::ShapeFunctionLayout(
+    lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
@@ -115,19 +127,19 @@ const ScalarReferenceFiniteElement<double>
     }
     case lf::base::RefEl::kSegment(): {
       LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
-      return *rfs_edge_p_;
+      return rfs_edge_p_;
     }
     case lf::base::RefEl::kTria(): {
       LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
-      return *rfs_tria_p_;
+      return rfs_tria_p_;
     }
     case lf::base::RefEl::kQuad(): {
       LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
-      return *rfs_quad_p_;
+      return rfs_quad_p_;
     }
     dafault : { LF_VERIFY_MSG(false, "Illegal entity type"); }
   }
-  return (*rfs_tria_p_);
+  return nullptr;
 }
 
 /* number of _interior_ shape functions associated to entities of various types

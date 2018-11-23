@@ -133,6 +133,15 @@ class MeshHierarchy {
   }
 
   /**
+   * @brief Provides array of shared pointers to meshes contained in the hierarchy
+   *
+   * @return vector of shared pointers to lf::mesh:Mesh objects
+   */
+  std::vector<std::shared_ptr<const mesh::Mesh>> getMeshes() const {
+    return {meshes_.begin(),meshes_.end()};
+  }
+  
+  /**
    * @brief Obtain refinement information for all points
    *
    * @param level refinement level to be queried
@@ -337,7 +346,7 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
     glb_idx_t edge_index = finest_mesh.Index(edge);
     (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
   }
-}
+} // end MeshHierarchy::MarkEdges
 
 }  // namespace lf::refinement
 
