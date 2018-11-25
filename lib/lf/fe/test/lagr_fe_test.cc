@@ -420,6 +420,37 @@ TEST(lf_fe, lf_fe_lintp) {
   }
 }
 
+TEST(lf_fe, set_dirbdc) {
+  std::cout << "### TEST: Setting Dirichlet boundary values" << std::endl;
+  // Building the test mesh: a general hybrid mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>(),
+      std::make_shared<SegmentLinearLagrangeFE<double>>());
+  // Specification of local shape functions for a edge
+  auto fe_spec_edge_p{fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment())};
+  // Local to global index mapping
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+
+  // Retrieve edges on the boundary
+  lf::mesh::utils::CodimMeshDataSet<bool> bd_flags(
+      lf::mesh::utils::flagEntitiesOnBoundary(mesh_p, 1));
+  // Selector for boundary edges
+  auto bd_edge_sel = [&bd_flags](const lf::mesh::Entity &edge) -> bool {
+    return bd_flags(edge);
+  };
+  // Function defining the Dirichlet boundary values
+  auto g = [](Eigen::Vector2d x) -> double {
+    return (x[0] * x[0] + x[1] * x[1]);
+  };
+
+  auto flag_val_vec(InitEssentialConditionFromFunction(dofh, *fe_spec_edge_p,
+                                                       bd_edge_sel, g));
+}
+
 // check whether linear function is interpolated exactly
 bool checkInterpolationLinear(const UniformScalarFiniteElementSpace &fe_space) {
   // Model linear function

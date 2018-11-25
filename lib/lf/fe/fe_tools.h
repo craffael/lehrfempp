@@ -288,6 +288,69 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
   AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
 }
 
+/**
+ * @brief Initialization of flags/values for dofs of a uniform Lagrangian
+ *        finite element space whose values are imposed by a specified function
+ */
+template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
+std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
+    const lf::assemble::DofHandler &dofh,
+    const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
+    EDGESELECTOR &&esscondflag, FUNCTION &&g) {
+  LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
+                "finite element specification must be for an edge!");
+
+  // Fetch numbers of evaluation nodes and local shape functions
+  const size_type num_eval_pts = fe_spec_edge.NumEvaluationNodes();
+  const size_type num_rsf = fe_spec_edge.NumRefShapeFunctions();
+
+  // Preprocessing: obtain evaluation nodes on reference segment [0,1]
+  const Eigen::MatrixXd ref_eval_pts{fe_spec_edge.EvaluationNodes()};
+  Eigen::MatrixXd eval_pts(2, num_eval_pts);
+  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> g_vals(num_eval_pts);
+  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dof_vals(num_eval_pts);
+
+  // Underlying mesh
+  const lf::mesh::Mesh &mesh{*dofh.Mesh()};
+
+  // Vector for returning flags and fixed values for dofs
+  const size_type num_coeffs = dofh.NoDofs();
+  std::vector<std::pair<bool, SCALAR>> flag_val_vec(num_coeffs,
+                                                    {false, SCALAR{}});
+
+  // Visit all edges of the mesh (codim-1 entities)
+  for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
+    // Check whether the current edge carries dofs to be imposed by the
+    // function g.
+    if (esscondflag(edge) == true) {
+      // Fetch the shape of the edge
+      const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
+      // Compute physical coordinates of the evaluation points
+      // Those are stored in the columns of a matrix
+      const Eigen::MatrixXd eval_pts{edge_geo_p->Global(ref_eval_pts)};
+      for (int k = 0; k < num_eval_pts; ++k) {
+	// Evluate function at evaluation/interpolation nodes
+        g_vals[k] = g(eval_pts.col(k));
+      }
+      // Compute degrees of freedom from function values in evaluation points
+      dof_vals = fe_spec_edge.NodalValuesToDofs(g_vals);
+      LF_ASSERT_MSG(dof_vals.size() == num_rsf,
+                    "Mismatch " << dof_vals.size() << " <-> " << num_rsf);
+      LF_ASSERT_MSG(
+          dofh.NoLocalDofs(edge) == num_rsf,
+          "Mismatch " << dofh.NoLocalDofs(edge) << " <-> " << num_rsf);
+      // Fetch indices of global shape functions associated with current edge
+      auto gdof_indices{dofh.GlobalDofIndices(edge)};
+      int k = 0;
+      // Set flags and values; setting, no accumulation here!
+      for (const lf::assemble::gdof_idx_t gdof_idx : gdof_indices) {
+        flag_val_vec[gdof_idx] = {true, dof_vals[k++]};
+      }
+    }
+  }
+  return flag_val_vec;
+}
+
 }  // namespace lf::fe
 
 #endif

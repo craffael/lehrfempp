@@ -163,8 +163,10 @@ class ScalarReferenceFiniteElement {
    *
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler.
+   *
+   * @note shape functions are assumed to be real-valued.
    */
-  virtual std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  virtual std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
@@ -180,7 +182,7 @@ class ScalarReferenceFiniteElement {
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler.
    */
-  virtual std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  virtual std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
@@ -300,27 +302,27 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
+    std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
+        (Eigen::Matrix<double, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
          refcoords.row(0) - refcoords.row(1)),
         refcoords.row(0), refcoords.row(1)};
     return ret;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ret{
+    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
         (Eigen::Vector2d::Constant(-1.0).replicate(1, n_pts)),
         ((Eigen::Vector2d() << 1.0, 0.0).finished()).replicate(1, n_pts),
         ((Eigen::Vector2d() << 0.0, 1.0).finished()).replicate(1, n_pts)};
@@ -331,14 +333,14 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   Eigen::MatrixXd EvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
+    return ScalarReferenceFiniteElement<double>::RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   size_type NumEvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
+    return ScalarReferenceFiniteElement<double>::RefEl().NumNodes();
   }
 };
 
@@ -381,11 +383,11 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    const std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>> ret{
+    const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
         ((1 - refcoords.row(0).array()) * (1 - refcoords.row(1).array()))
             .matrix(),
         ((refcoords.row(0).array()) * (1 - refcoords.row(1).array())).matrix(),
@@ -395,27 +397,27 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
+    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
              << (refcoords.row(1).array() - 1.0).matrix(),
          (refcoords.row(0).array() - 1.0).matrix())
             .finished(),
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
              << (1.0 - refcoords.row(1).array()).matrix(),
          (-refcoords.row(0).array()).matrix())
             .finished(),
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
              << (refcoords.row(1).array()).matrix(),
          (refcoords.row(0).array()).matrix())
             .finished(),
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
              << (-refcoords.row(1).array()).matrix(),
          (1.0 - refcoords.row(0).array()).matrix())
             .finished()};
@@ -481,30 +483,30 @@ class SegmentLinearLagrangeFE final
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
+    std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
+        (Eigen::Matrix<double, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
          refcoords.row(0)),
         refcoords.row(0)};
     return ret;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
+  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>::Constant(
+    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Constant(
             1, n_pts, -1.0)),
-        (Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>::Constant(
+        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Constant(
             1, n_pts, 1.0))};
     return ret;
   }
