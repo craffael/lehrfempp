@@ -115,9 +115,57 @@ std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
 }
 
 std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
-    const RefinementPattern& ref_pat,  // NOLINT(misc-unused-parameters)
-    base::dim_t codim) const {         // NOLINT(misc-unused-parameters)
-  LF_VERIFY_MSG(false, "refinement for SegmentO2 not implemented yet");
+    const RefinementPattern& refPat, base::dim_t codim) const {
+  LF_VERIFY_MSG(refPat.RefEl() == lf::base::RefEl::kSegment(),
+                "Refinement pattern for " << refPat.RefEl().ToString());
+  LF_VERIFY_MSG(codim < 2, "Illegal codim = " << codim);
+
+  const double hLattice = 1. / static_cast<double>(refPat.LatticeConst());
+  std::vector<std::unique_ptr<Geometry>> childGeoPtrs = {};
+
+  // get coordinates of childGeometries
+  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> childPolygons(
+      refPat.ChildPolygons(codim));
+
+  const size_t noChildren = childPolygons.size();
+  LF_VERIFY_MSG(
+      noChildren == refPat.noChildren(codim),
+      "noChildren " << noChildren << " <-> " << refPat.noChildren(codim));
+
+  // create a geometry object for each child
+  for (size_t child = 0; child < noChildren; ++child) {
+    // codim == 0: A single child must be described by an interval, that is
+    // two different lattice coordinates
+    // codim == 1: A point's location is just one number
+    LF_VERIFY_MSG(
+        childPolygons[child].rows() == 1,
+        "childPolygons[child].rows() = " << childPolygons[child].rows());
+    LF_VERIFY_MSG(
+        childPolygons[child].cols() == (2 - codim),
+        "childPolygons[child].cols() = " << childPolygons[child].rows());
+
+    Eigen::MatrixXd locCoords(1, 3 - 2 * codim);
+
+    switch (codim) {
+      case 0: {
+        // SegmentO2 requires the coordinate of the midpoint
+        locCoords << hLattice * childPolygons[child].cast<double>(),
+            (hLattice * childPolygons[child].cast<double>()).sum() / 2;
+        childGeoPtrs.push_back(std::make_unique<SegmentO2>(Global(locCoords)));
+
+        break;
+      }
+      case 1: {
+        locCoords << hLattice * childPolygons[child].cast<double>();
+        childGeoPtrs.push_back(std::make_unique<Point>(Global(locCoords)));
+
+        break;
+      }
+      default: { LF_VERIFY_MSG(false, "Unreachable code"); }
+    }
+  }
+
+  return childGeoPtrs;
 }
 
 }  // namespace lf::geometry

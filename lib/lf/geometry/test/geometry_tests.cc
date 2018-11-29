@@ -216,14 +216,31 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
 void checkChildGeometryVolume(
     const lf::geometry::Geometry &geom, const lf::refinement::RefPat &refPat,
     const lf::base::sub_idx_t &anchor = lf::refinement::idx_nil) {
-  const double volume = lf::geometry::Volume(geom);
+  // compute volume by means of overkill quadrature
+  auto computeVolume = [](const lf::geometry::Geometry &geom) {
+    const auto qr = lf::quad::make_QuadRule(geom.RefEl(), 23);
+
+    const auto &points = qr.Points();
+    const auto &weights = qr.Weights();
+    const auto &integrationElements = geom.IntegrationElement(points);
+
+    double vol = 0.;
+
+    for (size_t j = 0; j < points.cols(); ++j) {
+      vol += weights(j) * integrationElements(j);
+    }
+
+    return vol;
+  };
+
+  const double volume = computeVolume(geom);
   double refinedVolume = 0.;
   auto children = geom.ChildGeometry(
       lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat, anchor),
       0);
 
   for (auto &childGeom : children) {
-    refinedVolume += lf::geometry::Volume(*childGeom);
+    refinedVolume += computeVolume(*childGeom);
   }
 
   switch (refPat) {
@@ -232,7 +249,7 @@ void checkChildGeometryVolume(
           << refPat << " should not produce any children";
       break;
     default:
-      EXPECT_EQ(volume, refinedVolume)
+      EXPECT_FLOAT_EQ(volume, refinedVolume)
           << "Parent and children volumes differ for " << refPat;
   }
 }
@@ -243,13 +260,6 @@ TEST(Geometry, Point) {
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   runGeometryChecks(geom, points, 1e-9);
-
-  std::vector<lf::refinement::RefPat> pointSymmetricRefPats = {
-      lf::refinement::RefPat::rp_copy};
-
-  for (const auto &refPat : pointSymmetricRefPats) {
-    checkChildGeometryVolume(geom, refPat);
-  }
 }
 
 TEST(Geometry, SegmentO1) {
@@ -272,6 +282,14 @@ TEST(Geometry, SegmentO2) {
       (Eigen::MatrixXd(2, 3) << 1, 2, 3, 1, 4, 2).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> segSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_split};
+
+  for (const auto &refPat : segSymmetricRefPats) {
+    checkChildGeometryVolume(geom, refPat);
+  }
 }
 
 TEST(Geometry, TriaO1) {
