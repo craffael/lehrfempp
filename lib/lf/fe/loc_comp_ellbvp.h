@@ -604,8 +604,7 @@ class LagrangeFESelectEdgeMassMatrix
      * @{ */
   LagrangeFESelectEdgeMassMatrix(const LagrangeFESelectEdgeMassMatrix &) =
       delete;
-  LagrangeFESelectEdgeMassMatrix(LagrangeFESelectEdgeMassMatrix &&) =
-      default;
+  LagrangeFESelectEdgeMassMatrix(LagrangeFESelectEdgeMassMatrix &&) = default;
   LagrangeFESelectEdgeMassMatrix &operator=(
       const LagrangeFESelectEdgeMassMatrix &) = delete;
   LagrangeFESelectEdgeMassMatrix &operator=(LagrangeFESelectEdgeMassMatrix &&) =
@@ -970,8 +969,8 @@ class ScalarFESelectEdgeLocalLoadVector
      * @{ */
   ScalarFESelectEdgeLocalLoadVector(const ScalarFESelectEdgeLocalLoadVector &) =
       delete;
-  ScalarFESelectEdgeLocalLoadVector(
-      ScalarFESelectEdgeLocalLoadVector &&) = default;
+  ScalarFESelectEdgeLocalLoadVector(ScalarFESelectEdgeLocalLoadVector &&) =
+      default;
   ScalarFESelectEdgeLocalLoadVector &operator=(
       const ScalarFESelectEdgeLocalLoadVector &) = delete;
   ScalarFESelectEdgeLocalLoadVector &operator=(

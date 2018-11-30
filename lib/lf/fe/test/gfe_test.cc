@@ -354,30 +354,29 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
 }
 
 TEST(lf_gfe, Neu_BVP_ass) {
-   std::cout << "#### TEST: Assembly for Neumann BVP ###" << std::endl;
-   // Right-hand side source function
-   auto f = [](Eigen::Vector2d x) -> double {
-     return (std::sin(2 * M_PI * x[0]) * std::sin(2 * M_PI * x[1]));
-   };
-   // Neumann data
-   auto h = [](Eigen::Vector2d /*x*/) -> double { return 1.0; };
+  std::cout << "#### TEST: Assembly for Neumann BVP ###" << std::endl;
+  // Right-hand side source function
+  auto f = [](Eigen::Vector2d x) -> double {
+    return (std::sin(2 * M_PI * x[0]) * std::sin(2 * M_PI * x[1]));
+  };
+  // Neumann data
+  auto h = [](Eigen::Vector2d /*x*/) -> double { return 1.0; };
 
-   // Class describing the Neumann boundary value problem
-   std::shared_ptr<PureNeumannProblemLaplacian<decltype(f), decltype(h)>> bvp_p =
-       std::make_shared<PureNeumannProblemLaplacian<decltype(f), decltype(h)>>(
-           f, h);
+  // Class describing the Neumann boundary value problem
+  std::shared_ptr<PureNeumannProblemLaplacian<decltype(f), decltype(h)>> bvp_p =
+      std::make_shared<PureNeumannProblemLaplacian<decltype(f), decltype(h)>>(
+          f, h);
 
-   // Obtain finite Element space
-   // Building the test mesh: a general hybrid mesh
-   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  // Obtain finite Element space
+  // Building the test mesh: a general hybrid mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
-   // Set up global FE space
-   UniformScalarFiniteElementSpace fe_space(
-       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-       std::make_shared<QuadLinearLagrangeFE<double>>());
+  // Set up global FE space
+  UniformScalarFiniteElementSpace fe_space(
+      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
+      std::make_shared<QuadLinearLagrangeFE<double>>());
 
-   auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
- }
-  
+  auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
+}
+
 }  // namespace lf::fe::test
-
