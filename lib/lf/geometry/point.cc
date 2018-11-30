@@ -13,12 +13,11 @@ Eigen::MatrixXd Point::Jacobian(const Eigen::MatrixXd& local) const {
 
 Eigen::MatrixXd Point::JacobianInverseGramian(
     const ::Eigen::MatrixXd& local) const {  // NOLINT(misc-unused-parameters)
-  return Eigen::MatrixXd::Zero(DimGlobal(), 0);
+  LF_VERIFY_MSG(false, "JacobianInverseGramian undefined for points.");
 }
 
-// NOLINTNEXTLINE(misc-unused-parameters)
 Eigen::VectorXd Point::IntegrationElement(const Eigen::MatrixXd& local) const {
-  return Eigen::Matrix<double, 1, 1>::Constant(1.0);
+  return Eigen::VectorXd::Ones(local.cols());
 }
 
 std::unique_ptr<Geometry> Point::SubGeometry(dim_t codim, dim_t i) const {
