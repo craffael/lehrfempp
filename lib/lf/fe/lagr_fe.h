@@ -15,6 +15,8 @@
  */
 
 #include <lf/assemble/dofhandler.h>
+#include <iostream>
+#include <typeinfo>
 
 namespace lf::fe {
 /** Type for indices into global matrices/vectors */
@@ -39,6 +41,13 @@ using sub_idx_t = lf::base::sub_idx_t;
  * Each reference shape function is associated with a unique sub-entity
  * of the reference entity.
  *
+ * Specializations of this class support the evaluation of RSFs in
+ * arbitrary points in the reference element and the computation of their
+ * gradients. The also provide local components for the defintion of nodal
+ * interpolants.
+ *
+ * ### Numbering _convention_ for reference shape functions
+ *
  * The numbering of reference shape functions is done according to the
  * following convention:
  *
@@ -50,11 +59,21 @@ using sub_idx_t = lf::base::sub_idx_t;
  * the order given by the _local indexing_ of the sub-entities.
  *
  * The numbering scheme must the same as that adopted for the definition
- * of local-to-global maps, see lf::asssemble::DofHandler.
+ * of local-to-global maps, see the \ref lf::assemble::DofHandler class.
  *
- * Specializations of this class support the evaluation of RSFs in arbitrary
- * points in the reference element and the computation of their gradients.
- * The also provide local components for the defintion of nodal interpolants.
+ * ### Example for numbering of reference shape functions
+ *
+ * For triangular cubic Lagrangian finite elements there is a single reference
+ * shape function associated with each vertex, two reference shape functions
+ * belonging to every edge and a single interior reference shape function. In
+ * this case the RSFs are numbered a follows
+ * - RSF 0 -> vertex 0
+ * - RSF 1 -> vertex 1
+ * - RSF 2 -> vertex 2
+ * - RSF 3,4 -> edge 0 (3 closer to endpoint 0, 4 closer to endpoint 1)
+ * - RSF 5,6 -> edge 1 (5 closer to endpoint 0, 6 closer to endpoint 1)
+ * - RSF 7,8 -> edge 2 (7 closer to endpoint 0, 8 closer to endpoint 1)
+ * - RSF 9  -> triangle
  */
 template <typename SCALAR>
 class ScalarReferenceFiniteElement {
@@ -72,19 +91,19 @@ class ScalarReferenceFiniteElement {
 
  public:
   /**
-   * @brief Constructor setting topological type and order
+   * @brief Constructor setting topological type and degree
    *
    * @param ref_el reference cell on which the finite element is defined
-   * @param order "polynomial order" of the finite element; meant to provide
+   * @param degree polynomial degree of the finite element; meant to provide
    *              a hint about the appropriate choice of quadrature rules
    *
-   * The order of a scalar valued finite element will usually agree with the
-   * degree (+1) of the largest full polynomial space contained in its local
+   * The degree of a scalar valued finite element will usually agree with the
+   * degree of the largest full polynomial space contained in its local
    * space.
    */
   explicit ScalarReferenceFiniteElement(lf::base::RefEl ref_el,
-                                        unsigned int order)
-      : ref_el_(std::move(ref_el)), order_(order) {}
+                                        unsigned int degree)
+      : ref_el_(std::move(ref_el)), degree_(degree) {}
 
   virtual ~ScalarReferenceFiniteElement() = default;
 
@@ -94,12 +113,12 @@ class ScalarReferenceFiniteElement {
    */
   lf::base::RefEl RefEl() const { return ref_el_; }
   /**
-   * @brief Request the "polynomial order" of the finite element space
+   * @brief Request the polynomial degree of the finite element space
    *
    * @sa ScalarReferenceFiniteElement(lf::base::RefEl ref_el, unsigned int
-   * order)
+   * degree)
    */
-  unsigned int order() const { return order_; }
+  unsigned int degree() const { return degree_; }
 
   /**
    * @brief Returns the spatial dimension of the reference cell
@@ -137,7 +156,7 @@ class ScalarReferenceFiniteElement {
    *       of the same co-dimension
    */
   virtual size_type NumRefShapeFunctions(dim_t codim) const {
-    LF_VERIFY_MSG(false,"Illegal call for non-uniform sub-entity dof numbers");
+    LF_VERIFY_MSG(false, "Illegal call for non-uniform sub-entity dof numbers");
     return 0;
   }
 
@@ -157,17 +176,36 @@ class ScalarReferenceFiniteElement {
    * @brief Evaluation of _all_ reference shape functions in a number of points
    *
    * @param refcoords coordinates of N points in the reference cell passed as
-   * columns of a matrix of size dim x N.
-   * @return array of row vectors. The i-th array element contains the values
+   * columns of a matrix of size dim x N, where dim is the dimension of the
+   * reference element, that is =0 for points, =1 for edges, =2 for triangles
+   * and quadrilaterals
+   *
+   * @return array of *row vectors*. The i-th array element contains the values
    *         of the i-th shape function in the passed points.
    *
    * Concerning the numbering of local shape functions, please consult
-   * the documentation of lf::assemble::DofHandler.
+   * the documentation of lf::assemble::DofHandler or the documentation of the
+   * class.
    *
    * @note shape functions are assumed to be real-valued.
+   *
+   * ### Example: Triangular Linear Lagrangian finite elements
+   *
+   * There are three reference shape functions
+   * \f$\hat{b}^1,\hat{b}^2,\hat{b}^3\f$ associated with the vertices of the
+   * reference triangle. Let us assume that the `refcoords` argument is a 2x2
+   * matrix \f$[\mathbf{x}_1\;\mathbf{x}_2]\f$, which corresponds to passing
+   * the coordinates of two points in the reference triangle. Then this method
+   * will return a vector of length 3 of row vectors of size 2:
+   * \f[
+        \left\{[\hat{b}^1(\mathbf{x}_1)\; \hat{b}^1(\mathbf{x}_2)],
+          [\hat{b}^2(\mathbf{x}_1)\; \hat{b}^2(\mathbf{x}_2)],
+          [\hat{b}^3(\mathbf{x}_1)\; \hat{b}^3(\mathbf{x}_2)]\right\}\;.
+     \f]
+   *
    */
-  virtual std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
+  virtual std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
    * @brief Computation of the gradients of _all_ reference shape functions in a
@@ -175,19 +213,20 @@ class ScalarReferenceFiniteElement {
    *
    * @param refcoords coordinates of N points in the reference cell passed as
    *                  columns of a matrix of size dim x N.
-   * @return array of matrices. The i-th array element contains the values
+   * @return array of _matrices_. The i-th array element contains the values
    *         of the gradients of the i-th shape function at the points passed
    *         in `refcoords` in its _columns_.
    *
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler.
    */
-  virtual std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
-  GradientsReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
+  virtual std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
-   * @brief Returns positions of "reference" points for evaluation of parametric
-   *       degrees of freedom, nodal interpolation in the simplest case.
+   * @brief Returns reference coordinates of "evaluation nodes" for evaluation
+   *        of parametric degrees of freedom, nodal interpolation in the
+   * simplest case.
    *
    * @return A d x N matrix, where d is the dimension of the reference cell,
    * and N the number of interpolation nodes. The columns of this matrix contain
@@ -198,17 +237,32 @@ class ScalarReferenceFiniteElement {
    * This interpolation operator can be realized through evaluations at certain
    * evaluation nodes, which are provided by this method.
    *
+   * ### Unisolvence
+   *
+   * The evaluation points must satisfy the following requirement: If the values
+   * of a function belonging to the span of the reference shape functions are
+   * known in the evaluation nodes, then this function is uniquely determined.
+   * This entails that the number of evaluation nodes must be at least as big as
+   * the number of reference shape functions.
+   *
+   * @note It is not required that any vector a values at evaluation nodes can
+   * be produced by a suitable linear combination of reference shape functions.
+   *       For instance, this will not be possible, if there are more evaluation
+   * points than reference shape functions. If both sets have the same size,
+   * however, the interpolation problem has a solution for any vector of values
+   * at the evluation points.
+   *
    * ### Example: Principal lattice
-   * For triangular Lagrangian finite elements of degree p the evaluation nodes, 
+   * For triangular Lagrangian finite elements of degree p the evaluation nodes,
    * usually called "interpolation nodes" in this context, can be chosen as
    * \f$\left(\frac{j}{p},\frac{k}{p}\right),\; 0\leq j,k \leq p, j+k\leq p\f$.
-   * 
+   *
    * ### Moment-based degrees of freedom
-   * For some finite element spaces the interpolation functional may be defined 
-   * based on integrals over edges. In this case the evaluation nodes will be 
+   * For some finite element spaces the interpolation functional may be defined
+   * based on integrals over edges. In this case the evaluation nodes will be
    * quadrature nodes for the approximate evaluation of these integrals.
-   * 
-   * The quadrature rule must be exact for the polynomials contained in the 
+   *
+   * The quadrature rule must be exact for the polynomials contained in the
    * local finite element spaces.
    */
   virtual Eigen::MatrixXd EvaluationNodes() const = 0;
@@ -219,13 +273,12 @@ class ScalarReferenceFiniteElement {
   virtual size_type NumEvaluationNodes() const = 0;
 
   /**
-   * @brief Computes the local nodal interpolant from function values at
-   * interpolation nodes.
+   * @brief Computes the linear combination of reference shape functions
+   *        matching function values at evaluation nodes.
    *
-   * @tparam NV_SCALAR Scalar type for nodal values and resulting coefficients
-   *
-   * @param nodvals row vector of function values at interpolation nodes
+   * @param nodvals row vector of function values at evaluation nodes
    * The length of this vector must agree with NumEvaluationNodes().
+   *
    * @return The coefficients of the local "nodal interpolant" with respect to
    * the reference shape functions. This is a row vector of length
    * NumRefShapeFunctions().
@@ -236,6 +289,13 @@ class ScalarReferenceFiniteElement {
    * the linear mapping realized by NodalValuesToDofs() is the identity mapping.
    *
    * @note default implementation is the identity mapping
+   *
+   * ### Requirement: reproduction of local finite element functions
+   *
+   * If the vector of values at the evaluation nodes agrees with a vector
+   * of function values of a linear combination of reference shape functions
+   * at the evaluation nodes, then this method must return the very coefficients
+   * of the linear combination.
    */
   virtual Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const {
@@ -244,12 +304,49 @@ class ScalarReferenceFiniteElement {
     return nodvals;
   }
 
+  /**
+   * @brief output function
+   *
+   * @param o stream to which output is to be sent
+   * @return reference to the same stream
+   *
+   * Default implementation just prints degree, and the numbers of evaluation
+   * nodes and local shape functions
+   */
+  virtual std::ostream& print(std::ostream& o) const {
+    o << typeid(*this).name() << ", degree = " << degree()
+      << ", n_rsf = " << NumRefShapeFunctions()
+      << ", n_evln = " << NumEvaluationNodes();
+    if ((ctrl_ & kout_evln) != 0) {
+      o << "\n evl nodes = " << EvaluationNodes();
+    }
+    return o;
+  }
+
  protected:
   /** type of underlying reference cell */
   const lf::base::RefEl ref_el_;
-  /** polynomial order */
-  const unsigned int order_;
+  /** polynomial degree */
+  const unsigned int degree_;
+
+ public:
+  /** @brief output control variable */
+  static unsigned int ctrl_;
+  static const unsigned int kout_evln = 1;
 };
+
+// Definition of output control variable
+template <typename SCALAR>
+unsigned int ScalarReferenceFiniteElement<SCALAR>::ctrl_ = 0;
+
+/** @brief Stream output operator: just calls the
+ * ScalarReferenceFiniteElement::print() method
+ */
+template <typename SCALAR>
+std::ostream& operator<<(std::ostream& o,
+                         const ScalarReferenceFiniteElement<SCALAR>& fe_desc) {
+  return fe_desc.print(o);
+}
 
 /**
  * @brief Linear Lagrange finite element on triangular reference element
@@ -302,27 +399,26 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<double, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
-         refcoords.row(0) - refcoords.row(1)),
+    std::vector<Eigen::RowVectorXd> ret{
+        (Eigen::RowVectorXd::Constant(1, n_pts, 1.0) - refcoords.row(0) -
+         refcoords.row(1)),
         refcoords.row(0), refcoords.row(1)};
     return ret;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
-  GradientsReferenceShapeFunctions(
+  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
+    std::vector<Eigen::MatrixXd> ret{
         (Eigen::Vector2d::Constant(-1.0).replicate(1, n_pts)),
         ((Eigen::Vector2d() << 1.0, 0.0).finished()).replicate(1, n_pts),
         ((Eigen::Vector2d() << 0.0, 1.0).finished()).replicate(1, n_pts)};
@@ -347,6 +443,13 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
 /**
  * @brief Linear Lagrange finite element on the quadrilateral reference element
  *
+ * The reference shape functions are
+ * @f[
+       \hat{b}^1(x_1,x_2) = (1-x_1)(1-x_2)\;,\quad
+       \hat{b}^1(x_1,x_2) = x_1)(1-x_2)\;,\quad
+       \hat{b}^1(x_1,x_2) = x_1\cdot x_2\;,\quad
+       \hat{b}^1(x_1,x_2) = (1-x_1)x_2\;.
+ * @f]
  * This is a specialization of ScalarReferenceFiniteElement.
  * Refer to its documentation.
  */
@@ -383,11 +486,11 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
+    const std::vector<Eigen::RowVectorXd> ret{
         ((1 - refcoords.row(0).array()) * (1 - refcoords.row(1).array()))
             .matrix(),
         ((refcoords.row(0).array()) * (1 - refcoords.row(1).array())).matrix(),
@@ -397,28 +500,23 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
-  GradientsReferenceShapeFunctions(
+  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
-             << (refcoords.row(1).array() - 1.0).matrix(),
+    std::vector<Eigen::MatrixXd> ret{
+        (Eigen::MatrixXd(2, n_pts) << (refcoords.row(1).array() - 1.0).matrix(),
          (refcoords.row(0).array() - 1.0).matrix())
             .finished(),
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
-             << (1.0 - refcoords.row(1).array()).matrix(),
+        (Eigen::MatrixXd(2, n_pts) << (1.0 - refcoords.row(1).array()).matrix(),
          (-refcoords.row(0).array()).matrix())
             .finished(),
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
-             << (refcoords.row(1).array()).matrix(),
+        (Eigen::MatrixXd(2, n_pts) << (refcoords.row(1).array()).matrix(),
          (refcoords.row(0).array()).matrix())
             .finished(),
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(2, n_pts)
-             << (-refcoords.row(1).array()).matrix(),
+        (Eigen::MatrixXd(2, n_pts) << (-refcoords.row(1).array()).matrix(),
          (1.0 - refcoords.row(0).array()).matrix())
             .finished()};
     return ret;
@@ -483,31 +581,27 @@ class SegmentLinearLagrangeFE final
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<double, 1, Eigen::Dynamic>::Constant(1, n_pts, 1.0) -
-         refcoords.row(0)),
+    std::vector<Eigen::RowVectorXd> ret{
+        (Eigen::RowVectorXd::Constant(1, n_pts, 1.0) - refcoords.row(0)),
         refcoords.row(0)};
     return ret;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>
-  GradientsReferenceShapeFunctions(
+  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> ret{
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Constant(
-            1, n_pts, -1.0)),
-        (Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Constant(
-            1, n_pts, 1.0))};
+    std::vector<Eigen::MatrixXd> ret{
+        (Eigen::MatrixXd::Constant(1, n_pts, -1.0)),
+        (Eigen::MatrixXd::Constant(1, n_pts, 1.0))};
     return ret;
   }
 

@@ -9,7 +9,7 @@
 /**
  * @file
  * @brief Classes for the local computation of norms of (differences of)
- * functions elliptic BVPs
+ * (FE) functions
  * @author Ralf Hiptmair
  * @date November 2018
  * @copyright MIT License
@@ -43,7 +43,7 @@ namespace lf::fe {
  *
  * ~~~
  *   LocalL2NormDifference loc_comp(
- *     fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(),
+ *     fe_space.ShapeFunctionLayout(kTria), fe_space.ShapeFunctionLayout(kQuad),
  *      [](auto x) { return (x[0] * (1.0 - x[1])); }, quad_order);
  * ~~~
  */
@@ -60,15 +60,17 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
 
   /** @brief Constructor
    *
-   * @param fe_tria reference to layout description for reference shape
+   * @param fe_tria_p pointer to layout description for reference shape
    * functions on triangular cells
-   * @param fe_quad reference to layout description for reference shape
+   * @param fe_quad_p pointer to layout description for reference shape
    * functions on quadrilateral cells
    * @param u object providing scalar-valued function
    * @param loc_quad_order desired order of local quadrature, default value = 0.
    *        If = 0, the quadrature order is determined from the polynomial
    *        degree of the reference shape functions.
    *
+   * @note NULL pointers amy be passed, if evaluations for the
+   *       corresponding cell type are never requested.
    */
   LocalL2NormDifference(
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
@@ -76,7 +78,7 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
       FUNCTOR u, lf::quad::quadOrder_t loc_quad_order = 0)
       : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
         u_(u) {}
-  /*
+  /**
    * @brief main function for the computation of **squared** local L2 norms
    *
    * @tparam DOFVECTOR vector type for passing local coefficient vector
@@ -94,7 +96,7 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
    *
    * ### Template parameter type requirements
    *
-   * - DOFVECTOR must be compatible with `Eigen::VectorXd`
+   * - DOFVECTOR must be compatible with std::vector<SCALAR>
    */
   template <typename DOFVECTOR>
   double operator()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
@@ -134,7 +136,6 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
   const size_type qr_NumPts = qr_num_pts(ref_el);
   const size_type num_LSF = num_rsf(ref_el);
   const auto rsf_QuadPts{rsf_at_quadpts(ref_el)};
-  // const auto grad_QuadPts{grad_rsf_at_quadpts(ref_el)};
 
   SWITCHEDSTATEMENT(ctrl_, kout_cell,
                     std::cout << ref_el << ", (Nlsf = " << num_LSF
@@ -197,7 +198,6 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
  * LOCAL_NORM_COMP of the function lf::fe::L2NormDifference. Its main method
  * is the evaluation operator returning the **squared** local norm.
  *
- * @note Only for planar geometies (world dimension = 2)!
  *
  * ### Use case
  *
@@ -211,8 +211,9 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
   /** @brief type of return value of generic function */
   using vecval_t = typename std::invoke_result<VEC_FUNC, Eigen::Vector2d>::type;
 
-  /** @brief standard constructors */
-  /** @{ */
+  /** defgroup stdc
+   * @brief standard constructors
+   * @{ */
   LocL2GradientFEDifference(const LocL2GradientFEDifference &) = delete;
   LocL2GradientFEDifference(LocL2GradientFEDifference &&) noexcept = default;
   LocL2GradientFEDifference &operator=(const LocL2GradientFEDifference &) =
@@ -222,15 +223,17 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
 
   /** @brief Constructor
    *
-   * @param fe_tria reference to layout description for reference shape
+   * @param fe_tria_p reference to layout description for reference shape
    * functions on triangular cells
-   * @param fe_quad reference to layout description for reference shape
+   * @param fe_quad_p reference to layout description for reference shape
    * functions on quadrilateral cells
    * @param vecfield object providing a generic vector field
    * @param loc_quad_order desired order of local quadrature, default value = 0.
    *        If = 0, the quadrature order is determined from the polynomial
    *        degree of the reference shape functions.
    *
+   * @note NULL pointers amy be passed, if evaluations for the
+   *       corresponding cell type are never requested.
    */
   LocL2GradientFEDifference(
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
@@ -238,8 +241,9 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
       VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order = 0)
       : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
         vecfield_(vecfield) {}
-  /*
+  /**
    * @brief main function for the computation of **squared** local L2 norms
+   *      of gradients
    *
    * @tparam DOFVECTOR vector type for passing local coefficient vector
    *
@@ -256,7 +260,7 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
    *
    * ### Template parameter type requirements
    *
-   * - DOFVECTOR must be compatible with `Eigen::VectorXd`
+   * - DOFVECTOR must be compatible with std::vector of a SCALAR type
    */
   template <typename DOFVECTOR>
   double operator()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
@@ -287,9 +291,12 @@ double LocL2GradientFEDifference<VEC_FUNC>::operator()(
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
-  LF_ASSERT_MSG((geo_ptr->DimGlobal() == 2) && (geo_ptr->DimLocal() == 2),
+  LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
   LF_ASSERT_MSG(dofs.size() >= num_rsf(ref_el), "Dof vector too short");
+
+  // Physical dimension of the cell
+  const dim_t world_dim = geo_ptr->DimGlobal();
 
   // Obtain cell--type depend but cell-independent data
   const Eigen::MatrixXd &qr_Points{qr_points(ref_el)};
@@ -323,19 +330,23 @@ double LocL2GradientFEDifference<VEC_FUNC>::operator()(
   for (int k = 0; k < qr_NumPts; ++k) {
     // Value of the vector field at quadrature point
     const auto vfval = vecfield_(mapped_qpts.col(k));
+    LF_ASSERT_MSG(vfval.size() == world_dim, "Vector length mismatch");
+
     // Value of the gradient of the finite element function at quadrature point
     // Transformed gradients
-    const auto trf_grad(JinvT.block(0, 2 * k, 2, 2) * gradrsf_QuadPts[k]);
+    const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
+                        gradrsf_QuadPts[k]);
     // Loop over local shape functions/dofs to compute the value of
     // the finite element function in the quadrature point
-    Eigen::Matrix<dof_t, 2, 1> grad_uh_val(2, 1);
+    Eigen::Matrix<dof_t, Eigen::Dynamic, 1> grad_uh_val(world_dim, 1);
     grad_uh_val.setZero();
     for (int j = 0; j < num_LSF; ++j) {
       grad_uh_val += (dofs[j] * trf_grad.col(j));
     }
     // form the difference
-    grad_uh_val[0] -= vfval[0];
-    grad_uh_val[1] -= vfval[1];
+    for (int l = 0; l < world_dim; ++l) {
+      grad_uh_val[l] -= vfval[l];
+    }
     // sum the quared modulus weighted with quadrature weight and metric factor
     sum += qr_Weights[k] * determinants[k] * grad_uh_val.squaredNorm();
     // clang-format on

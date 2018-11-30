@@ -25,6 +25,104 @@
 
 namespace lf::fe::test {
 
+template <typename SCALAR>
+bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+  // Evaluates a random linear combination of reference shape functions
+  // at the evaluation nodes for the finite element and then reconstructs
+  // the "interpolant" which must agree with what we started from
+
+  // Fetch evaluation nodes
+  const Eigen::MatrixXd evl_nodes{fe_desc.EvaluationNodes()};
+  const size_type N_evln = fe_desc.NumEvaluationNodes();
+  EXPECT_EQ(evl_nodes.cols(), N_evln) << "No. evl nodes mismatch";
+
+  // Evaluate reference shape functions in evaluation nodes
+  const size_type N_rsf = fe_desc.NumRefShapeFunctions();
+  const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_at_evln{
+      fe_desc.EvalReferenceShapeFunctions(evl_nodes)};
+  EXPECT_EQ(rsf_at_evln.size(), N_rsf) << "No. rsf mismatch";
+
+  // Form random linear combination and store it values
+  // in the evaluation nodes
+  Eigen::RowVectorXd rand_coeffs{Eigen::RowVectorXd::Random(N_rsf)};
+  Eigen::RowVectorXd nodvals{Eigen::RowVectorXd::Zero(N_evln)};
+  for (int k = 0; k < N_rsf; ++k) {
+    nodvals += rand_coeffs[k] * rsf_at_evln[k];
+  }
+  // Reconstruct linear combination
+  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> coeffs{
+      fe_desc.NodalValuesToDofs(nodvals)};
+  // Check agreement of coefficients
+  EXPECT_DOUBLE_EQ((coeffs - rand_coeffs).norm(), 0.0)
+      << "Coefficient mismatch" << coeffs << " <-> " << rand_coeffs;
+  return true;
+}
+
+TEST(lf_fe, scal_fe_coeff_node) {
+  // Test of consistency of nodal interpolation
+  std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
+            << std::endl;
+  TriaLinearLagrangeFE<double> tlfe{};
+  std::cout << tlfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+  QuadLinearLagrangeFE<double> qlfe{};
+  std::cout << qlfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+  SegmentLinearLagrangeFE<double> slfe{};
+  std::cout << slfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+}
+
+template <typename SCALAR>
+bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+  // Interpolates random values at interpolation nodes
+  // and checks whether the resulting linear combination of
+  // basis functions reproduces those values
+
+  // Fetch evaluation nodes
+  const Eigen::MatrixXd evl_nodes{fe_desc.EvaluationNodes()};
+  const size_type N_evln = fe_desc.NumEvaluationNodes();
+  EXPECT_EQ(evl_nodes.cols(), N_evln) << "No. evl nodes mismatch";
+
+  // Evaluate reference shape functions in evaluation nodes
+  const size_type N_rsf = fe_desc.NumRefShapeFunctions();
+  const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_at_evln{
+      fe_desc.EvalReferenceShapeFunctions(evl_nodes)};
+  EXPECT_EQ(rsf_at_evln.size(), N_rsf) << "No. rsf mismatch";
+
+  // Test makes sense only, if the number of local shape functions
+  // agrees with the number of evaluation nodes
+  EXPECT_EQ(N_evln, N_rsf) << "Nos of rsf and evaluation nodes must agree";
+
+  // Vector of random nodal values
+  Eigen::RowVectorXd rand_vals{Eigen::RowVectorXd::Random(N_evln)};
+  // Obtain corresponding linear combination of shape functions
+  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> coeffs{
+      fe_desc.NodalValuesToDofs(rand_vals)};
+
+  // Evaluate linear combination of basis functions at evaluation nodes
+  Eigen::RowVectorXd nodvals{Eigen::RowVectorXd::Zero(N_evln)};
+  for (int k = 0; k < N_rsf; ++k) {
+    nodvals += coeffs[k] * rsf_at_evln[k];
+  }
+  // Check agreement of values
+  EXPECT_DOUBLE_EQ((nodvals - rand_vals).norm(), 0.0)
+      << "Value mismatch" << nodvals << " <-> " << rand_vals;
+  return true;
+}
+
+TEST(lf_fe, scal_fe_val_node) {
+  // Test of exactness of nodal reconstruction
+  std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
+            << std::endl;
+  TriaLinearLagrangeFE<double> tlfe{};
+  EXPECT_TRUE(scalarFEInterpTest(tlfe));
+  QuadLinearLagrangeFE<double> qlfe{};
+  EXPECT_TRUE(scalarFEInterpTest(tlfe));
+  SegmentLinearLagrangeFE<double> slfe{};
+  EXPECT_TRUE(scalarFEInterpTest(tlfe));
+}
+
 TEST(lf_fe, lf_fe_linfe) {
   // Three points in the reference element
   Eigen::MatrixXd refcoords{
@@ -209,312 +307,35 @@ TEST(lf_fe, lf_fe_loadvec) {
   }
 }
 
-TEST(lf_fe, lf_fe_l2norm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
-  std::cout << "### TEST Computation of L2 norm" << std::endl;
-  // This test computes an approximation of the L2 norm of a function
-  // by local quadrature on a finite element mesh, using the facilities
-  // for computation of norms of differences of functions.
+TEST(lf_fe, lf_fe_edgeload) {
+  std::cout << "### TEST: Computation of local edge load vector" << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  // Building the test mesh: a purely affine mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
+  // Set up finite elements
+  std::shared_ptr<SegmentLinearLagrangeFE<double>> fe_p{
+      std::make_shared<SegmentLinearLagrangeFE<double>>()};
 
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  // Set up objects taking care of local computations
+  auto g = [](Eigen::Vector2d) -> double { return 1.0; };
+  ScalarFEEdgeLocalLoadVector<double, decltype(g)> comp_elem_vec{fe_p, g};
+  // Set debugging flags
+  // comp_elem_mat.ctrl_ = 255;
+  // lf::quad::QuadRule::out_ctrl_ = 1;
 
-  // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
+  Eigen::Vector2d Ref_vec(2);
+  Ref_vec[0] = Ref_vec[1] = 0.5;
 
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  LocalL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
-  // loc_comp.ctrl_ = 255;
-
-  /*
-  // Alternative implementation
-  // Function whose L2 should be computed; a generic lambda here
-  auto u = [](auto x) { return (x[0] * (1.0 - x[1])); };
-   LocalL2NormDifference<decltype(u)> loc_comp(
-        fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(),
-        [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
-  */
-
-  // Actual compuation of norm
-  double norm = NormOfDifference(dofh, loc_comp, zerovec);
-  std::cout << "Norm = " << norm << std::endl;
-  EXPECT_NEAR(norm, 5.19615, 1E-4);
-}
-
-TEST(lf_fe, lf_fe_L2assnorm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
-  std::cout << "### TEST Compute L2 norm in two different ways" << std::endl;
-  // This test computes the L2 norm of a FE function in two ways
-
-  // Building the test mesh: a purely affine mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
-
-  // Local-to-global index map
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-
-  // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
-  // Matrix in triplet format holding Galerkin matrix
-  lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
-  // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
-      fe_space, [](auto x) -> double { return 0.0; },
-      [](auto x) -> double { return 1.0; }, A);
-
-  // First optin for setting the coefficient vector
-  // Model linear function
-  // auto u = [](auto x) { return (x[0] - 2 * x[1]); };
-  // Interpolation
-  // auto coeffvec{NodalProjection(fe_space, u)};
-
-  // Alternative:
-  // Random coefficient vector of FE function
-  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
-
-  const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
-
-  // Directly compute L2 norm of FE function
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  LocalL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) -> double { return 0.0; });
-
-  const double normsq_direct =
-      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
-
-  std::cout << "Norm^2 through A = " << normsq_from_A << std::endl;
-  std::cout << "Norm^2 directly = " << normsq_direct << std::endl;
-  EXPECT_NEAR(normsq_from_A, normsq_direct, 1E-4);
-}
-
-TEST(lf_fe, lf_fe_H1assnorm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
-  std::cout << "### TEST Compute H1 seminorm in two different ways"
-            << std::endl;
-  // This test computes the H1 seminorm of a FE function in two ways
-
-  // Building the test mesh: a purely affine mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
-
-  // Set up global FE space
-  LinearLagrangianFESpace fe_space(mesh_p);
-
-  // Local-to-global index map
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-
-  // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
-  // Matrix in triplet format holding Galerkin matrix
-  lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
-  // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
-      fe_space, [](auto x) -> double { return 1.0; },
-      [](auto x) -> double { return 0.0; }, A);
-
-  // First optin for setting the coefficient vector
-  // Model linear function
-  // auto u = [](auto x) { return (x[0] - 2 * x[1]); };
-  // Interpolation
-  // auto coeffvec{NodalProjection(fe_space, u)};
-
-  // Alternative:
-  // Random coefficient vector of FE function
-  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
-
-  const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
-
-  // Directly compute H1 seminorm of FE function
-  // Helper object for computation of norm
-  LocL2GradientFEDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return Eigen::Vector2d::Zero(2); });
-
-  const double normsq_direct =
-      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
-
-  std::cout << "H1 norm^2 through A = " << normsq_from_A << std::endl;
-  std::cout << "H1 norm^2 directly = " << normsq_direct << std::endl;
-  EXPECT_NEAR(normsq_from_A, normsq_direct, 1E-4);
-}
-
-TEST(lf_fe, lf_fe_l2norm_vf) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
-  std::cout << "### TEST Computation of L2 norm of vectorfield" << std::endl;
-  // This test computes an approximation of the L2 norm of a function
-  // by local quadrature on a finite element mesh, using the facilities
-  // for computation of norms of differences of functions.
-
-  // Building the test mesh: a purely affine mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
-
-  // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
-
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  LocL2GradientFEDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); }, 4);
-  // loc_comp.ctrl_ = 255;
-
-  // Actual compuation of norm
-  double norm = NormOfDifference(dofh, loc_comp, zerovec);
-  std::cout << "Norm of vectorfield = " << norm << std::endl;
-  EXPECT_NEAR(norm, 7.34847, 1E-4);
-}
-
-TEST(lf_fe, lf_fe_lintp) {
-  std::cout << "### TEST: Linear Interpolation" << std::endl;
-  // Building the test mesh: a general hybrid mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
-
-  auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
-  auto coeffvec{NodalProjection(fe_space, u)};
-
-  // Local-to-global index mapped
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-  EXPECT_EQ(coeffvec.size(), dofh.NoDofs())
-      << "Coefficient vector length mismatch";
-
-  // Check agreement of nodal values
-  for (lf::assemble::gdof_idx_t j = 0; j < coeffvec.size(); ++j) {
-    const lf::mesh::Entity &node{dofh.Entity(j)};
-    EXPECT_TRUE(node.RefEl() == lf::base::RefEl::kPoint());
-    auto tmp_coord(
-        node.Geometry()->Global(lf::base::RefEl::kPoint().NodeCoords()));
-    auto pt_coord(tmp_coord.col(0));
-    // std::cout << "@ [" << pt_coord.transpose() << "]: u = " << u(pt_coord)
-    //           << " <-> u_h = " << coeffvec[j] << std::endl;
-    EXPECT_DOUBLE_EQ(coeffvec[j], u(pt_coord))
-        << " @ [" << pt_coord.transpose() << "]:";
-  }
-}
-
-TEST(lf_fe, set_dirbdc) {
-  std::cout << "### TEST: Setting Dirichlet boundary values" << std::endl;
-  // Building the test mesh: a general hybrid mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>(),
-      std::make_shared<SegmentLinearLagrangeFE<double>>());
-  // Specification of local shape functions for a edge
-  auto fe_spec_edge_p{fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment())};
-  // Local to global index mapping
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
-
-  // Retrieve edges on the boundary
-  lf::mesh::utils::CodimMeshDataSet<bool> bd_flags(
-      lf::mesh::utils::flagEntitiesOnBoundary(mesh_p, 1));
-  // Selector for boundary edges
-  auto bd_edge_sel = [&bd_flags](const lf::mesh::Entity &edge) -> bool {
-    return bd_flags(edge);
-  };
-  // Function defining the Dirichlet boundary values
-  auto g = [](Eigen::Vector2d x) -> double {
-    return (x[0] * x[0] + x[1] * x[1]);
-  };
-
-  auto flag_val_vec(InitEssentialConditionFromFunction(dofh, *fe_spec_edge_p,
-                                                       bd_edge_sel, g));
-}
-
-// check whether linear function is interpolated exactly
-bool checkInterpolationLinear(const UniformScalarFiniteElementSpace &fe_space) {
-  // Model linear function
-  auto u = [](auto x) { return (x[0] - 2 * x[1]); };
-  // Interpolation
-  auto coeffvec{NodalProjection(fe_space, u)};
-  // Helper class for error computation
-  LocalL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), u, 4);
-  // Actual compuation of error norm
-  double norm = NormOfDifference(fe_space.LocGlobMap(), loc_comp, coeffvec);
-  std::cout << "Norm = " << norm << std::endl;
-  EXPECT_NEAR(norm, 0.0, 1E-6);
-  return (std::fabs(norm) < 1.0E-6);
-}
-
-TEST(lf_fe, lf_fe_lintp_exact) {
-  std::cout << "### TEST: Reproduction of linear functions" << std::endl;
-  // Building the test mesh: a general hybrid mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
-  EXPECT_TRUE(checkInterpolationLinear(fe_space));
-}
-
-TEST(lf_fe, lf_fe_intperrcvg) {
-  // Four levels of refinement
-  const int reflevels = 6;
-  std::cout << "### TEST: Convergence of interpolation error" << std::endl;
-  // Building the test mesh: a general hybrid mesh
-  // This serves as the coarsest mesh of the hierarchy
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-
-  // Prepare for creating a hierarchy of meshes
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(std::move(mesh_p), mesh_factory_ptr);
-
-  // Perform several steps of regular refinement of the given mesh
-  for (int refstep = 0; refstep < reflevels; ++refstep) {
-    // Barycentric refinement is the other option
-    multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
-  }
-
-  // Function
-  auto f = [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); };
-  auto grad_f = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return (std::exp(x[0] * x[1]) *
-            (Eigen::Vector2d() << x[1], x[0]).finished())
-        .eval();
-  };
-
-  auto errs{InterpolationErrors(
-      multi_mesh, f, grad_f, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>())};
-
-  size_type L = errs.size();
-  for (int l = 0; l < L; ++l) {
-    std::cout << "Level" << l << ": L2 error = " << errs[l].first
-              << ", H1 error = " << errs[l].second << std::endl;
+  // Loop over edges and compute element vectors
+  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
+    const lf::base::size_type n(edge.RefEl().NumNodes());
+    std::cout << "Edge " << edge << ": [";
+    typename decltype(comp_elem_vec)::ElemVec elem_vec{
+        comp_elem_vec.Eval(edge)};
+    std::cout << elem_vec.transpose() << " ]" << std::endl;
+    const double diffnorm =
+        (elem_vec - lf::geometry::Volume(*edge.Geometry()) * Ref_vec).norm();
+    EXPECT_NEAR(diffnorm, 0.0, 1E-6);
   }
 }
 

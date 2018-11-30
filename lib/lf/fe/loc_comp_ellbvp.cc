@@ -55,9 +55,9 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
 
   // Maximal degree of both finite elements
   const lf::quad::quadOrder_t tria_ord =
-      (fe_tria_p_ != nullptr) ? fe_tria_p_->order() : 0;
+      (fe_tria_p_ != nullptr) ? fe_tria_p_->degree() : 0;
   const lf::quad::quadOrder_t quad_ord =
-      (fe_quad_p_ != nullptr) ? fe_quad_p_->order() : 0;
+      (fe_quad_p_ != nullptr) ? fe_quad_p_->degree() : 0;
   const lf::quad::quadOrder_t poly_order = std::max(tria_ord, quad_ord);
 
   // Obtain quadrature rules for both triangles and quadrilaterals
@@ -179,11 +179,54 @@ LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor(
                         std::cout << "QP " << i << " = \n"
                                   << grad_quadpoint_quad_[i] << std::endl;
                       });
-  }
-  else {
+  } else {
     // No valid finite element specification for quadrilaterals
     // No quadrature points available
   }
 }
+
+// Implementation for LocCompLagrFEEdgePreprocessor
+LocCompLagrFEEdgePreprocessor::LocCompLagrFEEdgePreprocessor(
+    std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p)
+    : fe_edge_p_(fe_edge_p) {
+  LF_ASSERT_MSG(fe_edge_p_ != nullptr, "FE specification missing");
+  // Check topological type compatibility
+  LF_ASSERT_MSG(fe_edge_p_->RefEl() == lf::base::RefEl::kSegment(),
+                "local FE space must belong to edge");
+
+  // Fetch suitable predefined quadrature rule
+  // Its order is linked to the polynomial degree of the finite element
+  // functions
+  lf::quad::quadOrder_t quad_order = 2 * fe_edge_p_->degree();
+  qr_ = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), quad_order);
+  Nqp_ = qr_.NumPoints();
+  SWITCHEDSTATEMENT(ctrl_, kout_qr,
+                    std::cout << "LagrEM(Edge): " << qr_ << std::endl);
+
+  // Number of local shape functions
+  Nrsf_ = fe_edge_p_->NumRefShapeFunctions();
+
+  // Obtain value of reference shape functions in all quadrature points
+  const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_val{
+      fe_edge_p_->EvalReferenceShapeFunctions(qr_.Points())};
+  LF_ASSERT_MSG(Nrsf_ == rsf_val.size(), "Mismatch in length of value vector "
+                                             << Nrsf_ << " <-> "
+                                             << rsf_val.size());
+  // Store the values for reuse for all cells
+  rsf_quadpoints_.resize(Nrsf_, Nqp_);
+
+  for (int i = 0; i < Nrsf_; ++i) {
+    LF_ASSERT_MSG((rsf_val[i].cols() == Nqp_),
+                  "Length mismatch " << rsf_val[i].cols() << " <-> " << Nqp_);
+    for (int j = 0; j < Nqp_; ++j) {
+      rsf_quadpoints_(i, j) = rsf_val[i][j];
+    }
+  }
+  SWITCHEDSTATEMENT(ctrl_, kout_rsfvals,
+                    std::cout << "LagrEM(Edge): values of RSFs\n"
+                              << rsf_quadpoints_ << std::endl);
+}
+
+unsigned int LocCompLagrFEEdgePreprocessor::ctrl_ = 0;
 
 }  // end namespace lf::fe

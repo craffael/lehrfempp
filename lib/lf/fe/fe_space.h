@@ -33,6 +33,11 @@ namespace lf::fe {
  * This class just contains (pointers to) objects representing the various
  * building blocks of a finite element space. It does not offer elaborate
  * methods.
+ *
+ * @note Some of the pointers may be NULL. For instance, if all computations
+ *       are done on purely triangular meshes then a finite element
+ * specification for quadrilaterals need not be given, \see
+ * UniformScalarFiniteElementSpace().
  */
 class UniformScalarFiniteElementSpace {
  public:
@@ -101,8 +106,10 @@ class UniformScalarFiniteElementSpace {
 
   /** @brief access to shape function layout for cells
    *
-   * @param ref_el_type type of entity, must be either triangle
-   * (`lf::base::RefEl::kTria()`) or quadrilateral (`lf::base::RefEl::kQuad()`)
+   * @param ref_el_type type of entit, can be anything except for lf::base::RefEl::kPoint()
+   *
+   * @note NULL pointers may be returned by this method in case a finite element specification
+   *       was not given for a particular topological type of entity.
    */
   std::shared_ptr<const ScalarReferenceFiniteElement<double>>
   ShapeFunctionLayout(lf::base::RefEl rel_el_type) const;
@@ -138,7 +145,7 @@ class UniformScalarFiniteElementSpace {
     LF_VERIFY_MSG(dofh_p_ != nullptr,
                   "No valid FE space object: no dof handler");
     LF_VERIFY_MSG((rfs_quad_p_ != nullptr) && (rfs_quad_p_ != nullptr),
-                  "No valid FE space object: no rsfs");
+                  "No valid FE space object: no rsfs for cells");
     return true;
   }
 
@@ -176,22 +183,6 @@ class LinearLagrangianFESpace : public UniformScalarFiniteElementSpace {
    * handler)
    *
    * @param mesh_p shared pointer to underlying mesh (immutable)
-   * @param rfs_tria_p pointer to layout description for reference shape
-   * functions on triangular cells
-   * @param rfs_quad_p pointer to layout description for reference shape
-   * functions on quadrilateral cells
-   * @param rfs_edge_p pointer to layout description for reference shape
-   * functions on the edges
-   *
-   * The schemes for local shape have to satisfy certain _compatibility
-   * conditions_:
-   * - nodes may carry at most one local/global shape function
-   * - The number of interior shape functions for edges of triangles and
-   * quadrilaterals must agree.
-   *
-   * @note none of the shape function layouts needs to be specified; just pass
-   *       a null pointer. This will then restrict the applicability of
-   *       the resulting finite element space objects to particular meshes.
    */
   LinearLagrangianFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
       : UniformScalarFiniteElementSpace(

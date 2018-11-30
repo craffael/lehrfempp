@@ -126,15 +126,15 @@ UniformScalarFiniteElementSpace::ShapeFunctionLayout(
       break;
     }
     case lf::base::RefEl::kSegment(): {
-      LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
+      // LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
       return rfs_edge_p_;
     }
     case lf::base::RefEl::kTria(): {
-      LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
+      // LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
       return rfs_tria_p_;
     }
     case lf::base::RefEl::kQuad(): {
-      LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
+      // LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
       return rfs_quad_p_;
     }
     dafault : { LF_VERIFY_MSG(false, "Illegal entity type"); }

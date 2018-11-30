@@ -75,14 +75,6 @@ inline std::vector<std::pair<double, double>> InterpolationErrors(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, GRADFUNC grad_f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
-  // Set up array of pointers to the meshes contained in the mesh hierarchy
-  // std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs{};
-  // // Number of levels in the hierarchy
-  // lf::assemble::size_type L = multi_mesh.NumLevels();
-  // for (int level = 0; level < L; level++) {
-  //   // Retrieve pointer to mesh on a particular level
-  //   mesh_ptrs.push_back(multi_mesh.getMesh(level));
-  // }
   return InterpolationErrors(multi_mesh.getMeshes(), f, grad_f, rfs_tria_p, rfs_quad_p);
 }
 

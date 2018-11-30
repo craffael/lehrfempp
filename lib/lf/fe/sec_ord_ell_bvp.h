@@ -15,8 +15,9 @@
  * @copyright MIT License
  */
 
+#include <lf/mesh/utils/utils.h>
+#include "fe_tools.h"
 #include "loc_comp_ellbvp.h"
-#include "fe_space.h"
 
 namespace lf::fe {
 /**
@@ -45,26 +46,27 @@ class SecondOrderEllipticBVP {
   /** @} */
 
   /**
+   * @defgroup sel
    * @brief selectors for boundary/interface conditions
    *
    * All boundary edges are visited.
    * - If EssentialConditionsOnEdge() is `true`, then the edge is treated as an
    *   an edge on the Dirichlet part of the boundary
-   * - else if IsNeumannEdge() is `true`, the edge is treated as a part of the
-   *   boundary where Neumann boundary conditions are imposed.
-   * - else the edge is supposed to carry impedance boundary conditions
-   */
-  /** @{ */
+   * - else if IsImpedanceEdge() is `true`, the edge is treated as a part of
+   * the boundary where impedance boundary conditions are imposed.
+   * - else the edge is supposed to belong to the Neumann boundary part
+   * @{ */
   /** @brief Predicate telling whether solution is fixed on a particular edge */
   virtual bool EssentialConditionsOnEdge(
       const lf::mesh::Entity& edge) const = 0;
-  /** @brief Predicate telling whether an edge carries Neumann boundary
+  /** @brief Predicate telling whether an edge carries Impendance boundary
    * conditions */
-  virtual bool IsNeumannEdge(const lf::mesh::Entity& edge) const = 0;
+  virtual bool IsImpedanceEdge(const lf::mesh::Entity& edge) const = 0;
   /** @} */
 
-  /** @brief Data functions */
-  /** @{ */
+  /** @defgroup data
+   * @brief Data functions
+   * @{ */
   /** @brief right-hand side source function in @f$\in L^2 @f$ */
   virtual SCALAR f(Eigen::Vector2d x) const = 0;
   /** @brief Dirichlet data @f$\in C^0 @f$ */
@@ -106,8 +108,8 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
       const lf::mesh::Entity& /*edge*/) const override {
     return false;
   }
-  bool IsNeumannEdge(const lf::mesh::Entity& /*edge*/) const override {
-    return true;
+  bool IsImpedanceEdge(const lf::mesh::Entity& /*edge*/) const override {
+    return false;
   }
   double f(Eigen::Vector2d x) const override { return f_(x); }
   double g(Eigen::Vector2d /*x*/) const override { return 0.0; }
@@ -118,7 +120,7 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
   FUNCTOR_H h_;
 };
 
-  /** @brief Different locations for global shape functions */
+/** @brief Different locations for global shape functions */
 enum ShapeFnType : unsigned int { kDirGSF, kNeuGSF, kImpGSF, kIntGSF };
 
 /**
@@ -133,21 +135,104 @@ enum ShapeFnType : unsigned int { kDirGSF, kNeuGSF, kImpGSF, kIntGSF };
  * @param bvp_p shared pointer to description of boundary value problem
  * @return both the sparse finite element Galerkin matrix and the right-hand
  * side vector
+ *
+ * It relies on the various assembly functions provided in fe_tools.h
+ * - lf::fe::SecOrdBVPLagrFEFullInteriorGalMat()
+ * - lf::fe::SecOrdBVPLagrFEBoundaryGalMat()
+ * - lf::fe::LagrFEVolumeRightHandSideVector()
+ * - lf::fe::LagrFEBoundaryRightHandSideVector()
  */
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
 SecOrdEllBVPLagrFELinSys(
     const UniformScalarFiniteElementSpace& fe_space,
     std::shared_ptr<const SecondOrderEllipticBVP<SCALAR>> bvp_p) {
+  LF_ASSERT_MSG(bvp_p != nullptr, "No valid BVP specified");
+
   // The underlying finite element mesh
   const lf::mesh::Mesh& mesh{*fe_space.Mesh()};
   // The local-to-global index map for the finite element space
   const lf::assemble::DofHandler& dofh{fe_space.LocGlobMap()};
 
-  // Classify global shape functions according to their assciations with
-  // different types of edges; default classification "interior"
-  
-  
+  // Preprocessing: count number of edges with different boundary conditions
+  size_type no_Dirichlet_edges = 0;
+  size_type no_Neumann_edges = 0;
+  size_type no_impedance_edges = 0;
+  auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space.Mesh(), 1)};
+  for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
+    if (bvp_p->EssentialConditionsOnEdge(edge)) {
+      no_Dirichlet_edges++;
+    } else if (bvp_p->IsImpedanceEdge(edge)) {
+      no_impedance_edges++;
+    } else {
+      no_Neumann_edges++;
+    }
+  }
+
+  // Dimension of finite element space`
+  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  // Matrix in triplet format holding Galerkin matrix, zero initially.
+  lf::assemble::COOMatrix<SCALAR> A(N_dofs, N_dofs);
+
+  // I: Assemble finite element Galerkin matrix
+  // First the volume part for the bilinear form
+  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
+      fe_space,
+      [&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
+        return (bvp_p->alpha(x));
+      },
+      [&bvp_p](auto x) -> double { return (bvp_p->gamma(x)); }, A);
+  // Update with potential contributions from edges (Impedance boundary
+  // conditions)
+  if (no_impedance_edges > 0) {
+    lf::fe::SecOrdBVPLagrFEBoundaryGalMat(
+        fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->eta(x)); },
+        [&bvp_p](const lf::mesh::Entity& edge) -> bool {
+          return (!bvp_p->EssentialConditionsOnEdge(edge)) &&
+                 (bvp_p->IsImpedanceEdge(edge));
+        },
+        A);
+  }
+
+  // II: Right-hand side vector; has to be set to zero initially
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi(N_dofs);
+  phi.setZero();
+
+  // Assemble volume part of right-hand side vector depending on the function f
+  lf::fe::LagrFEVolumeRightHandSideVector(
+      fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->f(x)); }, phi);
+  // Add contributions from Neumann and impedance edges
+  if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
+    lf::fe::LagrFEBoundaryRightHandSideVector(
+        fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->h(x)); },
+        [&bvp_p](const lf::mesh::Entity& edge) -> bool {
+          return (!bvp_p->EssentialConditionsOnEdge(edge));
+        },
+        phi);
+  }
+
+  // III: Fixing coefficients due to essential boundary conditions
+  if (no_Dirichlet_edges > 0) {
+    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
+        fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment());
+    LF_ASSERT_MSG(rfs_edge_p != nullptr, "FE specification for edges missing");
+
+    // Obtain flags and values for degrees of freedom located on Dirichlet edges
+    auto ess_bdc_flags_values{InitEssentialConditionFromFunction(
+        dofh, *rfs_edge_p,
+        [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
+          return (bd_flags(edge) && bvp_p->EssentialConditionsOnEdge(edge));
+        },
+        [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); })};
+    // Eliminate Dirichlet dofs from linear system
+    lf::assemble::fix_flagged_solution_components<SCALAR>(
+        [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
+          return ess_bdc_flags_values[gdof_idx];
+        },
+        A, phi);
+  }
+
+  return {A.makeSparse(), phi};
 }
 
 }  // namespace lf::fe

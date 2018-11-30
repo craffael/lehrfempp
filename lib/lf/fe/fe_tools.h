@@ -96,8 +96,7 @@ struct DefaultEntitySelector {
 /**
  * @brief Summation of local contributions over _all_ cells
  *
- * @sa SumCellFEContrib(const lf::assemble::DofHandler,LOC_COMP, const
- * COEFFVECTOR &uh, SELECTOR)
+ * @sa SumCellFEContrib()
  */
 
 template <typename LOC_COMP, typename COEFFVECTOR>
@@ -111,7 +110,7 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
  * element function and a general functions.
  *
  * @tparam LOC_NORM_COMP helper type like lf::fe::LocalL2NormDifference
- * @tparam COEFFVECTOR a vanilla vector type
+ * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
  * @tparam SELECTOR a predicate for selecting cells
  *
  * ### type requirements
@@ -160,6 +159,21 @@ static const unsigned int kout_prj_vals = 2;
 /*
  * @brief Computes nodal projection of a function and returns the finite
  * element basis expansion coefficients of the result
+ *
+ * @tparam FUNCTOR type for encoding a scalar value function
+ * @tparam SELECTOR predicate type for selecting cells to be visited
+ *
+ * @param fe_space a uniform Lagrangian finite element space, providing finite
+ *        element specifications for the cells of the mesh
+ * @param u functor object supplying a scalar-valued function
+ * @param pred predicate object for the selection of relevant cells
+ * @return column vector of basis expansion coefficients for the resulting
+ *         finite element function
+ *
+ * The implemetation relies on the method
+ * ScalarReferenceFiniteElement::NodalValuesToDofs(). Refer to its
+ * documentation. This method is called for each active cell to **set** the
+ * coefficients for the global shape functions associated with that cell.
  *
  */
 template <typename FUNCTOR, typename SELECTOR>
@@ -230,8 +244,7 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u,
   return glob_dofvec;
 }
 
-/** @sa NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR
- * u, SELECTOR &&pred)
+/** @sa NodalProjection()
  *
  * Nodal projection applied to all cells
  */
@@ -268,19 +281,23 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u) {
  * - REACTION_COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
  *
  * This function can be used to assemble the global finite element Galerkin
- * matrix for a second-order elliptic boundary value problem.
+ * matrix for a second-order elliptic boundary value problem. Essential
+ * conditions are **not** taken into account.
+ *
+ * @note the matrix A passed as the last argument is _updated_ by the function.
  */
 template <typename TMPMATRIX, typename DIFF_COEFF, typename REACTION_COEFF>
 void SecOrdBVPLagrFEFullInteriorGalMat(
     const UniformScalarFiniteElementSpace &fe_space, DIFF_COEFF alpha,
     REACTION_COEFF gamma, TMPMATRIX &A) {
+  using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
   const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
   // The local-to-global index map for the finite element space
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
-  LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
+  LagrangeFEEllBVPElementMatrix<scalar_t, decltype(alpha), decltype(gamma)>
       elmat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
                     fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
                     alpha, gamma);
@@ -288,9 +305,165 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
   AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
 }
 
+/** @brief Incremental assembly of parts of a finite element Galerkin matrix
+ *         due to boundary contributions
+ *
+ * @tparam TMPMATRIX matrix type suitable for assembly
+ * @tparam COEFF a functor providing the impedance function
+ * @tparam EDGESELECTOR predicate for selection of edges
+ *
+ * @param fe_space a Lagrangian finite element space of uniform polynomial
+ *         degree
+ * @param eta impedance coefficient
+ * @param edge_selector object with an evaluation operator returning true
+ *        for all edges on the impedance boundary part.
+ * @param A a mutable reference to the Galerkin matrix. This argument is used to
+ *        return the matrix. The new entries will be added to any previous set
+ *        entries.
+ *
+ * ### Template parameter type requirements
+ * - TMPMATRIX is a rudimentary matrix type and must
+ *   + provide a constructor taking two matrix dimension arguments
+ *   + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
+ *   A model type is lf::assemble::COOMatrix.
+ * - COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
+ * - EDGESELECTOR needs an evaluation operator
+ *                `std::function<bool(const Entity &)>`
+ *
+ * This function can be used to assemble the contribution from an impedance
+ * boundary part to the Galerkin matrix for a second order elliptic boundary
+ * value problem.
+ */
+template <typename TMPMATRIX, typename COEFF, typename EDGESELECTOR>
+void SecOrdBVPLagrFEBoundaryGalMat(
+    const UniformScalarFiniteElementSpace &fe_space, COEFF eta,
+    EDGESELECTOR edge_sel, TMPMATRIX &A) {
+  using scalar_t = typename TMPMATRIX::Scalar;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+
+  // Object taking care of local computations.
+  LagrangeFESelectEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
+      edgemat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
+                      eta, edge_sel);
+  // Invoke assembly on edges by specifying co-dimension = 1
+  AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
+}
+
+/**
+ * @brief Incremental assembly of the right-hand side vector for a second-order
+ *        elliptic boundary value problem based on Lagrangian Finite Elements
+ *
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam FUNCTOR object with an evaluation operator of signature
+ *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
+ *         the source function
+ * @param fe_space underlying finite element space providing index mappings and
+ * mesh
+ * @param f functor object for source function
+ * @param phi mutable reference to a vector with scalar entries
+ *
+ * This function relies on the the class \ref ScalarFELocalLoadVector for local
+ * computations and the function \ref lf::assemble::AssembleVectorLocally()
+ * for assembly.
+ *
+ * @note the functions performs an update of the vector
+ */
+template <typename VECTOR, typename FUNCTOR>
+void LagrFEVolumeRightHandSideVector(
+    const UniformScalarFiniteElementSpace &fe_space, FUNCTOR f, VECTOR &phi) {
+  using scalar_t = typename VECTOR::value_type;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), f);
+  // Invoke assembly on cells
+  AssembleVectorLocally(0, dofh, elvec_builder, phi);
+}
+
+/**
+ * @brief Incremental assembly of the boundary contributions to the right-hand
+ * side vector for a second-order elliptic boundary value problem based on
+ * Lagrangian Finite Elements
+ *
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam FUNCTOR object with an evaluation operator of signature
+ *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
+ *         data on a set of active edges.
+ * @tparam EDGESELECTOR predicate for selection of edges
+ *
+ * @param fe_space underlying finite element space providing index mappings and
+ * mesh
+ * @param data functor object for boundary data
+ * @param edge_selector object with an evaluation operator returning true
+ *        for all edges on the impedance boundary part.
+ * @param phi mutable reference to a vector with scalar entries
+ *
+ * This function relies on the the class \ref ScalarFESelectEdgeLocalLoadVector
+ * for local computations and the function \ref
+ * lf::assemble::AssembleVectorLocally() for assembly.
+ *
+ * @note the functions performs an update of the vector
+ */
+template <typename VECTOR, typename FUNCTOR, typename EDGESELECTOR>
+void LagrFEBoundaryRightHandSideVector(
+    const UniformScalarFiniteElementSpace &fe_space, FUNCTOR data,
+    EDGESELECTOR edge_sel, VECTOR &phi) {
+  using scalar_t = typename VECTOR::value_type;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  ScalarFESelectEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR>
+      elvec_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
+                    data, edge_sel);
+  // Invoke assembly on cells, update vector
+  AssembleVectorLocally(0, dofh, elvec_builder, phi);
+}
+
 /**
  * @brief Initialization of flags/values for dofs of a uniform Lagrangian
- *        finite element space whose values are imposed by a specified function
+ *        finite element space whose values are imposed by a specified function.
+ *
+ * @tparam SCALAR scalar type for BVP = return type of the function g
+ * @tparam EDGESELECTOR predicate returning true for edges with fixed dofs
+ * @tparam FUNCTION functor type for object providing scalar-valued function
+ *
+ * @param dofh local-to-global index mapping
+ * @param fe_spec_edge description of arrangement for local shape functions
+ *        for a `kSegment`-type entity
+ * @param esscondflag predicate object whose evaluation operator returns
+ *        true for all edges whose associated degrees of freedom should be
+ *        set a fixed value.
+ * @return a vector of flag-value pairs, a `true` first component indicating
+ *         a fixed dof, with the second component providing the value in this
+ *         case.
+ *
+ * This function interpolates a scalar-valued function into a Lagrangian
+ * finite element space restricted to a set of edges. It relies on the
+ * method ScalarReferenceFiniteElement::NodalValuesToDofs().
+ *
+ * The main use of this function is the interpolation of Dirichet data on the
+ * Dirichlet part of vthe boundary of a domain.
+ *
+ * ### Template parameter type requirements
+ * - SCALAR must be a type like `complex<double>`
+ * - EDGESELECTOR must be compatible with
+ *                `std::function<bool(const Entity &)>`
+ * - FUNCTION must be a type like 'std::function<SCALAR(VectorXd)>`
+ *
+ * This function is meant to supply the information needed for the elimination
+ * of Dirichlet boundary conditions by means of the function
+ * lf::assemble::fix_flagged_solution_components().
  */
 template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
@@ -300,6 +473,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
                 "finite element specification must be for an edge!");
 
+  // *** I: Preprocessing ***
   // Fetch numbers of evaluation nodes and local shape functions
   const size_type num_eval_pts = fe_spec_edge.NumEvaluationNodes();
   const size_type num_rsf = fe_spec_edge.NumRefShapeFunctions();
@@ -317,7 +491,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   const size_type num_coeffs = dofh.NoDofs();
   std::vector<std::pair<bool, SCALAR>> flag_val_vec(num_coeffs,
                                                     {false, SCALAR{}});
-
+  // *** II: Local computations ****
   // Visit all edges of the mesh (codim-1 entities)
   for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
     // Check whether the current edge carries dofs to be imposed by the
@@ -329,7 +503,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
       // Those are stored in the columns of a matrix
       const Eigen::MatrixXd eval_pts{edge_geo_p->Global(ref_eval_pts)};
       for (int k = 0; k < num_eval_pts; ++k) {
-	// Evluate function at evaluation/interpolation nodes
+        // Evaluate function at evaluation/interpolation nodes
         g_vals[k] = g(eval_pts.col(k));
       }
       // Compute degrees of freedom from function values in evaluation points
