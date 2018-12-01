@@ -160,6 +160,7 @@ static const unsigned int kout_prj_vals = 2;
  * @brief Computes nodal projection of a function and returns the finite
  * element basis expansion coefficients of the result
  *
+ * @tparam SCALAR a scalar type
  * @tparam FUNCTOR type for encoding a scalar value function
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
@@ -176,11 +177,11 @@ static const unsigned int kout_prj_vals = 2;
  * coefficients for the global shape functions associated with that cell.
  *
  */
-template <typename FUNCTOR, typename SELECTOR>
+template <typename SCALAR, typename FUNCTOR, typename SELECTOR>
 Eigen::Matrix<typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type,
               Eigen::Dynamic, 1>
-NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u,
-                SELECTOR &&pred) {
+NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
+                FUNCTOR u, SELECTOR &&pred) {
   // Scalar type determined by the function
   using scalar_t = typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type;
   // Return type, type for FE coefficient vector
@@ -248,15 +249,17 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u,
  *
  * Nodal projection applied to all cells
  */
-template <typename FUNCTOR>
+template <typename SCALAR, typename FUNCTOR>
 Eigen::Matrix<typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type,
               Eigen::Dynamic, 1>
-NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u) {
+NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
+                FUNCTOR u) {
   return NodalProjection(fe_space, u, DefaultEntitySelector());
 }
 
 /** @brief Incremental assembly of global finite element Galerkin matrix
  *
+ * @tparam SCALAR a scalar type
  * @tparam TMPMATRIX matrix type suitable for assembly
  * @tparam DIFF_COEFF a functor providing point evaluation for the diffusion
  * tensor
@@ -286,9 +289,10 @@ NodalProjection(const UniformScalarFiniteElementSpace &fe_space, FUNCTOR u) {
  *
  * @note the matrix A passed as the last argument is _updated_ by the function.
  */
-template <typename TMPMATRIX, typename DIFF_COEFF, typename REACTION_COEFF>
+template <typename SCALAR, typename TMPMATRIX, typename DIFF_COEFF,
+          typename REACTION_COEFF>
 void SecOrdBVPLagrFEFullInteriorGalMat(
-    const UniformScalarFiniteElementSpace &fe_space, DIFF_COEFF alpha,
+    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, DIFF_COEFF alpha,
     REACTION_COEFF gamma, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
@@ -308,6 +312,7 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
 /** @brief Incremental assembly of parts of a finite element Galerkin matrix
  *         due to boundary contributions
  *
+ * @tparam SCALAR a scalar type
  * @tparam TMPMATRIX matrix type suitable for assembly
  * @tparam COEFF a functor providing the impedance function
  * @tparam EDGESELECTOR predicate for selection of edges
@@ -334,9 +339,10 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
  * boundary part to the Galerkin matrix for a second order elliptic boundary
  * value problem.
  */
-template <typename TMPMATRIX, typename COEFF, typename EDGESELECTOR>
+template <typename SCALAR, typename TMPMATRIX, typename COEFF,
+          typename EDGESELECTOR>
 void SecOrdBVPLagrFEBoundaryGalMat(
-    const UniformScalarFiniteElementSpace &fe_space, COEFF eta,
+    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, COEFF eta,
     EDGESELECTOR edge_sel, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
@@ -356,6 +362,7 @@ void SecOrdBVPLagrFEBoundaryGalMat(
  * @brief Incremental assembly of the right-hand side vector for a second-order
  *        elliptic boundary value problem based on Lagrangian Finite Elements
  *
+ * @tparam SCALAR a scalar type
  * @tparam VECTOR a generic vector type with component access through []
  * @tparam FUNCTOR object with an evaluation operator of signature
  *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
@@ -371,9 +378,10 @@ void SecOrdBVPLagrFEBoundaryGalMat(
  *
  * @note the functions performs an update of the vector
  */
-template <typename VECTOR, typename FUNCTOR>
+template <typename SCALAR, typename VECTOR, typename FUNCTOR>
 void LagrFEVolumeRightHandSideVector(
-    const UniformScalarFiniteElementSpace &fe_space, FUNCTOR f, VECTOR &phi) {
+    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, FUNCTOR f,
+    VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
   const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
@@ -393,6 +401,7 @@ void LagrFEVolumeRightHandSideVector(
  * side vector for a second-order elliptic boundary value problem based on
  * Lagrangian Finite Elements
  *
+ * @tparam SCALAR a scalar type
  * @tparam VECTOR a generic vector type with component access through []
  * @tparam FUNCTOR object with an evaluation operator of signature
  *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
@@ -412,9 +421,10 @@ void LagrFEVolumeRightHandSideVector(
  *
  * @note the functions performs an update of the vector
  */
-template <typename VECTOR, typename FUNCTOR, typename EDGESELECTOR>
+template <typename SCALAR, typename VECTOR, typename FUNCTOR,
+          typename EDGESELECTOR>
 void LagrFEBoundaryRightHandSideVector(
-    const UniformScalarFiniteElementSpace &fe_space, FUNCTOR data,
+    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, FUNCTOR data,
     EDGESELECTOR edge_sel, VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh

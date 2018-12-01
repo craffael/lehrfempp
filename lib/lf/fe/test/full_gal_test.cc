@@ -411,7 +411,7 @@ TEST(lf_gfe, Neu_BVP_ass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space; lowest order Lagrangian finite elements
-  LinearLagrangianFESpace fe_space(mesh_p);
+  LinearLagrangianFESpace<double> fe_space(mesh_p);
 
   // Generate linear system
   auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);

@@ -145,7 +145,7 @@ enum ShapeFnType : unsigned int { kDirGSF, kNeuGSF, kImpGSF, kIntGSF };
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
 SecOrdEllBVPLagrFELinSys(
-    const UniformScalarFiniteElementSpace& fe_space,
+    const UniformScalarFiniteElementSpace<SCALAR>& fe_space,
     std::shared_ptr<const SecondOrderEllipticBVP<SCALAR>> bvp_p) {
   LF_ASSERT_MSG(bvp_p != nullptr, "No valid BVP specified");
 

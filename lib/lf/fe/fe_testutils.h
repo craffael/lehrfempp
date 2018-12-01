@@ -120,13 +120,13 @@ inline std::vector<std::pair<double, double>> InterpolationErrors(
  */
 template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
           typename REAC_COEFF>
-std::vector<double> EnergiesOfInterpolants(
+std::vector<SCALAR> EnergiesOfInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     DIFF_COEFF alpha, REAC_COEFF gamma,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
   // Vector for returning the energies
-  std::vector<double> energies{};
+  std::vector<SCALAR> energies{};
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
@@ -155,7 +155,7 @@ std::vector<double> EnergiesOfInterpolants(
 
 template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
           typename REAC_COEFF>
-std::vector<double> EnergiesOfInterpolants(
+std::vector<SCALAR> EnergiesOfInterpolants(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, DIFF_COEFF alpha,
     REAC_COEFF gamma,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
@@ -209,7 +209,7 @@ std::vector<double> EnergiesOfInterpolants(
  */
 template <typename SCALAR, typename FFUNC, typename IMP_COEFF,
           typename EDGESELECTOR>
-std::vector<double> BoundaryEnergiesOfInterpolants(
+std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     IMP_COEFF eta,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
@@ -217,7 +217,7 @@ std::vector<double> BoundaryEnergiesOfInterpolants(
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
     EDGESELECTOR edge_sel) {
   // Vector for returning the energies
-  std::vector<double> energies{};
+  std::vector<SCALAR> energies{};
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
@@ -254,7 +254,7 @@ std::vector<double> BoundaryEnergiesOfInterpolants(
 
 template <typename SCALAR, typename FFUNC, typename IMP_COEFF,
           typename EDGESELECTOR>
-std::vector<double> BoundaryEnergiesOfInterpolants(
+std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, IMP_COEFF eta,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
@@ -299,13 +299,13 @@ std::vector<double> BoundaryEnergiesOfInterpolants(
  *
  */
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC>
-std::vector<double> RHSFunctionalForInterpolants(
+std::vector<SCALAR> RHSFunctionalForInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC v,
     SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
   // Vector for returning the energies
-  std::vector<double> ell_vals{};
+  std::vector<SCALAR> ell_vals{};
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
@@ -331,7 +331,7 @@ std::vector<double> RHSFunctionalForInterpolants(
 }
 
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC>
-std::vector<double> RHSFunctionalForInterpolants(
+std::vector<SCALAR> RHSFunctionalForInterpolants(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
@@ -378,7 +378,7 @@ std::vector<double> RHSFunctionalForInterpolants(
  */
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC,
           typename EDGESELECTOR>
-std::vector<double> RHSBoundaryFunctionalForInterpolants(
+std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC v,
     SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
@@ -386,7 +386,7 @@ std::vector<double> RHSBoundaryFunctionalForInterpolants(
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
     EDGESELECTOR edge_sel) {
   // Vector for returning the energies
-  std::vector<double> ell_vals{};
+  std::vector<SCALAR> ell_vals{};
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
@@ -421,7 +421,7 @@ std::vector<double> RHSBoundaryFunctionalForInterpolants(
 
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC,
           typename EDGESELECTOR>
-std::vector<double> RHSBoundaryFunctionalForInterpolants(
+std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
     lf::refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
