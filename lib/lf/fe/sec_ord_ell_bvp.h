@@ -160,12 +160,14 @@ SecOrdEllBVPLagrFELinSys(
   size_type no_impedance_edges = 0;
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space.Mesh(), 1)};
   for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
-    if (bvp_p->EssentialConditionsOnEdge(edge)) {
-      no_Dirichlet_edges++;
-    } else if (bvp_p->IsImpedanceEdge(edge)) {
-      no_impedance_edges++;
-    } else {
-      no_Neumann_edges++;
+    if (bd_flags(edge)) {
+      if (bvp_p->EssentialConditionsOnEdge(edge)) {
+        no_Dirichlet_edges++;
+      } else if (bvp_p->IsImpedanceEdge(edge)) {
+        no_impedance_edges++;
+      } else {
+        no_Neumann_edges++;
+      }
     }
   }
 
@@ -205,8 +207,8 @@ SecOrdEllBVPLagrFELinSys(
   if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
     lf::fe::LagrFEBoundaryRightHandSideVector(
         fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->h(x)); },
-        [&bvp_p](const lf::mesh::Entity& edge) -> bool {
-          return (!bvp_p->EssentialConditionsOnEdge(edge));
+        [&bvp_p,&bd_flags](const lf::mesh::Entity& edge) -> bool {
+          return (bd_flags(edge) && (!bvp_p->EssentialConditionsOnEdge(edge)));
         },
         phi);
   }

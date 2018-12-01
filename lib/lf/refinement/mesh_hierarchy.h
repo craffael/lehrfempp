@@ -392,6 +392,87 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
     std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat = RefPat::rp_regular);
 
+/**
+ * @brief Utility class: selection of entities according to the position of
+ * their midpoint
+ * @tparam POSPRED predicate depending on physical point location
+ * @param pos_pred object for true/false classification of of physicals points
+ */
+template <typename POSPRED>
+class EntityCenterPositionSelector {
+ public:
+  EntityCenterPositionSelector(const EntityCenterPositionSelector &) = default;
+  EntityCenterPositionSelector(EntityCenterPositionSelector &&) noexcept =
+      default;
+  EntityCenterPositionSelector &operator=(
+      const EntityCenterPositionSelector &) = default;
+  EntityCenterPositionSelector &operator=(
+      EntityCenterPositionSelector &&) noexcept = default;
+  /**
+   * @brief Preparing reference coordinates of "centers"
+   *
+   * @param pos_pred object for true/false classification of of physicals points
+   */
+  explicit EntityCenterPositionSelector(POSPRED pos_pred) : pos_pred_(pos_pred) {}
+  /** @brief Operator testing location of "center"
+   *  @param ent reference to a mesh entity
+   */
+  bool operator()(const lf::mesh::Entity &ent) const {
+    const lf::base::RefEl ref_el_type = ent.RefEl();
+    // Obtain shape of entity
+    lf::geometry::Geometry *geo_ptr = ent.Geometry();
+    LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
+    switch (ref_el_type) {
+      case lf::base::RefEl::kPoint(): {
+        const Eigen::MatrixXd pos{geo_ptr->Global(kpoint_center_)};
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kSegment(): {
+        const Eigen::MatrixXd pos{geo_ptr->Global(kedge_center_)};
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kTria(): {
+        const Eigen::MatrixXd pos{geo_ptr->Global(ktria_center_)};
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kQuad(): {
+        const Eigen::MatrixXd pos{geo_ptr->Global(kquad_center_)};
+        return pos_pred_(pos);
+      }
+      default: {
+        LF_ASSERT_MSG(false, "Illegal entity type");
+        break;
+      }
+    }  // end switch
+    return false;
+  }
+
+ private:
+  /** object for true/false classification of of physicals points */
+  POSPRED pos_pred_;
+
+  static const Eigen::MatrixXd kpoint_center_;
+  static const Eigen::MatrixXd kedge_center_;
+  static const Eigen::MatrixXd ktria_center_;
+  static const Eigen::MatrixXd kquad_center_;
+};
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kpoint_center_ =
+    Eigen::MatrixXd::Zero(0, 1);
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kedge_center_ =
+    (Eigen::MatrixXd(1, 1) << 0.5).finished();
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::ktria_center_ =
+    (Eigen::MatrixXd(2, 1) << 0.33, 0.33).finished();
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kquad_center_ =
+    (Eigen::MatrixXd(2, 1) << 0.5, 0.5).finished();
+
 }  // namespace lf::refinement
 
 #endif
