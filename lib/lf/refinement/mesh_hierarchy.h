@@ -7,6 +7,7 @@
  *
  */
 
+#include <iostream>
 #include "hybrid2d_refinement_pattern.h"
 
 namespace lf::refinement {
@@ -133,14 +134,15 @@ class MeshHierarchy {
   }
 
   /**
-   * @brief Provides array of shared pointers to meshes contained in the hierarchy
+   * @brief Provides array of shared pointers to meshes contained in the
+   * hierarchy
    *
    * @return vector of shared pointers to lf::mesh:Mesh objects
    */
   std::vector<std::shared_ptr<const mesh::Mesh>> getMeshes() const {
-    return {meshes_.begin(),meshes_.end()};
+    return {meshes_.begin(), meshes_.end()};
   }
-  
+
   /**
    * @brief Obtain refinement information for all points
    *
@@ -273,6 +275,20 @@ class MeshHierarchy {
    *       is still in use somewhere else in the code.
    */
   void Coarsen();
+  /**
+   * @brief Output of information about the mesh hierarchy.
+   *
+   * @param o output stream, can be `std::cout` or similar
+   * @return output stream
+   *
+   * The type of output is controlled by the `ctrl_` static control
+   * variable. If its second bit is set, the output function of the
+   * mesh class is used.
+   *
+   * This is a rudimentary implementation and should be extended.
+   *
+   */
+  virtual std::ostream &PrintInfo(std::ostream &o) const;
 
   virtual ~MeshHierarchy() = default;
 
@@ -331,7 +347,18 @@ class MeshHierarchy {
  public:
   /** @brief diagnostics control variable */
   static unsigned int output_ctrl_;
+  /** @brief Output control variable */
+  static unsigned int ctrl_;
+  static const unsigned int kout_meshinfo = 2;
 };
+
+/**
+ * @brief output operator for MeshHierarchy
+ */
+inline std::ostream &operator<<(std::ostream &o,
+                                const MeshHierarchy &multimesh) {
+  return multimesh.PrintInfo(o);
+}
 
 template <typename Marker>
 void MeshHierarchy::MarkEdges(Marker &&marker) {
@@ -346,7 +373,24 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
     glb_idx_t edge_index = finest_mesh.Index(edge);
     (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
   }
-} // end MeshHierarchy::MarkEdges
+}  // end MeshHierarchy::MarkEdges
+
+/**
+ * @brief Generated a sequence of nested 2D hybrid mehes by regular or
+ * barycentric refinement
+ *
+ * @param mesh_p pointer to the coarsest mesh, from which refinment will start
+ * @param ref_lev desired number of refinement steps
+ * @param ref_pat at selector for type of uniform refinement: default is
+ * rp_regular, rp_barycentric choses barycentric refinement.
+ * @return shared pointer to a MeshHierarchy object.
+ *
+ * Relies on lf::mesh::hybrid2d::MeshFactory as builder class for mesh entities.
+ * Invokes the method MeshHierarhy::RefineRegular() for refinement.
+ */
+std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
+    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    RefPat ref_pat = RefPat::rp_regular);
 
 }  // namespace lf::refinement
 

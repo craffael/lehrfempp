@@ -317,22 +317,19 @@ TEST(lf_gfe, lf_gfe_lintp_exact) {
 
 TEST(lf_gfe, lf_gfe_intperrcvg) {
   // Four levels of refinement
-  const int reflevels = 6;
+  const int reflevels = 4;
   std::cout << "### TEST: Convergence of interpolation error" << std::endl;
   // Building the test mesh: a general hybrid mesh
   // This serves as the coarsest mesh of the hierarchy
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
-  // Prepare for creating a hierarchy of meshes
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(std::move(mesh_p), mesh_factory_ptr);
+  std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
+      lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p,
+                                                              reflevels);
+  lf::refinement::MeshHierarchy &multi_mesh{*multi_mesh_p};
 
-  // Perform several steps of regular refinement of the given mesh
-  for (int refstep = 0; refstep < reflevels; ++refstep) {
-    // Barycentric refinement is the other option
-    multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
-  }
+  // output of mesh hierarchy
+  std::cout << multi_mesh;
 
   // Function
   auto f = [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); };
@@ -352,31 +349,5 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
               << ", H1 error = " << errs[l].second << std::endl;
   }
 }
-
-TEST(lf_gfe, Neu_BVP_ass) {
-  std::cout << "#### TEST: Assembly for Neumann BVP ###" << std::endl;
-  // Right-hand side source function
-  auto f = [](Eigen::Vector2d x) -> double {
-    return (std::sin(2 * M_PI * x[0]) * std::sin(2 * M_PI * x[1]));
-  };
-  // Neumann data
-  auto h = [](Eigen::Vector2d /*x*/) -> double { return 1.0; };
-
-  // Class describing the Neumann boundary value problem
-  std::shared_ptr<PureNeumannProblemLaplacian<decltype(f), decltype(h)>> bvp_p =
-      std::make_shared<PureNeumannProblemLaplacian<decltype(f), decltype(h)>>(
-          f, h);
-
-  // Obtain finite Element space
-  // Building the test mesh: a general hybrid mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-
-  // Set up global FE space
-  UniformScalarFiniteElementSpace fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
-
-  auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
-}
-
+  
 }  // namespace lf::fe::test

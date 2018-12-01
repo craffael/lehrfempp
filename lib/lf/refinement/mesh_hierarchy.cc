@@ -1,14 +1,14 @@
-/**
+ /**
  * @file refinement_hierarchy.cc
  * @brief implementation of global/local refinement methods
  */
 
 #include "mesh_hierarchy.h"
-#include <iostream>
+#include "lf/mesh/hybrid2d/hybrid2d.h"
 
 namespace lf::refinement {
 
-// Debuggin function: check validity of index vectors
+// Debugging function: check validity of index vectors
 bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
   const size_type n_idx = idx_vec.size();
   for (int n = 0; n < n_idx; n++) {
@@ -21,6 +21,9 @@ bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
 
 CONTROLDECLARECOMMENT(MeshHierarchy, output_ctrl_, "MeshHierarchy_output_ctrl",
                       "Diagnostics control for MeshHierarchy");
+
+CONTROLDECLARECOMMENT(MeshHierarchy, ctrl_, "MeshHierarchy_ctrl",
+                      "Output control for MeshHierarchy");
 
 // Implementation of MeshHierarchy
 MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
@@ -1689,6 +1692,44 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
     }
   }
   return idx_longest_edge;
+}
+
+std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
+  o << "MeshHierarchy, " << NumLevels() << " levels: " << std::endl;
+  for (int level = 0; level < NumLevels(); ++level) {
+    const lf::mesh::Mesh &mesh{*getMesh(level)};
+    o << "l=" << level << ": ";
+    if ((ctrl_ & kout_meshinfo) != 0) {
+      LF_ASSERT_MSG(false, "Not yet implemented");
+      // TODO, when output for lf::mesh::Mesh has been fixed
+      // o << mesh << std::endl;
+    } else {
+      o << static_cast<int>(mesh.DimMesh()) << "D -> "
+        << static_cast<int>(mesh.DimWorld()) << "D, " << mesh.Size(0)
+        << " cells [" << mesh.NumEntities(lf::base::RefEl::kTria()) << " tria, "
+        << mesh.NumEntities(lf::base::RefEl::kQuad()) << " quad], "
+        << mesh.Size(1) << " edges, " << mesh.Size(2) << " nodes" << std::endl;
+    }
+  }
+  return o;
+}
+
+// Utility function for generating a hierarchy of meshes
+std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
+    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    RefPat ref_pat) {
+  LF_ASSERT_MSG(mesh_p != nullptr, "No vavlid mesh supplied!");
+  // Set up the builder object for mesh entities
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  // Create a mesh hierarchy with a single level
+  std::shared_ptr<MeshHierarchy> multi_mesh_p =
+      std::make_shared<MeshHierarchy>(std::move(mesh_p), mesh_factory_ptr);
+  // Perform the desired number of steps of uniform refinement
+  for (int refstep = 0; refstep < ref_lev; ++refstep) {
+    multi_mesh_p->RefineRegular(ref_pat);
+  }
+  return multi_mesh_p;
 }
 
 }  // namespace lf::refinement

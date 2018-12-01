@@ -384,7 +384,7 @@ void LagrFEVolumeRightHandSideVector(
   ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), f);
-  // Invoke assembly on cells
+  // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 }
 
@@ -426,8 +426,8 @@ void LagrFEBoundaryRightHandSideVector(
   ScalarFESelectEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR>
       elvec_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
                     data, edge_sel);
-  // Invoke assembly on cells, update vector
-  AssembleVectorLocally(0, dofh, elvec_builder, phi);
+  // Invoke assembly on edges (codim == 1), update vector
+  AssembleVectorLocally(1, dofh, elvec_builder, phi);
 }
 
 /**
