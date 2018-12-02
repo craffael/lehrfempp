@@ -16,8 +16,8 @@ set(sources
   static_vars.cc
 )
 
-lf_add_library(base ${sources})
-target_link_libraries(base PUBLIC Eigen3::Eigen Boost::boost)
+lf_add_library(lf.base ${sources})
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost)
 
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)

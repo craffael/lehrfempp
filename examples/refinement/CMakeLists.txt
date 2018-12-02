@@ -6,12 +6,12 @@ add_executable(examples.refinement.refinement_demo ${refinement_demo})
 
 target_link_libraries(examples.refinement.refinement_demo
         PUBLIC Eigen3::Eigen Boost::boost
-        mesh
-        mesh.test_utils
-        mesh.utils
-        mesh.hybrid2d
-        refinement
-        io
+        lf.mesh
+        lf.mesh.test_utils
+        lf.mesh.utils
+        lf.mesh.hybrid2d
+        lf.refinement
+        lf.io
         )
 
 
@@ -21,11 +21,11 @@ add_executable(examples.refinement.point_refinement_demo ${point_refinement_demo
 
 target_link_libraries(examples.refinement.point_refinement_demo
         PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
-        io
-        mesh
-        mesh.utils
-        mesh.hybrid2d
-        refinement
+        lf.io
+        lf.mesh
+        lf.mesh.utils
+        lf.mesh.hybrid2d
+        lf.refinement
         )
 
 
@@ -35,8 +35,8 @@ add_executable(examples.refinement.torus_refinement_demo ${torus_refinement_demo
 
 target_link_libraries(examples.refinement.torus_refinement_demo
         PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
-        io
-        mesh
-        mesh.hybrid2d
-        refinement
+        lf.io
+        lf.mesh
+        lf.mesh.hybrid2d
+        lf.refinement
         )

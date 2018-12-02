@@ -6,12 +6,12 @@ add_executable(examples.io.io_demo ${io_demo})
 
 target_link_libraries(examples.io.io_demo
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system
-  mesh
-  mesh.test_utils
-  mesh.utils
-  mesh.hybrid2d
-  refinement
-  io
+  lf.mesh
+  lf.mesh.test_utils
+  lf.mesh.utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.io
   )
   
     

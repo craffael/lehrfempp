@@ -8,8 +8,8 @@ set(sources
   mesh_interface.cc
 )
 
-lf_add_library(mesh ${sources})
-target_link_libraries(mesh PUBLIC Eigen3::Eigen base geometry mesh.utils)
+lf_add_library(lf.mesh ${sources})
+target_link_libraries(lf.mesh PUBLIC Eigen3::Eigen lf.base lf.geometry lf.mesh.utils)
 
 add_subdirectory(hybrid2d)
 add_subdirectory(utils)

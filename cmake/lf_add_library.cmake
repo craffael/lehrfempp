@@ -53,12 +53,12 @@ function(lf_add_library _args)
     message(FATAL_ERROR "Error adding Lehrfem++ library '${_libname}': Libname is not lowercase (${_libname})")
   endif()
   
-  # Check that the library name starts with a.b.name if this file lies in lib/lf/a/b/
+  # Check that the library name starts with lf.a.b.name if this file lies in lib/lf/a/b/
   get_relative_path(_relative_dir ${CMAKE_CURRENT_LIST_DIR})
   if(NOT _relative_dir)
     message(FATAL_ERROR "Error adding LehrFEM++ library '${_libname}': lf_add_library() must be called from a subdirectory of the 'lib/lf' directory.")
   endif()
-  string(SUBSTRING ${_relative_dir} 7 -1 _relative_dir)
+  string(SUBSTRING ${_relative_dir} 4 -1 _relative_dir)
   
   string(REPLACE "/" "." _libname_test ${_relative_dir})
   if(NOT ${_libname} STREQUAL ${_libname_test})
@@ -67,7 +67,7 @@ function(lf_add_library _args)
   endif()
   
   # Determine base folder of the lf repository:
-  string(REPLACE "/lib/lf/${_relative_dir}" "" _path2lf ${CMAKE_CURRENT_LIST_DIR})
+  string(REPLACE "/lib/${_relative_dir}" "" _path2lf ${CMAKE_CURRENT_LIST_DIR})
   
   # Check that if this is a header-only library no source files are present:
   list(LENGTH ${_libname}_src _srcLen)
@@ -91,14 +91,13 @@ function(lf_add_library _args)
     add_library(${_libname} ${sources})
     set(_scope PUBLIC)
   endif()
-  add_library("LF::${_libname}" ALIAS ${_libname}) # needed if apps and lehrfem++ are in same build tree so that an app can reference the target as LF::fem or similar)
   target_include_directories(${_libname} PUBLIC
     "$<BUILD_INTERFACE:${LOCAL_INCLUDE_DIRECTORY}>"
     "$<BUILD_INTERFACE:${LOCAL_GENERATED_INCLUDE_DIRECTORY}>"
     $<INSTALL_INTERFACE:include>
   )
   target_compile_features(${_libname} PUBLIC cxx_std_17)
-  set_target_properties(${_libname} PROPERTIES PREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}lf.")
+  set_target_properties(${_libname} PROPERTIES PREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
   # set_target_properties(${_libname} PROPERTIES FOLDER "Libraries")
   
 

@@ -10,5 +10,5 @@ set(sources
 )
 
 add_library(docsnippets ${sources})
-target_link_libraries(docsnippets PUBLIC Eigen3::Eigen base mesh)
+target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base lf.mesh)
 target_compile_features(docsnippets PUBLIC cxx_std_17)
