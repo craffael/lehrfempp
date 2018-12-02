@@ -7,6 +7,6 @@ set(sources
   make_quad_rule_tests.cc
 )
 
-add_executable(quad.test ${sources})
-target_link_libraries(quad.test PUBLIC Eigen3::Eigen Boost::boost GTest::main base quad)
-gtest_discover_tests(quad.test)
+add_executable(lf.quad.test ${sources})
+target_link_libraries(lf.quad.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.base lf.quad)
+gtest_discover_tests(lf.quad.test)
