@@ -58,9 +58,9 @@ find_package(lehrfempp CONFIG REQUIRED)
 add_executable(getting_started main.cc)
 
 # link executable with LehrFEM++ module lf::base
-target_link_libraries(main.cpp lf::base) 
+target_link_libraries(main.cpp lf.base) 
  ```
-   Note that this `CMakeLists.txt` links only with the `lf::base` module of LehrFEM++. Because we only want to print the number of nodes of a triangle, it suffices to link to the `lf::base` module.
+   Note that this `CMakeLists.txt` links only with the `lf.base` module of LehrFEM++. Because we only want to print the number of nodes of a triangle, it suffices to link to the `lf.base` module.
    However, if you want to use more functionality, you will probably need to link to other LehrFEM++ modules as well.
    See \ref modules_ for more info about LehrFEM++ modules and [__list of namespaces__](./namespaces.html) for a list of all LehrFEM++ modules.
  5. Your folder structure should look as follows:
