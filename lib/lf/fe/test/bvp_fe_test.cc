@@ -188,6 +188,7 @@ TEST(lfe_bvpfe, bvp_DirNeu) {
           << "Dubious L2 norm on level " << k;
       EXPECT_NEAR(err.second, exp_h1serr[k], 1.0E-5)
           << "Dubious H1 norm on level " << k;
+      k++;
     }
   }
 }
