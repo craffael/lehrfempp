@@ -23,6 +23,8 @@ namespace lf::fe {
 /**
  * @brief Interface class to the data defining a second-order elliptic boundary
  *        value problem in two dimensions
+ *
+ * @tparam SCALAR a scalar type, usually `double` or `complex<double>`
  */
 template <typename SCALAR>
 class SecondOrderEllipticBVP {

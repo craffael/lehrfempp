@@ -194,6 +194,26 @@ TEST(lf_gfe, a_dir_dbg_8) {
   EXPECT_NEAR(en.back(), 4.44757, 2.0E-3);
 }
 
+TEST(lf_gfe, a_dir_dbg_9) {
+  // Four levels of refinement
+  const int reflevels = REFLEV;
+  std::cout << "#### TEST: Bilinear form test 9, linear f" << std::endl;
+  std::cout << "alpha = [1+x_2,0;0,1+x_1], gamma = 0, => energy = 7.5.."
+            << std::endl;
+  // Synthetic function
+  auto v = [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); };
+  // Diffusion coefficient
+  auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix2d {
+    return (Eigen::Matrix2d(2, 2) << 1.0 + x[1], 0.0, 0.0, 1.0 + x[0])
+        .finished();
+  };
+  // Reaction coefficient
+  auto gamma = [](Eigen::Vector2d x) -> double { return 0.0; };
+
+  auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
+  EXPECT_NEAR(en.back(), 7.5, 2.0E-3);
+}
+
 // **********************************************************************
 // Tests of assembly of boundary contributions
 //
@@ -423,6 +443,110 @@ TEST(lf_gfe, Neu_BVP_ass) {
       << "Row sum not zero";
   EXPECT_NEAR(A_dense.colwise().sum().norm(), 0.0, 1.0E-10)
       << "Col sum not zero";
+}
+
+// **********************************************************************
+// Test: Solution of BVP
+// **********************************************************************
+
+template <typename SOLFUNC, typename SOLGRAD>
+std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
+    int reflevels, std::shared_ptr<const SecondOrderEllipticBVP<double>> bvp_p,
+    SOLFUNC solution, SOLGRAD sol_grad) {
+  std::vector<std::pair<double, double>> errnorms{};
+
+  // Generate hierarchy of meshes of the unit square
+  std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
+      lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(
+          lf::mesh::test_utils::GenerateHybrid2DTestMesh(0, 1.0 / 3),
+          reflevels);
+  lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
+  // Number of levels
+  size_type L = multi_mesh.NumLevels();
+
+  // Do computations on all levels
+  for (int l = 0; l < L; ++l) {
+    std::shared_ptr<const mesh::Mesh> mesh_p{multi_mesh.getMesh(l)};
+    // Set up global FE space; lowest order Lagrangian finite elements
+    LinearLagrangianFESpace<double> fe_space(mesh_p);
+    const lf::assemble::DofHandler& dofh{fe_space.LocGlobMap()};
+
+    // Compute Galerkin matrix A and right-hand-side vector
+    auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
+    // Solve linear system
+    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+    solver.compute(A);
+    Eigen::VectorXd sol_vec = solver.solve(phi);
+    // Compute error norms
+    // Helper class for L2 error computation
+    LocalL2NormDifference lc_L2(
+        fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+        fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), solution);
+    // Helper class for H1 semi norm
+    LocL2GradientFEDifference lc_H1(
+        fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
+        fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), sol_grad);
+
+    double L2err = NormOfDifference(dofh, lc_L2, sol_vec);
+    double H1serr = NormOfDifference(dofh, lc_H1, sol_vec);
+    errnorms.emplace_back(L2err, H1serr);
+  }
+
+  return errnorms;
+}
+
+// Definition of boundary value problem
+
+class MixedEllipticBVP : public SecondOrderEllipticBVP<double> {
+ public:
+  MixedEllipticBVP()
+      : edge_sel_(
+            [](Eigen::Vector2d x) -> bool { return ((x[0] + x[1]) < 1.0); }) {}
+  MixedEllipticBVP(const MixedEllipticBVP&) = default;
+  MixedEllipticBVP(MixedEllipticBVP&&) noexcept = default;
+  MixedEllipticBVP& operator=(const MixedEllipticBVP&) = default;
+  MixedEllipticBVP& operator=(MixedEllipticBVP&&) noexcept = default;
+
+  Eigen::Matrix<double, 2, 2> alpha(Eigen::Vector2d x) const override {
+    return (1 + x.squaredNorm()) * Eigen::Matrix<double, 2, 2>::Identity(2, 2);
+  }
+  double gamma(Eigen::Vector2d x) const override { return 0.0; }
+  double eta(Eigen::Vector2d x) const override { return 0.0; }
+  bool EssentialConditionsOnEdge(const lf::mesh::Entity& edge) const override {
+    return edge_sel_(edge);
+  }
+  bool IsImpedanceEdge(const lf::mesh::Entity& /*edge*/) const override {
+    return false;
+  }
+  double f(Eigen::Vector2d /*x*/) const override { return 2.0; }
+  double g(Eigen::Vector2d x) const override {
+    return 0.5 * std::log(x.squaredNorm() + 1);
+  }
+  double h(Eigen::Vector2d x) const override {
+    if (x[0] > x[1]) {
+      return x[0];
+    } else {
+      return x[1];
+    }
+  }
+
+ private:
+  /// Selector for Dirichlet boundary conditions
+  lf::refinement::EntityCenterPositionSelector<
+      std::function<bool(Eigen::Vector2d)>>
+      edge_sel_;
+};
+
+TEST(lfe_bvp, bvp_1) {
+  // The solution and its gradient
+  auto u = [](Eigen::Vector2d x) -> double {
+    return (0.5 * std::log(x.squaredNorm() + 1.0));
+  };
+  auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+    return (1.0 / (x.squaredNorm() + 1.0)) * x;
+  };
+  auto bvp_p = std::make_shared<MixedEllipticBVP>();
+  auto errnorms = TestConvergenceEllBVPFESol(4, bvp_p, u, grad_u);
 }
 
 }  // namespace lf::fe::test

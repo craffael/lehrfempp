@@ -164,38 +164,6 @@ template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFiniteElementSpace<SCALAR> &fes);
 
-/**
- * @brief Linear Lagrangian Finite Element space
- *
- * Just a special incarnation of UniformScalarFiniteElementSpace based on
- * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
- *
- */
-template <typename SCALAR>
-class LinearLagrangianFESpace : public UniformScalarFiniteElementSpace<SCALAR> {
- public:
-  /** @brief default constructors, needed by std::vector
-   * @note creates an invalid object that cannot be used. */
-  LinearLagrangianFESpace() = default;
-  LinearLagrangianFESpace(const LinearLagrangianFESpace &) = delete;
-  LinearLagrangianFESpace(LinearLagrangianFESpace &&) noexcept = default;
-  LinearLagrangianFESpace &operator=(const LinearLagrangianFESpace &) = delete;
-  LinearLagrangianFESpace &operator=(LinearLagrangianFESpace &&) noexcept =
-      default;
-  /**
-   * @brief Main constructor: sets up the local-to-global index mapping (dof
-   * handler)
-   *
-   * @param mesh_p shared pointer to underlying mesh (immutable)
-   */
-  LinearLagrangianFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
-      : UniformScalarFiniteElementSpace<SCALAR>(
-            mesh_p, std::make_shared<TriaLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<QuadLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<SegmentLinearLagrangeFE<SCALAR>>()) {}
-  virtual ~LinearLagrangianFESpace() {}
-};
-
 // Output control variable
 template <typename SCALAR>
 unsigned int UniformScalarFiniteElementSpace<SCALAR>::ctrl_ = 0;
@@ -375,6 +343,38 @@ std::ostream &operator<<(std::ostream &o,
   }
   return o;
 }
+
+/**
+ * @brief Linear Lagrangian Finite Element space
+ *
+ * Just a special incarnation of UniformScalarFiniteElementSpace based on
+ * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
+ *
+ */
+template <typename SCALAR>
+class LinearLagrangianFESpace : public UniformScalarFiniteElementSpace<SCALAR> {
+ public:
+  /** @brief default constructors, needed by std::vector
+   * @note creates an invalid object that cannot be used. */
+  LinearLagrangianFESpace() = default;
+  LinearLagrangianFESpace(const LinearLagrangianFESpace &) = delete;
+  LinearLagrangianFESpace(LinearLagrangianFESpace &&) noexcept = default;
+  LinearLagrangianFESpace &operator=(const LinearLagrangianFESpace &) = delete;
+  LinearLagrangianFESpace &operator=(LinearLagrangianFESpace &&) noexcept =
+      default;
+  /**
+   * @brief Main constructor: sets up the local-to-global index mapping (dof
+   * handler)
+   *
+   * @param mesh_p shared pointer to underlying mesh (immutable)
+   */
+  explicit LinearLagrangianFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
+      : UniformScalarFiniteElementSpace<SCALAR>(
+            mesh_p, std::make_shared<TriaLinearLagrangeFE<SCALAR>>(),
+            std::make_shared<QuadLinearLagrangeFE<SCALAR>>(),
+            std::make_shared<SegmentLinearLagrangeFE<SCALAR>>()) {}
+  virtual ~LinearLagrangianFESpace() {}
+};
 
 }  // namespace lf::fe
 
