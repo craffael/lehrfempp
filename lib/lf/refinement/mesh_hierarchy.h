@@ -411,7 +411,7 @@ class EntityCenterPositionSelector {
   /**
    * @brief Preparing reference coordinates of "centers"
    *
-   * @param pos_pred object for true/false classification of of physicals points
+   * @param pos_pred object for true/false classification of physicals points
    */
   explicit EntityCenterPositionSelector(POSPRED pos_pred) : pos_pred_(pos_pred) {}
   /** @brief Operator testing location of "center"

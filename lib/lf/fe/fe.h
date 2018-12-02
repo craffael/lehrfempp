@@ -15,9 +15,10 @@
  * @copyright MIT License
  */
 
-#include "lagr_fe.h"
-#include "loc_comp_ellbvp.h"
-#include "fe_tools.h"
+#include "sec_ord_ell_bvp.h"
+#include "loc_comp_norms.h"
+#include "fe_testutils.h"
+#include "lin_fe.h"
 
 namespace lf::fe {}  // namespace lf::fe
 

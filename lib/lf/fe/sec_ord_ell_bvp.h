@@ -122,8 +122,11 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
   FUNCTOR_H h_;
 };
 
-/** @brief Different locations for global shape functions */
-enum ShapeFnType : unsigned int { kDirGSF, kNeuGSF, kImpGSF, kIntGSF };
+/** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
+CONTROLDECLAREINFO(
+    LFELinSys_ctrl, "LFELinSys_ctrl",
+    "Output control variable for function SecOrdEllBVPLagrFELinSys()");
+static const unsigned int kLFELinSys_bdinfo = 2;
 
 /**
  * @brief Builds finite element linear system of equations for a second-order
@@ -172,6 +175,11 @@ SecOrdEllBVPLagrFELinSys(
       }
     }
   }
+  SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
+                    std::cout << "B.c.: " << no_Dirichlet_edges
+                              << " Dirichlet edges, " << no_Neumann_edges
+                              << " Neumann edges, " << no_impedance_edges
+                              << " impedance edges" << std::endl);
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NoDofs());
@@ -209,7 +217,7 @@ SecOrdEllBVPLagrFELinSys(
   if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
     lf::fe::LagrFEBoundaryRightHandSideVector(
         fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->h(x)); },
-        [&bvp_p,&bd_flags](const lf::mesh::Entity& edge) -> bool {
+        [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && (!bvp_p->EssentialConditionsOnEdge(edge)));
         },
         phi);

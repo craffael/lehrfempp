@@ -6,7 +6,7 @@
 
 /**
  * @file
- * @brief Implementation of data structures and functions relevant for 
+ * @brief Implementation of data structures and functions relevant for
  *        second-order elliptic boundary value problems.
  * 2nd-order linear elliptic boundary value problems.
  * @author Ralf Hiptmair
