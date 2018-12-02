@@ -112,7 +112,7 @@ function(lf_add_library _args)
       set(_headers ${_headers} ${s})
     endif()
   endforeach()
-  install(FILES ${_headers} DESTINATION "include/lf/${_relative_dir}")
+  install(FILES ${_headers} DESTINATION "include/${_relative_dir}")
   
   # Register this library:
   # set(LF_ALL_TARGETS ${_libname} ${LF_ALL_TARGETS} CACHE INTERNAL "" FORCE)
