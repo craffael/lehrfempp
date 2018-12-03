@@ -5,6 +5,7 @@
 
 #include "mesh_hierarchy.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
+#include "lf/mesh/utils/utils.h"
 
 namespace lf::refinement {
 
@@ -1702,7 +1703,7 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
     if ((ctrl_ & kout_meshinfo) != 0) {
       LF_ASSERT_MSG(false, "Not yet implemented");
       // TODO, when output for lf::mesh::Mesh has been fixed
-      // o << mesh << std::endl;
+      o << mesh << std::endl;
     } else {
       o << static_cast<int>(mesh.DimMesh()) << "D -> "
         << static_cast<int>(mesh.DimWorld()) << "D, " << mesh.Size(0)
