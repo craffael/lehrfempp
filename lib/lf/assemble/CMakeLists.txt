@@ -7,6 +7,8 @@ set(sources
   coomatrix.cc
   assembler.h
   assembler.cc
+  fix_dof.h
+  fix_dof.cc
 )
 lf_add_library(lf.assemble ${sources})
 target_link_libraries(lf.assemble PUBLIC

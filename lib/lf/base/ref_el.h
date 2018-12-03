@@ -472,7 +472,7 @@ class RefEl {
 
   // Output control variable
   /** @brief Diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 
 };  // class RefEl
 

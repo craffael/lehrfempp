@@ -12,17 +12,6 @@
  * @copyright MIT License
  */
 
-#include "quad_rule.h"
+#include "lagr_fe.h"
 
-namespace lf::quad {
-
-CONTROLDECLARECOMMENT(QuadRule, out_ctrl_, "out_ctrl_",
-                      "Output control for QuadRule");
-
-std::ostream& operator<<(std::ostream& stream,
-                         const lf::quad::QuadRule& quadrule) {
-  quadrule.PrintInfo(stream);
-  return stream;
-}
-
-}  // namespace lf::quad
+namespace lf::fe {}  // namespace lf::fe

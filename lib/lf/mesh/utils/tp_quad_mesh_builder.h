@@ -45,7 +45,7 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
 
  public:
   /** Diagnostics control variable */
-  static int output_ctrl_;
+  static unsigned int output_ctrl_;
 };  // end class definition TPQuadMeshBuilder
 
 }  // namespace lf::mesh::hybrid2d

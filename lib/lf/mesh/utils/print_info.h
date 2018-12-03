@@ -22,7 +22,7 @@ namespace lf::mesh::utils {
  *
  * @note: this static variable is intialized to the value 100
  */
-extern int printinfo_ctrl;
+extern unsigned int printinfo_ctrl;
 
 /**
  * @brief Diagnostic output operator. Prints info about a mesh.
@@ -32,7 +32,7 @@ extern int printinfo_ctrl;
  * #### Output levels
  * See extern int printinfo_ctrl
  */
-void PrintInfo(const Mesh& mesh, std::ostream& o);
+void PrintInfo(const lf::mesh::Mesh& mesh, std::ostream& o);
 
 // Print function for Entity object
 /**
@@ -48,6 +48,20 @@ void PrintInfo(const Mesh& mesh, std::ostream& o);
  * - Entity::output_ctrl_ > 90: The above and coordinates
  */
 void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
+
+/**
+ * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`
+ * @param stream The stream to which this function should output
+ * @param mesh The mesh to write to `stream`.
+ * @return The stream itself.
+ *
+ * Invokes the function lf::mesh::utils::PrintInfo()
+ */
+inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
+  lf::mesh::utils::PrintInfo(mesh, stream);
+  return stream;
+}
+
 }  // namespace lf::mesh::utils
 
 // Put the overloaded operators into lf::mesh so they are found when needed

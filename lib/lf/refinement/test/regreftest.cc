@@ -11,7 +11,7 @@
 
 namespace lf::refinement::test {
 
-static const int testmesh_selector = 1;
+static const int testmesh_selector = 3;
 
 TEST(RegRefTest, RegRef) {
   std::cout << "TEST: Uniform regular refinement" << std::endl;
@@ -33,7 +33,7 @@ TEST(RegRefTest, RegRef) {
   std::cout << "Checking mesh completeness" << std::endl;
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
-  std::cout << "Checking geometry compatibulity: " << std::flush;
+  std::cout << "Checking geometry compatibility: " << std::flush;
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";

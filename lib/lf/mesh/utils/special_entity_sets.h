@@ -15,6 +15,7 @@
 #ifndef _LF_SPEC_DATA_
 #define _LF_SPEC_DATA_
 
+#include "all_codim_mesh_data_set.h"
 #include "codim_mesh_data_set.h"
 
 namespace lf::mesh::utils {
@@ -26,6 +27,7 @@ namespace lf::mesh::utils {
  * @param codim_sub co-dimension of the queried entities
  * @param codim_super _relative_ co-dimension (with positive sign) of
  *                      super entities.
+ * @return an array of cardinals storing adjacency numbers
  *
  * For each entity of a given co-dimension, this function counts the number of
  * adjacent super-entities of some smaller co-dimension.
@@ -35,12 +37,50 @@ namespace lf::mesh::utils {
  * If, for a 2D mesh we want to count the number of cells adjacent to edges,
  * we have to specify codim_sub = 1, codim_super = 1!
  *
- * @note codim_super is _relative_ with flipped sign!
+ * If, for a 2D mesh you want to count the number of cells owning a node,
+ * specify codim_sub = 2 and codim_super = 2!
+ *
+ * @note codim_super is _relative_ to codim_sub with flipped sign!
  */
-
 CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
     const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super);
+
+/**
+ * @brief flag entities of a specific co-dimension located on the boundary
+ *
+ * @param codim co-dimension of entities to be flagged, must be > 0.
+ * @return an array of boolean values for the entities of the specified
+ * co-dimension
+ *
+ * An entity of co-dimension 1 is located on the boundary, if it is adjacent
+ * to exactly 1 cell (= entity of co-dimension 0).
+ *
+ * The boundary of a mesh is the set of all entities that are either entities
+ * of co-dimension 1 located on the boundary or sub-entities of those.
+ *
+ */
+CodimMeshDataSet<bool> flagEntitiesOnBoundary(
+    const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim);
+
+/**
+ * @brief flag entities of _any co-dimension_ located on the boundary
+ *
+ * @param codim co-dimension of entities to be flagged, must be > 0.
+ * @return an array of boolean values for the entities of the specified
+ * co-dimension
+ *
+ * An entity of co-dimension 1 is located on the boundary, if it is adjacent
+ * to exactly 1 cell (= entity of co-dimension 0).
+ *
+ * The boundary of a mesh is the set of all entities that are either entities
+ * of co-dimension 1 located on the boundary or sub-entities of those.
+ *
+ * @note the current implementation returns an integer array, because
+ *       of an error in the implementation of AllCodimMeshDataSet.
+ */
+AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
+    const std::shared_ptr<const Mesh>& mesh_p);
 
 }  // namespace lf::mesh::utils
 

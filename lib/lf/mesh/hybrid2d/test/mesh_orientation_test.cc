@@ -21,7 +21,7 @@ namespace lf::mesh::hybrid2d::test {
 TEST(lf_hybrid2d, lf_orientation) {
   std::cout << "### TEST: mesh orientation" << std::endl;
   // Building the test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   EXPECT_EQ(mesh_p->Size(0), 9) << "Test mesh: 9 cells expected!";
   EXPECT_EQ(mesh_p->Size(1), 18) << "Test mesh: 18 edges expected!";
