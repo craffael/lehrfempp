@@ -15,6 +15,8 @@ set(sources
   segment_o2.cc
   tria_o1.h
   tria_o1.cc
+  tria_o2.h
+  tria_o2.cc
   print_info.h
   print_info.cc
 )
