@@ -11,6 +11,29 @@
 
 namespace lf::geometry {
 
+SegmentO2::SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
+    : coords_(std::move(coords)),
+      alpha_(coords_.rows()),
+      beta_(coords_.rows()),
+      gamma_(coords_.rows()),
+      alpha_squared_(0),
+      alpha_beta_(0),
+      beta_squared_(0) {
+  const Eigen::VectorXd& vtx0 = coords_.col(0);
+  const Eigen::VectorXd& vtx1 = coords_.col(1);
+  const Eigen::VectorXd& midp = coords_.col(2);
+
+  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
+  alpha_ = 2. * (vtx1 + vtx0) - 4. * midp;
+  beta_ = 4. * midp - 3. * vtx0 - vtx1;
+  gamma_ = vtx0;
+
+  // coefficients for JacobianInverseGramian and IntegrationElement
+  alpha_squared_ = alpha_.squaredNorm();
+  alpha_beta_ = alpha_.dot(beta_);
+  beta_squared_ = beta_.squaredNorm();
+}
+
 Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
   Eigen::VectorXd local_vec = local.transpose();
 
@@ -18,19 +41,15 @@ Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
     // evaluate polynomial with Horner scheme
     auto tmp = ((alpha_ * local).colwise() + beta_).array().rowwise();
     return (tmp * local_vec.transpose().array()).matrix().colwise() + gamma_;
-  } else {
-    LF_VERIFY_MSG(false,
-                  "local coordinates out of bounds for reference element");
   }
+  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
 }
 
 Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
   if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
     return (2. * alpha_ * local).colwise() + beta_;
-  } else {
-    LF_VERIFY_MSG(false,
-                  "local coordinates out of bounds for reference element");
   }
+  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
 }
 
 Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
@@ -48,10 +67,8 @@ Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
       const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
       return jacobian.array().rowwise() * jTj_inv.transpose().array();
     }
-  } else {
-    LF_VERIFY_MSG(false,
-                  "local coordinates out of bounds for reference element");
   }
+  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
 }
 
 Eigen::VectorXd SegmentO2::IntegrationElement(
@@ -61,10 +78,8 @@ Eigen::VectorXd SegmentO2::IntegrationElement(
         4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
         beta_squared_;
     return jTj.cwiseSqrt().transpose();
-  } else {
-    LF_VERIFY_MSG(false,
-                  "local coordinates out of bounds for reference element");
   }
+  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
 }  // namespace lf::geometry
 
 std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
