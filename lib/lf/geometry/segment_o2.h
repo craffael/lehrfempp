@@ -20,7 +20,27 @@ namespace lf::geometry {
 class SegmentO2 : public Geometry {
  public:
   explicit SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
-      : coords_(std::move(coords)) {}
+      : coords_(std::move(coords)),
+        alpha_(),
+        beta_(),
+        gamma_(),
+        alpha_squared_(),
+        alpha_beta_(),
+        beta_squared_() {
+    const Eigen::VectorXd& vtx0 = coords_.col(0);
+    const Eigen::VectorXd& vtx1 = coords_.col(1);
+    const Eigen::VectorXd& midp = coords_.col(2);
+
+    // polynomial of degree 2: alpha * x^2 + beta * x + gamma
+    alpha_ = 2. * (vtx1 + vtx0) - 4. * midp;
+    beta_ = 4. * midp - 3. * vtx0 - vtx1;
+    gamma_ = vtx0;
+
+    // coefficients for JacobianInverseGramian and IntegrationElement
+    alpha_squared_ = alpha_.squaredNorm();
+    alpha_beta_ = alpha_.dot(beta_);
+    beta_squared_ = beta_.squaredNorm();
+  }
 
   dim_t DimLocal() const override { return 1; }
   dim_t DimGlobal() const override { return coords_.rows(); }
@@ -48,6 +68,12 @@ class SegmentO2 : public Geometry {
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> alpha_;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> beta_;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> gamma_;
+  double alpha_squared_;
+  double alpha_beta_;
+  double beta_squared_;
 };
 
 }  // namespace lf::geometry

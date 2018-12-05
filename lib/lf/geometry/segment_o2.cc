@@ -12,95 +12,60 @@
 namespace lf::geometry {
 
 Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
-  Eigen::MatrixXd global(DimGlobal(), local.cols());
+  Eigen::VectorXd local_vec = local.transpose();
 
-  const Eigen::VectorXd vtx0 = coords_.col(0);
-  const Eigen::VectorXd vtx1 = coords_.col(1);
-  const Eigen::VectorXd midp = coords_.col(2);
-
-  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
-  const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
-  const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
-  const Eigen::VectorXd& gamma = vtx0;
-
-  for (size_t point = 0; point < local.cols(); ++point) {
-    const double x = local(point);
-
-    if (0. <= x && x <= 1.) {
-      global.col(point) = alpha * x * x + beta * x + gamma;
-    } else {
-      LF_VERIFY_MSG(false,
-                    "local coordinate out of bounds for reference element");
-    }
+  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
+    // evaluate polynomial with Horner scheme
+    auto tmp = ((alpha_ * local).colwise() + beta_).array().rowwise();
+    return (tmp * local_vec.transpose().array()).matrix().colwise() + gamma_;
+  } else {
+    LF_VERIFY_MSG(false,
+                  "local coordinates out of bounds for reference element");
   }
-
-  return global;
 }
 
 Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
-  Eigen::MatrixXd jacobian(DimGlobal(), DimLocal() * local.cols());
-
-  const Eigen::VectorXd vtx0 = coords_.col(0);
-  const Eigen::VectorXd vtx1 = coords_.col(1);
-  const Eigen::VectorXd midp = coords_.col(2);
-
-  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
-  const Eigen::VectorXd alpha = 2. * (vtx1 + vtx0) - 4. * midp;
-  const Eigen::VectorXd beta = 4. * midp - 3. * vtx0 - vtx1;
-
-  for (size_t point = 0; point < local.cols(); ++point) {
-    const double x = local(point);
-
-    if (0. <= x && x <= 1.) {
-      jacobian.col(point) = 2. * alpha * x + beta;
-    } else {
-      LF_VERIFY_MSG(false,
-                    "local coordinate out of bounds for reference element");
-    }
+  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
+    return (2. * alpha_ * local).colwise() + beta_;
+  } else {
+    LF_VERIFY_MSG(false,
+                  "local coordinates out of bounds for reference element");
   }
-
-  return jacobian;
 }
 
 Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
     const ::Eigen::MatrixXd& local) const {
-  Eigen::MatrixXd jacInvGram(DimGlobal(), DimLocal() * local.cols());
-  Eigen::MatrixXd jacobian = Jacobian(local);
+  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
+    auto jacobian = (2. * alpha_ * local).colwise() + beta_;
 
-  for (size_t point = 0; point < local.cols(); ++point) {
-    Eigen::MatrixXd jac =
-        jacobian.block(0, point * DimLocal(), DimGlobal(), DimLocal());
-
-    if (DimGlobal() == DimLocal()) {
-      jacInvGram.block(0, point * DimLocal(), DimGlobal(), DimLocal()) =
-          jac.inverse().transpose();
+    if (DimGlobal() == 1) {
+      return jacobian.cwiseInverse();
     } else {
-      jacInvGram.block(0, point * DimLocal(), DimGlobal(), DimLocal()) =
-          jac * (jac.transpose() * jac).inverse();
+      // evaluate polynomial with Horner scheme
+      const auto jTj =
+          4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
+          beta_squared_;
+      const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
+      return jacobian.array().rowwise() * jTj_inv.transpose().array();
     }
+  } else {
+    LF_VERIFY_MSG(false,
+                  "local coordinates out of bounds for reference element");
   }
-
-  return jacInvGram;
 }
 
 Eigen::VectorXd SegmentO2::IntegrationElement(
     const Eigen::MatrixXd& local) const {
-  Eigen::VectorXd intEl(local.cols());
-  Eigen::MatrixXd jacobian = Jacobian(local);
-
-  for (size_t point = 0; point < local.cols(); ++point) {
-    Eigen::MatrixXd jac =
-        jacobian.block(0, point * DimLocal(), DimGlobal(), DimLocal());
-
-    if (DimGlobal() == DimLocal()) {
-      intEl(point) = std::abs(jac.determinant());
-    } else {
-      intEl(point) = std::sqrt((jac.transpose() * jac).determinant());
-    }
+  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
+    const auto jTj =
+        4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
+        beta_squared_;
+    return jTj.cwiseSqrt().transpose();
+  } else {
+    LF_VERIFY_MSG(false,
+                  "local coordinates out of bounds for reference element");
   }
-
-  return intEl;
-}
+}  // namespace lf::geometry
 
 std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
   if (codim == 0) {
@@ -115,22 +80,22 @@ std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
 }
 
 std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
-    const RefinementPattern& refPat, base::dim_t codim) const {
-  LF_VERIFY_MSG(refPat.RefEl() == lf::base::RefEl::kSegment(),
-                "Refinement pattern for " << refPat.RefEl().ToString());
+    const RefinementPattern& ref_pat, base::dim_t codim) const {
+  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kSegment(),
+                "Refinement pattern for " << ref_pat.RefEl().ToString());
   LF_VERIFY_MSG(codim < 2, "Illegal codim = " << codim);
 
-  const double hLattice = 1. / static_cast<double>(refPat.LatticeConst());
+  const double hLattice = 1. / static_cast<double>(ref_pat.LatticeConst());
   std::vector<std::unique_ptr<Geometry>> childGeoPtrs = {};
 
   // get coordinates of childGeometries
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> childPolygons(
-      refPat.ChildPolygons(codim));
+      ref_pat.ChildPolygons(codim));
 
   const size_t noChildren = childPolygons.size();
   LF_VERIFY_MSG(
-      noChildren == refPat.noChildren(codim),
-      "noChildren " << noChildren << " <-> " << refPat.noChildren(codim));
+      noChildren == ref_pat.noChildren(codim),
+      "noChildren " << noChildren << " <-> " << ref_pat.noChildren(codim));
 
   // create a geometry object for each child
   for (size_t child = 0; child < noChildren; ++child) {
