@@ -59,14 +59,15 @@ Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
 
     if (DimGlobal() == 1) {
       return jacobian.cwiseInverse();
-    } else {
-      // evaluate polynomial with Horner scheme
-      const auto jTj =
-          4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
-          beta_squared_;
-      const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
-      return jacobian.array().rowwise() * jTj_inv.transpose().array();
     }
+
+    // evaluate polynomial with Horner scheme
+    const auto jTj =
+        4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
+        beta_squared_;
+    const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
+
+    return jacobian.array().rowwise() * jTj_inv.transpose().array();
   }
   LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
 }
@@ -80,7 +81,7 @@ Eigen::VectorXd SegmentO2::IntegrationElement(
     return jTj.cwiseSqrt().transpose();
   }
   LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
-}  // namespace lf::geometry
+}
 
 std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
   if (codim == 0) {
