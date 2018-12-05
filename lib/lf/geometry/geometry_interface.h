@@ -96,7 +96,7 @@ class Geometry {
    * ~~~
    */
   virtual Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const = 0;
+      const Eigen::MatrixXd& local) const = 0;
 
   /**
    * @brief The integration element (factor appearing in integral transformation

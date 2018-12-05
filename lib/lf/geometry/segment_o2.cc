@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Implementation of second-order segments
+ * @brief Implementation of second-order parametric segments
  * @author Anian Ruoss
  * @date   2018-11-18 19:02:17
  * @copyright MIT License
@@ -34,7 +34,7 @@ Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
 }
 
 Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const {
+    const Eigen::MatrixXd& local) const {
   if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
     auto jacobian = (2. * alpha_ * local).colwise() + beta_;
 
