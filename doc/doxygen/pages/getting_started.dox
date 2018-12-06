@@ -42,8 +42,8 @@ cmake_minimum_required(VERSION 3.10)
 ### Hunter package manager ###
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.61.tar.gz"
-    SHA1 "60e121f3d0d826a6cd914bba6afaf045d4e09dfa"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.65.tar.gz"
+    SHA1 "00e252171605c290390a3cc90a372beeeb406d3c"
 )
 
 
@@ -63,6 +63,7 @@ target_link_libraries(main.cpp LF::lf.base)
    Note that this `CMakeLists.txt` links only with the `lf.base` module of LehrFEM++. Because we only want to print the number of nodes of a triangle, it suffices to link to the `lf.base` module.
    However, if you want to use more functionality, you will probably need to link to other LehrFEM++ modules as well.
    See \ref modules_ for more info about LehrFEM++ modules and [__list of namespaces__](./namespaces.html) for a list of all LehrFEM++ modules.
+
  5. Your folder structure should look as follows:
  ```
  getting_started
@@ -108,7 +109,16 @@ int main() {
  
  
  
- 
+### Notes about versioning
+The LehrFEM++ team releases new versions of LehrFEM++ on hunter when important changes happen. 
+These releases are _tagged_ on github and you can see all releases [here](https://github.com/craffael/lehrfempp/releases).
+
+It's important to understand that the concrete `HunterGate` command that you use in your CMakeLists will determine the versions of LehrFEM++ that you can use in your code.
+If you want to use the latest version of LehrFEM++, you should also use the [latest `HunterGate` command](https://github.com/ruslo/hunter/releases).
+Hunter allows you to select the [LehrFEM++ version](https://github.com/craffael/lehrfempp/releases) explictly, see [here](https://github.com/ruslo/hunter/wiki/example.custom.config.id).
+If you don't specify a version explicitly, the most recent version which is available with your current `HunterGate` command, is used.
+
+
  
  
  
