@@ -25,6 +25,7 @@ int main() {
     std::cout << *mesh_p << std::endl;
     
     // TikZ output
+<<<<<<< HEAD
     std::stringstream filename_tikz;
     filename_tikz << "test_mesh_" << selector << ".tex";
     lf::mesh::utils::writeTikZ(
@@ -40,6 +41,15 @@ int main() {
 
     // Python output
     
+=======
+    std::stringstream filename;
+    filename << "test_mesh_" << selector << ".tex";
+    lf::mesh::utils::writeTikZ(
+        *mesh_p, filename.str(),
+        TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
+            TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
+            TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips);
+>>>>>>> origin
   }
 
   return 0L;

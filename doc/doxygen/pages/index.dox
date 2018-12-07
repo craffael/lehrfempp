@@ -3,6 +3,7 @@
 Simplistic Finite Element Framework for research and education optimized for clarity and flexibility with some trade-off concerning performance.
 
 Content:
+- \ref getting_started
 - \ref modules_
 
 */
