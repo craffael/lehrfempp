@@ -12,6 +12,5 @@ set(sources
   test_meshes.cc
 )
 
-add_library(lf.mesh.test_utils ${sources})
+lf_add_library(lf.mesh.test_utils ${sources})
 target_link_libraries(lf.mesh.test_utils PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.mesh lf.mesh.hybrid2d)
-target_compile_features(lf.mesh.test_utils PUBLIC cxx_std_17)

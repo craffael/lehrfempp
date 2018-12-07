@@ -15,5 +15,4 @@ target_link_libraries(lf.mesh.utils.test
   lf.mesh.utils
   lf.mesh.test_utils
 )
-target_compile_features(lf.mesh.utils.test PUBLIC cxx_std_17)
 gtest_discover_tests(lf.mesh.utils.test)

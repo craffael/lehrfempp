@@ -38,9 +38,13 @@ namespace lf::mesh::test_utils {
  * - Test mesh generated when selector = 3;
  * @image html testmesh3.png
  * This is a purely triangular mesh
+ * - selector = 4: test mesh of [0,3]^2 with triangles and quads
+ * - selector = 5: test mesh of [0,3]^2 with triangles and parallelograms, all _affine_ 
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
                                                          double scale = 1.0);
+
+  static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 5;
 
 }  // namespace lf::mesh::test_utils
 
