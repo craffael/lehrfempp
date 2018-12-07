@@ -35,52 +35,53 @@ SegmentO2::SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
 }
 
 Eigen::MatrixXd SegmentO2::Global(const Eigen::MatrixXd& local) const {
-  Eigen::VectorXd local_vec = local.transpose();
+  LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
+                "local coordinates out of bounds for reference element");
 
-  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
-    // evaluate polynomial with Horner scheme
-    auto tmp = ((alpha_ * local).colwise() + beta_).array().rowwise();
-    return (tmp * local_vec.transpose().array()).matrix().colwise() + gamma_;
-  }
-  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
+  // evaluate polynomial with Horner scheme
+  Eigen::VectorXd local_vec = local.transpose();
+  auto tmp = ((alpha_ * local).colwise() + beta_).array().rowwise();
+
+  return (tmp * local_vec.transpose().array()).matrix().colwise() + gamma_;
 }
 
 Eigen::MatrixXd SegmentO2::Jacobian(const Eigen::MatrixXd& local) const {
-  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
-    return (2. * alpha_ * local).colwise() + beta_;
-  }
-  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
+  LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
+                "local coordinates out of bounds for reference element");
+
+  return (2. * alpha_ * local).colwise() + beta_;
 }
 
 Eigen::MatrixXd SegmentO2::JacobianInverseGramian(
     const ::Eigen::MatrixXd& local) const {
-  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
-    auto jacobian = (2. * alpha_ * local).colwise() + beta_;
+  LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
+                "local coordinates out of bounds for reference element");
 
-    if (DimGlobal() == 1) {
-      return jacobian.cwiseInverse();
-    }
+  auto jacobian = (2. * alpha_ * local).colwise() + beta_;
 
-    // evaluate polynomial with Horner scheme
-    const auto jTj =
-        4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
-        beta_squared_;
-    const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
-
-    return jacobian.array().rowwise() * jTj_inv.transpose().array();
+  if (DimGlobal() == 1) {
+    return jacobian.cwiseInverse();
   }
-  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
+
+  // evaluate polynomial with Horner scheme
+  const auto jTj =
+      4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
+      beta_squared_;
+  const Eigen::VectorXd jTj_inv = jTj.cwiseInverse().transpose();
+
+  return jacobian.array().rowwise() * jTj_inv.transpose().array();
 }
 
 Eigen::VectorXd SegmentO2::IntegrationElement(
     const Eigen::MatrixXd& local) const {
-  if ((0. <= local.array()).all() && (local.array() <= 1.).all()) {
-    const auto jTj =
-        4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
-        beta_squared_;
-    return jTj.cwiseSqrt().transpose();
-  }
-  LF_VERIFY_MSG(false, "local coordinates out of bounds for reference element");
+  LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
+                "local coordinates out of bounds for reference element");
+
+  const auto jTj =
+      4. * local.array() * (local.array() * alpha_squared_ + alpha_beta_) +
+      beta_squared_;
+
+  return jTj.cwiseSqrt().transpose();
 }
 
 std::unique_ptr<Geometry> SegmentO2::SubGeometry(dim_t codim, dim_t i) const {
