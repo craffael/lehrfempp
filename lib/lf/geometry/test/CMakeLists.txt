@@ -11,5 +11,4 @@ target_link_libraries(lf.geometry.test
   lf.refinement
 )
 
-target_compile_features(lf.geometry.test PUBLIC cxx_std_17)
 gtest_discover_tests(lf.geometry.test)

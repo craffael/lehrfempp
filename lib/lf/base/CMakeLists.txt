@@ -7,6 +7,7 @@ set(sources
   lf_assert.cc
   lf_assert.h
   lf_exception.h
+  predicate_true.h
   random_access_iterator.h
   random_access_range.h
   ref_el.cc
@@ -15,12 +16,9 @@ set(sources
   static_vars.cc
 )
 
-add_library(lf.base ${sources})
+lf_add_library(lf.base ${sources})
 target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost)
-target_compile_features(lf.base PUBLIC cxx_std_17)
-target_include_directories(lf.base PUBLIC
-  "$<BUILD_INTERFACE:${LOCAL_INCLUDE_DIRECTORY}>"
-  "$<BUILD_INTERFACE:${LOCAL_GENERATED_INCLUDE_DIRECTORY}>"
-)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
