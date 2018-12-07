@@ -19,7 +19,7 @@ target_link_libraries(lf.refinement.test
   lf.io
   lf.io.test_utils
   )
-target_compile_features(lf.refinement.test PUBLIC cxx_std_17)
+
 gtest_discover_tests(lf.refinement.test)
 
 set(rrt_sources 
@@ -38,5 +38,5 @@ target_link_libraries(lf.refinement.rrt_test
   lf.io
   lf.io.test_utils
   )
-target_compile_features(lf.refinement.rrt_test PUBLIC cxx_std_17)
+
 gtest_discover_tests(lf.refinement.rrt_test)
