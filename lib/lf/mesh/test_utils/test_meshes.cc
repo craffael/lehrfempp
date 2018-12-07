@@ -285,7 +285,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
           std::array<double, 2>({2, 3}), std::array<double, 2>({3, 3})};
 
       // Create nodes
-      for (const auto& node : node_coord) {
+      for (const auto &node : node_coord) {
         mesh_factory_ptr->AddPoint(coord_t({node[0] * scale, node[1] * scale}));
       }
 
@@ -308,7 +308,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
           std::array<size_type, 4>({4, 5, 9, 8})};
 
       // generate triangles
-      for (const auto& node : tria_nodes) {
+      for (const auto &node : tria_nodes) {
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kTria(),
             lf::base::ForwardRange<const size_type>(
@@ -317,7 +317,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       }
 
       // generate Parallelograms
-      for (const auto& node : quad_nodes) {
+      for (const auto &node : quad_nodes) {
         quad_coord_t quad_coord(2, 4);
         for (int n_pt = 0; n_pt < 4; ++n_pt) {
           quad_coord(0, n_pt) = node_coord[node[n_pt]][0];
