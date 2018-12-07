@@ -17,7 +17,7 @@
 function(get_relative_path out path)
   
   # Match regex to extract anything that starts with lib/lf/
-  string(REGEX MATCH "\/lib\/lf[A-Za-z0-9\/_]*" _relative_dir ${path})
+  string(REGEX MATCH "/lib/lf[A-Za-z0-9/_]*" _relative_dir ${path})
   if(NOT _relative_dir)
     set(${out} FALSE PARENT_SCOPE)
 	return()
@@ -30,7 +30,7 @@ function(get_relative_path out path)
 	  if(NOT _relative_dir)
 	    break() #Also break if _relative_dir is an empty string
 	  endif()
-	  string(REGEX MATCH "\/lib\/lf(\/[A-Za-z0-9\/_]*)?" _temp ${_relative_dir})
+	  string(REGEX MATCH "/lib/lf(/[A-Za-z0-9/_]*)?" _temp ${_relative_dir})
 	  if(NOT _temp)
 	    break()
 	  endif()
