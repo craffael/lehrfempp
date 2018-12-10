@@ -141,17 +141,15 @@ jobs:
         - graphviz
         - libclang-common-6.0-dev
     script: |
-      cd /tmp
+      cd ${DEPS_DIR}
       wget -O - http://doxygen.nl/files/doxygen-1.8.14.src.tar.gz | tar xz
       cd doxygen-1.8.14
       mkdir build
       cd build
       cmake -Duse_libclang=ON -DCMAKE_INSTALL_PREFIX=${DEPS_DIR} ..
-      make install -j2
-      export PATH=${DEPS_DIR}/bin:$PATH
-      ./bin/doxygen --version
-      ls -la ./bin/
-      ${DEPS_DIR}/bin/doxygen --version
+      make -j2
+      export PATH=${DEPS_DIR}/doxygen-1.8.14/build/bin:$PATH
+      doxygen --version
       # cd $TRAVIS_BUILD_DIR/doc/doxygen
       # export CXX=g++-7
       # cmake -H. -BBuild
