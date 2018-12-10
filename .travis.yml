@@ -138,6 +138,7 @@ jobs:
         - g++-7
         - flex
         - bison
+        - graphviz
         - libclang-common-6.0-dev
     script: |
       cd /tmp
@@ -146,8 +147,9 @@ jobs:
       mkdir build
       cd build
       cmake -Duse_libclang=ON -DCMAKE_INSTALL_PREFIX=${DEPS_DIR} ..
-      export PATH=${DEPS_DIR}/bin:$PATH
       make install -j2
+      export PATH=${DEPS_DIR}/bin:$PATH
+      doxygen --version
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
       cmake -H. -BBuild
