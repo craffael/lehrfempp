@@ -125,7 +125,7 @@ jobs:
     # env: COMPILER='clang++' BUILD_TYPE='Release'
     # script: "./travis/compile_test.sh"
   - stage: doxygen
-    # if: branch = master AND type IN (push)
+    if: branch = master AND type IN (push)
     os: linux
     compiler: gcc
     addons:
@@ -152,8 +152,8 @@ jobs:
       skip_cleanup: true
       local_dir: "./doc/doxygen/Build/html"
       github_token: "$GITHUB_API_KEY"
-      # on:
-        # branch: master
+      on:
+        branch: master
 notifications:
   slack:
     secure: EnZoql1AbDEDOMoXeTQZuxDbD2rTCsg9MI74IS3zYIulc9v+65mtIh7fL1M5UX9LiSe+AZyymwGklwBBoGA4/nAG1STxHOBC4QR0zRSRRtsp36kVGWwZzaHnBSIdj4uyQrlNmkS7VNR8/svaiUiizlmvzEYiMiDX/xvXt+TrdB1Gya2mQQtkL6vWLtFTjkKhnRIz/JKEcRaxwzFMAwtKKcZE66RucKYvuUMfVPeCFioRmp1BW6C8pgHdUrq/Aq5Yi7Oa8QQxwe6Jqf6DMpBXb63O8vPuzdv29QKc/hfME1ZSCf4yxTCPCUFjFa0UOrfDEoTP5cQ/vczFgr8rj+K8fLoASAFBGkDwBK2IRO4KZSfoZfLJVhPJSQ9GitLP6RN2AKMlja4uRHTwYhBC/Slu8qdWZEmLfCA1wYUfwprSnoZ9xvB58P/BpL2kgLW1bD6S9r9CQ3+5bxh0xz51Rr8VAuZIOE1EtNPXCfucz+LGlMHCX3gUFF8ONtTt+ESuoB1Y2nfeahWPWweN/AyiedIpjHQdrVsu4L/DKf7NOl+O2gl7L5lKyhowUby57DTDdebdbP5cdMZWOGA5xRBd2x4q5wCC5dEY+nqQc09rjuoYYdfxKvPCK6lcTHOWoMVRYydG5Ga2e7sY40k4shn8Y4PCzR+62fry23lnyn+ta9dWJck=
