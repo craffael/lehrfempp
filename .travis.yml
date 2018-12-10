@@ -150,6 +150,7 @@ jobs:
       make install -j2
       export PATH=${DEPS_DIR}/bin:$PATH
       ./bin/doxygen --version
+      ${DEPS_DIR}/bin/doxygen --version
       # cd $TRAVIS_BUILD_DIR/doc/doxygen
       # export CXX=g++-7
       # cmake -H. -BBuild
