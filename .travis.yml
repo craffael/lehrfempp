@@ -138,13 +138,14 @@ jobs:
         - g++-7
         - flex
         - bison
+        - libclang-common-6.0-dev
     script: |
       cd /tmp
       wget -O - http://doxygen.nl/files/doxygen-1.8.14.src.tar.gz | tar xz
       cd doxygen-1.8.14
       mkdir build
       cd build
-      cmake -Duse_clang=ON ..
+      cmake -Duse_libclang=ON ..
       make
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
