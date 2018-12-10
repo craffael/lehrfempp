@@ -8,7 +8,7 @@ dir=$(pwd)
 
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-if [[ ! -d "doxygen-1.8.14" ]; then
+if [ ! -d "doxygen-1.8.14" ]; then
   wget -O - http://doxygen.nl/files/doxygen-1.8.14.src.tar.gz | tar xz
   cd doxygen-1.8.14
   mkdir build
