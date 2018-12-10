@@ -148,11 +148,11 @@ jobs:
       cmake -Duse_libclang=ON -DCMAKE_INSTALL_PREFIX=${DEPS_DIR} ..
       export PATH=${DEPS_DIR}:$PATH
       make install -j2
-      cd $TRAVIS_BUILD_DIR/doc/doxygen
-      export CXX=g++-7
-      cmake -H. -BBuild
-      cd Build
-      make doxygen
+      # cd $TRAVIS_BUILD_DIR/doc/doxygen
+      # export CXX=g++-7
+      # cmake -H. -BBuild
+      # cd Build
+      # make doxygen
     deploy:
       provider: pages
       skip_cleanup: true
