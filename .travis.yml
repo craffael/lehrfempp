@@ -141,7 +141,7 @@ jobs:
         - graphviz
         - libclang-common-6.0-dev
     script: |
-      ./travis/install_doxygen.sh
+      . ./travis/install_doxygen.sh
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
       cmake -H. -BBuild
