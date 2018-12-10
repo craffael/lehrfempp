@@ -145,8 +145,9 @@ jobs:
       cd doxygen-1.8.14
       mkdir build
       cd build
-      cmake -Duse_libclang=ON ..
-      make
+      cmake -Duse_libclang=ON -DCMAKE_INSTALL_PREFIX=${DEPS_DIR} ..
+      export PATH=${DEPS_DIR}:$PATH
+      make install -j2
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
       cmake -H. -BBuild
