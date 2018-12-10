@@ -133,11 +133,16 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - doxygen
         - graphviz
         - g++-7
-    script: "cd $TRAVIS_BUILD_DIR/doc/doxygen\nexport CXX=g++-7\ncmake -H. -BBuild
-      \ncd Build\nmake doxygen\n"
+    script: |
+      wget -O - http://ftp.stack.nl/pub/users/dimitri/${DOXYGEN_TAR}
+      doxygen --version
+      cd $TRAVIS_BUILD_DIR/doc/doxygen
+      export CXX=g++-7
+      cmake -H. -BBuild
+      cd Build
+      make doxygen
     deploy:
       provider: pages
       skip_cleanup: true

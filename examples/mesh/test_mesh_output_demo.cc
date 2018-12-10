@@ -24,7 +24,7 @@ int main() {
     // Output of mesh information
     std::cout << "#### Test mesh " << selector << " ####" << std::endl;
     std::cout << *mesh_p << std::endl;
-    
+
     // TikZ output
     std::stringstream filename_tikz;
     filename_tikz << "test_mesh_" << selector << ".tex";
