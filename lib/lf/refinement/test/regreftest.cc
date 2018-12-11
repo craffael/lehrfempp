@@ -336,10 +336,10 @@ TEST(LocRefTest, MultipleRefinement) {
   WriteMatlab(multi_mesh, "multiref");
 }
 
-  // Auxiliary function: several steps of refinement using different
-  // refinement policies
-  void refine_for_testing(lf::refinement::MeshHierarchy  &multi_mesh) {
-      // Mark edges whose midpoints are located in a certain region
+// Auxiliary function: several steps of refinement using different
+// refinement policies
+void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
+  // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
       marker =
           [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {
@@ -359,9 +359,8 @@ TEST(LocRefTest, MultipleRefinement) {
   // Fourth step: local refinement again
   multi_mesh.MarkEdges(marker);
   multi_mesh.RefineMarked();
-  }
+}
 
-  
 TEST(LocRefTest, MixedRefinement) {
   lf::mesh::test_utils::watertight_mesh_ctrl = 100;
   lf::refinement::MeshHierarchy::output_ctrl_ = 0;
@@ -379,7 +378,7 @@ TEST(LocRefTest, MixedRefinement) {
 
   // Several step of refinement
   refine_for_testing(multi_mesh);
-  
+
   // Check mesh integrity
   const size_type n_levels = multi_mesh.NumLevels();
   EXPECT_EQ(n_levels, 5) << "After four steps of refinement " << n_levels
@@ -395,7 +394,7 @@ TEST(LocRefTest, MixedRefinement) {
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(*mesh);
 
-    std::cout << ": Checking geometry compatibulity: " << std::flush;
+    std::cout << ": Checking geometry compatibility: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
     if (fails.empty()) {
@@ -416,12 +415,11 @@ TEST(LocRefTest, MixedRefinement) {
   WriteMatlab(multi_mesh, "mixedref");
 }  // end mixed refinement test
 
-  TEST(LocRefTest, AffMeshRef) {
-    std::cout << "TEST: Refinement of an affine mesh" << std::endl;
-    // Generate an hybriod mesh of [0,3]^2, comprising only affine cells
-    // (selector = 5)
-  auto mesh_p =
-    lf::mesh::test_utils::GenerateHybrid2DTestMesh(5);
+TEST(LocRefTest, AffMeshRef) {
+  std::cout << "TEST: Refinement of an affine mesh" << std::endl;
+  // Generate an hybriod mesh of [0,3]^2, comprising only affine cells
+  // (selector = 5)
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(5);
   // Output mesh information
   std::cout << *mesh_p << std::endl;
   // Build mesh hierarchy
@@ -429,8 +427,25 @@ TEST(LocRefTest, MixedRefinement) {
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
-  
+  // Several step of refinement
+  refine_for_testing(multi_mesh);
 
+  // Check mesh integrity
+  const size_type n_levels = multi_mesh.NumLevels();
+  for (int l = 0; l < n_levels; ++l) {
+    // Verify that all cells are still affine
+    const lf::mesh::Mesh &mesh{*multi_mesh.getMesh(l)};
+    // Loop over all cells
+    double dom_vol = 0.0;
+    for (lf::mesh::Entity &cell : mesh.Entities(0)) {
+      lf::geometry::Geometry *geo_ptr{cell.Geometry()};
+      LF_ASSERT_MSG(geo_ptr != nullptr, "No geometry for cell " << cell);
+      EXPECT_TRUE(geo_ptr->isAffine()) << " Cell " << cell << " not affine!";
+      dom_vol += lf::geometry::Volume(*geo_ptr);
+    }
+    EXPECT_NEAR(dom_vol, 9.0, 1.0E-4)
+        << " Domain volume " << dom_vol << " != 9.0";
   }
-  
+}
+
 }  // namespace lf::refinement::test
