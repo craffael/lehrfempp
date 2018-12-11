@@ -132,12 +132,16 @@ jobs:
       apt:
         sources:
         - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-6.0
         packages:
         - graphviz
         - g++-7
+        - flex
+        - bison
+        - graphviz
+        - libclang-common-6.0-dev
     script: |
-      wget -O - http://ftp.stack.nl/pub/users/dimitri/${DOXYGEN_TAR}
-      doxygen --version
+      . ./travis/install_doxygen.sh
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
       cmake -H. -BBuild
