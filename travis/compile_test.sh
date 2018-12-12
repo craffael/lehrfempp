@@ -18,6 +18,8 @@ source $(dirname $0)/install_cmake.sh
 # compile
 cd ${TRAVIS_BUILD_DIR}
 export CXX=${COMPILER}
+$CXX --version
+
 cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
 cd Build
 make -j2
