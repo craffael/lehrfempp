@@ -5,7 +5,7 @@
  
  
  This tutorial shows you how you can call LehrFEM++ from your own code in a few simple steps.
- We will make a very simple program that calls LehrFEM++ prints the number of nodes of a triangle to the console.
+ We will make a very simple program that calls LehrFEM++ and prints the number of nodes of a triangle to the console.
  
  \note Because LehrFEM++ relies on the [Hunter Package Manager](https://github.com/ruslo/hunter), there is no need to download LehrFEM++ itself!
  
@@ -28,7 +28,7 @@
  > cd getting_started
  > mkdir cmake
  ```
- 2. Create the empty file `getting_started/main.cc`. In step 3 below, we will add the `main()` function to this file and call LehrFEM++ from there.
+ 2. Create the empty file `getting_started/main.cc`. Later on, we will add the `main()` function to this file and call LehrFEM++ from there.
  3. Download the [`HunterGate.cmake`](https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake) file into `getting_started/cmake`
  ```
  > cd cmake
@@ -47,7 +47,7 @@ HunterGate(
 )
 
 
-### Setup CMake ###
+### Setup CMake Project ###
 project(GettingStarted)
 
 # download dependencies
@@ -72,7 +72,7 @@ target_link_libraries(main.cpp LF::lf.base)
  +-- cmake
  |   +-- HunterGate.cmake
  ```
- 6. Use CMake to build the project. Depending on your platform, you have a [few different options](https://cmake.org/runningcmake/). 
+ 6. Use CMake to create the makefiles for you. Depending on your platform, you have a [few different options](https://cmake.org/runningcmake/). 
    It is strongly suggested that you do an out-of-source build, i.e. that you place your binaries in a folder that is different from `getting_started`.
    E.g. on linux:
  ```
