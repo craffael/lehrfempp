@@ -285,9 +285,8 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
           std::array<double, 2>({2, 3}), std::array<double, 2>({3, 3})};
 
       // Create nodes
-      for (int j = 0; j < node_coord.size(); ++j) {
-        mesh_factory_ptr->AddPoint(
-            coord_t({node_coord[j][0] * scale, node_coord[j][1] * scale}));
+      for (const auto &node : node_coord) {
+        mesh_factory_ptr->AddPoint(coord_t({node[0] * scale, node[1] * scale}));
       }
 
       // Specify triangles
@@ -309,26 +308,25 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
           std::array<size_type, 4>({4, 5, 9, 8})};
 
       // generate triangles
-      for (int j = 0; j < tria_nodes.size(); ++j) {
+      for (const auto &node : tria_nodes) {
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kTria(),
             lf::base::ForwardRange<const size_type>(
-                {tria_nodes[j][0], tria_nodes[j][1], tria_nodes[j][2]}),
+                {node[0], node[1], node[2]}),
             std::unique_ptr<lf::geometry::Geometry>(nullptr));
       }
 
       // generate Parallelograms
-      for (int j = 0; j < quad_nodes.size(); ++j) {
+      for (const auto &node : quad_nodes) {
         quad_coord_t quad_coord(2, 4);
         for (int n_pt = 0; n_pt < 4; ++n_pt) {
-          quad_coord(0, n_pt) = node_coord[quad_nodes[j][n_pt]][0];
-          quad_coord(1, n_pt) = node_coord[quad_nodes[j][n_pt]][1];
+          quad_coord(0, n_pt) = node_coord[node[n_pt]][0];
+          quad_coord(1, n_pt) = node_coord[node[n_pt]][1];
         }
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kQuad(),
             lf::base::ForwardRange<const size_type>(
-                {quad_nodes[j][0], quad_nodes[j][1], quad_nodes[j][2],
-                 quad_nodes[j][3]}),
+                {node[0], node[1], node[2], node[3]}),
             std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       }
       break;
