@@ -361,14 +361,21 @@ void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
   multi_mesh.RefineMarked();
 }
 
-TEST(LocRefTest, MixedRefinement) {
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+// Test different refinement type and their interaction for
+// meshes provided by lf::mesh::test_utils::GenerateHybriod2DTestMesh()
+void test_hybrid_2d_meshes(int selector) {
+  // Setting appropriate output controls
+  lf::mesh::test_utils::watertight_mesh_ctrl = 0;
   lf::refinement::MeshHierarchy::output_ctrl_ = 0;
-  std::cout << "TEST: Mixed local/global refinement" << std::endl;
 
-  // Generate the standard hybrid test mesh
-  auto mesh_p =
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
+  LF_VERIFY_MSG(
+      (selector >= 0) &&
+          (selector <= lf::mesh::test_utils::GenerateHybrid2DTestMesh_maxsel),
+      "Illegal selector value " << selector);
+  std::cout << "<<< Mixed refinement test for test mesh " << selector << std::endl;
+
+  // Generate one of the standard 2D hybrid test meshes
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
@@ -376,7 +383,7 @@ TEST(LocRefTest, MixedRefinement) {
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
 
-  // Several step of refinement
+  // Several steps of refinement
   refine_for_testing(multi_mesh);
 
   // Check mesh integrity
@@ -412,9 +419,38 @@ TEST(LocRefTest, MixedRefinement) {
     std::string filename = std::string("mixedref") + level_asc.str() + ".vtk";
     lf::io::VtkWriter(mesh, filename);
   }  // end loop over levels
-  WriteMatlab(multi_mesh, "mixedref");
-}  // end mixed refinement test
 
+  // Output of information about mesh hierarchy for postprocessing with MATLAB
+  std::stringstream tmp;
+  tmp << "mixedref_" << selector;
+  WriteMatlab(multi_mesh, tmp.str());
+}
+
+TEST(LocRefTest, mixed_ref_0) {
+  test_hybrid_2d_meshes(0);
+}  // end mixed refinement test 0
+
+TEST(LocRefTest, mixed_ref_1) {
+  test_hybrid_2d_meshes(1);
+}  // end mixed refinement test 1
+  
+  TEST(LocRefTest, mixed_ref_2) {
+  test_hybrid_2d_meshes(2);
+}  // end mixed refinement test 2
+
+  TEST(LocRefTest, mixed_ref_3) {
+  test_hybrid_2d_meshes(3);
+}  // end mixed refinement test 3
+
+  TEST(LocRefTest, mixed_ref_4) {
+  test_hybrid_2d_meshes(4);
+}  // end mixed refinement test 4
+
+  TEST(LocRefTest, mixed_ref_5) {
+  test_hybrid_2d_meshes(5);
+}  // end mixed refinement test 5
+
+  
 TEST(LocRefTest, AffMeshRef) {
   lf::mesh::Entity::output_ctrl_ = 1;
   std::cout << "TEST: Refinement of an affine mesh" << std::endl;
