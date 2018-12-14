@@ -416,6 +416,7 @@ TEST(LocRefTest, MixedRefinement) {
 }  // end mixed refinement test
 
 TEST(LocRefTest, AffMeshRef) {
+  lf::mesh::Entity::output_ctrl_ = 1;
   std::cout << "TEST: Refinement of an affine mesh" << std::endl;
   // Generate an hybriod mesh of [0,3]^2, comprising only affine cells
   // (selector = 5)
@@ -437,10 +438,11 @@ TEST(LocRefTest, AffMeshRef) {
     const lf::mesh::Mesh &mesh{*multi_mesh.getMesh(l)};
     // Loop over all cells
     double dom_vol = 0.0;
-    for (lf::mesh::Entity &cell : mesh.Entities(0)) {
+    for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
       lf::geometry::Geometry *geo_ptr{cell.Geometry()};
       LF_ASSERT_MSG(geo_ptr != nullptr, "No geometry for cell " << cell);
-      EXPECT_TRUE(geo_ptr->isAffine()) << " Cell " << cell << " not affine!";
+      EXPECT_TRUE(geo_ptr->isAffine())
+          << "Level " << l << ", cell " << cell << " not affine!";
       dom_vol += lf::geometry::Volume(*geo_ptr);
     }
     EXPECT_NEAR(dom_vol, 9.0, 1.0E-4)
