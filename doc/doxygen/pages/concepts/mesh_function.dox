@@ -5,19 +5,19 @@
 
 A mesh function is a function object that can be evaluated at any point on the mesh.
 
-Conceptually, a mesh function assigns to every point on the mesh a matrix of size `m x n`.
-In this way mesh functions can be scalar valued (`m = n = 1`), (column-)vector valued (`n=1`) or tensor/matrix valued.
+Conceptually, a mesh function assigns to every point on the mesh an object such as a `double` or an `Eigen::Matrix2d`.
 
 For efficiency reasons, a mesh function is normally evaluated at a number of points at once.
 Hence a mesh function must overload the bracket operator as follows:
 ```
-Eigen::MatrixXd operator()(const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const
+std::vector<T> operator()(const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const
 ```
 Here 
 - `e` is a \ref lf::mesh::Entity "mesh entity"
 - `local` is a matrix of size `(e.RefEl().Dimension()) x NumPoints` and lists the local coordinates of the evaluation points (with respect to the reference element `e.RefEl()`).
+- `T` is more or less arbitrary type such as a `double` or a `Eigen::Matrix2d`
 
-The return type of `operator()` is a matrix of size `m x (NumPoints * n)`.
+The return type of `operator()` is a `std::vector` with `NumPoints` length.
 
 ## Requirements
 
@@ -34,7 +34,7 @@ the following expressions are valid:
 <tr> <th>expression  <th>return type     <th>semantics
 <tr> <td> `MF(a)`             <td> `MF`     <td> Creates a copy of `a`
 <tr> <td> `MF(std::move(a))` <td> `MF`      <td> "steals" `a` to create a new MeshFunction
-<tr> <td> `a(e, local)` <td> `Eigen::MatrixXd` or `Eigen::MatrixXcd` <td>Evaluates mesh function at points `local`
+<tr> <td> `a(e, local)` <td> `std::vector<T>` <td>Evaluates mesh function at points `local`
 </table>
 
 

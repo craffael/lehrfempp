@@ -1,6 +1,11 @@
 include(GoogleTest)
 
-add_executable(lf.fe.test is_mesh_function_test.cc lagr_fe_test.cc)
+set(src
+  is_mesh_function_test.cc
+  lagr_fe_test.cc
+)
+
+add_executable(lf.fe.test ${src})
 
 target_link_libraries(lf.fe.test PUBLIC
   Eigen3::Eigen Boost::boost GTest::main lf.mesh lf.refinement lf.assemble lf.quad

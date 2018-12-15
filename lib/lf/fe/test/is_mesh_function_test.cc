@@ -13,92 +13,106 @@
 namespace lf::fe::test {
 
 struct ProperMeshFunction {
-  Eigen::MatrixXd operator()(const mesh::Entity& e,
-                             const Eigen::MatrixXd& local) const {
-    return Eigen::MatrixXd(3, 3);
+  auto operator()(const mesh::Entity& e, const Eigen::MatrixXd& local) const {
+    return std::vector<double>{1.0};
   }
 };
 
 struct NotCopyableMeshFunction {
   NotCopyableMeshFunction(const NotCopyableMeshFunction&) = delete;
 
-  Eigen::MatrixXd operator()(const mesh::Entity& e,
-                             const Eigen::MatrixXd& local) const {
-    return Eigen::MatrixXd(3, 3);
+  auto operator()(const mesh::Entity& e, const Eigen::MatrixXd& local) const {
+    return std::vector<double>{1.0};
   }
 };
 
 struct NotMoveableMeshFunction {
   NotMoveableMeshFunction(const NotMoveableMeshFunction&) = delete;
 
-  Eigen::MatrixXd operator()(const mesh::Entity& e,
-                             const Eigen::MatrixXd& local) const {
-    return Eigen::MatrixXd(3, 3);
+  auto operator()(const mesh::Entity& e, const Eigen::MatrixXd& local) const {
+    return std::vector<double>{1.0};
   }
 };
 
 struct NotCallableMeshFunction {};
 
 TEST(isMeshFunctionTestSuite, basicTests) {
-  EXPECT_EQ(lf::fe::isMeshFunction<ProperMeshFunction>, true);
-  EXPECT_EQ(lf::fe::isMeshFunction<const ProperMeshFunction>, true);
+  EXPECT_TRUE(isMeshFunction<ProperMeshFunction>);
+  EXPECT_TRUE((isMeshFunction<ProperMeshFunction, double>));
+  EXPECT_FALSE((isMeshFunction<ProperMeshFunction, float>));
+  EXPECT_TRUE(isMeshFunction<const ProperMeshFunction>);
+  EXPECT_TRUE((isMeshFunction<const ProperMeshFunction, double>));
+  EXPECT_FALSE((isMeshFunction<const ProperMeshFunction, std::vector<double>>));
 
   // references are not MeshFunctions
-  EXPECT_EQ(lf::fe::isMeshFunction<ProperMeshFunction&>, false);
-  EXPECT_EQ(lf::fe::isMeshFunction<const ProperMeshFunction&>, false);
-  EXPECT_EQ(lf::fe::isMeshFunction<ProperMeshFunction&&>, false);
+  EXPECT_FALSE(isMeshFunction<ProperMeshFunction&>);
+  EXPECT_FALSE((isMeshFunction<ProperMeshFunction&, double>));
+  EXPECT_FALSE(isMeshFunction<const ProperMeshFunction&>);
+  EXPECT_FALSE((isMeshFunction<const ProperMeshFunction&, double>));
+  EXPECT_FALSE(isMeshFunction<ProperMeshFunction&&>);
+  EXPECT_FALSE((isMeshFunction<ProperMeshFunction&&, double>));
 
   // also pointers don't work
-  EXPECT_EQ(lf::fe::isMeshFunction<ProperMeshFunction*>, false);
+  EXPECT_FALSE(isMeshFunction<ProperMeshFunction*>);
 
   // check with lambda
   auto lambda = [](const mesh::Entity& e, const Eigen::MatrixXd& local) {
-    return Eigen::MatrixXcd(3, 3);
-  };
-  EXPECT_EQ(lf::fe::isMeshFunction<decltype(lambda)>, true);
-
-  // test if any of the other expressions don't work
-  EXPECT_EQ(lf::fe::isMeshFunction<NotCopyableMeshFunction>, false);
-  EXPECT_EQ(lf::fe::isMeshFunction<NotMoveableMeshFunction>, false);
-  EXPECT_EQ(lf::fe::isMeshFunction<NotCallableMeshFunction>, false);
-
-  // if operator() expects wrong number of arguments
-  auto l2 = [](const mesh::Entity& e) { return Eigen::MatrixXd(3, 3); };
-  EXPECT_EQ(lf::fe::isMeshFunction<decltype(l2)>, false);
-
-  // if operator() has a template argument
-  auto l3 = [](auto& e, auto local) { return Eigen::MatrixXd(3, 3); };
-  EXPECT_EQ(lf::fe::isMeshFunction<decltype(l3)>, true);
-
-  // if operator() expect std::vector instead of Eigen::MatrixXd
-  auto l4 = [](const mesh::Entity&, std::vector<double> local) {
-    return Eigen::MatrixXd(3, 3);
-  };
-  EXPECT_EQ(lf::fe::isMeshFunction<decltype(l4)>, false);
-
-  // if operator() doesn't return eigen matrix
-  auto l5 = [](const mesh::Entity&, Eigen::MatrixXd) {
     return std::vector<double>{1.0};
   };
-  EXPECT_FALSE(lf::fe::isMeshFunction<decltype(l5)>);
+  EXPECT_TRUE(isMeshFunction<decltype(lambda)>);
+  EXPECT_TRUE((isMeshFunction<decltype(lambda), double>));
 
-  // if operator() returns an eigen vector
-  auto l6 = [](const mesh::Entity&, const Eigen::MatrixXd&) {
-    return Eigen::VectorXd(5);
+  // test that any of the other expressions don't work
+  EXPECT_FALSE(isMeshFunction<NotCopyableMeshFunction>);
+  EXPECT_FALSE((isMeshFunction<NotCopyableMeshFunction, double>));
+  EXPECT_FALSE(isMeshFunction<NotMoveableMeshFunction>);
+  EXPECT_FALSE((isMeshFunction<NotMoveableMeshFunction, double>));
+  EXPECT_FALSE(isMeshFunction<NotCallableMeshFunction>);
+  EXPECT_FALSE((isMeshFunction<NotCallableMeshFunction, double>));
+
+  // if operator() expects wrong number of arguments
+  auto l2 = [](const mesh::Entity& e) { return std::vector{1.0}; };
+  EXPECT_FALSE(isMeshFunction<decltype(l2)>);
+  EXPECT_FALSE((isMeshFunction<decltype(l2), double>));
+
+  // if operator() has a template argument
+  auto l3 = [](auto& e, auto local) { return std::vector{1.0}; };
+  EXPECT_TRUE(isMeshFunction<decltype(l3)>);
+  EXPECT_TRUE((isMeshFunction<decltype(l3), double>));
+  EXPECT_FALSE((isMeshFunction<decltype(l3), float>));
+
+  // if operator() expects std::vector instead of Eigen::MatrixXd
+  auto l4 = [](const mesh::Entity&, std::vector<double> local) {
+    return std::vector{1.0};
   };
-  EXPECT_TRUE(lf::fe::isMeshFunction<decltype(l6)>);
+  EXPECT_FALSE(isMeshFunction<decltype(l4)>);
+  EXPECT_FALSE((isMeshFunction<decltype(l4), double>));
+
+  // if operator() doesn't return std::vector
+  auto l5 = [](const mesh::Entity&, Eigen::MatrixXd) { return 1; };
+  EXPECT_FALSE(isMeshFunction<decltype(l5)>);
+  EXPECT_FALSE((isMeshFunction<decltype(l5), int>));
+
+  // if operator() returns a vector of 3x1 eigen vectors
+  auto l6 = [](const mesh::Entity&, const Eigen::MatrixXd&) {
+    return std::vector{Eigen::Vector3d(1.0, 1.0, 1.0)};
+  };
+  EXPECT_TRUE(isMeshFunction<decltype(l6)>);
+  EXPECT_TRUE((isMeshFunction<decltype(l6), Eigen::Vector3d>));
 
   // if operator() accepts Eigen matrix by value
   auto l7 = [](const mesh::Entity&, Eigen::MatrixXd) {
-    return Eigen::MatrixXd(3, 3);
+    return std::vector{1.0};
   };
-  EXPECT_TRUE(lf::fe::isMeshFunction<decltype(l7)>);
+  EXPECT_TRUE(isMeshFunction<decltype(l7)>);
+  EXPECT_TRUE((isMeshFunction<decltype(l7), double>));
 
   // if operator() accepts Eigen matrix by mutable reference
   auto l8 = [](const mesh::Entity&, Eigen::MatrixXd&) {
-    return Eigen::MatrixXd(3, 3);
+    return std::vector{1.0};
   };
-  EXPECT_FALSE(lf::fe::isMeshFunction<decltype(l8)>);
+  EXPECT_FALSE(isMeshFunction<decltype(l8)>);
+  EXPECT_FALSE((isMeshFunction<decltype(l8), double>));
 }
 
 }  // namespace lf::fe::test

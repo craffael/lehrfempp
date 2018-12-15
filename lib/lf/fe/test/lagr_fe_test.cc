@@ -21,6 +21,7 @@
 #include "lf/fe/loc_comp_ellbvp.h"
 
 #include <lf/mesh/utils/utils.h>
+#include "lf/fe/mesh_function_global.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 
 namespace lf::fe::test {
@@ -202,8 +203,8 @@ TEST(lf_fe, lf_fe_ellbvp) {
       std::make_shared<QuadLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
-  auto alpha = [](Eigen::Vector2d) -> double { return 1.0; };
-  auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
+  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
+  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
       comp_elem_mat{tlfe_p, qlfe_p, alpha, gamma};
   // Set debugging flags

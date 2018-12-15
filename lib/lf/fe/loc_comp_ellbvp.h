@@ -17,6 +17,7 @@
 
 #include <lf/quad/quad.h>
 #include <iostream>
+#include "is_mesh_function.h"
 #include "lagr_fe.h"
 
 namespace lf::fe {
@@ -114,6 +115,19 @@ class LocCompLagrFEPreprocessor {
     }
     return 0;
   }
+
+  inline const ScalarReferenceFiniteElement<double> &getRefFE(
+      base::RefEl ref_el) {
+    switch (ref_el) {
+      case base::RefEl::kTria():
+        return *fe_tria_p_;
+      case base::RefEl::kQuad():
+        return *fe_quad_p_;
+      default:
+        LF_VERIFY_MSG(false, "Error, only tria and quads are supported.");
+    }
+  }
+
   /** @brief Matrix of values of reference shape functions at theorem
    *        quadrature points in the reference element
    * @param type of reference element (triangle or quadrilateral)
@@ -137,8 +151,9 @@ class LocCompLagrFEPreprocessor {
       &grad_rsf_at_quadpts(lf::base::RefEl ref_el) {
     if (ref_el == lf::base::RefEl::kQuad()) {
       return grad_quadpoint_quad_;
-    } else
+    } else {
       return grad_quadpoint_tria_;
+    }
   }
 
   /**
@@ -213,6 +228,9 @@ class LocCompLagrFEPreprocessor {
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
+  static_assert(isMeshFunction<DIFF_COEFF>);
+  static_assert(isMeshFunction<REACTION_COEFF>);
+
  public:
   /**
    * @brief type of returned element matrix
@@ -220,12 +238,6 @@ class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
   using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
   /** @brief Return type for @ref Eval() method */
   using ElemMat = const elem_mat_t;
-  /** @brief Type for diffusion coefficient */
-  using diff_coeff_t =
-      typename std::invoke_result<DIFF_COEFF, Eigen::VectorXd>::type;
-  /** @brief Type for reaction coefficient */
-  using reac_coeff_t =
-      typename std::invoke_result<REACTION_COEFF, Eigen::VectorXd>::type;
 
   /** @brief standard constructors */
   /** @{ */
@@ -328,97 +340,42 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
 
-  // Computations differ depending on the type of the cell
-  if ((ref_el == lf::base::RefEl::kTria()) && (Nrsf_tria_ > 0)) {
-    // Quadrature points in actual cell
-    const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_tria_.Points()));
-    LF_ASSERT_MSG(mapped_qpts.cols() == qr_num_pts(lf::base::RefEl::kTria()),
-                  "Mismatch " << mapped_qpts.cols() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kTria()));
-    // Obtain the metric factors for the quadrature points
-    const Eigen::VectorXd determinants(
-        geo_ptr->IntegrationElement(qr_tria_.Points()));
-    LF_ASSERT_MSG(determinants.size() == qr_num_pts(lf::base::RefEl::kTria()),
-                  "Mismatch " << determinants.size() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kTria()));
-    // Fetch the transformation matrices for the gradients
-    const Eigen::MatrixXd JinvT(
-        geo_ptr->JacobianInverseGramian(qr_tria_.Points()));
-    LF_ASSERT_MSG(JinvT.cols() == 2 * qr_num_pts(lf::base::RefEl::kTria()),
-                  "Mismatch " << JinvT.cols() << " <-> "
-                              << 2 * qr_num_pts(lf::base::RefEl::kTria()));
-    LF_ASSERT_MSG(JinvT.rows() == world_dim,
-                  "Mismatch " << JinvT.rows() << " <-> " << world_dim);
+  const Eigen::VectorXd determinants(
+      geo_ptr->IntegrationElement(qr_points(ref_el)));
+  LF_ASSERT_MSG(
+      determinants.size() == qr_num_pts(ref_el),
+      "Mismatch " << determinants.size() << " <-> " << qr_num_pts(ref_el));
+  // Fetch the transformation matrices for the gradients
+  const Eigen::MatrixXd JinvT(
+      geo_ptr->JacobianInverseGramian(qr_points(ref_el)));
+  LF_ASSERT_MSG(
+      JinvT.cols() == 2 * qr_num_pts(ref_el),
+      "Mismatch " << JinvT.cols() << " <-> " << 2 * qr_num_pts(ref_el));
+  LF_ASSERT_MSG(JinvT.rows() == world_dim,
+                "Mismatch " << JinvT.rows() << " <-> " << world_dim);
 
-    // Element matrix
-    elem_mat_t mat(Nrsf_tria_, Nrsf_tria_);
-    mat.setZero();
+  // compute values of alpha, gamma at quadrature points:
+  auto alphaval = alpha_(cell, qr_points(ref_el));
+  auto gammaval = gamma_(cell, qr_points(ref_el));
 
-    // Loop over quadrature points
-    for (int k = 0; k < Nqp_tria_; ++k) {
-      // Evaluate diffusion and reaction coefficient
-      // at quadrature points in actual cell
-      const auto alphaval = alpha_(mapped_qpts.col(k));
-      const auto gammaval = gamma_(mapped_qpts.col(k));
+  // Element matrix
+  elem_mat_t mat(getRefFE(ref_el).NumRefShapeFunctions(),
+                 getRefFE(ref_el).NumRefShapeFunctions());
+  mat.setZero();
 
-      const double w = qr_tria_.Weights()[k] * determinants[k];
-      // Transformed gradients
-      const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                          grad_quadpoint_tria_[k]);
-      // Transformed gradients multiplied with coefficient
-      const auto alpha_trf_grad(alphaval * trf_grad);
-      mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                  (gammaval * rsf_quadpoints_tria_.col(k)) *
-                      (rsf_quadpoints_tria_.col(k).transpose()));
-    }
-    return mat;
-  } else if ((ref_el == lf::base::RefEl::kQuad()) && (Nrsf_quad_ > 0)) {
-    // Quadrature points in actual cell
-    const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_quad_.Points()));
-    LF_ASSERT_MSG(mapped_qpts.cols() == qr_num_pts(lf::base::RefEl::kQuad()),
-                  "Mismatch " << mapped_qpts.cols() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kQuad()));
-    // Obtain the metric factors for the quadrature points
-    const Eigen::VectorXd determinants(
-        geo_ptr->IntegrationElement(qr_quad_.Points()));
-    LF_ASSERT_MSG(determinants.size() == qr_num_pts(lf::base::RefEl::kQuad()),
-                  "Mismatch " << determinants.size() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kQuad()));
-    // Fetch the transformation matrices for the gradients
-    const Eigen::MatrixXd JinvT(
-        geo_ptr->JacobianInverseGramian(qr_quad_.Points()));
-    LF_ASSERT_MSG(JinvT.cols() == 2 * qr_num_pts(lf::base::RefEl::kQuad()),
-                  "Mismatch " << JinvT.cols() << " <-> "
-                              << 2 * qr_num_pts(lf::base::RefEl::kQuad()));
-    LF_ASSERT_MSG(JinvT.rows() == world_dim,
-                  "Mismatch " << JinvT.rows() << " <-> " << world_dim);
-
-    // Element matrix
-    elem_mat_t mat(Nrsf_quad_, Nrsf_quad_);
-    mat.setZero();
-
-    // Loop over quadrature points
-    for (int k = 0; k < Nqp_quad_; ++k) {
-      // Evaluate diffusion and reaction coefficient
-      // at quadrature points in actual cell
-      const auto alphaval{alpha_(mapped_qpts.col(k))};
-      const auto gammaval{gamma_(mapped_qpts.col(k))};
-
-      const double w = qr_quad_.Weights()[k] * determinants[k];
-      // Transformed gradients
-      const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                          grad_quadpoint_quad_[k]);
-      // Transformed gradients multiplied with coefficient
-      const auto alpha_trf_grad(alphaval * trf_grad);
-      mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                  (gammaval * rsf_quadpoints_quad_.col(k)) *
-                      (rsf_quadpoints_quad_.col(k).transpose()));
-    }
-    return mat;
+  // Loop over quadrature points
+  for (int k = 0; k < qr_num_pts(ref_el); ++k) {
+    const double w = qr_weights(ref_el)[k] * determinants[k];
+    // Transformed gradients
+    const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
+                        grad_rsf_at_quadpts(ref_el)[k]);
+    // Transformed gradients multiplied with coefficient
+    const auto alpha_trf_grad(alphaval[k] * trf_grad);
+    mat += w * (alpha_trf_grad.transpose() * trf_grad +
+                (gammaval[k] * rsf_at_quadpts(ref_el).col(k)) *
+                    (rsf_at_quadpts(ref_el).col(k).transpose()));
   }
-  LF_VERIFY_MSG(false,
-                "Entity type " << ref_el << " without FE specification!");
-  return Eigen::MatrixXd(0, 0);
+  return mat;
 }
 
 /**
