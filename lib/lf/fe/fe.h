@@ -15,10 +15,11 @@
  * @copyright MIT License
  */
 
-#include "sec_ord_ell_bvp.h"
-#include "loc_comp_norms.h"
 #include "fe_testutils.h"
+#include "is_mesh_function.h"
 #include "lin_fe.h"
+#include "loc_comp_norms.h"
+#include "sec_ord_ell_bvp.h"
 
 namespace lf::fe {}  // namespace lf::fe
 
