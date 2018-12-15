@@ -30,8 +30,14 @@ hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
 # Add cling support
-find_library (LIBDL_PATH NAMES dl)
-set(CMAKE_CXX_STANDARD_LIBRARIES "${LIBDL_PATH}")
+option(LF_ENABLE_CLING "if set to true, we will link with libdl so that cling works" OFF)
+if("${LF_ENABLE_CLING}")
+  find_library (LIBDL_PATH NAMES dl)
+  set(CMAKE_CXX_STANDARD_LIBRARIES "${LIBDL_PATH}")
+  if(LIBDL_PATH STREQUAL "LIBDL_PATH-NOTFOUND") 
+    message(FATAL_ERROR "LF_ENABLE_CLING=On but cannot find Libdl. Consider setting LIBDL_PATH manually.")
+  endif()
+endif()
 
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)

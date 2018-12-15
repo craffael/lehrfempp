@@ -16,8 +16,9 @@
 namespace lf::fe {
 namespace internal {
 template <class T>
-using MeshFunctionReturnType_t = decltype(std::declval<T>()(
-    std::declval<const lf::mesh::Entity>(), std::declval<Eigen::MatrixXd>()));
+using MeshFunctionReturnType_t =
+    decltype(std::declval<T>()(std::declval<const lf::mesh::Entity>(),
+                               std::declval<const Eigen::MatrixXd>()));
 
 template <
     class T,

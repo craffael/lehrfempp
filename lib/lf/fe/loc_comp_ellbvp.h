@@ -306,9 +306,12 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
       alpha_(alpha),
       gamma_(gamma) {}
 
+// TODO(craffael) remove const once
+// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 typename LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF,
-                                       REACTION_COEFF>::ElemMat
+                                       REACTION_COEFF>::ElemMat const
 LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
     const lf::mesh::Entity &cell) {
   // Topological type of the cell
@@ -545,8 +548,11 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::LagrangeFEEdgeMassMatrix(
     : LocCompLagrFEEdgePreprocessor(fe_edge_p), gamma_(gamma) {}
 
 // Eval() method
+// TODO(craffael) remove const once
+// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// is resolved
 template <typename SCALAR, typename COEFF>
-typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::ElemMat
+typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::ElemMat const
 LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::Eval(const lf::mesh::Entity &edge) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{edge.RefEl()};
@@ -729,8 +735,11 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
     FUNCTOR f)
     : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p), f_(f) {}
 
+// TODO(craffael) remove const once
+// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// is resolved
 template <typename SCALAR, typename FUNCTOR>
-typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec
+typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   // Type for source function
   using source_fn_t = decltype(f_(Eigen::Vector2d::Zero()));
@@ -911,8 +920,11 @@ template <typename SCALAR, typename FUNCTOR>
 unsigned int ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
 
 // Eval() method
+// TODO(craffael) remove const once
+// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// is resolved
 template <typename SCALAR, typename FUNCTOR>
-typename ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::ElemVec
+typename ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
 ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
