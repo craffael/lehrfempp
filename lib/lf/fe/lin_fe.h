@@ -185,8 +185,6 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
       break;
     }
   }  // end switch
-  // Midpoints of edges in world coordinates
-  const Eigen::MatrixXd mp(geo_ptr->Global(ref_mp));
 
   const double area = lf::geometry::Volume(*geo_ptr);
 
@@ -194,10 +192,12 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   elem_vec_t elem_vec = elem_vec_t::Zero();
   // Run over the midpoints of edges and fetch values of the source function
   // there
+
+  auto fvals = f_(cell, ref_mp);
+
   for (int k = 0; k < num_nodes; k++) {
-    const auto fval_half = 0.5 * f_(mp.col(k));
-    elem_vec[k] += fval_half;
-    elem_vec[(k + 1) % num_nodes] += fval_half;
+    elem_vec[k] += 0.5 * fvals[k];
+    elem_vec[(k + 1) % num_nodes] += 0.5 * fvals[k];
   }
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_locvec,

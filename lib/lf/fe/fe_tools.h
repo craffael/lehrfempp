@@ -21,7 +21,6 @@
 
 namespace lf::fe {
 
-CONTROLDECLAREINFO(ctrl_l2, "ctrl_l2", "Output control for SumCellFEContrib()");
 static const unsigned int kout_l2_qr = 1;
 static const unsigned int kout_l2_rsfvals = 2;
 
@@ -88,11 +87,6 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
   return sum;
 }
 
-/** @brief predicate for non-discriminatory positive selection of entities */
-struct DefaultEntitySelector {
-  bool operator()(const lf::mesh::Entity & /*cell*/) { return true; }
-};
-
 /**
  * @brief Summation of local contributions over _all_ cells
  *
@@ -102,14 +96,14 @@ struct DefaultEntitySelector {
 template <typename LOC_COMP, typename COEFFVECTOR>
 double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
                         LOC_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return SumCellFEContrib(dofh, loc_comp, uh, DefaultEntitySelector());
+  return SumCellFEContrib(dofh, loc_comp, uh, base::PredicateTrue{});
 }
 
 /**
  * @brief Computation of an inner product norm of the difference of a finite
  * element function and a general functions.
  *
- * @tparam LOC_NORM_COMP helper type like lf::fe::LocalL2NormDifference
+ * @tparam LOC_NORM_COMP helper type like lf::fe::MeshFunctionL2NormDifference
  * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
  * @tparam SELECTOR a predicate for selecting cells
  *
@@ -145,14 +139,16 @@ double NormOfDifference(const lf::assemble::DofHandler &dofh,
 template <typename LOC_NORM_COMP, typename COEFFVECTOR>
 double NormOfDifference(const lf::assemble::DofHandler &dofh,
                         LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return NormOfDifference(dofh, loc_comp, uh, DefaultEntitySelector());
+  return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
 }
 
 // ******************************************************************************
 
 // Output control for nodal projection
-CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
-                   "Output control for  NodalProjection()");
+// TODO(ralfh) putting this in a header file leads to multiple symbols with the
+// name ctrl_l2
+// CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
+//                    "Output control for  NodalProjection()");
 static const unsigned int kout_prj_cell = 1;
 static const unsigned int kout_prj_vals = 2;
 
@@ -161,7 +157,8 @@ static const unsigned int kout_prj_vals = 2;
  * element basis expansion coefficients of the result
  *
  * @tparam SCALAR a scalar type
- * @tparam FUNCTOR type for encoding a scalar value function
+ * @tparam FUNCTOR a \ref mesh_function "MeshFunction" representing the scalar
+ * valued function that should be projected
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
  * @param fe_space a uniform Lagrangian finite element space, providing finite
@@ -177,13 +174,14 @@ static const unsigned int kout_prj_vals = 2;
  * coefficients for the global shape functions associated with that cell.
  *
  */
-template <typename SCALAR, typename FUNCTOR, typename SELECTOR>
-Eigen::Matrix<typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type,
-              Eigen::Dynamic, 1>
-NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
-                FUNCTOR u, SELECTOR &&pred) {
-  // Scalar type determined by the function
-  using scalar_t = typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type;
+template <typename SCALAR, typename FUNCTOR,
+          typename SELECTOR = base::PredicateTrue>
+auto NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
+                     FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
+  static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
+  // choose scalar type so it can hold the scalar type of u as well as SCALAR
+  using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<FUNCTOR>>;
+  using scalar_t = decltype(SCALAR(0) * scalarMF_t(0));
   // Return type, type for FE coefficient vector
   using dof_vec_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
@@ -205,10 +203,11 @@ NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
     LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
     LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                   "Only 2D implementation available!");
-    SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
-                      std::cout << ref_el << ", shape = \n"
-                                << geo_ptr->Global(ref_el.NodeCoords())
-                                << std::endl);
+    // TODO(ralfh) uncommend when ctrl_prj is well-defined.
+    // SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
+    //                   std::cout << ref_el << ", shape = \n"
+    //                             << geo_ptr->Global(ref_el.NodeCoords())
+    //                             << std::endl);
 
     // Information about local shape functions on reference element
     const ScalarReferenceFiniteElement<double> &ref_shape_fns{
@@ -217,15 +216,14 @@ NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
     const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
     // Obtain reference coordinates for evaluation nodes
     const Eigen::MatrixXd ref_nodes(ref_shape_fns.EvaluationNodes());
-    // Obtain world coordinates of evaluation points
-    const Eigen::MatrixXd mapped_evlpts(geo_ptr->Global(ref_nodes));
+
     // Collect values of function to be projected in a row vector
-    Eigen::Matrix<scalar_t, 1, Eigen::Dynamic> uvalvec(num_eval_nodes);
-    for (int j = 0; j < num_eval_nodes; ++j) {
-      uvalvec[j] = u(mapped_evlpts.col(j));
-    }
+    auto uvalvec = u(cell, ref_nodes);
+
     // Compute the resulting local degrees of freedom
-    auto dofvec(ref_shape_fns.NodalValuesToDofs(uvalvec));
+    auto dofvec(ref_shape_fns.NodalValuesToDofs(
+        Eigen::Map<Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>>(
+            &uvalvec[0], uvalvec.size(), 1)));
 
     // Set the corresponing global degrees of freedom
     // Note: "Setting", not "adding to"
@@ -243,18 +241,6 @@ NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
     }
   }
   return glob_dofvec;
-}
-
-/** @sa NodalProjection()
- *
- * Nodal projection applied to all cells
- */
-template <typename SCALAR, typename FUNCTOR>
-Eigen::Matrix<typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type,
-              Eigen::Dynamic, 1>
-NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
-                FUNCTOR u) {
-  return NodalProjection(fe_space, u, DefaultEntitySelector());
 }
 
 /** @brief Incremental assembly of global finite element Galerkin matrix
@@ -351,7 +337,7 @@ void SecOrdBVPLagrFEBoundaryGalMat(
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
   // Object taking care of local computations.
-  LagrangeFESelectEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
+  LagrangeFEEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
       edgemat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
                       eta, edge_sel);
   // Invoke assembly on edges by specifying co-dimension = 1
@@ -415,7 +401,7 @@ void LagrFEVolumeRightHandSideVector(
  *        for all edges on the impedance boundary part.
  * @param phi mutable reference to a vector with scalar entries
  *
- * This function relies on the the class \ref ScalarFESelectEdgeLocalLoadVector
+ * This function relies on the the class \ref ScalarFEEdgeLocalLoadVector
  * for local computations and the function \ref
  * lf::assemble::AssembleVectorLocally() for assembly.
  *
@@ -433,9 +419,9 @@ void LagrFEBoundaryRightHandSideVector(
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
-  ScalarFESelectEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR>
-      elvec_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
-                    data, edge_sel);
+  ScalarFEEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
+      fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()), data,
+      edge_sel);
   // Invoke assembly on edges (codim == 1), update vector
   AssembleVectorLocally(1, dofh, elvec_builder, phi);
 }
@@ -491,7 +477,6 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   // Preprocessing: obtain evaluation nodes on reference segment [0,1]
   const Eigen::MatrixXd ref_eval_pts{fe_spec_edge.EvaluationNodes()};
   Eigen::MatrixXd eval_pts(2, num_eval_pts);
-  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> g_vals(num_eval_pts);
   Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dof_vals(num_eval_pts);
 
   // Underlying mesh
@@ -501,6 +486,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   const size_type num_coeffs = dofh.NoDofs();
   std::vector<std::pair<bool, SCALAR>> flag_val_vec(num_coeffs,
                                                     {false, SCALAR{}});
+
   // *** II: Local computations ****
   // Visit all edges of the mesh (codim-1 entities)
   for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
@@ -509,15 +495,12 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     if (esscondflag(edge) == true) {
       // Fetch the shape of the edge
       const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
-      // Compute physical coordinates of the evaluation points
-      // Those are stored in the columns of a matrix
-      const Eigen::MatrixXd eval_pts{edge_geo_p->Global(ref_eval_pts)};
-      for (int k = 0; k < num_eval_pts; ++k) {
-        // Evaluate function at evaluation/interpolation nodes
-        g_vals[k] = g(eval_pts.col(k));
-      }
+      auto g_vals = g(edge, ref_eval_pts);
+
       // Compute degrees of freedom from function values in evaluation points
-      dof_vals = fe_spec_edge.NodalValuesToDofs(g_vals);
+      dof_vals = fe_spec_edge.NodalValuesToDofs(
+          Eigen::Map<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>(&g_vals[0], 1,
+                                                               g_vals.size()));
       LF_ASSERT_MSG(dof_vals.size() == num_rsf,
                     "Mismatch " << dof_vals.size() << " <-> " << num_rsf);
       LF_ASSERT_MSG(

@@ -6,7 +6,7 @@
  * @copyright MIT License
  */
 
-#include <lf/fe/is_mesh_function.h>
+#include <lf/fe/mesh_function_traits.h>
 
 #include <gtest/gtest.h>
 
@@ -36,13 +36,15 @@ struct NotMoveableMeshFunction {
 
 struct NotCallableMeshFunction {};
 
-TEST(isMeshFunctionTestSuite, basicTests) {
+TEST(isMeshFunctionTestSuite, checkIsMeshFunction) {
   EXPECT_TRUE(isMeshFunction<ProperMeshFunction>);
   EXPECT_TRUE((isMeshFunction<ProperMeshFunction, double>));
   EXPECT_FALSE((isMeshFunction<ProperMeshFunction, float>));
   EXPECT_TRUE(isMeshFunction<const ProperMeshFunction>);
   EXPECT_TRUE((isMeshFunction<const ProperMeshFunction, double>));
   EXPECT_FALSE((isMeshFunction<const ProperMeshFunction, std::vector<double>>));
+  EXPECT_TRUE(
+      (std::is_same_v<MeshFunctionReturnType<ProperMeshFunction>, double>));
 
   // references are not MeshFunctions
   EXPECT_FALSE(isMeshFunction<ProperMeshFunction&>);
@@ -61,6 +63,8 @@ TEST(isMeshFunctionTestSuite, basicTests) {
   };
   EXPECT_TRUE(isMeshFunction<decltype(lambda)>);
   EXPECT_TRUE((isMeshFunction<decltype(lambda), double>));
+  EXPECT_TRUE(
+      (std::is_same_v<MeshFunctionReturnType<decltype(lambda)>, double>));
 
   // test that any of the other expressions don't work
   EXPECT_FALSE(isMeshFunction<NotCopyableMeshFunction>);
@@ -80,6 +84,7 @@ TEST(isMeshFunctionTestSuite, basicTests) {
   EXPECT_TRUE(isMeshFunction<decltype(l3)>);
   EXPECT_TRUE((isMeshFunction<decltype(l3), double>));
   EXPECT_FALSE((isMeshFunction<decltype(l3), float>));
+  EXPECT_TRUE((std::is_same_v<MeshFunctionReturnType<decltype(l3)>, double>));
 
   // if operator() expects std::vector instead of Eigen::MatrixXd
   auto l4 = [](const mesh::Entity&, std::vector<double> local) {
@@ -99,6 +104,8 @@ TEST(isMeshFunctionTestSuite, basicTests) {
   };
   EXPECT_TRUE(isMeshFunction<decltype(l6)>);
   EXPECT_TRUE((isMeshFunction<decltype(l6), Eigen::Vector3d>));
+  EXPECT_TRUE(
+      (std::is_same_v<MeshFunctionReturnType<decltype(l6)>, Eigen::Vector3d>));
 
   // if operator() accepts Eigen matrix by value
   auto l7 = [](const mesh::Entity&, Eigen::MatrixXd) {
@@ -106,6 +113,7 @@ TEST(isMeshFunctionTestSuite, basicTests) {
   };
   EXPECT_TRUE(isMeshFunction<decltype(l7)>);
   EXPECT_TRUE((isMeshFunction<decltype(l7), double>));
+  EXPECT_TRUE((std::is_same_v<MeshFunctionReturnType<decltype(l7)>, double>));
 
   // if operator() accepts Eigen matrix by mutable reference
   auto l8 = [](const mesh::Entity&, Eigen::MatrixXd&) {

@@ -15,6 +15,9 @@
 
 namespace lf::fe {
 
+/**
+ * @ingroup mesh_function
+ */
 template <class F>
 class MeshFunctionGlobal {
   using F_return_type =

@@ -6,7 +6,7 @@ set(sources
   fe_tools.cc
   fe_tools.h
   fe.h
-  is_mesh_function.h
+  mesh_function_traits.h
   lagr_fe.h
   lagr_fe.cc
   lin_fe.h

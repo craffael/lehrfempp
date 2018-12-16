@@ -17,8 +17,8 @@
 
 #include <lf/quad/quad.h>
 #include <iostream>
-#include "is_mesh_function.h"
 #include "lagr_fe.h"
+#include "mesh_function_traits.h"
 
 namespace lf::fe {
 
@@ -199,32 +199,28 @@ class LocCompLagrFEPreprocessor {
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
  *
- * @tparam SCALAR type for the entries of the element matrices
- * @tparam DIFF_COEFF a functor providing point evaluation for the diffusion
- * tensor
- * @tparam REACTION_COEFF a functor for point evaluation of the reaction
+ * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ *                     type such as `double` or `std::complex<double>`
+ * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
+ *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
+ *                    It should be either scalar- or matrix-valued.
+ * @tparam REACTION_COEFF a \ref mesh_function "MeshFunction" that defines the
+ *                        reaction coefficient \f$ \mathbf{\gamma} \f$.
+     *                    It should be either scalar- or matrix-valued.
  * coefficient
  *
- * ### Template parameter type requirements
- *
- * - SCALAR must be a field type like `std::complex<double>`
- * - DIFF_COEFF must comply with `std::function<T(Eigen::Vector2d)>`, where `T`
- * is either a SCALAR compatible type of a matrix type like
- * `Eigen::Matrix<SCALAR,...>`.
- * - REACTION_COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
  *
  * @note This class complies with the type requirements for the template
- argument
- * ELEM_MAT_COMP of the function lf::assemble::AssembleMatrixLocally().
+ * argument ELEM_MAT_COMP of the function lf::assemble::AssembleMatrixLocally().
  *
- * The element matrix is that for the (local) bilinear form
+ * The element matrix is corresponds to the (local) bilinear form
  * @f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
           \cdot\mathbf{grad}\,v + \gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
  * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
- @f$\gamma@f$.
+ * @f$\gamma@f$.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
@@ -423,30 +419,33 @@ class LocCompLagrFEEdgePreprocessor {
   static const unsigned int kout_rsfvals = 2;
 };
 
-/**
- * @brief Quadrature-based computation of local mass matrix for an edge
+/** @brief Quadrature-based computation of local mass matrix for an edge
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
- * @tparam COEFF functor type for scalar valued coefficient
+ * @tparam COEFF \ref mesh_function "MeshFunction" that defines the
+ * scalar valued coefficient \f$ \gamma \f$
+ * @tparam EDGESELECTOR predicate defining which edges are included
  *
- * This helper class takes care of the computation of the element matrix
+ * This helper class corresponds to the the element matrix
  * for the bilinear form
  * @f[
-       (u,v) \mapsto \int\limits_e \gamma(x)u(x)v(x)\,\mathrm{d}S(x)\;,
+ *     (u,v) \mapsto \int\limits_e \gamma(x)u(x)v(x)\,\mathrm{d}S(x)\;,
  * @f]
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
+ *
+ * @sa LagrangeFEEdgeMassMatrix
  */
-template <typename SCALAR, typename COEFF>
+template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
  public:
-  using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
+  using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
+  using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
   using ElemMat = const elem_mat_t;
-  using coeff_t = typename std::invoke_result<COEFF, Eigen::VectorXd>::type;
 
-  /** @defgroup standard constructors
-   * @brief default constructors
-   *  @{ */
+  /** @defgroup
+      @brief standard constructors
+     * @{ */
   LagrangeFEEdgeMassMatrix(const LagrangeFEEdgeMassMatrix &) = delete;
   LagrangeFEEdgeMassMatrix(LagrangeFEEdgeMassMatrix &&) = default;
   LagrangeFEEdgeMassMatrix &operator=(const LagrangeFEEdgeMassMatrix &) =
@@ -454,21 +453,32 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
   LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = default;
   /** @} */
   /**
-   * @brief Constructor: preprocessing using knowledge about quadrature rule
+   * @brief Constructor performing cell-independent initializations
    *
-   * @param fe_edge_p FE specification for a line segmentLinearLagrangeFE
-   * @param gamma scalar-valued coefficient function
+   * @param fe_edeg_p pointer to FE specification for a segment
+   * @param gamma coefficient function through functor object
+   * @param edge_selector predicate object selecting active to be covered in the
+   * assembly
    */
   LagrangeFEEdgeMassMatrix(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
-      COEFF gamma);
+      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_edge_p,
+      COEFF gamma, EDGESELECTOR edge_selector = base::PredicateTrue{})
+      : LocCompLagrFEEdgePreprocessor(std::move(fe_edge_p)),
+        gamma_(gamma),
+        edge_sel_(edge_selector) {}
+
   /**
-   * @brief All edges are assumed to be active in the default implementation
+   * @brief If true, then an edge is taken into account during assembly
    *
-   * This method is meant to be overloaded if assembly should be restricted to a
-   * subset of cells.
+   * The information about "active" edges is supplied through the
+   * `edge_selector` argument of the constructor.
    */
-  virtual bool isActive(const lf::mesh::Entity & /*edge*/) { return true; }
+  bool isActive(const lf::mesh::Entity &edge) {
+    LF_ASSERT_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
+                  "Wrong type for an edge");
+    return edge_sel_(edge);
+  }
+
   /**
    * @brief actual computation of edge mass matrix
    *
@@ -484,33 +494,30 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
    */
   ElemMat Eval(const lf::mesh::Entity &edge);
 
-  virtual ~LagrangeFEEdgeMassMatrix() = default;
-
- protected:
-  COEFF gamma_; /**< functor for coefficient */
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
+ private:
+  COEFF gamma_;               // functor for coefficient
+  EDGESELECTOR edge_sel_;     // Defines the active edges
+  static unsigned int ctrl_;  // output control variable
 };
 
-template <typename SCALAR, typename COEFF>
-unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::ctrl_ = 0;
+// deduction guide:
+template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
+LagrangeFEEdgeMassMatrix(PTR, COEFF coeff,
+                         EDGESELECTOR edge_predicate = base::PredicateTrue{})
+    ->LagrangeFEEdgeMassMatrix<typename PTR::element_type::Scalar, COEFF,
+                               EDGESELECTOR>;
 
-// Constructor
-template <typename SCALAR, typename COEFF>
-LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::LagrangeFEEdgeMassMatrix(
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
-    COEFF gamma)
-    : LocCompLagrFEEdgePreprocessor(fe_edge_p), gamma_(gamma) {}
+template <class SCALAR, class COEFF, class EDGESELECTOR>
+unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename COEFF>
-typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::ElemMat const
-LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::Eval(const lf::mesh::Entity &edge) {
+template <class SCALAR, class COEFF, class EDGESELECTOR>
+typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
+LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
+    const lf::mesh::Entity &edge) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{edge.RefEl()};
   LF_ASSERT_MSG(ref_el == lf::base::RefEl::kSegment(),
@@ -518,11 +525,6 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::Eval(const lf::mesh::Entity &edge) {
   // Query the shape of the edge
   const lf::geometry::Geometry *geo_ptr = edge.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
-
-  // Quadrature points on physical edge
-  const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_.Points()));
-  LF_ASSERT_MSG(mapped_qpts.cols() == Nqp_,
-                "Mismatch " << mapped_qpts.cols() << " <-> " << Nqp_);
 
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_.Points()));
@@ -533,77 +535,18 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF>::Eval(const lf::mesh::Entity &edge) {
   elem_mat_t mat(Nrsf_, Nrsf_);
   mat.setZero();
 
+  auto gammaval = gamma_(edge, qr_.Points());
+
   // Loop over quadrature points
   for (int k = 0; k < Nqp_; ++k) {
-    // Evaluate coefficient at quadrature points on physical edge
-    const auto gammaval = gamma_(mapped_qpts.col(k));
-
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
-    const auto w = (qr_.Weights()[k] * determinants[k]) * gammaval;
+    const auto w = (qr_.Weights()[k] * determinants[k]) * gammaval[k];
     mat +=
         ((rsf_quadpoints_.col(k)) * (rsf_quadpoints_.col(k).transpose())) * w;
   }
   return mat;
 }
-
-/** @brief Builder class for local edge mass matrix with additional
- *         selection of relevant edges
- *
- * @tparam EDGESELECTOR predicate type `std::function<bool(const Entity &)>`
- *
- * @sa LagrangeFEEdgeMassMatrix
- */
-template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
-class LagrangeFESelectEdgeMassMatrix
-    : public LagrangeFEEdgeMassMatrix<SCALAR, COEFF> {
- public:
-  using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
-  using ElemMat = const elem_mat_t;
-  using coeff_t = typename std::invoke_result<COEFF, Eigen::Vector2d>::type;
-
-  /** @defgroup
-      @brief standard constructors
-     * @{ */
-  LagrangeFESelectEdgeMassMatrix(const LagrangeFESelectEdgeMassMatrix &) =
-      delete;
-  LagrangeFESelectEdgeMassMatrix(LagrangeFESelectEdgeMassMatrix &&) = default;
-  LagrangeFESelectEdgeMassMatrix &operator=(
-      const LagrangeFESelectEdgeMassMatrix &) = delete;
-  LagrangeFESelectEdgeMassMatrix &operator=(LagrangeFESelectEdgeMassMatrix &&) =
-      default;
-  /** @} */
-  /**
-   * @brief Constructor performing cell-independent initializations
-   *
-   * @param fe_edeg_p point to FE specification for a segment
-   * @param eta coefficient function through functor object
-   * @param edge_selector predicate object selecting active to be covered in the
-   * assembly
-   */
-  LagrangeFESelectEdgeMassMatrix(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
-      COEFF eta, EDGESELECTOR edge_selector)
-      : LagrangeFEEdgeMassMatrix<SCALAR, COEFF>(fe_edge_p, eta),
-        edge_sel_(edge_selector) {}
-
-  /**
-   * @brief If true, then an edge is taken into account during assembly
-   *
-   * The information about "active" edges is supplied through the
-   * `edge_selector` argument of the constructor.
-   */
-  bool isActive(const lf::mesh::Entity &edge) override {
-    LF_ASSERT_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
-                  "Wrong type for an edge");
-    return edge_sel_(edge);
-  }
-
- private:
-  /** @brief Predicate telling whether an edge should be taken into account
-     during the assembly of the Galerkin matrix */
-  EDGESELECTOR edge_sel_;
-};
 
 /**
  * @brief Local computation of general element (load) vector for scalar finite
@@ -628,6 +571,8 @@ class LagrangeFESelectEdgeMassMatrix
  */
 template <typename SCALAR, typename FUNCTOR>
 class ScalarFELocalLoadVector : public LocCompLagrFEPreprocessor {
+  static_assert(isMeshFunction<FUNCTOR>);
+
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
   using ElemVec = const elem_vec_t;
@@ -699,7 +644,7 @@ template <typename SCALAR, typename FUNCTOR>
 typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   // Type for source function
-  using source_fn_t = decltype(f_(Eigen::Vector2d::Zero()));
+  using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Query the shape of the cell
@@ -712,91 +657,36 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
                               << geo_ptr->Global(ref_el.NodeCoords())
                               << std::endl);
 
-  // Computations differ depending on the type of the cell
-  if ((ref_el == lf::base::RefEl::kTria()) && (Nrsf_tria_ > 0)) {
-    // World coordinates of quadrature points
-    const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_tria_.Points()));
-    SWITCHEDSTATEMENT(ctrl_, kout_qpts,
-                      std::cout << "LOCVEC(Tria): Mapped quadrature points:\n"
-                                << mapped_qpts << std::endl);
-    LF_ASSERT_MSG(mapped_qpts.cols() == qr_num_pts(lf::base::RefEl::kTria()),
-                  "Mismatch " << mapped_qpts.cols() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kTria()));
-    // Obtain the metric factors for the quadrature points
-    const Eigen::VectorXd determinants(
-        geo_ptr->IntegrationElement(qr_tria_.Points()));
-    LF_ASSERT_MSG(determinants.size() == qr_num_pts(lf::base::RefEl::kTria()),
-                  "Mismatch " << determinants.size() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kTria()));
-    SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                      std::cout << "LOCVEC(Tria): Metric factors:\n"
-                                << determinants.transpose() << std::endl);
-    // Element vector
-    elem_vec_t vec(Nrsf_tria_);
-    vec.setZero();
+  // Obtain the metric factors for the quadrature points
+  const Eigen::VectorXd determinants(
+      geo_ptr->IntegrationElement(qr_points(ref_el)));
+  LF_ASSERT_MSG(
+      determinants.size() == qr_num_pts(ref_el),
+      "Mismatch " << determinants.size() << " <-> " << qr_num_pts(ref_el));
+  SWITCHEDSTATEMENT(ctrl_, kout_dets,
+                    std::cout << "LOCVEC(" << ref_el << "): Metric factors:\n"
+                              << determinants.transpose() << std::endl);
+  // Element vector
+  elem_vec_t vec(num_rsf(ref_el));
+  vec.setZero();
 
-    // Loop over quadrature points
-    for (int k = 0; k < Nqp_tria_; ++k) {
-      // Source function value at quadrature point
-      const auto fval = f_(mapped_qpts.col(k));
-      SWITCHEDSTATEMENT(
-          ctrl_, kout_loop,
-          std::cout << "LOCVEC(Tria): [" << qr_tria_.Points().col(k).transpose()
-                    << "] -> [" << mapped_qpts.col(k).transpose()
-                    << "], f = " << fval
-                    << ", weight = " << qr_tria_.Weights()[k] << std::endl);
-      // Contribution of current quadrature point
-      vec += (qr_tria_.Weights()[k] * determinants[k] * fval) *
-             rsf_quadpoints_tria_.col(k);
-    }
-    SWITCHEDSTATEMENT(ctrl_, kout_locvec,
-                      std::cout << "LOCVEC(Tria) = \n"
-                                << vec.transpose() << std::endl);
-    return vec;
-  } else if ((ref_el == lf::base::RefEl::kQuad()) && (Nrsf_quad_ > 0)) {
-    // Quadrature points in world coordinates
-    const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_quad_.Points()));
-    SWITCHEDSTATEMENT(ctrl_, kout_qpts,
-                      std::cout << "LOCVEC(Quad): Mapped quadrature points:\n"
-                                << mapped_qpts << std::endl);
-    LF_ASSERT_MSG(mapped_qpts.cols() == qr_num_pts(lf::base::RefEl::kQuad()),
-                  "Mismatch " << mapped_qpts.cols() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kQuad()));
-    // Obtain the metric factors for the quadrature points
-    const Eigen::VectorXd determinants(
-        geo_ptr->IntegrationElement(qr_quad_.Points()));
-    LF_ASSERT_MSG(determinants.size() == qr_num_pts(lf::base::RefEl::kQuad()),
-                  "Mismatch " << determinants.size() << " <-> "
-                              << qr_num_pts(lf::base::RefEl::kQuad()));
-    SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                      std::cout << "LOCVEC(Quad): Metric factors:\n"
-                                << determinants.transpose() << std::endl);
-    // Element vector
-    elem_vec_t vec(Nrsf_quad_);
-    vec.setZero();
+  auto fval = f_(cell, qr_points(ref_el));
 
-    // Loop over quadrature points
-    for (int k = 0; k < Nqp_quad_; ++k) {
-      // Source function value at quadrature point
-      const auto fval = f_(mapped_qpts.col(k));
-      SWITCHEDSTATEMENT(
-          ctrl_, kout_loop,
-          std::cout << "LOCVEC(Quad): [" << qr_quad_.Points().col(k).transpose()
-                    << "] -> [" << mapped_qpts.col(k).transpose()
-                    << "], f = " << fval
-                    << ", weight = " << qr_quad_.Weights()[k] << std::endl);
-      // Contribution of current quadrature point
-      vec += ((qr_quad_.Weights()[k] * determinants[k]) * fval) *
-             rsf_quadpoints_quad_.col(k);
-    }
-    SWITCHEDSTATEMENT(ctrl_, kout_locvec,
-                      std::cout << "LOCVEC(Quad) = \n"
-                                << vec.transpose() << std::endl);
-    return vec;
+  // Loop over quadrature points
+  for (int k = 0; k < determinants.size(); ++k) {
+    SWITCHEDSTATEMENT(ctrl_, kout_loop,
+                      std::cout
+                          << "LOCVEC: [" << qr_points(ref_el).col(k).transpose()
+                          << "] -> ["
+                          << "weight = " << qr_weights(ref_el)[k] << std::endl);
+    // Contribution of current quadrature point
+    vec += (qr_weights(ref_el)[k] * determinants[k] * fval[k]) *
+           rsf_at_quadpts(ref_el).col(k);
   }
-  LF_VERIFY_MSG(false,
-                "Entity type " << ref_el << " without FE specification!");
-  return Eigen::VectorXd(0);
+  SWITCHEDSTATEMENT(ctrl_, kout_locvec,
+                    std::cout << "LOCVEC = \n"
+                              << vec.transpose() << std::endl);
+  return vec;
 }
 
 /**
@@ -819,7 +709,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
-template <typename SCALAR, typename FUNCTOR>
+template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
@@ -843,11 +733,13 @@ class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
    */
   ScalarFEEdgeLocalLoadVector(
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_edge_p,
-      FUNCTOR g)
-      : LocCompLagrFEEdgePreprocessor(fe_edge_p), g_(g) {}
+      FUNCTOR g, EDGESELECTOR edge_sel = base::PredicateTrue{})
+      : LocCompLagrFEEdgePreprocessor(fe_edge_p), g_(g), edge_sel_(edge_sel) {}
 
   /** @brief Default implement: all edges are active */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  virtual bool isActive(const lf::mesh::Entity &cell) {
+    return edge_sel_(cell);
+  }
   /*
    * @brief Main method for computing the element vector
    *
@@ -858,8 +750,8 @@ class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
   ElemVec Eval(const lf::mesh::Entity &cell);
 
  private:
-  /** @brief An object providing the source function */
-  FUNCTOR g_;
+  FUNCTOR g_;              // source function
+  EDGESELECTOR edge_sel_;  // selects edges
 
  public:
   /*
@@ -873,16 +765,24 @@ class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
   static const unsigned int kout_qpts = 128;
 };
 
-template <typename SCALAR, typename FUNCTOR>
-unsigned int ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
+// deduction guide
+template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
+ScalarFEEdgeLocalLoadVector(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
+    ->ScalarFEEdgeLocalLoadVector<typename PTR::element_type::Scalar, FUNCTOR,
+                                  EDGESELECTOR>;
+
+template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
+unsigned int ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR, EDGESELECTOR>::ctrl_ =
+    0;
 
 // Eval() method
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename FUNCTOR>
-typename ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
-ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::Eval(
+template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
+typename ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR,
+                                     EDGESELECTOR>::ElemVec const
+ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{edge.RefEl()};
@@ -906,76 +806,16 @@ ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>::Eval(
   elem_vec_t vec(Nrsf_);
   vec.setZero();
 
+  auto g_vals = g_(edge, qr_.Points());
+
   // Loop over quadrature points
   for (int k = 0; k < Nqp_; ++k) {
-    // Evaluate coefficient at quadrature points on physical edge
-    const auto gvals = g_(mapped_qpts.col(k));
-
     // Add contribution of quadrature point to local vector
-    const auto w = (qr_.Weights()[k] * determinants[k]) * gvals;
+    const auto w = (qr_.Weights()[k] * determinants[k]) * g_vals[k];
     vec += rsf_quadpoints_.col(k) * w;
   }
   return vec;
 }
-
-/** @brief Builder class for local edge local vector with additional selection
- *         of relevant edges
- *
- * @tparam EDGESELECTOR predicate type `std::function<bool(const Entity &)>`
- *
- * @sa ScalarFEEdgeLocalLoadVector
- */
-template <typename SCALAR, typename FUNCTOR, typename EDGESELECTOR>
-class ScalarFESelectEdgeLocalLoadVector
-    : public ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR> {
- public:
-  using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
-  using ElemMat = const elem_mat_t;
-  using coeff_t = typename std::invoke_result<FUNCTOR, Eigen::VectorXd>::type;
-
-  /** @defgroup
-      @brief standard constructors
-     * @{ */
-  ScalarFESelectEdgeLocalLoadVector(const ScalarFESelectEdgeLocalLoadVector &) =
-      delete;
-  ScalarFESelectEdgeLocalLoadVector(ScalarFESelectEdgeLocalLoadVector &&) =
-      default;
-  ScalarFESelectEdgeLocalLoadVector &operator=(
-      const ScalarFESelectEdgeLocalLoadVector &) = delete;
-  ScalarFESelectEdgeLocalLoadVector &operator=(
-      ScalarFESelectEdgeLocalLoadVector &&) = default;
-  /** @} */
-  /**
-   * @brief Constructor performing cell-independent initializations
-   *
-   * @param fe_edeg_p point to FE specification for a segment
-   * @param g data function through functor object
-   * @param edge_selector predicate object selecting active to be covered in the
-   * assembly
-   */
-  ScalarFESelectEdgeLocalLoadVector(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p,
-      FUNCTOR g, EDGESELECTOR edge_selector)
-      : ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR>(fe_edge_p, g),
-        edge_sel_(edge_selector) {}
-
-  /**
-   * @brief If true, then an edge is taken into account during assembly
-   *
-   * The information about "active" edges is supplied through the
-   * `edge_selector` argument of the constructor.
-   */
-  bool isActive(const lf::mesh::Entity &edge) override {
-    LF_ASSERT_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
-                  "Wrong type for an edge");
-    return edge_sel_(edge);
-  }
-
- private:
-  /** @brief Predicate telling whether an edge should be taken into account
-     during the assembly of the local vector */
-  EDGESELECTOR edge_sel_;
-};
 
 }  // namespace lf::fe
 

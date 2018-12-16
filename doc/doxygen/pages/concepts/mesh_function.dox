@@ -1,29 +1,30 @@
 /**
-@page mesh_function MeshFunction
+@defgroup mesh_function MeshFunction
 
 ## Description
 
 A mesh function is a function object that can be evaluated at any point on the mesh.
 
-Conceptually, a mesh function assigns to every point on the mesh an object such as a `double` or an `Eigen::Matrix2d`.
+Conceptually, a mesh function assigns to every point on the mesh an object of type `R` (e.g. `double` or an `Eigen::Matrix2d`).
 
 For efficiency reasons, a mesh function is normally evaluated at a number of points at once.
 Hence a mesh function must overload the bracket operator as follows:
 ```
-std::vector<T> operator()(const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const
+std::vector<R> operator()(const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const
 ```
 Here 
 - `e` is a \ref lf::mesh::Entity "mesh entity"
 - `local` is a matrix of size `(e.RefEl().Dimension()) x NumPoints` and lists the local coordinates of the evaluation points (with respect to the reference element `e.RefEl()`).
-- `T` is more or less arbitrary type such as a `double` or a `Eigen::Matrix2d`
+- `R` is more or less arbitrary type such as a `double` or a `Eigen::Matrix2d`
 
-The return type of `operator()` is a `std::vector` with `NumPoints` length.
+The return type of `operator()` is a `std::vector<R>` with `NumPoints` length.
 
 ## Requirements
 
 The type `MF` satisfies `MeshFunction` if
 
 Given
+- `R`, the type of objects returned by the mesh function
 - `e`, a mesh entity of type `lf::mesh::Entity`,
 - `local`, a set of local coordinates of type `Eigen::MatrixXd`
 - `a`, `b` objects of type `MF`
@@ -36,6 +37,10 @@ the following expressions are valid:
 <tr> <td> `MF(std::move(a))` <td> `MF`      <td> "steals" `a` to create a new MeshFunction
 <tr> <td> `a(e, local)` <td> `std::vector<T>` <td>Evaluates mesh function at points `local`
 </table>
+
+## Usage scenarios
+The concept of a MeshFunction is used widely in the `lf::fe` module:
+- Assembler classes such as lf::fe::ScalarFEEdgeLocalLoadVector or lf::fe::LagrangeFEEllBVPElementMatrix accept MeshFunctions that describe coefficients or source functions.
 
 
 */

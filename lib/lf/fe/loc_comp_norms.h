@@ -42,20 +42,25 @@ namespace lf::fe {
  * ### Use case
  *
  * ~~~
- *   LocalL2NormDifference loc_comp(
+ *   MeshFunctionL2NormDifference loc_comp(
  *     fe_space.ShapeFunctionLayout(kTria), fe_space.ShapeFunctionLayout(kQuad),
  *      [](auto x) { return (x[0] * (1.0 - x[1])); }, quad_order);
  * ~~~
  */
 template <typename FUNCTOR>
-class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
+class MeshFunctionL2NormDifference : public LocCompLagrFEPreprocessor {
+  static_assert(isMeshFunction<FUNCTOR>);
+
  public:
   /** @brief standard constructors */
   /** @{ */
-  LocalL2NormDifference(const LocalL2NormDifference &) = delete;
-  LocalL2NormDifference(LocalL2NormDifference &&) noexcept = default;
-  LocalL2NormDifference &operator=(const LocalL2NormDifference &) = delete;
-  LocalL2NormDifference &operator=(LocalL2NormDifference &&) = default;
+  MeshFunctionL2NormDifference(const MeshFunctionL2NormDifference &) = delete;
+  MeshFunctionL2NormDifference(MeshFunctionL2NormDifference &&) noexcept =
+      default;
+  MeshFunctionL2NormDifference &operator=(
+      const MeshFunctionL2NormDifference &) = delete;
+  MeshFunctionL2NormDifference &operator=(MeshFunctionL2NormDifference &&) =
+      default;
   /** @} */
 
   /** @brief Constructor
@@ -72,7 +77,7 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
    * @note NULL pointers amy be passed, if evaluations for the
    *       corresponding cell type are never requested.
    */
-  LocalL2NormDifference(
+  MeshFunctionL2NormDifference(
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
       FUNCTOR u, lf::quad::quadOrder_t loc_quad_order = 0)
@@ -115,12 +120,12 @@ class LocalL2NormDifference : public LocCompLagrFEPreprocessor {
 
 // Initialization of control variable
 template <typename FUNCTOR>
-unsigned int LocalL2NormDifference<FUNCTOR>::ctrl_ = 0;
+unsigned int MeshFunctionL2NormDifference<FUNCTOR>::ctrl_ = 0;
 
 template <typename FUNCTOR>
 template <typename DOFVECTOR>
-double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
-                                                  const DOFVECTOR &dofs) {
+double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
+    const lf::mesh::Entity &cell, const DOFVECTOR &dofs) {
   using dof_t = typename DOFVECTOR::value_type;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
@@ -155,10 +160,11 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
                   << determinants.transpose() << std::endl);
 
   double sum = 0.0;  // summation variable
+
+  auto uvals = u_(cell, qr_Points);
+
   // Loop over quadrature points
   for (int k = 0; k < qr_NumPts; ++k) {
-    // Comparison function value at quadrature point
-    const auto uval = u_(mapped_qpts.col(k));
     // Value of finite element function at quadrature point
     // Loop over local shape functions/dofs to compute the value of
     // the finite element function in the quadrature point
@@ -167,12 +173,12 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
       uh_val += rsf_QuadPts(j, k) * dofs[j];
     }
     // form the difference
-    uh_val -= uval;
+    uh_val -= uvals[k];
     // sum the quared modulus weighted with quadrature weight and metric factor
     sum += qr_Weights[k] * determinants[k] * std::fabs(uh_val * uh_val);
     SWITCHEDSTATEMENT(ctrl_, kout_comp,
                       std::cout << "\t @ " << (mapped_qpts.col(k)).transpose()
-                                << ": uh = " << uh_val << ", u = " << uval
+                                << ": uh = " << uh_val << ", u = " << uvals[k]
                                 << std::endl);
   }
   SWITCHEDSTATEMENT(ctrl_, kout_comp,
@@ -183,6 +189,7 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
 // **********************************************************************
 
 /**
+ * @ingroup mesh_function
  * @brief Class for the local computation of the L2 norm of the difference of
  *        the _gradient_ of a Lagrangian finite element function and a
  *        generic vector field
@@ -206,19 +213,21 @@ double LocalL2NormDifference<FUNCTOR>::operator()(const lf::mesh::Entity &cell,
  * ~~~
  */
 template <typename VEC_FUNC>
-class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
- public:
-  /** @brief type of return value of generic function */
-  using vecval_t = typename std::invoke_result<VEC_FUNC, Eigen::Vector2d>::type;
+class MeshFunctionL2GradientDifference : public LocCompLagrFEPreprocessor {
+  static_assert(isMeshFunction<VEC_FUNC>);
 
+ public:
   /** defgroup stdc
    * @brief standard constructors
    * @{ */
-  LocL2GradientFEDifference(const LocL2GradientFEDifference &) = delete;
-  LocL2GradientFEDifference(LocL2GradientFEDifference &&) noexcept = default;
-  LocL2GradientFEDifference &operator=(const LocL2GradientFEDifference &) =
+  MeshFunctionL2GradientDifference(const MeshFunctionL2GradientDifference &) =
       delete;
-  LocL2GradientFEDifference &operator=(LocL2GradientFEDifference &&) = default;
+  MeshFunctionL2GradientDifference(
+      MeshFunctionL2GradientDifference &&) noexcept = default;
+  MeshFunctionL2GradientDifference &operator=(
+      const MeshFunctionL2GradientDifference &) = delete;
+  MeshFunctionL2GradientDifference &operator=(
+      MeshFunctionL2GradientDifference &&) = default;
   /** @} */
 
   /** @brief Constructor
@@ -235,7 +244,7 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
    * @note NULL pointers amy be passed, if evaluations for the
    *       corresponding cell type are never requested.
    */
-  LocL2GradientFEDifference(
+  MeshFunctionL2GradientDifference(
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
       VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order = 0)
@@ -279,11 +288,11 @@ class LocL2GradientFEDifference : public LocCompLagrFEPreprocessor {
 
 // Initialization of control variable
 template <typename VEC_FUNC>
-unsigned int LocL2GradientFEDifference<VEC_FUNC>::ctrl_ = 0;
+unsigned int MeshFunctionL2GradientDifference<VEC_FUNC>::ctrl_ = 0;
 
 template <typename VEC_FUNC>
 template <typename DOFVECTOR>
-double LocL2GradientFEDifference<VEC_FUNC>::operator()(
+double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
     const lf::mesh::Entity &cell, const DOFVECTOR &dofs) {
   using dof_t = typename DOFVECTOR::value_type;
   // Topological type of the cell
@@ -326,12 +335,11 @@ double LocL2GradientFEDifference<VEC_FUNC>::operator()(
                   << determinants.transpose() << std::endl);
 
   double sum = 0.0;  // summation variable
+
+  auto vfval = vecfield_(cell, qr_Points);
+
   // Loop over quadrature points
   for (int k = 0; k < qr_NumPts; ++k) {
-    // Value of the vector field at quadrature point
-    const auto vfval = vecfield_(mapped_qpts.col(k));
-    LF_ASSERT_MSG(vfval.size() == world_dim, "Vector length mismatch");
-
     // Value of the gradient of the finite element function at quadrature point
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
@@ -345,7 +353,7 @@ double LocL2GradientFEDifference<VEC_FUNC>::operator()(
     }
     // form the difference
     for (int l = 0; l < world_dim; ++l) {
-      grad_uh_val[l] -= vfval[l];
+      grad_uh_val[l] -= vfval[k][l];
     }
     // sum the quared modulus weighted with quadrature weight and metric factor
     sum += qr_Weights[k] * determinants[k] * grad_uh_val.squaredNorm();
@@ -353,8 +361,8 @@ double LocL2GradientFEDifference<VEC_FUNC>::operator()(
     SWITCHEDSTATEMENT(ctrl_, kout_comp,
                       std::cout << "\t @ " << (mapped_qpts.col(k)).transpose()
                                 << ": grad uh = [" << grad_uh_val.transpose()
-                                << "[, vf = [" << vfval[0] << ' ' << vfval[1]
-                                << "]" << std::endl);
+                                << "[, vf = [" << vfval[k][0] << ' '
+                                << vfval[k][1] << "]" << std::endl);
     // clang-format on
   }
   SWITCHEDSTATEMENT(ctrl_, kout_comp,

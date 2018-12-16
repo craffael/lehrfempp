@@ -44,17 +44,17 @@ TEST(lf_gfe, lf_gfe_l2norm) {
 
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
-  LocalL2NormDifference loc_comp(
+  MeshFunctionL2NormDifference loc_comp(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
+      MeshFunctionGlobal([](auto x) { return (x[0] * (1.0 - x[1])); }), 4);
   // loc_comp.ctrl_ = 255;
 
   /*
   // Alternative implementation
   // Function whose L2 should be computed; a generic lambda here
   auto u = [](auto x) { return (x[0] * (1.0 - x[1])); };
-   LocalL2NormDifference<decltype(u)> loc_comp(
+   MeshFunctionL2NormDifference<decltype(u)> loc_comp(
         fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(),
         [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
   */
@@ -86,9 +86,8 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
-      fe_space, [](auto x) -> double { return 0.0; },
-      [](auto x) -> double { return 1.0; }, A);
+  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(fe_space, MeshFunctionConstant(0.0),
+                                            MeshFunctionConstant(1.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
@@ -105,10 +104,10 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   // Directly compute L2 norm of FE function
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
-  LocalL2NormDifference loc_comp(
+  MeshFunctionL2NormDifference loc_comp(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) -> double { return 0.0; });
+      MeshFunctionConstant(0.0));
 
   const double normsq_direct =
       std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
@@ -138,9 +137,8 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
-      fe_space, [](auto x) -> double { return 1.0; },
-      [](auto x) -> double { return 0.0; }, A);
+  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(fe_space, MeshFunctionConstant(1.0),
+                                            MeshFunctionConstant(0.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
@@ -156,10 +154,10 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
 
   // Directly compute H1 seminorm of FE function
   // Helper object for computation of norm
-  LocL2GradientFEDifference loc_comp(
+  MeshFunctionL2GradientDifference loc_comp(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return Eigen::Vector2d::Zero(2); });
+      MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0)));
 
   const double normsq_direct =
       std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
@@ -190,10 +188,12 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
 
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
-  LocL2GradientFEDifference loc_comp(
+  MeshFunctionL2GradientDifference loc_comp(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); }, 4);
+      MeshFunctionGlobal(
+          [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); }),
+      4);
   // loc_comp.ctrl_ = 255;
 
   // Actual compuation of norm
@@ -213,7 +213,7 @@ TEST(lf_gfe, lf_gfe_lintp) {
       std::make_shared<QuadLinearLagrangeFE<double>>());
 
   auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
-  auto coeffvec{NodalProjection(fe_space, u)};
+  auto coeffvec{NodalProjection(fe_space, MeshFunctionGlobal(u))};
 
   // Local-to-global index mapped
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
@@ -263,8 +263,8 @@ TEST(lf_gfe, set_dirbdc) {
     return (x[0] * x[0] + x[1] * x[1]);
   };
 
-  auto flag_val_vec(InitEssentialConditionFromFunction(dofh, *fe_spec_edge_p,
-                                                       bd_edge_sel, g));
+  auto flag_val_vec(InitEssentialConditionFromFunction(
+      dofh, *fe_spec_edge_p, bd_edge_sel, MeshFunctionGlobal(g)));
   // Checking agreement of values
   for (lf::assemble::gdof_idx_t j = 0; j < flag_val_vec.size(); ++j) {
     const lf::mesh::Entity &node{dofh.Entity(j)};
@@ -287,13 +287,14 @@ TEST(lf_gfe, set_dirbdc) {
 }
 
 // check whether linear function is interpolated exactly
-  bool checkInterpolationLinear(const UniformScalarFiniteElementSpace<double> &fe_space) {
+bool checkInterpolationLinear(
+    const UniformScalarFiniteElementSpace<double> &fe_space) {
   // Model linear function
-  auto u = [](auto x) { return (x[0] - 2 * x[1]); };
+  auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
   auto coeffvec{NodalProjection(fe_space, u)};
   // Helper class for error computation
-  LocalL2NormDifference loc_comp(
+  MeshFunctionL2NormDifference loc_comp(
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
       fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), u, 4);
   // Actual compuation of error norm
@@ -332,12 +333,13 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
   std::cout << multi_mesh;
 
   // Function
-  auto f = [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); };
-  auto grad_f = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+  auto f = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
+  auto grad_f = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (std::exp(x[0] * x[1]) *
             (Eigen::Vector2d() << x[1], x[0]).finished())
         .eval();
-  };
+  });
 
   auto errs{InterpolationErrors(
       multi_mesh, f, grad_f, std::make_shared<TriaLinearLagrangeFE<double>>(),

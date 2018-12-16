@@ -90,6 +90,10 @@ class ScalarReferenceFiniteElement {
       ScalarReferenceFiniteElement&&) noexcept = default;
 
  public:
+
+  /** @brief The scalar type of the shape function */
+  using Scalar = SCALAR;
+
   /**
    * @brief Constructor setting topological type and degree
    *
