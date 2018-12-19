@@ -6,6 +6,7 @@
 # include <sstream>
 # include <map>
 # include <stdexcept>
+# include <boost/spirit/home/support/detail/hold_any.hpp>
 # include <boost/program_options.hpp>
 # include <boost/program_options/options_description.hpp>
 # include <boost/algorithm/string/split.hpp>
@@ -21,21 +22,54 @@
 
 namespace lf::base {
 
+namespace bs = boost::spirit; // faster, templated version of boost::any
 namespace po = boost::program_options; // keep in lf::base to avoid conflicts
 
 namespace comm {
 
 namespace variables {
 
-extern std::map<std::string, int> kGlobalVars;
+// (key, (value, comment)) = (string, (hold_any, string))
+extern std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
-extern void Add(const std::string&, const int);
+template <typename T>
+void Add(const std::string&, const T&, const std::string& comment = "");
 
-extern int Get(const std::string&);
+template <typename T>
+T Get(const std::string&);
+
+extern void ListVariables();
 
 extern bool IsSet(const std::string&);
 
 extern bool Remove(const std::string&);
+
+/**
+ * @brief Add a the value `value` to the global variables with key `key` Handle
+ *        description `comment`.
+ * @param key The key of the variable.
+ * @param value The value.
+ * @param comment (optional) Description of the variable.
+ */
+template <typename T>
+void Add(const std::string& key, const T& value, const std::string& comment) {
+  kGlobalVars[key] = std::make_pair(bs::hold_any(value), comment);
+}
+
+/**
+ * @brief Get the value of the variable `key`.
+ * @param key The key of the variable.
+ * @note Throws an invalid_argument exception if `key` doens't exist.
+ */
+template <typename T>
+T Get(const std::string& key) {
+  if (kGlobalVars.count(key)) {
+    return bs::any_cast<T>(kGlobalVars[key].first);
+  }
+  else {
+    throw std::invalid_argument("The key " + key + " couldn't be found.");
+  }
+}
 
 } // namespace variables
 
@@ -89,9 +123,6 @@ extern bool IsSet(const std::string&);
 extern void ParseCommandLine(int argc = 0, char** argv = nullptr);
 
 extern void ParseFile(const std::string& file = "");
-
-extern bool MakeGlobal(const std::string& name);
-
 
 /**
  * @brief Add possible input for variable called `name` with description

@@ -6,31 +6,17 @@ namespace comm {
 
 namespace variables {
 
-std::map<std::string, int> kGlobalVars;
+std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
-/**
- * @brief Add (key, value) pair to kGlobalVars map.
- * @param key The key of the (key, value) pair.
- * @param value The value of the (key, value) pair.
- */
-void Add(const std::string& key, const int value) {
-  kGlobalVars[key] = value;
-}
-
-/**
- * @brief Get value to corresponding to key.
- * @param key The key of the (key, value) pair.
- * @return The value of the (key, value) pair.
- * @note: Throws error if key is not found. Use with cv::IsSet to avoid
- *        errors: if cv::IsSet(key) { val = cv::Get(key); }
- */
-int Get(const std::string& key) {
-  auto it = kGlobalVars.find(key);
-  if (it != kGlobalVars.end()) {
-    return it->second;
+void ListVariables() {
+  for (auto const& el : kGlobalVars) {
+    std::string key = el.first;
+    auto val = el.second; // nested pairs. Clearer than el.second.second.
+    std::cout << key << " = " << val.first;
+    if (val.second != "") // if description not empty
+      std::cout << " : " << val.second;
+    std::cout << "\n";
   }
-  throw "The key " + key + " couldn't be found.";
-  return 0; // against compiler warnings
 }
 
 /**
@@ -340,29 +326,6 @@ void ParseFile(const std::string& file) {
   }
 }
 
-/**
- * @brief Make a int-variable global in the sense of cv::Add
- * @param name The name of the variable, as specified in ci::Add
- * @return true, if the variable existed and is int, false otherwise.
- */
-bool MakeGlobal(const std::string& name) {
-  if (IsSet(name)) {
-    int val;
-    try {
-      val = Get<int>(name);
-    }
-    catch (const boost::bad_any_cast& e) {
-      // Get calls vm[name].as<int>, which throws a bad_any_cast
-      // error, if the types mismatch (hence no int)
-      return false;
-    }
-    cv::Add(name, val); // int version of Add
-  }
-  else {
-    std::cout << "Variable " << name << " is not set, cannot make it global.\n";
-    return false;
-  }
-}
 
 } // namespace input
 
