@@ -5,11 +5,8 @@
 using namespace lf::base;
 
 void sub() {
-  cc::Debug(0, "Sub: A level 0 debug message");
-  cc::Debug(10, "Sub: A level 10 debug message");
-
-  std::cout << "Sub: x = " << cv::Get("x") << "\n";
-  std::cout << "Sub: y = " << cv::Get("y") << "\n";
+  std::cout << "Sub: x = " << cv::Get<int>("x") << "\n";
+  std::cout << "Sub: y = " << cv::Get<std::string>("y") << "\n";
 }
 
 int main(int argc, char** argv) {
@@ -50,8 +47,6 @@ int main(int argc, char** argv) {
   if (ci::Help())  // print help & var names, if -h was specified
     return 0;      // and stop here! No need to go through the program :)
 
-  ci::MakeGlobal("v1"); // v1 is int, like this we set it as global variable
-
   if (verbose)
     std::cout << "Verbosity on.\n";
   else
@@ -71,15 +66,10 @@ int main(int argc, char** argv) {
   std::cout << "Value of v4 is " << ci::Get<std::string>("v4", "empty") << "\n";
   // std::cout << ci::Get<double>("v5") << "\n"; // invalid_argument exception!
 
-  // debug messages of different levels
-  cc::Debug(0, "A level 0 debug message.");
-  cc::Debug(1, "A level 1 debug message.");
-  cc::Debug(2, "A level 2 debug message.");
-
   // global variables
   cv::Add("x", 2);
-  cv::Add("y", -100);
-  std::cout << "Globally set 'x'=2 and 'y'=-100\n";
+  cv::Add("y", std::string("Applepie."));
+  std::cout << "Globally set x=2 and y='Applepie.'\n";
 
   // the global variables are also accesible from othre functions & files
   sub();
