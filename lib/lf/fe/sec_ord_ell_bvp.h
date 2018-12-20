@@ -15,9 +15,8 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
-#include "fe_tools.h"
-#include "loc_comp_ellbvp.h"
 
 namespace lf::fe {
 /**
@@ -122,11 +121,13 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
   FUNCTOR_H h_;
 };
 
-/** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
-CONTROLDECLAREINFO(
-    LFELinSys_ctrl, "LFELinSys_ctrl",
-    "Output control variable for function SecOrdEllBVPLagrFELinSys()");
-static const unsigned int kLFELinSys_bdinfo = 2;
+// TODO(ralfh) Putting this into a header file leads to multiple definitions of
+// the same symbol!!!
+// /** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
+// CONTROLDECLAREINFO(
+//     LFELinSys_ctrl, "LFELinSys_ctrl",
+//     "Output control variable for function SecOrdEllBVPLagrFELinSys()");
+// static const unsigned int kLFELinSys_bdinfo = 2;
 
 /**
  * @brief Builds finite element linear system of equations for a second-order
@@ -175,11 +176,13 @@ SecOrdEllBVPLagrFELinSys(
       }
     }
   }
-  SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
-                    std::cout << "B.c.: " << no_Dirichlet_edges
-                              << " Dirichlet edges, " << no_Neumann_edges
-                              << " Neumann edges, " << no_impedance_edges
-                              << " impedance edges" << std::endl);
+
+  // TODO(ralfh): Fix this once LFELinSys_ctrl has been fixed.
+  // SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
+  //                   std::cout << "B.c.: " << no_Dirichlet_edges
+  //                             << " Dirichlet edges, " << no_Neumann_edges
+  //                             << " Neumann edges, " << no_impedance_edges
+  //                             << " impedance edges" << std::endl);
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NoDofs());
@@ -190,15 +193,19 @@ SecOrdEllBVPLagrFELinSys(
   // First the volume part for the bilinear form
   lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
       fe_space,
-      [&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
+      MeshFunctionGlobal([&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
         return (bvp_p->alpha(x));
-      },
-      [&bvp_p](auto x) -> double { return (bvp_p->gamma(x)); }, A);
+      }),
+      MeshFunctionGlobal(
+          [&bvp_p](auto x) -> double { return (bvp_p->gamma(x)); }),
+      A);
   // Update with potential contributions from edges (Impedance boundary
   // conditions)
   if (no_impedance_edges > 0) {
     lf::fe::SecOrdBVPLagrFEBoundaryGalMat(
-        fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->eta(x)); },
+        fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
+          return (bvp_p->eta(x));
+        }),
         [&bvp_p](const lf::mesh::Entity& edge) -> bool {
           return (!bvp_p->EssentialConditionsOnEdge(edge)) &&
                  (bvp_p->IsImpedanceEdge(edge));
@@ -212,11 +219,15 @@ SecOrdEllBVPLagrFELinSys(
 
   // Assemble volume part of right-hand side vector depending on the function f
   lf::fe::LagrFEVolumeRightHandSideVector(
-      fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->f(x)); }, phi);
+      fe_space,
+      MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR { return (bvp_p->f(x)); }),
+      phi);
   // Add contributions from Neumann and impedance edges
   if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
     lf::fe::LagrFEBoundaryRightHandSideVector(
-        fe_space, [&bvp_p](auto x) -> SCALAR { return (bvp_p->h(x)); },
+        fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
+          return (bvp_p->h(x));
+        }),
         [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && (!bvp_p->EssentialConditionsOnEdge(edge)));
         },
@@ -235,7 +246,8 @@ SecOrdEllBVPLagrFELinSys(
         [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && bvp_p->EssentialConditionsOnEdge(edge));
         },
-        [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); })};
+        MeshFunctionGlobal(
+            [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); }))};
     // Eliminate Dirichlet dofs from linear system
     lf::assemble::fix_flagged_solution_components<SCALAR>(
         [&ess_bdc_flags_values](glb_idx_t gdof_idx) {

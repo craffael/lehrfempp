@@ -21,7 +21,7 @@
 #include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 
-#define REFLEV 7
+#define REFLEV 5
 
 namespace lf::fe::test {
 
@@ -93,11 +93,11 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
     Eigen::VectorXd sol_vec = solver.solve(phi);
     // Compute error norms
     // Helper class for L2 error computation
-    LocalL2NormDifference lc_L2(
+    MeshFunctionL2NormDifference lc_L2(
         fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
         fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), solution);
     // Helper class for H1 semi norm
-    LocL2GradientFEDifference lc_H1(
+    MeshFunctionL2GradientDifference lc_H1(
         fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
         fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), sol_grad);
 
@@ -163,23 +163,23 @@ class MixedEllipticBVP : public SecondOrderEllipticBVP<double> {
 
 TEST(lfe_bvpfe, bvp_DirNeu) {
   // Set debugging flags
-  LFELinSys_ctrl = 255;
+  // LFELinSys_ctrl = 0;
   // The solution and its gradient
-  auto u = [](Eigen::Vector2d x) -> double {
+  auto u = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (0.5 * std::log(x.squaredNorm() + 1.0));
-  };
-  auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+  });
+  auto grad_u = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (1.0 / (x.squaredNorm() + 1.0)) * x;
-  };
+  });
   auto bvp_p = std::make_shared<MixedEllipticBVP>();
   auto errnorms = TestConvergenceEllBVPFESol(REFLEV, bvp_p, u, grad_u);
 
-  std::array<double,8> exp_l2err{0.025494,    0.00736786,  0.0019407,
-                                0.000493379, 0.000123978, 3.10413e-05,
-                                7.76373e-06, 1.94118e-06};
-  std::array<double,8> exp_h1serr{0.104398,   0.0565337,  0.0290143,
-                                 0.014624,   0.00732936, 0.00366718,
-                                 0.00183394, 0.00091702};
+  std::array<double, 8> exp_l2err{0.025494,    0.00736786,  0.0019407,
+                                  0.000493379, 0.000123978, 3.10413e-05,
+                                  7.76373e-06, 1.94118e-06};
+  std::array<double, 8> exp_h1serr{0.104398,   0.0565337,  0.0290143,
+                                   0.014624,   0.00732936, 0.00366718,
+                                   0.00183394, 0.00091702};
 
   int k = 0;
   for (auto& err : errnorms) {

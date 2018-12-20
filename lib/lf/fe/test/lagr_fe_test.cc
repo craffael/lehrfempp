@@ -21,6 +21,8 @@
 #include "lf/fe/loc_comp_ellbvp.h"
 
 #include <lf/mesh/utils/utils.h>
+#include "lf/fe/mesh_function_constant.h"
+#include "lf/fe/mesh_function_global.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 
 namespace lf::fe::test {
@@ -202,8 +204,8 @@ TEST(lf_fe, lf_fe_ellbvp) {
       std::make_shared<QuadLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
-  auto alpha = [](Eigen::Vector2d) -> double { return 1.0; };
-  auto gamma = [](Eigen::Vector2d) -> double { return 0.0; };
+  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
+  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
       comp_elem_mat{tlfe_p, qlfe_p, alpha, gamma};
   // Set debugging flags
@@ -240,8 +242,8 @@ TEST(lf_fe, lf_fe_edgemass) {
       std::make_shared<SegmentLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
-  auto gamma = [](Eigen::Vector2d) -> double { return 1.0; };
-  LagrangeFEEdgeMassMatrix<double, decltype(gamma)> comp_elem_mat{fe_p, gamma};
+  auto gamma = MeshFunctionConstant(1.0);
+  LagrangeFEEdgeMassMatrix comp_elem_mat(fe_p, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -277,7 +279,8 @@ TEST(lf_fe, lf_fe_loadvec) {
       std::make_shared<QuadLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
-  auto f = [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); };
+  auto f = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
   using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
 
   // Set debugging flags
@@ -317,8 +320,8 @@ TEST(lf_fe, lf_fe_edgeload) {
       std::make_shared<SegmentLinearLagrangeFE<double>>()};
 
   // Set up objects taking care of local computations
-  auto g = [](Eigen::Vector2d) -> double { return 1.0; };
-  ScalarFEEdgeLocalLoadVector<double, decltype(g)> comp_elem_vec{fe_p, g};
+  auto g = MeshFunctionConstant(1.0);
+  ScalarFEEdgeLocalLoadVector comp_elem_vec{fe_p, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
