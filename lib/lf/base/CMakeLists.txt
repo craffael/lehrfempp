@@ -19,7 +19,7 @@ set(sources
 )
 
 lf_add_library(lf.base ${sources})
-target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost)
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options)
 
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)
