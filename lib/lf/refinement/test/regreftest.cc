@@ -372,7 +372,8 @@ void test_hybrid_2d_meshes(int selector) {
       (selector >= 0) &&
           (selector <= lf::mesh::test_utils::GenerateHybrid2DTestMesh_maxsel),
       "Illegal selector value " << selector);
-  std::cout << "<<< Mixed refinement test for test mesh " << selector << std::endl;
+  std::cout << "<<< Mixed refinement test for test mesh " << selector
+            << std::endl;
 
   // Generate one of the standard 2D hybrid test meshes
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
@@ -433,24 +434,23 @@ TEST(LocRefTest, mixed_ref_0) {
 TEST(LocRefTest, mixed_ref_1) {
   test_hybrid_2d_meshes(1);
 }  // end mixed refinement test 1
-  
-  TEST(LocRefTest, mixed_ref_2) {
+
+TEST(LocRefTest, mixed_ref_2) {
   test_hybrid_2d_meshes(2);
 }  // end mixed refinement test 2
 
-  TEST(LocRefTest, mixed_ref_3) {
+TEST(LocRefTest, mixed_ref_3) {
   test_hybrid_2d_meshes(3);
 }  // end mixed refinement test 3
 
-  TEST(LocRefTest, mixed_ref_4) {
+TEST(LocRefTest, mixed_ref_4) {
   test_hybrid_2d_meshes(4);
 }  // end mixed refinement test 4
 
-  TEST(LocRefTest, mixed_ref_5) {
+TEST(LocRefTest, mixed_ref_5) {
   test_hybrid_2d_meshes(5);
 }  // end mixed refinement test 5
 
-  
 TEST(LocRefTest, AffMeshRef) {
   lf::mesh::Entity::output_ctrl_ = 1;
   std::cout << "TEST: Refinement of an affine mesh" << std::endl;

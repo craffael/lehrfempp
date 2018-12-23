@@ -6,10 +6,10 @@
  */
 
 #include <sstream>
+#include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
-#include "lf/io/io.h"
 
 int main() {
   using lf::mesh::utils::TikzOutputCtrl;
@@ -33,7 +33,7 @@ int main() {
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
             TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
             TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips);
-    
+
     // Matlab output
     std::stringstream filename_matlab;
     filename_matlab << "test_mesh_" << selector << ".m";
