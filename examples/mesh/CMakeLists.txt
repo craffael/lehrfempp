@@ -19,7 +19,7 @@ target_link_libraries(examples.mesh.structured_mesh_demo PUBLIC Eigen3::Eigen
 set(test_mesh_output_sources test_mesh_output_demo.cc)
 add_executable(lf.examples.mesh.test_mesh_output_demo ${test_mesh_output_sources})
 target_link_libraries(lf.examples.mesh.test_mesh_output_demo PUBLIC Eigen3::Eigen
-  Boost::boost GTest::main lf.mesh.hybrid2d lf.mesh.test_utils lf.mesh.utils)
+  Boost::boost GTest::main lf.mesh.hybrid2d lf.mesh.test_utils lf.mesh.utils lf.io)
 target_compile_features(lf.examples.mesh.test_mesh_output_demo PUBLIC cxx_std_17)
 
 

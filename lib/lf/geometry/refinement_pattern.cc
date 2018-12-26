@@ -17,11 +17,12 @@
 namespace lf::geometry {
 bool isParallelogram(
     const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &polygon) {
+  LF_ASSERT_MSG(polygon.rows() == 2, "Only planar polygons supported");
   // A parallelogram must have four vertices
   if (polygon.cols() != 4) {
     return false;
   }
-  return ((polygon * (Eigen::Vector4i() << 1, -1, -1, 1).finished())
+  return ((polygon * (Eigen::Vector4i() << 1, -1, 1, -1).finished())
               .squaredNorm() == 0);
 }
 }  // namespace lf::geometry
