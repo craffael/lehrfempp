@@ -1,7 +1,11 @@
 
 include(GoogleTest)
 
-set(sources geometry_tests.cc point_tests.cc quad_test.cc)
+set(sources 
+  geometry_tests.cc 
+  #point_tests.cc 
+  #quad_test.cc
+)
 
 add_executable(lf.geometry.test ${sources})
 target_link_libraries(lf.geometry.test
