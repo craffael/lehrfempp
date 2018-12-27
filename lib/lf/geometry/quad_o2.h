@@ -12,12 +12,16 @@
 #include "geometry_interface.h"
 
 namespace lf::geometry {
+
+/**
+ * @brief A second-order quadrilateral in the plane or in 3D space
+ */
 class QuadO2 : public Geometry {
  public:
   /**
-   * @brief Constructor build quadrilateral from vertex coordinates
+   * @brief Constructor building quadrilateral from vertex/midpoint coordinates
    * @param coords w x 8 matrix, w = world dimension, whose columns contain the
-   *        world coordinates of the vertices
+   *        world coordinates of the vertices/midpoints
    */
   explicit QuadO2(Eigen::Matrix<double, Eigen::Dynamic, 8> coords);
 
@@ -32,7 +36,7 @@ class QuadO2 : public Geometry {
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd &local) const override;
 
-  /** @copydoc Geometry::SubGeometry() */
+  /** @copydoc lf::geometry::Geometry::SubGeometry() */
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
   /**
