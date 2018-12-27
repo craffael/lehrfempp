@@ -81,14 +81,24 @@ Eigen::MatrixXd TriaO2::JacobianInverseGramian(
 
   if (DimGlobal() == 2) {
     for (int i = 0; i < local.cols(); ++i) {
-      jacInvGram.block(0, 2 * i, 2, 2) =
-          jac.block(0, 2 * i, 2, 2).inverse().transpose();
+      auto jacobian = jac.block(0, 2 * i, 2, 2);
+      jacInvGram.block(0, 2 * i, 2, 2) << jacobian(1, 1), -jacobian(1, 0),
+          -jacobian(0, 1), jacobian(0, 0);
+      jacInvGram.block(0, 2 * i, 2, 2) /= jacobian.determinant();
     }
   } else {
     for (int i = 0; i < local.cols(); ++i) {
       auto jacobian = jac.block(0, 2 * i, jac.rows(), 2);
+
+      auto A = jacobian.col(0);
+      auto B = jacobian.col(1);
+      auto AB = A.dot(B);
+
+      Eigen::MatrixXd tmp(2, 2);
+      tmp << B.dot(B), -AB, -AB, A.dot(A);
+
       jacInvGram.block(0, 2 * i, jac.rows(), 2) =
-          jacobian * (jacobian.transpose() * jacobian).inverse();
+          jacobian * tmp / tmp.determinant();
     }
   }
 
@@ -109,7 +119,12 @@ Eigen::VectorXd TriaO2::IntegrationElement(const Eigen::MatrixXd& local) const {
   } else {
     for (int i = 0; i < local.cols(); ++i) {
       auto jacobian = jac.block(0, 2 * i, jac.rows(), 2);
-      intElem(i) = std::sqrt((jacobian.transpose() * jacobian).determinant());
+
+      auto A = jacobian.col(0);
+      auto B = jacobian.col(1);
+      auto AB = A.dot(B);
+
+      intElem(i) = std::sqrt(std::abs(A.dot(A) * B.dot(B) - AB * AB));
     }
   }
 
