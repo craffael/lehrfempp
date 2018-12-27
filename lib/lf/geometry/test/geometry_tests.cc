@@ -113,7 +113,7 @@ void checkIntegrationElement(const lf::geometry::Geometry &geom,
     const double approx_integrationElement =
         std::sqrt((jacobian.transpose() * jacobian).determinant());
 
-    EXPECT_DOUBLE_EQ(integrationElement, approx_integrationElement)
+    EXPECT_FLOAT_EQ(integrationElement, approx_integrationElement)
         << "IntegrationElement incorrect at point " << eval_points.col(j);
   }
 }
@@ -187,7 +187,7 @@ void checkSubGeometry(
         // map coordinates in RefEl.Dimension to geom.DimGlobal
         auto globalPoints = geom.Global(mappedPoints);
 
-        EXPECT_EQ(globalPointsFromSub, globalPoints)
+        EXPECT_TRUE(globalPoints.isApprox(globalPointsFromSub))
             << "Global mapping of points " << points << " from subEntity "
             << subEntity << " in relative codim " << codim
             << " differs from global mapping";
@@ -271,7 +271,7 @@ void checkChildGeometryVolume(
 void checkChildGeometry(
     const lf::geometry::Geometry &geom,
     const lf::geometry::RefinementPattern &ref_pat,
-    std::function<lf::quad::QuadRule(lf::base::RefEl)> qr_provider) {
+    const std::function<lf::quad::QuadRule(lf::base::RefEl)> &qr_provider) {
   LF_ASSERT_MSG(geom.RefEl() == ref_pat.RefEl(),
                 "This refinement pattern is not made for a " << geom.RefEl());
   double h = 1. / ref_pat.LatticeConst();
@@ -380,6 +380,41 @@ TEST(Geometry, SegmentO2) {
 TEST(Geometry, TriaO1) {
   lf::geometry::TriaO1 geom(
       (Eigen::MatrixXd(2, 3) << 1, 4, 3, 1, 2, 5).finished());
+  auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> triaSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_regular,
+      lf::refinement::RefPat::rp_barycentric};
+
+  for (const auto &refPat : triaSymmetricRefPats) {
+    checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
+  }
+
+  std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
+      lf::refinement::RefPat::rp_bisect, lf::refinement::RefPat::rp_trisect,
+      lf::refinement::RefPat::rp_trisect_left,
+      lf::refinement::RefPat::rp_quadsect};
+
+  for (const auto &refPat : triaAsymmetricRefPats) {
+    for (size_t anchor = 0; anchor < 3; ++anchor) {
+      checkChildGeometryVolume(geom, refPat, anchor);
+      checkChildGeometry(
+          geom,
+          lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat,
+                                                    anchor),
+          [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
+    }
+  }
+}
+
+TEST(Geometry, TriaO2) {
+  lf::geometry::TriaO2 geom(
+      (Eigen::MatrixXd(2, 6) << 1, 4, 3, 2, 4, 0, 2, 1, 5, 3, 4, 4).finished());
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
