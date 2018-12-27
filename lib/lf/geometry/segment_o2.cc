@@ -116,15 +116,14 @@ std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
 
   // create a geometry object for each child
   for (size_t child = 0; child < noChildren; ++child) {
-    // codim == 0: A single child must be described by an interval, that is
-    // two different lattice coordinates
-    // codim == 1: A point's location is just one number
+    // codim == 0: a child segment is described by a polygon with three vertices
+    // codim == 1: a child point by a single point ("polygon with one corner")
     LF_VERIFY_MSG(
         childPolygons[child].rows() == 1,
         "childPolygons[child].rows() = " << childPolygons[child].rows());
     LF_VERIFY_MSG(
         childPolygons[child].cols() == (2 - codim),
-        "childPolygons[child].cols() = " << childPolygons[child].rows());
+        "childPolygons[child].cols() = " << childPolygons[child].cols());
 
     Eigen::MatrixXd locCoords(1, 3 - 2 * codim);
 
