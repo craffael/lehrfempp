@@ -44,6 +44,13 @@ class TriaO2 : public Geometry {
 
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 6> coords_;
+  // alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1*x2]
+  Eigen::Matrix<double, Eigen::Dynamic, 1> alpha_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> beta_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> delta_;
+  // coefficients for Jacobian
+  Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_x_2_;
 };
 }  // namespace lf::geometry
 
