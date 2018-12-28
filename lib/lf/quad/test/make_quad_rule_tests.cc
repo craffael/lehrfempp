@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/quad/quad.h>
 #include <boost/math/special_functions/factorials.hpp>
+#include "lf/quad/make_quad_rule_nodal.h"
 
 namespace lf::quad::test {
 
@@ -110,6 +111,13 @@ TEST(qr_IntegrationTest, Tria) {
   // make sure that also the tensor product versions are tested.
   for (int i = 1; i < 55; ++i) {
     checkQuadRule(make_QuadRule(base::RefEl::kTria(), i), 1e-12, i < 10);
+  }
+}
+
+TEST(qr_IntegrationTest, nodal) {
+  for (auto ref_el :
+       {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    checkQuadRule(make_QuadRuleNodal(ref_el), 1e-12);
   }
 }
 

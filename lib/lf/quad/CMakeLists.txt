@@ -3,6 +3,9 @@ set(sources
   gauss_quadrature.cc
   make_quad_rule.h
   make_quad_rule.cc
+  make_quad_rule_nodal.h
+  make_quad_rule_nodal.cc
+  quad.h
   quad_rule.h
   quad_rule.cc
   quad_rules_tria.cc

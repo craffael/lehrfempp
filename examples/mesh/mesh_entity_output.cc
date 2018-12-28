@@ -63,7 +63,7 @@ int main() {
 
   // write_tikz version 2.0 --------------------------------------
 
-  auto desiredEntities = [&](const lf::mesh::Entity& entity) {
+  auto desiredEntities = [&](const lf::mesh::Entity& entity) -> bool {
     // If list contains entity, return true
     // return std::find(entitiesToPrint.begin(), entitiesToPrint.end(), entity)
     // != entitiesToPrint.end();
