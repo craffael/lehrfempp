@@ -53,6 +53,21 @@ class QuadO2 : public Geometry {
    * @brief Coordinates of the 8 vertices/midpoints, stored in matrix columns
    */
   Eigen::Matrix<double, Eigen::Dynamic, 8> coords_;
+
+  /**
+   * QuadO2 is parametrized by:
+   *    alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1 * x2]
+   *    + epsilon * [x1^2 * x2, x1 * x2^2]
+   */
+  Eigen::Matrix<double, Eigen::Dynamic, 1> alpha_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> beta_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> delta_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> epsilon_;
+
+  /** @brief Coefficients for efficient evaluation of Jacobian() */
+  Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_x_2_;
+  Eigen::Matrix<double, Eigen::Dynamic, 2> epsilon_x_2_;
 };
 }  // namespace lf::geometry
 

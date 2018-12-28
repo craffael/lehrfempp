@@ -342,6 +342,7 @@ TEST(Geometry, Point) {
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   runGeometryChecks(geom, points, 1e-9);
 
+  // check that local nodes are mapped to global nodes
   EXPECT_TRUE(
       geom.Global(Eigen::Matrix<double, 0, 1>()).isApprox(global_nodes));
 }
@@ -364,6 +365,7 @@ TEST(Geometry, SegmentO1) {
         [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
 
+  // check that local nodes are mapped to global nodes
   EXPECT_TRUE(geom.Global(lf::base::RefEl::kSegment().NodeCoords())
                   .isApprox(global_nodes));
 }
@@ -428,6 +430,7 @@ TEST(Geometry, TriaO1) {
     }
   }
 
+  // check that local nodes are mapped to global nodes
   EXPECT_TRUE(geom.Global(lf::base::RefEl::kTria().NodeCoords())
                   .isApprox(global_nodes));
 }
@@ -468,7 +471,7 @@ TEST(Geometry, TriaO2) {
     }
   }
 
-  // check that local nodes are mapped to global nodes:
+  // check that local nodes are mapped to global nodes
   Eigen::MatrixXd local_nodes(2, 6);
   local_nodes << 0, 1, 0, 0.5, 0.5, 0, 0, 0, 1, 0, 0.5, 0.5;
   EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
@@ -509,7 +512,48 @@ TEST(Geometry, QuadO1) {
     }
   }
 
-  // check that local nodes are mapped to global nodes:
+  // check that local nodes are mapped to global nodes
   EXPECT_TRUE(geom.Global(lf::base::RefEl::kQuad().NodeCoords())
                   .isApprox(global_nodes));
+}
+
+TEST(Geometry, QuadO2) {
+  Eigen::MatrixXd global_nodes(2, 8);
+  global_nodes << 3, 6, 7, 5, 4, 2, 1, 0, 1, 0, 3, 6, 7, 5, 8, 4;
+
+  lf::geometry::QuadO2 geom(global_nodes);
+  auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> quadSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_regular,
+      lf::refinement::RefPat::rp_barycentric};
+
+  for (const auto &refPat : quadSymmetricRefPats) {
+    checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
+  }
+
+  std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
+      lf::refinement::RefPat::rp_split, lf::refinement::RefPat::rp_bisect,
+      lf::refinement::RefPat::rp_trisect, lf::refinement::RefPat::rp_quadsect,
+      lf::refinement::RefPat::rp_threeedge};
+
+  for (const auto &refPat : triaAsymmetricRefPats) {
+    for (size_t anchor = 0; anchor < 4; ++anchor) {
+      checkChildGeometryVolume(geom, refPat, anchor);
+      checkChildGeometry(geom,
+                         lf::refinement::Hybrid2DRefinementPattern(
+                             geom.RefEl(), refPat, anchor),
+                         lf::quad::make_QuadRuleNodal);
+    }
+  }
+
+  // check that local nodes are mapped to global nodes
+  Eigen::MatrixXd local_nodes(2, 8);
+  local_nodes << 0, 1, 1, 0, .5, 1, .5, 0, 0, 0, 1, 1, 0, .5, 1, 0.5;
+  EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
 }
