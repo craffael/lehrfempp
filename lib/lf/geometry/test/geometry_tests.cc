@@ -334,16 +334,22 @@ void checkChildGeometry(
 }
 
 TEST(Geometry, Point) {
-  lf::geometry::Point geom((Eigen::MatrixXd(2, 1) << 1, 1).finished());
+  Eigen::MatrixXd global_nodes(2, 1);
+  global_nodes << 1, 2;
+  lf::geometry::Point geom(global_nodes);
 
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   runGeometryChecks(geom, points, 1e-9);
+
+  EXPECT_TRUE(
+      geom.Global(Eigen::Matrix<double, 0, 1>()).isApprox(global_nodes));
 }
 
 TEST(Geometry, SegmentO1) {
-  lf::geometry::SegmentO1 geom(
-      (Eigen::MatrixXd(2, 2) << 1, 1, 0, 4).finished());
+  Eigen::MatrixXd global_nodes(2, 2);
+  global_nodes << 1, 1, 0, 4;
+  lf::geometry::SegmentO1 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
@@ -357,11 +363,16 @@ TEST(Geometry, SegmentO1) {
         geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
         [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
+
+  EXPECT_TRUE(geom.Global(lf::base::RefEl::kSegment().NodeCoords())
+                  .isApprox(global_nodes));
 }
 
 TEST(Geometry, SegmentO2) {
-  lf::geometry::SegmentO2 geom(
-      (Eigen::MatrixXd(2, 3) << 1, 2, 3, 1, 4, 2).finished());
+  Eigen::MatrixXd global_nodes(2, 3);
+  global_nodes << 1, 2, 3, 1, 4, 2;
+
+  lf::geometry::SegmentO2 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
@@ -375,11 +386,17 @@ TEST(Geometry, SegmentO2) {
         geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
         [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
+
+  Eigen::MatrixXd local_nodes(1, 3);
+  local_nodes << 0, 1, 0.5;
+  EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
 }
 
 TEST(Geometry, TriaO1) {
-  lf::geometry::TriaO1 geom(
-      (Eigen::MatrixXd(2, 3) << 1, 4, 3, 1, 2, 5).finished());
+  Eigen::MatrixXd global_nodes(2, 3);
+  global_nodes << 1, 4, 3, 1, 2, 5;
+
+  lf::geometry::TriaO1 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
@@ -410,11 +427,16 @@ TEST(Geometry, TriaO1) {
           [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
     }
   }
+
+  EXPECT_TRUE(geom.Global(lf::base::RefEl::kTria().NodeCoords())
+                  .isApprox(global_nodes));
 }
 
 TEST(Geometry, TriaO2) {
-  lf::geometry::TriaO2 geom(
-      (Eigen::MatrixXd(2, 6) << 1, 4, 3, 2, 4, 0, 2, 1, 5, 3, 4, 4).finished());
+  Eigen::MatrixXd global_nodes(2, 6);
+  global_nodes << 1, 4, 3, 2, 4, 0, 2, 1, 5, 3, 4, 4;
+
+  lf::geometry::TriaO2 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
@@ -445,11 +467,18 @@ TEST(Geometry, TriaO2) {
           [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
     }
   }
+
+  // check that local nodes are mapped to global nodes:
+  Eigen::MatrixXd local_nodes(2, 6);
+  local_nodes << 0, 1, 0, 0.5, 0.5, 0, 0, 0, 1, 0, 0.5, 0.5;
+  EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
 }
 
 TEST(Geometry, QuadO1) {
-  lf::geometry::QuadO1 geom(
-      (Eigen::MatrixXd(2, 4) << -1, 3, 2, 1, -2, 0, 2, 1).finished());
+  Eigen::MatrixXd global_nodes(2, 4);
+  global_nodes << -1, 3, 2, 1, -2, 0, 2, 1;
+
+  lf::geometry::QuadO1 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
   runGeometryChecks(geom, qr.Points(), 1e-9);
 
@@ -479,4 +508,8 @@ TEST(Geometry, QuadO1) {
                          lf::quad::make_QuadRuleNodal);
     }
   }
+
+  // check that local nodes are mapped to global nodes:
+  EXPECT_TRUE(geom.Global(lf::base::RefEl::kQuad().NodeCoords())
+                  .isApprox(global_nodes));
 }
