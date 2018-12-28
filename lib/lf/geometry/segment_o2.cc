@@ -142,7 +142,7 @@ std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
 
         break;
       }
-      default: { LF_VERIFY_MSG(false, "Unreachable code"); }
+      default: { LF_VERIFY_MSG(false, "Illegal co-dimension"); }
     }
   }
 

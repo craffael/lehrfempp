@@ -139,10 +139,11 @@ std::unique_ptr<Geometry> TriaO2::SubGeometry(dim_t codim, dim_t i) const {
     }
     case 1: {
       LF_ASSERT_MSG(0 <= i && i <= 2, "i is out of bounds");
-      Eigen::MatrixXd seg_coords(coords_.rows(), 3);
-      seg_coords << coords_.col(i), coords_.col((i + 1) % 3),
-          coords_.col(i + 3);
-      return std::make_unique<SegmentO2>(seg_coords);
+      return std::make_unique<SegmentO2>(
+          (Eigen::Matrix<double, Eigen::Dynamic, 3>(DimGlobal(), 3)
+               << coords_.col(i),
+           coords_.col((i + 1) % 3), coords_.col(i + 3))
+              .finished());
     }
     case 2: {
       LF_ASSERT_MSG(0 <= i && i <= 5, "i is out of bounds");
@@ -155,7 +156,7 @@ std::unique_ptr<Geometry> TriaO2::SubGeometry(dim_t codim, dim_t i) const {
 std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
     const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
   LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kTria(),
-                "refinement pattern for " << ref_pat.RefEl().ToString());
+                "Refinement pattern for " << ref_pat.RefEl().ToString());
   LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
 
   const double hLattice = 1. / static_cast<double>(ref_pat.LatticeConst());
@@ -215,7 +216,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
 
         break;
       }
-      default: { LF_VERIFY_MSG(false, "unreachable code"); }
+      default: { LF_VERIFY_MSG(false, "Illegal co-dimension"); }
     }
   }
 
