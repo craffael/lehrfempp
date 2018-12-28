@@ -18,7 +18,7 @@ TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
       gamma_(coords_.rows(), 2),
       delta_(coords_.rows()),
       gamma_x_2_(coords_.rows(), 2) {
-  /*
+  /**
    *  2                                C
    *  | \                              | \
    *  5   4              ->            F   E
@@ -37,7 +37,7 @@ TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
   gamma_ << 2. * (A + B) - 4. * D, 2. * (A + C) - 4. * F;
   delta_ << 4. * (A + E - D - F);
 
-  // coefficients for Jacobian
+  // coefficient for Jacobian()
   gamma_x_2_ << 2. * gamma_;
 }
 

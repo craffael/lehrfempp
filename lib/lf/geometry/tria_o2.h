@@ -56,7 +56,7 @@ class TriaO2 : public Geometry {
 
   /**
    * TriaO2 is parametrized by:
-   *    alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1*x2]
+   *    alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1 * x2]
    */
   Eigen::Matrix<double, Eigen::Dynamic, 1> alpha_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> beta_;
