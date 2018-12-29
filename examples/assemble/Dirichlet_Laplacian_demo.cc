@@ -13,6 +13,7 @@
 #include <boost/program_options.hpp>
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/mesh_function_global.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
@@ -391,7 +392,8 @@ int main(int argc, const char **argv) {
     // lf::assemble::ass_mat_dbg_ctrl = 255;
 
     // Compute finite element solution and error
-    auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u, f);
+    auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u,
+                                      lf::fe::MeshFunctionGlobal(f));
     int level = 0;
     for (auto &err : L2errs) {
       std::cout << "L2 error on level " << level << " = " << err << std::endl;

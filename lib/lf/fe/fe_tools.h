@@ -16,7 +16,7 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/quad/quad.h>
-#include "fe_space.h"
+#include "uniform_scalar_finite_element_space.h"
 #include "loc_comp_norms.h"
 
 namespace lf::fe {

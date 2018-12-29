@@ -13,12 +13,12 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/fe/fe.h>
 #include <iostream>
-#include "lf/fe/fe_testutils.h"
-#include "lf/fe/lin_fe.h"
-#include "lf/fe/sec_ord_ell_bvp.h"
 
 #include <lf/mesh/utils/utils.h>
+#include <lf/refinement/refinement.h>
+#include "fe_testutils.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 
 namespace lf::fe::test {

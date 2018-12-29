@@ -18,7 +18,7 @@
 #include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 
-namespace lf::fe {
+namespace lf::fe::test {
 /**
  * @brief Interface class to the data defining a second-order elliptic boundary
  *        value problem in two dimensions
@@ -191,7 +191,7 @@ SecOrdEllBVPLagrFELinSys(
 
   // I: Assemble finite element Galerkin matrix
   // First the volume part for the bilinear form
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(
+  SecOrdBVPLagrFEFullInteriorGalMat(
       fe_space,
       MeshFunctionGlobal([&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
         return (bvp_p->alpha(x));
@@ -202,7 +202,7 @@ SecOrdEllBVPLagrFELinSys(
   // Update with potential contributions from edges (Impedance boundary
   // conditions)
   if (no_impedance_edges > 0) {
-    lf::fe::SecOrdBVPLagrFEBoundaryGalMat(
+    SecOrdBVPLagrFEBoundaryGalMat(
         fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
           return (bvp_p->eta(x));
         }),
@@ -218,13 +218,13 @@ SecOrdEllBVPLagrFELinSys(
   phi.setZero();
 
   // Assemble volume part of right-hand side vector depending on the function f
-  lf::fe::LagrFEVolumeRightHandSideVector(
+  LagrFEVolumeRightHandSideVector(
       fe_space,
       MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR { return (bvp_p->f(x)); }),
       phi);
   // Add contributions from Neumann and impedance edges
   if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
-    lf::fe::LagrFEBoundaryRightHandSideVector(
+    LagrFEBoundaryRightHandSideVector(
         fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
           return (bvp_p->h(x));
         }),
@@ -259,6 +259,6 @@ SecOrdEllBVPLagrFELinSys(
   return {A.makeSparse(), phi};
 }
 
-}  // namespace lf::fe
+}  // namespace lf::fe::test
 
 #endif

@@ -1,8 +1,6 @@
 set(sources
-  fe_space.cc
-  fe_space.h
-  fe_testutils.h
-  fe_testutils.cc
+  uniform_scalar_finite_element_space.cc
+  uniform_scalar_finite_element_space.h
   fe_tools.cc
   fe_tools.h
   fe.h
@@ -15,8 +13,6 @@ set(sources
   loc_comp_ellbvp.cc
   loc_comp_norms.h
   loc_comp_norms.cc
-  sec_ord_ell_bvp.h
-  sec_ord_ell_bvp.cc
 )
 
 add_library(lf.fe ${sources})

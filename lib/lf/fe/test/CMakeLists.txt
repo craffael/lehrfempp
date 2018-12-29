@@ -2,10 +2,14 @@ include(GoogleTest)
 
 set(src
   bvp_fe_test.cc
+  fe_testutils.h
+  fe_testutils.cc
   full_gal_test.cc
   gfe_test.cc
-  mesh_function_traits_test.cc
   lagr_fe_test.cc
+  mesh_function_traits_test.cc
+  sec_ord_ell_bvp.h
+  sec_ord_ell_bvp.cc
 )
 
 add_executable(lf.fe.test ${src})

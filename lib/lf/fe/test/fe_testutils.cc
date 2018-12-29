@@ -13,6 +13,6 @@
  * @copyright MIT License
  */
 
-#include "lf/fe/fe_testutils.h"
+#include "fe_testutils.h"
 
 namespace lf::fe {}

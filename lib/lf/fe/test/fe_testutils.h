@@ -14,11 +14,11 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include "fe_tools.h"
 
-namespace lf::fe {
+namespace lf::fe::test {
 /**
  * @brief record interpolation errors in L2 norm and H1 norm on a sequence of
  * 2D hybrid meshes
@@ -73,7 +73,7 @@ std::vector<std::pair<double, double>> InterpolationErrors(
 
 template <typename FFUNC, typename GRADFUNC>
 inline std::vector<std::pair<double, double>> InterpolationErrors(
-    lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, GRADFUNC grad_f,
+    refinement::MeshHierarchy &multi_mesh, FFUNC f, GRADFUNC grad_f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
   return InterpolationErrors(multi_mesh.getMeshes(), f, grad_f, rfs_tria_p,
@@ -135,7 +135,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
     UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
-    const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    const assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
@@ -145,9 +145,9 @@ std::vector<SCALAR> EnergiesOfInterpolants(
     // Dimension of finite element space`
     const lf::assemble::size_type N_dofs(dofh.NoDofs());
     // Matrix in triplet format holding Galerkin matrix, zero initially.
-    lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
+    assemble::COOMatrix<double> A(N_dofs, N_dofs);
     // Actual assembly
-    lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(fe_space, alpha, gamma, A);
+    SecOrdBVPLagrFEFullInteriorGalMat(fe_space, alpha, gamma, A);
 
     // Computation of energy norm of interpolant
     double energy = coeff_vec.dot(A.MatVecMult(1.0, coeff_vec));
@@ -159,7 +159,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
           typename REAC_COEFF>
 std::vector<SCALAR> EnergiesOfInterpolants(
-    lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, DIFF_COEFF alpha,
+    refinement::MeshHierarchy &multi_mesh, FFUNC f, DIFF_COEFF alpha,
     REAC_COEFF gamma,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
@@ -246,7 +246,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
     // Matrix in triplet format holding Galerkin matrix, zero initially.
     lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
     // Actual assembly
-    lf::fe::SecOrdBVPLagrFEBoundaryGalMat(fe_space, eta, bd_edge_sel, A);
+    SecOrdBVPLagrFEBoundaryGalMat(fe_space, eta, bd_edge_sel, A);
 
     // Computation of energy norm of interpolant
     double energy = coeff_vec.dot(A.MatVecMult(1.0, coeff_vec));
@@ -258,7 +258,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
 template <typename SCALAR, typename FFUNC, typename IMP_COEFF,
           typename EDGESELECTOR>
 std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
-    lf::refinement::MeshHierarchy &multi_mesh, FFUNC f, IMP_COEFF eta,
+    refinement::MeshHierarchy &multi_mesh, FFUNC f, IMP_COEFF eta,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
@@ -325,7 +325,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
     const lf::assemble::size_type N_dofs(dofh.NoDofs());
     Eigen::VectorXd phi = Eigen::VectorXd::Zero(N_dofs);
     // Actual assembly
-    lf::fe::LagrFEVolumeRightHandSideVector(fe_space, f, phi);
+    LagrFEVolumeRightHandSideVector(fe_space, f, phi);
     // Evaluation of right-hand-side functional for interpolant
     double ell_val = coeff_vec.dot(phi);
     ell_vals.push_back(ell_val);
@@ -335,7 +335,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
 
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC>
 std::vector<SCALAR> RHSFunctionalForInterpolants(
-    lf::refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
+    refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
   return RHSFunctionalForInterpolants<SCALAR>(multi_mesh.getMeshes(), v, f,
@@ -414,7 +414,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
     const lf::assemble::size_type N_dofs(dofh.NoDofs());
     Eigen::VectorXd phi = Eigen::VectorXd::Zero(N_dofs);
     // Actual assembly
-    lf::fe::LagrFEBoundaryRightHandSideVector(fe_space, f, bd_edge_sel, phi);
+    LagrFEBoundaryRightHandSideVector(fe_space, f, bd_edge_sel, phi);
     // Evaluation of right-hand-side functional for interpolant
     double ell_val = coeff_vec.dot(phi);
     ell_vals.push_back(ell_val);
@@ -425,7 +425,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC,
           typename EDGESELECTOR>
 std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
-    lf::refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
+    refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
@@ -435,6 +435,6 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
                                                       rfs_edge_p, edge_sel);
 }
 
-}  // namespace lf::fe
+}  // namespace lf::fe::test
 
 #endif

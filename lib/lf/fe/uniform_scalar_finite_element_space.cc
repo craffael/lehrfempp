@@ -13,6 +13,6 @@
  * @copyright MIT License
  */
 
-#include "fe_space.h"
+#include "uniform_scalar_finite_element_space.h"
 
 namespace lf::fe {}  // namespace lf::fe
