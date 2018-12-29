@@ -57,7 +57,7 @@ std::vector<std::pair<double, double>> InterpolationErrors(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
+    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
     const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
     // Perform (nodal) projection of the passed function onto the finite element
     // space and obtain basis expansion coefficient vector
@@ -134,7 +134,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
+    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
     const assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
     // I: Perform (nodal) projection of the passed function onto the finite
@@ -225,8 +225,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p,
-                                             rfs_edge_p};
+    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p};
     const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
     // I: Collect flags for edges on the boundary
@@ -313,7 +312,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
+    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
     const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
     // I: Perform (nodal) projection of the passed function onto the finite
@@ -394,8 +393,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    UniformScalarFiniteElementSpace fe_space{mesh_p, rfs_tria_p, rfs_quad_p,
-                                             rfs_edge_p};
+    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p};
     const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
     // I: Collect flags for edges on the boundary

@@ -1,6 +1,7 @@
 set(sources
-  uniform_scalar_finite_element_space.cc
-  uniform_scalar_finite_element_space.h
+  fe_space_lagrange_o1.h
+  fe_space_lagrange_uniform.cc
+  fe_space_lagrange_uniform.h
   fe_tools.cc
   fe_tools.h
   fe.h

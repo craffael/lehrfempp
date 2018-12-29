@@ -34,7 +34,7 @@ TEST(lf_gfe, lf_gfe_l2norm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>());
 
@@ -74,7 +74,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>());
 
@@ -127,7 +127,7 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  LinearLagrangianFESpace<double> fe_space(mesh_p);
+  FeSpaceLagrangeO1<double> fe_space(mesh_p);
 
   // Local-to-global index map
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
@@ -178,7 +178,7 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>());
 
@@ -208,7 +208,7 @@ TEST(lf_gfe, lf_gfe_lintp) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>());
 
@@ -241,7 +241,7 @@ TEST(lf_gfe, set_dirbdc) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>(),
       std::make_shared<SegmentLinearLagrangeFE<double>>());
@@ -287,8 +287,7 @@ TEST(lf_gfe, set_dirbdc) {
 }
 
 // check whether linear function is interpolated exactly
-bool checkInterpolationLinear(
-    const UniformScalarFiniteElementSpace<double> &fe_space) {
+bool checkInterpolationLinear(const FeSpaceUniformScalar<double> &fe_space) {
   // Model linear function
   auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
@@ -310,7 +309,7 @@ TEST(lf_gfe, lf_gfe_lintp_exact) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  UniformScalarFiniteElementSpace<double> fe_space(
+  FeSpaceUniformScalar<double> fe_space(
       mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
       std::make_shared<QuadLinearLagrangeFE<double>>());
   EXPECT_TRUE(checkInterpolationLinear(fe_space));

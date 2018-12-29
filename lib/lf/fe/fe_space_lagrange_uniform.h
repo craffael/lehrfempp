@@ -37,22 +37,18 @@ namespace lf::fe {
  * @note Some of the pointers may be NULL. For instance, if all computations
  *       are done on purely triangular meshes then a finite element
  * specification for quadrilaterals need not be given, \see
- * fe_space_uniform_scalar().
+ * FeSpaceUniformScalar().
  */
 template <typename SCALAR>
-class fe_space_uniform_scalar {
+class FeSpaceUniformScalar {
  public:
   /** @brief default constructors, needed by std::vector
    * @note creates an invalid object that cannot be used. */
-  fe_space_uniform_scalar() = default;
-  fe_space_uniform_scalar(const fe_space_uniform_scalar &) =
-      delete;
-  fe_space_uniform_scalar(fe_space_uniform_scalar &&) noexcept =
-      default;
-  fe_space_uniform_scalar &operator=(
-      const fe_space_uniform_scalar &) = delete;
-  fe_space_uniform_scalar &operator=(
-      fe_space_uniform_scalar &&) noexcept = default;
+  FeSpaceUniformScalar() = default;
+  FeSpaceUniformScalar(const FeSpaceUniformScalar &) = delete;
+  FeSpaceUniformScalar(FeSpaceUniformScalar &&) noexcept = default;
+  FeSpaceUniformScalar &operator=(const FeSpaceUniformScalar &) = delete;
+  FeSpaceUniformScalar &operator=(FeSpaceUniformScalar &&) noexcept = default;
   /**
    * @brief Main constructor: sets up the local-to-global index mapping (dof
    * handler)
@@ -75,7 +71,7 @@ class fe_space_uniform_scalar {
    *       a null pointer. This will then restrict the applicability of
    *       the resulting finite element space objects to particular meshes.
    */
-  fe_space_uniform_scalar(
+  FeSpaceUniformScalar(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p,
@@ -122,7 +118,7 @@ class fe_space_uniform_scalar {
   size_type NumRefShapeFunctions(lf::base::RefEl ref_el_type) const;
 
   /** @brief No special destructor */
-  virtual ~fe_space_uniform_scalar() = default;
+  virtual ~FeSpaceUniformScalar() = default;
 
  private:
   /** Underlying mesh */
@@ -157,20 +153,20 @@ class fe_space_uniform_scalar {
   static const unsigned int kout_mesh = 1;
   static const unsigned int kout_dofh = 2;
   static const unsigned int kout_rsfs = 4;
-};  // end class definition fe_space_uniform_scalar
+};  // end class definition FeSpaceUniformScalar
 
 /** @brief output operator for scalar parametric finite element space */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
-                         const fe_space_uniform_scalar<SCALAR> &fes);
+                         const FeSpaceUniformScalar<SCALAR> &fes);
 
 // Output control variable
 template <typename SCALAR>
-unsigned int fe_space_uniform_scalar<SCALAR>::ctrl_ = 0;
+unsigned int FeSpaceUniformScalar<SCALAR>::ctrl_ = 0;
 
 // Initialization methods
 template <typename SCALAR>
-void fe_space_uniform_scalar<SCALAR>::init() {
+void FeSpaceUniformScalar<SCALAR>::init() {
   LF_VERIFY_MSG(mesh_p_ != nullptr, "Missing mesh!");
   LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
                 "Missing FE specification for cells");
@@ -265,7 +261,7 @@ void fe_space_uniform_scalar<SCALAR>::init() {
 
 template <typename SCALAR>
 std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
-fe_space_uniform_scalar<SCALAR>::ShapeFunctionLayout(
+FeSpaceUniformScalar<SCALAR>::ShapeFunctionLayout(
     lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
@@ -293,7 +289,7 @@ fe_space_uniform_scalar<SCALAR>::ShapeFunctionLayout(
 /* number of _interior_ shape functions associated to entities of various types
  */
 template <typename SCALAR>
-size_type fe_space_uniform_scalar<SCALAR>::NumRefShapeFunctions(
+size_type FeSpaceUniformScalar<SCALAR>::NumRefShapeFunctions(
     lf::base::RefEl ref_el_type) const {
   LF_ASSERT_MSG((rfs_quad_p_ != nullptr) && (rfs_quad_p_ != nullptr),
                 "No valid FE space object: no rsfs");
@@ -319,19 +315,19 @@ size_type fe_space_uniform_scalar<SCALAR>::NumRefShapeFunctions(
 /** output operator for scalar parametric finite element space */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
-                         const fe_space_uniform_scalar<SCALAR> &fes) {
+                         const FeSpaceUniformScalar<SCALAR> &fes) {
   o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NoDofs()
     << std::endl;
-  if (fe_space_uniform_scalar<SCALAR>::ctrl_ &
-      fe_space_uniform_scalar<SCALAR>::kout_mesh) {
+  if (FeSpaceUniformScalar<SCALAR>::ctrl_ &
+      FeSpaceUniformScalar<SCALAR>::kout_mesh) {
     o << fes.Mesh() << std::endl;
   }
-  if (fe_space_uniform_scalar<SCALAR>::ctrl_ &
-      fe_space_uniform_scalar<SCALAR>::kout_dofh) {
+  if (FeSpaceUniformScalar<SCALAR>::ctrl_ &
+      FeSpaceUniformScalar<SCALAR>::kout_dofh) {
     o << fes.LocGlobMap() << std::endl;
   }
-  if (fe_space_uniform_scalar<SCALAR>::ctrl_ &
-      fe_space_uniform_scalar<SCALAR>::kout_rsfs) {
+  if (FeSpaceUniformScalar<SCALAR>::ctrl_ &
+      FeSpaceUniformScalar<SCALAR>::kout_rsfs) {
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
       << std::endl;
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())
@@ -343,38 +339,6 @@ std::ostream &operator<<(std::ostream &o,
   }
   return o;
 }
-
-/**
- * @brief Linear Lagrangian Finite Element space
- *
- * Just a specialization of fe_space_uniform_scalar based on
- * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
- *
- */
-template <typename SCALAR>
-class LinearLagrangianFESpace : public fe_space_uniform_scalar<SCALAR> {
- public:
-  /** @brief default constructors, needed by std::vector
-   * @note creates an invalid object that cannot be used. */
-  LinearLagrangianFESpace() = default;
-  LinearLagrangianFESpace(const LinearLagrangianFESpace &) = delete;
-  LinearLagrangianFESpace(LinearLagrangianFESpace &&) noexcept = default;
-  LinearLagrangianFESpace &operator=(const LinearLagrangianFESpace &) = delete;
-  LinearLagrangianFESpace &operator=(LinearLagrangianFESpace &&) noexcept =
-      default;
-  /**
-   * @brief Main constructor: sets up the local-to-global index mapping (dof
-   * handler)
-   *
-   * @param mesh_p shared pointer to underlying mesh (immutable)
-   */
-  explicit LinearLagrangianFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
-      : fe_space_uniform_scalar<SCALAR>(
-            mesh_p, std::make_shared<TriaLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<QuadLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<SegmentLinearLagrangeFE<SCALAR>>()) {}
-  virtual ~LinearLagrangianFESpace() {}
-};
 
 }  // namespace lf::fe
 

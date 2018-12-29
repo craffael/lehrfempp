@@ -44,7 +44,7 @@ TEST(lf_bvpfe, Neu_BVP_ass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space; lowest order Lagrangian finite elements
-  LinearLagrangianFESpace<double> fe_space(mesh_p);
+  FeSpaceLagrangeO1<double> fe_space(mesh_p);
 
   // Generate linear system
   auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
@@ -82,7 +82,7 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
   for (int l = 0; l < L; ++l) {
     std::shared_ptr<const mesh::Mesh> mesh_p{multi_mesh.getMesh(l)};
     // Set up global FE space; lowest order Lagrangian finite elements
-    LinearLagrangianFESpace<double> fe_space(mesh_p);
+    FeSpaceLagrangeO1<double> fe_space(mesh_p);
     const lf::assemble::DofHandler& dofh{fe_space.LocGlobMap()};
 
     // Compute Galerkin matrix A and right-hand-side vector

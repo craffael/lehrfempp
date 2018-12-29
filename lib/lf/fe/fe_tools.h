@@ -16,7 +16,7 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/quad/quad.h>
-#include "uniform_scalar_finite_element_space.h"
+#include "fe_space_lagrange_uniform.h"
 #include "loc_comp_norms.h"
 
 namespace lf::fe {
@@ -176,8 +176,8 @@ static const unsigned int kout_prj_vals = 2;
  */
 template <typename SCALAR, typename FUNCTOR,
           typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
-                     FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
+auto NodalProjection(const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR &&u,
+                     SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
   // choose scalar type so it can hold the scalar type of u as well as SCALAR
   using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<FUNCTOR>>;
@@ -278,7 +278,7 @@ auto NodalProjection(const UniformScalarFiniteElementSpace<SCALAR> &fe_space,
 template <typename SCALAR, typename TMPMATRIX, typename DIFF_COEFF,
           typename REACTION_COEFF>
 void SecOrdBVPLagrFEFullInteriorGalMat(
-    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, DIFF_COEFF alpha,
+    const FeSpaceUniformScalar<SCALAR> &fe_space, DIFF_COEFF alpha,
     REACTION_COEFF gamma, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
@@ -327,9 +327,9 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
  */
 template <typename SCALAR, typename TMPMATRIX, typename COEFF,
           typename EDGESELECTOR>
-void SecOrdBVPLagrFEBoundaryGalMat(
-    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, COEFF eta,
-    EDGESELECTOR edge_sel, TMPMATRIX &A) {
+void SecOrdBVPLagrFEBoundaryGalMat(const FeSpaceUniformScalar<SCALAR> &fe_space,
+                                   COEFF eta, EDGESELECTOR edge_sel,
+                                   TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
   const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
@@ -366,8 +366,7 @@ void SecOrdBVPLagrFEBoundaryGalMat(
  */
 template <typename SCALAR, typename VECTOR, typename FUNCTOR>
 void LagrFEVolumeRightHandSideVector(
-    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, FUNCTOR f,
-    VECTOR &phi) {
+    const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR f, VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
   const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
@@ -410,7 +409,7 @@ void LagrFEVolumeRightHandSideVector(
 template <typename SCALAR, typename VECTOR, typename FUNCTOR,
           typename EDGESELECTOR>
 void LagrFEBoundaryRightHandSideVector(
-    const UniformScalarFiniteElementSpace<SCALAR> &fe_space, FUNCTOR data,
+    const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR data,
     EDGESELECTOR edge_sel, VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
