@@ -19,6 +19,184 @@
 #include <lf/refinement/mesh_hierarchy.h>
 
 namespace lf::fe::test {
+
+/** @brief Incremental assembly of global finite element Galerkin matrix
+ *
+ * @tparam SCALAR a scalar type
+ * @tparam TMPMATRIX matrix type suitable for assembly
+ * @tparam DIFF_COEFF a functor providing point evaluation for the diffusion
+ * tensor
+ * @tparam REACTION_COEFF a functor for point evaluation of the reaction
+ * coefficient
+ * @param fe_space a Lagrangian finite element space of uniform polynomial
+ * degree
+ * @param alpha diffusion coefficient
+ * @param gamma reaction coefficient
+ * @param A a mutable reference to the Galerkin matrix. This argument is used to
+ *        return the matrix. The new entries will be added to any previous set
+ *        entries.
+ *
+ * ### Template parameter type requirements
+ * - TMPMATRIX is a rudimentary matrix type and must
+ *   + provide a constructor taking two matrix dimension arguments
+ *   + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
+ *   A model type is lf::assemble::COOMatrix.
+ * - DIFF_COEFF must comply with `std::function<T(Eigen::Vector2d)>`, where `T`
+ * is either a SCALAR compatible type of a matrix type like
+ * `Eigen::Matrix<SCALAR,...>`.
+ * - REACTION_COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
+ *
+ * This function can be used to assemble the global finite element Galerkin
+ * matrix for a second-order elliptic boundary value problem. Essential
+ * conditions are **not** taken into account.
+ *
+ * @note the matrix A passed as the last argument is _updated_ by the function.
+ */
+template <typename SCALAR, typename TMPMATRIX, typename DIFF_COEFF,
+          typename REACTION_COEFF>
+void SecOrdBVPLagrFEFullInteriorGalMat(
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, DIFF_COEFF alpha,
+    REACTION_COEFF gamma, TMPMATRIX &A) {
+  using scalar_t = typename TMPMATRIX::Scalar;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  LagrangeFEEllBVPElementMatrix<scalar_t, decltype(alpha), decltype(gamma)>
+      elmat_builder(fe_space, alpha, gamma);
+  // Invoke assembly on cells
+  AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
+}
+
+/** @brief Incremental assembly of parts of a finite element Galerkin matrix
+ *         due to boundary contributions
+ *
+ * @tparam SCALAR a scalar type
+ * @tparam TMPMATRIX matrix type suitable for assembly
+ * @tparam COEFF a functor providing the impedance function
+ * @tparam EDGESELECTOR predicate for selection of edges
+ *
+ * @param fe_space a Lagrangian finite element space of uniform polynomial
+ *         degree
+ * @param eta impedance coefficient
+ * @param edge_selector object with an evaluation operator returning true
+ *        for all edges on the impedance boundary part.
+ * @param A a mutable reference to the Galerkin matrix. This argument is used to
+ *        return the matrix. The new entries will be added to any previous set
+ *        entries.
+ *
+ * ### Template parameter type requirements
+ * - TMPMATRIX is a rudimentary matrix type and must
+ *   + provide a constructor taking two matrix dimension arguments
+ *   + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
+ *   A model type is lf::assemble::COOMatrix.
+ * - COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
+ * - EDGESELECTOR needs an evaluation operator
+ *                `std::function<bool(const Entity &)>`
+ *
+ * This function can be used to assemble the contribution from an impedance
+ * boundary part to the Galerkin matrix for a second order elliptic boundary
+ * value problem.
+ */
+template <typename SCALAR, typename TMPMATRIX, typename COEFF,
+          typename EDGESELECTOR>
+void SecOrdBVPLagrFEBoundaryGalMat(
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, COEFF eta,
+    EDGESELECTOR edge_sel, TMPMATRIX &A) {
+  using scalar_t = typename TMPMATRIX::Scalar;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+
+  // Object taking care of local computations.
+  LagrangeFEEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
+      edgemat_builder(fe_space, eta, edge_sel);
+  // Invoke assembly on edges by specifying co-dimension = 1
+  AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
+}
+
+/**
+ * @brief Incremental assembly of the right-hand side vector for a second-order
+ *        elliptic boundary value problem based on Lagrangian Finite Elements
+ *
+ * @tparam SCALAR a scalar type
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam FUNCTOR object with an evaluation operator of signature
+ *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
+ *         the source function
+ * @param fe_space underlying finite element space providing index mappings and
+ * mesh
+ * @param f functor object for source function
+ * @param phi mutable reference to a vector with scalar entries
+ *
+ * This function relies on the the class \ref ScalarFELocalLoadVector for local
+ * computations and the function \ref lf::assemble::AssembleVectorLocally()
+ * for assembly.
+ *
+ * @note the functions performs an update of the vector
+ */
+template <typename SCALAR, typename VECTOR, typename FUNCTOR>
+void LagrFEVolumeRightHandSideVector(
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f,
+    VECTOR &phi) {
+  using scalar_t = typename VECTOR::value_type;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(fe_space, f);
+  // Invoke assembly on cells (codim == 0)
+  AssembleVectorLocally(0, dofh, elvec_builder, phi);
+}
+
+/**
+ * @brief Incremental assembly of the boundary contributions to the right-hand
+ * side vector for a second-order elliptic boundary value problem based on
+ * Lagrangian Finite Elements
+ *
+ * @tparam SCALAR a scalar type
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam FUNCTOR object with an evaluation operator of signature
+ *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
+ *         data on a set of active edges.
+ * @tparam EDGESELECTOR predicate for selection of edges
+ *
+ * @param fe_space underlying finite element space providing index mappings and
+ * mesh
+ * @param data functor object for boundary data
+ * @param edge_selector object with an evaluation operator returning true
+ *        for all edges on the impedance boundary part.
+ * @param phi mutable reference to a vector with scalar entries
+ *
+ * This function relies on the the class \ref ScalarFEEdgeLocalLoadVector
+ * for local computations and the function \ref
+ * lf::assemble::AssembleVectorLocally() for assembly.
+ *
+ * @note the functions performs an update of the vector
+ */
+template <typename SCALAR, typename VECTOR, typename FUNCTOR,
+          typename EDGESELECTOR>
+void LagrFEBoundaryRightHandSideVector(
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR data,
+    EDGESELECTOR edge_sel, VECTOR &phi) {
+  using scalar_t = typename VECTOR::value_type;
+  // The underlying finite element mesh
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
+  // The local-to-global index map for the finite element space
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+  // Object taking care of local computations. No selection of a subset
+  // of cells is specified.
+  ScalarFEEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
+      fe_space, data, edge_sel);
+  // Invoke assembly on edges (codim == 1), update vector
+  AssembleVectorLocally(1, dofh, elvec_builder, phi);
+}
+
 /**
  * @brief record interpolation errors in L2 norm and H1 norm on a sequence of
  * 2D hybrid meshes

@@ -85,8 +85,8 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(fe_space, MeshFunctionConstant(0.0),
-                                            MeshFunctionConstant(1.0), A);
+  fe::test::SecOrdBVPLagrFEFullInteriorGalMat(
+      fe_space, MeshFunctionConstant(0.0), MeshFunctionConstant(1.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
