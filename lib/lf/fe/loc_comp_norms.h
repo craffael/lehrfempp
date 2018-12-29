@@ -27,12 +27,8 @@ namespace lf::fe {
  * @brief Class for the local computation of the L2 norm of the difference of
  *        a Lagrangian finite element function and a generic function
  *
- * @tparam FUNCTOR type for a generic function
- *
- * ### Template parameter type requirements
- *
- * - FUNCTOR must behave like `std::function<SCALAR(Eigen::DenseBase)>` where
- *   SCALAR is a field type.
+ * @tparam FUNCTOR describes the function from which the finite element function
+ is subtracted, should model the concept \ref mesh_function .
 
  *
  * This class complies with the type requirements for the template argument
@@ -48,7 +44,7 @@ namespace lf::fe {
  * ~~~
  */
 template <typename FUNCTOR>
-class MeshFunctionL2NormDifference : public LocCompLagrFEPreprocessor {
+class MeshFunctionL2NormDifference {
   static_assert(isMeshFunction<FUNCTOR>);
 
  public:
@@ -65,10 +61,7 @@ class MeshFunctionL2NormDifference : public LocCompLagrFEPreprocessor {
 
   /** @brief Constructor
    *
-   * @param fe_tria_p pointer to layout description for reference shape
-   * functions on triangular cells
-   * @param fe_quad_p pointer to layout description for reference shape
-   * functions on quadrilateral cells
+   * @param fe_space Describes the Shapefunctions over which to integrate.
    * @param u object providing scalar-valued function
    * @param loc_quad_order desired order of local quadrature, default value = 0.
    *        If = 0, the quadrature order is determined from the polynomial
@@ -78,11 +71,17 @@ class MeshFunctionL2NormDifference : public LocCompLagrFEPreprocessor {
    *       corresponding cell type are never requested.
    */
   MeshFunctionL2NormDifference(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
-      FUNCTOR u, lf::quad::quadOrder_t loc_quad_order = 0)
-      : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
-        u_(u) {}
+      std::shared_ptr<FeSpaceUniformScalar<double>> fe_space, FUNCTOR u,
+      quad::quadOrder_t loc_quad_order)
+      : u_(u), fe_precomp_() {
+    for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+      auto fe = fe_space->ShapeFunctionLayout(ref_el);
+      fe_precomp_[ref_el.Id()] =
+          PrecomputedScalarReferenceFiniteElement<double>(
+              std ::move(fe), quad ::make_QuadRule(ref_el, loc_quad_order));
+    }
+  }
+
   /**
    * @brief main function for the computation of **squared** local L2 norms
    *
@@ -111,6 +110,8 @@ class MeshFunctionL2NormDifference : public LocCompLagrFEPreprocessor {
    * element function */
   FUNCTOR u_;
 
+  std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
+
  public:
   /** @brief output control variable */
   static unsigned int ctrl_;
@@ -129,18 +130,20 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
   using dof_t = typename DOFVECTOR::value_type;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
+  auto &fe = fe_precomp_[ref_el.Id()];
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimGlobal() == 2) && (geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  LF_ASSERT_MSG(dofs.size() >= num_rsf(ref_el), "Dof vector too short");
+  LF_ASSERT_MSG(dofs.size() >= fe.NumRefShapeFunctions(),
+                "Dof vector too short");
   // Obtain cell--type depend invariant data
-  const Eigen::MatrixXd &qr_Points{qr_points(ref_el)};
-  const Eigen::VectorXd &qr_Weights{qr_weights(ref_el)};
-  const size_type qr_NumPts = qr_num_pts(ref_el);
-  const size_type num_LSF = num_rsf(ref_el);
-  const auto rsf_QuadPts{rsf_at_quadpts(ref_el)};
+  const Eigen::MatrixXd &qr_Points{fe.Qr().Points()};
+  const Eigen::VectorXd &qr_Weights{fe.Qr().Weights()};
+  const size_type qr_NumPts = fe.Qr().NumPoints();
+  const size_type num_LSF = fe.NumRefShapeFunctions();
+  const auto rsf_QuadPts{fe.PrecompReferenceShapeFunctions()};
 
   SWITCHEDSTATEMENT(ctrl_, kout_cell,
                     std::cout << ref_el << ", (Nlsf = " << num_LSF
@@ -198,7 +201,8 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  *
  * ### Template parameter type requirements
  *
- * - VEC_FUNC must behave like `std::function<VECTOR(Eigen::DenseBase)>` where
+ * - VEC_FUNC must behave like `std::function<VECTOR(Eigen::DenseBase)>`
+ where
  *   VECTOR is a vector type like a vector of Eigen or std::vector.
  *
  * This class complies with the type requirements for the template argument
@@ -213,7 +217,7 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  * ~~~
  */
 template <typename VEC_FUNC>
-class MeshFunctionL2GradientDifference : public LocCompLagrFEPreprocessor {
+class MeshFunctionL2GradientDifference {
   static_assert(isMeshFunction<VEC_FUNC>);
 
  public:
@@ -232,24 +236,23 @@ class MeshFunctionL2GradientDifference : public LocCompLagrFEPreprocessor {
 
   /** @brief Constructor
    *
-   * @param fe_tria_p reference to layout description for reference shape
-   * functions on triangular cells
-   * @param fe_quad_p reference to layout description for reference shape
-   * functions on quadrilateral cells
+   * @param fe_space Describes the shape functions that should be used.
    * @param vecfield object providing a generic vector field
-   * @param loc_quad_order desired order of local quadrature, default value = 0.
-   *        If = 0, the quadrature order is determined from the polynomial
-   *        degree of the reference shape functions.
+   * @param loc_quad_order desired order of local quadrature
    *
    * @note NULL pointers amy be passed, if evaluations for the
    *       corresponding cell type are never requested.
    */
   MeshFunctionL2GradientDifference(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
-      VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order = 0)
-      : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p, loc_quad_order),
-        vecfield_(vecfield) {}
+      std::shared_ptr<const FeSpaceUniformScalar<double>> fe_space,
+      VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order)
+      : vecfield_(vecfield), fe_precomp_() {
+    for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+      fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
+          fe_space->ShapeFunctionLayout(ref_el),
+          quad::make_QuadRule(ref_el, loc_quad_order));
+    }
+  }
   /**
    * @brief main function for the computation of **squared** local L2 norms
    *      of gradients
@@ -261,9 +264,11 @@ class MeshFunctionL2GradientDifference : public LocCompLagrFEPreprocessor {
    * @param dofs vector of degrees of freedom for the current entity
    * @return the local "error norm" squared
    *
-   * Actual computation of the element matrix based on numerical quadrature and
+   * Actual computation of the element matrix based on numerical quadrature
+   and
    * mapping techniques. The order of the quadrature rule is tied to the
-   * polynomial degree of the underlying Lagrangian finite element spaces: for
+   * polynomial degree of the underlying Lagrangian finite element spaces:
+   for
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials of degree 2p ("moderate overkill quadrature")
    *
@@ -275,9 +280,12 @@ class MeshFunctionL2GradientDifference : public LocCompLagrFEPreprocessor {
   double operator()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
 
  private:
-  /** @brief a handle to the generic function with which to compare the finite
+  /** @brief a handle to the generic function with which to compare the
+  finite
    * element function */
   VEC_FUNC vecfield_;
+
+  std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
 
  public:
   /** @brief output control variable */
@@ -297,22 +305,24 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   using dof_t = typename DOFVECTOR::value_type;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
+  auto &pfe = fe_precomp_[ref_el.Id()];
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  LF_ASSERT_MSG(dofs.size() >= num_rsf(ref_el), "Dof vector too short");
+  LF_ASSERT_MSG(dofs.size() >= pfe.NumRefShapeFunctions(),
+                "Dof vector too short");
 
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
 
   // Obtain cell--type depend but cell-independent data
-  const Eigen::MatrixXd &qr_Points{qr_points(ref_el)};
-  const Eigen::VectorXd &qr_Weights{qr_weights(ref_el)};
-  const size_type qr_NumPts = qr_num_pts(ref_el);
-  const size_type num_LSF = num_rsf(ref_el);
-  const auto gradrsf_QuadPts{grad_rsf_at_quadpts(ref_el)};
+  const Eigen::MatrixXd &qr_Points{pfe.Qr().Points()};
+  const Eigen::VectorXd &qr_Weights{pfe.Qr().Weights()};
+  const size_type qr_NumPts = pfe.Qr().NumPoints();
+  const size_type num_LSF = pfe.NumRefShapeFunctions();
+  const auto gradrsf_QuadPts{pfe.PrecompGradientsReferenceShapeFunctions()};
 
   SWITCHEDSTATEMENT(ctrl_, kout_cell,
                     std::cout << ref_el << ", (Nlsf = " << num_LSF

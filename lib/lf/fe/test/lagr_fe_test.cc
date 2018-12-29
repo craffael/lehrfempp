@@ -59,13 +59,13 @@ TEST(lf_fe, scal_fe_coeff_node) {
   // Test of consistency of nodal interpolation
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
-  TriaLinearLagrangeFE<double> tlfe{};
+  FeLagrangeO1Tria<double> tlfe{};
   std::cout << tlfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
-  QuadLinearLagrangeFE<double> qlfe{};
+  FeLagrangeO1Quad<double> qlfe{};
   std::cout << qlfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
-  SegmentLinearLagrangeFE<double> slfe{};
+  FeLagrangeO1Segment<double> slfe{};
   std::cout << slfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
 }
@@ -112,11 +112,11 @@ TEST(lf_fe, scal_fe_val_node) {
   // Test of exactness of nodal reconstruction
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
-  TriaLinearLagrangeFE<double> tlfe{};
+  FeLagrangeO1Tria<double> tlfe{};
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
-  QuadLinearLagrangeFE<double> qlfe{};
+  FeLagrangeO1Quad<double> qlfe{};
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
-  SegmentLinearLagrangeFE<double> slfe{};
+  FeLagrangeO1Segment<double> slfe{};
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
 }
 
@@ -128,7 +128,7 @@ TEST(lf_fe, lf_fe_linfe) {
 
   // Testing triangular element
   {
-    TriaLinearLagrangeFE<double> tlfe{};
+    FeLagrangeO1Tria<double> tlfe{};
     EXPECT_EQ(tlfe.NumRefShapeFunctions(), 3);
     EXPECT_EQ(tlfe.NumRefShapeFunctions(0, 0), 0);
     EXPECT_EQ(tlfe.NumRefShapeFunctions(1, 0), 0);
@@ -147,7 +147,7 @@ TEST(lf_fe, lf_fe_linfe) {
 
   // Testing quadrilateral element
   {
-    QuadLinearLagrangeFE<double> qlfe{};
+    FeLagrangeO1Quad<double> qlfe{};
     EXPECT_EQ(qlfe.NumRefShapeFunctions(), 4);
     EXPECT_EQ(qlfe.NumRefShapeFunctions(0, 0), 0);
     EXPECT_EQ(qlfe.NumRefShapeFunctions(1, 0), 0);
@@ -171,7 +171,7 @@ TEST(lf_fe, lf_fe_segment) {
       (Eigen::MatrixXd(1, 3) << 0.3, 0.1, 0.7).finished()};
   std::cout << "Points in reference cell\n" << refcoords << std::endl;
 
-  SegmentLinearLagrangeFE<double> slfe{};
+  FeLagrangeO1Segment<double> slfe{};
   EXPECT_EQ(slfe.NumRefShapeFunctions(), 2);
   EXPECT_EQ(slfe.NumRefShapeFunctions(0, 0), 0);
   EXPECT_EQ(slfe.NumRefShapeFunctions(1, 0), 1);
@@ -193,16 +193,13 @@ TEST(lf_fe, lf_fe_ellbvp) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Set up finite elements
-  std::shared_ptr<TriaLinearLagrangeFE<double>> tlfe_p{
-      std::make_shared<TriaLinearLagrangeFE<double>>()};
-  std::shared_ptr<QuadLinearLagrangeFE<double>> qlfe_p{
-      std::make_shared<QuadLinearLagrangeFE<double>>()};
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
   auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
   auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
-      comp_elem_mat{tlfe_p, qlfe_p, alpha, gamma};
+      comp_elem_mat{fe_space, alpha, gamma};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -233,12 +230,13 @@ TEST(lf_fe, lf_fe_edgemass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Set up finite elements
-  std::shared_ptr<SegmentLinearLagrangeFE<double>> fe_p{
-      std::make_shared<SegmentLinearLagrangeFE<double>>()};
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+  std::shared_ptr<FeLagrangeO1Segment<double>> fe_p{
+      std::make_shared<FeLagrangeO1Segment<double>>()};
 
   // Set up objects taking care of local computations
   auto gamma = MeshFunctionConstant(1.0);
-  LagrangeFEEdgeMassMatrix comp_elem_mat(fe_p, gamma);
+  LagrangeFEEdgeMassMatrix comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -268,10 +266,7 @@ TEST(lf_fe, lf_fe_loadvec) {
 
   // Set up finite elements
   // Set up finite elements
-  std::shared_ptr<TriaLinearLagrangeFE<double>> tlfe_p{
-      std::make_shared<TriaLinearLagrangeFE<double>>()};
-  std::shared_ptr<QuadLinearLagrangeFE<double>> qlfe_p{
-      std::make_shared<QuadLinearLagrangeFE<double>>()};
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
   auto f = MeshFunctionGlobal(
@@ -284,7 +279,7 @@ TEST(lf_fe, lf_fe_loadvec) {
   LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;  // 3;
 
   // Instantiate object for local computations
-  loc_comp_t comp_elem_vec(tlfe_p, qlfe_p, f);
+  loc_comp_t comp_elem_vec(fe_space, f);
 
   // For comparison
   LinearFELocalLoadVector<double, decltype(f)> lfe_elem_vec(f);
@@ -311,12 +306,11 @@ TEST(lf_fe, lf_fe_edgeload) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   // Set up finite elements
-  std::shared_ptr<SegmentLinearLagrangeFE<double>> fe_p{
-      std::make_shared<SegmentLinearLagrangeFE<double>>()};
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
   auto g = MeshFunctionConstant(1.0);
-  ScalarFEEdgeLocalLoadVector comp_elem_vec{fe_p, g};
+  ScalarFEEdgeLocalLoadVector comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;

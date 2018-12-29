@@ -17,15 +17,17 @@ namespace lf::fe {
  * @brief Linear Lagrangian Finite Element space
  *
  * Just a specialization of FeSpaceUniformScalar based on
- * TriaLinearLagrangeFE, QuadLinearLagrangeFE.
+ * FeLagrangeO1Tria, FeLagrangeO1Quad.
  *
  */
 template <typename SCALAR>
 class FeSpaceLagrangeO1 : public FeSpaceUniformScalar<SCALAR> {
  public:
+  using Scalar = SCALAR;
+
   /** @brief default constructors, needed by std::vector
    * @note creates an invalid object that cannot be used. */
-  FeSpaceLagrangeO1() = default;
+  FeSpaceLagrangeO1() = delete;
   FeSpaceLagrangeO1(const FeSpaceLagrangeO1 &) = delete;
   FeSpaceLagrangeO1(FeSpaceLagrangeO1 &&) noexcept = default;
   FeSpaceLagrangeO1 &operator=(const FeSpaceLagrangeO1 &) = delete;
@@ -38,9 +40,9 @@ class FeSpaceLagrangeO1 : public FeSpaceUniformScalar<SCALAR> {
    */
   explicit FeSpaceLagrangeO1(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
       : FeSpaceUniformScalar<SCALAR>(
-            mesh_p, std::make_shared<TriaLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<QuadLinearLagrangeFE<SCALAR>>(),
-            std::make_shared<SegmentLinearLagrangeFE<SCALAR>>()) {}
+            mesh_p, std::make_shared<FeLagrangeO1Tria<SCALAR>>(),
+            std::make_shared<FeLagrangeO1Quad<SCALAR>>(),
+            std::make_shared<FeLagrangeO1Segment<SCALAR>>()) {}
   virtual ~FeSpaceLagrangeO1() {}
 };
 }  // namespace lf::fe

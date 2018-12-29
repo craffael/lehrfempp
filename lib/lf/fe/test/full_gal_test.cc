@@ -36,8 +36,8 @@ std::vector<double> LinFEEnergyTest(int reflevels, FFUNC v, DIFF_COEFF alpha,
   // refinement levels
   std::vector<double> energies{EnergiesOfInterpolants<double>(
       *multi_mesh_p, v, alpha, gamma,
-      std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>())};
+      std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>())};
   size_type L = energies.size();
   for (int l = 0; l < L; ++l) {
     std::cout << "Level" << l << ": energy = " << energies[l] << std::endl;
@@ -254,9 +254,9 @@ std::vector<double> LinFEInterfaceEnergyTest(int reflevels, FFUNC v,
   // Compute energies of the pw. linear interpolants of v on the different
   // refinement levels
   std::vector<double> energies{BoundaryEnergiesOfInterpolants<double>(
-      *multi_mesh_p, v, eta, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>(),
-      std::make_shared<SegmentLinearLagrangeFE<double>>(), edge_sel)};
+      *multi_mesh_p, v, eta, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>(),
+      std::make_shared<FeLagrangeO1Segment<double>>(), edge_sel)};
   // Output of energies
   size_type L = energies.size();
   for (int l = 0; l < L; ++l) {
@@ -331,8 +331,8 @@ std::vector<double> LinFERHSTest(int reflevels, FFUNC v, SOURCE_FUNC f) {
   // Compute energies of the pw. linear interpolants of v on the different
   // refinement levels
   std::vector<double> fvals{RHSFunctionalForInterpolants<double>(
-      *multi_mesh_p, v, f, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>())};
+      *multi_mesh_p, v, f, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>())};
 
   size_type L = fvals.size();
   for (int l = 0; l < L; ++l) {
@@ -395,9 +395,9 @@ std::vector<double> LinFEBoundaryRHSTest(int reflevels, FFUNC v,
   // Compute energies of the pw. linear interpolants of v on the different
   // refinement levels
   std::vector<double> fvals{RHSBoundaryFunctionalForInterpolants<double>(
-      *multi_mesh_p, v, f, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>(),
-      std::make_shared<SegmentLinearLagrangeFE<double>>(), edge_sel)};
+      *multi_mesh_p, v, f, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>(),
+      std::make_shared<FeLagrangeO1Segment<double>>(), edge_sel)};
   // Output of energies
   size_type L = fvals.size();
   for (int l = 0; l < L; ++l) {

@@ -49,16 +49,18 @@ std::vector<std::pair<double, double>> InterpolationErrors(
   // Vector of error norms
   std::vector<std::pair<double, double>> err_norms{};
 
-  // Helper class for L2 error computation
-  MeshFunctionL2NormDifference lc_L2(rfs_tria_p, rfs_quad_p, f);
-  // Helper class for H1 semi norm
-  MeshFunctionL2GradientDifference lc_H1(rfs_tria_p, rfs_quad_p, grad_f);
-
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
-    const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+        mesh_p, rfs_tria_p, rfs_quad_p);
+
+    // Helper class for L2 error computation
+    MeshFunctionL2NormDifference lc_L2(fe_space, f, 2);
+    // Helper class for H1 semi norm
+    MeshFunctionL2GradientDifference lc_H1(fe_space, grad_f, 2);
+
+    const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
     // Perform (nodal) projection of the passed function onto the finite element
     // space and obtain basis expansion coefficient vector
     auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
@@ -133,9 +135,10 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
+    auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+        mesh_p, rfs_tria_p, rfs_quad_p);
     // Build finite element space and set up local-to-global index map
-    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
-    const assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    const assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
@@ -225,11 +228,12 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p};
-    const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+        mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p);
+    const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
     // I: Collect flags for edges on the boundary
-    auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space.Mesh(), 1)};
+    auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
     auto bd_edge_sel = [&bd_flags,
                         &edge_sel](const lf::mesh::Entity &edge) -> bool {
       return (bd_flags(edge) && edge_sel(edge));
@@ -312,8 +316,9 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p};
-    const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    auto fe_space = std::make_shared<FeSpaceUniformScalar<SCALAR>>(
+        mesh_p, rfs_tria_p, rfs_quad_p);
+    const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
@@ -393,11 +398,12 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    FeSpaceUniformScalar fe_space{mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p};
-    const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+    auto fe_space = std::make_shared<FeSpaceUniformScalar<SCALAR>>(
+        mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p);
+    const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
     // I: Collect flags for edges on the boundary
-    auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space.Mesh(), 1)};
+    auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
     auto bd_edge_sel = [&bd_flags,
                         &edge_sel](const lf::mesh::Entity &edge) -> bool {
       return (bd_flags(edge) && edge_sel(edge));

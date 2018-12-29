@@ -42,6 +42,8 @@ namespace lf::fe {
 template <typename SCALAR>
 class FeSpaceUniformScalar {
  public:
+  using Scalar = SCALAR;
+
   /** @brief default constructors, needed by std::vector
    * @note creates an invalid object that cannot be used. */
   FeSpaceUniformScalar() = default;
@@ -91,7 +93,7 @@ class FeSpaceUniformScalar {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
     return mesh_p_;
   }
-  /** @brief acess to assciated local-to-global map
+  /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
   const lf::assemble::DofHandler &LocGlobMap() const {

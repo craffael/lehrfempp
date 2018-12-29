@@ -44,7 +44,7 @@ class FeSpaceUniformScalar {
  public:
   /** @brief default constructors, needed by std::vector
    * @note creates an invalid object that cannot be used. */
-  FeSpaceUniformScalar() = default;
+  FeSpaceUniformScalar() = delete;
   FeSpaceUniformScalar(const FeSpaceUniformScalar &) = delete;
   FeSpaceUniformScalar(FeSpaceUniformScalar &&) noexcept = default;
   FeSpaceUniformScalar &operator=(const FeSpaceUniformScalar &) = delete;

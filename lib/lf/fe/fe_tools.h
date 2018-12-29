@@ -176,8 +176,8 @@ static const unsigned int kout_prj_vals = 2;
  */
 template <typename SCALAR, typename FUNCTOR,
           typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR &&u,
-                     SELECTOR &&pred = base::PredicateTrue{}) {
+auto NodalProjection(std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
+                     FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
   // choose scalar type so it can hold the scalar type of u as well as SCALAR
   using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<FUNCTOR>>;
@@ -186,9 +186,9 @@ auto NodalProjection(const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR &&u,
   using dof_vec_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   // Underlying mesh instance
-  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // Fetch local-to-global index mapping for shape functions
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Vector for returning expansion coefficients
   dof_vec_t glob_dofvec(dofh.NoDofs());
@@ -211,7 +211,7 @@ auto NodalProjection(const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR &&u,
 
     // Information about local shape functions on reference element
     const ScalarReferenceFiniteElement<double> &ref_shape_fns{
-        *fe_space.ShapeFunctionLayout(ref_el)};
+        *fe_space->ShapeFunctionLayout(ref_el)};
     // Number of evaluation nodes
     const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
     // Obtain reference coordinates for evaluation nodes
@@ -278,19 +278,17 @@ auto NodalProjection(const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR &&u,
 template <typename SCALAR, typename TMPMATRIX, typename DIFF_COEFF,
           typename REACTION_COEFF>
 void SecOrdBVPLagrFEFullInteriorGalMat(
-    const FeSpaceUniformScalar<SCALAR> &fe_space, DIFF_COEFF alpha,
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, DIFF_COEFF alpha,
     REACTION_COEFF gamma, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
-  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
   LagrangeFEEllBVPElementMatrix<scalar_t, decltype(alpha), decltype(gamma)>
-      elmat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-                    fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-                    alpha, gamma);
+      elmat_builder(fe_space, alpha, gamma);
   // Invoke assembly on cells
   AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
 }
@@ -327,19 +325,18 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
  */
 template <typename SCALAR, typename TMPMATRIX, typename COEFF,
           typename EDGESELECTOR>
-void SecOrdBVPLagrFEBoundaryGalMat(const FeSpaceUniformScalar<SCALAR> &fe_space,
-                                   COEFF eta, EDGESELECTOR edge_sel,
-                                   TMPMATRIX &A) {
+void SecOrdBVPLagrFEBoundaryGalMat(
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, COEFF eta,
+    EDGESELECTOR edge_sel, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
-  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Object taking care of local computations.
   LagrangeFEEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
-      edgemat_builder(fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()),
-                      eta, edge_sel);
+      edgemat_builder(fe_space, eta, edge_sel);
   // Invoke assembly on edges by specifying co-dimension = 1
   AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
 }
@@ -366,17 +363,16 @@ void SecOrdBVPLagrFEBoundaryGalMat(const FeSpaceUniformScalar<SCALAR> &fe_space,
  */
 template <typename SCALAR, typename VECTOR, typename FUNCTOR>
 void LagrFEVolumeRightHandSideVector(
-    const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR f, VECTOR &phi) {
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f,
+    VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
-  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
-  ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), f);
+  ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(fe_space, f);
   // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 }
@@ -409,18 +405,17 @@ void LagrFEVolumeRightHandSideVector(
 template <typename SCALAR, typename VECTOR, typename FUNCTOR,
           typename EDGESELECTOR>
 void LagrFEBoundaryRightHandSideVector(
-    const FeSpaceUniformScalar<SCALAR> &fe_space, FUNCTOR data,
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR data,
     EDGESELECTOR edge_sel, VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
-  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
   ScalarFEEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment()), data,
-      edge_sel);
+      fe_space, data, edge_sel);
   // Invoke assembly on edges (codim == 1), update vector
   AssembleVectorLocally(1, dofh, elvec_builder, phi);
 }

@@ -78,6 +78,7 @@ using sub_idx_t = lf::base::sub_idx_t;
 template <typename SCALAR>
 class ScalarReferenceFiniteElement {
  protected:
+  ScalarReferenceFiniteElement() = default;
   ScalarReferenceFiniteElement(const ScalarReferenceFiniteElement&) = default;
   // NOLINTNEXTLINE
   ScalarReferenceFiniteElement(ScalarReferenceFiniteElement&&) noexcept =
@@ -90,44 +91,30 @@ class ScalarReferenceFiniteElement {
       ScalarReferenceFiniteElement&&) noexcept = default;
 
  public:
-
   /** @brief The scalar type of the shape function */
   using Scalar = SCALAR;
 
-  /**
-   * @brief Constructor setting topological type and degree
-   *
-   * @param ref_el reference cell on which the finite element is defined
-   * @param degree polynomial degree of the finite element; meant to provide
-   *              a hint about the appropriate choice of quadrature rules
-   *
-   * The degree of a scalar valued finite element will usually agree with the
-   * degree of the largest full polynomial space contained in its local
-   * space.
-   */
-  explicit ScalarReferenceFiniteElement(lf::base::RefEl ref_el,
-                                        unsigned int degree)
-      : ref_el_(std::move(ref_el)), degree_(degree) {}
-
+  /** Virtual destructor */
   virtual ~ScalarReferenceFiniteElement() = default;
 
   /**
    * @brief Tells the type of reference cell underlying the parametric finite
    * element
    */
-  lf::base::RefEl RefEl() const { return ref_el_; }
+  virtual base::RefEl RefEl() const = 0;
+
   /**
    * @brief Request the polynomial degree of the finite element space
    *
    * @sa ScalarReferenceFiniteElement(lf::base::RefEl ref_el, unsigned int
    * degree)
    */
-  unsigned int degree() const { return degree_; }
+  virtual unsigned int Degree() const = 0;
 
   /**
    * @brief Returns the spatial dimension of the reference cell
    */
-  dim_t Dimension() const { return ref_el_.Dimension(); }
+  dim_t Dimension() const { return RefEl().Dimension(); }
 
   /**
    * @brief Total number of reference shape functions associated with the
@@ -139,7 +126,7 @@ class ScalarReferenceFiniteElement {
   virtual size_type NumRefShapeFunctions() const {
     size_type cnt = 0;
     for (dim_t codim = 0; codim <= Dimension(); ++codim) {
-      for (sub_idx_t subidx = 0; subidx < ref_el_.NumSubEntities(codim);
+      for (sub_idx_t subidx = 0; subidx < RefEl().NumSubEntities(codim);
            ++subidx) {
         cnt += NumRefShapeFunctions(codim, subidx);
       }
@@ -318,7 +305,7 @@ class ScalarReferenceFiniteElement {
    * nodes and local shape functions
    */
   virtual std::ostream& print(std::ostream& o) const {
-    o << typeid(*this).name() << ", degree = " << degree()
+    o << typeid(*this).name() << ", degree = " << Degree()
       << ", n_rsf = " << NumRefShapeFunctions()
       << ", n_evln = " << NumEvaluationNodes();
     if ((ctrl_ & kout_evln) != 0) {
@@ -326,12 +313,6 @@ class ScalarReferenceFiniteElement {
     }
     return o;
   }
-
- protected:
-  /** type of underlying reference cell */
-  const lf::base::RefEl ref_el_;
-  /** polynomial degree */
-  const unsigned int degree_;
 
  public:
   /** @brief output control variable */
@@ -368,15 +349,18 @@ std::ostream& operator<<(std::ostream& o,
  * of the triangle.
  */
 template <typename SCALAR>
-class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  TriaLinearLagrangeFE(const TriaLinearLagrangeFE&) = default;
-  TriaLinearLagrangeFE(TriaLinearLagrangeFE&&) noexcept = default;
-  TriaLinearLagrangeFE& operator=(const TriaLinearLagrangeFE&) = default;
-  TriaLinearLagrangeFE& operator=(TriaLinearLagrangeFE&&) noexcept = default;
-  TriaLinearLagrangeFE()
-      : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kTria(), 1) {}
-  virtual ~TriaLinearLagrangeFE() = default;
+  FeLagrangeO1Tria(const FeLagrangeO1Tria&) = default;
+  FeLagrangeO1Tria(FeLagrangeO1Tria&&) noexcept = default;
+  FeLagrangeO1Tria& operator=(const FeLagrangeO1Tria&) = default;
+  FeLagrangeO1Tria& operator=(FeLagrangeO1Tria&&) noexcept = default;
+  FeLagrangeO1Tria() = default;
+  virtual ~FeLagrangeO1Tria() = default;
+
+  base::RefEl RefEl() const override { return base::RefEl::kTria(); }
+
+  unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
@@ -433,15 +417,13 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   Eigen::MatrixXd EvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<double>::RefEl().NodeCoords();
+    return RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  size_type NumEvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<double>::RefEl().NumNodes();
-  }
+  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
 };
 
 /**
@@ -458,15 +440,18 @@ class TriaLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
  * Refer to its documentation.
  */
 template <typename SCALAR>
-class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  QuadLinearLagrangeFE(const QuadLinearLagrangeFE&) = default;
-  QuadLinearLagrangeFE(QuadLinearLagrangeFE&&) noexcept = default;
-  QuadLinearLagrangeFE& operator=(const QuadLinearLagrangeFE&) = default;
-  QuadLinearLagrangeFE& operator=(QuadLinearLagrangeFE&&) noexcept = default;
-  QuadLinearLagrangeFE()
-      : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kQuad(), 1) {}
-  virtual ~QuadLinearLagrangeFE() = default;
+  FeLagrangeO1Quad(const FeLagrangeO1Quad&) = default;
+  FeLagrangeO1Quad(FeLagrangeO1Quad&&) noexcept = default;
+  FeLagrangeO1Quad& operator=(const FeLagrangeO1Quad&) = default;
+  FeLagrangeO1Quad& operator=(FeLagrangeO1Quad&&) noexcept = default;
+  FeLagrangeO1Quad() = default;
+  virtual ~FeLagrangeO1Quad() = default;
+
+  base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
+
+  unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: four bilinear basis functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
@@ -527,12 +512,10 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   Eigen::MatrixXd EvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
+    return RefEl().NodeCoords();
   }
 
-  size_type NumEvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
-  }
+  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
 };
 
 /**
@@ -550,17 +533,18 @@ class QuadLinearLagrangeFE final : public ScalarReferenceFiniteElement<SCALAR> {
  * of the edge.
  */
 template <typename SCALAR>
-class SegmentLinearLagrangeFE final
-    : public ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  SegmentLinearLagrangeFE(const SegmentLinearLagrangeFE&) = default;
-  SegmentLinearLagrangeFE(SegmentLinearLagrangeFE&&) noexcept = default;
-  SegmentLinearLagrangeFE& operator=(const SegmentLinearLagrangeFE&) = default;
-  SegmentLinearLagrangeFE& operator=(SegmentLinearLagrangeFE&&) noexcept =
-      default;
-  SegmentLinearLagrangeFE()
-      : ScalarReferenceFiniteElement<SCALAR>(lf::base::RefEl::kSegment(), 1) {}
-  virtual ~SegmentLinearLagrangeFE() = default;
+  FeLagrangeO1Segment(const FeLagrangeO1Segment&) = default;
+  FeLagrangeO1Segment(FeLagrangeO1Segment&&) noexcept = default;
+  FeLagrangeO1Segment& operator=(const FeLagrangeO1Segment&) = default;
+  FeLagrangeO1Segment& operator=(FeLagrangeO1Segment&&) noexcept = default;
+  FeLagrangeO1Segment() = default;
+  virtual ~FeLagrangeO1Segment() = default;
+
+  base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
+
+  unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
@@ -613,15 +597,13 @@ class SegmentLinearLagrangeFE final
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   Eigen::MatrixXd EvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NodeCoords();
+    return RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  size_type NumEvaluationNodes() const override {
-    return ScalarReferenceFiniteElement<SCALAR>::RefEl().NumNodes();
-  }
+  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
 };
 
 }  // namespace lf::fe

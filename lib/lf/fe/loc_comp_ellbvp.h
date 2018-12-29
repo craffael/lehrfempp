@@ -19,181 +19,9 @@
 #include <iostream>
 #include "lagr_fe.h"
 #include "mesh_function_traits.h"
+#include "precomputed_scalar_reference_finite_element.h"
 
 namespace lf::fe {
-
-/**
- * @brief Preparing reusable information for parametric Lagrangian finite
- * elements
- *
- * For _uniform_ _parametric_ Lagrangian finite element spaces local
- * computations applied to all celss of a mesh often rely on a single quadrature
- * rule for a particular cell type. Therefore the values and gradients of
- * reference shape functions can be precomputed at reference quadrature points
- * and stored for reuse on every cell. This is the purpose of this class.
- */
-class LocCompLagrFEPreprocessor {
- protected:
-  /** @brief Constructor: initializing local data
-   *
-   * @param fe_trie_p pointer to finite element to be used on triangles
-   * @param fe_quad_p pointer finite element for quadrilaterals
-   * @param loc_quad_order desired order of local quadrature, default value = 0.
-   *        If = 0, the quadrature order is determined from the polynomial
-   *        degree of the reference shape functions.
-   *
-   * @note null pointers mayb be passed. In this case the precomputations for
-   *       a particular type of element are skipped, an the number of local
-   * shape functions and quadrature points for that type is assumed to be zero.
-   *
-   * The two parametric finite elements for triangles and quadrilaterals have to
-   * be compatible in the sense that they all assign exactly one reference shape
-   * function to each vertex and the same number of interior shape functions
-   * to each edge.
-   *
-   * The constructor sets up local quadrature rules and fetches the values and
-   * gradients of references local shape functions in the quadrature points (on
-   * the reference element)
-   *
-   * The class also provides cell-type-controlled access methods to precomputed
-   * information on the reference element.
-   */
-  LocCompLagrFEPreprocessor(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
-      lf::quad::quadOrder_t loc_quad_order = 0);
-
-  /** @brief type-dependent query of quadrature points */
-  inline Eigen::MatrixXd qr_points(lf::base::RefEl ref_el) {
-    switch (ref_el) {
-      case lf::base::RefEl::kTria(): {
-        return qr_tria_.Points();
-      }
-      case lf::base::RefEl::kQuad(): {
-        return qr_quad_.Points();
-      }
-      default: { LF_VERIFY_MSG(false, "Illegal type " << ref_el); }
-    }
-    return Eigen::MatrixXd(0, 0);
-  }
-  /** @brief type-dependent query of quadrature weights */
-  inline Eigen::VectorXd qr_weights(lf::base::RefEl ref_el) {
-    switch (ref_el) {
-      case lf::base::RefEl::kTria(): {
-        return qr_tria_.Weights();
-      }
-      case lf::base::RefEl::kQuad(): {
-        return qr_quad_.Weights();
-      }
-      default: { LF_VERIFY_MSG(false, "Illegal type " << ref_el); }
-    }
-    return Eigen::VectorXd(0);
-  }
-  /** @brief type-dependent query of number of quadrature points */
-  inline size_type qr_num_pts(lf::base::RefEl ref_el) {
-    switch (ref_el) {
-      case lf::base::RefEl::kTria(): {
-        return Nqp_tria_;
-      }
-      case lf::base::RefEl::kQuad(): {
-        return Nqp_quad_;
-      }
-      default: { LF_VERIFY_MSG(false, "Illegal type " << ref_el); }
-    }
-    return 0;
-  }
-  /** @brief type-dependent total number of local shape functions */
-  inline size_type num_rsf(lf::base::RefEl ref_el) {
-    switch (ref_el) {
-      case lf::base::RefEl::kTria(): {
-        return Nrsf_tria_;
-      }
-      case lf::base::RefEl::kQuad(): {
-        return Nrsf_quad_;
-      }
-      default: { LF_VERIFY_MSG(false, "Illegal type " << ref_el); }
-    }
-    return 0;
-  }
-
-  inline const ScalarReferenceFiniteElement<double> &getRefFE(
-      base::RefEl ref_el) {
-    switch (ref_el) {
-      case base::RefEl::kTria():
-        return *fe_tria_p_;
-      case base::RefEl::kQuad():
-        return *fe_quad_p_;
-      default:
-        LF_VERIFY_MSG(false, "Error, only tria and quads are supported.");
-    }
-  }
-
-  /** @brief Matrix of values of reference shape functions at theorem
-   *        quadrature points in the reference element
-   * @param type of reference element (triangle or quadrilateral)
-   * @return an N_rsf x N_qpt matrix, each row corresponding to a reference
-   *         shape function, each column to a quadrature point.
-   */
-  inline const Eigen::MatrixXd &rsf_at_quadpts(lf::base::RefEl ref_el) {
-    if (ref_el == lf::base::RefEl::kQuad()) {
-      return rsf_quadpoints_quad_;
-    } else
-      return rsf_quadpoints_tria_;
-  }
-  /** @brief Vector of packed gradients of reference shape funtions at
-   *         reference quadrature points
-   * @param type of reference element (triangle or quadrilateral)
-   * @return array of matrices whose columns contain the gradients of all RFSs
-   * in a single quadrature point. The length of the array agrees with the
-   * number of quadrature points
-   */
-  inline const std::vector<Eigen::Matrix<double, 2, Eigen::Dynamic>>
-      &grad_rsf_at_quadpts(lf::base::RefEl ref_el) {
-    if (ref_el == lf::base::RefEl::kQuad()) {
-      return grad_quadpoint_quad_;
-    } else {
-      return grad_quadpoint_tria_;
-    }
-  }
-
-  /**
-   * @brief references to arrangement of local shape functions
-   */
-  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p_;
-  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p_;
-  /**
-   * @brief Numbers of local shape functions
-   */
-  size_type Nrsf_tria_{0}, Nrsf_quad_{0};
-  /**
-   * @brief Numbers of quadrature points
-   */
-  size_type Nqp_tria_{0}, Nqp_quad_{0};
-  /**
-   * @brief quadrature rules for both admissible types of cells
-   */
-  lf::quad::QuadRule qr_tria_, qr_quad_;
-  /**
-   * @brief Matrix of values of all reference shape functions at all quadrature
-   * points
-   *
-   * The rows correspond to the RSFs, the columns to the quadrature points
-   */
-  Eigen::MatrixXd rsf_quadpoints_tria_, rsf_quadpoints_quad_;
-  /**
-   * @brief array of matrices whose columns contain the gradients of all RFSs in
-   *        a single quadrature point
-   */
-  std::vector<Eigen::Matrix<double, 2, Eigen::Dynamic>> grad_quadpoint_tria_{};
-  std::vector<Eigen::Matrix<double, 2, Eigen::Dynamic>> grad_quadpoint_quad_{};
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_qr = 1;
-  static const unsigned int kout_rsfvals = 2;
-  static const unsigned int kout_gradvals = 4;
-};
 
 /**
  * @brief Class for local quadrature based computations for Lagrangian finite
@@ -223,7 +51,7 @@ class LocCompLagrFEPreprocessor {
  * @f$\gamma@f$.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
+class LagrangeFEEllBVPElementMatrix {
   static_assert(isMeshFunction<DIFF_COEFF>);
   static_assert(isMeshFunction<REACTION_COEFF>);
 
@@ -255,9 +83,8 @@ class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
   LagrangeFEEllBVPElementMatrix(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
-      DIFF_COEFF alpha, REACTION_COEFF gamma);
+      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, DIFF_COEFF alpha,
+      REACTION_COEFF gamma);
   /**
    * @brief All cells are considered active in the default implementation
    *
@@ -292,6 +119,10 @@ class LagrangeFEEllBVPElementMatrix : public LocCompLagrFEPreprocessor {
   /** Reaction coefficient */
   REACTION_COEFF gamma_;
   /** @} */
+
+  // fe_precomp_[i] contains precomputed reference finite element for ref_el i.
+  std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
+
  public:
   /** @brief output control variable */
   static unsigned int ctrl_;
@@ -307,23 +138,28 @@ unsigned int
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     LagrangeFEEllBVPElementMatrix(
-        std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_tria_p,
-        std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_quad_p,
+        std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
-    : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p),
-      alpha_(alpha),
-      gamma_(gamma) {}
+    : alpha_(alpha), gamma_(gamma), fe_precomp_() {
+  for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    auto fe = fe_space->ShapeFunctionLayout(ref_el);
+    fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
+        fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+  }
+}
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-typename LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF,
-                                       REACTION_COEFF>::ElemMat const
+typename lf::fe::LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF,
+                                               REACTION_COEFF>::ElemMat const
 LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
     const lf::mesh::Entity &cell) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
+  auto &pfe = fe_precomp_[ref_el.Id()];
+
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -337,87 +173,41 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
   const dim_t world_dim = geo_ptr->DimGlobal();
 
   const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr_points(ref_el)));
+      geo_ptr->IntegrationElement(pfe.Qr().Points()));
   LF_ASSERT_MSG(
-      determinants.size() == qr_num_pts(ref_el),
-      "Mismatch " << determinants.size() << " <-> " << qr_num_pts(ref_el));
+      determinants.size() == pfe.Qr().NumPoints(),
+      "Mismatch " << determinants.size() << " <-> " << pfe.Qr().NumPoints());
   // Fetch the transformation matrices for the gradients
   const Eigen::MatrixXd JinvT(
-      geo_ptr->JacobianInverseGramian(qr_points(ref_el)));
+      geo_ptr->JacobianInverseGramian(pfe.Qr().Points()));
   LF_ASSERT_MSG(
-      JinvT.cols() == 2 * qr_num_pts(ref_el),
-      "Mismatch " << JinvT.cols() << " <-> " << 2 * qr_num_pts(ref_el));
+      JinvT.cols() == 2 * pfe.Qr().NumPoints(),
+      "Mismatch " << JinvT.cols() << " <-> " << 2 * pfe.Qr().NumPoints());
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
 
   // compute values of alpha, gamma at quadrature points:
-  auto alphaval = alpha_(cell, qr_points(ref_el));
-  auto gammaval = gamma_(cell, qr_points(ref_el));
+  auto alphaval = alpha_(cell, pfe.Qr().Points());
+  auto gammaval = gamma_(cell, pfe.Qr().Points());
 
   // Element matrix
-  elem_mat_t mat(getRefFE(ref_el).NumRefShapeFunctions(),
-                 getRefFE(ref_el).NumRefShapeFunctions());
+  elem_mat_t mat(pfe.NumRefShapeFunctions(), pfe.NumRefShapeFunctions());
   mat.setZero();
 
   // Loop over quadrature points
-  for (int k = 0; k < qr_num_pts(ref_el); ++k) {
-    const double w = qr_weights(ref_el)[k] * determinants[k];
+  for (int k = 0; k < pfe.Qr().NumPoints(); ++k) {
+    const double w = pfe.Qr().Weights()[k] * determinants[k];
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        grad_rsf_at_quadpts(ref_el)[k]);
+                        pfe.PrecompGradientsReferenceShapeFunctions()[k]);
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
     mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                (gammaval[k] * rsf_at_quadpts(ref_el).col(k)) *
-                    (rsf_at_quadpts(ref_el).col(k).transpose()));
+                (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
+                    (pfe.PrecompReferenceShapeFunctions().col(k).transpose()));
   }
   return mat;
 }
-
-/**
- * @brief preprocessor class for local computations on edges
- *
- * Initialization of quadrature points and values of reference shape functions
- * in quadrature points. The information is stored in protected data members.
- */
-class LocCompLagrFEEdgePreprocessor {
- protected:
-  /**
-   * @brief Constructor: preprocessing using knowledge about quadrature rule
-   *
-   * @param fe_edge_p FE specification for a line segmentLinearLagrangeFE
-   *
-   * The finite element specification must be valid for this preprocessor class
-   */
-  LocCompLagrFEEdgePreprocessor(
-      std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p);
-
-  virtual ~LocCompLagrFEEdgePreprocessor() = default;
-
- protected:
-  lf::quad::QuadRule qr_; /**< quadrature rule */
-  size_type Nqp_{0};      /**< no of quadrature points */
-  size_type Nrsf_{0};     /**< no of reference shape functions */
-
-  /**
-   * @brief references to arrangement of local shape functions
-   */
-  std::shared_ptr<const ScalarReferenceFiniteElement<double>> fe_edge_p_;
-
-  /**
-   * @brief Matrix of values of all reference shape functions at all quadrature
-   * points
-   *
-   * The rows correspond to the RSFs, the columns to the quadrature points
-   */
-  Eigen::MatrixXd rsf_quadpoints_;
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_qr = 1;
-  static const unsigned int kout_rsfvals = 2;
-};
 
 /** @brief Quadrature-based computation of local mass matrix for an edge
  *
@@ -437,7 +227,7 @@ class LocCompLagrFEEdgePreprocessor {
  * @sa LagrangeFEEdgeMassMatrix
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
-class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
+class LagrangeFEEdgeMassMatrix {
  public:
   using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
   using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
@@ -447,7 +237,7 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
       @brief standard constructors
      * @{ */
   LagrangeFEEdgeMassMatrix(const LagrangeFEEdgeMassMatrix &) = delete;
-  LagrangeFEEdgeMassMatrix(LagrangeFEEdgeMassMatrix &&) = default;
+  LagrangeFEEdgeMassMatrix(LagrangeFEEdgeMassMatrix &&) noexcept = default;
   LagrangeFEEdgeMassMatrix &operator=(const LagrangeFEEdgeMassMatrix &) =
       delete;
   LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = default;
@@ -455,17 +245,20 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
   /**
    * @brief Constructor performing cell-independent initializations
    *
-   * @param fe_edeg_p pointer to FE specification for a segment
+   * @param fe_space Describes the shapefunctions
    * @param gamma coefficient function through functor object
-   * @param edge_selector predicate object selecting active to be covered in the
+   * @param edge_selector predicate object selecting active to be covered in
+   the
    * assembly
    */
   LagrangeFEEdgeMassMatrix(
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_edge_p,
-      COEFF gamma, EDGESELECTOR edge_selector = base::PredicateTrue{})
-      : LocCompLagrFEEdgePreprocessor(std::move(fe_edge_p)),
-        gamma_(gamma),
-        edge_sel_(edge_selector) {}
+      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, COEFF gamma,
+      EDGESELECTOR edge_selector = base::PredicateTrue{})
+      : gamma_(gamma), edge_sel_(edge_selector), fe_precomp_() {
+    auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
+    fe_precomp_ = PrecomputedScalarReferenceFiniteElement(
+        fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
+  }
 
   /**
    * @brief If true, then an edge is taken into account during assembly
@@ -486,9 +279,11 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
    *        which the mass matrix is needed
    * @return a small dense matrix, containing the element matrix.
    *
-   * Actual computation of the local edge mass based on numerical quadrature and
+   * Actual computation of the local edge mass based on numerical quadrature
+   and
    * mapping techniques. The order of the quadrature rule is tied to the
-   * polynomial degree of the underlying Lagrangian finite element spaces: for
+   * polynomial degree of the underlying Lagrangian finite element spaces:
+   for
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials o degree 2p.
    */
@@ -498,6 +293,7 @@ class LagrangeFEEdgeMassMatrix : public LocCompLagrFEEdgePreprocessor {
   COEFF gamma_;               // functor for coefficient
   EDGESELECTOR edge_sel_;     // Defines the active edges
   static unsigned int ctrl_;  // output control variable
+  PrecomputedScalarReferenceFiniteElement<SCALAR> fe_precomp_;
 };
 
 // deduction guide:
@@ -512,7 +308,8 @@ unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once
-// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// https://
+// developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class COEFF, class EDGESELECTOR>
 typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
@@ -527,29 +324,35 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
 
   // Obtain the metric factors for the quadrature points
-  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_.Points()));
-  LF_ASSERT_MSG(determinants.size() == Nqp_,
-                "Mismatch " << determinants.size() << " <-> " << Nqp_);
+  const Eigen::VectorXd determinants(
+      geo_ptr->IntegrationElement(fe_precomp_.Qr().Points()));
+  LF_ASSERT_MSG(determinants.size() == fe_precomp_.Qr().NumPoints(),
+                "Mismatch " << determinants.size() << " <-> "
+                            << fe_precomp_.Qr().NumPoints());
 
   // Element matrix
-  elem_mat_t mat(Nrsf_, Nrsf_);
+  elem_mat_t mat(fe_precomp_.NumRefShapeFunctions(),
+                 fe_precomp_.NumRefShapeFunctions());
   mat.setZero();
 
-  auto gammaval = gamma_(edge, qr_.Points());
+  auto gammaval = gamma_(edge, fe_precomp_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < Nqp_; ++k) {
+  for (int k = 0; k < determinants.size(); ++k) {
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
-    const auto w = (qr_.Weights()[k] * determinants[k]) * gammaval[k];
-    mat +=
-        ((rsf_quadpoints_.col(k)) * (rsf_quadpoints_.col(k).transpose())) * w;
+    const auto w =
+        (fe_precomp_.Qr().Weights()[k] * determinants[k]) * gammaval[k];
+    mat += ((fe_precomp_.PrecompReferenceShapeFunctions().col(k)) *
+            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).transpose())) *
+           w;
   }
   return mat;
 }
 
 /**
- * @brief Local computation of general element (load) vector for scalar finite
+ * @brief Local computation of general element (load) vector for scalar
+ finite
  * elements; volume contributions only
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
@@ -570,7 +373,7 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
 template <typename SCALAR, typename FUNCTOR>
-class ScalarFELocalLoadVector : public LocCompLagrFEPreprocessor {
+class ScalarFELocalLoadVector {
   static_assert(isMeshFunction<FUNCTOR>);
 
  public:
@@ -588,17 +391,17 @@ class ScalarFELocalLoadVector : public LocCompLagrFEPreprocessor {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_tria_p pointer to local shape functions to be used on triangles
+   * @param fe_tria_p pointer to local shape functions to be used on
+   triangles
    * @param fe_quad_p pointer local shape functions for quadrilaterals
    * @param f functor object for source function
    *
-   * Either pointer may be NULL, which is acceptable, if local computatioins for
+   * Either pointer may be NULL, which is acceptable, if local computatioins
+   for
    * that element type are not requested.
    */
   ScalarFELocalLoadVector(
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_quad_p,
-      FUNCTOR f);
+      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -613,6 +416,8 @@ class ScalarFELocalLoadVector : public LocCompLagrFEPreprocessor {
  private:
   /** @brief An object providing the source function */
   FUNCTOR f_;
+
+  std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
 
  public:
   /*
@@ -632,13 +437,17 @@ unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
-    std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_quad_p,
-    FUNCTOR f)
-    : LocCompLagrFEPreprocessor(fe_tria_p, fe_quad_p), f_(f) {}
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f)
+    : f_(f) {
+  for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    auto fe = fe_space->ShapeFunctionLayout(ref_el);
+    fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement<SCALAR>(
+        fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+  }
+}
 
 // TODO(craffael) remove const once
-// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename FUNCTOR>
 typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
@@ -647,6 +456,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
+  auto pfe = fe_precomp_[ref_el.Id()];
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -659,29 +469,28 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
 
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr_points(ref_el)));
+      geo_ptr->IntegrationElement(pfe.Qr().Points()));
   LF_ASSERT_MSG(
-      determinants.size() == qr_num_pts(ref_el),
-      "Mismatch " << determinants.size() << " <-> " << qr_num_pts(ref_el));
+      determinants.size() == pfe.Qr().NumPoints(),
+      "Mismatch " << determinants.size() << " <-> " << pfe.Qr().NumPoints());
   SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                    std::cout << "LOCVEC(" << ref_el << "): Metric factors:\n"
+                    std::cout << "LOCVEC(" << ref_el << "): Metric factors :\n "
                               << determinants.transpose() << std::endl);
   // Element vector
-  elem_vec_t vec(num_rsf(ref_el));
+  elem_vec_t vec(pfe.NumRefShapeFunctions());
   vec.setZero();
 
-  auto fval = f_(cell, qr_points(ref_el));
+  auto fval = f_(cell, pfe.Qr().Points());
 
   // Loop over quadrature points
   for (int k = 0; k < determinants.size(); ++k) {
-    SWITCHEDSTATEMENT(ctrl_, kout_loop,
-                      std::cout
-                          << "LOCVEC: [" << qr_points(ref_el).col(k).transpose()
-                          << "] -> ["
-                          << "weight = " << qr_weights(ref_el)[k] << std::endl);
+    SWITCHEDSTATEMENT(
+        ctrl_, kout_loop,
+        std::cout << "LOCVEC: [" << pfe.Qr().Points().transpose() << "] -> ["
+                  << "weight = " << pfe.Qr().Weights()[k] << std::endl);
     // Contribution of current quadrature point
-    vec += (qr_weights(ref_el)[k] * determinants[k] * fval[k]) *
-           rsf_at_quadpts(ref_el).col(k);
+    vec += (pfe.Qr().Weights()[k] * determinants[k] * fval[k]) *
+           pfe.PrecompReferenceShapeFunctions().col(k);
   }
   SWITCHEDSTATEMENT(ctrl_, kout_locvec,
                     std::cout << "LOCVEC = \n"
@@ -710,7 +519,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
-class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
+class ScalarFEEdgeLocalLoadVector {
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
   using ElemVec = const elem_vec_t;
@@ -732,10 +541,13 @@ class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
    * @param g functor object providing edge data
    */
   ScalarFEEdgeLocalLoadVector(
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_edge_p,
-      FUNCTOR g, EDGESELECTOR edge_sel = base::PredicateTrue{})
-      : LocCompLagrFEEdgePreprocessor(fe_edge_p), g_(g), edge_sel_(edge_sel) {}
-
+      std::shared_ptr<const FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR g,
+      EDGESELECTOR edge_sel = base::PredicateTrue{})
+      : g_(g), edge_sel_(edge_sel), pfe_() {
+    auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
+    pfe_ = PrecomputedScalarReferenceFiniteElement(
+        fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
+  }
   /** @brief Default implement: all edges are active */
   virtual bool isActive(const lf::mesh::Entity &cell) {
     return edge_sel_(cell);
@@ -752,6 +564,7 @@ class ScalarFEEdgeLocalLoadVector : public LocCompLagrFEEdgePreprocessor {
  private:
   FUNCTOR g_;              // source function
   EDGESELECTOR edge_sel_;  // selects edges
+  PrecomputedScalarReferenceFiniteElement<SCALAR> pfe_;
 
  public:
   /*
@@ -793,26 +606,29 @@ ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
 
   // Quadrature points on physical edge
-  const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_.Points()));
-  LF_ASSERT_MSG(mapped_qpts.cols() == Nqp_,
-                "Mismatch " << mapped_qpts.cols() << " <-> " << Nqp_);
+  const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(pfe_.Qr().Points()));
+  LF_ASSERT_MSG(
+      mapped_qpts.cols() == pfe_.Qr().NumPoints(),
+      "Mismatch " << mapped_qpts.cols() << " <-> " << pfe_.Qr().NumPoints());
 
   // Obtain the metric factors for the quadrature points
-  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_.Points()));
-  LF_ASSERT_MSG(determinants.size() == Nqp_,
-                "Mismatch " << determinants.size() << " <-> " << Nqp_);
+  const Eigen::VectorXd determinants(
+      geo_ptr->IntegrationElement(pfe_.Qr().Points()));
+  LF_ASSERT_MSG(
+      determinants.size() == pfe_.Qr().NumPoints(),
+      "Mismatch " << determinants.size() << " <-> " << pfe_.Qr().NumPoints());
 
   // Element vector
-  elem_vec_t vec(Nrsf_);
+  elem_vec_t vec(pfe_.NumRefShapeFunctions());
   vec.setZero();
 
-  auto g_vals = g_(edge, qr_.Points());
+  auto g_vals = g_(edge, pfe_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < Nqp_; ++k) {
+  for (int k = 0; k < pfe_.Qr().NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
-    const auto w = (qr_.Weights()[k] * determinants[k]) * g_vals[k];
-    vec += rsf_quadpoints_.col(k) * w;
+    const auto w = (pfe_.Qr().Weights()[k] * determinants[k]) * g_vals[k];
+    vec += pfe_.PrecompReferenceShapeFunctions().col(k) * w;
   }
   return vec;
 }

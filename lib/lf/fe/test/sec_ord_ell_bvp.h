@@ -151,20 +151,20 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
 SecOrdEllBVPLagrFELinSys(
-    const FeSpaceUniformScalar<SCALAR>& fe_space,
+    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
     std::shared_ptr<const SecondOrderEllipticBVP<SCALAR>> bvp_p) {
   LF_ASSERT_MSG(bvp_p != nullptr, "No valid BVP specified");
 
   // The underlying finite element mesh
-  const lf::mesh::Mesh& mesh{*fe_space.Mesh()};
+  const lf::mesh::Mesh& mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
-  const lf::assemble::DofHandler& dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler& dofh{fe_space->LocGlobMap()};
 
   // Preprocessing: count number of edges with different boundary conditions
   size_type no_Dirichlet_edges = 0;
   size_type no_Neumann_edges = 0;
   size_type no_impedance_edges = 0;
-  auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space.Mesh(), 1)};
+  auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
   for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
     if (bd_flags(edge)) {
       if (bvp_p->EssentialConditionsOnEdge(edge)) {
@@ -237,7 +237,7 @@ SecOrdEllBVPLagrFELinSys(
   // III: Fixing coefficients due to essential boundary conditions
   if (no_Dirichlet_edges > 0) {
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
-        fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment());
+        fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     LF_ASSERT_MSG(rfs_edge_p != nullptr, "FE specification for edges missing");
 
     // Obtain flags and values for degrees of freedom located on Dirichlet edges

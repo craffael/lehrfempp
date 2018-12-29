@@ -34,19 +34,18 @@ TEST(lf_gfe, lf_gfe_l2norm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>());
 
   // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   std::vector<double> zerovec(dofh.NoDofs(), 0.0);
 
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
   MeshFunctionL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
+      fe_space,
       MeshFunctionGlobal([](auto x) { return (x[0] * (1.0 - x[1])); }), 4);
   // loc_comp.ctrl_ = 255;
 
@@ -74,12 +73,12 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>());
 
   // Local-to-global index map
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NoDofs());
@@ -104,10 +103,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   // Directly compute L2 norm of FE function
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
-  MeshFunctionL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      MeshFunctionConstant(0.0));
+  MeshFunctionL2NormDifference loc_comp(fe_space, MeshFunctionConstant(0.0), 2);
 
   const double normsq_direct =
       std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
@@ -127,18 +123,19 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  FeSpaceLagrangeO1<double> fe_space(mesh_p);
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Local-to-global index map
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  auto &dofh = fe_space->LocGlobMap();
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NoDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
-  lf::fe::SecOrdBVPLagrFEFullInteriorGalMat(fe_space, MeshFunctionConstant(1.0),
-                                            MeshFunctionConstant(0.0), A);
+  std::shared_ptr<FeSpaceUniformScalar<double>> temp = fe_space;
+  SecOrdBVPLagrFEFullInteriorGalMat(temp, MeshFunctionConstant(1.0),
+                                    MeshFunctionConstant(0.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
@@ -155,9 +152,7 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   // Directly compute H1 seminorm of FE function
   // Helper object for computation of norm
   MeshFunctionL2GradientDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0)));
+      fe_space, MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0)), 2);
 
   const double normsq_direct =
       std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
@@ -178,21 +173,20 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>());
 
   // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   std::vector<double> zerovec(dofh.NoDofs(), 0.0);
 
   // Helper object for computation of norm
   // Function passed as a generic lambda expression
   MeshFunctionL2GradientDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()),
-      MeshFunctionGlobal(
-          [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); }),
+      fe_space, MeshFunctionGlobal([](auto x) {
+        return (Eigen::Vector2d() << x[1], -x[0]).finished();
+      }),
       4);
   // loc_comp.ctrl_ = 255;
 
@@ -208,15 +202,15 @@ TEST(lf_gfe, lf_gfe_lintp) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>());
 
   auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
   auto coeffvec{NodalProjection(fe_space, MeshFunctionGlobal(u))};
 
   // Local-to-global index mapped
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   EXPECT_EQ(coeffvec.size(), dofh.NoDofs())
       << "Coefficient vector length mismatch";
 
@@ -241,15 +235,15 @@ TEST(lf_gfe, set_dirbdc) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>(),
-      std::make_shared<SegmentLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>(),
+      std::make_shared<FeLagrangeO1Segment<double>>());
   // Specification of local shape functions for a edge
   auto fe_spec_edge_p{
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kSegment())};
+      fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment())};
   // Local to global index mapping
-  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Retrieve edges on the boundary
   lf::mesh::utils::CodimMeshDataSet<bool> bd_flags(
@@ -287,17 +281,16 @@ TEST(lf_gfe, set_dirbdc) {
 }
 
 // check whether linear function is interpolated exactly
-bool checkInterpolationLinear(const FeSpaceUniformScalar<double> &fe_space) {
+bool checkInterpolationLinear(
+    const std::shared_ptr<FeSpaceUniformScalar<double>> &fe_space) {
   // Model linear function
   auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
   auto coeffvec{NodalProjection(fe_space, u)};
   // Helper class for error computation
-  MeshFunctionL2NormDifference loc_comp(
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-      fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), u, 4);
+  MeshFunctionL2NormDifference loc_comp(fe_space, u, 4);
   // Actual compuation of error norm
-  double norm = NormOfDifference(fe_space.LocGlobMap(), loc_comp, coeffvec);
+  double norm = NormOfDifference(fe_space->LocGlobMap(), loc_comp, coeffvec);
   std::cout << "Norm = " << norm << std::endl;
   EXPECT_NEAR(norm, 0.0, 1E-6);
   return (std::fabs(norm) < 1.0E-6);
@@ -309,9 +302,9 @@ TEST(lf_gfe, lf_gfe_lintp_exact) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  FeSpaceUniformScalar<double> fe_space(
-      mesh_p, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>());
+  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
+      std::make_shared<FeLagrangeO1Quad<double>>());
   EXPECT_TRUE(checkInterpolationLinear(fe_space));
 }
 
@@ -340,9 +333,9 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
         .eval();
   });
 
-  auto errs{InterpolationErrors(
-      multi_mesh, f, grad_f, std::make_shared<TriaLinearLagrangeFE<double>>(),
-      std::make_shared<QuadLinearLagrangeFE<double>>())};
+  auto errs{InterpolationErrors(multi_mesh, f, grad_f,
+                                std::make_shared<FeLagrangeO1Tria<double>>(),
+                                std::make_shared<FeLagrangeO1Quad<double>>())};
 
   size_type L = errs.size();
   for (int l = 0; l < L; ++l) {

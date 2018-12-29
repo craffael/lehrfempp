@@ -29,7 +29,7 @@ TEST(lf_bvpfe, Neu_BVP_ass) {
   std::cout << "#### TEST: Assembly for Neumann BVP ###" << std::endl;
   // Right-hand side source function
   auto f = [](Eigen::Vector2d x) -> double {
-    return (std::sin(2 * M_PI * x[0]) * std::sin(2 * M_PI * x[1]));
+    return (std::sin(2 * base::kPi * x[0]) * std::sin(2 * base::kPi * x[1]));
   };
   // Neumann data
   auto h = [](Eigen::Vector2d /*x*/) -> double { return 1.0; };
@@ -44,7 +44,7 @@ TEST(lf_bvpfe, Neu_BVP_ass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space; lowest order Lagrangian finite elements
-  FeSpaceLagrangeO1<double> fe_space(mesh_p);
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Generate linear system
   auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
@@ -82,8 +82,8 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
   for (int l = 0; l < L; ++l) {
     std::shared_ptr<const mesh::Mesh> mesh_p{multi_mesh.getMesh(l)};
     // Set up global FE space; lowest order Lagrangian finite elements
-    FeSpaceLagrangeO1<double> fe_space(mesh_p);
-    const lf::assemble::DofHandler& dofh{fe_space.LocGlobMap()};
+    auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+    const lf::assemble::DofHandler& dofh{fe_space->LocGlobMap()};
 
     // Compute Galerkin matrix A and right-hand-side vector
     auto [A, phi] = SecOrdEllBVPLagrFELinSys<double>(fe_space, bvp_p);
@@ -93,13 +93,9 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
     Eigen::VectorXd sol_vec = solver.solve(phi);
     // Compute error norms
     // Helper class for L2 error computation
-    MeshFunctionL2NormDifference lc_L2(
-        fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-        fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), solution);
+    MeshFunctionL2NormDifference lc_L2(fe_space, solution, 2);
     // Helper class for H1 semi norm
-    MeshFunctionL2GradientDifference lc_H1(
-        fe_space.ShapeFunctionLayout(lf::base::RefEl::kTria()),
-        fe_space.ShapeFunctionLayout(lf::base::RefEl::kQuad()), sol_grad);
+    MeshFunctionL2GradientDifference lc_H1(fe_space, sol_grad, 2);
 
     double L2err = NormOfDifference(dofh, lc_L2, sol_vec);
     double H1serr = NormOfDifference(dofh, lc_H1, sol_vec);
