@@ -309,9 +309,9 @@ TEST(LocRefTest, MultipleRefinement) {
 
     std::shared_ptr<const mesh::Mesh> mesh = multi_mesh.getMesh(n_levels - 1);
 
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
-              << " cells," << std::endl;
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": "
+              << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
+              << " nodes, " << mesh->NumEntities(0) << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(*mesh);
@@ -395,9 +395,9 @@ void test_hybrid_2d_meshes(int selector) {
     std::shared_ptr<mesh::Mesh> mesh = multi_mesh.getMesh(l);
 
     std::cout << "### LEVEL " << l << " ####" << std::endl;
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
-              << " cells," << std::endl;
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": "
+              << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
+              << " nodes, " << mesh->NumEntities(0) << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(*mesh);

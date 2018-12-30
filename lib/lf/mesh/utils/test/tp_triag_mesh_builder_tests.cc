@@ -31,9 +31,9 @@ TEST(lf_mesh, buildStructuredMesh) {
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
-  EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
-  EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
-  EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
+  EXPECT_EQ(mesh_p->NumEntities(0), 8) << "Mesh should comprise 8 triangles";
+  EXPECT_EQ(mesh_p->NumEntities(1), 16) << "Mesh should have 16 edges";
+  EXPECT_EQ(mesh_p->NumEntities(2), 9) << "Mesh should have 9 vertices";
 
   std::cout << "Checking entity indexing" << std::endl;
   test_utils::checkEntityIndexing(*mesh_p);
@@ -59,9 +59,9 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
-  EXPECT_EQ(mesh_p->Size(0), 8) << "Mesh should comprise 8 triangles";
-  EXPECT_EQ(mesh_p->Size(1), 16) << "Mesh should have 16 edges";
-  EXPECT_EQ(mesh_p->Size(2), 9) << "Mesh should have 9 vertices";
+  EXPECT_EQ(mesh_p->NumEntities(0), 8) << "Mesh should comprise 8 triangles";
+  EXPECT_EQ(mesh_p->NumEntities(1), 16) << "Mesh should have 16 edges";
+  EXPECT_EQ(mesh_p->NumEntities(2), 9) << "Mesh should have 9 vertices";
 
   std::cout << "Checking entity indexing" << std::endl;
   test_utils::checkEntityIndexing(*mesh_p);

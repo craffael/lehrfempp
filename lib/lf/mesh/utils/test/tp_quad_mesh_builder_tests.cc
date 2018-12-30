@@ -36,9 +36,9 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 2) << "World dimension must be 2";
-  EXPECT_EQ(mesh_p->Size(0), 6) << "Mesh should comprise 6 squares";
-  EXPECT_EQ(mesh_p->Size(1), 17) << "Mesh should comprise 17 edges";
-  EXPECT_EQ(mesh_p->Size(2), 12) << "Mesh should have 12 vertices";
+  EXPECT_EQ(mesh_p->NumEntities(0), 6) << "Mesh should comprise 6 squares";
+  EXPECT_EQ(mesh_p->NumEntities(1), 17) << "Mesh should comprise 17 edges";
+  EXPECT_EQ(mesh_p->NumEntities(2), 12) << "Mesh should have 12 vertices";
 
   std::cout << "Checking entity indexing" << std::endl;
   test_utils::checkEntityIndexing(*mesh_p);

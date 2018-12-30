@@ -33,7 +33,7 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
     // Loop over codimensions
 
     for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
-      const size_type no_ent = mesh.Size(co_dim);
+      const size_type no_ent = mesh.NumEntities(co_dim);
       o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
         << std::endl;
 

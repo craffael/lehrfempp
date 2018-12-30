@@ -30,7 +30,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim)),
+        data_(mesh_->NumEntities(codim)),
         codim_(codim) {}
 
   /**
@@ -45,7 +45,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim), init),
+        data_(mesh_->NumEntities(codim), init),
         codim_(codim) {}
 
   /**

@@ -32,7 +32,7 @@ MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
   meshes_.push_back(base_mesh);
   {
     // Refinement edge has to be set for edges
-    refinement_edges_.emplace_back(base_mesh->Size(0), idx_nil);
+    refinement_edges_.emplace_back(base_mesh->NumEntities(0), idx_nil);
     for (const mesh::Entity &cell : base_mesh->Entities(0)) {
       lf::base::glb_idx_t cell_index = base_mesh->Index(cell);
       if (cell.RefEl() == lf::base::RefEl::kTria()) {
@@ -41,24 +41,24 @@ MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
     }  // end loop over cells
 
     // Setting up child information
-    std::vector<CellChildInfo> cell_child_info(base_mesh->Size(0));
-    std::vector<EdgeChildInfo> edge_child_info(base_mesh->Size(1));
-    std::vector<PointChildInfo> point_child_info(base_mesh->Size(2));
+    std::vector<CellChildInfo> cell_child_info(base_mesh->NumEntities(0));
+    std::vector<EdgeChildInfo> edge_child_info(base_mesh->NumEntities(1));
+    std::vector<PointChildInfo> point_child_info(base_mesh->NumEntities(2));
     cell_child_infos_.push_back(std::move(cell_child_info));
     edge_child_infos_.push_back(std::move(edge_child_info));
     point_child_infos_.push_back(std::move(point_child_info));
   }
   {
     // No parents for entities on the coarsest level
-    std::vector<ParentInfo> cell_parent_info(base_mesh->Size(0));
-    std::vector<ParentInfo> edge_parent_info(base_mesh->Size(1));
-    std::vector<ParentInfo> point_parent_info(base_mesh->Size(2));
+    std::vector<ParentInfo> cell_parent_info(base_mesh->NumEntities(0));
+    std::vector<ParentInfo> edge_parent_info(base_mesh->NumEntities(1));
+    std::vector<ParentInfo> point_parent_info(base_mesh->NumEntities(2));
     parent_infos_.push_back({std::move(cell_parent_info),
                              std::move(edge_parent_info),
                              std::move(point_parent_info)});
   }
   edge_marked_.push_back(
-      std::move(std::vector<bool>(base_mesh->Size(1), false)));
+      std::move(std::vector<bool>(base_mesh->NumEntities(1), false)));
 }
 
 void MeshHierarchy::RefineRegular(RefPat ref_pat) {
@@ -72,11 +72,11 @@ void MeshHierarchy::RefineRegular(RefPat ref_pat) {
   std::vector<EdgeChildInfo> &finest_edge_ci(edge_child_infos_.back());
   std::vector<CellChildInfo> &finest_cell_ci(cell_child_infos_.back());
 
-  LF_VERIFY_MSG(finest_point_ci.size() == finest_mesh.Size(2),
+  LF_VERIFY_MSG(finest_point_ci.size() == finest_mesh.NumEntities(2),
                 "length mismatch PointChildInfo vector");
-  LF_VERIFY_MSG(finest_edge_ci.size() == finest_mesh.Size(1),
+  LF_VERIFY_MSG(finest_edge_ci.size() == finest_mesh.NumEntities(1),
                 "length mismatch EdgeChildInfo vector");
-  LF_VERIFY_MSG(finest_cell_ci.size() == finest_mesh.Size(0),
+  LF_VERIFY_MSG(finest_cell_ci.size() == finest_mesh.NumEntities(0),
                 "length mismatch CellChildInfo vector");
 
   // Flag all points as to be copied
@@ -110,11 +110,11 @@ void MeshHierarchy::RefineMarked() {
   std::vector<EdgeChildInfo> &finest_edge_ci(edge_child_infos_.back());
   std::vector<CellChildInfo> &finest_cell_ci(cell_child_infos_.back());
 
-  LF_VERIFY_MSG(finest_point_ci.size() == finest_mesh.Size(2),
+  LF_VERIFY_MSG(finest_point_ci.size() == finest_mesh.NumEntities(2),
                 "length mismatch PointChildInfo vector");
-  LF_VERIFY_MSG(finest_edge_ci.size() == finest_mesh.Size(1),
+  LF_VERIFY_MSG(finest_edge_ci.size() == finest_mesh.NumEntities(1),
                 "length mismatch EdgeChildInfo vector");
-  LF_VERIFY_MSG(finest_cell_ci.size() == finest_mesh.Size(0),
+  LF_VERIFY_MSG(finest_cell_ci.size() == finest_mesh.NumEntities(0),
                 "length mismatch CellChildInfo vector");
 
   // Flag all points as to be copied
@@ -492,7 +492,7 @@ void MeshHierarchy::PerformRefinement() {
     // Visit all cells, examine their refinement patterns, retrieve indices of
     // their sub-entities, and those of the children.
     std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
-    LF_VERIFY_MSG(cell_child_info.size() == parent_mesh.Size(0),
+    LF_VERIFY_MSG(cell_child_info.size() == parent_mesh.NumEntities(0),
                   "Size mismatch for CellChildInfos");
     for (const mesh::Entity &cell : parent_mesh.Entities(0)) {
       // type of cell
@@ -1265,35 +1265,36 @@ void MeshHierarchy::PerformRefinement() {
   mesh::Mesh &child_mesh(*meshes_.back());
 
   CONTROLLEDSTATEMENT(output_ctrl_, 10,
-                      std::cout << "Child mesh" << child_mesh.Size(2)
-                                << " nodes, " << child_mesh.Size(1)
-                                << " edges, " << child_mesh.Size(0) << " cells."
-                                << std::endl;)
+                      std::cout << "Child mesh" << child_mesh.NumEntities(2)
+                                << " nodes, " << child_mesh.NumEntities(1)
+                                << " edges, " << child_mesh.NumEntities(0)
+                                << " cells." << std::endl;)
 
   // Create space for data pertaining to the new mesh
   // Note that references to vectors may become invalid
   {
     // Arrays containing parent information
     parent_infos_.push_back(
-        {std::move(std::vector<ParentInfo>(child_mesh.Size(0))),
-         std::move(std::vector<ParentInfo>(child_mesh.Size(1))),
-         std::move(std::vector<ParentInfo>(child_mesh.Size(2)))});
+        {std::move(std::vector<ParentInfo>(child_mesh.NumEntities(0))),
+         std::move(std::vector<ParentInfo>(child_mesh.NumEntities(1))),
+         std::move(std::vector<ParentInfo>(child_mesh.NumEntities(2)))});
 
     // Initialize (empty) refinement information for newly created fine mesh
     // Same code as in the constructor of MeshHierarchy
-    std::vector<CellChildInfo> fine_cell_child_info(child_mesh.Size(0));
-    std::vector<EdgeChildInfo> fine_edge_child_info(child_mesh.Size(1));
-    std::vector<PointChildInfo> fine_point_child_info(child_mesh.Size(2));
+    std::vector<CellChildInfo> fine_cell_child_info(child_mesh.NumEntities(0));
+    std::vector<EdgeChildInfo> fine_edge_child_info(child_mesh.NumEntities(1));
+    std::vector<PointChildInfo> fine_point_child_info(
+        child_mesh.NumEntities(2));
     cell_child_infos_.push_back(std::move(fine_cell_child_info));
     edge_child_infos_.push_back(std::move(fine_edge_child_info));
     point_child_infos_.push_back(std::move(fine_point_child_info));
 
     // Array containing information about refinement edges
     refinement_edges_.push_back(
-        std::move(std::vector<sub_idx_t>(child_mesh.Size(0), idx_nil)));
+        std::move(std::vector<sub_idx_t>(child_mesh.NumEntities(0), idx_nil)));
 
     // Finally set up vector for edge flags
-    edge_marked_.emplace_back(child_mesh.Size(1), false);
+    edge_marked_.emplace_back(child_mesh.NumEntities(1), false);
   }
 
   // Finally, we have to initialize the parent pointers for the entities of the
@@ -1306,11 +1307,11 @@ void MeshHierarchy::PerformRefinement() {
     std::vector<ParentInfo> &fine_edge_parent_info(parent_infos_.back()[1]);
     std::vector<ParentInfo> &fine_cell_parent_info(parent_infos_.back()[0]);
 
-    LF_VERIFY_MSG(fine_node_parent_info.size() == child_mesh.Size(2),
+    LF_VERIFY_MSG(fine_node_parent_info.size() == child_mesh.NumEntities(2),
                   "fine_node_parent_info size mismatch");
-    LF_VERIFY_MSG(fine_edge_parent_info.size() == child_mesh.Size(1),
+    LF_VERIFY_MSG(fine_edge_parent_info.size() == child_mesh.NumEntities(1),
                   "fine_edge_parent_info size mismatch");
-    LF_VERIFY_MSG(fine_cell_parent_info.size() == child_mesh.Size(0),
+    LF_VERIFY_MSG(fine_cell_parent_info.size() == child_mesh.NumEntities(0),
                   "fine_edge_parent_info size mismatch");
 
     // Visit all nodes of the parent mesh and retrieve their children by index
@@ -1441,7 +1442,7 @@ void MeshHierarchy::PerformRefinement() {
           const sub_idx_t fine_cell_child_number =
               (parent_infos_.back())[0][cell_index].child_number;
           const glb_idx_t parent_index = parent_mesh.Index(*parent_ptr);
-          LF_VERIFY_MSG(parent_index < parent_mesh.Size(0),
+          LF_VERIFY_MSG(parent_index < parent_mesh.NumEntities(0),
                         "parent_index = " << parent_index << " out of range");
 
           CONTROLLEDSTATEMENT(

@@ -37,7 +37,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       // Output parent information for nodes
       const std::vector<ParentInfo> &pt_parent_info(
           hier_mesh.ParentInfos(level, 2));
-      const size_type no_nodes = mesh->Size(2);
+      const size_type no_nodes = mesh->NumEntities(2);
       for (int k = 0; k < no_nodes; k++) {
         file << "PTPAR(" << k + 1 << ",:) = ["
              << normalize_idx(pt_parent_info[k].parent_index) << " , "
@@ -50,7 +50,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       // Output parent information for edge
       const std::vector<ParentInfo> &ed_parent_info(
           hier_mesh.ParentInfos(level, 1));
-      const size_type no_edges = mesh->Size(1);
+      const size_type no_edges = mesh->NumEntities(1);
       for (int k = 0; k < no_edges; k++) {
         file << "EDPAR(" << k + 1 << ",:) = ["
              << normalize_idx(ed_parent_info[k].parent_index) << " , "
@@ -64,7 +64,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       const std::vector<ParentInfo> &cell_parent_info(
           hier_mesh.ParentInfos(level, 0));
       const std::vector<glb_idx_t> &ref_eds(hier_mesh.RefinementEdges(level));
-      const size_type no_cells = mesh->Size(0);
+      const size_type no_cells = mesh->NumEntities(0);
       for (int k = 0; k < no_cells; k++) {
         file << "CELLPAR(" << k + 1 << ",:) = ["
              << normalize_idx(cell_parent_info[k].parent_index) << " , "

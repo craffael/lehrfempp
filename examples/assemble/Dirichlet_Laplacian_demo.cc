@@ -138,8 +138,9 @@ double L2ErrorLinearFEDirichletLaplacian(
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_basic,
       std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
-                << mesh_p->Size(0) << " cells, " << mesh_p->Size(1)
-                << " edges, " << mesh_p->Size(2) << " nodes" << std::endl;)
+                << mesh_p->NumEntities(0) << " cells, "
+                << mesh_p->NumEntities(1) << " edges, "
+                << mesh_p->NumEntities(2) << " nodes" << std::endl;)
   SWITCHEDSTATEMENT(
       dbg_ctrl, dbg_mesh,
       const int tmp_mesh_ctrl = lf::mesh::hybrid2d::Mesh::output_ctrl_;
@@ -349,9 +350,9 @@ int main(int argc, const char **argv) {
     }
     // At this point a pointer to the mesh is stored in mesh_p
     // Output summary information about the coarsest mesh
-    std::cout << "Coarse mesh: " << mesh_p->Size(0) << " cells, "
-              << mesh_p->Size(1) << " edges, " << mesh_p->Size(2) << " vertices"
-              << std::endl;
+    std::cout << "Coarse mesh: " << mesh_p->NumEntities(0) << " cells, "
+              << mesh_p->NumEntities(1) << " edges, " << mesh_p->NumEntities(2)
+              << " vertices" << std::endl;
     std::cout << reflevels << " refinement levels requested" << std::endl;
 
     // Problem data provided by function pointers
