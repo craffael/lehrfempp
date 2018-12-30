@@ -28,7 +28,7 @@ target_link_libraries(lf.examples.assemble.Dirichlet_Laplacian_demo
   lf.refinement
   lf.assemble
   lf.io
-  lf.fe
+  lf.lagrfe
   )
 
 target_compile_features(lf.examples.assemble.Dirichlet_Laplacian_demo PUBLIC cxx_std_17)
