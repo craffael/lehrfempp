@@ -171,8 +171,8 @@ class ScalarReferenceFiniteElement {
    * reference element, that is =0 for points, =1 for edges, =2 for triangles
    * and quadrilaterals
    *
-   * @return array of *row vectors*. The i-th array element contains the values
-   *         of the i-th shape function in the passed points.
+   * @return An Eigen Matrix of size `NumRefShapeFunctions() x refcoords.cols()`
+   * which contains the shape functions evaluated at every quadrature point.
    *
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler or the documentation of the
@@ -187,16 +187,16 @@ class ScalarReferenceFiniteElement {
    * reference triangle. Let us assume that the `refcoords` argument is a 2x2
    * matrix \f$[\mathbf{x}_1\;\mathbf{x}_2]\f$, which corresponds to passing
    * the coordinates of two points in the reference triangle. Then this method
-   * will return a vector of length 3 of row vectors of size 2:
+   * will return a `3x2` matrix:
    * \f[
-        \left\{[\hat{b}^1(\mathbf{x}_1)\; \hat{b}^1(\mathbf{x}_2)],
-          [\hat{b}^2(\mathbf{x}_1)\; \hat{b}^2(\mathbf{x}_2)],
-          [\hat{b}^3(\mathbf{x}_1)\; \hat{b}^3(\mathbf{x}_2)]\right\}\;.
+        \begin{pmatrix}\hat{b}^1(\mathbf{x}_1) & \hat{b}^1(\mathbf{x}_2) \\
+          \hat{b}^2(\mathbf{x}_1) & \hat{b}^2(\mathbf{x}_2) \\
+          \hat{b}^3(\mathbf{x}_1)\ & \hat{b}^3(\mathbf{x}_2) \end{pmatrix}
      \f]
    *
    */
-  virtual std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
-      const Eigen::MatrixXd& refcoords) const = 0;
+  virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
    * @brief Computation of the gradients of _all_ reference shape functions in a
@@ -204,15 +204,31 @@ class ScalarReferenceFiniteElement {
    *
    * @param refcoords coordinates of N points in the reference cell passed as
    *                  columns of a matrix of size dim x N.
-   * @return array of _matrices_. The i-th array element contains the values
-   *         of the gradients of the i-th shape function at the points passed
-   *         in `refcoords` in its _columns_.
+   * @return An Eigen Matrix of size `NumRefShapeFunctions() x (dim *
+   * refcoords.cols())` where `dim` is the dimension of the reference
+   * finite element.
+   *
    *
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler.
+   *
+   * ### Example: Triangular Linear Lagrangian finite elements
+   *
+   * There are three reference shape functions
+   * \f$\hat{b}^1,\hat{b}^2,\hat{b}^3\f$ associated with the vertices of the
+   * reference triangle. Let us assume that the `refcoords` argument is a 2x2
+   * matrix \f$[\mathbf{x}_1\;\mathbf{x}_2]\f$, which corresponds to passing
+   * the coordinates of two points in the reference triangle. Then this method
+   * will return a `3x4` matrix:
+   * \f[
+  \begin{pmatrix}
+  \grad^T\hat{b}^1(\mathbf{x}_1) & \grad^T\hat{b}^1(\mathbf{x}_2) \\
+  \grad^T\hat{b}^2(\mathbf{x}_1) & \grad^T\hat{b}^2(\mathbf{x}_2) \\
+  \grad^T\hat{b}^3(\mathbf{x}_1) & \grad^T\hat{b}^3(\mathbf{x}_2)
+  \end{pmatrix} \f]
    */
-  virtual std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd& refcoords) const = 0;
+  virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
    * @brief Returns reference coordinates of "evaluation nodes" for evaluation
@@ -387,30 +403,33 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
-      const Eigen::MatrixXd& refcoords) const override {
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::RowVectorXd> ret{
-        (Eigen::RowVectorXd::Constant(1, n_pts, 1.0) - refcoords.row(0) -
-         refcoords.row(1)),
-        refcoords.row(0), refcoords.row(1)};
-    return ret;
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        3, refcoords.cols());
+    result.row(0) = Eigen::RowVectorXd::Ones(refcoords.cols()) -
+                    refcoords.row(0) - refcoords.row(1);
+    result.block(1, 0, 2, refcoords.cols()) = refcoords;
+    return result;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::MatrixXd> ret{
-        (Eigen::Vector2d::Constant(-1.0).replicate(1, n_pts)),
-        ((Eigen::Vector2d() << 1.0, 0.0).finished()).replicate(1, n_pts),
-        ((Eigen::Vector2d() << 0.0, 1.0).finished()).replicate(1, n_pts)};
-    return ret;
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        3, 2 * refcoords.cols());
+    result.row(0) = Eigen::RowVectorXd::Constant(2 * n_pts, -1);
+    result.row(1) = Eigen::RowVector2d(1., 0.).replicate(1, n_pts);
+    result.row(2) = Eigen::RowVector2d(0., 1.).replicate(1, n_pts);
+    return result;
   }
 
   /** @brief Evalutation nodes are just the vertices of the triangle
@@ -475,40 +494,51 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
-      const Eigen::MatrixXd& refcoords) const override {
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    const std::vector<Eigen::RowVectorXd> ret{
+
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        4, refcoords.cols());
+
+    result.row(0) =
         ((1 - refcoords.row(0).array()) * (1 - refcoords.row(1).array()))
-            .matrix(),
-        ((refcoords.row(0).array()) * (1 - refcoords.row(1).array())).matrix(),
-        ((refcoords.row(0).array()) * (refcoords.row(1).array())).matrix(),
-        ((1 - refcoords.row(0).array()) * (refcoords.row(1).array())).matrix()};
-    return ret;
+            .matrix();
+    result.row(1) =
+        ((refcoords.row(0).array()) * (1 - refcoords.row(1).array())).matrix();
+    result.row(2) =
+        ((refcoords.row(0).array()) * (refcoords.row(1).array())).matrix();
+    result.row(3) =
+        ((1 - refcoords.row(0).array()) * (refcoords.row(1).array())).matrix();
+
+    return result;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    const size_type n_pts(refcoords.cols());
+    size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::MatrixXd> ret{
-        (Eigen::MatrixXd(2, n_pts) << (refcoords.row(1).array() - 1.0).matrix(),
-         (refcoords.row(0).array() - 1.0).matrix())
-            .finished(),
-        (Eigen::MatrixXd(2, n_pts) << (1.0 - refcoords.row(1).array()).matrix(),
-         (-refcoords.row(0).array()).matrix())
-            .finished(),
-        (Eigen::MatrixXd(2, n_pts) << (refcoords.row(1).array()).matrix(),
-         (refcoords.row(0).array()).matrix())
-            .finished(),
-        (Eigen::MatrixXd(2, n_pts) << (-refcoords.row(1).array()).matrix(),
-         (1.0 - refcoords.row(0).array()).matrix())
-            .finished()};
-    return ret;
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(4, 2 * n_pts);
+
+    // reshape the result matrix into a 8xn_pts matrix
+    Eigen::Map<Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
+               Eigen::AutoAlign>
+        temp(&result(0, 0), 8, n_pts);
+    temp.row(0) = refcoords.row(1).array() - 1.0;
+    temp.row(1) = 1.0 - refcoords.row(1).array();
+    temp.row(2) = refcoords.row(1).array();
+    temp.row(3) = -refcoords.row(1).array();
+    temp.row(4) = refcoords.row(0).array() - 1.0;
+    temp.row(5) = -refcoords.row(0).array();
+    temp.row(6) = refcoords.row(0).array();
+    temp.row(7) = 1.0 - refcoords.row(0).array();
+
+    return result;
   }
 
   Eigen::MatrixXd EvaluationNodes() const override {
@@ -569,28 +599,34 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
-      const Eigen::MatrixXd& refcoords) const override {
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
-    std::vector<Eigen::RowVectorXd> ret{
-        (Eigen::RowVectorXd::Constant(1, n_pts, 1.0) - refcoords.row(0)),
-        refcoords.row(0)};
-    return ret;
+
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        2, refcoords.cols());
+    result.row(0) = Eigen::RowVectorXd::Constant(1, n_pts, 1.0) - refcoords;
+    result.row(1) = refcoords;
+
+    return result;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
 
-    std::vector<Eigen::MatrixXd> ret{
-        (Eigen::MatrixXd::Constant(1, n_pts, -1.0)),
-        (Eigen::MatrixXd::Constant(1, n_pts, 1.0))};
-    return ret;
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        2, refcoords.cols());
+    result.row(0) = Eigen::MatrixXd::Constant(1, n_pts, -1.0);
+    result.row(1) = Eigen::MatrixXd::Constant(1, n_pts, 1.0);
+
+    return result;
   }
 
   /** @brief Evalutation nodes are just the vertices of the triangle

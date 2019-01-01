@@ -318,11 +318,11 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   const dim_t world_dim = geo_ptr->DimGlobal();
 
   // Obtain cell--type depend but cell-independent data
-  const Eigen::MatrixXd &qr_Points{pfe.Qr().Points()};
-  const Eigen::VectorXd &qr_Weights{pfe.Qr().Weights()};
-  const size_type qr_NumPts = pfe.Qr().NumPoints();
-  const size_type num_LSF = pfe.NumRefShapeFunctions();
-  const auto gradrsf_QuadPts{pfe.PrecompGradientsReferenceShapeFunctions()};
+  auto &qr_Points{pfe.Qr().Points()};
+  auto &qr_Weights{pfe.Qr().Weights()};
+  size_type qr_NumPts = pfe.Qr().NumPoints();
+  size_type num_LSF = pfe.NumRefShapeFunctions();
+  auto gradrsf_QuadPts = pfe.PrecompGradientsReferenceShapeFunctions();
 
   SWITCHEDSTATEMENT(ctrl_, kout_cell,
                     std::cout << ref_el << ", (Nlsf = " << num_LSF
@@ -352,8 +352,9 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   for (int k = 0; k < qr_NumPts; ++k) {
     // Value of the gradient of the finite element function at quadrature point
     // Transformed gradients
-    const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        gradrsf_QuadPts[k]);
+    const auto trf_grad(
+        JinvT.block(0, 2 * k, world_dim, 2) *
+        gradrsf_QuadPts.block(0, 2 * k, gradrsf_QuadPts.rows(), 2).transpose());
     // Loop over local shape functions/dofs to compute the value of
     // the finite element function in the quadrature point
     Eigen::Matrix<dof_t, Eigen::Dynamic, 1> grad_uh_val(world_dim, 1);

@@ -10,6 +10,7 @@
 #ifndef __e281cd0ab7fb476e9315a3dda7f45ffe
 #define __e281cd0ab7fb476e9315a3dda7f45ffe
 
+#include <Eigen/src/Core/util/ForwardDeclarations.h>
 #include <lf/quad/quad.h>
 #include <memory>
 #include "fe_space_uniform_scalar.h"
@@ -17,8 +18,8 @@
 namespace lf::lagrfe {
 
 /**
- * @brief Represents a ScalarReferenceFiniteElement with precomputed values at
- * the nodes of a quadrature rule.
+ * @brief Helper class which stores a ScalarReferenceFiniteElement with
+ * precomputed values at the nodes of a quadrature rule.
  * @tparam SCALAR The scalar type of the shape functions.
  *
  * This class does essentially three things:
@@ -44,19 +45,8 @@ class PrecomputedScalarReferenceFiniteElement
       : ScalarReferenceFiniteElement<SCALAR>(),
         fe_(std::move(fe)),
         qr_(std::move(qr)),
-        shap_fun_(fe_->NumRefShapeFunctions(), qr_.NumPoints()),
-        grad_shape_fun_(
-            qr_.NumPoints(),
-            Eigen::MatrixXd(fe_->Dimension(), fe_->NumRefShapeFunctions())) {
-    auto temp = fe_->EvalReferenceShapeFunctions(qr_.Points());
-    auto temp2 = fe_->GradientsReferenceShapeFunctions(qr_.Points());
-    for (int i = 0; i < temp.size(); ++i) {
-      shap_fun_.row(i) = temp[i];
-      for (int j = 0; j < qr_.NumPoints(); ++j) {
-        grad_shape_fun_[j].col(i) = temp2[i].col(j);
-      }
-    }
-  }
+        shap_fun_(fe_->EvalReferenceShapeFunctions(qr_.Points())),
+        grad_shape_fun_(fe_->GradientsReferenceShapeFunctions(qr_.Points())) {}
 
   base::RefEl RefEl() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
@@ -82,12 +72,13 @@ class PrecomputedScalarReferenceFiniteElement
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NumRefShapeFunctions(codim, subidx);
   }
-  std::vector<Eigen::RowVectorXd> EvalReferenceShapeFunctions(
+
+  Eigen::MatrixXd EvalReferenceShapeFunctions(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->EvalReferenceShapeFunctions(local);
   }
-  std::vector<Eigen::MatrixXd> GradientsReferenceShapeFunctions(
+  Eigen::MatrixXd GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->GradientsReferenceShapeFunctions(local);
@@ -132,8 +123,7 @@ class PrecomputedScalarReferenceFiniteElement
   /**
    * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Weights())`
    */
-  const std::vector<Eigen::MatrixXd>& PrecompGradientsReferenceShapeFunctions()
-      const {
+  const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return grad_shape_fun_;
   }
@@ -142,7 +132,7 @@ class PrecomputedScalarReferenceFiniteElement
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_;
   quad::QuadRule qr_;
   Eigen::MatrixXd shap_fun_;
-  std::vector<Eigen::MatrixXd> grad_shape_fun_;
+  Eigen::MatrixXd grad_shape_fun_;
 };
 
 }  // namespace lf::lagrfe

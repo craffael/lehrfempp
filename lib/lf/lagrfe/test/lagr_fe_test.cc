@@ -35,17 +35,14 @@ bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
 
   // Evaluate reference shape functions in evaluation nodes
   const size_type N_rsf = fe_desc.NumRefShapeFunctions();
-  const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_at_evln{
-      fe_desc.EvalReferenceShapeFunctions(evl_nodes)};
-  EXPECT_EQ(rsf_at_evln.size(), N_rsf) << "No. rsf mismatch";
+  auto rsf_at_evln = fe_desc.EvalReferenceShapeFunctions(evl_nodes);
+  EXPECT_EQ(rsf_at_evln.rows(), N_rsf) << "No. rsf mismatch";
 
   // Form random linear combination and store it values
   // in the evaluation nodes
   Eigen::RowVectorXd rand_coeffs{Eigen::RowVectorXd::Random(N_rsf)};
-  Eigen::RowVectorXd nodvals{Eigen::RowVectorXd::Zero(N_evln)};
-  for (int k = 0; k < N_rsf; ++k) {
-    nodvals += rand_coeffs[k] * rsf_at_evln[k];
-  }
+  Eigen::RowVectorXd nodvals = rand_coeffs * rsf_at_evln;
+
   // Reconstruct linear combination
   Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> coeffs{
       fe_desc.NodalValuesToDofs(nodvals)};
@@ -83,9 +80,8 @@ bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
 
   // Evaluate reference shape functions in evaluation nodes
   const size_type N_rsf = fe_desc.NumRefShapeFunctions();
-  const std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic>> rsf_at_evln{
-      fe_desc.EvalReferenceShapeFunctions(evl_nodes)};
-  EXPECT_EQ(rsf_at_evln.size(), N_rsf) << "No. rsf mismatch";
+  auto rsf_at_evln = fe_desc.EvalReferenceShapeFunctions(evl_nodes);
+  EXPECT_EQ(rsf_at_evln.rows(), N_rsf) << "No. rsf mismatch";
 
   // Test makes sense only, if the number of local shape functions
   // agrees with the number of evaluation nodes
@@ -98,10 +94,8 @@ bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
       fe_desc.NodalValuesToDofs(rand_vals)};
 
   // Evaluate linear combination of basis functions at evaluation nodes
-  Eigen::RowVectorXd nodvals{Eigen::RowVectorXd::Zero(N_evln)};
-  for (int k = 0; k < N_rsf; ++k) {
-    nodvals += coeffs[k] * rsf_at_evln[k];
-  }
+  Eigen::RowVectorXd nodvals = coeffs * rsf_at_evln;
+
   // Check agreement of values
   EXPECT_DOUBLE_EQ((nodvals - rand_vals).norm(), 0.0)
       << "Value mismatch" << nodvals << " <-> " << rand_vals;
@@ -135,14 +129,24 @@ TEST(lf_fe, lf_fe_linfe) {
     EXPECT_EQ(tlfe.NumRefShapeFunctions(2, 0), 1);
 
     auto rsf_vals = tlfe.EvalReferenceShapeFunctions(refcoords);
-    for (const auto &v : rsf_vals) {
-      std::cout << "Tria: RSF values: " << v << std::endl;
-    }
-    for (const auto &v : tlfe.GradientsReferenceShapeFunctions(refcoords)) {
-      std::cout << "Tria: RSF gradients:\n " << v << std::endl;
-    }
-    std::cout << "Tria: Evaluation nodes\n"
-              << tlfe.EvaluationNodes() << std::endl;
+    EXPECT_EQ(rsf_vals.rows(), 3);
+    EXPECT_EQ(rsf_vals.cols(), 3);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 0), 0.5);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 0), 0.3);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 0), 0.2);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 1), 0.4);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 1), 0.1);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 1), 0.5);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 2), 0.2);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 2), 0.7);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 2), 0.1);
+
+    EXPECT_TRUE(
+        tlfe.EvalReferenceShapeFunctions(base::RefEl::kTria().NodeCoords())
+            .isApprox(Eigen::MatrixXd::Identity(3, 3)));
+
+    EXPECT_TRUE(
+        tlfe.EvaluationNodes().isApprox(base::RefEl::kTria().NodeCoords()));
   }
 
   // Testing quadrilateral element
@@ -154,14 +158,30 @@ TEST(lf_fe, lf_fe_linfe) {
     EXPECT_EQ(qlfe.NumRefShapeFunctions(2, 0), 1);
 
     auto rsf_vals = qlfe.EvalReferenceShapeFunctions(refcoords);
-    for (const auto &v : rsf_vals) {
-      std::cout << "Quad: RSF values: " << v << std::endl;
-    }
-    for (const auto &v : qlfe.GradientsReferenceShapeFunctions(refcoords)) {
-      std::cout << "Quad: RSF gradients:\n " << v << std::endl;
-    }
-    std::cout << "Quad: Evaluation nodes\n"
-              << qlfe.EvaluationNodes() << std::endl;
+    EXPECT_EQ(rsf_vals.rows(), 4);
+    EXPECT_EQ(rsf_vals.cols(), 3);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 0), 0.56);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 0), 0.24);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 0), 0.06);
+    EXPECT_DOUBLE_EQ(rsf_vals(3, 0), 0.14);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 1), 0.45);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 1), 0.05);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 1), 0.05);
+    EXPECT_DOUBLE_EQ(rsf_vals(3, 1), 0.45);
+    EXPECT_DOUBLE_EQ(rsf_vals(0, 2), 0.27);
+    EXPECT_DOUBLE_EQ(rsf_vals(1, 2), 0.63);
+    EXPECT_DOUBLE_EQ(rsf_vals(2, 2), 0.07);
+    EXPECT_DOUBLE_EQ(rsf_vals(3, 2), 0.03);
+
+    EXPECT_TRUE(
+        qlfe.EvalReferenceShapeFunctions(base::RefEl::kQuad().NodeCoords())
+            .isApprox(Eigen::MatrixXd::Identity(4, 4)));
+
+    EXPECT_TRUE(
+        qlfe.EvaluationNodes().isApprox(base::RefEl::kQuad().NodeCoords()));
+
+    std::cout << "Quad: RSF gradients:\n "
+              << qlfe.GradientsReferenceShapeFunctions(refcoords) << std::endl;
   }
 }
 
@@ -177,14 +197,21 @@ TEST(lf_fe, lf_fe_segment) {
   EXPECT_EQ(slfe.NumRefShapeFunctions(1, 0), 1);
 
   auto rsf_vals = slfe.EvalReferenceShapeFunctions(refcoords);
-  for (const auto &v : rsf_vals) {
-    std::cout << "Segment: RSF values: " << v << std::endl;
-  }
-  for (const auto &v : slfe.GradientsReferenceShapeFunctions(refcoords)) {
-    std::cout << "Segment: RSF gradients:\n " << v << std::endl;
-  }
-  std::cout << "Segment: Evaluation nodes\n"
-            << slfe.EvaluationNodes() << std::endl;
+  EXPECT_EQ(rsf_vals.rows(), 2);
+  EXPECT_EQ(rsf_vals.cols(), 3);
+  EXPECT_DOUBLE_EQ(rsf_vals(0, 0), 0.7);
+  EXPECT_DOUBLE_EQ(rsf_vals(1, 0), 0.3);
+  EXPECT_DOUBLE_EQ(rsf_vals(0, 1), 0.9);
+  EXPECT_DOUBLE_EQ(rsf_vals(1, 1), 0.1);
+  EXPECT_DOUBLE_EQ(rsf_vals(0, 2), 0.3);
+  EXPECT_DOUBLE_EQ(rsf_vals(1, 2), 0.7);
+
+  auto rsf_grads = slfe.GradientsReferenceShapeFunctions(refcoords);
+  EXPECT_TRUE(rsf_grads.row(0).isConstant(-1.0));
+  EXPECT_TRUE(rsf_grads.row(1).isConstant(1.0));
+
+  EXPECT_TRUE(
+      slfe.EvaluationNodes().isApprox(base::RefEl::kSegment().NodeCoords()));
 }
 
 TEST(lf_fe, lf_fe_ellbvp) {

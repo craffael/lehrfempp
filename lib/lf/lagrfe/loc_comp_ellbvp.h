@@ -199,7 +199,9 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
     const double w = pfe.Qr().Weights()[k] * determinants[k];
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        pfe.PrecompGradientsReferenceShapeFunctions()[k]);
+                        pfe.PrecompGradientsReferenceShapeFunctions()
+                            .block(0, 2 * k, mat.rows(), 2)
+                            .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
     mat += w * (alpha_trf_grad.transpose() * trf_grad +
