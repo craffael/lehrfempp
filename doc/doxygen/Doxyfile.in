@@ -1583,7 +1583,7 @@ MATHJAX_RELPATH        = https://cdn.mathjax.org/mathjax/latest
 # MATHJAX_EXTENSIONS = TeX/AMSmath TeX/AMSsymbols
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-MATHJAX_EXTENSIONS     = AMSmath \
+MATHJAX_EXTENSIONS     = TeX/AMSmath \
                          bm
 
 # The MATHJAX_CODEFILE tag can be used to specify a file with javascript pieces
@@ -1592,7 +1592,7 @@ MATHJAX_EXTENSIONS     = AMSmath \
 # example see the documentation.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-MATHJAX_CODEFILE       = 
+MATHJAX_CODEFILE       = @CMAKE_CURRENT_SOURCE_DIR@/mathjax_config.js
 
 # When the SEARCHENGINE tag is enabled doxygen will generate a search box for
 # the HTML output. The underlying search engine uses javascript and DHTML and
