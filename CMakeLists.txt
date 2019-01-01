@@ -51,6 +51,7 @@ if("${LF_ENABLE_CLING}")
   if(LIBDL_PATH STREQUAL "LIBDL_PATH-NOTFOUND") 
     message(FATAL_ERROR "LF_ENABLE_CLING=On but cannot find Libdl. Consider setting LIBDL_PATH manually.")
   endif()
+endif()
 
 # Settings for installation
 ###############################################################################

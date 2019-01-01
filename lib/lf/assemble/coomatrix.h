@@ -199,7 +199,7 @@ class COOMatrix {
    * This function prints matrix size and the list of triplets
    */
   template <typename SCALARTYPE>
-  friend std::ostream &operator<<(std::ostream &o,  //NOLINT
+  friend std::ostream &operator<<(std::ostream &o,  // NOLINT
                                   const COOMatrix<SCALARTYPE> &mat);
 
  private:

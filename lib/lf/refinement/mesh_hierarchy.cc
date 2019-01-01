@@ -1707,10 +1707,11 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
       o << mesh << std::endl;
     } else {
       o << static_cast<int>(mesh.DimMesh()) << "D -> "
-        << static_cast<int>(mesh.DimWorld()) << "D, " << mesh.Size(0)
+        << static_cast<int>(mesh.DimWorld()) << "D, " << mesh.NumEntities(0)
         << " cells [" << mesh.NumEntities(lf::base::RefEl::kTria()) << " tria, "
         << mesh.NumEntities(lf::base::RefEl::kQuad()) << " quad], "
-        << mesh.Size(1) << " edges, " << mesh.Size(2) << " nodes" << std::endl;
+        << mesh.NumEntities(1) << " edges, " << mesh.NumEntities(2) << " nodes"
+        << std::endl;
     }
   }
   return o;
