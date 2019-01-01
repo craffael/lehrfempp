@@ -137,9 +137,10 @@ int main(int argc, char **argv) {
         multi_mesh.getMesh(n_levels - 1);
 
     // print number of entities of various co-dimensions
-    std::cout << "Mesh on level " << n_levels - 1 << ": " << mesh_fine->Size(2)
-              << " nodes, " << mesh_fine->Size(1) << " edges, "
-              << mesh_fine->Size(0) << " cells," << std::endl;
+    std::cout << "Mesh on level " << n_levels - 1 << ": "
+              << mesh_fine->NumEntities(2) << " nodes, "
+              << mesh_fine->NumEntities(1) << " edges, "
+              << mesh_fine->NumEntities(0) << " cells," << std::endl;
 
     lf::mesh::utils::writeTikZ(
         *mesh_fine,

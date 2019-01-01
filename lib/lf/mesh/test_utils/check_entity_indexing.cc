@@ -10,7 +10,7 @@ void checkEntityIndexing(const Mesh& mesh) {
   // Now run over all co-dimensions to check indexing
   for (size_type co_dim = 0; co_dim <= dim_mesh; ++co_dim) {
     // Number of entities of current co-dimension
-    const auto no_of_entities = mesh.Size(co_dim);
+    const auto no_of_entities = mesh.NumEntities(co_dim);
     // counting array for occurrences of an index
     std::vector<int> idx_use(no_of_entities, 0);
     // Traverse all entities of a given co-dimension

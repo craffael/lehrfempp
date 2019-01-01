@@ -8,13 +8,13 @@ set(sources
   write_matplotlib.cc
 )
 
-add_library(lf.io ${sources})
+lf_add_library(lf.io ${sources})
 target_link_libraries(lf.io PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.utils)
-target_compile_features(lf.io PUBLIC cxx_std_17)
-if(WIN32) 
+if(WIN32 AND NOT MINGW) 
   target_compile_options(lf.io PRIVATE "/bigobj")
 endif()
 
-
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
 add_subdirectory(test_utils)

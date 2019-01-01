@@ -37,7 +37,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     // Run through the nodes of the mesh and write x coordinates
     const dim_t node_codim(dim_mesh);
     // Number of nodes of the mesh
-    const size_type no_of_nodes = mesh.Size(node_codim);
+    const size_type no_of_nodes = mesh.NumEntities(node_codim);
     file << "x = zeros(" << no_of_nodes << ",1);" << std::endl;
     file << "y = zeros(" << no_of_nodes << ",1);" << std::endl;
 
@@ -56,7 +56,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     LF_VERIFY_MSG(node_cnt == no_of_nodes, "Node count mismatch");
 
     // Write edge information to file
-    const size_type no_of_edges = mesh.Size(1);
+    const size_type no_of_edges = mesh.NumEntities(1);
     file << "EDS = zeros(" << no_of_edges << ",2);" << std::endl;
     size_type ed_cnt = 0;
     for (const Entity &edge : mesh.Entities(1)) {

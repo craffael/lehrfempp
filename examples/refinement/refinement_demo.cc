@@ -125,9 +125,9 @@ int main(int argc, const char *argv[]) {
     std::shared_ptr<const lf::mesh::Mesh> mesh =
         multi_mesh.getMesh(n_levels - 1);
     // Print number of entities of various co-dimensions
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " edges, " << mesh->Size(0)
-              << " cells," << std::endl;
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": "
+              << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
+              << " edges, " << mesh->NumEntities(0) << " cells," << std::endl;
     std::stringstream level_asc;
     level_asc << refstep;
 

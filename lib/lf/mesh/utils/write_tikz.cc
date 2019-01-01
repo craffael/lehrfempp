@@ -51,7 +51,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   // Run through nodes
   const dim_t node_codim(dim_mesh);  // Codimension number for nodes in the mesh
   const size_type no_of_nodes =
-      mesh.Size(node_codim);  // No. of nodes in codimension for nodes
+      mesh.NumEntities(node_codim);  // No. of nodes in codimension for nodes
   size_type node_count = 0;
 
   // START writing to file

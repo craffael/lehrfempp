@@ -61,7 +61,7 @@ class Mesh {
    * @param codim The codimension of the entities that should be counted.
    * @return That number of entities that have the given codimension.
    */
-  virtual size_type Size(char codim) const = 0;
+  virtual size_type NumEntities(char codim) const = 0;
 
   /**
    * @brief Tells number of entities of a particular topological/geometric type

@@ -365,7 +365,7 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
   // Retrieve the finest mesh in the hierarchy
   const mesh::Mesh &finest_mesh(*meshes_.back());
 
-  LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.Size(1),
+  LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.NumEntities(1),
                 "Length  mismatch for edge flag array");
 
   // Run through the edges = entities of co-dimension 1

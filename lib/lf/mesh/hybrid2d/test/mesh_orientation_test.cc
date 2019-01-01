@@ -23,9 +23,9 @@ TEST(lf_hybrid2d, lf_orientation) {
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
-  EXPECT_EQ(mesh_p->Size(0), 9) << "Test mesh: 9 cells expected!";
-  EXPECT_EQ(mesh_p->Size(1), 18) << "Test mesh: 18 edges expected!";
-  EXPECT_EQ(mesh_p->Size(2), 10) << "Test mesh: 10 nodes expected!";
+  EXPECT_EQ(mesh_p->NumEntities(0), 9) << "Test mesh: 9 cells expected!";
+  EXPECT_EQ(mesh_p->NumEntities(1), 18) << "Test mesh: 18 edges expected!";
+  EXPECT_EQ(mesh_p->NumEntities(2), 10) << "Test mesh: 10 nodes expected!";
 
   std::vector<std::vector<lf::mesh::Orientation>> o{
       {lf::mesh::Orientation::positive, lf::mesh::Orientation::positive,

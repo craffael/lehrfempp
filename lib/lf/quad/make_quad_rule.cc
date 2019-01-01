@@ -7,7 +7,7 @@
  */
 
 #include "make_quad_rule.h"
-#include <Eigen/KroneckerProduct>
+#include <unsupported/Eigen/KroneckerProduct>
 #include "gauss_quadrature.h"
 
 namespace lf::quad {

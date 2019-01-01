@@ -40,7 +40,7 @@ base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
   }
 }
 
-Mesh::size_type Mesh::Size(char codim) const {
+Mesh::size_type Mesh::NumEntities(char codim) const {
   switch (codim) {
     case 0:
       return trias_.size() + quads_.size();
@@ -99,7 +99,8 @@ Mesh::size_type Mesh::Index(const Entity &e) const {
 
 const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
   LF_ASSERT_MSG(codim <= 2, "Illegal codimension " << codim);
-  LF_ASSERT_MSG(index < Size(codim), "Index " << index << " > " << Size(codim));
+  LF_ASSERT_MSG(index < NumEntities(codim),
+                "Index " << index << " > " << NumEntities(codim));
   return entity_pointers_[codim][index];
 }
 
