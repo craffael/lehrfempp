@@ -45,14 +45,11 @@ class fe_space_uniform_scalar {
   /** @brief default constructors, needed by std::vector
    * @note creates an invalid object that cannot be used. */
   fe_space_uniform_scalar() = default;
-  fe_space_uniform_scalar(const fe_space_uniform_scalar &) =
-      delete;
-  fe_space_uniform_scalar(fe_space_uniform_scalar &&) noexcept =
+  fe_space_uniform_scalar(const fe_space_uniform_scalar &) = delete;
+  fe_space_uniform_scalar(fe_space_uniform_scalar &&) noexcept = default;
+  fe_space_uniform_scalar &operator=(const fe_space_uniform_scalar &) = delete;
+  fe_space_uniform_scalar &operator=(fe_space_uniform_scalar &&) noexcept =
       default;
-  fe_space_uniform_scalar &operator=(
-      const fe_space_uniform_scalar &) = delete;
-  fe_space_uniform_scalar &operator=(
-      fe_space_uniform_scalar &&) noexcept = default;
   /**
    * @brief Main constructor: sets up the local-to-global index mapping (dof
    * handler)

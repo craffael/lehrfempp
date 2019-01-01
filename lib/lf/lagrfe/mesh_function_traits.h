@@ -21,12 +21,12 @@ using MeshFunctionReturnType_t =
     std::invoke_result_t<T, const lf::mesh::Entity, const Eigen::MatrixXd>;
 
 template <class T>
-auto getVectorType(const std::vector<T>& a, int) -> T {
+auto getVectorType(const std::vector<T>& a, int /*unused*/) -> T {
   return a[0];
 }
 
 template <class T>
-void getVectorType(const T& a, long) {}
+void getVectorType(const T& /*unused*/, long /*unused*/) {}
 
 template <class T>
 using VectorElement_t = decltype(getVectorType(std::declval<T>(), 0));
@@ -34,21 +34,20 @@ using VectorElement_t = decltype(getVectorType(std::declval<T>(), 0));
 template <class T, class RETURN_TYPE,
           class = typename std::enable_if<!std::is_same_v<
               VectorElement_t<MeshFunctionReturnType_t<T>>, void>>::type>
-constexpr bool IsMeshFunctionCallable(int) {
+constexpr bool IsMeshFunctionCallable(int /*unused*/) {
   if constexpr (std::is_same_v<RETURN_TYPE, void>) {
     // user didn't want us to check whether the return type is something
     // particular
     return true;
-  } else {
-    // user specified a RETURN_TYPE -> Check that std::vector<RETURN_TYPE> is
-    // returned.
-    return std::is_same_v<VectorElement_t<MeshFunctionReturnType_t<T>>,
-                          RETURN_TYPE>;
   }
+  // user specified a RETURN_TYPE -> Check that std::vector<RETURN_TYPE> is
+  // returned.
+  return std::is_same_v<VectorElement_t<MeshFunctionReturnType_t<T>>,
+                        RETURN_TYPE>;
 }
 
 template <class T, class RETURN_TYPE>
-constexpr bool IsMeshFunctionCallable(long) {
+constexpr bool IsMeshFunctionCallable(long /*unused*/) {
   return false;
 }
 

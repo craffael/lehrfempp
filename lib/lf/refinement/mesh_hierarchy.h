@@ -413,7 +413,8 @@ class EntityCenterPositionSelector {
    *
    * @param pos_pred object for true/false classification of physicals points
    */
-  explicit EntityCenterPositionSelector(POSPRED pos_pred) : pos_pred_(pos_pred) {}
+  explicit EntityCenterPositionSelector(POSPRED pos_pred)
+      : pos_pred_(pos_pred) {}
   /** @brief Operator testing location of "center"
    *  @param ent reference to a mesh entity
    */
@@ -446,6 +447,8 @@ class EntityCenterPositionSelector {
     }  // end switch
     return false;
   }
+
+  virtual ~EntityCenterPositionSelector() = default;
 
  private:
   /** object for true/false classification of of physicals points */

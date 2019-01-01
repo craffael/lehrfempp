@@ -1,4 +1,4 @@
- /**
+/**
  * @file refinement_hierarchy.cc
  * @brief implementation of global/local refinement methods
  */
@@ -1702,7 +1702,7 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
     o << "l=" << level << ": ";
     if ((ctrl_ & kout_meshinfo) != 0) {
       LF_ASSERT_MSG(false, "Not yet implemented");
-      // TODO, when output for lf::mesh::Mesh has been fixed
+      // TODO(raffael), when output for lf::mesh::Mesh has been fixed
       o << mesh << std::endl;
     } else {
       o << static_cast<int>(mesh.DimMesh()) << "D -> "

@@ -30,7 +30,8 @@ class MeshFunctionConstant {
    */
   explicit MeshFunctionConstant(R value) : value_(value) {}
 
-  std::vector<R> operator()(const mesh::Entity&, const Eigen::MatrixXd& local) {
+  std::vector<R> operator()(const mesh::Entity& /*unused*/,
+                            const Eigen::MatrixXd& local) {
     return std::vector<R>(local.cols(), value_);
   }
 

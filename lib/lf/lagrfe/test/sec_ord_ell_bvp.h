@@ -151,7 +151,7 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
 SecOrdEllBVPLagrFELinSys(
-    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
+    std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space,
     std::shared_ptr<const SecondOrderEllipticBVP<SCALAR>> bvp_p) {
   LF_ASSERT_MSG(bvp_p != nullptr, "No valid BVP specified");
 

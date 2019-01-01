@@ -25,11 +25,11 @@ class MeshFunctionGlobal {
 
  public:
   MeshFunctionGlobal(const MeshFunctionGlobal&) = default;
-  MeshFunctionGlobal(MeshFunctionGlobal&&) = default;
+  MeshFunctionGlobal(MeshFunctionGlobal&&) noexcept = default;
   MeshFunctionGlobal& operator=(const MeshFunctionGlobal&) = delete;
   MeshFunctionGlobal& operator=(MeshFunctionGlobal&&) = delete;
 
-  MeshFunctionGlobal(const F& f) : f_(f) {}
+  explicit MeshFunctionGlobal(F f) : f_(std::move(f)) {}
 
   std::vector<F_return_type> operator()(const mesh::Entity& e,
                                         const Eigen::MatrixXd& local) {
@@ -43,6 +43,8 @@ class MeshFunctionGlobal {
     }
     return result;
   }
+
+  virtual ~MeshFunctionGlobal() = default;
 
  private:
   F f_;

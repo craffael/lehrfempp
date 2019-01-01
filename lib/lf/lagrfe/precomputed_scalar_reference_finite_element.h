@@ -13,7 +13,7 @@
 #include <Eigen/src/Core/util/ForwardDeclarations.h>
 #include <lf/quad/quad.h>
 #include <memory>
-#include "fe_space_uniform_scalar.h"
+#include "fe_space_lagrange_uniform.h"
 
 namespace lf::lagrfe {
 
@@ -38,6 +38,18 @@ class PrecomputedScalarReferenceFiniteElement
    * (invalid state).
    */
   PrecomputedScalarReferenceFiniteElement() = default;
+
+  PrecomputedScalarReferenceFiniteElement(
+      const PrecomputedScalarReferenceFiniteElement&) = delete;
+
+  PrecomputedScalarReferenceFiniteElement(
+      PrecomputedScalarReferenceFiniteElement&&) noexcept = default;
+
+  PrecomputedScalarReferenceFiniteElement& operator=(
+      const PrecomputedScalarReferenceFiniteElement&) = delete;
+
+  PrecomputedScalarReferenceFiniteElement& operator=(
+      PrecomputedScalarReferenceFiniteElement&&) noexcept = default;
 
   PrecomputedScalarReferenceFiniteElement(
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe,
@@ -127,6 +139,9 @@ class PrecomputedScalarReferenceFiniteElement
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return grad_shape_fun_;
   }
+
+  /** virtual destructor */
+  ~PrecomputedScalarReferenceFiniteElement() override = default;
 
  private:
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_;

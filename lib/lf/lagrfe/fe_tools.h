@@ -177,7 +177,7 @@ static const unsigned int kout_prj_vals = 2;
  */
 template <typename SCALAR, typename FUNCTOR,
           typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
+auto NodalProjection(std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space,
                      FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
   // choose scalar type so it can hold the scalar type of u as well as SCALAR
@@ -197,13 +197,12 @@ auto NodalProjection(std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
 
   // Loop over all cells
   for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+    if (!pred(cell)) {
+      continue;
+    }
     // Topological type of the cell
     const lf::base::RefEl ref_el{cell.RefEl()};
-    // Query the shape of the cell
-    const lf::geometry::Geometry *geo_ptr = cell.Geometry();
-    LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
-    LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
-                  "Only 2D implementation available!");
+
     // TODO(ralfh) uncommend when ctrl_prj is well-defined.
     // SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
     //                   std::cout << ref_el << ", shape = \n"
@@ -310,7 +309,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
     // Check whether the current edge carries dofs to be imposed by the
     // function g.
-    if (esscondflag(edge) == true) {
+    if (esscondflag(edge)) {
       // Fetch the shape of the edge
       const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
       auto g_vals = g(edge, ref_eval_pts);

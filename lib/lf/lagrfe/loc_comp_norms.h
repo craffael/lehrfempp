@@ -56,7 +56,7 @@ class MeshFunctionL2NormDifference {
   MeshFunctionL2NormDifference &operator=(
       const MeshFunctionL2NormDifference &) = delete;
   MeshFunctionL2NormDifference &operator=(MeshFunctionL2NormDifference &&) =
-      default;
+      delete;
   /** @} */
 
   /** @brief Constructor
@@ -71,9 +71,9 @@ class MeshFunctionL2NormDifference {
    *       corresponding cell type are never requested.
    */
   MeshFunctionL2NormDifference(
-      std::shared_ptr<FeSpaceUniformScalar<double>> fe_space, FUNCTOR u,
-      quad::quadOrder_t loc_quad_order)
-      : u_(u), fe_precomp_() {
+      const std::shared_ptr<const FeSpaceLagrangeUniform<double>> &fe_space,
+      FUNCTOR u, quad::quadOrder_t loc_quad_order)
+      : u_(u) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       auto fe = fe_space->ShapeFunctionLayout(ref_el);
       fe_precomp_[ref_el.Id()] =
@@ -104,6 +104,9 @@ class MeshFunctionL2NormDifference {
    */
   template <typename DOFVECTOR>
   double operator()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
+
+  /** Virtual destructor */
+  virtual ~MeshFunctionL2NormDifference() = default;
 
  private:
   /** @brief a handle to the generic function with which to compare the finite
@@ -231,7 +234,7 @@ class MeshFunctionL2GradientDifference {
   MeshFunctionL2GradientDifference &operator=(
       const MeshFunctionL2GradientDifference &) = delete;
   MeshFunctionL2GradientDifference &operator=(
-      MeshFunctionL2GradientDifference &&) = default;
+      MeshFunctionL2GradientDifference &&) = delete;
   /** @} */
 
   /** @brief Constructor
@@ -244,9 +247,9 @@ class MeshFunctionL2GradientDifference {
    *       corresponding cell type are never requested.
    */
   MeshFunctionL2GradientDifference(
-      std::shared_ptr<const FeSpaceUniformScalar<double>> fe_space,
+      const std::shared_ptr<const FeSpaceLagrangeUniform<double>> &fe_space,
       VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order)
-      : vecfield_(vecfield), fe_precomp_() {
+      : vecfield_(vecfield) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
           fe_space->ShapeFunctionLayout(ref_el),
@@ -278,6 +281,8 @@ class MeshFunctionL2GradientDifference {
    */
   template <typename DOFVECTOR>
   double operator()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
+
+  virtual ~MeshFunctionL2GradientDifference() = default;
 
  private:
   /** @brief a handle to the generic function with which to compare the

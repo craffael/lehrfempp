@@ -14,6 +14,7 @@ set(sources
   loc_comp_ellbvp.cc
   loc_comp_norms.h
   loc_comp_norms.cc
+  precomputed_scalar_reference_finite_element.h
 )
 
 add_library(lf.lagrfe ${sources})

@@ -34,7 +34,7 @@ TEST(lf_gfe, lf_gfe_l2norm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>());
 
@@ -73,7 +73,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>());
 
@@ -133,7 +133,7 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
-  std::shared_ptr<FeSpaceUniformScalar<double>> temp = fe_space;
+  std::shared_ptr<FeSpaceLagrangeUniform<double>> temp = fe_space;
   SecOrdBVPLagrFEFullInteriorGalMat(temp, MeshFunctionConstant(1.0),
                                     MeshFunctionConstant(0.0), A);
 
@@ -173,7 +173,7 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>());
 
@@ -202,7 +202,7 @@ TEST(lf_gfe, lf_gfe_lintp) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>());
 
@@ -235,7 +235,7 @@ TEST(lf_gfe, set_dirbdc) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>(),
       std::make_shared<FeLagrangeO1Segment<double>>());
@@ -282,7 +282,7 @@ TEST(lf_gfe, set_dirbdc) {
 
 // check whether linear function is interpolated exactly
 bool checkInterpolationLinear(
-    const std::shared_ptr<FeSpaceUniformScalar<double>> &fe_space) {
+    const std::shared_ptr<FeSpaceLagrangeUniform<double>> &fe_space) {
   // Model linear function
   auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
@@ -302,7 +302,7 @@ TEST(lf_gfe, lf_gfe_lintp_exact) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   // Set up global FE space
-  auto fe_space = std::make_shared<FeSpaceUniformScalar<double>>(
+  auto fe_space = std::make_shared<FeSpaceLagrangeUniform<double>>(
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>());
   EXPECT_TRUE(checkInterpolationLinear(fe_space));

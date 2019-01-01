@@ -71,7 +71,7 @@ class LagrangeFEEllBVPElementMatrix {
   LagrangeFEEllBVPElementMatrix &operator=(
       const LagrangeFEEllBVPElementMatrix &) = delete;
   LagrangeFEEllBVPElementMatrix &operator=(LagrangeFEEllBVPElementMatrix &&) =
-      default;
+      delete;
   /** @} */
 
   /**
@@ -83,8 +83,8 @@ class LagrangeFEEllBVPElementMatrix {
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
   LagrangeFEEllBVPElementMatrix(
-      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, DIFF_COEFF alpha,
-      REACTION_COEFF gamma);
+      std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space,
+      DIFF_COEFF alpha, REACTION_COEFF gamma);
   /**
    * @brief All cells are considered active in the default implementation
    *
@@ -109,6 +109,9 @@ class LagrangeFEEllBVPElementMatrix {
    * the type of the cell.
    */
   ElemMat Eval(const lf::mesh::Entity &cell);
+
+  /** Virtual destructor */
+  virtual ~LagrangeFEEllBVPElementMatrix() = default;
 
  private:
   /** @defgroup coefficient functors
@@ -138,7 +141,7 @@ unsigned int
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     LagrangeFEEllBVPElementMatrix(
-        std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space,
+        std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
     : alpha_(alpha), gamma_(gamma), fe_precomp_() {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
@@ -242,7 +245,7 @@ class LagrangeFEEdgeMassMatrix {
   LagrangeFEEdgeMassMatrix(LagrangeFEEdgeMassMatrix &&) noexcept = default;
   LagrangeFEEdgeMassMatrix &operator=(const LagrangeFEEdgeMassMatrix &) =
       delete;
-  LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = default;
+  LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = delete;
   /** @} */
   /**
    * @brief Constructor performing cell-independent initializations
@@ -254,7 +257,7 @@ class LagrangeFEEdgeMassMatrix {
    * assembly
    */
   LagrangeFEEdgeMassMatrix(
-      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, COEFF gamma,
+      std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space, COEFF gamma,
       EDGESELECTOR edge_selector = base::PredicateTrue{})
       : gamma_(gamma), edge_sel_(edge_selector), fe_precomp_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
@@ -290,6 +293,8 @@ class LagrangeFEEdgeMassMatrix {
    * polynomials o degree 2p.
    */
   ElemMat Eval(const lf::mesh::Entity &edge);
+
+  virtual ~LagrangeFEEdgeMassMatrix() = default;
 
  private:
   COEFF gamma_;               // functor for coefficient
@@ -388,7 +393,7 @@ class ScalarFELocalLoadVector {
   ScalarFELocalLoadVector(const ScalarFELocalLoadVector &) = delete;
   ScalarFELocalLoadVector(ScalarFELocalLoadVector &&) noexcept = default;
   ScalarFELocalLoadVector &operator=(const ScalarFELocalLoadVector &) = delete;
-  ScalarFELocalLoadVector &operator=(ScalarFELocalLoadVector &&) = default;
+  ScalarFELocalLoadVector &operator=(ScalarFELocalLoadVector &&) = delete;
   /**@}*/
 
   /** @brief Constructor, performs precomputations
@@ -403,7 +408,7 @@ class ScalarFELocalLoadVector {
    * that element type are not requested.
    */
   ScalarFELocalLoadVector(
-      std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f);
+      std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space, FUNCTOR f);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -414,6 +419,8 @@ class ScalarFELocalLoadVector {
    *
    */
   ElemVec Eval(const lf::mesh::Entity &cell);
+
+  virtual ~ScalarFELocalLoadVector() = default;
 
  private:
   /** @brief An object providing the source function */
@@ -439,7 +446,7 @@ unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
-    std::shared_ptr<FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR f)
+    std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space, FUNCTOR f)
     : f_(f) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -458,7 +465,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
   using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
-  auto pfe = fe_precomp_[ref_el.Id()];
+  auto &pfe = fe_precomp_[ref_el.Id()];
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -530,11 +537,12 @@ class ScalarFEEdgeLocalLoadVector {
    * @brief standard constructors
    *@{*/
   ScalarFEEdgeLocalLoadVector(const ScalarFEEdgeLocalLoadVector &) = delete;
-  ScalarFEEdgeLocalLoadVector(ScalarFEEdgeLocalLoadVector &&) = default;
+  ScalarFEEdgeLocalLoadVector(ScalarFEEdgeLocalLoadVector &&) noexcept =
+      default;
   ScalarFEEdgeLocalLoadVector &operator=(const ScalarFEEdgeLocalLoadVector &) =
       delete;
   ScalarFEEdgeLocalLoadVector &operator=(ScalarFEEdgeLocalLoadVector &&) =
-      default;
+      delete;
   /**@}*/
 
   /** @brief Constructor, performs precomputations
@@ -543,7 +551,7 @@ class ScalarFEEdgeLocalLoadVector {
    * @param g functor object providing edge data
    */
   ScalarFEEdgeLocalLoadVector(
-      std::shared_ptr<const FeSpaceUniformScalar<SCALAR>> fe_space, FUNCTOR g,
+      std::shared_ptr<const FeSpaceLagrangeUniform<SCALAR>> fe_space, FUNCTOR g,
       EDGESELECTOR edge_sel = base::PredicateTrue{})
       : g_(g), edge_sel_(edge_sel), pfe_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
@@ -561,7 +569,9 @@ class ScalarFEEdgeLocalLoadVector {
    * @return local load vector as column vector
    *
    */
-  ElemVec Eval(const lf::mesh::Entity &cell);
+  ElemVec Eval(const lf::mesh::Entity &edge);
+
+  virtual ~ScalarFEEdgeLocalLoadVector() = default;
 
  private:
   FUNCTOR g_;              // source function

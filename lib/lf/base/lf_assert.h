@@ -33,7 +33,7 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
   {                                                                     \
     if (!(expr)) {                                                      \
       std::stringstream ss;                                             \
-      ss << msg;                                                        \
+      ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
       std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
@@ -53,7 +53,7 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
   {                                                                     \
     if (!(expr)) {                                                      \
       std::stringstream ss;                                             \
-      ss << msg;                                                        \
+      ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
       std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
