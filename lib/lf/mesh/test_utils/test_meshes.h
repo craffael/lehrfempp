@@ -45,7 +45,7 @@ namespace lf::mesh::test_utils {
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
                                                          double scale = 1.0);
 
-static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 5;
+static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 6;
 
 }  // namespace lf::mesh::test_utils
 
