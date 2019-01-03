@@ -137,6 +137,11 @@ double NormOfDifference(const lf::assemble::DofHandler &dofh,
   const double norm_sq = SumCellFEContrib(dofh, loc_comp, uh, pred);
   return std::sqrt(norm_sq);
 }
+
+/** @brief Computation of difference of norms for _all_ cells
+ *
+ * @sa NormOfDifference()
+ */
 template <typename LOC_NORM_COMP, typename COEFFVECTOR>
 double NormOfDifference(const lf::assemble::DofHandler &dofh,
                         LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
@@ -153,7 +158,7 @@ double NormOfDifference(const lf::assemble::DofHandler &dofh,
 static const unsigned int kout_prj_cell = 1;
 static const unsigned int kout_prj_vals = 2;
 
-/*
+/**
  * @brief Computes nodal projection of a function and returns the finite
  * element basis expansion coefficients of the result
  *

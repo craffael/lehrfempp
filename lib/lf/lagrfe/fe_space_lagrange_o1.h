@@ -25,8 +25,7 @@ class FeSpaceLagrangeO1 : public FeSpaceLagrangeUniform<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  /** @brief default constructors, needed by std::vector
-   * @note creates an invalid object that cannot be used. */
+  /** @brief no default constructors */
   FeSpaceLagrangeO1() = delete;
   FeSpaceLagrangeO1(const FeSpaceLagrangeO1 &) = delete;
   FeSpaceLagrangeO1(FeSpaceLagrangeO1 &&) noexcept = default;

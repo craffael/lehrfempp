@@ -8,7 +8,7 @@
 
 /**
  * @file
- * @brief Data structure describing finite element spaces
+ * @brief Data structure describing scalar-valued finite element spaces
  * @author Ralf Hiptmair
  * @date November 2018
  * @copyright MIT License
@@ -21,6 +21,9 @@ namespace lf::lagrfe {
 
 /**
  * @brief Space of scalar valued finite element functions on a hybrid 2D mesh
+ *
+ * @tparam SCALAR underlying scalar type, usually either `double` or
+ * `complex<double>`
  *
  * The abstract concept of a (parametric) finite element space involves
  * - an underlying mesh
@@ -44,7 +47,7 @@ class FeSpaceLagrangeUniform {
  public:
   using Scalar = SCALAR;
 
-  /** @brief default constructors, needed by std::vector
+  /** @brief default constructor, needed by std::vector
    * @note creates an invalid object that cannot be used. */
   FeSpaceLagrangeUniform() = default;
   FeSpaceLagrangeUniform(const FeSpaceLagrangeUniform &) = delete;
@@ -57,11 +60,11 @@ class FeSpaceLagrangeUniform {
    * handler)
    *
    * @param mesh_p shared pointer to underlying mesh (immutable)
-   * @param rfs_tria_p pointer to layout description for reference shape
+   * @param rfs_tria_p shared pointer to layout description for reference shape
    * functions on triangular cells
-   * @param rfs_quad_p pointer to layout description for reference shape
+   * @param rfs_quad_p shared pointer to layout description for reference shape
    * functions on quadrilateral cells
-   * @param rfs_edge_p pointer to layout description for reference shape
+   * @param rfs_edge_p shared pointer to layout description for reference shape
    * functions on the edges
    *
    * The schemes for local shape have to satisfy certain _compatibility

@@ -8,8 +8,8 @@
 
 /**
  * @file
- * @brief Finite elements: local definition and assembly
- * elliptic BVPs
+ * @brief Lagrangian finite elements: local definition and assembly
+ * for elliptic BVPs
  * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License

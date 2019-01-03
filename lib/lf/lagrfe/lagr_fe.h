@@ -35,6 +35,9 @@ using sub_idx_t = lf::base::sub_idx_t;
 /**
  * @brief Interface class for parametric scalar valued finite elements
  *
+ * @tparam SCALAR underlying scalar type, usually either `double` or
+ * `complex<double>`
+ *
  * A scalar parametric finite element is defined through a set of
  * reference shape functions (RSFs) on a particular reference entity.
  *
@@ -53,8 +56,8 @@ using sub_idx_t = lf::base::sub_idx_t;
  *
  * -# RSFs  belonging to _sub-entities_ of a larger (relative)
  * co-dimension are arranged before dofs associated with _sub-entities_ of a
- * smaller co-dimension.
- * -# RSFss belonging to the same sub-entity are numbered contiguously.
+ * smaller co-dimension (first nodes, then edges, finally cells).
+ * -# RSFs belonging to the same sub-entity are numbered contiguously.
  * -# RSFs for _sub-entities_ of the same co-dimension are taken into account in
  * the order given by the _local indexing_ of the sub-entities.
  *
@@ -91,7 +94,7 @@ class ScalarReferenceFiniteElement {
       ScalarReferenceFiniteElement&&) noexcept = default;
 
  public:
-  /** @brief The scalar type of the shape function */
+  /** @brief The underlying scalar type */
   using Scalar = SCALAR;
 
   /** Virtual destructor */
@@ -206,8 +209,8 @@ class ScalarReferenceFiniteElement {
    *                  columns of a matrix of size dim x N.
    * @return An Eigen Matrix of size `NumRefShapeFunctions() x (dim *
    * refcoords.cols())` where `dim` is the dimension of the reference
-   * finite element.
-   *
+   * finite element. The gradients are returned in chunks of rows of this
+   * matrix.
    *
    * Concerning the numbering of local shape functions, please consult
    * the documentation of lf::assemble::DofHandler.

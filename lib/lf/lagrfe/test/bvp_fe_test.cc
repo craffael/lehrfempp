@@ -21,7 +21,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "sec_ord_ell_bvp.h"
 
-#define REFLEV 5
+#define REFLEV 6
 
 namespace lf::lagrfe::test {
 

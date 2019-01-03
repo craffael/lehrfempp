@@ -33,7 +33,7 @@ namespace lf::lagrfe {
  *
  * This class complies with the type requirements for the template argument
  * LOCAL_NORM_COMP of the function lf::lagrfe::L2NormDifference. Its main method
- * is the evaluation operator.
+ * is the evaluation operator `operator ()`.
  *
  * ### Use case
  *
@@ -67,8 +67,8 @@ class MeshFunctionL2NormDifference {
    *        If = 0, the quadrature order is determined from the polynomial
    *        degree of the reference shape functions.
    *
-   * @note NULL pointers amy be passed, if evaluations for the
-   *       corresponding cell type are never requested.
+   * @note The finite element space need not provide reference shape functions
+   *       for all cell types if these cell types do not occur.
    */
   MeshFunctionL2NormDifference(
       const std::shared_ptr<const FeSpaceLagrangeUniform<double>> &fe_space,
@@ -113,6 +113,7 @@ class MeshFunctionL2NormDifference {
    * element function */
   FUNCTOR u_;
 
+  /** @brief cell-type dependent but cell-independent information */
   std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
 
  public:
@@ -268,11 +269,9 @@ class MeshFunctionL2GradientDifference {
    * @return the local "error norm" squared
    *
    * Actual computation of the element matrix based on numerical quadrature
-   and
-   * mapping techniques. The order of the quadrature rule is tied to the
+   * and mapping techniques. The order of the quadrature rule is tied to the
    * polynomial degree of the underlying Lagrangian finite element spaces:
-   for
-   * polynomial degree p a quadrature rule is chosen that is exact for
+   * for polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials of degree 2p ("moderate overkill quadrature")
    *
    * ### Template parameter type requirements
