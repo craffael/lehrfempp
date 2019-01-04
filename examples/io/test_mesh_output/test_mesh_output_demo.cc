@@ -45,6 +45,9 @@ int main() {
     lf::io::writeMatplotlib(*mesh_p, filename_py.str());
 
     // VTK output
+    std::stringstream filename_vtk;
+    filename_vtk << "test_mesh_" << selector << ".vtk";
+    lf::io::VtkWriter(mesh_p, filename_vtk.str());
   }
 
   return 0L;
