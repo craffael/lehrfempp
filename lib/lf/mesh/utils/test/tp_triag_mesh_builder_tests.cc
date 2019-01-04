@@ -7,6 +7,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
@@ -80,7 +81,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
     }
   }
   std::cout << "Writing MATLAB file" << std::endl;
-  utils::writeMatlab(*mesh_p, "tp_triag_test.m");
+  io::writeMatlab(*mesh_p, "tp_triag_test.m");
 
   // Printing mesh information
   utils::PrintInfo(*mesh_p, std::cout);

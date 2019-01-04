@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
   Eigen::Vector2d point(point_coords.data());
 
   using size_type = lf::base::size_type;
-  using lf::mesh::utils::TikzOutputCtrl;
+  using lf::io::TikzOutputCtrl;
 
   std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
               << mesh_fine->NumEntities(1) << " edges, "
               << mesh_fine->NumEntities(0) << " cells," << std::endl;
 
-    lf::mesh::utils::writeTikZ(
+    lf::io::writeTikZ(
         *mesh_fine,
         std::string("refinement_mesh") + std::to_string(step) + ".txt",
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |

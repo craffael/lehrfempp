@@ -8,6 +8,7 @@ set(sources
 
 add_executable(lf.mesh.hybrid2d.test ${sources})
 target_link_libraries(lf.mesh.hybrid2d.test PUBLIC Eigen3::Eigen Boost::boost GTest::main
+  lf.io
   lf.mesh.hybrid2d
   lf.mesh.test_utils
   lf.mesh.utils)

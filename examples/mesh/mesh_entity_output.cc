@@ -6,13 +6,13 @@
 #include <iostream>
 #include <vector>
 
-#include "lf/mesh/hybrid2d/hybrid2d.h"
+#include <lf/io/io.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
+#include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
-#include "lf/mesh/utils/print_info.h"
-#include "lf/mesh/utils/utils.h"
 
 int main() {
-  using lf::mesh::utils::TikzOutputCtrl;
+  using lf::io::TikzOutputCtrl;
   std::cout << "Output of information for mesh entity elements" << std::endl;
 
   // Build mesh ----------------------------------
@@ -75,9 +75,9 @@ int main() {
     // return true;
   };  // auto
 
-  lf::mesh::utils::writeTikZ(*mesh_p, "tikz_selector.txt", desiredEntities);
+  lf::io::writeTikZ(*mesh_p, "tikz_selector.txt", desiredEntities);
 
-  lf::mesh::utils::writeTikZ(
+  lf::io::writeTikZ(
       *mesh_p, "tikz_mesh_test.txt", desiredEntities,
       TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
           TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |

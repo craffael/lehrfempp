@@ -30,7 +30,7 @@ CONTROLDECLAREINFO(refselector, "refselector",
 
 int main(int argc, const char *argv[]) {
   using size_type = lf::base::size_type;
-  using lf::mesh::utils::TikzOutputCtrl;
+  using lf::io::TikzOutputCtrl;
 
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
