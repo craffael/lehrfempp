@@ -23,4 +23,6 @@ target_link_libraries(lf.lagrfe PUBLIC
   lf.mesh.utils lf.assemble lf.quad)
 target_compile_features(lf.lagrfe PUBLIC cxx_std_17)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

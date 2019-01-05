@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 
 TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {
   return static_cast<TikzOutputCtrl>(static_cast<unsigned int>(lhs) |
@@ -72,7 +72,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   // Loop through codimensions
   for (int co_dim = 0; co_dim <= dim_mesh; co_dim++) {
     // Loop through all types of entities
-    for (const Entity &obj : mesh.Entities(co_dim)) {
+    for (const mesh::Entity &obj : mesh.Entities(co_dim)) {
       if (selector(obj)) {  // IF SELECTOR -------
         size_type obj_idx = mesh.Index(obj);
         lf::base::RefEl obj_refel = obj.RefEl();
@@ -255,4 +255,4 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                    [](const lf::mesh::Entity &) { return true; }, output_ctrl);
 }
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io
