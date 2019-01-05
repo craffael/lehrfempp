@@ -15,10 +15,6 @@ set(sources
   tp_triag_mesh_builder.h
   tp_triag_mesh_builder.cc
   utils.h
-  write_matlab.cc
-  write_matlab.h
-  write_tikz.cc
-  write_tikz.h
 )
 
 lf_add_library(lf.mesh.utils ${sources})
