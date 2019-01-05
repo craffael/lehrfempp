@@ -41,6 +41,7 @@ namespace lf::mesh::test_utils {
  * - selector = 4: test mesh of [0,3]^2 with triangles and quads
  * - selector = 5: test mesh of [0,3]^2 with triangles and parallelograms, all
  *                 _affine_
+ * - selector = 6: hybrid mesh of a triangular domain
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
                                                          double scale = 1.0);

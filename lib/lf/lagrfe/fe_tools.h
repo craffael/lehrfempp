@@ -271,13 +271,13 @@ auto NodalProjection(std::shared_ptr<FeSpaceLagrangeUniform<SCALAR>> fe_space,
  * method ScalarReferenceFiniteElement::NodalValuesToDofs().
  *
  * The main use of this function is the interpolation of Dirichet data on the
- * Dirichlet part of vthe boundary of a domain.
+ * Dirichlet part of the boundary of a domain.
  *
  * ### Template parameter type requirements
  * - SCALAR must be a type like `complex<double>`
  * - EDGESELECTOR must be compatible with
  *                `std::function<bool(const Entity &)>`
- * - FUNCTION must be a type like 'std::function<SCALAR(VectorXd)>`
+ * - FUNCTION must be a MeshFunction type
  *
  * This function is meant to supply the information needed for the elimination
  * of Dirichlet boundary conditions by means of the function
@@ -288,6 +288,8 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const lf::assemble::DofHandler &dofh,
     const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
     EDGESELECTOR &&esscondflag, FUNCTION &&g) {
+  // This test triggers strange errors
+  // static_assert(isMeshFunction<FUNCTION>, "g must by a MeshFunction object");
   LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
                 "finite element specification must be for an edge!");
 
@@ -313,10 +315,12 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   // Visit all edges of the mesh (codim-1 entities)
   for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
     // Check whether the current edge carries dofs to be imposed by the
-    // function g.
+    // function g. The decision relies on the predicate `esscondflag`
     if (esscondflag(edge)) {
       // Fetch the shape of the edge
       const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
+      // Evaluate mesh function at several points specified by their
+      // reference coordinates.
       auto g_vals = g(edge, ref_eval_pts);
 
       // Compute degrees of freedom from function values in evaluation points
