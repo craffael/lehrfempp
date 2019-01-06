@@ -141,6 +141,8 @@ class VtkFile {
 
 void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
 
+// clang-format off
+
 /**
  * @brief Write a mesh along with mesh data into a vtk file.
  *
@@ -172,7 +174,50 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
  *
  * @note By default, VtkWriter outputs files in text-format. However, for
  * larger meshes you can switch to the more efficient binary mode (setBinary()).
+ *
+ * #### How to view the output in Paraview
+ * Once a `*.vtk` file has been written with the VtkWriter, this file can be
+ * opened in [Paraview](https://www.paraview.org/download/) as follows:
+ *
+ * 1. Open the file via `File->Open` (here we open the file `smiley.vtk` which
+ * is produced by the example code in `examples/io/vtk_gmsh_demo`)
+ * 2. Note that Paraview added the Vtk-File to the "Pipeline Browser". You can
+ * activate the file and show it in the view by selecting the Vtk file in
+ * the Pipeline Browser and clicking on "Apply" below:
+ * ![](vtk_writer/paraview_apply.png)
+ * 3. Paraview will now automatically select a set of data that was written with
+ * `WritePointData()` or `WriteCellData()` and visualize it on the mesh. You
+ * can select a different dataset or change the representation mode
+ * (e.g. to show the underlying mesh):
+ * ![](vtk_writer/paraview_data_selection.png)
+ * 4. There are many ways to visualize vector datasets (i.e. if the MeshDataSet 
+ * is `Eigen::Vector2d` or `Eigen::Vector3d` valued) in Paraview. If you
+ * select a vector dataset, you can additionally select how the mesh should be
+ * colored: Magnitude of the vector, or the x-, y- or z-component of the vector.
+ * ![](vtk_writer/paraview_vector_dataset.png)
+ * 5. If you want to visualize the vectors using arrows, you can use a
+ * "Glyph" filter:
+ *   1. Click on "Filters->Common->Glyph"
+ *   2. Note that Paraview added the filter to the "Pipeline Browser"
+ *   3. Select the new filter and adjust the properties in the "Properties Window"
+ *   below:
+ *   | Subsection   | Property Name | Description |
+ *   | ------------ | ------------- | ----------- |
+ *   | Glyph Source | Glyph Type    | `Arrow` is the most common choice, `2D Glyph` is also interesting
+ *   | Active Attributes | Scalars  | The (scalar) dataset that is used to color the arrows. |
+ *   | Active Attributes | Vector   | The vector dataset that defines the vector direction. If `Scalars` is a cell-based dataset, this must also be cell-based. If it `Scalars` is a point dataset, this must be a vector point dataset |
+ *   | Scaling      | Scale Mode    | Set this to `vector` if the length of the arrows should be proportional to the magnitude of the vectors |
+ *   | Scaling      | Scale Factor  | If vectors are too small/too big adjust this factor |
+ *
+ *   4. Click on "Apply"
+ * 6. Finally, if you want to take a look at the raw data you can e.g. click on 
+ * "Split Vertical" and then select "Spreadsheet View". You can then select 
+ * rows and see to what cell/point they correspond in the mesh:
+ * ![](vtk_writer/paraview_split_vertical.png)
+ *
  */
+
+// clang-format on
 class VtkWriter {
  public:
   using dim_t = base::dim_t;

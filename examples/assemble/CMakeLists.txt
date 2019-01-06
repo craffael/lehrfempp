@@ -2,9 +2,9 @@
 
 set (dof_demo dof_demo.cc)
 
-add_executable(lf.examples.assemble.dof_demo ${dof_demo})
+add_executable(examples.assemble.dof_demo ${dof_demo})
 
-target_link_libraries(lf.examples.assemble.dof_demo
+target_link_libraries(examples.assemble.dof_demo
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
@@ -13,13 +13,13 @@ target_link_libraries(lf.examples.assemble.dof_demo
   lf.assemble
   )
 
-target_compile_features(lf.examples.assemble.dof_demo PUBLIC cxx_std_17)
+target_compile_features(examples.assemble.dof_demo PUBLIC cxx_std_17)
 
 set (Dirichlet_Laplacian_demo Dirichlet_Laplacian_demo.cc)
 
-add_executable(lf.examples.assemble.Dirichlet_Laplacian_demo ${Dirichlet_Laplacian_demo})
+add_executable(examples.assemble.Dirichlet_Laplacian_demo ${Dirichlet_Laplacian_demo})
 
-target_link_libraries(lf.examples.assemble.Dirichlet_Laplacian_demo
+target_link_libraries(examples.assemble.Dirichlet_Laplacian_demo
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
@@ -28,9 +28,9 @@ target_link_libraries(lf.examples.assemble.Dirichlet_Laplacian_demo
   lf.refinement
   lf.assemble
   lf.io
-  lf.lagrfe
+  lf.uscalfe
   )
 
-target_compile_features(lf.examples.assemble.Dirichlet_Laplacian_demo PUBLIC cxx_std_17)
+target_compile_features(examples.assemble.Dirichlet_Laplacian_demo PUBLIC cxx_std_17)
 
 

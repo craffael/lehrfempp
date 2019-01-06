@@ -50,7 +50,7 @@ TEST(RegRefTest, RegRef) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "fine_mesh.m");
+  io::writeMatlab(*fine_mesh, "fine_mesh.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "fine_mesh_pi.m");
@@ -60,13 +60,12 @@ TEST(RegRefTest, RegRef) {
 
   // Output mesh geometry in TikZ format
   // Enable, once function is available in master branch
-  lf::mesh::utils::writeTikZ(
-      *fine_mesh, "fine_mesh.tikz",
-      lf::mesh::utils::TikzOutputCtrl::RenderCells |
-          lf::mesh::utils::TikzOutputCtrl::CellNumbering |
-          lf::mesh::utils::TikzOutputCtrl::VerticeNumbering |
-          lf::mesh::utils::TikzOutputCtrl::NodeNumbering |
-          lf::mesh::utils::TikzOutputCtrl::EdgeNumbering);
+  lf::io::writeTikZ(*fine_mesh, "fine_mesh.tikz",
+                    lf::io::TikzOutputCtrl::RenderCells |
+                        lf::io::TikzOutputCtrl::CellNumbering |
+                        lf::io::TikzOutputCtrl::VerticeNumbering |
+                        lf::io::TikzOutputCtrl::NodeNumbering |
+                        lf::io::TikzOutputCtrl::EdgeNumbering);
 }  // End RegRefTest::RegRef
 
 TEST(RegRefTest, BarycentricRef) {
@@ -105,7 +104,7 @@ TEST(RegRefTest, BarycentricRef) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "barycentric_ref.m");
+  io::writeMatlab(*fine_mesh, "barycentric_ref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "barycentric_ref_pi.m");
@@ -163,7 +162,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "allref.m");
+  io::writeMatlab(*fine_mesh, "allref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "allref_pi.m");
@@ -225,7 +224,7 @@ TEST(LocRefTest, LocalRefinement) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "locref.m");
+  io::writeMatlab(*fine_mesh, "locref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "locref_pi.m");

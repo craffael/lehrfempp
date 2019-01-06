@@ -3,8 +3,9 @@
  */
 
 #include "refutils.h"
+#include <lf/io/io.h>
+#include <lf/mesh/utils/utils.h>
 #include <fstream>
-#include "lf/mesh/utils/utils.h"
 
 namespace lf::refinement {
 
@@ -87,7 +88,7 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &basename) {
     std::shared_ptr<const mesh::Mesh> mesh = hier_mesh.getMesh(level);
 
     // Output of mesh data
-    lf::mesh::utils::writeMatlab(*mesh, filebase + ".m");
+    io::writeMatlab(*mesh, filebase + ".m");
     // Output of parent/refinement edge information
     WriteMatlabLevel(hier_mesh, level, filebase + "_pi.m");
   }
