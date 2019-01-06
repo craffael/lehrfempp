@@ -363,15 +363,14 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * elements; volume contributions only
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
- * @tparam FUNCTOR object with an evaluation operator of signature
- *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
- *         the source function
+ * @tparam FUNCTOR \ref mesh_function "MeshFunction" which defines the source
+ * function \f$ f \f$
  *
  * The underlying local linear form is
  * @f[
       v \mapsto \int_K f(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}\mathbf{x}\;,
  * @f]
- * where \f$f\f$ is suppoed to be a locally continuous source function.
+ * where \f$f\f$ is supposed to be a locally continuous source function.
  *
  * Computation is based on a quadrature rules supplied by the LehrFEM++
  * lf::quad::QuadRule module.
@@ -511,15 +510,14 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
  * @brief Local edge contributions to element vector
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
- * @tparam FUNCTOR object with an evaluation operator of signature
- *         std::function<SCALAR(const Eigen::VectorXd &)>, which supplies
- *         the data on the edge
+ * @tparam FUNCTOR `SCALAR` valued \ref mesh_function "MeshFunction" which
+ * defines the function \f$ g \f$
  *
  * The underlying local linear form for an edge @f$e@f$ is
  * @f[
-    v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}S\mathbf{x}\;,
+    v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x})\,\mathrm{d}S\mathbf{x}\;,
  * @f]
- * where \f$g\f$ is suppoed to be a locally continuous source function.
+ * where \f$g\f$ is supposed to be a locally continuous source function.
  *
  * Computation is based on a quadrature rules supplied by the LehrFEM++
  * lf::quad::QuadRule module.

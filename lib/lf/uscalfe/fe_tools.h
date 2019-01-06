@@ -169,12 +169,13 @@ static const unsigned int kout_prj_vals = 2;
  *
  * @param fe_space a uniform Lagrangian finite element space, providing finite
  *        element specifications for the cells of the mesh
- * @param u functor object supplying a scalar-valued function
+ * @param u functor object supplying a scalar-valued function that is to be
+ * projected
  * @param pred predicate object for the selection of relevant cells
  * @return column vector of basis expansion coefficients for the resulting
  *         finite element function
  *
- * The implemetation relies on the method
+ * The implementation relies on the method
  * ScalarReferenceFiniteElement::NodalValuesToDofs(). Refer to its
  * documentation. This method is called for each active cell to **set** the
  * coefficients for the global shape functions associated with that cell.
@@ -254,7 +255,8 @@ auto NodalProjection(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
  *
  * @tparam SCALAR scalar type for BVP = return type of the function g
  * @tparam EDGESELECTOR predicate returning true for edges with fixed dofs
- * @tparam FUNCTION functor type for object providing scalar-valued function
+ * @tparam FUNCTION \ref mesh_function "MeshFunction" which defines the imposed
+ * values on the edges
  *
  * @param dofh local-to-global index mapping
  * @param fe_spec_edge description of arrangement for local shape functions
@@ -270,14 +272,15 @@ auto NodalProjection(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
  * finite element space restricted to a set of edges. It relies on the
  * method ScalarReferenceFiniteElement::NodalValuesToDofs().
  *
- * The main use of this function is the interpolation of Dirichet data on the
- * Dirichlet part of vthe boundary of a domain.
+ * The main use of this function is the interpolation of Dirichlet data on the
+ * Dirichlet part of the boundary of a domain.
  *
  * ### Template parameter type requirements
  * - SCALAR must be a type like `complex<double>`
  * - EDGESELECTOR must be compatible with
  *                `std::function<bool(const Entity &)>`
- * - FUNCTION must be a type like 'std::function<SCALAR(VectorXd)>`
+ * - FUNCTION is a scalar valued \ref mesh_function "MeshFunction" which is
+ * evaluated on edges
  *
  * This function is meant to supply the information needed for the elimination
  * of Dirichlet boundary conditions by means of the function
@@ -288,6 +291,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const lf::assemble::DofHandler &dofh,
     const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
     EDGESELECTOR &&esscondflag, FUNCTION &&g) {
+  static_assert(isMeshFunction<std::remove_reference_t<FUNCTION>>);
   LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
                 "finite element specification must be for an edge!");
 
