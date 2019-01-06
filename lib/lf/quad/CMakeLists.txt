@@ -9,7 +9,7 @@ set(sources
   quad_rules_tria.cc
 )
 
-add_library(lf.quad ${sources})
+lf_add_library(lf.quad ${sources})
 target_link_libraries(lf.quad PUBLIC Eigen3::Eigen lf.base)
 
 if(LF_ENABLE_TESTING)

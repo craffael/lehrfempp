@@ -15,9 +15,9 @@
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
-#include <lf/lagrfe/lagrfe.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
+#include <lf/uscalfe/lagrfe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
@@ -148,8 +148,8 @@ double L2ErrorLinearFEDirichletLaplacian(
       lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
       lf::mesh::hybrid2d::Mesh::output_ctrl_ = tmp_mesh_ctrl);
   // Initialize objects for local computations
-  lf::lagrfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
-  lf::lagrfe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
+  lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
+  lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
@@ -384,17 +384,17 @@ int main(int argc, const char **argv) {
     }
 
     // Set debugging switches
-    lf::lagrfe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
+    lf::uscalfe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
     // LinearFELaplaceElementMatrix::dbg_geo |
     // LinearFELaplaceElementMatrix::dbg_locmat;
-    lf::lagrfe::LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;
+    lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;
     lf::assemble::DofHandler::output_ctrl_ = 6;
     dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
     // lf::assemble::ass_mat_dbg_ctrl = 255;
 
     // Compute finite element solution and error
     auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u,
-                                      lf::lagrfe::MeshFunctionGlobal(f));
+                                      lf::uscalfe::MeshFunctionGlobal(f));
     int level = 0;
     for (auto &err : L2errs) {
       std::cout << "L2 error on level " << level << " = " << err << std::endl;

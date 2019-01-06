@@ -115,7 +115,7 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
 }
 
 /**
- * @brief Create a new CodimMeshDataSet that attached data of type `T` with
+ * @brief Create a new CodimMeshDataSet that attaches data of type `T` with
  *        every entity with codimension `codim`. The data of every entity
  *        is initialized to the given value (`T` must be copyable!)
  * @param mesh The mesh that contains the entities.
