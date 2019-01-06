@@ -334,15 +334,17 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
     case 6: {
       // Hybrid mesh for triangle domain with vertices [0,0],[1,0],[0.2,1]
       // Set coordinates of nodes
+      // clang-format off
       std::array<std::array<double, 2>, 8> node_coord{
-          std::array<double, 2>({0, 0}),
-          std::array<double, 2>({1, 0}),
-          std::array<double, 2>({0.2, 1.0}),
-          std::array<double, 2>({0.5, 0.0}),
-          std::array<double, 2>({0.6, 0.5}),
-          std::array<double, 2>({0.1, 0.5}),
-          std::array<double, 2>({0.15, 0.75}),
-          std::array<double, 2>({0.4, 0.75})};
+          std::array<double, 2>({0   , 0    }),
+          std::array<double, 2>({1   , 0    }),
+          std::array<double, 2>({0.2 , 1.0  }),
+          std::array<double, 2>({0.5 , 0.0  }),
+          std::array<double, 2>({0.6 , 0.5  }),
+          std::array<double, 2>({0.1 , 0.5  }),
+          std::array<double, 2>({0.15, 0.75 }),
+          std::array<double, 2>({0.4 , 0.75 })};
+      // clang-format on
 
       // Specify triangles (two)
       std::array<std::array<size_type, 3>, 2> tria_nodes{

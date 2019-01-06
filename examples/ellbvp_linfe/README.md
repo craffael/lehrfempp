@@ -8,7 +8,8 @@ This demonstration code
   second-order elliptic boundary value problem,
 - builds a simple 2D hybrid mesh comprising triangles and quadrilaterals,
 - constructs a hierarchy of nested meshes by uniform refinement,
-- assembles the Galerkin matrix and right hand side vector on each refinement level,
+- assembles the Galerkin matrix and right hand side vector on each refinement level
+  using lowest-order (linear) Lagrangian finite elements,
 - solves the finite element linear system,
 - approximately computes the L2 norm and H1 seminorm of the finite element discretization
   errors
