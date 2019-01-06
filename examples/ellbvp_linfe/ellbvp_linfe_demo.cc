@@ -13,10 +13,10 @@
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
-#include <lf/lagrfe/lagrfe.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
+#include <lf/uscalfe/uscalfe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 
 int main(int argc, const char** argv) {
@@ -45,30 +45,30 @@ int main(int argc, const char** argv) {
         .finished();
   };
   // Wrap diffusion coefficient into a MeshFunction
-  lf::lagrfe::MeshFunctionGlobal mf_alpha{alpha};
+  lf::uscalfe::MeshFunctionGlobal mf_alpha{alpha};
 
   // Scalar valued reaction coefficient c
   auto gamma = [](Eigen::Vector2d x) -> double {
     return (x[0] * x[0] + x[1] * x[1]);
   };
-  lf::lagrfe::MeshFunctionGlobal mf_gamma{gamma};
+  lf::uscalfe::MeshFunctionGlobal mf_gamma{gamma};
 
   // Scalar valued impedance coefficient
   auto eta = [](Eigen::Vector2d x) -> double { return (1.0 + x[0] + x[1]); };
-  lf::lagrfe::MeshFunctionGlobal mf_eta{eta};
+  lf::uscalfe::MeshFunctionGlobal mf_eta{eta};
 
   // Exact solution u
   auto u = [](Eigen::Vector2d x) -> double {
     return std::log(x[0] * x[0] + x[1] + 1.0);
   };
-  lf::lagrfe::MeshFunctionGlobal mf_u{u};
+  lf::uscalfe::MeshFunctionGlobal mf_u{u};
 
   // Gradient of exact solution
   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
     double den = x[0] * x[0] + x[1] + 1.0;
     return ((Eigen::Vector2d() << 2.0 * x[0], 1.0).finished()) / den;
   };
-  lf::lagrfe::MeshFunctionGlobal mf_grad_u{grad_u};
+  lf::uscalfe::MeshFunctionGlobal mf_grad_u{grad_u};
 
   // Right-hand side source function f
   auto f = [&gamma, &u](Eigen::Vector2d x) -> double {
@@ -77,7 +77,7 @@ int main(int argc, const char** argv) {
         -x[0] * x[0] * (2 * x[1] + 9) - x[0] + 2 * x[1] * x[1] + 9 * x[1] + 5;
     return (-num / (den * den) + gamma(x) * u(x));
   };
-  lf::lagrfe::MeshFunctionGlobal mf_f{f};
+  lf::uscalfe::MeshFunctionGlobal mf_f{f};
 
   // Boundary conditions and predicates for different boundary parts
   // The predicates are named edge_sel_* and when invoked for an entity of edge
@@ -90,7 +90,7 @@ int main(int argc, const char** argv) {
       ((Eigen::Vector2d() << -1.0, 0.2).finished()).normalized();
   // Dirichlet data borrowed from the known exact solution.
   auto g = [&u](Eigen::Vector2d x) -> double { return u(x); };
-  lf::lagrfe::MeshFunctionGlobal mf_g{g};
+  lf::uscalfe::MeshFunctionGlobal mf_g{g};
 
   // Predicates and selectors for boundary conditions
   // Predicates for selecting edges on the Neumann boundary
@@ -127,7 +127,7 @@ int main(int argc, const char** argv) {
       return 0.0;
     }
   };
-  lf::lagrfe::MeshFunctionGlobal mf_h{h};
+  lf::uscalfe::MeshFunctionGlobal mf_h{h};
 
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
@@ -162,7 +162,7 @@ int main(int argc, const char** argv) {
       lf::base::RefEl::kTria(),
       lf::base::ForwardRange<const size_type>({7, 6, 2}),
       std::unique_ptr<lf::geometry::Geometry>(nullptr));
-  
+
   // Create general quadrilateral
   std::array<size_type, 4> quad_nodes{5, 4, 7, 6};
   Eigen::Matrix<double, 2, 4> quad_coord;
@@ -174,7 +174,7 @@ int main(int argc, const char** argv) {
       lf::base::RefEl::kQuad(),
       lf::base::ForwardRange<const size_type>({5, 4, 7, 6}),
       std::make_unique<lf::geometry::QuadO1>(quad_coord));
-  
+
   // Create parallelogram
   std::array<size_type, 4> parg_nodes{0, 3, 4, 5};
   for (int n_pt = 0; n_pt < 4; ++n_pt) {
@@ -215,7 +215,7 @@ int main(int argc, const char** argv) {
     std::shared_ptr<const lf::mesh::Mesh> mesh_p{multi_mesh.getMesh(level)};
     // Set up global FE space; lowest order Lagrangian finite elements
     auto fe_space =
-        std::make_shared<lf::lagrfe::FeSpaceLagrangeO1<double>>(mesh_p);
+        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
     // Reference to current mesh
     const lf::mesh::Mesh& mesh{*(fe_space->Mesh())};
     // Obtain local->global index mapping for current finite element space
@@ -255,8 +255,8 @@ int main(int argc, const char** argv) {
     // First the volume part for the bilinear form
     // Initialize object taking care of local computations. No selection of a
     // subset of cells is specified in this demonstration
-    lf::lagrfe::LagrangeFEEllBVPElementMatrix<double, decltype(mf_alpha),
-                                              decltype(mf_gamma)>
+    lf::uscalfe::LagrangeFEEllBVPElementMatrix<double, decltype(mf_alpha),
+                                               decltype(mf_gamma)>
         elmat_builder(fe_space, mf_alpha, mf_gamma);
     // Invoke assembly on cells (co-dimension = 0)
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
@@ -264,8 +264,8 @@ int main(int argc, const char** argv) {
     // conditions!). To that end initialize object taking care of local
     // computations on segments. A predicate ensure that computations are
     // confined to edges on the impredance boundary
-    lf::lagrfe::LagrangeFEEdgeMassMatrix<double, decltype(mf_eta),
-                                         decltype(edge_sel_imp)>
+    lf::uscalfe::LagrangeFEEdgeMassMatrix<double, decltype(mf_eta),
+                                          decltype(edge_sel_imp)>
         edgemat_builder(fe_space, mf_eta, edge_sel_imp);
     // Invoke assembly on edges by specifying co-dimension = 1
     lf::assemble::AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
@@ -277,7 +277,7 @@ int main(int argc, const char** argv) {
     // Assemble volume part of right-hand side vector depending on the source
     // function f.
     // Initialize object taking care of local computations on all cells.
-    lf::lagrfe::ScalarFELocalLoadVector<double, decltype(mf_f)> elvec_builder(
+    lf::uscalfe::ScalarFELocalLoadVector<double, decltype(mf_f)> elvec_builder(
         fe_space, mf_f);
     // Invoke assembly on cells (codim == 0)
     AssembleVectorLocally(0, dofh, elvec_builder, phi);
@@ -292,8 +292,8 @@ int main(int argc, const char** argv) {
       };
       // Object taking care of local computations. A predicate selects the edges
       // to be processed
-      lf::lagrfe::ScalarFEEdgeLocalLoadVector<double, decltype(mf_h),
-                                              decltype(edge_sel)>
+      lf::uscalfe::ScalarFEEdgeLocalLoadVector<double, decltype(mf_h),
+                                               decltype(edge_sel)>
           elvec_builder(fe_space, mf_h, edge_sel);
       // Invoke assembly on edges (codim == 1), update vector
       AssembleVectorLocally(1, dofh, elvec_builder, phi);
@@ -304,7 +304,7 @@ int main(int argc, const char** argv) {
     // boundary conditions
     if (no_Dirichlet_edges > 0) {
       // Obtain specification for shape functions on edges
-      std::shared_ptr<const lf::lagrfe::ScalarReferenceFiniteElement<double>>
+      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
           rsf_edge_p =
               fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
       LF_ASSERT_MSG(rsf_edge_p != nullptr,
@@ -312,7 +312,7 @@ int main(int argc, const char** argv) {
 
       // Fetch flags and values for degrees of freedom located on Dirichlet
       // edges.
-      auto ess_bdc_flags_values{lf::lagrfe::InitEssentialConditionFromFunction(
+      auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
           dofh, *rsf_edge_p,
           [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
             return (bd_flags(edge) && edge_sel_dir(edge));
@@ -337,12 +337,12 @@ int main(int argc, const char** argv) {
 
     // Postprocessing: Compute error norms
     // Helper class for L2 error computation
-    lf::lagrfe::MeshFunctionL2NormDifference lc_L2(fe_space, mf_u, 2);
+    lf::uscalfe::MeshFunctionL2NormDifference lc_L2(fe_space, mf_u, 2);
     // Helper class for H1 semi norm
-    lf::lagrfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
+    lf::uscalfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
 
-    double L2err = lf::lagrfe::NormOfDifference(dofh, lc_L2, sol_vec);
-    double H1serr = lf::lagrfe::NormOfDifference(dofh, lc_H1, sol_vec);
+    double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
+    double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 
