@@ -16,7 +16,6 @@ void sub() {
 int main(int argc, char** argv) {
   // namespace overview:
   // ci (comm::input) for reading in variables from cmdline or file
-  // cc (comm::check) for debug messages
   // cv (comm::variables) for global variables
 
   if (argc <= 1) {
