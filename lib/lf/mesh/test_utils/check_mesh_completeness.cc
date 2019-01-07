@@ -14,7 +14,7 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   for (size_type co_dim = 0; co_dim < dim_mesh; ++co_dim) {
     // Count occurrences of sub-entities of relative co-dimension 1
     // To that end allocate a vector of counters
-    std::vector<size_type> entity_link_cnt(mesh.Size(co_dim + 1), 0);
+    std::vector<size_type> entity_link_cnt(mesh.NumEntities(co_dim + 1), 0);
 
     // Diagnostic output
     // std::cout << "co-dim " << co_dim + 1 << ": " << mesh.Size(co_dim + 1)

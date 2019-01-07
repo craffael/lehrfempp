@@ -1,4 +1,5 @@
 #include "lf/base/ref_el.h"
+#include <lf/quad/quad.h>
 #include <cassert>
 #include <iostream>
 
@@ -49,6 +50,16 @@ void foo() {
         triangle.SubType(2, 0);  // RefEl of sub-entity with codim=2, index=0
     assert(point == RefEl::kPoint());
     //![refElUsage]
+  }
+
+  {
+    // clang-format off
+    //![id]
+    std::vector<quad::QuadRule> quad_rules(4);
+    quad_rules[base::RefEl::kTria().Id()] = quad::make_QuadRule(base::RefEl::kTria(), 5);
+    quad_rules[base::RefEl::kQuad().Id()] = quad::make_QuadRule(base::RefEl::kQuad(), 5);
+    //![id]
+    // clang-format on
   }
 }  // foo
 }  // namespace lf::base

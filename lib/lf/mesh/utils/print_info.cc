@@ -6,8 +6,10 @@
  * @copyright MIT License
  */
 
-#include "print_info.h"
+#include <typeinfo>
+
 #include "lf/geometry/geometry.h"
+#include "print_info.h"
 
 namespace lf::mesh::utils {
 
@@ -31,7 +33,7 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
     // Loop over codimensions
 
     for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
-      const size_type no_ent = mesh.Size(co_dim);
+      const size_type no_ent = mesh.NumEntities(co_dim);
       o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
         << std::endl;
 
@@ -77,16 +79,19 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
 
 // Print function for Entity object
 void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
+  // Topological type of entity
   lf::base::RefEl e_ref_el = e.RefEl();
   int dim_ref_el = e_ref_el.Dimension();
-  stream << "Entity type: " << e_ref_el << std::endl;
+  // Geometry of entity and coordinates
+  const geometry::Geometry *e_geo_ptr = e.Geometry();
+  LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
+
+  stream << "Entity " << e_ref_el << "/" << typeid(*e_geo_ptr).name()
+         << std::endl;
 
   if (Entity::output_ctrl_ > 10) {
     stream << "Dimension: " << dim_ref_el << std::endl;
 
-    // Geometry of entity and coordinates
-    const geometry::Geometry *e_geo_ptr = e.Geometry();
-    LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
     const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
 
     // Loop over codimensions

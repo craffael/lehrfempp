@@ -34,9 +34,9 @@ TEST(lf_mesh_p, buildTorusMesh) {
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
   EXPECT_EQ(mesh_p->DimMesh(), 2) << "Mesh dimension != 2 !";
   EXPECT_EQ(mesh_p->DimWorld(), 3) << "World dimension must be 3";
-  EXPECT_EQ(mesh_p->Size(0), 15) << "Mesh should comprise 15 cells";
-  EXPECT_EQ(mesh_p->Size(1), 30) << "Mesh should comprise 30 edges";
-  EXPECT_EQ(mesh_p->Size(2), 15) << "Mesh should have 15 vertices";
+  EXPECT_EQ(mesh_p->NumEntities(0), 15) << "Mesh should comprise 15 cells";
+  EXPECT_EQ(mesh_p->NumEntities(1), 30) << "Mesh should comprise 30 edges";
+  EXPECT_EQ(mesh_p->NumEntities(2), 15) << "Mesh should have 15 vertices";
 
   // check that every edge has two adjacent cells
   auto cells_per_edge = mesh::utils::countNoSuperEntities(mesh_p, 1, 1);

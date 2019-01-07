@@ -6,12 +6,13 @@
  */
 
 #include <sstream>
+#include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
 int main() {
-  using lf::mesh::utils::TikzOutputCtrl;
+  using lf::io::TikzOutputCtrl;
   std::cout << "LehrFEM++ demo: output of test meshes" << std::endl;
   std::cout << "(test meshes from "
                "lf::mesh::test_utils::GenerateHybrid2DTestMesh()"
@@ -25,13 +26,28 @@ int main() {
     std::cout << *mesh_p << std::endl;
 
     // TikZ output
-    std::stringstream filename;
-    filename << "test_mesh_" << selector << ".tex";
-    lf::mesh::utils::writeTikZ(
-        *mesh_p, filename.str(),
+    std::stringstream filename_tikz;
+    filename_tikz << "test_mesh_" << selector << ".tex";
+    lf::io::writeTikZ(
+        *mesh_p, filename_tikz.str(),
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
             TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
             TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips);
+
+    // Matlab output
+    std::stringstream filename_matlab;
+    filename_matlab << "test_mesh_" << selector << ".m";
+    lf::io::writeMatlab(*mesh_p, filename_matlab.str());
+
+    // Python output
+    std::stringstream filename_py;
+    filename_py << "test_mesh_" << selector << ".py";
+    lf::io::writeMatplotlib(*mesh_p, filename_py.str());
+
+    // VTK output
+    std::stringstream filename_vtk;
+    filename_vtk << "test_mesh_" << selector << ".vtk";
+    lf::io::VtkWriter vtk_writer(mesh_p, filename_vtk.str());
   }
 
   return 0L;

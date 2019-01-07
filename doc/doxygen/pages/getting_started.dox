@@ -18,7 +18,7 @@
  - **OSX:**
    - XCode >= 9.4 (tests run with XCode 9.4)
  - **Windows:**
-   - Visual Studio 2017 or later is required (tests run with VS2017)
+   - Visual Studio 2017 or later is required (tests run with VS2017), only x64 is supported!
  
  
  ### 2. Create a new CMake project

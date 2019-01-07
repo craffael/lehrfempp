@@ -114,7 +114,8 @@ class COOMatrix {
   const TripletVec &triplets() const { return triplets_; }
 
   /**
-   * @brief Computes the product of a vector with the matrix in COO format
+   * @brief Computes the product of a (scaled) vector with the matrix in COO
+   * format
    * @tparam VECTOR a basic vector type for the argument vector
    * @param alpha scalar with which to multiply the argument vector
    *        before the matrix x vector multiplication.
@@ -198,7 +199,7 @@ class COOMatrix {
    * This function prints matrix size and the list of triplets
    */
   template <typename SCALARTYPE>
-  friend std::ostream &operator<<(std::ostream &o,  //NOLINT
+  friend std::ostream &operator<<(std::ostream &o,  // NOLINT
                                   const COOMatrix<SCALARTYPE> &mat);
 
  private:

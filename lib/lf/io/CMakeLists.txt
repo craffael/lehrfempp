@@ -4,8 +4,12 @@ set(sources
   io.h
   vtk_writer.h
   vtk_writer.cc
+  write_matlab.h
+  write_matlab.cc
   write_matplotlib.h
   write_matplotlib.cc
+  write_tikz.h
+  write_tikz.cc
 )
 
 lf_add_library(lf.io ${sources})

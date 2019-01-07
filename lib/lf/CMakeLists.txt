@@ -5,4 +5,5 @@ add_subdirectory(io)
 add_subdirectory(mesh)
 add_subdirectory(quad)
 add_subdirectory(refinement)
-add_subdirectory(fe)
+add_subdirectory(uscalfe)
+

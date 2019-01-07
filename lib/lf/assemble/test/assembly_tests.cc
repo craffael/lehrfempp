@@ -125,9 +125,9 @@ TEST(lf_assembly, dof_index_test) {
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  EXPECT_EQ(mesh_p->Size(0), 9) << "Test mesh: 9 cells expected!";
-  EXPECT_EQ(mesh_p->Size(1), 18) << "Test mesh: 18 edges expected!";
-  EXPECT_EQ(mesh_p->Size(2), 10) << "Test mesh: 10 nodes expected!";
+  EXPECT_EQ(mesh_p->NumEntities(0), 9) << "Test mesh: 9 cells expected!";
+  EXPECT_EQ(mesh_p->NumEntities(1), 18) << "Test mesh: 18 edges expected!";
+  EXPECT_EQ(mesh_p->NumEntities(2), 10) << "Test mesh: 10 nodes expected!";
 
   // Describe local (uniform!) distribution of degrees of freedom
   // 1 dof per node, 2 dofs per edge, 3 dofs per triangle, 4 dofs per quad
@@ -151,9 +151,9 @@ TEST(lf_assembly, dynamic_dof_index_test) {
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  EXPECT_EQ(mesh_p->Size(0), 9) << "Test mesh: 9 cells expected!";
-  EXPECT_EQ(mesh_p->Size(1), 18) << "Test mesh: 18 edges expected!";
-  EXPECT_EQ(mesh_p->Size(2), 10) << "Test mesh: 10 nodes expected!";
+  EXPECT_EQ(mesh_p->NumEntities(0), 9) << "Test mesh: 9 cells expected!";
+  EXPECT_EQ(mesh_p->NumEntities(1), 18) << "Test mesh: 18 edges expected!";
+  EXPECT_EQ(mesh_p->NumEntities(2), 10) << "Test mesh: 10 nodes expected!";
 
   // Construct dofhandler
   std::function<lf::assemble::size_type(const lf::mesh::Entity &)> dof_layout =

@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "lf/base/base.h"
+#include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/mesh.h"
 #include "lf/mesh/test_utils/check_entity_indexing.h"
@@ -49,6 +50,6 @@ int main(int argc, const char *argv[]) {
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
 
   // Matlab output of mesh
-  lf::mesh::utils::writeMatlab(*mesh_p, "lf_tptriagmesh.m");
+  lf::io::writeMatlab(*mesh_p, "lf_tptriagmesh.m");
   return 0;
 }

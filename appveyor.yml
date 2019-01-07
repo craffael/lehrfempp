@@ -18,7 +18,6 @@ init:
 # Win32 and x64 are CMake-compatible solution platform names.
 # This allows us to pass %PLATFORM% to CMake -A.
 platform:
-  - Win32
   - x64
 
 # build Configurations, i.e. Debug, Release, etc.
