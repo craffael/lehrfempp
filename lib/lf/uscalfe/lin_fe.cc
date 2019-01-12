@@ -6,16 +6,16 @@
 
 /**
  * @file
- * @brief Implementation of local computations for Lagrange FE for
- * 2nd-order linear elliptic boundary value problems.
+ * @brief Implementation: element matrix for Laplacian discretized
+ *        with linear finite elements
  * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License
  */
 
-#include "loc_comp_ellbvp.h"
+#include "lin_fe.h"
 
-namespace lf::fe {
+namespace lf::uscalfe {
 // Implementation for LinearFELaplaceElementMatrix
 unsigned int LinearFELaplaceElementMatrix::dbg_ctrl{0};
 
@@ -50,7 +50,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
                               << vertices << std::endl);
 
   // 4x4 dense matrix for returning result
-  ElemMat elem_mat = ElemMat::Zero(4, 4);
+  elem_mat_t elem_mat = elem_mat_t::Zero(4, 4);
 
   // Computations differ depending on the type of the cell
   switch (ref_el) {
@@ -168,6 +168,6 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   return elem_mat;
 }
 
-// Implementation of LinearFELocalLoadVector
+// No implementation for TEMPLATE LinearFELocalLoadVector here
 
-}  // end namespace lf::fe
+}  // namespace lf::uscalfe

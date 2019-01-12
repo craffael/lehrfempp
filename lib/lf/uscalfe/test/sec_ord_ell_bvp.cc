@@ -1,6 +1,4 @@
-#ifndef LF_FE_H
-#define LF_FE_H
-/***************************************************************************
+/* **************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
@@ -8,16 +6,14 @@
 
 /**
  * @file
- * @brief Finite elements: local definition and assembly
- * elliptic BVPs
+ * @brief Implementation of data structures and functions relevant for
+ *        second-order elliptic boundary value problems.
+ * 2nd-order linear elliptic boundary value problems.
  * @author Ralf Hiptmair
- * @date October 2018
+ * @date November 2018
  * @copyright MIT License
  */
 
-#include "lagr_fe.h"
-#include "loc_comp_ellbvp.h"
+#include "sec_ord_ell_bvp.h"
 
-namespace lf::fe {}  // namespace lf::fe
-
-#endif
+namespace lf::uscalfe {}

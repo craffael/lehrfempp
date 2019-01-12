@@ -11,17 +11,20 @@
 
 # find clang-format
 if [ -x "$(command -v clang-format)" ]; then
-  ct=$(command -v clang-tidy)
+  ct=$(command -v clang-format)
 fi
 if [ -x "$(command -v clang-format-5.0)" ]; then
-  ct=$(command -v clang-tidy-5.0)
+  ct=$(command -v clang-format-5.0)
 fi
 if [ -x "$(command -v clang-format-6.0)" ]; then
-  ct=$(command -v clang-tidy-6.0)
+  ct=$(command -v clang-format-6.0)
+fi
+if [ -x "$(command -v clang-format-7)" ]; then
+  ct=$(command -v clang-format-7)
 fi
 
 if [ -z "$ct" ]; then
   echo "clang-format, clang-format-6.0 or clang-format-5.0 not found in path"
 fi
 
-$(dirname $0)/travis/run-clang-format.py -r --clang-format-executable clang-format-6.0 --color always $(dirname $0)/lib
+$(dirname $0)/travis/run-clang-format.py -r --clang-format-executable $ct --color always $(dirname $0)/lib

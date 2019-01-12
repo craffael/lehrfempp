@@ -37,6 +37,7 @@
 # Specific folders:
 .vs/
 bin/
+bin_32/
 bin_clang/
 bin_clang5/
 bin_clang_release/

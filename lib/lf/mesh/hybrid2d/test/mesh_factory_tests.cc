@@ -7,6 +7,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
@@ -51,7 +52,7 @@ bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
   std::cout << ">>> Total area = " << total_area << std::endl;
 
   std::cout << "Mesh sanity: Writing MATLAB file" << std::endl;
-  utils::writeMatlab(mesh, "test_mesh.m");
+  io::writeMatlab(mesh, "test_mesh.m");
 
   // Printing mesh information
   lf::geometry::Geometry::output_ctrl_ = 20;
@@ -108,9 +109,9 @@ TEST(lf_hybrid2d, EdgeNumbering) {
   // build the mesh
   auto mesh = mf.Build();
 
-  EXPECT_EQ(mesh->Size(0), 1);
-  EXPECT_EQ(mesh->Size(1), 4);
-  EXPECT_EQ(mesh->Size(2), 4);
+  EXPECT_EQ(mesh->NumEntities(0), 1);
+  EXPECT_EQ(mesh->NumEntities(1), 4);
+  EXPECT_EQ(mesh->NumEntities(2), 4);
 
   // check indices of the nodes:
   Eigen::VectorXd zero = Eigen::VectorXd::Zero(0);

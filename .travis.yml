@@ -102,18 +102,6 @@ jobs:
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode9.4
-    compiler: clang
-    env: COMPILER='clang++' BUILD_TYPE='Debug'
-    script: "./travis/compile_test.sh"
-  - stage: compile_test
-    os: osx
-    osx_image: xcode9.4
-    compiler: clang
-    env: COMPILER='clang++' BUILD_TYPE='Release'
-    script: "./travis/compile_test.sh"
-  - stage: compile_test
-    os: osx
     osx_image: xcode10.1
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'

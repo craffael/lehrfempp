@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 /**
  * @brief Writes affine triangulation data to file in MATLAB format
  *
@@ -34,6 +34,6 @@ namespace lf::mesh::utils {
  */
 void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename);
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io
 
 #endif  // __X633e7bf8dd548de839f74075687e81A

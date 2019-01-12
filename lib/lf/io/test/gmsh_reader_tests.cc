@@ -21,9 +21,9 @@ using size_type = mesh::Mesh::size_type;
 
 void checkTwoElementMesh(const GmshReader& reader) {
   auto mesh = reader.mesh();
-  EXPECT_EQ(mesh->Size(0), 2);
-  EXPECT_EQ(mesh->Size(1), 6);
-  EXPECT_EQ(mesh->Size(2), 5);
+  EXPECT_EQ(mesh->NumEntities(0), 2);
+  EXPECT_EQ(mesh->NumEntities(1), 6);
+  EXPECT_EQ(mesh->NumEntities(2), 5);
 
   // codim=2 checks:
   auto entities2 = mesh->Entities(2);
