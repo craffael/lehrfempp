@@ -40,7 +40,7 @@ base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
   }
 }
 
-Mesh::size_type Mesh::Size(char codim) const {
+Mesh::size_type Mesh::NumEntities(char codim) const {
   switch (codim) {
     case 0:
       return trias_.size() + quads_.size();
@@ -51,6 +51,28 @@ Mesh::size_type Mesh::Size(char codim) const {
     default:
       LF_VERIFY_MSG(false, "codim out of bounds.");
   }
+}
+
+Mesh::size_type Mesh::NumEntities(lf::base::RefEl ref_el_type) const {
+  switch (ref_el_type) {
+    case lf::base::RefEl::kPoint(): {
+      return points_.size();
+    }
+    case lf::base::RefEl::kSegment(): {
+      return segments_.size();
+    }
+    case lf::base::RefEl::kTria(): {
+      return trias_.size();
+    }
+    case lf::base::RefEl::kQuad(): {
+      return quads_.size();
+    }
+    default: {
+      LF_ASSERT_MSG(false, "Illegal entity type");
+      break;
+    }
+  }
+  return 0;
 }
 
 Mesh::size_type Mesh::Index(const Entity &e) const {
@@ -77,7 +99,8 @@ Mesh::size_type Mesh::Index(const Entity &e) const {
 
 const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
   LF_ASSERT_MSG(codim <= 2, "Illegal codimension " << codim);
-  LF_ASSERT_MSG(index < Size(codim), "Index " << index << " > " << Size(codim));
+  LF_ASSERT_MSG(index < NumEntities(codim),
+                "Index " << index << " > " << NumEntities(codim));
   return entity_pointers_[codim][index];
 }
 

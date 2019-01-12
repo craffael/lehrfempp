@@ -66,7 +66,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
         mesh_(std::move(mesh)),
         data_(dim_mesh_ + 1) {
     for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
-      data_[codim].resize(mesh_->Size(codim));
+      data_[codim].resize(mesh_->NumEntities(codim));
     }
   }
 
@@ -86,7 +86,7 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
         mesh_(std::move(mesh)),
         data_(dim_mesh_ + 1) {
     for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
-      data_[codim] = std::vector<T>(mesh_->Size(codim), init_value);
+      data_[codim] = std::vector<T>(mesh_->NumEntities(codim), init_value);
     }
   }
 

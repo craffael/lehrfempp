@@ -27,13 +27,13 @@ namespace lf::base {
  *
  */
 enum class RefElType : unsigned char {
-  kPoint,
+  kPoint = 1,
   //!< @copydoc RefEl::kPoint()
-  kSegment,
+  kSegment = 2,
   //!< @copydoc RefEl::kSegment()
-  kTria,
+  kTria = 3,
   //!< @copydoc RefEl::kTria()
-  kQuad,
+  kQuad = 4,
   //!< @copydoc RefEl::kQuad()
 };
 
@@ -467,6 +467,17 @@ class RefEl {
    */
   // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
   constexpr operator RefElType() const { return type_; }
+
+  /**
+   * @brief Return a unique id for this reference element.
+   *
+   * #### Usage example
+   * @snippet ref_el.cc id
+   */
+  // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+  constexpr unsigned char Id() const {
+    return static_cast<unsigned char>(type_);
+  }
 
   ~RefEl() = default;
 

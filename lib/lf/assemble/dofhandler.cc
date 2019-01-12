@@ -132,7 +132,7 @@ void UniformFEDofHandler::initIndexArrays() {
 
   // Step I: Set indices for shape functions on nodes
   // Total number of degrees of freedom on nodes (entities of co-dim = 2)
-  const size_type no_nodes = mesh_->Size(2);
+  const size_type no_nodes = mesh_->NumEntities(2);
   const size_type num_dofs_nodes = no_nodes * no_dofs_[kNodeOrd];
   dofs_[kNodeOrd].resize(num_dofs_nodes);
   // Run through nodes in the order given by their numbering
@@ -152,7 +152,7 @@ void UniformFEDofHandler::initIndexArrays() {
   // Step II: Set indices for shape functions on edges
   // Total number of degrees of freedom belonging to edges (entities of co-dim =
   // 1)
-  const size_type no_edges = mesh_->Size(1);
+  const size_type no_edges = mesh_->NumEntities(1);
   const size_type num_dofs_edges = no_edges * no_dofs_[kEdgeOrd];
   dofs_[kEdgeOrd].resize(num_dofs_edges);
   // Visit all edges
@@ -184,7 +184,7 @@ void UniformFEDofHandler::initIndexArrays() {
   }
 
   // Step III: Set indices for shape functions on cells
-  const size_type no_cells = mesh_->Size(0);
+  const size_type no_cells = mesh_->NumEntities(0);
   const size_type max_num_dof_cells = no_cells * no_dofs_[kCellOrd];
   dofs_[kCellOrd].resize(max_num_dof_cells);
 
@@ -276,7 +276,7 @@ UniformFEDofHandler::GlobalDofIndices(lf::base::RefEl ref_el_type,
   const dim_t codim = 2 - ref_el_type.Dimension();
   const size_type no_covered_dofs = NoCoveredDofs(ref_el_type);
 
-  LF_ASSERT_MSG((mesh_->Size(codim) > entity_index),
+  LF_ASSERT_MSG((mesh_->NumEntities(codim) > entity_index),
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
@@ -298,7 +298,7 @@ UniformFEDofHandler::InteriorGlobalDofIndices(lf::base::RefEl ref_el_type,
   const size_type no_covered_dofs = NoCoveredDofs(ref_el_type);
   const size_type no_loc_dofs = NoInteriorDofs(ref_el_type);
 
-  LF_ASSERT_MSG((mesh_->Size(codim) > entity_index),
+  LF_ASSERT_MSG((mesh_->NumEntities(codim) > entity_index),
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =

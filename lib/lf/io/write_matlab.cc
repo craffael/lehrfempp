@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 
 void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
   using size_type = std::size_t;         // unsigned integer
@@ -37,13 +37,13 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     // Run through the nodes of the mesh and write x coordinates
     const dim_t node_codim(dim_mesh);
     // Number of nodes of the mesh
-    const size_type no_of_nodes = mesh.Size(node_codim);
+    const size_type no_of_nodes = mesh.NumEntities(node_codim);
     file << "x = zeros(" << no_of_nodes << ",1);" << std::endl;
     file << "y = zeros(" << no_of_nodes << ",1);" << std::endl;
 
     // Write node coordinates to file
     size_type node_cnt = 0;
-    for (const Entity &node : mesh.Entities(node_codim)) {
+    for (const mesh::Entity &node : mesh.Entities(node_codim)) {
       const lf::base::glb_idx_t node_index = mesh.Index(node);
       const geometry::Geometry *geo_ptr = node.Geometry();
       Eigen::MatrixXd node_coord(geo_ptr->Global(zero));
@@ -56,10 +56,10 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     LF_VERIFY_MSG(node_cnt == no_of_nodes, "Node count mismatch");
 
     // Write edge information to file
-    const size_type no_of_edges = mesh.Size(1);
+    const size_type no_of_edges = mesh.NumEntities(1);
     file << "EDS = zeros(" << no_of_edges << ",2);" << std::endl;
     size_type ed_cnt = 0;
-    for (const Entity &edge : mesh.Entities(1)) {
+    for (const mesh::Entity &edge : mesh.Entities(1)) {
       const lf::base::glb_idx_t edge_index = mesh.Index(edge);
       base::RefEl ref_el = edge.RefEl();
       LF_VERIFY_MSG(ref_el == lf::base::RefEl::kSegment(),
@@ -77,7 +77,7 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     size_type cell_cnt = 0;
     size_type triag_cnt = 0;
     size_type quad_cnt = 0;
-    for (const Entity &e : mesh.Entities(0)) {
+    for (const mesh::Entity &e : mesh.Entities(0)) {
       lf::base::glb_idx_t cell_index = mesh.Index(e);
       // Access vertices =  sub-entities of relative co-dimension 2
       const auto sub_ent = e.SubEntities(2);
@@ -113,4 +113,4 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
   }
 }
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io

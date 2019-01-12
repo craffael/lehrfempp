@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace lf::mesh::utils {
+namespace lf::io {
 
 /**
  * @brief Enum flags: TikzOutputCtrl for output control of mesh drawn in TikZ.
@@ -133,6 +133,6 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                TikzOutputCtrl output_ctrl = TikzOutputCtrl::RenderCells);
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::io
 
 #endif  // WRITE_TIKZ_H

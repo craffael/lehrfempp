@@ -1,4 +1,3 @@
-
 #ifndef __b86b0c9cb0fd48da931a1f24421b8842
 #define __b86b0c9cb0fd48da931a1f24421b8842
 
@@ -62,7 +61,14 @@ class Mesh {
    * @param codim The codimension of the entities that should be counted.
    * @return That number of entities that have the given codimension.
    */
-  virtual size_type Size(char codim) const = 0;
+  virtual size_type NumEntities(char codim) const = 0;
+
+  /**
+   * @brief Tells number of entities of a particular topological/geometric type
+   * @param ref_el_type topological/geometric type
+   * @return number of entities of that type
+   */
+  virtual size_type NumEntities(lf::base::RefEl ref_el_type) const = 0;
 
   /**
    * @brief Acess to the index of a mesh entity of any co-dimension
