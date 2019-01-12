@@ -489,7 +489,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   LF_ASSERT_MSG(codim >= 0 && codim < dim_mesh, "codim out of bounds.");
 
   // insert nodes:
-  vtk_file_.unstructured_grid.points.resize(mesh_->Size(dim_mesh));
+  vtk_file_.unstructured_grid.points.resize(mesh_->NumEntities(dim_mesh));
   Eigen::Matrix<double, 0, 1> zero;
   for (auto& p : mesh_->Entities(dim_mesh)) {
     auto index = mesh_->Index(p);
@@ -509,8 +509,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   }
 
   // insert elements:
-  vtk_file_.unstructured_grid.cells.resize(mesh_->Size(codim));
-  vtk_file_.unstructured_grid.cell_types.resize(mesh_->Size(codim));
+  vtk_file_.unstructured_grid.cells.resize(mesh_->NumEntities(codim));
+  vtk_file_.unstructured_grid.cell_types.resize(mesh_->NumEntities(codim));
   for (auto& e : mesh_->Entities(codim)) {
     auto index = mesh_->Index(e);
     auto ref_el = e.RefEl();
@@ -698,7 +698,7 @@ void VtkWriter::WriteScalarPointData(const std::string& name,
                                      T undefined_value) {
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::ScalarData<T> data{};
-  data.data.resize(mesh_->Size(mesh_->DimMesh()));
+  data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));
   data.name = name;
   for (auto& p : mesh_->Entities(mesh_->DimMesh())) {
     if (mds.DefinedOn(p)) {
@@ -731,7 +731,7 @@ void VtkWriter::WriteVectorPointData(
     const Eigen::Matrix<T, ROWS, 1>& undefined_value) {
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::VectorData<T> data{};
-  data.data.resize(mesh_->Size(mesh_->DimMesh()));
+  data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));
   data.name = name;
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
@@ -752,7 +752,7 @@ void VtkWriter::WriteScalarCellData(const std::string& name,
                                     T undefined_value) {
   CheckAttributeSetName(vtk_file_.cell_data, name);
   VtkFile::ScalarData<T> data{};
-  data.data.resize(mesh_->Size(codim_));
+  data.data.resize(mesh_->NumEntities(codim_));
   data.name = name;
   for (auto& e : mesh_->Entities(codim_)) {
     if (mds.DefinedOn(e)) {
@@ -771,7 +771,7 @@ void VtkWriter::WriteVectorCellData(
     const Eigen::Matrix<T, ROWS, 1>& undefined_value) {
   CheckAttributeSetName(vtk_file_.cell_data, name);
   VtkFile::VectorData<T> data{};
-  data.data.resize(mesh_->Size(codim_));
+  data.data.resize(mesh_->NumEntities(codim_));
   data.name = name;
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);

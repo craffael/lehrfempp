@@ -1,0 +1,12 @@
+/**
+ @defgroup concepts Concepts
+ 
+ This page contains a list of **Named Requirements** (sometimes also called concepts) used by LehrFEM++:
+ 
+ 
+ @{
+ @defgroup mesh_function MeshFunction
+ 
+ 
+ @}
+*/

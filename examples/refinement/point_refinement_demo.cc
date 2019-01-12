@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
   Eigen::Vector2d point(point_coords.data());
 
   using size_type = lf::base::size_type;
-  using lf::mesh::utils::TikzOutputCtrl;
+  using lf::io::TikzOutputCtrl;
 
   std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -137,11 +137,12 @@ int main(int argc, char **argv) {
         multi_mesh.getMesh(n_levels - 1);
 
     // print number of entities of various co-dimensions
-    std::cout << "Mesh on level " << n_levels - 1 << ": " << mesh_fine->Size(2)
-              << " nodes, " << mesh_fine->Size(1) << " edges, "
-              << mesh_fine->Size(0) << " cells," << std::endl;
+    std::cout << "Mesh on level " << n_levels - 1 << ": "
+              << mesh_fine->NumEntities(2) << " nodes, "
+              << mesh_fine->NumEntities(1) << " edges, "
+              << mesh_fine->NumEntities(0) << " cells," << std::endl;
 
-    lf::mesh::utils::writeTikZ(
+    lf::io::writeTikZ(
         *mesh_fine,
         std::string("refinement_mesh") + std::to_string(step) + ".txt",
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |

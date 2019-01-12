@@ -402,7 +402,7 @@ class DynamicFEDofHandler : public DofHandler {
 
     // Step I: Set indices for shape functions on nodes
     // Run through node indices (entities of co-dimension 2)
-    const size_type no_nodes = mesh_p_->Size(2);
+    const size_type no_nodes = mesh_p_->NumEntities(2);
     no_int_dofs_[2].resize(no_nodes, 0);
     offsets_[2].resize(no_nodes + 1, 0);
     // Traverse nodes (co-dimension-2 entities) based on indices
@@ -428,7 +428,7 @@ class DynamicFEDofHandler : public DofHandler {
     offsets_[2][no_nodes] = dof_idx;
 
     // Step II: Set indices for shape functions on edges (co-dimension = 1)
-    const size_type no_edges = mesh_p_->Size(1);
+    const size_type no_edges = mesh_p_->NumEntities(1);
     // Set length of edge-related index vectors
     no_int_dofs_[1].resize(no_edges, 0);
     offsets_[1].resize(no_edges + 1, 0);
@@ -467,7 +467,7 @@ class DynamicFEDofHandler : public DofHandler {
     offsets_[1][no_edges] = edge_dof_offset;
 
     // Step III: Set indices for shape functions on cells (co-dimension = 0)
-    const size_type no_cells = mesh_p_->Size(0);
+    const size_type no_cells = mesh_p_->NumEntities(0);
     // Set length of cell-related index vectors
     no_int_dofs_[0].resize(no_cells, 0);
     offsets_[0].resize(no_cells + 1, 0);
