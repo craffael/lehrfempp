@@ -19,7 +19,6 @@
 // lf::base
 // --------::comm
 // --------------::variables (for global variables)
-// --------------::check (for debug & verify messages)
 // --------------::input (for reading variables from cmdline & files)
 
 namespace lf::base {
@@ -74,24 +73,6 @@ T Get(const std::string& key) {
 }
 
 } // namespace variables
-
-namespace check {
-
-extern int kDebugCode;
-
-extern int CountBits(const int);
-
-extern int ExtractDebugCode(const std::string&);
-
-extern void Debug(const int, const std::string&);
-
-extern void SetDebugCode(const int);
-
-extern int GetDebugCode();
-
-extern void Verify(const bool, const std::string&);
-
-} // namespace check
 
 namespace input {
 
@@ -249,7 +230,6 @@ T Get(const std::string& name, const T& alt) {
 } // namespace comm
 
 namespace ci = comm::input;
-namespace cc = comm::check;
 namespace cv = comm::variables;
 
 } // namespace lf::base
