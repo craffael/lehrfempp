@@ -17,9 +17,8 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include "lf/mesh/test_utils/test_meshes.h"
 
-int main(int argc, const char** argv) {
+int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
   std::cout << "\t Solution of general second-order elliptic\n"
             << "\t boundary value problem by means of linear\n"
@@ -98,17 +97,16 @@ int main(int argc, const char** argv) {
     return (x[1] / 1.25 + x[0] - 1 > -1.0E-7);
   };
   lf::refinement::EntityCenterPositionSelector<
-      std::function<bool(Eigen::Vector2d)>>
+      std::function<bool(const Eigen::Vector2d&)>>
       edge_sel_neu{neu_sel};
   // Predicates for selecting edges on the Dirichlet boundary
-  std::function<bool(Eigen::Vector2d)> dir_sel = [](Eigen::Vector2d x) -> bool {
-    return (x[1] < 1.0E-7);
-  };
+  std::function<bool(const Eigen::Vector2d&)> dir_sel =
+      [](const Eigen::Vector2d& x) -> bool { return (x[1] < 1.0E-7); };
   lf::refinement::EntityCenterPositionSelector<
-      std::function<bool(Eigen::Vector2d)>>
+      std::function<bool(const Eigen::Vector2d&)>>
       edge_sel_dir{dir_sel};
   // Predicates for selecting edges on the impedance boundary
-  auto imp_sel = [](Eigen::Vector2d x) -> bool {
+  auto imp_sel = [](const Eigen::Vector2d& x) -> bool {
     return (x[1] - 5.0 * x[0] > -1.0E-7);
   };
   lf::refinement::EntityCenterPositionSelector edge_sel_imp{imp_sel};
@@ -119,13 +117,13 @@ int main(int argc, const char** argv) {
     if (imp_sel(x)) {
       // Impedance boundary
       return ((alpha(x) * grad_u(x)).dot(n_imp) + eta(x) * u(x));
-    } else if (neu_sel(x)) {
+    }
+    if (neu_sel(x)) {
       // Neumann boundary
       return ((alpha(x) * grad_u(x)).dot(n_neu));
-    } else {
-      LF_ASSERT_MSG(false, "h called for Dirichlet edge!");
-      return 0.0;
     }
+    LF_ASSERT_MSG(false, "h called for Dirichlet edge!");
+    return 0.0;
   };
   lf::uscalfe::MeshFunctionGlobal mf_h{h};
 
@@ -212,7 +210,7 @@ int main(int argc, const char** argv) {
 
   // Do computations on all levels
   for (int level = 0; level < L; ++level) {
-    std::shared_ptr<const lf::mesh::Mesh> mesh_p{multi_mesh.getMesh(level)};
+    mesh_p = multi_mesh.getMesh(level);
     // Set up global FE space; lowest order Lagrangian finite elements
     auto fe_space =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
@@ -294,9 +292,9 @@ int main(int argc, const char** argv) {
       // to be processed
       lf::uscalfe::ScalarFEEdgeLocalLoadVector<double, decltype(mf_h),
                                                decltype(edge_sel)>
-          elvec_builder(fe_space, mf_h, edge_sel);
+          elvec_builder_neu(fe_space, mf_h, edge_sel);
       // Invoke assembly on edges (codim == 1), update vector
-      AssembleVectorLocally(1, dofh, elvec_builder, phi);
+      AssembleVectorLocally(1, dofh, elvec_builder_neu, phi);
     }
 
     // ----------------------------------------------------------------------
