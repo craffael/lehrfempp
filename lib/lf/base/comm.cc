@@ -165,14 +165,6 @@ void ParseCommandLine(const int argc, const char** argv) {
     po::store(po::parse_command_line(kArgc, kArgv, kDesc), kVM);
   }
   po::notify(kVM);
-  // extract & set debug level, if set
-  if (IsSet("debug_levels")) {
-    int code = cc::ExtractDebugCode(Get<std::string>("debug_levels"));
-    cc::SetDebugCode(code);
-  }
-  else if (IsSet("debug_code")) {
-    cc::SetDebugCode(Get<int>("debug_code"));
-  }
 }
 
 /**
@@ -186,14 +178,6 @@ void ParseFile(const std::string& file) {
   std::ifstream config_fs(file != "" ? file : kConfigFile);
   po::store(po::parse_config_file(config_fs, kDesc), kVM);
   po::notify(kVM);
-  // extract & set debug level, if set
-  if (IsSet("debug_levels")) {
-    int code = cc::ExtractDebugCode(Get<std::string>("debug_levels"));
-    cc::SetDebugCode(code);
-  }
-  else if (IsSet("debug_code")) {
-    cc::SetDebugCode(Get<int>("debug_code"));
-  }
 }
 
 
