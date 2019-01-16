@@ -12,6 +12,8 @@
 # include <boost/algorithm/string/split.hpp>
 # include <boost/algorithm/string/classification.hpp>
 
+# include "lf/base/static_vars.h"
+
 
 // namespace structure:
 // lf::base
@@ -112,6 +114,8 @@ template <typename T>
 void Add(const std::string&, const std::string&, const T&);
 template <class A>
 void AddCtrl(const std::string&, A&, const std::string& comment = "");
+template <typename T>
+void AddSetter(const std::string&, T&, const std::string& comment = "");
 
 template <typename T>
 T Get(const std::string&);
@@ -122,7 +126,7 @@ extern bool Help();
 
 extern bool IsSet(const std::string&);
 
-extern void ParseCommandLine(int argc = 0, char** argv = nullptr);
+extern void ParseCommandLine(const int argc = 0, const char** argv = nullptr);
 
 extern void ParseFile(const std::string& file = "");
 
@@ -152,7 +156,7 @@ void Add(const std::string& name, const std::string& comment, const T& def) {
 
 template <class A>
 std::function<void(unsigned int)> SetCtrl(A& a) {
-  std::function<void(unsigned int)> lambda = [&a](unsigned int c){ a.ctrl = c; };
+  std::function<void(unsigned int)> lambda = [&a](unsigned int c){ a.output_ctrl_ = c; };
   return lambda;
 }
 
@@ -166,10 +170,45 @@ std::function<void(unsigned int)> SetCtrl(A& a) {
 template <class A>
 void AddCtrl(const std::string& name, A& class_instance,
              const std::string& comment) {
+  // Why not solve it like:
+  //   void AddCtrl(const string& name, const T& val, const string& comment);
+  // Call it like:
+  //   AddCtrl("ctrl", MyClass.PublicVar, "Some comment");
+  //   AddCtrl("ctrl", MyClass::StaticVar, "Some comment");
+  // ?
   kDesc.add_options()
     (name.c_str(),
      po::value<unsigned int>()->notifier(SetCtrl(class_instance)),
      comment.c_str());
+}
+
+
+template <typename T>
+std::function<void(T)> SetValue(T& value) {
+  std::function<void(T)> lambda = [&value](T new_value){ value = new_value; };
+  return lambda;
+}
+
+/**
+ * @brief Possibility of setting any variable `value`. Option is called `name`
+          with description `comment`
+ * @param name The name of the option.
+ * @param value The variable to set.
+ * @param comment (optional) Description of the option.
+ */
+template <typename T>
+void AddSetter(const std::string& name, T& value, const std::string& comment) {
+  // Avoid duplicate entries
+  try {
+    // Don't add the option if it exists already (then no error is thrown)
+    // false -> only exact match in name is admissible
+    po::option_description el = kDesc.find(name, false);
+  }
+  catch (const std::exception e) {
+    // If not found, then we add the option
+    kDesc.add_options()
+      (name.c_str(), po::value<T>()->notifier(SetValue(value)), comment.c_str());
+  }
 }
 
 /**

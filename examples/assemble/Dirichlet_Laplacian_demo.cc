@@ -9,6 +9,8 @@
 
 #include <cmath>
 
+#include "lf/base/comm.h"
+namespace ci = lf::base::ci;
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
@@ -284,13 +286,13 @@ std::vector<double> SolveDirLaplSeqMesh(
 int main(int argc, const char **argv) {
   // Pointer to the current mesh
   std::shared_ptr<lf::mesh::Mesh> mesh_p;
+  ci::Init();
 
   // Processing command line arguments
   bool verbose = false;
   namespace po = boost::program_options;
-  po::options_description desc("Allowed options");
   // clang-format off
-  desc.add_options()
+  ci::Add()
   ("help,h", "-h -v -f <filename> -s <selection>")
   ("filename,f", "File to load coarse mesh from ")
   ("selector,s", po::value<int>()->default_value(0), "Selection of test mesh")
@@ -299,22 +301,17 @@ int main(int argc, const char **argv) {
    "Selector for Dirichlet data and rhs function")
   ("verbose,v", po::bool_switch(&verbose),"Enable verbose mode");
   // clang-format on
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
-    std::cout << "Internal variables that can be set by name=value args"
-              << std::endl;
-    lf::base::ListCtrlVars(std::cout);
+  ci::ParseCommandLine(argc, argv);
+  if (ci::Help()) {
+    // Nothing to be done!
   } else {
-    lf::base::ReadCtrVarsCmdArgs(argc, argv);
     std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
               << std::endl;
     // Retrieve number of degrees of freedom for each entity type from
     // command line arguments
-    if (vm.count("filename") > 0) {
+    if (ci::IsSet("filename")) {
       // A filename was specified
-      std::string filename{vm["filename"].as<std::string>()};
+      std::string filename{ci::Get<std::string>("filename")};
       if (filename.length() > 0) {
         std::cout << "Reading mesh from file " << filename << std::endl;
         boost::filesystem::path here = __FILE__;
@@ -328,8 +325,8 @@ int main(int argc, const char **argv) {
     } else {
       std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
                 << std::endl;
-      if (vm.count("selector") > 0) {
-        const int selector = vm["selector"].as<int>();
+      if (ci::IsSet("selector")) {
+        const int selector = ci::Get<int>("selector");
         std::cout << "Using test mesh no " << selector << std::endl;
         if ((selector >= 0) && (selector <= 4)) {
           mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
@@ -337,14 +334,8 @@ int main(int argc, const char **argv) {
       }
     }
     // Set number of refinement levels
-    unsigned int reflevels = 2;
-    if (vm.count("reflevels") > 0) {
-      reflevels = vm["reflevels"].as<int>();
-    }
-    unsigned int bvpsel = 0;
-    if (vm.count("bvpsel") > 0) {
-      bvpsel = vm["bvpsel"].as<int>();
-    }
+    unsigned int reflevels = ci::Get<int>("reflevels", 2); // default value: 2
+    unsigned int bvpsel = ci::Get<int>("bvpsel", 0);
     if (mesh_p == nullptr) {
       // Default mesh
       std::cout << "Using default mesh; test mesh 0" << std::endl;

@@ -1,7 +1,7 @@
 set(sources
   base.h
-  comm.cc
   comm.h
+  comm.cc
   dereference_lambda_random_access_iterator.h
   forward_iterator.h
   forward_range.h

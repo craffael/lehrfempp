@@ -4,8 +4,10 @@
 
 using namespace lf::base;
 
-struct Dummy {
-  unsigned int ctrl; // We will set ctrl from the command line later.
+class Dummy {
+public:
+  unsigned int output_ctrl_; // We will set ctrl from the command line later.
+  static unsigned int ctrl;
 };
 
 void sub() {
@@ -13,10 +15,12 @@ void sub() {
   std::cout << "Sub: y = " << cv::Get<std::string>("y") << "\n";
 }
 
+unsigned int Dummy::ctrl;
 int main(int argc, char** argv) {
   // namespace overview:
   // ci (comm::input) for reading in variables from cmdline or file
   // cv (comm::variables) for global variables
+
 
   if (argc <= 1) {
     std::cout << "Demo for lf::base::comm.\n" \
@@ -36,8 +40,9 @@ int main(int argc, char** argv) {
     ("v3", po::value<int>()->default_value(10), "Set variable #3.")
     ("v4", po::value<std::string>(), "Set variable #4.")
     ("verbose,v", po::bool_switch(&verbose), "Set verbosity.");
-  // Set the member variable ctrl of instance dummy
+
   Dummy dummy;
+  // Set the member variable ctrl of instance dummy
   ci::AddCtrl("ctrl", dummy, "Set member ctrl of instance dummy.");
 
   // parse command line & file for variables
@@ -66,7 +71,7 @@ int main(int argc, char** argv) {
   // std::cout << ci::Get<double>("v5") << "\n"; // invalid_argument exception!
 
   // print value of dummy.ctrl
-  std::cout << "Value of dummy.ctrl is " << dummy.ctrl << "\n";
+  std::cout << "Value of dummy.output_ctrl_ is " << dummy.output_ctrl_<< "\n";
 
   // global variables
   cv::Add("x", 2);

@@ -98,7 +98,8 @@ using StaticVar = Track<unsigned int>;
 #define CONTROLDECLARECOMMENT(class, intvar, varname, comment)      \
   unsigned int class ::intvar = 0;                                  \
   static lf::base::StaticVar class##intvar(varname, class ::intvar, \
-                                           lf::base::ctrl_root, #comment)
+                                           lf::base::ctrl_root, comment)
+                                      // Why was this #comment and not comment?
 /**@}*/
 
 /**

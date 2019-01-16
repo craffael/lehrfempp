@@ -199,7 +199,26 @@ void Init(int argc, char** argv, std::string file) {
   kArgc = argc;
   kArgv = argv;
   kConfigFile = file;
+
+  // check for StaticVars defined
+  // ctrl_root globally defined in static_vars.cc
+  const StaticVar* it = ctrl_root;
+  while (it != nullptr) {
+    // Avoid duplicate entries
+    try {
+      // Don't add the option if it exists already (then no error is thrown)
+      // false -> only exact match in name is admissible
+      po::option_description el = kDesc.find(it->name_, false);
+    }
+    catch (const std::exception e) {
+      Add()
+        (it->name_.c_str(), po::value<unsigned int>(&it->ref_), it->comment_.c_str());
+    }
+    it = it->next_;
+  }
+
   // add debug option per default
+  /*
   Add<int>("debug_code,d",
     "Debug code. Output all debug statements of level l, if binary"            \
     "representation of <debug_code> is 1 at bit l."                            \
@@ -211,6 +230,7 @@ void Init(int argc, char** argv, std::string file) {
     "Debug levels. Set individual levels l using comma-separated values." \
     "Example: `--debug_levels \"0,2,5\"` will print all debug messages of" \
     "levels 0, 2 and 5.\n Don't use in combination with --debug_code!");
+  */
 }
 
 /**
@@ -285,7 +305,7 @@ bool IsSet(const std::string& name) {
  * @note If argc and argv are not provided, the values given to init will
  *       be used. If none have been given, no variables will be found.
  */
-void ParseCommandLine(int argc, char** argv) {
+void ParseCommandLine(const int argc, const char** argv) {
   // maybe argc/argv haven't been set yet and are given as arguments to this
   if (argc != 0 && argv != nullptr) {
     po::store(po::parse_command_line(argc, argv, kDesc), kVM);
