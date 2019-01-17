@@ -37,8 +37,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   // Coefficients:
 
   // 2x2 diffusion tensor A(x)
-  std::function<Eigen::Matrix<double, 2, 2>(Eigen::Vector2d)> alpha =
-      [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
+  auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
     return (Eigen::Matrix<double, 2, 2>() << (3.0 + x[1]), x[0], x[0],
             (2.0 + x[0]))
         .finished();
@@ -93,7 +92,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // Predicates and selectors for boundary conditions
   // Predicates for selecting edges on the Neumann boundary
-  std::function<bool(Eigen::Vector2d)> neu_sel = [](Eigen::Vector2d x) -> bool {
+  auto neu_sel = [](Eigen::Vector2d x) -> bool {
     return (x[1] / 1.25 + x[0] - 1 > -1.0E-7);
   };
   lf::refinement::EntityCenterPositionSelector<
@@ -129,6 +128,9 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
+  // Since this example relies on a manufactured solution tied to a particular
+  // domain, using a hard-wirdd mesh is justified. Another example will address
+  // solving a boundary value problem on a mesh read from file.
   // ======================================================================
 
   // Helper object: mesh factory
