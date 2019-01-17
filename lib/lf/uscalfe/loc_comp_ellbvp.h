@@ -143,7 +143,7 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     LagrangeFEEllBVPElementMatrix(
         std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
-    : alpha_(alpha), gamma_(gamma), fe_precomp_() {
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
     fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
@@ -259,7 +259,9 @@ class LagrangeFEEdgeMassMatrix {
   LagrangeFEEdgeMassMatrix(
       std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, COEFF gamma,
       EDGESELECTOR edge_selector = base::PredicateTrue{})
-      : gamma_(gamma), edge_sel_(edge_selector), fe_precomp_() {
+      : gamma_(std::move(gamma)),
+        edge_sel_(std::move(edge_selector)),
+        fe_precomp_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
     fe_precomp_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
@@ -446,7 +448,7 @@ unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
 template <typename SCALAR, typename FUNCTOR>
 ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
     std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f)
-    : f_(f) {
+    : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
     fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement<SCALAR>(
@@ -551,7 +553,7 @@ class ScalarFEEdgeLocalLoadVector {
   ScalarFEEdgeLocalLoadVector(
       std::shared_ptr<const ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR g,
       EDGESELECTOR edge_sel = base::PredicateTrue{})
-      : g_(g), edge_sel_(edge_sel), pfe_() {
+      : g_(std::move(g)), edge_sel_(std::move(edge_sel)), pfe_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
     pfe_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
