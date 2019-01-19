@@ -3,14 +3,17 @@ include(GoogleTest)
 set(src
   fe_testutils.h
   fe_testutils.cc
+  mesh_function_utils.h
 
   #bvp_fe_test.cc
   #full_gal_test.cc
   #gfe_test.cc
   #lagr_fe_test.cc
+  #mesh_function_fe_test.cc
+  mesh_function_grad_fe_test.cc
   #mesh_function_traits_test.cc
   #mesh_function_binary_test.cc
-  mesh_function_unary_test.cc
+  #mesh_function_unary_test.cc
   #sec_ord_ell_bvp.h
   #sec_ord_ell_bvp.cc
 )

@@ -159,11 +159,11 @@ static const unsigned int kout_prj_cell = 1;
 static const unsigned int kout_prj_vals = 2;
 
 /**
- * @brief Computes nodal projection of a function and returns the finite
+ * @brief Computes nodal projection of a mesh function and returns the finite
  * element basis expansion coefficients of the result
  *
  * @tparam SCALAR a scalar type
- * @tparam FUNCTOR a \ref mesh_function "MeshFunction" representing the scalar
+ * @tparam MF a \ref mesh_function "MeshFunction" representing the scalar
  * valued function that should be projected
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
@@ -181,21 +181,20 @@ static const unsigned int kout_prj_vals = 2;
  * coefficients for the global shape functions associated with that cell.
  *
  */
-template <typename SCALAR, typename FUNCTOR,
-          typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
-                     FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
-  static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
+template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
+auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
+                     SELECTOR &&pred = base::PredicateTrue{}) {
+  static_assert(isMeshFunction<std::remove_reference_t<MF>>);
   // choose scalar type so it can hold the scalar type of u as well as SCALAR
-  using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<FUNCTOR>>;
+  using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<MF>>;
   using scalar_t = decltype(SCALAR(0) * scalarMF_t(0));
   // Return type, type for FE coefficient vector
   using dof_vec_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   // Underlying mesh instance
-  const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
+  const lf::mesh::Mesh &mesh{*fe_space.Mesh()};
   // Fetch local-to-global index mapping for shape functions
-  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+  const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
   // Vector for returning expansion coefficients
   dof_vec_t glob_dofvec(dofh.NoDofs());
@@ -217,7 +216,7 @@ auto NodalProjection(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
 
     // Information about local shape functions on reference element
     const ScalarReferenceFiniteElement<double> &ref_shape_fns{
-        *fe_space->ShapeFunctionLayout(ref_el)};
+        *fe_space.ShapeFunctionLayout(ref_el)};
     // Number of evaluation nodes
     const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
     // Obtain reference coordinates for evaluation nodes

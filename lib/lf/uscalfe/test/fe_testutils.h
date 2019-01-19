@@ -241,7 +241,7 @@ std::vector<std::pair<double, double>> InterpolationErrors(
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
     // Perform (nodal) projection of the passed function onto the finite element
     // space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
     // Compute norms of interpolation error by means of numerical quadrature
     // whose order is controlled by the polynomials degree of the FE space
     double L2err = NormOfDifference(dofh, lc_L2, coeff_vec);
@@ -320,7 +320,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
 
     // II: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
@@ -419,7 +419,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
 
     // II: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
 
     // III: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
@@ -500,7 +500,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, v, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, v, base::PredicateTrue{})};
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`
@@ -589,7 +589,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
 
     // II: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, v, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, v, base::PredicateTrue{})};
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`

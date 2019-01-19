@@ -35,16 +35,22 @@ class MeshFunctionFE {
       local_dofs(i) = dof_vector_(global_dofs[i]);
     }
 
-    std::vector<Scalar> result(sf_eval.rows());
+    std::vector<Scalar> result(local.cols());
     Eigen::Map<Eigen::Matrix<Scalar, 1, Eigen::Dynamic>> temp(&result[0], 1,
-                                                              sf_eval.rows());
+                                                              local.cols());
     temp = local_dofs * sf_eval;
-    return temp;
+    return result;
   }
 
  private:
   std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
 };
+
+// deduction guide
+template <class T, class SCALAR_COEFF>
+MeshFunctionFE(std::shared_ptr<T>,
+               const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
+    ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 
 }  // namespace lf::uscalfe

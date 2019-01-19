@@ -23,6 +23,7 @@
 #include "mesh_function_constant.h"
 #include "mesh_function_fe.h"
 #include "mesh_function_global.h"
+#include "mesh_function_grad_fe.h"
 #include "mesh_function_traits.h"
 #include "mesh_function_unary.h"
 #include "scalar_uniform_fe_space.h"
