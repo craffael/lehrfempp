@@ -17,6 +17,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include "lf/uscalfe/test/mesh_function_utils.h"
 
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
@@ -336,13 +337,15 @@ int main(int /*argc*/, const char** /*argv*/) {
     Eigen::VectorXd sol_vec = solver.solve(phi);
 
     // Postprocessing: Compute error norms
-    // Helper class for L2 error computation
-    lf::uscalfe::MeshFunctionL2NormDifference lc_L2(fe_space, mf_u, 2);
-    // Helper class for H1 semi norm
-    lf::uscalfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
 
-    double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
-    double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
+    // create mesh functions representing solution / gradient of solution
+    auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
+
+    double L2err =
+        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 10));
+    double H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 10));
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 
