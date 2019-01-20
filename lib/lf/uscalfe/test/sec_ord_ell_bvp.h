@@ -121,13 +121,11 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
   FUNCTOR_H h_;
 };
 
-// TODO(ralfh) Putting this into a header file leads to multiple definitions of
-// the same symbol!!!
-// /** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
-// CONTROLDECLAREINFO(
-//     LFELinSys_ctrl, "LFELinSys_ctrl",
-//     "Output control variable for function SecOrdEllBVPLagrFELinSys()");
-// static const unsigned int kLFELinSys_bdinfo = 2;
+/** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
+EXTERNDECLAREINFO(
+    LFELinSys_ctrl, "LFELinSys_ctrl",
+    "Output control variable for function SecOrdEllBVPLagrFELinSys()");
+static const unsigned int kLFELinSys_bdinfo = 2;
 
 /**
  * @brief Builds finite element linear system of equations for a second-order
@@ -177,12 +175,11 @@ SecOrdEllBVPLagrFELinSys(
     }
   }
 
-  // TODO(ralfh): Fix this once LFELinSys_ctrl has been fixed.
-  // SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
-  //                   std::cout << "B.c.: " << no_Dirichlet_edges
-  //                             << " Dirichlet edges, " << no_Neumann_edges
-  //                             << " Neumann edges, " << no_impedance_edges
-  //                             << " impedance edges" << std::endl);
+  SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
+                    std::cout << "B.c.: " << no_Dirichlet_edges
+                              << " Dirichlet edges, " << no_Neumann_edges
+                              << " Neumann edges, " << no_impedance_edges
+                              << " impedance edges" << std::endl);
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NoDofs());

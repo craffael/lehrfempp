@@ -43,7 +43,7 @@ class FeSpaceLagrangeO1 : public ScalarUniformFESpace<SCALAR> {
             std::make_shared<FeLagrangeO1Quad<SCALAR>>(),
             std::make_shared<FeLagrangeO1Segment<SCALAR>>(),
             std::make_shared<FeLagrangePoint<SCALAR>>(1)) {}
-  virtual ~FeSpaceLagrangeO1() = default;
+  ~FeSpaceLagrangeO1() override = default;
 };
 }  // namespace lf::uscalfe
 

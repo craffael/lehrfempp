@@ -299,6 +299,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
     EDGESELECTOR &&esscondflag, FUNCTION &&g) {
   static_assert(isMeshFunction<std::remove_reference_t<FUNCTION>>);
+  // static_assert(isMeshFunction<FUNCTION>, "g must by a MeshFunction object");
   LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
                 "finite element specification must be for an edge!");
 
@@ -324,8 +325,10 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   // Visit all edges of the mesh (codim-1 entities)
   for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
     // Check whether the current edge carries dofs to be imposed by the
-    // function g.
+    // function g. The decision relies on the predicate `esscondflag`
     if (esscondflag(edge)) {
+      // Evaluate mesh function at several points specified by their
+      // reference coordinates.
       auto g_vals = g(edge, ref_eval_pts);
 
       // Compute degrees of freedom from function values in evaluation

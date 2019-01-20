@@ -189,8 +189,8 @@ void LagrFEBoundaryRightHandSideVector(
   const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
-  // Object taking care of local computations. No selection of a subset
-  // of cells is specified.
+  // Object taking care of local computations. A predicate selects the edges to
+  // be processed
   ScalarFEEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
       fe_space, data, edge_sel);
   // Invoke assembly on edges (codim == 1), update vector

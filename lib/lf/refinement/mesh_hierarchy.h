@@ -414,7 +414,7 @@ class EntityCenterPositionSelector {
    * @param pos_pred object for true/false classification of physicals points
    */
   explicit EntityCenterPositionSelector(POSPRED pos_pred)
-      : pos_pred_(pos_pred) {}
+      : pos_pred_(std::move(pos_pred)) {}
   /** @brief Operator testing location of "center"
    *  @param ent reference to a mesh entity
    */
@@ -425,19 +425,19 @@ class EntityCenterPositionSelector {
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {
-        const Eigen::MatrixXd pos{geo_ptr->Global(kpoint_center_)};
+        Eigen::MatrixXd pos(geo_ptr->Global(kpoint_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kSegment(): {
-        const Eigen::MatrixXd pos{geo_ptr->Global(kedge_center_)};
+        Eigen::MatrixXd pos(geo_ptr->Global(kedge_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kTria(): {
-        const Eigen::MatrixXd pos{geo_ptr->Global(ktria_center_)};
+        Eigen::MatrixXd pos(geo_ptr->Global(ktria_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kQuad(): {
-        const Eigen::MatrixXd pos{geo_ptr->Global(kquad_center_)};
+        Eigen::MatrixXd pos(geo_ptr->Global(kquad_center_));
         return pos_pred_(pos);
       }
       default: {
