@@ -13,6 +13,23 @@
 
 namespace lf::uscalfe {
 
+/**
+ * @brief A mesh function representing another \ref mesh_function "mesh
+ * function" under a pointwise, unary operation.
+ * @tparam OP The operator that should be applied (see below)
+ * @tparam MF The type of the original mesh function.
+ *
+ * ### Requirements for OP
+ * The Operator `OP` must fulfill the following requirements:
+ * - It must be moveable
+ * - It should overload `operator()` as follows:
+ * ```
+ * template <class U>
+ * std::vector<Z> operator()(const std::vector<U>& u, int)
+ * ```
+ * where `U` is the MeshFunctionReturnType of the original MeshFunction, and `Z`
+ * is the type of the mesh function `OP MF`.
+ */
 template <class OP, class MF>
 class MeshFunctionUnary {
  public:
@@ -115,11 +132,30 @@ struct UnaryOpSquaredNorm {
 };
 }  // namespace internal
 
+/**
+ * @brief Applies the unary minus operator to a \ref mesh_function "mesh
+ * function".
+ * @tparam A The type of the original mesh function.
+ * @param a The original mesh function.
+ * @return `-a`, where the minus operator is applied pointwise everywhere on the
+ * mesh.
+ *
+ * @note The MeshFunctionReturnType of `a` must support the minus operator!
+ */
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto operator-(const A& a) {
   return MeshFunctionUnary(internal::UnaryOpMinus{}, a);
 }
 
+/**
+ * @brief Pointwise squared norm of another \ref mesh_function "mesh function"
+ * @tparam A The type of the wrapped mesh function.
+ * @param a The original mesh function
+ * @return \ref mesh_function representing `|a|^2` (pointwise)
+ *
+ * @note This operator requires `a` to be either scalar or (eigen-) vector
+ * valued.
+ */
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto squaredNorm(const A& a) {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);

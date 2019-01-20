@@ -14,18 +14,34 @@
 namespace lf::uscalfe {
 
 /**
- * @brief A mesh function which combines two other mesh functions using a binary
- * operator.
+ * @brief A mesh function which combines two other \ref mesh_function "mesh
+ * functions" using a binary operator (advanced use).
  * @tparam OP The type of operator that combines the mesh functions.
  * @tparam A The type of the lhs mesh function.
  * @tparam B The type of the rhs mesh function.
  *
  * # Requirements for OP
- *
+ * The Operator `OP` must fulfill the following requirements:
+ * - It must be moveable
+ * - It should overload `operator()` as follows:
+ * ```
+ * template <class U, class V>
+ * std::vector<Z> operator()(const std::vector<U>& u, const std::vector<V>& v,
+ * int)
+ * ```
+ * where `U` is the MeshFunctionReturnType of the lhs MeshFunction, `V` is the
+ * MeshFunctionReturnType of the rhs MeshFunction and `Z` is the type of the
+ * mesh function `A OP B`.
  */
 template <class OP, class A, class B>
 class MeshFunctionBinary {
  public:
+  /**
+   * @brief Create a new MeshFunctionBinary
+   * @param op The operator to apply
+   * @param a The lhs mesh function
+   * @param b The rhs mesh function.
+   */
   MeshFunctionBinary(OP op, A a, B b)
       : op_(std::move(op)), a_(std::move(a)), b_(std::move(b)) {}
 
@@ -224,12 +240,36 @@ struct OperatorSubtraction {
 
 }  // namespace internal
 
+/**
+ * @brief Add's two mesh functions
+ * @tparam A Type of the lhs mesh function
+ * @tparam B Type of the rhs mesh function
+ * @param a the lhs mesh function
+ * @param b the rhs mesh function
+ * @return `a + b`, i.e. a new mesh function which represents the pointwise
+ * addition of `a` and `b`
+ *
+ * @note the two mesh functions `a` and `b` should produce the same type of
+ * values, e.g. both should be scalar valued or both matrix/vector valued.
+ */
 template <class A, class B,
           class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
 auto operator+(const A& a, const B& b) {
   return MeshFunctionBinary(internal::OperatorAddition{}, a, b);
 }
 
+/**
+ * @brief Subtracts two mesh functions
+ * @tparam A Type of the lhs mesh function
+ * @tparam B Type of the rhs mesh function
+ * @param a the lhs mesh function
+ * @param b the rhs mesh function
+ * @return `a - b`, i.e. a new mesh function which represents the pointwise
+ * difference of `a` minus `b`
+ *
+ * @note the two mesh functions `a` and `b` should produce the same type of
+ * values, e.g. both should be scalar valued or both matrix/vector valued.
+ */
 template <class A, class B,
           class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
 auto operator-(const A& a, const B& b) {

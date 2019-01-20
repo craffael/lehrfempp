@@ -70,6 +70,35 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
 }
 };  // namespace internal
 
+/**
+ * @brief Integrate a \ref mesh_function over a mesh (with quadrature rules)
+ * @tparam MF The type of the \ref mesh_function "mesh function".
+ * @tparam QR_SELECTOR The type of qr_selector (see below)
+ * @tparam ENTITY_PREDICATE The type of the entity predicate (see below)
+ * @param mesh The mesh to integrate over
+ * @param mf The mesh function to integrate
+ * @param qr_selector Provides the quadrature rule for every entity of the mesh.
+ * @param ep Selects the entities over which `mf` is integrated (default: all
+ * entities)
+ * @param codim The codimension of the entities over which `mf` is integrated.
+ * @return The integrated value
+ *
+ * ### Requirements for QR_SELECTOR
+ * `QR_SELECTOR` should overload `operator()` as follows:
+ * ```
+ * quad::QuadRule operator()(const mesh::Entity& e) const
+ * ```
+ * i.e. it should return the quadrature rule for every entity `e` of the mesh
+ * that is to be used for computing the integral of `mf` over `e`.
+ *
+ * ### Requirements for ENTITY_PREDICATE
+ * The entity predicate should overload `operator()` as follows:
+ * ```
+ * bool operator()(const mesh::Entity& e) const
+ * ```
+ * It should return `true`, if `e` is part of the integration domain and `false`
+ * if it is not.
+ */
 template <class MF, class QR_SELECTOR,
           class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
@@ -90,6 +119,28 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
   return result;
 }
 
+/**
+ * @brief Integrate a \ref mesh_function "mesh function" over a mesh using
+ * quadrature rules of uniform order.
+ * @tparam MF type of \ref mesh_function "mesh function" to integrate
+ * @tparam ENTITY_PREDICATE type of entity predicate (see below)
+ * @param mesh The mesh over which `mf` is integrated.
+ * @param mf The \ref mesh_function "mesh function" which is integrated
+ * @param quad_order The quadrature order of the quadrature rules that are to be
+ * used for integration.
+ * @param ep The entity predicate selecting the entities over which `mf` is
+ * integrated.
+ * @param codim The codimension of the entities over which `mf` is integrated.
+ * @return `mf` integrated over the entities `e` of `mf` where `ep(e)==true`.
+ *
+ * ### Requirements for ENTITY_PREDICATE
+ * The entity predicate should overload `operator()` as follows:
+ * ```
+ * bool operator()(const mesh::Entity& e) const
+ * ```
+ * It should return `true`, if `e` is part of the integration domain and `false`
+ * if it is not.
+ */
 template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
                            int quad_order,
