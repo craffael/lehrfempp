@@ -45,9 +45,9 @@ class MeshFunctionGradFE {
    * functions of `fe_space`
    */
   MeshFunctionGradFE(
-      const std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>>& fe_space,
+      std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
-      : fe_space_(fe_space), dof_vector_(dof_vector) {
+      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {
     for (auto& ref_el : {base::RefEl::kSegment(), base::RefEl::kTria(),
                          base::RefEl::kQuad()}) {
       fe_[ref_el.Id()] = fe_space_->ShapeFunctionLayout(ref_el);
@@ -72,6 +72,7 @@ class MeshFunctionGradFE {
     auto jac_t = e.Geometry()->JacobianInverseGramian(local);
     auto dim_local = e.RefEl().Dimension();
     std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> result(local.cols());
+
     for (int i = 0; i < result.size(); ++i) {
       result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *
                   local_grads.block(0, i * dim_local, 1, dim_local).transpose();

@@ -47,7 +47,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
     return (value_m * weights_ie)(0);
   }
 
-  if constexpr (base::is_eigen_matrix<MfType>) {
+  if constexpr (base::is_eigen_matrix<MfType>) {  // NOLINT
     constexpr int size = MfType::SizeAtCompileTime;
     if constexpr (size != Eigen::Dynamic) {
       auto value_m = Eigen::Map<

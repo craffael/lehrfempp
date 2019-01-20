@@ -344,9 +344,9 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     // compute errors with 10-th order quadrature rules
     double L2err =
-        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 10));
+        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
     double H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 10));
+        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 

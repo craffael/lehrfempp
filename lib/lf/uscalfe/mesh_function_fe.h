@@ -43,9 +43,9 @@ class MeshFunctionFE {
    * functions of `fe_space`
    */
   MeshFunctionFE(
-      const std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>>& fe_space,
+      std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
-      : fe_space_(fe_space), dof_vector_(coeff_vector) {
+      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {
     for (auto& ref_el : {base::RefEl::kPoint(), base::RefEl::kSegment(),
                          base::RefEl::kTria(), base::RefEl::kQuad()}) {
       fe_[ref_el.Id()] = fe_space_->ShapeFunctionLayout(ref_el);
@@ -80,7 +80,7 @@ class MeshFunctionFE {
 
 // deduction guide
 template <class T, class SCALAR_COEFF>
-MeshFunctionFE(const std::shared_ptr<T>&,
+MeshFunctionFE(std::shared_ptr<T>,
                const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
     ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 
