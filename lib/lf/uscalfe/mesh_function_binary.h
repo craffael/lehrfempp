@@ -13,6 +13,16 @@
 
 namespace lf::uscalfe {
 
+/**
+ * @brief A mesh function which combines two other mesh functions using a binary
+ * operator.
+ * @tparam OP The type of operator that combines the mesh functions.
+ * @tparam A The type of the lhs mesh function.
+ * @tparam B The type of the rhs mesh function.
+ *
+ * # Requirements for OP
+ *
+ */
 template <class OP, class A, class B>
 class MeshFunctionBinary {
  public:
@@ -36,7 +46,8 @@ struct OperatorAddition {
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
-  auto operator()(const std::vector<U>& u, const std::vector<V>& v, int) const {
+  auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
+                  /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
                                                              u.size());
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(&v[0], 1,
@@ -53,10 +64,10 @@ struct OperatorAddition {
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
-                  int) const {
+                  int /*unused*/) const {
     using scalar_t = decltype(S1(0) + S2(0));
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
-                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // add two static size eigen matrices to each other
       static_assert(R1 == R2, "cannot add matrices with different #rows.");
       static_assert(C1 == C2, "cannot add matrices with different #cols.");
@@ -73,7 +84,7 @@ struct OperatorAddition {
       return result;
     }
     if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
-                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
       // One of the matrices is fixed size:
       constexpr int fixedRows = std::max(R1, R2);
       constexpr int fixedCols = std::max(C1, C2);
@@ -90,7 +101,7 @@ struct OperatorAddition {
         result[i] = u[i] + v[i];
       }
       return result;
-    } else {
+    } else {  // NOLINT
       // subtract two dynamic sized matrices from each other:
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
@@ -111,7 +122,7 @@ struct OperatorAddition {
   // addition of arbitrary types supporting + operator:
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
-                  long) const {
+                  long /*unused*/) const {
     std::vector<decltype(u[0] + v[0])> result(u.size());
     for (int i = 0; i < result.size(); ++i) {
       result[i] = u[i] + v[i];
@@ -125,7 +136,8 @@ struct OperatorSubtraction {
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
-  auto operator()(const std::vector<U>& u, const std::vector<V>& v, int) const {
+  auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
+                  /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
                                                              u.size());
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(&v[0], 1,
@@ -142,10 +154,10 @@ struct OperatorSubtraction {
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
-                  int) const {
+                  int /*unused*/) const {
     using scalar_t = decltype(S1(0) + S2(0));
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
-                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // subtract two static size eigen matrices from each other
       static_assert(R1 == R2, "cannot add matrices with different #rows.");
       static_assert(C1 == C2, "cannot add matrices with different #cols.");
@@ -162,7 +174,7 @@ struct OperatorSubtraction {
       return result;
     }
     if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
-                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
       // One of the matrices is fixed size:
       constexpr int fixedRows = std::max(R1, R2);
       constexpr int fixedCols = std::max(C1, C2);
@@ -179,7 +191,7 @@ struct OperatorSubtraction {
         result[i] = u[i] - v[i];
       }
       return result;
-    } else {
+    } else {  // NOLINT
       // subtract two dynamic sized matrices from each other:
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
@@ -200,7 +212,7 @@ struct OperatorSubtraction {
   // subtraction of arbitrary types supporting - operator:
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
-                  long) const {
+                  long /*unused*/) const {
     std::vector<decltype(u[0] + v[0])> result(u.size(),
                                               decltype(u[0] + v[0])());
     for (int i = 0; i < result.size(); ++i) {

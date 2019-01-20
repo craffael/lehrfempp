@@ -12,21 +12,52 @@
 
 namespace lf::uscalfe {
 
+/**
+ * @brief A \ref mesh_function "MeshFunction" representing the gradient of a
+ * function from a finite element space (e.g. gradient of a solution of BVP).
+ * @tparam SCALAR_FE The scalar type of the finite element basis functions.
+ * @tparam SCALAR_COEFF The scalar type of the coefficient vector
+ *
+ * The MeshFunctionGradFE takes essentially two parameters:
+ * - A ScalarUniformFESpace which defines the space of all approximation
+ * functions.
+ * - A Coefficient Vector which defines what element should be picked from the
+ * FeSpace. This is a simple Eigen::Vector which defines the coefficient in
+ * front of every basis function of the FeSpace (same ordering).
+ *
+ * @note A MeshFunctionGradFE can be evaluated on entities of all codimensions
+ * except for points.
+ *
+ * @note The gradient that is returned by this mesh function is w.r.t. to the
+ * global coordinate system of the mesh, i.e. the gradients of the shape
+ * function are multiplied by Geometry::JacobianInverseGramian()
+ */
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionGradFE {
  public:
   using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));
 
+  /**
+   * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
+   * coefficient vector
+   * @param fe_space the approximation space in which the function lies.
+   * @param coeff_vector Defines the coefficients in front of the basis
+   * functions of `fe_space`
+   */
   MeshFunctionGradFE(
       const std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>>& fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
-      : fe_space_(fe_space), dof_vector_(dof_vector) {}
+      : fe_space_(fe_space), dof_vector_(dof_vector) {
+    for (auto& ref_el : {base::RefEl::kSegment(), base::RefEl::kTria(),
+                         base::RefEl::kQuad()}) {
+      fe_[ref_el.Id()] = fe_space_->ShapeFunctionLayout(ref_el);
+    }
+  }
 
   std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> operator()(
       const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const {
-    auto shape_functions = fe_space_->ShapeFunctionLayout(e.RefEl());
     auto grad_sf_eval =
-        shape_functions->GradientsReferenceShapeFunctions(local);
+        fe_[e.RefEl().Id()]->GradientsReferenceShapeFunctions(local);
 
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(
         1, grad_sf_eval.rows());
@@ -52,6 +83,8 @@ class MeshFunctionGradFE {
  private:
   std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
+  std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
+      fe_;
 };
 
 // deduction guide

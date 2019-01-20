@@ -31,7 +31,7 @@ namespace internal {
 struct UnaryOpMinus {
   // minus in front of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
-  auto operator()(const std::vector<U>& u, int) const {
+  auto operator()(const std::vector<U>& u, int /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
                                                              u.size());
     std::vector<U> result(u.size());
@@ -45,7 +45,7 @@ struct UnaryOpMinus {
       class S, int R, int C, int O, int MR, int MC,
       class = std::enable_if_t<R != Eigen::Dynamic && C != Eigen::Dynamic>>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
-                  int) const {
+                  int /*unused*/) const {
     if (R == 0 || C == 0) {
       // result vector is empty
       return u;
@@ -61,7 +61,7 @@ struct UnaryOpMinus {
 
   // minus in front of any object that supports the unary operator-
   template <class T>
-  auto operator()(const std::vector<T>& u, long) const {
+  auto operator()(const std::vector<T>& u, long /*unused*/) const {
     std::vector<T> result(u.size());
     for (int i = 0; i < u.size(); ++i) {
       result[i] = -u[i];
@@ -73,7 +73,7 @@ struct UnaryOpMinus {
 struct UnaryOpSquaredNorm {
   // squared norm of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
-  auto operator()(const std::vector<U>& u, int) const {
+  auto operator()(const std::vector<U>& u, int /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
                                                              u.size());
     std::vector<U> result(u.size());
@@ -85,7 +85,7 @@ struct UnaryOpSquaredNorm {
   // squared norm of a eigen matrix
   template <class S, int R, int C, int O, int MR, int MC>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
-                  int) const {
+                  int /*unused*/) const {
     std::vector<double> result(u.size());
     if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
       static_assert(

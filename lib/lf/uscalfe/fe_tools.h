@@ -82,7 +82,9 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
   auto entities = mesh.Entities(codim);
   auto result = internal::LocalIntegral(*entities.begin(), qr_selector, mf);
   for (auto i = ++entities.begin(); i != entities.end(); ++i) {
-    if (!ep(*i)) continue;
+    if (!ep(*i)) {
+      continue;
+    }
     result = result + internal::LocalIntegral(*i, qr_selector, mf);
   }
   return result;
@@ -91,7 +93,7 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
 template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
                            int quad_order,
-                           const ENTITY_PREDICATE & = base::PredicateTrue{},
+                           const ENTITY_PREDICATE &ep = base::PredicateTrue{},
                            int codim = 0) {
   std::array<quad::QuadRule, 5> qrs;
   for (auto ref_el :
@@ -99,7 +101,8 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
     qrs[ref_el.Id()] = quad::make_QuadRule(ref_el, quad_order);
   }
   return IntegrateMeshFunction(
-      mesh, mf, [&](const mesh::Entity &e) { return qrs[e.RefEl().Id()]; });
+      mesh, mf, [&](const mesh::Entity &e) { return qrs[e.RefEl().Id()]; }, ep,
+      codim);
 }
 
 // ******************************************************************************
@@ -171,8 +174,7 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
     // Information about local shape functions on reference element
     const ScalarReferenceFiniteElement<double> &ref_shape_fns{
         *fe_space.ShapeFunctionLayout(ref_el)};
-    // Number of evaluation nodes
-    const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
+
     // Obtain reference coordinates for evaluation nodes
     const Eigen::MatrixXd ref_nodes(ref_shape_fns.EvaluationNodes());
 
@@ -273,8 +275,6 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     // Check whether the current edge carries dofs to be imposed by the
     // function g.
     if (esscondflag(edge)) {
-      // Fetch the shape of the edge
-      const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
       auto g_vals = g(edge, ref_eval_pts);
 
       // Compute degrees of freedom from function values in evaluation
