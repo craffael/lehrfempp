@@ -11,6 +11,7 @@
 #include <lf/io/test_utils/read_mesh.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
+#include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_function_utils.h"
 
 namespace lf::uscalfe::test {
@@ -35,6 +36,11 @@ auto mfB =
 auto mfVectorA = MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; });
 auto mfVectorB = MeshFunctionGlobal(
     [](const Eigen::Vector2d& x) { return Eigen::Vector2d(x[0], 2 * x[0]); });
+auto mfVectorA_dynamic = MeshFunctionGlobal(
+    [](const Eigen::Vector2d& x) { return Eigen::VectorXd(x); });
+auto mfVectorB_dynamic = MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+  return Eigen::VectorXd(Eigen::Vector2d(x[0], 2 * x[0]));
+});
 
 auto mfMatrixA =
     MeshFunctionGlobal([](auto x) { return (x * x.transpose()).eval(); });
@@ -46,18 +52,20 @@ auto mfXA = MeshFunctionConstant(X(1));
 auto mfXB = MeshFunctionConstant(X(2));
 
 TEST(meshFunctionBinary, Addition) {
-  auto reader = io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
-  auto mesh = reader.mesh();
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   auto sum = mfA + mfB;
   checkMeshFunctionEqual(*mesh, sum, MeshFunctionGlobal([](auto x) {
     return x[0] * x[0] + 2 * x[1] + x[0];
   }));
 
-  auto vectorSum = mfVectorA + mfVectorB;
-  checkMeshFunctionEqual(*mesh, vectorSum, MeshFunctionGlobal([](auto x) {
-    return Eigen::Vector2d(2 * x[0], x[1] + 2 * x[0]);
-  }));
+  auto mfVecAdd = MeshFunctionGlobal(
+      [](auto x) { return Eigen::Vector2d(2 * x[0], x[1] + 2 * x[0]); });
+  checkMeshFunctionEqual(*mesh, mfVectorA + mfVectorB, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic + mfVectorB, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfVectorA + mfVectorB_dynamic, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic + mfVectorB_dynamic,
+                         mfVecAdd);
 
   auto matrixSum = mfMatrixA + mfMatrixB;
   checkMeshFunctionEqual(*mesh, matrixSum, MeshFunctionGlobal([](auto x) {
@@ -71,18 +79,21 @@ TEST(meshFunctionBinary, Addition) {
 }
 
 TEST(meshFunctionBinary, Subtraction) {
-  auto reader = io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
-  auto mesh = reader.mesh();
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 
   auto sub = mfA - mfB;
   checkMeshFunctionEqual(*mesh, sub, MeshFunctionGlobal([](auto x) {
     return x[0] * x[0] - x[0];
   }));
 
+  auto mfVecDif = MeshFunctionGlobal(
+      [](auto x) { return Eigen::Vector2d(0., x[1] - 2 * x[0]); });
   auto subVector = mfVectorA - mfVectorB;
-  checkMeshFunctionEqual(*mesh, subVector, MeshFunctionGlobal([](auto x) {
-    return Eigen::Vector2d(0., x[1] - 2 * x[0]);
-  }));
+  checkMeshFunctionEqual(*mesh, mfVectorA - mfVectorB, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic - mfVectorB, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfVectorA - mfVectorB_dynamic, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic - mfVectorB_dynamic,
+                         mfVecDif);
 
   auto subMatrix = mfMatrixA - mfMatrixB;
   checkMeshFunctionEqual(*mesh, subMatrix, MeshFunctionGlobal([](auto x) {

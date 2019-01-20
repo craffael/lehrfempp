@@ -4,18 +4,19 @@ set(src
   fe_testutils.h
   fe_testutils.cc
   mesh_function_utils.h
+  sec_ord_ell_bvp.h
+  sec_ord_ell_bvp.cc
 
-  #bvp_fe_test.cc
-  #full_gal_test.cc
-  #gfe_test.cc
-  #lagr_fe_test.cc
-  #mesh_function_fe_test.cc
-  mesh_function_grad_fe_test.cc
-  #mesh_function_traits_test.cc
-  #mesh_function_binary_test.cc
-  #mesh_function_unary_test.cc
-  #sec_ord_ell_bvp.h
-  #sec_ord_ell_bvp.cc
+  bvp_fe_tests.cc
+  fe_tools_tests.cc
+  full_gal_tests.cc
+  gfe_tests.cc
+  lagr_fe_tests.cc
+  mesh_function_fe_tests.cc
+  mesh_function_grad_fe_tests.cc
+  mesh_function_traits_tests.cc
+  mesh_function_binary_tests.cc
+  mesh_function_unary_tests.cc
 )
 
 add_executable(lf.uscalfe.test ${src})

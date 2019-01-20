@@ -16,7 +16,7 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/quad/quad.h>
-#include "loc_comp_norms.h"
+#include "mesh_function_traits.h"
 #include "scalar_uniform_fe_space.h"
 
 namespace lf::uscalfe {
@@ -24,151 +24,104 @@ namespace lf::uscalfe {
 static const unsigned int kout_l2_qr = 1;
 static const unsigned int kout_l2_rsfvals = 2;
 
-/**
- * @brief Summation of cell values computed based on a finite element
- *        function specified through its basis expansion coefficients
- *
- * @tparam LOC_COMP type taking care of local computations
- * @tparam COEFFVECTOR a vanilla vector type
- * @tparam SELECTOR a predicate for selecting cells
- *
- * ### type requirements
- *
- * - The type LOC_COMP must feature an `isActive()` method for the
- *   selection of cells to be visited, must provide a type `dofvector_t`
- *   for passing coefficients of local shape functions and a method
- * ~~~
- * double operator ()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
- * ~~~
- *   that performs the local computations.
- * - The type COEFFVECTOR must provide component access through `[]`,
- *   a `size()` method telling the vector length, and `value_type` typedef
- *   telling the  component type.
- * - The type functor must provide an evaluation operator `()` taking
- *   a point coordinate vector `Eigen::Vector2d` as an argument.
- *
- * @param dofh Local-to-global index mapping belonging to a finite element space
- * @param loc_comp reference to helper object for local computations
- *        This object must be aware of the shape functions!
- * @param uh coefficient vector of finite element function
- *
- */
-template <typename LOC_COMP, typename COEFFVECTOR, typename SELECTOR>
-double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
-                        LOC_COMP &loc_comp, const COEFFVECTOR &uh,
-                        SELECTOR &&pred) {
-  // Type for passing local coefficient vectors
-  using dofvector_t = std::vector<typename COEFFVECTOR::value_type>;
-  // Retrieve the mesh
-  const lf::mesh::Mesh &mesh{*dofh.Mesh()};
+namespace internal {
 
-  // Check whether sufficiently large vector uh
-  LF_ASSERT_MSG(uh.size() >= dofh.NoDofs(), "uh vector too short!");
-
-  double sum = 0.0;
-  /// loop over cells ( = codim-0 entities)
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
-    if (pred(cell)) {
-      // Number of local shape functions
-      const size_type num_loc_dofs = dofh.NoLocalDofs(cell);
-      // Allocate a temporary vector of appropriate size
-      dofvector_t loc_coeffs(num_loc_dofs);
-      // Fetch global numbers of local shape functions
-      lf::base::RandomAccessRange<const gdof_idx_t> ldof_gidx(
-          dofh.GlobalDofIndices(cell));
-      // Copy degrees of freedom into temporory vector
-      for (int j = 0; j < num_loc_dofs; ++j) {
-        loc_coeffs[j] = uh[ldof_gidx[j]];
-      }
-      // Sum local contribution
-      sum += loc_comp(cell, loc_coeffs);
-    }  // end if (isACtive())
+// TODO(raffael) convert this method into a lambda function of
+// IntegrateMeshFunction() once
+// https://developercommunity.visualstudio.com/content/problem/200017/if-constexpr-in-lambda.html
+// is resolved.
+template <class MF, class QR_SELECTOR>
+auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
+                   const MF &mf) -> MeshFunctionReturnType<MF> {
+  using MfType = MeshFunctionReturnType<MF>;
+  auto qr = qr_selector(e);
+  auto values = mf(e, qr.Points());
+  auto weights_ie =
+      (qr.Weights().cwiseProduct(e.Geometry()->IntegrationElement(qr.Points())))
+          .eval();
+  LF_ASSERT_MSG(values.size() == qr.NumPoints(),
+                "mf returns vector with wrong size.");
+  if constexpr (std::is_arithmetic_v<MfType>) {
+    auto value_m = Eigen::Map<Eigen::Matrix<MfType, 1, Eigen::Dynamic>>(
+        &values[0], 1, values.size());
+    return (value_m * weights_ie)(0);
   }
-  return sum;
+
+  if constexpr (base::is_eigen_matrix<MfType>) {
+    constexpr int size = MfType::SizeAtCompileTime;
+    if constexpr (size != Eigen::Dynamic) {
+      auto value_m = Eigen::Map<
+          Eigen::Matrix<typename MfType::Scalar, size, Eigen::Dynamic>>(
+          &values[0](0, 0), size, values.size());
+      MfType result;
+      auto result_m =
+          Eigen::Map<Eigen::Matrix<typename MfType::Scalar, size, 1>>(
+              &result(0, 0));
+      result_m = value_m * weights_ie;
+      return result;
+    }
+  }
+  // fallback: we cannot make any optimizations:
+  MfType temp = weights_ie(0) * values[0];
+  for (int i = 1; i < qr.NumPoints(); ++i) {
+    temp = temp + weights_ie(i) * values[i];
+  }
+  return temp;
+}
+};  // namespace internal
+
+template <class MF, class QR_SELECTOR,
+          class ENTITY_PREDICATE = base::PredicateTrue>
+auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
+                           const QR_SELECTOR &qr_selector,
+                           const ENTITY_PREDICATE &ep = base::PredicateTrue{},
+                           int codim = 0) -> MeshFunctionReturnType<MF> {
+  static_assert(isMeshFunction<MF>);
+  using MfType = MeshFunctionReturnType<MF>;
+
+  auto entities = mesh.Entities(codim);
+  auto result = internal::LocalIntegral(*entities.begin(), qr_selector, mf);
+  for (auto i = ++entities.begin(); i != entities.end(); ++i) {
+    if (!ep(*i)) continue;
+    result = result + internal::LocalIntegral(*i, qr_selector, mf);
+  }
+  return result;
 }
 
-/**
- * @brief Summation of local contributions over _all_ cells
- *
- * @sa SumCellFEContrib()
- */
-
-template <typename LOC_COMP, typename COEFFVECTOR>
-double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
-                        LOC_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return SumCellFEContrib(dofh, loc_comp, uh, base::PredicateTrue{});
-}
-
-/**
- * @brief Computation of an inner product norm of the difference of a finite
- * element function and a general functions.
- *
- * @tparam LOC_NORM_COMP helper type like
- * lf::uscalfe::MeshFunctionL2NormDifference
- * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
- * @tparam SELECTOR a predicate for selecting cells
- *
- * ### type requirements
- *
- * - The type LOC_NORM_COMP must feature an `isActive()` method for the
- *   selection of cells to be visited, must provide a type `dofvector_t`
- *   for passing coefficients of local shape functions and a method
- * ~~~
- * double operator () (const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
- * ~~~
- *   that performs the local computations and returns the **square** of
- *   the local norm of the difference function
- * - The type COEFFVECTOR must provide component access through `[]`,
- *   a `size()` method telling the vector length, and `value_type` typedef
- *   telling the  component type.
- * - The type functor must provide an evaluation operator `()` taking
- *   a point coordinate vector `Eigen::Vector2d` as an argument.
- *
- * @param dofh Local-to-global index mapping belonging to a finite element space
- * @param loc_comp reference to helper object for local computations
- *        This object must be aware of the shape functions!
- * @param uh coefficient vector of finite element function
- *
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR, typename SELECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh,
-                        SELECTOR &&pred) {
-  const double norm_sq = SumCellFEContrib(dofh, loc_comp, uh, pred);
-  return std::sqrt(norm_sq);
-}
-
-/** @brief Computation of difference of norms for _all_ cells
- *
- * @sa NormOfDifference()
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
+template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
+auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
+                           int quad_order,
+                           const ENTITY_PREDICATE & = base::PredicateTrue{},
+                           int codim = 0) {
+  std::array<quad::QuadRule, 5> qrs;
+  for (auto ref_el :
+       {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    qrs[ref_el.Id()] = quad::make_QuadRule(ref_el, quad_order);
+  }
+  return IntegrateMeshFunction(
+      mesh, mf, [&](const mesh::Entity &e) { return qrs[e.RefEl().Id()]; });
 }
 
 // ******************************************************************************
 
 // Output control for nodal projection
-// TODO(ralfh) putting this in a header file leads to multiple symbols with the
-// name ctrl_l2
-// CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
+// TODO(ralfh) putting this in a header file leads to multiple symbols with
+// the name ctrl_l2 CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
 //                    "Output control for  NodalProjection()");
 static const unsigned int kout_prj_cell = 1;
 static const unsigned int kout_prj_vals = 2;
 
 /**
- * @brief Computes nodal projection of a mesh function and returns the finite
- * element basis expansion coefficients of the result
+ * @brief Computes nodal projection of a mesh function and returns the
+ * finite element basis expansion coefficients of the result
  *
  * @tparam SCALAR a scalar type
  * @tparam MF a \ref mesh_function "MeshFunction" representing the scalar
  * valued function that should be projected
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
- * @param fe_space a uniform Lagrangian finite element space, providing finite
- *        element specifications for the cells of the mesh
+ * @param fe_space a uniform Lagrangian finite element space, providing
+ * finite element specifications for the cells of the mesh
  * @param u functor object supplying a scalar-valued function that is to be
  * projected
  * @param pred predicate object for the selection of relevant cells
@@ -185,7 +138,8 @@ template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
 auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
                      SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<MF>>);
-  // choose scalar type so it can hold the scalar type of u as well as SCALAR
+  // choose scalar type so it can hold the scalar type of u as well as
+  // SCALAR
   using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<MF>>;
   using scalar_t = decltype(SCALAR(0) * scalarMF_t(0));
   // Return type, type for FE coefficient vector
@@ -250,12 +204,13 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
 
 /**
  * @brief Initialization of flags/values for dofs of a uniform Lagrangian
- *        finite element space whose values are imposed by a specified function.
+ *        finite element space whose values are imposed by a specified
+ * function.
  *
  * @tparam SCALAR scalar type for BVP = return type of the function g
  * @tparam EDGESELECTOR predicate returning true for edges with fixed dofs
- * @tparam FUNCTION \ref mesh_function "MeshFunction" which defines the imposed
- * values on the edges
+ * @tparam FUNCTION \ref mesh_function "MeshFunction" which defines the
+ * imposed values on the edges
  *
  * @param dofh local-to-global index mapping
  * @param fe_spec_edge description of arrangement for local shape functions
@@ -264,15 +219,15 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
  *        true for all edges whose associated degrees of freedom should be
  *        set a fixed value.
  * @return a vector of flag-value pairs, a `true` first component indicating
- *         a fixed dof, with the second component providing the value in this
- *         case.
+ *         a fixed dof, with the second component providing the value in
+ * this case.
  *
  * This function interpolates a scalar-valued function into a Lagrangian
  * finite element space restricted to a set of edges. It relies on the
  * method ScalarReferenceFiniteElement::NodalValuesToDofs().
  *
- * The main use of this function is the interpolation of Dirichlet data on the
- * Dirichlet part of the boundary of a domain.
+ * The main use of this function is the interpolation of Dirichlet data on
+ * the Dirichlet part of the boundary of a domain.
  *
  * ### Template parameter type requirements
  * - SCALAR must be a type like `complex<double>`
@@ -281,8 +236,8 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
  * - FUNCTION is a scalar valued \ref mesh_function "MeshFunction" which is
  * evaluated on edges
  *
- * This function is meant to supply the information needed for the elimination
- * of Dirichlet boundary conditions by means of the function
+ * This function is meant to supply the information needed for the
+ * elimination of Dirichlet boundary conditions by means of the function
  * lf::assemble::fix_flagged_solution_components().
  */
 template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
@@ -322,7 +277,8 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
       const lf::geometry::Geometry *edge_geo_p{edge.Geometry()};
       auto g_vals = g(edge, ref_eval_pts);
 
-      // Compute degrees of freedom from function values in evaluation points
+      // Compute degrees of freedom from function values in evaluation
+      // points
       dof_vals = fe_spec_edge.NodalValuesToDofs(
           Eigen::Map<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>(&g_vals[0], 1,
                                                                g_vals.size()));
@@ -331,7 +287,8 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
       LF_ASSERT_MSG(
           dofh.NoLocalDofs(edge) == num_rsf,
           "Mismatch " << dofh.NoLocalDofs(edge) << " <-> " << num_rsf);
-      // Fetch indices of global shape functions associated with current edge
+      // Fetch indices of global shape functions associated with current
+      // edge
       auto gdof_indices{dofh.GlobalDofIndices(edge)};
       int k = 0;
       // Set flags and values; setting, no accumulation here!

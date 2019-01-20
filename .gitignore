@@ -40,6 +40,7 @@ bin/
 bin_32/
 bin_clang/
 bin_clang5/
+bin_clang7/
 bin_clang_release/
 bin_gcc/
 bin_gcc_release/
@@ -50,4 +51,5 @@ Build/
 build/
 .idea/
 venv/
+
 

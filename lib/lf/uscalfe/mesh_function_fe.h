@@ -49,7 +49,7 @@ class MeshFunctionFE {
 
 // deduction guide
 template <class T, class SCALAR_COEFF>
-MeshFunctionFE(std::shared_ptr<T>,
+MeshFunctionFE(const std::shared_ptr<T>&,
                const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
     ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 

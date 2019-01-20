@@ -13,7 +13,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <iostream>
 
 #include <lf/mesh/utils/utils.h>
@@ -33,34 +33,12 @@ TEST(lf_gfe, lf_gfe_l2norm) {
   // Building the test mesh: a purely affine mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
-  // Set up global FE space
-  auto fe_space = std::make_shared<ScalarUniformFESpace<double>>(
-      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
-      std::make_shared<FeLagrangeO1Quad<double>>());
+  // The function to integrate
+  auto mf = MeshFunctionGlobal([](auto x) { return (x[0] * (1.0 - x[1])); });
 
-  // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
-  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
+  // compute norm by integrating the mesh function mf over the mesh
+  double norm = std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
 
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  MeshFunctionL2NormDifference loc_comp(
-      fe_space,
-      MeshFunctionGlobal([](auto x) { return (x[0] * (1.0 - x[1])); }), 4);
-  // loc_comp.ctrl_ = 255;
-
-  /*
-  // Alternative implementation
-  // Function whose L2 should be computed; a generic lambda here
-  auto u = [](auto x) { return (x[0] * (1.0 - x[1])); };
-   MeshFunctionL2NormDifference<decltype(u)> loc_comp(
-        fe_space.TriaShapeFunctionLayout(), fe_space.QuadShapeFunctionLayout(),
-        [](auto x) { return (x[0] * (1.0 - x[1])); }, 4);
-  */
-
-  // Actual compuation of norm
-  double norm = NormOfDifference(dofh, loc_comp, zerovec);
-  std::cout << "Norm = " << norm << std::endl;
   EXPECT_NEAR(norm, 5.19615, 1E-4);
 }
 
@@ -84,7 +62,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   const lf::assemble::size_type N_dofs(dofh.NoDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
-  // Assemble finite element Galerkin matrix
+  // Assemble finite element Galerkin matrix (mass matrix)
   uscalfe::test::SecOrdBVPLagrFEFullInteriorGalMat(
       fe_space, MeshFunctionConstant(0.0), MeshFunctionConstant(1.0), A);
 
@@ -98,15 +76,13 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   // Random coefficient vector of FE function
   Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
 
-  const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
+  double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
 
-  // Directly compute L2 norm of FE function
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  MeshFunctionL2NormDifference loc_comp(fe_space, MeshFunctionConstant(0.0), 2);
+  // Directly compute L2 norm of FE function by integrating the
+  // associated mesh function:
+  MeshFunctionFE<double, double> mf_fe(fe_space, coeffvec);
 
-  const double normsq_direct =
-      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
+  double normsq_direct = IntegrateMeshFunction(*mesh_p, squaredNorm(mf_fe), 2);
 
   std::cout << "Norm^2 through A = " << normsq_from_A << std::endl;
   std::cout << "Norm^2 directly = " << normsq_direct << std::endl;
@@ -149,13 +125,11 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
 
   const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
 
-  // Directly compute H1 seminorm of FE function
-  // Helper object for computation of norm
-  MeshFunctionL2GradientDifference loc_comp(
-      fe_space, MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0)), 2);
+  // Directly compute H1 seminorm by integrating the mesh function
+  MeshFunctionGradFE mf_grad_fe(fe_space, coeffvec);
 
-  const double normsq_direct =
-      std::pow(NormOfDifference(dofh, loc_comp, coeffvec), 2);
+  double normsq_direct =
+      IntegrateMeshFunction(*mesh_p, squaredNorm(mf_grad_fe), 2);
 
   std::cout << "H1 norm^2 through A = " << normsq_from_A << std::endl;
   std::cout << "H1 norm^2 directly = " << normsq_direct << std::endl;
@@ -172,26 +146,13 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
   // Building the test mesh: a purely affine mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
-  // Set up global FE space
-  auto fe_space = std::make_shared<ScalarUniformFESpace<double>>(
-      mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
-      std::make_shared<FeLagrangeO1Quad<double>>());
+  // mesh function to integrate:
+  auto mf = MeshFunctionGlobal(
+      [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); });
 
-  // Dummy vector for coefficients of FE function
-  const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
-  std::vector<double> zerovec(dofh.NoDofs(), 0.0);
+  // integrate mesh function:
+  double norm = std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
 
-  // Helper object for computation of norm
-  // Function passed as a generic lambda expression
-  MeshFunctionL2GradientDifference loc_comp(
-      fe_space, MeshFunctionGlobal([](auto x) {
-        return (Eigen::Vector2d() << x[1], -x[0]).finished();
-      }),
-      4);
-  // loc_comp.ctrl_ = 255;
-
-  // Actual compuation of norm
-  double norm = NormOfDifference(dofh, loc_comp, zerovec);
   std::cout << "Norm of vectorfield = " << norm << std::endl;
   EXPECT_NEAR(norm, 7.34847, 1E-4);
 }
@@ -207,7 +168,7 @@ TEST(lf_gfe, lf_gfe_lintp) {
       std::make_shared<FeLagrangeO1Quad<double>>());
 
   auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
-  auto coeffvec{NodalProjection(fe_space, MeshFunctionGlobal(u))};
+  auto coeffvec = NodalProjection(*fe_space, MeshFunctionGlobal(u));
 
   // Local-to-global index mapped
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
@@ -286,12 +247,11 @@ bool checkInterpolationLinear(
   // Model linear function
   auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
-  auto coeffvec{NodalProjection(fe_space, u)};
-  // Helper class for error computation
-  MeshFunctionL2NormDifference loc_comp(fe_space, u, 4);
-  // Actual compuation of error norm
-  double norm = NormOfDifference(fe_space->LocGlobMap(), loc_comp, coeffvec);
-  std::cout << "Norm = " << norm << std::endl;
+  Eigen::VectorXd coeffvec = NodalProjection(*fe_space, u);
+  auto mf_fe = MeshFunctionFE<double, double>(fe_space, coeffvec);
+  auto norm =
+      IntegrateMeshFunction(*fe_space->Mesh(), squaredNorm(mf_fe - u), 4);
+
   EXPECT_NEAR(norm, 0.0, 1E-6);
   return (std::fabs(norm) < 1.0E-6);
 }

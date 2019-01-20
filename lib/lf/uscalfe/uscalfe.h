@@ -18,7 +18,7 @@
 #include "fe_space_lagrange_o1.h"
 #include "fe_tools.h"
 #include "lin_fe.h"
-#include "loc_comp_norms.h"
+#include "loc_comp_ellbvp.h"
 #include "mesh_function_binary.h"
 #include "mesh_function_constant.h"
 #include "mesh_function_fe.h"

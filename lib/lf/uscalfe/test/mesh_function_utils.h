@@ -14,7 +14,7 @@ namespace lf::uscalfe::test {
 template <class A, class B>
 void checkMeshFunctionEqual(const mesh::Mesh& m, A a, B b, int codim = 0) {
   using scalar_t = MeshFunctionReturnType<A>;
-  static_assert(std::is_same_v<scalar_t, MeshFunctionReturnType<B>>);
+  static_assert(std::is_convertible_v<scalar_t, MeshFunctionReturnType<B>>);
 
   if constexpr (std::is_arithmetic_v<scalar_t>) {
     for (auto& e : m.Entities(codim)) {

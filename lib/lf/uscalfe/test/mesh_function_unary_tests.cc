@@ -30,8 +30,14 @@ auto mfScalar = MeshFunctionGlobal(
 
 auto mfVector = MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; });
 
+auto mfVector_dynamic = MeshFunctionGlobal(
+    [](const Eigen::Vector2d& x) { return Eigen::VectorXd(x); });
+
 auto mfRowVector =
     MeshFunctionGlobal([](auto x) { return Eigen::RowVector2d(x[1], -x[0]); });
+
+auto mfRowVector_dynamic = MeshFunctionGlobal(
+    [](auto x) { return Eigen::MatrixXd(Eigen::RowVector2d(x[1], -x[0])); });
 
 auto mfMatrix =
     MeshFunctionGlobal([](auto x) { return (x * x.transpose()).eval(); });
@@ -70,15 +76,15 @@ TEST(meshFunctionUnary, squaredNorm) {
     return std::pow(x[0] * x[0] + x[1], 2);
   }));
 
-  auto snVector = squaredNorm(mfVector);
-  checkMeshFunctionEqual(*mesh, snVector, MeshFunctionGlobal([](auto x) {
-    return x.squaredNorm();
-  }));
+  auto snMfVector = MeshFunctionGlobal([](auto x) { return x.squaredNorm(); });
+  checkMeshFunctionEqual(*mesh, squaredNorm(mfVector), snMfVector);
+  checkMeshFunctionEqual(*mesh, squaredNorm(mfVector_dynamic), snMfVector);
 
-  auto snRowVector = squaredNorm(mfRowVector);
-  checkMeshFunctionEqual(*mesh, snVector, MeshFunctionGlobal([](auto x) {
-    return x.squaredNorm();
-  }));
+  auto snMfRowVector =
+      MeshFunctionGlobal([](auto x) { return x.squaredNorm(); });
+  checkMeshFunctionEqual(*mesh, squaredNorm(mfRowVector), snMfRowVector);
+  checkMeshFunctionEqual(*mesh, squaredNorm(mfRowVector_dynamic),
+                         snMfRowVector);
 
   auto snMatrix = squaredNorm(mfMatrix);
   checkMeshFunctionEqual(*mesh, snMatrix, MeshFunctionGlobal([](auto x) {

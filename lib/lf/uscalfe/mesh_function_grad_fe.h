@@ -43,7 +43,7 @@ class MeshFunctionGradFE {
     std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> result(local.cols());
     for (int i = 0; i < result.size(); ++i) {
       result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *
-                  local_grads.block(0, 2 * dim_local, 1, dim_local).transpose();
+                  local_grads.block(0, i * dim_local, 1, dim_local).transpose();
     }
 
     return result;

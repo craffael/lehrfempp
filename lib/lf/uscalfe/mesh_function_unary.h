@@ -82,34 +82,34 @@ struct UnaryOpSquaredNorm {
     return result;
   }
 
-  // squared norm of a fixed size matrix
-  template <
-      class S, int R, int C, int O, int MR, int MC,
-      class = std::enable_if_t<R != Eigen::Dynamic && C != Eigen::Dynamic>>
+  // squared norm of a eigen matrix
+  template <class S, int R, int C, int O, int MR, int MC>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
                   int) const {
-    static_assert(R > 0 && C > 0,
-                  "squaredNorm only supported for matrices with at least 1 row "
-                  "and column");
     std::vector<double> result(u.size());
-    if constexpr (C == 1) {
-      Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
-                                                               u.size());
-      Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0], 1,
-                                                         u.size());
-      rm = um.cwiseAbs2().colwise().sum();
-    } else if constexpr (R == 1) {
-      Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, C, Eigen::RowMajor>> um(
-          &u[0](0, 0), u.size(), C);
-      Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(&result[0],
-                                                               u.size(), 1);
-      rm = um.cwiseAbs2().rowwise().sum();
+    if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
+      static_assert(
+          R > 0 && C > 0,
+          "squaredNorm only supported for matrices with at least 1 row "
+          "and column");
+      if constexpr (C == 1) {
+        Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
+                                                                 u.size());
+        Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0], 1,
+                                                           u.size());
+        rm = um.cwiseAbs2().colwise().sum();
+      } else if constexpr (R == 1) {
+        Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, C, Eigen::RowMajor>>
+            um(&u[0](0, 0), u.size(), C);
+        Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(&result[0], u.size(),
+                                                           1);
+        rm = um.cwiseAbs2().rowwise().sum();
+      }
     } else {
       for (int i = 0; i < u.size(); ++i) {
         result[i] = u[i].squaredNorm();
       }
     }
-
     return result;
   }
 };
