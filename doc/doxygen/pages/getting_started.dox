@@ -37,7 +37,7 @@
 On Mac OSX use curl instead:
  ```
  > cd cmake
- > curl -0 https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ > curl -O https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
  ```
    This file is needed to setup the hunter package manager (which runs completly inside CMake).
  4. Create the file `getting_started/CMakeLists.txt` with the following content
