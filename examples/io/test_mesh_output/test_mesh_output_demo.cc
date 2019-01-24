@@ -20,6 +20,8 @@ int main() {
   for (int selector = 0;
        selector <= lf::mesh::test_utils::GenerateHybrid2DTestMesh_maxsel;
        selector++) {
+    // Generates a small test meshes, more precisely described in the documentation
+    // of the function GenerateHybrid2DTestMesh()
     auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     // Output of mesh information
     std::cout << "#### Test mesh " << selector << " ####" << std::endl;
