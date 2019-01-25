@@ -24,6 +24,18 @@ namespace lf::assemble {
  * Objects of this class provide the local-to-global map for indices
  * of local/global shape functions.
  *
+ * ## Some terminology
+ *
+ * - The terms "degrees of freedom", "global basis functions", and "global shape
+ * functions are synomymous.
+ * - Every global and local shape function is _associated_ with a unique
+ * geometric entity.
+ * - The global/local shape functions associated with a mesh entity are called
+ * its **interior** shape functions/degrees of freedom.
+ * - The shape functions/degrees of freedom **belonging** to a mesh entity
+ * or **subordinate** to a  mesh entity are those whose supports cover that
+ * entity. Hence all interior d.o.f. must also belong to an entity.
+ *
  * # Rules for ordering global shape functions <-> degrees of freedom (dof)
  *
  * Note that every global shape (dof) function belongs to a unique mesh entity.
@@ -68,9 +80,9 @@ class DofHandler {
   DofHandler() = default;
   virtual ~DofHandler() = default;
 
-  /** Disabled constructors and assignment operators */
+  /** Copying and assignment do not make sense for @ref DofHandler objects */
   /**@{*/
-  /** @name Disabled */
+  /** @name Disabled constructors*/
   DofHandler(const DofHandler &) = delete;
   DofHandler(DofHandler &&) = delete;
   DofHandler &operator=(const DofHandler &) = delete;
@@ -83,7 +95,8 @@ class DofHandler {
   virtual size_type NoDofs() const = 0;
 
   /**
-   * @brief tells the number of degrees of freedom subordinated to an entity
+   * @brief tells the number of degrees of freedom _subordinate_/_belonging_ to
+   * to an entity
    *
    * @param entity reference to an entity of the underlying mesh
    *
@@ -94,18 +107,19 @@ class DofHandler {
   virtual size_type NoLocalDofs(const lf::mesh::Entity &entity) const = 0;
 
   /**
-   * @brief provides number of shape functions associated with an entity
+   * @brief provides number of shape functions _associated_ with an entity
    *
    * @param entity entity of underlying mesh whose number of shape functions
    *               is queried
    *
    * The return value of this method must be equal to the length of the range
-   * built by GlobalDofIndices().
+   * built by InteriorGlobalDofIndices().
+   * @sa InteriorGlobalDofIndices()
    */
   virtual size_type NoInteriorDofs(const lf::mesh::Entity &entity) const = 0;
 
   /**
-   * @brief access to indices of global dof's belonging to an entity
+   * @brief access to indices of global dof's _belonging_ to an entity
    *
    * @param entity reference to the entity for which the dof's are to be
    *        fetched. This entity must belong to the underlying mesh.
@@ -124,7 +138,7 @@ class DofHandler {
       const lf::mesh::Entity &entity) const = 0;
 
   /**
-   * @brief global indices of shape functions _belonging to an entity_
+   * @brief global indices of shape functions _associated with_ an entity_
    *
    * @param entity entity for which shape functin indices are queried
    * @return cardinal number range of global indices of shape functions
@@ -132,6 +146,9 @@ class DofHandler {
    * Each global shape function is associated with a unique mesh entity.
    * This method provides all the global indices of the shape function
    * associated to the entity specified by the function arguments.
+   *
+   * @note Be aware of the difference of @ref GlobalDofIndices() and @ref
+   * InteriorGlobalDofIndices()
    */
   virtual lf::base::RandomAccessRange<const gdof_idx_t>
   InteriorGlobalDofIndices(const lf::mesh::Entity &entity) const = 0;
