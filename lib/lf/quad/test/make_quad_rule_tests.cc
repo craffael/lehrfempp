@@ -37,7 +37,9 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
           << "Failure for i = " << i;
     }
     // try integrate one order too high:
-    EXPECT_GT(std::abs(integrate(qr, {order + 1}) - 1. / (2. + order)), 1e-10);
+    EXPECT_GT(std::abs(integrate(qr, {static_cast<int>(order) + 1}) -
+                       1. / (2. + order)),
+              1e-10);
   } else if (qr.RefEl() == base::RefEl::kTria()) {
     // TRIA
     ///////////////////////////////////////////////////////////////////////////
@@ -57,7 +59,7 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
       // correctly
       bool one_fails = false;
       for (int i = -1; i <= order; ++i) {
-        if (std::abs(integrate(qr, {i + 1, order - i}) -
+        if (std::abs(integrate(qr, {i + 1, static_cast<int>(order - i)}) -
                      exact_value(i + 1, order - i)) > 1e-12) {
           one_fails = true;
           break;
@@ -79,12 +81,12 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     // make sure that not all of the higher polynomials integrate correctly:
     bool atLeastOneFails = false;
     for (int i = 0; i <= order + 1; ++i) {
-      if (std::abs(integrate(qr, {order + 1, i}) -
+      if (std::abs(integrate(qr, {static_cast<int>(order + 1), i}) -
                    1. / ((2. + order) * (1. + i))) > 1e-10) {
         atLeastOneFails = true;
         break;
       }
-      if (std::abs(integrate(qr, {i, order + 1}) -
+      if (std::abs(integrate(qr, {i, static_cast<int>(order + 1)}) -
                    1. / ((2. + order) * (1. + i))) > 1e-10) {
         atLeastOneFails = true;
         break;

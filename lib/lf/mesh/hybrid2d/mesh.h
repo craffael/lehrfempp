@@ -32,11 +32,12 @@ class MeshFactory;
  */
 class Mesh : public mesh::Mesh {
  public:
-  char DimMesh() const override { return 2; }
-  char DimWorld() const override { return dim_world_; }
+  unsigned DimMesh() const override { return 2; }
+  unsigned DimWorld() const override { return dim_world_; }
 
-  base::ForwardRange<const mesh::Entity> Entities(char codim) const override;
-  size_type NumEntities(char codim) const override;
+  base::ForwardRange<const mesh::Entity> Entities(
+      unsigned codim) const override;
+  size_type NumEntities(unsigned codim) const override;
   size_type NumEntities(lf::base::RefEl ref_el_type) const override;
   size_type Index(const Entity& e) const override;
   const mesh::Entity* EntityByIndex(dim_t codim,

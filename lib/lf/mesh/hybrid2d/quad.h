@@ -68,7 +68,7 @@ class Quadrilateral : public mesh::Entity {
                          const Segment* edge2, const Segment* edge3);
 
   /** @brief an edge is an entity of co-dimension 1 */
-  char Codim() const override { return 0; }
+  unsigned Codim() const override { return 0; }
 
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select edges, if 2 select nodes, if 0 select cell
@@ -80,7 +80,7 @@ class Quadrilateral : public mesh::Entity {
      - for rel_codim == 2: return 4-range containing the edges
    */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
-      char rel_codim) const override;
+      unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
