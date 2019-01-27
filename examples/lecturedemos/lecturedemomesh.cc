@@ -128,7 +128,7 @@ void lecturedemomesh() {
 
   // Output general information on mesh; self-explanatory
   std::cout << "Mesh from file " << mesh_file.string() << ": ["
-            << (int)mesh.DimMesh() << ',' << (int)mesh.DimWorld()
+            << mesh.DimMesh() << ',' << mesh.DimWorld()
             << "] dim:" << std::endl;
   std::cout << mesh.NumEntities(0) << " cells, " << mesh.NumEntities(1)
             << " edges, " << mesh.NumEntities(2) << " nodes" << std::endl;
