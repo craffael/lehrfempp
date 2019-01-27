@@ -6,60 +6,34 @@
  * @copyright MIT License
  */
 
-#include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 #include "lecturedemomesh.h"
+#include "lecturedemodof.h"
 
-int main() {
-  // Set complete file path to the sample mesh in Gmsh format
-  boost::filesystem::path here = __FILE__;
-  auto mesh_file = here.parent_path() / "lecturedemomesh.msh";
-
+int main(int argc, char **argv) {
+  namespace po = boost::program_options;
+  po::options_description desc("Allowed options");
   // clang-format off
-  /* SAM_LISTING_BEGIN_1 */
-  // Create a 2D mesh data structure from the information contained in the file
-  // \texttt{mesh\_file}. A \com{factory object} is in charge of creating mesh
-  // entities and has to be initialized first.
-  auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);// \Label[line]{lgm:1}
-  lf::io::GmshReader reader(std::move(factory), mesh_file.string()); // \Label[line]{lgm:2}
-  // Obtain pointer to read only mesh from the mesh reader object
-  // Meshes in \lfpp are managed through \samemp{shared pointers}, see
-  // \href{http://en.cppreference.com/w/cpp/memory/shared_ptr}{documentation}.
-  std::shared_ptr<const lf::mesh::Mesh> mesh_ptr = reader.mesh();
-  const lf::mesh::Mesh &mesh{*mesh_ptr};
-
-  // Output general information on mesh; self-explanatory
-  std::cout << "Mesh from file " << mesh_file.string() << ": ["
-            << (int)mesh.DimMesh() << ',' << (int)mesh.DimWorld()
-            << "] dim:" << std::endl;
-  std::cout << mesh.NumEntities(0) << " cells, " << mesh.NumEntities(1)
-            << " edges, " << mesh.NumEntities(2) << " nodes" << std::endl;
-  /* SAM_LISTING_END_1 */
+  desc.add_options()
+  ("help,h", "This message")
+  ("demo_number,d", po::value<int>()->default_value(0), "Selector for demo code");
   // clang-format on
-
-  // First demo: container functionalty of a mesh object
-  for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
-    (void)lecturedemo::traverseEntities(mesh, codim);
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  if (vm.count("help") > 0) {
+    std::cout << desc << std::endl;
+    std::cout << "No arg: run all demos" << std::endl;
+    std::cout << "N = 1: demo of LehrFEM++ mesh capabilities" << std::endl;
+    std::cout << "N = 2: demo of LehrFEM++ assemble capabilities" << std::endl;
+  } else {
+    int selector = vm["demo_number"].as<int>();
+    if ((selector == 1) || (selector == 0)) {
+      lecturedemo::lecturedemomesh();
+    }
+    if ((selector == 2) || (selector == 0)) {
+      lecturedemo::lecturedemodof();
+    }
   }
-  // Count number of instances of different cell types
-  auto [ tria_cnt, quad_cnt ] = lecturedemo::countCellTypes(mesh);
-  std::cout << tria_cnt << " TRIA, " << quad_cnt << " QUAD cells" << std::endl;
-
-  // Output information about topological relationships
-  lecturedemo::scanTopology(mesh, 0);  // topolgy from the cell perspective
-  lecturedemo::scanTopology(mesh, 1);  // topolgy from the edge perspective
-
-  // Print information about the geometry of the mesh cells
-  lecturedemo::PrintGeometryInfo(mesh, 0);
-  // Print information about the geometry of the mesh edges
-  lecturedemo::PrintGeometryInfo(mesh, 1);
-  
-  // Output rendering of mesh in LaTeX/TikZ format
-  using lf::io::TikzOutputCtrl;
-  lf::io::writeTikZ(
-      mesh, "demomesh.tex",
-      TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
-          TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
-          TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips);
 
   return 0L;
 }

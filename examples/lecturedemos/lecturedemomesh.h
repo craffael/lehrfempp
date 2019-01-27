@@ -1,6 +1,8 @@
+#ifndef LF_LD_MESH_H
+#define LF_LD_MESH_H
 /**
  * @file
- * @brief Driver function for simple LehrFEM++ demo
+ * @brief Functions for simple LehrFEM++ demos + sample codes
  * @author Ralf Hiptmair
  * @date   January 2019
  * @copyright MIT License
@@ -9,13 +11,11 @@
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
+#include <boost/filesystem.hpp>
+#include "lecturedemo.h"
 #include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 namespace lecturedemo {
-using size_type = lf::base::size_type;
-using dim_t = lf::base::dim_t;
-using glb_idx_t = lf::base::glb_idx_t;
-using sub_idx_t = lf::base::sub_idx_t;
 
 /** @brief traverses entities of specified co-dimension and
  *         prints information about them.
@@ -45,4 +45,10 @@ void scanTopology(const lf::mesh::Mesh &mesh, dim_t codim);
  */
 void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim);
 
+/** @brief driver routine for LehrFEM++ demos for lecture
+ */
+void lecturedemomesh();
+
 };  // namespace lecturedemo
+
+#endif  // LF_LD_MESH_H
