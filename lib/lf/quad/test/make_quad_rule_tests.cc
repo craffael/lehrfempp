@@ -58,7 +58,7 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
       // Make sure that at least on of the order+1 polynomials is not integrated
       // correctly
       bool one_fails = false;
-      for (int i = -1; i <= order; ++i) {
+      for (int i = -1; i <= static_cast<int>(order); ++i) {
         if (std::abs(integrate(qr, {i + 1, static_cast<int>(order - i)}) -
                      exact_value(i + 1, order - i)) > 1e-12) {
           one_fails = true;
