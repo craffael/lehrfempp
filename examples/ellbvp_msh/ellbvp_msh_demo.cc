@@ -73,7 +73,7 @@ int main() {
   auto identity = [](Eigen::Vector2d x) -> double { return 1.; };
   lf::uscalfe::MeshFunctionGlobal mf_identity{identity};
 
-  auto zero = [](Eigen::Vector2d x) -> double { return 1.; };
+  auto zero = [](Eigen::Vector2d x) -> double { return 0.; };
   lf::uscalfe::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
@@ -109,13 +109,6 @@ int main() {
       elvec_builder_neu(fe_space, mf_identity, edge_sel_neu);
   AssembleVectorLocally(1, dofh, elvec_builder_neu, phi);
 
-  // Fix Dirichlet boundary conditions
-  // Select Dirichlet edges
-  auto edge_sel_dir =
-      [&reader, physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
-    return reader.IsPhysicalEntity(edge, physical_entity_nr_dir);
-  };
-
   // Obtain specification for shape functions on edges
   std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
       rsf_edge_p = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
@@ -129,17 +122,21 @@ int main() {
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
   auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
       dofh, *rsf_edge_p,
-      [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
-        return (bd_flags(edge) && edge_sel_dir(edge));
+      [&bd_flags, &reader,
+       physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
+        return (bd_flags(edge) &&
+                reader.IsPhysicalEntity(edge, physical_entity_nr_dir));
       },
       mf_zero)};
-
+  std::cout << phi;
   // Eliminate Dirichlet dofs from linear system
   lf::assemble::fix_flagged_solution_components<double>(
       [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
         return ess_bdc_flags_values[gdof_idx];
       },
       A, phi);
+
+  std::cout << phi;
 
   // Assembly completed: Convert COO matrix into CRS format using Eigen's
   // internal conversion routines.
@@ -150,6 +147,6 @@ int main() {
   solver.compute(A_crs);
   Eigen::VectorXd sol_vec = solver.solve(phi);
 
-  std::cout << "Computed Energy: " << sol_vec.transpose() * (A_crs * sol_vec)
-            << "\n";
+  std::cout << "Computed Energy: "
+            << std::sqrt(sol_vec.transpose() * (A_crs * sol_vec)) << "\n";
 }
