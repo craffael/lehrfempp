@@ -123,7 +123,7 @@ int main() {
   auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
       dofh, *rsf_edge_p,
       [&bd_flags](const lf::mesh::Entity& edge) -> bool {
-        return (bd_flags(edge);
+        return (bd_flags(edge));
       },
       mf_zero)};
   // Eliminate Dirichlet dofs from linear system
