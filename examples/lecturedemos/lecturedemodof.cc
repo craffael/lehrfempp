@@ -37,8 +37,8 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       }
       std::cout << ']';
       // Also output indices of interior shape functions
-      lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> intdofarray{
-          dofh.InteriorGlobalDofIndices(e)};
+      lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t>
+	intdofarray{dofh.InteriorGlobalDofIndices(e)};
       std::cout << " int = [";
       for (lf::assemble::gdof_idx_t int_dof : intdofarray) {
         std::cout << int_dof << ' ';
@@ -54,7 +54,6 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
               << std::endl;
   }
 }  // end function printDofInfo
-
 /* SAM_LISTING_END_1 */
 // clang-format on
 

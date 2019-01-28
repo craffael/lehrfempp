@@ -8,6 +8,8 @@
  * @copyright MIT License
  */
 
+#include <lf/base/base.h>
+
 namespace lecturedemo {
 using size_type = lf::base::size_type;
 using dim_t = lf::base::dim_t;

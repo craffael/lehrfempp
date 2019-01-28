@@ -7,8 +7,9 @@
  */
 
 #include <boost/program_options.hpp>
-#include "lecturedemomesh.h"
+#include "lecturedemoassemble.h"
 #include "lecturedemodof.h"
+#include "lecturedemomesh.h"
 
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
@@ -24,7 +25,9 @@ int main(int argc, char **argv) {
     std::cout << desc << std::endl;
     std::cout << "No arg: run all demos" << std::endl;
     std::cout << "N = 1: demo of LehrFEM++ mesh capabilities" << std::endl;
-    std::cout << "N = 2: demo of LehrFEM++ assemble capabilities" << std::endl;
+    std::cout << "N = 2: demo of LehrFEM++ DofHandler capabilities"
+              << std::endl;
+    std::cout << "N = 3: demo of LehrFEM++ assembly of LSE" << std::endl;
   } else {
     int selector = vm["demo_number"].as<int>();
     if ((selector == 1) || (selector == 0)) {
@@ -32,6 +35,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 2) || (selector == 0)) {
       lecturedemo::lecturedemodof();
+    }
+    if ((selector == 3) || (selector == 0)) {
+      lecturedemo::lecturedemoassemble();
     }
   }
 

@@ -91,7 +91,7 @@ void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim) {
     const lf::geometry::Geometry *geo_ptr = ent.Geometry();
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry!");
     // Fetch coordinates of corner points in packed format \cref{par:coords}
-    Eigen::MatrixXd corners{lf::geometry::Corners(*geo_ptr)};
+    Eigen::MatrixXd corners = lf::geometry::Corners(*geo_ptr);
     LF_ASSERT_MSG(corners.rows() == geo_ptr->DimGlobal(),
                   "dimension mismatch for coordinate vectors");
     LF_ASSERT_MSG(corners.cols() == num_nodes, "#corners mismath");
@@ -140,6 +140,7 @@ void lecturedemomesh() {
     (void)lecturedemo::traverseEntities(mesh, codim);
   }
   // Count number of instances of different cell types
+  // NOLINTNEXTLINE
   auto [tria_cnt, quad_cnt] = lecturedemo::countCellTypes(mesh);
   std::cout << tria_cnt << " TRIA, " << quad_cnt << " QUAD cells" << std::endl;
 

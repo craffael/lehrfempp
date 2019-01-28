@@ -71,6 +71,20 @@ namespace lf::assemble {
  * taking into account the orientation (direction) of the edge: dofs are ordered
  * along the edge and those "closer to endpoint 0" are numbered first. In 3D
  * many more situations have to be dealt with.
+ *
+ * # Conventions for numbering global shape functions
+ *
+ * Though not important for most finite element computations, the **current
+ * implementations**
+ * of the local-to-global d.o.f. mapping interface comply with the following
+ * rules:
+ * -# The shape functions associated to entities of higher co-dimension have
+ * smaller indices than those blonding to entities of lower co-dimension. This
+ * means that for 2D meshes d.o.f. for nodes are numbered first, then those for
+ * edges, finally those for cells.
+ * -# Within entities of the same co-dimension the _numbering follows their indexing_ through the 
+ * member function @ref lf::mesh::Mesh::Index(). 
+ * 
  */
 class DofHandler {
  public:
