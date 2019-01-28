@@ -16,7 +16,7 @@ template <base::RefElType REF_EL, int Order>
 QuadRule HardcodedQuadRule();
 }
 
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned order) {
   if (ref_el == base::RefEl::kSegment()) {
     quadOrder_t n = order / 2 + 1;
     auto [points, weights] = GaussLegendre(n);
