@@ -32,7 +32,7 @@ int main() {
 
   // load mesh of square computational domain
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::io::GmshReader reader(std::move(mesh_factory), mesh_path.string());
+  const lf::io::GmshReader reader(std::move(mesh_factory), mesh_path.string());
 
   // get pointer to mesh
   auto mesh = reader.mesh();
@@ -128,15 +128,12 @@ int main() {
                 reader.IsPhysicalEntity(edge, physical_entity_nr_dir));
       },
       mf_zero)};
-  std::cout << phi;
   // Eliminate Dirichlet dofs from linear system
   lf::assemble::fix_flagged_solution_components<double>(
       [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
         return ess_bdc_flags_values[gdof_idx];
       },
       A, phi);
-
-  std::cout << phi;
 
   // Assembly completed: Convert COO matrix into CRS format using Eigen's
   // internal conversion routines.
