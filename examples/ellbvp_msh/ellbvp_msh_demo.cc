@@ -20,22 +20,21 @@
 
 #include <boost/filesystem.hpp>
 
-
-int main(){
+int main() {
   // abbreviations for types
   using size_type = lf::base::size_type;
   using glb_idx_t = lf::assemble::glb_idx_t;
   using coord_t = Eigen::Vector2d;
 
-  //find path to mesh
+  // find path to mesh
   boost::filesystem::path here = __FILE__;
   auto mesh_path = here.parent_path() / "meshes/square.msh";
 
-  //load mesh of square computational domain
+  // load mesh of square computational domain
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::io::GmshReader reader(std::move(mesh_factory), mesh_path.string());
 
-  //get pointer to mesh
+  // get pointer to mesh
   auto mesh = reader.mesh();
 
   // Count the number of edges with von Neumann boundary condition
@@ -46,7 +45,8 @@ int main(){
       ++num_neumann;
     }
   }
-  std::cout << "boundary edges with von Neumann boundary condition: " << num_neumann << "\n";
+  std::cout << "boundary edges with von Neumann boundary condition: "
+            << num_neumann << "\n";
 
   // Count the number of edges with Dirichlet boundary condition
   auto physical_entity_nr_dir = reader.PhysicalEntityName2Nr("dir");
@@ -56,27 +56,24 @@ int main(){
       ++num_dirichlet;
     }
   }
-  std::cout << "boundary edges with Dirichlet boundary condition: " << num_dirichlet << "\n";
+  std::cout << "boundary edges with Dirichlet boundary condition: "
+            << num_dirichlet << "\n";
 
-  //set up finite element space
+  // set up finite element space
   auto fe_space =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
-  //set up dof handler
+  // set up dof handler
   const lf::assemble::DofHandler& dofh{fe_space->LocGlobMap()};
 
   // Dimension of finite element space`
   const size_type N_dofs(dofh.NoDofs());
 
-  //identity mesh function for very simple problem
-  auto identity = [](Eigen::Vector2d x) -> double {
-    return 1.;
-  };
+  // identity mesh function for very simple problem
+  auto identity = [](Eigen::Vector2d x) -> double { return 1.; };
   lf::uscalfe::MeshFunctionGlobal mf_identity{identity};
 
-  auto zero = [](Eigen::Vector2d x) -> double {
-    return 1.;
-  };
+  auto zero = [](Eigen::Vector2d x) -> double { return 1.; };
   lf::uscalfe::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
@@ -93,40 +90,42 @@ int main(){
   Eigen::Matrix<double, Eigen::Dynamic, 1> phi(N_dofs);
   phi.setZero();
 
-  // Initialize object taking care of local computations on all cells for the source f. The source is the identity function
+  // Initialize object taking care of local computations on all cells for the
+  // source f. The source is the identity function
   lf::uscalfe::ScalarLoadElementVectorProvider<double, decltype(mf_identity)>
       elvec_builder(fe_space, mf_identity);
   // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 
-  //Select von Neumann edges
-  auto edge_sel_neu = [&reader, physical_entity_nr_neu](const lf::mesh::Entity& edge) -> bool {
+  // Select von Neumann edges
+  auto edge_sel_neu =
+      [&reader, physical_entity_nr_neu](const lf::mesh::Entity& edge) -> bool {
     return reader.IsPhysicalEntity(edge, physical_entity_nr_neu);
   };
 
-  //Add contributions of von Neumann boundary conditions
+  // Add contributions of von Neumann boundary conditions
   lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_identity),
                                             decltype(edge_sel_neu)>
       elvec_builder_neu(fe_space, mf_identity, edge_sel_neu);
   AssembleVectorLocally(1, dofh, elvec_builder_neu, phi);
 
-  //Fix Dirichlet boundary conditions
-  //Select Dirichlet edges
-  auto edge_sel_dir = [&reader, physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
+  // Fix Dirichlet boundary conditions
+  // Select Dirichlet edges
+  auto edge_sel_dir =
+      [&reader, physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
     return reader.IsPhysicalEntity(edge, physical_entity_nr_dir);
   };
 
   // Obtain specification for shape functions on edges
   std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
-      rsf_edge_p =
-          fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
-  LF_ASSERT_MSG(rsf_edge_p != nullptr,
-                "FE specification for edges missing");
+      rsf_edge_p = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
+  LF_ASSERT_MSG(rsf_edge_p != nullptr, "FE specification for edges missing");
 
   // Fetch flags and values for degrees of freedom located on Dirichlet
   // edges.
-  //bd_flags strictly speaking would not be necessary here since only boundary edges
-  //are flagged as 'dir' anyway. In other cases this might however be necessary.
+  // bd_flags strictly speaking would not be necessary here since only boundary
+  // edges are flagged as 'dir' anyway. In other cases this might however be
+  // necessary.
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
   auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
       dofh, *rsf_edge_p,
@@ -151,5 +150,6 @@ int main(){
   solver.compute(A_crs);
   Eigen::VectorXd sol_vec = solver.solve(phi);
 
-  std::cout << "Computed Energy: " << sol_vec.transpose() * (A_crs * sol_vec) << "\n";
+  std::cout << "Computed Energy: " << sol_vec.transpose() * (A_crs * sol_vec)
+            << "\n";
 }
