@@ -15,7 +15,7 @@
 
 namespace lf::quad {
 
-using quadOrder_t = unsigned char;
+using quadOrder_t = unsigned int;
 
 /**
  * @brief Represents a Quadrature Rule over one of the Reference Elements

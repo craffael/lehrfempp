@@ -62,11 +62,11 @@ class Point : public mesh::Entity {
                   "Geometry must fit point");
   }
 
-  char Codim() const override { return 2; }
+  unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
-      char rel_codim) const override {
+      unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
     return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
   }

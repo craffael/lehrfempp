@@ -478,9 +478,7 @@ class RefEl {
    * @snippet ref_el.cc id
    */
   // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-  constexpr unsigned char Id() const {
-    return static_cast<unsigned char>(type_);
-  }
+  constexpr unsigned int Id() const { return static_cast<unsigned int>(type_); }
 
   ~RefEl() = default;
 

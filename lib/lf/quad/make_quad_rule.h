@@ -25,5 +25,5 @@ namespace lf::quad {
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  */
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order);
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned order);
 }  // namespace lf::quad
