@@ -74,6 +74,11 @@ int main(){
   };
   lf::uscalfe::MeshFunctionGlobal mf_identity{identity};
 
+  auto zero = [](Eigen::Vector2d x) -> double {
+    return 1.;
+  };
+  lf::uscalfe::MeshFunctionGlobal mf_zero{zero};
+
   // Matrix in triplet format holding Galerkin matrix, zero initially.
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
 
@@ -95,6 +100,56 @@ int main(){
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 
   //Select von Neumann edges
-  neu_edge_sel
+  auto edge_sel_neu = [&reader, physical_entity_nr_neu](const lf::mesh::Entity& edge) -> bool {
+    return reader.IsPhysicalEntity(edge, physical_entity_nr_neu);
+  };
 
+  //Add contributions of von Neumann boundary conditions
+  lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_identity),
+                                            decltype(edge_sel_neu)>
+      elvec_builder_neu(fe_space, mf_identity, edge_sel_neu);
+  AssembleVectorLocally(1, dofh, elvec_builder_neu, phi);
+
+  //Fix Dirichlet boundary conditions
+  //Select Dirichlet edges
+  auto edge_sel_dir = [&reader, physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
+    return reader.IsPhysicalEntity(edge, physical_entity_nr_dir);
+  };
+
+  // Obtain specification for shape functions on edges
+  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
+      rsf_edge_p =
+          fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
+  LF_ASSERT_MSG(rsf_edge_p != nullptr,
+                "FE specification for edges missing");
+
+  // Fetch flags and values for degrees of freedom located on Dirichlet
+  // edges.
+  //bd_flags strictly speaking would not be necessary here since only boundary edges
+  //are flagged as 'dir' anyway. In other cases this might however be necessary.
+  auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
+  auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
+      dofh, *rsf_edge_p,
+      [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
+        return (bd_flags(edge) && edge_sel_dir(edge));
+      },
+      mf_zero)};
+
+  // Eliminate Dirichlet dofs from linear system
+  lf::assemble::fix_flagged_solution_components<double>(
+      [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
+        return ess_bdc_flags_values[gdof_idx];
+      },
+      A, phi);
+
+  // Assembly completed: Convert COO matrix into CRS format using Eigen's
+  // internal conversion routines.
+  Eigen::SparseMatrix<double> A_crs = A.makeSparse();
+
+  // Solve linear system using Eigen's sparse direct elimination
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(A_crs);
+  Eigen::VectorXd sol_vec = solver.solve(phi);
+
+  std::cout << "Computed Energy: " << sol_vec.transpose() * (A_crs * sol_vec) << "\n";
 }
