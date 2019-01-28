@@ -122,10 +122,8 @@ int main() {
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
   auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
       dofh, *rsf_edge_p,
-      [&bd_flags, &reader,
-       physical_entity_nr_dir](const lf::mesh::Entity& edge) -> bool {
-        return (bd_flags(edge) &&
-                reader.IsPhysicalEntity(edge, physical_entity_nr_dir));
+      [&bd_flags](const lf::mesh::Entity& edge) -> bool {
+        return (bd_flags(edge);
       },
       mf_zero)};
   // Eliminate Dirichlet dofs from linear system
