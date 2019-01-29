@@ -51,7 +51,10 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     for (int i = 0; i <= order; ++i) {
       for (int j = 0; j <= order - i; ++j) {
         // integrate x^i y^j
-        EXPECT_NEAR(integrate(qr, {i, j}) / exact_value(i, j), 1, precision);
+        double qr_val = integrate(qr, {i, j});
+        EXPECT_NEAR(qr_val / exact_value(i, j), 1, precision)
+            << "Failure for x^" << i << "*y^" << j << ": " << qr_val << " <-> "
+            << exact_value(i, j);
       }
     }
     if (check_order_exact) {
@@ -74,7 +77,11 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     for (int i = 0; i <= order; ++i) {
       for (int j = 0; j <= order; ++j) {
         // integrate x^i y^j
-        EXPECT_DOUBLE_EQ(integrate(qr, {i, j}), 1. / ((1. + i) * (1. + j)));
+        double qr_val = integrate(qr, {i, j});
+        double ext_val = 1. / ((1. + i) * (1. + j));
+        EXPECT_DOUBLE_EQ(qr_val, ext_val)
+            << "Failure for x^" << i << "*y^" << j << ": " << qr_val << " <-> "
+            << ext_val;
       }
     }
 
@@ -113,6 +120,16 @@ TEST(qr_IntegrationTest, Tria) {
   for (int i = 1; i < 55; ++i) {
     checkQuadRule(make_QuadRule(base::RefEl::kTria(), i), 1e-12, i < 10);
   }
+}
+
+// Test midpoint quadrature rule for triangles
+TEST(qr_IntegrationTest, mp) {
+  checkQuadRule(make_TriaQR_EdgeMidpointRule(), 1e-12, true);
+  checkQuadRule(make_QuadQR_EdgeMidpointRule(), 1e-12, true);
+}
+
+TEST(qr_IntegrationTest, P6O4) {
+  checkQuadRule(make_TriaQR_P6O4(), 1e-12, true);
 }
 
 }  // namespace lf::quad::test
