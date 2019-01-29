@@ -97,8 +97,8 @@ int main() {
   // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 
-  // Select von Neumann edges
   if (num_neumann > 0) {
+    // Select von Neumann edges
     auto edge_sel_neu = [&reader, physical_entity_nr_neu](
                             const lf::mesh::Entity& edge) -> bool {
       return reader.IsPhysicalEntity(edge, physical_entity_nr_neu);
@@ -151,6 +151,31 @@ int main() {
   solver.compute(A_crs);
   Eigen::VectorXd sol_vec = solver.solve(phi);
 
-  std::cout << "Computed Energy: "
-            << std::sqrt(sol_vec.transpose() * (A_crs * sol_vec)) << "\n";
+  // Compute Energy
+  // Matrix in triplet format holding Stiffness matrix.
+  lf::assemble::COOMatrix<double> Stiffness(N_dofs, N_dofs);
+  lf::uscalfe::ReactionDiffusionElementMatrixProvider<
+      double, decltype(mf_identity), decltype(mf_zero)>
+      stiffness_mat_builder(fe_space, mf_identity, mf_zero);
+  lf::assemble::AssembleMatrixLocally(0, dofh, dofh, stiffness_mat_builder,
+                                      Stiffness);
+  Eigen::SparseMatrix<double> Stiffness_mat = Stiffness.makeSparse();
+
+  // Matrix in triplet format holding Stiffness matrix.
+  lf::assemble::COOMatrix<double> Mass(N_dofs, N_dofs);
+  lf::uscalfe::ReactionDiffusionElementMatrixProvider<double, decltype(mf_zero),
+                                                      decltype(mf_identity)>
+      mass_mat_builder(fe_space, mf_zero, mf_identity);
+  lf::assemble::AssembleMatrixLocally(0, dofh, dofh, mass_mat_builder, Mass);
+  Eigen::SparseMatrix<double> Mass_mat = Mass.makeSparse();
+
+  // energy_stiffness_sq = 1' A 1
+  double energy_stiffness_sq =
+      Eigen::VectorXd::Constant(N_dofs, 1.0).transpose() *
+      (Stiffness_mat * Eigen::VectorXd::Constant(N_dofs, 1.0));
+  // energy_mass_sq = \mu' M \mu
+  double energy_mass_sq = sol_vec.transpose() * Mass_mat * sol_vec;
+
+  std::cout << "Computed Energy Norm: "
+            << std::sqrt(energy_stiffness_sq + energy_mass_sq) << "\n";
 }
