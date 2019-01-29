@@ -16,4 +16,7 @@
 
 #include "sec_ord_ell_bvp.h"
 
-namespace lf::uscalfe {}
+namespace lf::uscalfe::test {
+// Definition of output control variable
+unsigned int LFELinSys_ctrl = 0;
+}  // namespace lf::uscalfe::test

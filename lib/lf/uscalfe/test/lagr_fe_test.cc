@@ -225,7 +225,8 @@ TEST(lf_fe, lf_fe_ellbvp) {
   // Set up objects taking care of local computations
   auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
   auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
-  LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
+  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
+                                         decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -242,7 +243,7 @@ TEST(lf_fe, lf_fe_ellbvp) {
               << std::endl;
     LinearFELaplaceElementMatrix::ElemMat lfe_mat{lfe_elem_mat.Eval(cell)};
     std::cout << lfe_mat << std::endl;
-    std::cout << "Element matrix from LagrangeFEEllBVPElementMatrix:"
+    std::cout << "Element matrix from ReactionDiffusionElementMatrixProvider:"
               << std::endl;
     typename decltype(comp_elem_mat)::ElemMat quad_mat{
         comp_elem_mat.Eval(cell)};
@@ -263,7 +264,7 @@ TEST(lf_fe, lf_fe_edgemass) {
 
   // Set up objects taking care of local computations
   auto gamma = MeshFunctionConstant(1.0);
-  LagrangeFEEdgeMassMatrix comp_elem_mat(fe_space, gamma);
+  MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -298,7 +299,7 @@ TEST(lf_fe, lf_fe_loadvec) {
   // Set up objects taking care of local computations
   auto f = MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
-  using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
+  using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
   // Set debugging flags
   loc_comp_t::ctrl_ = 0;                                       // 255;
@@ -320,7 +321,8 @@ TEST(lf_fe, lf_fe_loadvec) {
     LinearFELocalLoadVector<double, decltype(f)>::ElemVec lfe_vec{
         lfe_elem_vec.Eval(cell)};
     std::cout << "[ " << lfe_vec.transpose() << "] " << std::endl;
-    std::cout << "Element vector from ScalarFELocalLoadVector:" << std::endl;
+    std::cout << "Element vector from ScalarLoadElementVectorProvider:"
+              << std::endl;
     loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};
     std::cout << "[ " << quad_vec.transpose() << "] " << std::endl;
     EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
@@ -337,7 +339,7 @@ TEST(lf_fe, lf_fe_edgeload) {
 
   // Set up objects taking care of local computations
   auto g = MeshFunctionConstant(1.0);
-  ScalarFEEdgeLocalLoadVector comp_elem_vec{fe_space, g};
+  ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;

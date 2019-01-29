@@ -86,7 +86,7 @@ using StaticVar = Track<unsigned int>;
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 #define EXTERNDECLAREINFO(intvar, varname, info)              \
-  extern unsigned(intvar);                                    \
+  extern unsigned intvar;                                     \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \
                                              lf::base::ctrl_root, #info)
 

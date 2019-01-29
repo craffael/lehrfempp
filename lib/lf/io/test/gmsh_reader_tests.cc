@@ -146,4 +146,10 @@ TEST(lf_io, readTwoElementMesh) {
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  test_utils::getMeshPath("two_element_hybrid_2d.msh")));
 }
+
+TEST(lf_io, readLectureDemoMesh) {
+  // the following file contains an extra whitespace at the end of a line...
+  // check that we can still read it.
+  auto reader = test_utils::getGmshReader("lecturedemomesh.msh", 2);
+}
 }  // namespace lf::io::test
