@@ -64,7 +64,8 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
-  LagrangeFEEllBVPElementMatrix<scalar_t, decltype(alpha), decltype(gamma)>
+  ReactionDiffusionElementMatrixProvider<scalar_t, decltype(alpha),
+                                         decltype(gamma)>
       elmat_builder(fe_space, alpha, gamma);
   // Invoke assembly on cells
   AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
@@ -112,7 +113,7 @@ void SecOrdBVPLagrFEBoundaryGalMat(
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Object taking care of local computations.
-  LagrangeFEEdgeMassMatrix<scalar_t, decltype(eta), decltype(edge_sel)>
+  MassEdgeMatrixProvider<scalar_t, decltype(eta), decltype(edge_sel)>
       edgemat_builder(fe_space, eta, edge_sel);
   // Invoke assembly on edges by specifying co-dimension = 1
   AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
@@ -132,9 +133,9 @@ void SecOrdBVPLagrFEBoundaryGalMat(
  * @param f functor object for source function
  * @param phi mutable reference to a vector with scalar entries
  *
- * This function relies on the the class \ref ScalarFELocalLoadVector for local
- * computations and the function \ref lf::assemble::AssembleVectorLocally()
- * for assembly.
+ * This function relies on the the class \ref ScalarLoadElementVectorProvider
+ * for local computations and the function \ref
+ * lf::assemble::AssembleVectorLocally() for assembly.
  *
  * @note the functions performs an update of the vector
  */
@@ -149,7 +150,7 @@ void LagrFEVolumeRightHandSideVector(
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   // Object taking care of local computations. No selection of a subset
   // of cells is specified.
-  ScalarFELocalLoadVector<scalar_t, FUNCTOR> elvec_builder(fe_space, f);
+  ScalarLoadElementVectorProvider<scalar_t, FUNCTOR> elvec_builder(fe_space, f);
   // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 }
@@ -173,7 +174,7 @@ void LagrFEVolumeRightHandSideVector(
  *        for all edges on the impedance boundary part.
  * @param phi mutable reference to a vector with scalar entries
  *
- * This function relies on the the class \ref ScalarFEEdgeLocalLoadVector
+ * This function relies on the the class \ref ScalarLoadEdgeMatrixProvider
  * for local computations and the function \ref
  * lf::assemble::AssembleVectorLocally() for assembly.
  *
@@ -189,9 +190,9 @@ void LagrFEBoundaryRightHandSideVector(
   const lf::mesh::Mesh &mesh{*fe_space->Mesh()};
   // The local-to-global index map for the finite element space
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
-  // Object taking care of local computations. No selection of a subset
-  // of cells is specified.
-  ScalarFEEdgeLocalLoadVector<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
+  // Object taking care of local computations. A predicate selects the edges to
+  // be processed
+  ScalarLoadEdgeVectorProvider<scalar_t, FUNCTOR, EDGESELECTOR> elvec_builder(
       fe_space, data, edge_sel);
   // Invoke assembly on edges (codim == 1), update vector
   AssembleVectorLocally(1, dofh, elvec_builder, phi);

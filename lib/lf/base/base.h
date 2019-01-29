@@ -27,7 +27,7 @@ using sub_idx_t = unsigned int;
 /**
  * @brief type for dimensions and co-dimensions and numbers derived from them
  */
-using dim_t = unsigned char;
+using dim_t = unsigned int;
 /**
  * @brief Index flagged as invalid
  */

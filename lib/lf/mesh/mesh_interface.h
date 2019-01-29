@@ -35,13 +35,13 @@ class Mesh {
    *        equivalently the maximum dimension of the reference elements
    *        present in the mesh.
    */
-  virtual char DimMesh() const = 0;
+  virtual unsigned DimMesh() const = 0;
 
   /**
    * @brief The dimension of the Euclidean space in which the mesh is
    *        embedded.
    */
-  virtual char DimWorld() const = 0;
+  virtual unsigned DimWorld() const = 0;
 
   /**
    * @brief All entities of a given codimension.
@@ -54,14 +54,14 @@ class Mesh {
    * co-dimension Hence, all cells of a mesh are covered by the range returned
    * when giving co-dimension 0, regardless of their concrete shape.
    */
-  virtual base::ForwardRange<const Entity> Entities(char codim) const = 0;
+  virtual base::ForwardRange<const Entity> Entities(unsigned codim) const = 0;
 
   /**
    * @brief The number of Entities that have the given codimension.
    * @param codim The codimension of the entities that should be counted.
    * @return That number of entities that have the given codimension.
    */
-  virtual size_type NumEntities(char codim) const = 0;
+  virtual size_type NumEntities(unsigned codim) const = 0;
 
   /**
    * @brief Tells number of entities of a particular topological/geometric type

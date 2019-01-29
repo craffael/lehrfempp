@@ -375,7 +375,7 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Tria& operator=(const FeLagrangeO1Tria&) = default;
   FeLagrangeO1Tria& operator=(FeLagrangeO1Tria&&) noexcept = default;
   FeLagrangeO1Tria() = default;
-  virtual ~FeLagrangeO1Tria() = default;
+  ~FeLagrangeO1Tria() override = default;
 
   base::RefEl RefEl() const override { return base::RefEl::kTria(); }
 
@@ -469,7 +469,7 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Quad& operator=(const FeLagrangeO1Quad&) = default;
   FeLagrangeO1Quad& operator=(FeLagrangeO1Quad&&) noexcept = default;
   FeLagrangeO1Quad() = default;
-  virtual ~FeLagrangeO1Quad() = default;
+  ~FeLagrangeO1Quad() override = default;
 
   base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
 
@@ -573,7 +573,7 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Segment& operator=(const FeLagrangeO1Segment&) = default;
   FeLagrangeO1Segment& operator=(FeLagrangeO1Segment&&) noexcept = default;
   FeLagrangeO1Segment() = default;
-  virtual ~FeLagrangeO1Segment() = default;
+  ~FeLagrangeO1Segment() override = default;
 
   base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
 

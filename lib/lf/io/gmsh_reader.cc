@@ -674,11 +674,12 @@ MshFile readGMshFile(const std::string& filename) {
     // Text file
     vec3 = qi::double_ >> ' ' >> qi::double_ >> ' ' >> qi::double_;
     node = qi::uint_ >> ' ' >> vec3 >> qi::eol;
-    elementText %=
-        qi::int_ > ' ' > qi::int_ > ' ' > qi::omit[qi::int_[qi::_a = qi::_1]] >
-        ' ' > qi::int_ > ' ' > qi::int_ > ' ' >
-        ((qi::eps(_a > 2) >> omit[qi::int_] >> ' ') || qi::eps) >
-        qi::repeat(qi::_a - 3)[qi::int_ >> ' '] > (qi::uint_ % ' ') > qi::eol;
+    elementText %= qi::int_ > ' ' > qi::int_ > ' ' >
+                   qi::omit[qi::int_[qi::_a = qi::_1]] > ' ' > qi::int_ > ' ' >
+                   qi::int_ > ' ' >
+                   ((qi::eps(_a > 2) >> omit[qi::int_] >> ' ') || qi::eps) >
+                   qi::repeat(qi::_a - 3)[qi::int_ >> ' '] > (qi::uint_ % ' ') >
+                   *(qi::blank) > qi::eol;
     elementGroup %= "$Elements" > qi::eol >
                     qi::omit[qi::uint_[phoenix::reserve(qi::_val, qi::_1),
                                        qi::_a = qi::_1]] > qi::eol >

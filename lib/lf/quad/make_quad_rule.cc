@@ -16,7 +16,7 @@ template <base::RefElType REF_EL, int Order>
 QuadRule HardcodedQuadRule();
 }
 
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned order) {
   if (ref_el == base::RefEl::kSegment()) {
     quadOrder_t n = order / 2 + 1;
     auto [points, weights] = GaussLegendre(n);
@@ -39,7 +39,7 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 1>();
       case 2:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 2>();
-      case 3:  // user order 4 rule instead
+      case 3:  // use order 4 rule instead
       case 4:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 4>();
       case 5:
@@ -153,4 +153,87 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order) {
   LF_VERIFY_MSG(
       false, "No Quadrature rules implemented for this reference element yet.");
 }
+
+QuadRule make_TriaQR_MidpointRule() {
+  Eigen::MatrixXd points(2, 1);
+  Eigen::VectorXd weights(1);
+
+  points(0, 0) = 1.0 / 3.0;
+  points(1, 0) = 1.0 / 3.0;
+
+  weights(0) = 0.5;
+
+  return QuadRule(base::RefEl::kTria(), std::move(points), std::move(weights),
+                  1);
+}
+
+QuadRule make_TriaQR_EdgeMidpointRule() {
+  Eigen::MatrixXd points(2, 3);
+  Eigen::VectorXd weights(3);
+
+  points(0, 0) = 0.5;
+  points(1, 0) = 0.0;
+  points(0, 1) = 0.5;
+  points(1, 1) = 0.5;
+  points(0, 2) = 0.0;
+  points(1, 2) = 0.5;
+
+  weights(0) = 0.16666666666666665741;
+  weights(1) = 0.16666666666666665741;
+  weights(2) = 0.16666666666666665741;
+
+  return QuadRule(base::RefEl::kTria(), std::move(points), std::move(weights),
+                  2);
+}
+
+QuadRule make_QuadQR_EdgeMidpointRule() {
+  Eigen::MatrixXd points(2, 4);
+  Eigen::VectorXd weights(4);
+
+  points(0, 0) = 0.5;
+  points(1, 0) = 0.0;
+  points(0, 1) = 1.0;
+  points(1, 1) = 0.5;
+  points(0, 2) = 0.5;
+  points(1, 2) = 1.0;
+  points(0, 3) = 0.0;
+  points(1, 3) = 0.5;
+
+  weights(0) = 0.25;
+  weights(1) = 0.25;
+  weights(2) = 0.25;
+  weights(3) = 0.25;
+
+  return QuadRule(base::RefEl::kQuad(), std::move(points), std::move(weights),
+                  1);
+}
+
+QuadRule make_TriaQR_P6O4() {
+  Eigen::MatrixXd points(2, 6);
+  Eigen::VectorXd weights(6);
+
+  points(0, 0) = 0.5;
+  points(1, 0) = 0.0;
+  points(0, 1) = 0.5;
+  points(1, 1) = 0.5;
+  points(0, 2) = 0.0;
+  points(1, 2) = 0.5;
+  points(0, 3) = 1.0 / 6.0;
+  points(1, 3) = 1.0 / 6.0;
+  points(0, 4) = 1.0 / 6.0;
+  points(1, 4) = 2.0 / 3.0;
+  points(0, 5) = 2.0 / 3.0;
+  points(1, 5) = 1.0 / 6.0;
+
+  weights << 1.0, 1.0, 1.0, 9.0, 9.0, 9.0;
+  weights /= 60.0;
+
+  return QuadRule(base::RefEl::kTria(), std::move(points), std::move(weights),
+                  3);
+}
+
+QuadRule make_TriaQR_P7O6() {
+  return detail::HardcodedQuadRule<base::RefEl::kTria(), 5>();
+}
+
 }  // namespace lf::quad
