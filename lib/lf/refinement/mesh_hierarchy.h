@@ -7,6 +7,7 @@
  *
  */
 
+#include <iostream>
 #include "hybrid2d_refinement_pattern.h"
 
 namespace lf::refinement {
@@ -130,6 +131,16 @@ class MeshHierarchy {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
+  }
+
+  /**
+   * @brief Provides array of shared pointers to meshes contained in the
+   * hierarchy
+   *
+   * @return vector of shared pointers to lf::mesh:Mesh objects
+   */
+  std::vector<std::shared_ptr<const mesh::Mesh>> getMeshes() const {
+    return {meshes_.begin(), meshes_.end()};
   }
 
   /**
@@ -264,6 +275,20 @@ class MeshHierarchy {
    *       is still in use somewhere else in the code.
    */
   void Coarsen();
+  /**
+   * @brief Output of information about the mesh hierarchy.
+   *
+   * @param o output stream, can be `std::cout` or similar
+   * @return output stream
+   *
+   * The type of output is controlled by the `ctrl_` static control
+   * variable. If its second bit is set, the output function of the
+   * mesh class is used.
+   *
+   * This is a rudimentary implementation and should be extended.
+   *
+   */
+  virtual std::ostream &PrintInfo(std::ostream &o) const;
 
   virtual ~MeshHierarchy() = default;
 
@@ -322,14 +347,25 @@ class MeshHierarchy {
  public:
   /** @brief diagnostics control variable */
   static unsigned int output_ctrl_;
+  /** @brief Output control variable */
+  static unsigned int ctrl_;
+  static const unsigned int kout_meshinfo = 2;
 };
+
+/**
+ * @brief output operator for MeshHierarchy
+ */
+inline std::ostream &operator<<(std::ostream &o,
+                                const MeshHierarchy &multimesh) {
+  return multimesh.PrintInfo(o);
+}
 
 template <typename Marker>
 void MeshHierarchy::MarkEdges(Marker &&marker) {
   // Retrieve the finest mesh in the hierarchy
   const mesh::Mesh &finest_mesh(*meshes_.back());
 
-  LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.Size(1),
+  LF_VERIFY_MSG(edge_marked_.back().size() == finest_mesh.NumEntities(1),
                 "Length  mismatch for edge flag array");
 
   // Run through the edges = entities of co-dimension 1
@@ -337,7 +373,108 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
     glb_idx_t edge_index = finest_mesh.Index(edge);
     (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
   }
-}
+}  // end MeshHierarchy::MarkEdges
+
+/**
+ * @brief Generated a sequence of nested 2D hybrid mehes by regular or
+ * barycentric refinement
+ *
+ * @param mesh_p pointer to the coarsest mesh, from which refinment will start
+ * @param ref_lev desired number of refinement steps
+ * @param ref_pat at selector for type of uniform refinement: default is
+ * rp_regular, rp_barycentric choses barycentric refinement.
+ * @return shared pointer to a MeshHierarchy object.
+ *
+ * Relies on lf::mesh::hybrid2d::MeshFactory as builder class for mesh entities.
+ * Invokes the method MeshHierarhy::RefineRegular() for refinement.
+ */
+std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
+    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    RefPat ref_pat = RefPat::rp_regular);
+
+/**
+ * @brief Utility class: selection of entities according to the position of
+ * their midpoint
+ * @tparam POSPRED predicate depending on physical point location
+ * @param pos_pred object for true/false classification of of physicals points
+ */
+template <typename POSPRED>
+class EntityCenterPositionSelector {
+ public:
+  EntityCenterPositionSelector(const EntityCenterPositionSelector &) = default;
+  EntityCenterPositionSelector(EntityCenterPositionSelector &&) noexcept =
+      default;
+  EntityCenterPositionSelector &operator=(
+      const EntityCenterPositionSelector &) = default;
+  EntityCenterPositionSelector &operator=(
+      EntityCenterPositionSelector &&) noexcept = default;
+  /**
+   * @brief Preparing reference coordinates of "centers"
+   *
+   * @param pos_pred object for true/false classification of physicals points
+   */
+  explicit EntityCenterPositionSelector(POSPRED pos_pred)
+      : pos_pred_(std::move(pos_pred)) {}
+  /** @brief Operator testing location of "center"
+   *  @param ent reference to a mesh entity
+   */
+  bool operator()(const lf::mesh::Entity &ent) const {
+    const lf::base::RefEl ref_el_type = ent.RefEl();
+    // Obtain shape of entity
+    lf::geometry::Geometry *geo_ptr = ent.Geometry();
+    LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
+    switch (ref_el_type) {
+      case lf::base::RefEl::kPoint(): {
+        Eigen::MatrixXd pos(geo_ptr->Global(kpoint_center_));
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kSegment(): {
+        Eigen::MatrixXd pos(geo_ptr->Global(kedge_center_));
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kTria(): {
+        Eigen::MatrixXd pos(geo_ptr->Global(ktria_center_));
+        return pos_pred_(pos);
+      }
+      case lf::base::RefEl::kQuad(): {
+        Eigen::MatrixXd pos(geo_ptr->Global(kquad_center_));
+        return pos_pred_(pos);
+      }
+      default: {
+        LF_ASSERT_MSG(false, "Illegal entity type");
+        break;
+      }
+    }  // end switch
+    return false;
+  }
+
+  virtual ~EntityCenterPositionSelector() = default;
+
+ private:
+  /** object for true/false classification of of physicals points */
+  POSPRED pos_pred_;
+
+  static const Eigen::MatrixXd kpoint_center_;
+  static const Eigen::MatrixXd kedge_center_;
+  static const Eigen::MatrixXd ktria_center_;
+  static const Eigen::MatrixXd kquad_center_;
+};
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kpoint_center_ =
+    Eigen::MatrixXd::Zero(0, 1);
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kedge_center_ =
+    (Eigen::MatrixXd(1, 1) << 0.5).finished();
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::ktria_center_ =
+    (Eigen::MatrixXd(2, 1) << 0.33, 0.33).finished();
+
+template <typename POSPRED>
+const Eigen::MatrixXd EntityCenterPositionSelector<POSPRED>::kquad_center_ =
+    (Eigen::MatrixXd(2, 1) << 0.5, 0.5).finished();
 
 }  // namespace lf::refinement
 

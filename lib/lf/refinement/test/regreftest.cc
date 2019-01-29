@@ -11,7 +11,7 @@
 
 namespace lf::refinement::test {
 
-static const int testmesh_selector = 3;
+static const int testmesh_selector = 0;
 
 TEST(RegRefTest, RegRef) {
   std::cout << "TEST: Uniform regular refinement" << std::endl;
@@ -50,7 +50,7 @@ TEST(RegRefTest, RegRef) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "fine_mesh.m");
+  io::writeMatlab(*fine_mesh, "fine_mesh.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "fine_mesh_pi.m");
@@ -60,13 +60,12 @@ TEST(RegRefTest, RegRef) {
 
   // Output mesh geometry in TikZ format
   // Enable, once function is available in master branch
-  lf::mesh::utils::writeTikZ(
-      *fine_mesh, "fine_mesh.tikz",
-      lf::mesh::utils::TikzOutputCtrl::RenderCells |
-          lf::mesh::utils::TikzOutputCtrl::CellNumbering |
-          lf::mesh::utils::TikzOutputCtrl::VerticeNumbering |
-          lf::mesh::utils::TikzOutputCtrl::NodeNumbering |
-          lf::mesh::utils::TikzOutputCtrl::EdgeNumbering);
+  lf::io::writeTikZ(*fine_mesh, "fine_mesh.tikz",
+                    lf::io::TikzOutputCtrl::RenderCells |
+                        lf::io::TikzOutputCtrl::CellNumbering |
+                        lf::io::TikzOutputCtrl::VerticeNumbering |
+                        lf::io::TikzOutputCtrl::NodeNumbering |
+                        lf::io::TikzOutputCtrl::EdgeNumbering);
 }  // End RegRefTest::RegRef
 
 TEST(RegRefTest, BarycentricRef) {
@@ -105,7 +104,7 @@ TEST(RegRefTest, BarycentricRef) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "barycentric_ref.m");
+  io::writeMatlab(*fine_mesh, "barycentric_ref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "barycentric_ref_pi.m");
@@ -163,7 +162,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "allref.m");
+  io::writeMatlab(*fine_mesh, "allref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "allref_pi.m");
@@ -225,7 +224,7 @@ TEST(LocRefTest, LocalRefinement) {
   checkFatherChildRelations(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
-  lf::mesh::utils::writeMatlab(*fine_mesh, "locref.m");
+  io::writeMatlab(*fine_mesh, "locref.m");
 
   std::cout << "Writing parent information" << std::endl;
   WriteMatlabLevel(multi_mesh, 1, "locref_pi.m");
@@ -309,9 +308,9 @@ TEST(LocRefTest, MultipleRefinement) {
 
     std::shared_ptr<const mesh::Mesh> mesh = multi_mesh.getMesh(n_levels - 1);
 
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
-              << " cells," << std::endl;
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": "
+              << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
+              << " nodes, " << mesh->NumEntities(0) << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(*mesh);
@@ -336,21 +335,9 @@ TEST(LocRefTest, MultipleRefinement) {
   WriteMatlab(multi_mesh, "multiref");
 }
 
-TEST(LocRefTest, MixedRefinement) {
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
-  std::cout << "TEST: Mixed local/global refinement" << std::endl;
-
-  // Generate the standard hybrid test mesh
-  auto mesh_p =
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
-  // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
-  // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
-
+// Auxiliary function: several steps of refinement using different
+// refinement policies
+void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
       marker =
@@ -371,6 +358,33 @@ TEST(LocRefTest, MixedRefinement) {
   // Fourth step: local refinement again
   multi_mesh.MarkEdges(marker);
   multi_mesh.RefineMarked();
+}
+
+// Test different refinement type and their interaction for
+// meshes provided by lf::mesh::test_utils::GenerateHybriod2DTestMesh()
+void test_hybrid_2d_meshes(int selector) {
+  // Setting appropriate output controls
+  lf::mesh::test_utils::watertight_mesh_ctrl = 0;
+  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+
+  LF_VERIFY_MSG(
+      (selector >= 0) &&
+          (selector <= lf::mesh::test_utils::GenerateHybrid2DTestMesh_maxsel),
+      "Illegal selector value " << selector);
+  std::cout << "<<< Mixed refinement test for test mesh " << selector
+            << std::endl;
+
+  // Generate one of the standard 2D hybrid test meshes
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
+  // Output mesh information
+  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  // Build mesh hierarchy
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+
+  // Several steps of refinement
+  refine_for_testing(multi_mesh);
 
   // Check mesh integrity
   const size_type n_levels = multi_mesh.NumLevels();
@@ -380,14 +394,14 @@ TEST(LocRefTest, MixedRefinement) {
     std::shared_ptr<mesh::Mesh> mesh = multi_mesh.getMesh(l);
 
     std::cout << "### LEVEL " << l << " ####" << std::endl;
-    std::cout << "#### Mesh on level " << n_levels - 1 << ": " << mesh->Size(2)
-              << " nodes, " << mesh->Size(1) << " nodes, " << mesh->Size(0)
-              << " cells," << std::endl;
+    std::cout << "#### Mesh on level " << n_levels - 1 << ": "
+              << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
+              << " nodes, " << mesh->NumEntities(0) << " cells," << std::endl;
 
     std::cout << "Checking mesh completeness" << std::endl;
     lf::mesh::test_utils::checkMeshCompleteness(*mesh);
 
-    std::cout << ": Checking geometry compatibulity: " << std::flush;
+    std::cout << ": Checking geometry compatibility: " << std::flush;
     auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh, false);
     EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
     if (fails.empty()) {
@@ -405,7 +419,70 @@ TEST(LocRefTest, MixedRefinement) {
     std::string filename = std::string("mixedref") + level_asc.str() + ".vtk";
     lf::io::VtkWriter(mesh, filename);
   }  // end loop over levels
-  WriteMatlab(multi_mesh, "mixedref");
-}  // end mixed refinement test
+
+  // Output of information about mesh hierarchy for postprocessing with MATLAB
+  std::stringstream tmp;
+  tmp << "mixedref_" << selector;
+  WriteMatlab(multi_mesh, tmp.str());
+}
+
+TEST(LocRefTest, mixed_ref_0) {
+  test_hybrid_2d_meshes(0);
+}  // end mixed refinement test 0
+
+TEST(LocRefTest, mixed_ref_1) {
+  test_hybrid_2d_meshes(1);
+}  // end mixed refinement test 1
+
+TEST(LocRefTest, mixed_ref_2) {
+  test_hybrid_2d_meshes(2);
+}  // end mixed refinement test 2
+
+TEST(LocRefTest, mixed_ref_3) {
+  test_hybrid_2d_meshes(3);
+}  // end mixed refinement test 3
+
+TEST(LocRefTest, mixed_ref_4) {
+  test_hybrid_2d_meshes(4);
+}  // end mixed refinement test 4
+
+TEST(LocRefTest, mixed_ref_5) {
+  test_hybrid_2d_meshes(5);
+}  // end mixed refinement test 5
+
+TEST(LocRefTest, AffMeshRef) {
+  lf::mesh::Entity::output_ctrl_ = 1;
+  std::cout << "TEST: Refinement of an affine mesh" << std::endl;
+  // Generate an hybriod mesh of [0,3]^2, comprising only affine cells
+  // (selector = 5)
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(5);
+  // Output mesh information
+  std::cout << *mesh_p << std::endl;
+  // Build mesh hierarchy
+  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+
+  // Several step of refinement
+  refine_for_testing(multi_mesh);
+
+  // Check mesh integrity
+  const size_type n_levels = multi_mesh.NumLevels();
+  for (int l = 0; l < n_levels; ++l) {
+    // Verify that all cells are still affine
+    const lf::mesh::Mesh &mesh{*multi_mesh.getMesh(l)};
+    // Loop over all cells
+    double dom_vol = 0.0;
+    for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+      lf::geometry::Geometry *geo_ptr{cell.Geometry()};
+      LF_ASSERT_MSG(geo_ptr != nullptr, "No geometry for cell " << cell);
+      EXPECT_TRUE(geo_ptr->isAffine())
+          << "Level " << l << ", cell " << cell << " not affine!";
+      dom_vol += lf::geometry::Volume(*geo_ptr);
+    }
+    EXPECT_NEAR(dom_vol, 9.0, 1.0E-4)
+        << " Domain volume " << dom_vol << " != 9.0";
+  }
+}
 
 }  // namespace lf::refinement::test

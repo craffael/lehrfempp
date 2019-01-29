@@ -30,7 +30,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim)),
+        data_(mesh_->NumEntities(codim)),
         codim_(codim) {}
 
   /**
@@ -45,7 +45,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
-        data_(mesh_->Size(codim), init),
+        data_(mesh_->NumEntities(codim), init),
         codim_(codim) {}
 
   /**
@@ -115,7 +115,7 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
 }
 
 /**
- * @brief Create a new CodimMeshDataSet that attached data of type `T` with
+ * @brief Create a new CodimMeshDataSet that attaches data of type `T` with
  *        every entity with codimension `codim`. The data of every entity
  *        is initialized to the given value (`T` must be copyable!)
  * @param mesh The mesh that contains the entities.

@@ -25,7 +25,25 @@ namespace lf::quad {
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  */
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order);
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned order);
+
+/** @defgroup namedquad Special "named" quadrature rules
+ * These functions provide a number of special quadrature rules
+ * in the forms of @ref QuadRule objects. They are meant to be
+ * used in low-order finite element methods when the quadrature
+ * rules can easily fixed a-priori and should feature a special
+ * location of quadrature points as is required, e.g., for mass-lumping
+ * technoiques.
+ * @{
+ */
+
+/** @brief midpoint quadrature rule for triangles
+ *
+ * This quadrature rule relies on the center of gravity as single quadrature
+ * node
+ */
+QuadRule make_TriaQR_MidpointRule();
+inline QuadRule make_TriaQR_P1O2() { return make_TriaQR_MidpointRule(); }
 
 /** @brief edge midpoint quadrature rule for reference triangles
  *
@@ -35,6 +53,23 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned char order);
  * The rule is exact for quadratic bi-variate polynomials
  */
 QuadRule make_TriaQR_EdgeMidpointRule();
+inline QuadRule make_TriaQR_P3O3() { return make_TriaQR_EdgeMidpointRule(); }
+
+/** @brief Seven point triangular quadrature rule of order 6 */
+QuadRule make_TriaQR_P7O6();
+
+/** @brief Six point triangular quadrature rule of order 4 */
+QuadRule make_TriaQR_P6O4();
+
+/** @brief midpoint quadrature rule for quadrilaterals
+ *
+ * This quadrature rule relies on the center of gravity as single quadrature
+ * node. It agrees with the lowest-order tensor product Gauss rule
+ */
+inline QuadRule make_QuadQR_MidpointRule() {
+  return make_QuadRule(lf::base::RefEl::kQuad(), 1);
+}
+inline QuadRule make_QuadQR_P1O2() { return make_QuadQR_MidpointRule(); }
 
 /** @brief edge midpoint quadrature rule for unit square (= reference quad)
  *
@@ -44,7 +79,16 @@ QuadRule make_TriaQR_EdgeMidpointRule();
  * The rule is exact for bilinear polynomials.
  */
 QuadRule make_QuadQR_EdgeMidpointRule();
+inline QuadRule make_QuadQR_P4O2() { return make_QuadQR_EdgeMidpointRule(); }
 
-/** @brief Seven point triangular quadrature rule of order 6 */
-QuadRule make_TriaQR_P7O6();
+/** @brief Fourth-order tensor product Gauss rule for quadrilaterals
+ *
+ * Rule uses four interior quadrature nodes and is exact for tensor-product
+ * polynomials up to degree 3.
+ */
+inline QuadRule make_QuadQR_P4O4() {
+  return make_QuadRule(lf::base::RefEl::kQuad(), 3);
+}
+
+/** @} */
 }  // namespace lf::quad

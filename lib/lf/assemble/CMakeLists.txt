@@ -10,10 +10,10 @@ set(sources
   fix_dof.h
   fix_dof.cc
 )
-
-add_library(lf.assemble ${sources})
+lf_add_library(lf.assemble ${sources})
 target_link_libraries(lf.assemble PUBLIC
                       Eigen3::Eigen lf.mesh lf.base lf.geometry lf.mesh.utils)
-target_compile_features(lf.assemble PUBLIC cxx_std_17)
 
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()

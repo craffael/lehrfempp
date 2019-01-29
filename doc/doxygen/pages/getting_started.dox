@@ -1,0 +1,131 @@
+/**
+ @page getting_started Getting Started
+ 
+ 
+ 
+ 
+ This tutorial shows you how you can call LehrFEM++ from your own code in a few simple steps.
+ We will make a very simple program that calls LehrFEM++ and prints the number of nodes of a triangle to the console.
+ 
+ \note Because LehrFEM++ relies on the [Hunter Package Manager](https://github.com/ruslo/hunter), there is no need to download LehrFEM++ itself!
+ 
+ ### 1. Check Prerequisites
+ 
+ You only need a recent version of [CMake](https://cmake.org/download/) (>= 3.10) and one of the supported compilers:
+ - **Linux:**
+   - Clang Version >= 5 (tests run with clang-5.0)
+   - GCC Version >= 7 (tests run with g++-7)
+ - **OSX:**
+   - XCode >= 9.4 (tests run with XCode 9.4)
+ - **Windows:**
+   - Visual Studio 2017 or later is required (tests run with VS2017), only x64 is supported!
+ 
+ 
+ ### 2. Create a new CMake project
+ 1. Create a folder `getting_started` somewhere on your system and create the subfolder `cmake` in it, e.g.
+ ```
+ > mkdir getting_started
+ > cd getting_started
+ > mkdir cmake
+ ```
+ 2. Create the empty file `getting_started/main.cc`. Later on, we will add the `main()` function to this file and call LehrFEM++ from there.
+ 3. Download the [`HunterGate.cmake`](https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake) file into `getting_started/cmake`
+ ```
+ > cd cmake
+ > wget https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ ```
+On Mac OSX use curl instead:
+ ```
+ > cd cmake
+ > curl -O https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ ```
+   This file is needed to setup the hunter package manager (which runs completly inside CMake).
+ 4. Create the file `getting_started/CMakeLists.txt` with the following content
+ ```
+cmake_minimum_required(VERSION 3.10)
+
+### Hunter package manager ###
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.23.65.tar.gz"
+    SHA1 "00e252171605c290390a3cc90a372beeeb406d3c"
+)
+
+
+### Setup CMake Project ###
+project(GettingStarted)
+
+# download dependencies
+hunter_add_package(lehrfempp)
+find_package(lehrfempp CONFIG REQUIRED)
+
+# define executable
+add_executable(getting_started main.cc)
+
+# link executable with LehrFEM++ module lf::base
+target_link_libraries(getting_started LF::lf.base) 
+ ```
+   Note that this `CMakeLists.txt` links only with the `lf.base` module of LehrFEM++. Because we only want to print the number of nodes of a triangle, it suffices to link to the `lf.base` module.
+   However, if you want to use more functionality, you will probably need to link to other LehrFEM++ modules as well.
+   See \ref modules_ for more info about LehrFEM++ modules and [__list of namespaces__](./namespaces.html) for a list of all LehrFEM++ modules.
+
+ 5. Your folder structure should look as follows:
+ ```
+ getting_started
+ +-- CMakeLists.txt
+ +-- main.cc
+ +-- cmake
+ |   +-- HunterGate.cmake
+ ```
+ 6. Use CMake to create the makefiles for you. Depending on your platform, you have a [few different options](https://cmake.org/runningcmake/). 
+   It is strongly suggested that you do an out-of-source build, i.e. that you place your binaries in a folder that is different from `getting_started`.
+   E.g. on linux:
+ ```
+ > cd getting_started
+ > mkdir bin
+ > cd bin
+ > cmake .. 
+ ```
+   The first time you run CMake, it will take a while because hunter will download all dependencies (LehrFEM++ and its dependencies) and compile them.
+   
+
+### 3. Write a program
+ Here we will write a very simple program that prints the number of nodes of a triangle to the console. 
+ For this we write the following code into the previously created `main.cc`:
+ ```
+#include <iostream>
+
+// Include the lf::base module
+#include <lf/base/base.h>
+
+
+int main() {
+  std::cout << lf::base::RefEl::kTria().NumNodes() << std::endl;
+  return 0;
+}
+ ```
+ 
+ Afterwards compile your program and run it. Example on linux:
+ ```
+ > cd getting_started/bin
+ > make
+ > ./getting_started
+ ```
+ 
+ 
+ 
+### Notes about versioning
+The LehrFEM++ team releases new versions of LehrFEM++ on hunter when important changes happen. 
+These releases are _tagged_ on github and you can see all releases [here](https://github.com/craffael/lehrfempp/releases).
+
+It's important to understand that the concrete `HunterGate` command that you use in your CMakeLists will determine the versions of LehrFEM++ that you can use in your code.
+If you want to use the latest version of LehrFEM++, you should also use the [latest `HunterGate` command](https://github.com/ruslo/hunter/releases).
+Hunter allows you to select the [LehrFEM++ version](https://github.com/craffael/lehrfempp/releases) explictly, see [here](https://github.com/ruslo/hunter/wiki/example.custom.config.id).
+If you don't specify a version explicitly, the most recent version which is available with your current `HunterGate` command, is used.
+
+
+ 
+ 
+ 
+
+*/

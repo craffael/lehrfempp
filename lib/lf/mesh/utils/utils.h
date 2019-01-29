@@ -24,7 +24,5 @@ namespace lf::mesh::utils {}
 #include "torus_mesh_builder.h"
 #include "tp_quad_mesh_builder.h"
 #include "tp_triag_mesh_builder.h"
-#include "write_matlab.h"
-#include "write_tikz.h"
 
 #endif  // __ecc2ab2ad7184f42a672a2b9d490f541

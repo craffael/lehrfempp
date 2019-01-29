@@ -11,7 +11,7 @@
 
 namespace lf::mesh::hybrid2d {
 base::RandomAccessRange<const mesh::Entity> Segment::SubEntities(
-    char rel_codim) const {
+    unsigned rel_codim) const {
   // An impressive way to do double dereferencing!
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   if (rel_codim == 1) {

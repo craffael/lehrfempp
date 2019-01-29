@@ -102,13 +102,13 @@ jobs:
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode9.4
+    osx_image: xcode10.1
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode9.4
+    osx_image: xcode10.1
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
@@ -120,12 +120,21 @@ jobs:
       apt:
         sources:
         - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-6.0
         packages:
-        - doxygen
         - graphviz
         - g++-7
-    script: "cd $TRAVIS_BUILD_DIR/doc/doxygen\nexport CXX=g++-7\ncmake -H. -BBuild
-      \ncd Build\nmake doxygen\n"
+        - flex
+        - bison
+        - graphviz
+        - libclang-common-6.0-dev
+    script: |
+      . ./travis/install_doxygen.sh
+      cd $TRAVIS_BUILD_DIR/doc/doxygen
+      export CXX=g++-7
+      cmake -H. -BBuild
+      cd Build
+      make doxygen
     deploy:
       provider: pages
       skip_cleanup: true

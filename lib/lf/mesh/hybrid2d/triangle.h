@@ -65,7 +65,7 @@ class Triangle : public mesh::Entity {
                     const Segment* edge1, const Segment* edge2);
 
   /** @brief an edge is an entity of co-dimension 1 */
-  char Codim() const override { return 0; }
+  unsigned Codim() const override { return 0; }
 
   /** @brief access to index of an entity */
   size_type index() const { return index_; }
@@ -78,7 +78,7 @@ class Triangle : public mesh::Entity {
      - for rel_codim == 2: return 3-range containing the edges
    */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
-      char rel_codim) const override;
+      unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation

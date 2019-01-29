@@ -81,7 +81,7 @@ Quadrilateral::Quadrilateral(size_type index,
 
 // Access to sub-entities
 base::RandomAccessRange<const mesh::Entity> Quadrilateral::SubEntities(
-    char rel_codim) const {
+    unsigned rel_codim) const {
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   switch (rel_codim) {
     case 2:

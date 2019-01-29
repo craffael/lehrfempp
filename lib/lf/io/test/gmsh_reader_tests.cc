@@ -21,9 +21,9 @@ using size_type = mesh::Mesh::size_type;
 
 void checkTwoElementMesh(const GmshReader& reader) {
   auto mesh = reader.mesh();
-  EXPECT_EQ(mesh->Size(0), 2);
-  EXPECT_EQ(mesh->Size(1), 6);
-  EXPECT_EQ(mesh->Size(2), 5);
+  EXPECT_EQ(mesh->NumEntities(0), 2);
+  EXPECT_EQ(mesh->NumEntities(1), 6);
+  EXPECT_EQ(mesh->NumEntities(2), 5);
 
   // codim=2 checks:
   auto entities2 = mesh->Entities(2);
@@ -145,5 +145,11 @@ TEST(lf_io, readTwoElementMesh) {
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  test_utils::getMeshPath("two_element_hybrid_2d.msh")));
+}
+
+TEST(lf_io, readLectureDemoMesh) {
+  // the following file contains an extra whitespace at the end of a line...
+  // check that we can still read it.
+  auto reader = test_utils::getGmshReader("lecturedemomesh.msh", 2);
 }
 }  // namespace lf::io::test

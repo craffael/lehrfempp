@@ -4,17 +4,21 @@ set(sources
   io.h
   vtk_writer.h
   vtk_writer.cc
+  write_matlab.h
+  write_matlab.cc
   write_matplotlib.h
   write_matplotlib.cc
+  write_tikz.h
+  write_tikz.cc
 )
 
-add_library(lf.io ${sources})
+lf_add_library(lf.io ${sources})
 target_link_libraries(lf.io PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.utils)
-target_compile_features(lf.io PUBLIC cxx_std_17)
-if(WIN32) 
+if(WIN32 AND NOT MINGW) 
   target_compile_options(lf.io PRIVATE "/bigobj")
 endif()
 
-
-add_subdirectory(test)
+if(LF_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
 add_subdirectory(test_utils)

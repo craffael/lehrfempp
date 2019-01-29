@@ -37,7 +37,9 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
           << "Failure for i = " << i;
     }
     // try integrate one order too high:
-    EXPECT_GT(std::abs(integrate(qr, {order + 1}) - 1. / (2. + order)), 1e-10);
+    EXPECT_GT(std::abs(integrate(qr, {static_cast<int>(order) + 1}) -
+                       1. / (2. + order)),
+              1e-10);
   } else if (qr.RefEl() == base::RefEl::kTria()) {
     // TRIA
     ///////////////////////////////////////////////////////////////////////////
@@ -49,15 +51,18 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     for (int i = 0; i <= order; ++i) {
       for (int j = 0; j <= order - i; ++j) {
         // integrate x^i y^j
-        EXPECT_NEAR(integrate(qr, {i, j}) / exact_value(i, j), 1, precision);
+        double qr_val = integrate(qr, {i, j});
+        EXPECT_NEAR(qr_val / exact_value(i, j), 1, precision)
+            << "Failure for x^" << i << "*y^" << j << ": " << qr_val << " <-> "
+            << exact_value(i, j);
       }
     }
     if (check_order_exact) {
       // Make sure that at least on of the order+1 polynomials is not integrated
       // correctly
       bool one_fails = false;
-      for (int i = -1; i <= order; ++i) {
-        if (std::abs(integrate(qr, {i + 1, order - i}) -
+      for (int i = -1; i <= static_cast<int>(order); ++i) {
+        if (std::abs(integrate(qr, {i + 1, static_cast<int>(order - i)}) -
                      exact_value(i + 1, order - i)) > 1e-12) {
           one_fails = true;
           break;
@@ -72,19 +77,23 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
     for (int i = 0; i <= order; ++i) {
       for (int j = 0; j <= order; ++j) {
         // integrate x^i y^j
-        EXPECT_DOUBLE_EQ(integrate(qr, {i, j}), 1. / ((1. + i) * (1. + j)));
+        double qr_val = integrate(qr, {i, j});
+        double ext_val = 1. / ((1. + i) * (1. + j));
+        EXPECT_DOUBLE_EQ(qr_val, ext_val)
+            << "Failure for x^" << i << "*y^" << j << ": " << qr_val << " <-> "
+            << ext_val;
       }
     }
 
     // make sure that not all of the higher polynomials integrate correctly:
     bool atLeastOneFails = false;
     for (int i = 0; i <= order + 1; ++i) {
-      if (std::abs(integrate(qr, {order + 1, i}) -
+      if (std::abs(integrate(qr, {static_cast<int>(order + 1), i}) -
                    1. / ((2. + order) * (1. + i))) > 1e-10) {
         atLeastOneFails = true;
         break;
       }
-      if (std::abs(integrate(qr, {i, order + 1}) -
+      if (std::abs(integrate(qr, {i, static_cast<int>(order + 1)}) -
                    1. / ((2. + order) * (1. + i))) > 1e-10) {
         atLeastOneFails = true;
         break;
@@ -117,6 +126,10 @@ TEST(qr_IntegrationTest, Tria) {
 TEST(qr_IntegrationTest, mp) {
   checkQuadRule(make_TriaQR_EdgeMidpointRule(), 1e-12, true);
   checkQuadRule(make_QuadQR_EdgeMidpointRule(), 1e-12, true);
+}
+
+TEST(qr_IntegrationTest, P6O4) {
+  checkQuadRule(make_TriaQR_P6O4(), 1e-12, true);
 }
 
 }  // namespace lf::quad::test
