@@ -4,6 +4,7 @@ set(lecturedemo
   lecturedemomesh.h lecturedemomesh.cc
   lecturedemodof.h lecturedemodof.cc
   lecturedemoassemble.h lecturedemoassemble.cc
+  lecturedemoquad.h lecturedemoquad.cc
   lecturedemo.h lecturedemomain.cc)
 
 add_executable(examples.lecturedemo ${lecturedemo})
@@ -19,6 +20,7 @@ target_link_libraries(examples.lecturedemo
   lf.mesh.hybrid2d
   lf.refinement
   lf.io
+  lf.quad
   lf.assemble
   )
   

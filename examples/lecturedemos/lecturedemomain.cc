@@ -10,6 +10,7 @@
 #include "lecturedemoassemble.h"
 #include "lecturedemodof.h"
 #include "lecturedemomesh.h"
+#include "lecturedemoquad.h"
 
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
@@ -38,6 +39,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 3) || (selector == 0)) {
       lecturedemo::lecturedemoassemble();
+    }
+    if ((selector == 4) || (selector == 0)) {
+      lecturedemo::lecturedemoquad();
     }
   }
 
