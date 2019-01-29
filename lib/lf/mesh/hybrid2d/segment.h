@@ -70,7 +70,7 @@ class Segment : public mesh::Entity {
   }
 
   /** @brief an edge is an entity of co-dimension 1 */
-  char Codim() const override { return 1; }
+  unsigned Codim() const override { return 1; }
 
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select endnodes, if 0 select edge itself
@@ -79,7 +79,7 @@ class Segment : public mesh::Entity {
      - for rel_codim == 0: return the Segment entity itself
    */
   base::RandomAccessRange<const mesh::Entity> SubEntities(
-      char rel_codim) const override;
+      unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of endpoints
    *

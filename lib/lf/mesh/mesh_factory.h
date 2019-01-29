@@ -23,7 +23,7 @@ class MeshFactory {
   /** @copydoc Mesh::coord_t */
   using coord_t = Eigen::VectorXd;
 
-  using dim_t = unsigned char;
+  using dim_t = base::dim_t;
 
   /**
    * @brief Return the Mesh::DimWorld() of the mesh that will be returned.

@@ -51,7 +51,7 @@ namespace lf::uscalfe {
  * @f$\gamma@f$.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-class LagrangeFEEllBVPElementMatrix {
+class ReactionDiffusionElementMatrixProvider {
   static_assert(isMeshFunction<DIFF_COEFF>);
   static_assert(isMeshFunction<REACTION_COEFF>);
 
@@ -65,13 +65,14 @@ class LagrangeFEEllBVPElementMatrix {
 
   /** @brief standard constructors */
   /** @{ */
-  LagrangeFEEllBVPElementMatrix(const LagrangeFEEllBVPElementMatrix &) = delete;
-  LagrangeFEEllBVPElementMatrix(LagrangeFEEllBVPElementMatrix &&) noexcept =
-      default;
-  LagrangeFEEllBVPElementMatrix &operator=(
-      const LagrangeFEEllBVPElementMatrix &) = delete;
-  LagrangeFEEllBVPElementMatrix &operator=(LagrangeFEEllBVPElementMatrix &&) =
-      delete;
+  ReactionDiffusionElementMatrixProvider(
+      const ReactionDiffusionElementMatrixProvider &) = delete;
+  ReactionDiffusionElementMatrixProvider(
+      ReactionDiffusionElementMatrixProvider &&) noexcept = default;
+  ReactionDiffusionElementMatrixProvider &operator=(
+      const ReactionDiffusionElementMatrixProvider &) = delete;
+  ReactionDiffusionElementMatrixProvider &operator=(
+      ReactionDiffusionElementMatrixProvider &&) = delete;
   /** @} */
 
   /**
@@ -82,7 +83,7 @@ class LagrangeFEEllBVPElementMatrix {
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
-  LagrangeFEEllBVPElementMatrix(
+  ReactionDiffusionElementMatrixProvider(
       std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
       REACTION_COEFF gamma);
   /**
@@ -111,7 +112,7 @@ class LagrangeFEEllBVPElementMatrix {
   ElemMat Eval(const lf::mesh::Entity &cell);
 
   /** Virtual destructor */
-  virtual ~LagrangeFEEllBVPElementMatrix() = default;
+  virtual ~ReactionDiffusionElementMatrixProvider() = default;
 
  private:
   /** @defgroup coefficient functors
@@ -134,16 +135,15 @@ class LagrangeFEEllBVPElementMatrix {
 };
 
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-unsigned int
-    LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::ctrl_ =
-        0;
+unsigned int ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
+                                                    REACTION_COEFF>::ctrl_ = 0;
 
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
-    LagrangeFEEllBVPElementMatrix(
+ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
+    ReactionDiffusionElementMatrixProvider(
         std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
-    : alpha_(alpha), gamma_(gamma), fe_precomp_() {
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
     fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
@@ -155,10 +155,10 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-typename lf::uscalfe::LagrangeFEEllBVPElementMatrix<
+typename lf::uscalfe::ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat const
-LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
-    const lf::mesh::Entity &cell) {
+ReactionDiffusionElementMatrixProvider<
+    SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   auto &pfe = fe_precomp_[ref_el.Id()];
@@ -229,10 +229,10 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
- * @sa LagrangeFEEdgeMassMatrix
+ * @sa MassEdgeMatrixProvider
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
-class LagrangeFEEdgeMassMatrix {
+class MassEdgeMatrixProvider {
  public:
   using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
   using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
@@ -241,11 +241,10 @@ class LagrangeFEEdgeMassMatrix {
   /** @defgroup
       @brief standard constructors
      * @{ */
-  LagrangeFEEdgeMassMatrix(const LagrangeFEEdgeMassMatrix &) = delete;
-  LagrangeFEEdgeMassMatrix(LagrangeFEEdgeMassMatrix &&) noexcept = default;
-  LagrangeFEEdgeMassMatrix &operator=(const LagrangeFEEdgeMassMatrix &) =
-      delete;
-  LagrangeFEEdgeMassMatrix &operator=(LagrangeFEEdgeMassMatrix &&) = delete;
+  MassEdgeMatrixProvider(const MassEdgeMatrixProvider &) = delete;
+  MassEdgeMatrixProvider(MassEdgeMatrixProvider &&) noexcept = default;
+  MassEdgeMatrixProvider &operator=(const MassEdgeMatrixProvider &) = delete;
+  MassEdgeMatrixProvider &operator=(MassEdgeMatrixProvider &&) = delete;
   /** @} */
   /**
    * @brief Constructor performing cell-independent initializations
@@ -256,10 +255,12 @@ class LagrangeFEEdgeMassMatrix {
    the
    * assembly
    */
-  LagrangeFEEdgeMassMatrix(
-      std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, COEFF gamma,
-      EDGESELECTOR edge_selector = base::PredicateTrue{})
-      : gamma_(gamma), edge_sel_(edge_selector), fe_precomp_() {
+  MassEdgeMatrixProvider(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
+                         COEFF gamma,
+                         EDGESELECTOR edge_selector = base::PredicateTrue{})
+      : gamma_(std::move(gamma)),
+        edge_sel_(std::move(edge_selector)),
+        fe_precomp_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
     fe_precomp_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
@@ -294,7 +295,7 @@ class LagrangeFEEdgeMassMatrix {
    */
   ElemMat Eval(const lf::mesh::Entity &edge);
 
-  virtual ~LagrangeFEEdgeMassMatrix() = default;
+  virtual ~MassEdgeMatrixProvider() = default;
 
  private:
   COEFF gamma_;               // functor for coefficient
@@ -305,13 +306,13 @@ class LagrangeFEEdgeMassMatrix {
 
 // deduction guide:
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
-LagrangeFEEdgeMassMatrix(PTR, COEFF coeff,
-                         EDGESELECTOR edge_predicate = base::PredicateTrue{})
-    ->LagrangeFEEdgeMassMatrix<typename PTR::element_type::Scalar, COEFF,
-                               EDGESELECTOR>;
+MassEdgeMatrixProvider(PTR, COEFF coeff,
+                       EDGESELECTOR edge_predicate = base::PredicateTrue{})
+    ->MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
+                             EDGESELECTOR>;
 
 template <class SCALAR, class COEFF, class EDGESELECTOR>
-unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
+unsigned int MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -319,8 +320,8 @@ unsigned int LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 // developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class COEFF, class EDGESELECTOR>
-typename LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
-LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
+typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
+MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{edge.RefEl()};
@@ -379,7 +380,7 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
 template <typename SCALAR, typename FUNCTOR>
-class ScalarFELocalLoadVector {
+class ScalarLoadElementVectorProvider {
   static_assert(isMeshFunction<FUNCTOR>);
 
  public:
@@ -389,10 +390,14 @@ class ScalarFELocalLoadVector {
   /** @defgroup stdc
    * @brief standard constructors
    *@{*/
-  ScalarFELocalLoadVector(const ScalarFELocalLoadVector &) = delete;
-  ScalarFELocalLoadVector(ScalarFELocalLoadVector &&) noexcept = default;
-  ScalarFELocalLoadVector &operator=(const ScalarFELocalLoadVector &) = delete;
-  ScalarFELocalLoadVector &operator=(ScalarFELocalLoadVector &&) = delete;
+  ScalarLoadElementVectorProvider(const ScalarLoadElementVectorProvider &) =
+      delete;
+  ScalarLoadElementVectorProvider(ScalarLoadElementVectorProvider &&) noexcept =
+      default;
+  ScalarLoadElementVectorProvider &operator=(
+      const ScalarLoadElementVectorProvider &) = delete;
+  ScalarLoadElementVectorProvider &operator=(
+      ScalarLoadElementVectorProvider &&) = delete;
   /**@}*/
 
   /** @brief Constructor, performs precomputations
@@ -406,7 +411,7 @@ class ScalarFELocalLoadVector {
    for
    * that element type are not requested.
    */
-  ScalarFELocalLoadVector(
+  ScalarLoadElementVectorProvider(
       std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
@@ -419,7 +424,7 @@ class ScalarFELocalLoadVector {
    */
   ElemVec Eval(const lf::mesh::Entity &cell);
 
-  virtual ~ScalarFELocalLoadVector() = default;
+  virtual ~ScalarLoadElementVectorProvider() = default;
 
  private:
   /** @brief An object providing the source function */
@@ -440,13 +445,14 @@ class ScalarFELocalLoadVector {
 };
 
 template <typename SCALAR, typename FUNCTOR>
-unsigned int ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ctrl_ = 0;
+unsigned int ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ctrl_ = 0;
 
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
-ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
-    std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f)
-    : f_(f) {
+ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+    ScalarLoadElementVectorProvider(
+        std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f)
+    : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
     fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement<SCALAR>(
@@ -458,8 +464,9 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ScalarFELocalLoadVector(
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename FUNCTOR>
-typename ScalarFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
-ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
+typename ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ElemVec const
+ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
+    const lf::mesh::Entity &cell) {
   // Type for source function
   using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
   // Topological type of the cell
@@ -526,7 +533,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
-class ScalarFEEdgeLocalLoadVector {
+class ScalarLoadEdgeVectorProvider {
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
   using ElemVec = const elem_vec_t;
@@ -534,12 +541,12 @@ class ScalarFEEdgeLocalLoadVector {
   /** @defgroup stdc
    * @brief standard constructors
    *@{*/
-  ScalarFEEdgeLocalLoadVector(const ScalarFEEdgeLocalLoadVector &) = delete;
-  ScalarFEEdgeLocalLoadVector(ScalarFEEdgeLocalLoadVector &&) noexcept =
+  ScalarLoadEdgeVectorProvider(const ScalarLoadEdgeVectorProvider &) = delete;
+  ScalarLoadEdgeVectorProvider(ScalarLoadEdgeVectorProvider &&) noexcept =
       default;
-  ScalarFEEdgeLocalLoadVector &operator=(const ScalarFEEdgeLocalLoadVector &) =
-      delete;
-  ScalarFEEdgeLocalLoadVector &operator=(ScalarFEEdgeLocalLoadVector &&) =
+  ScalarLoadEdgeVectorProvider &operator=(
+      const ScalarLoadEdgeVectorProvider &) = delete;
+  ScalarLoadEdgeVectorProvider &operator=(ScalarLoadEdgeVectorProvider &&) =
       delete;
   /**@}*/
 
@@ -548,10 +555,10 @@ class ScalarFEEdgeLocalLoadVector {
    * @param fe_edge_p FE specification on edge
    * @param g functor object providing edge data
    */
-  ScalarFEEdgeLocalLoadVector(
+  ScalarLoadEdgeVectorProvider(
       std::shared_ptr<const ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR g,
       EDGESELECTOR edge_sel = base::PredicateTrue{})
-      : g_(g), edge_sel_(edge_sel), pfe_() {
+      : g_(std::move(g)), edge_sel_(std::move(edge_sel)), pfe_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
     pfe_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
@@ -569,7 +576,7 @@ class ScalarFEEdgeLocalLoadVector {
    */
   ElemVec Eval(const lf::mesh::Entity &edge);
 
-  virtual ~ScalarFEEdgeLocalLoadVector() = default;
+  virtual ~ScalarLoadEdgeVectorProvider() = default;
 
  private:
   FUNCTOR g_;              // source function
@@ -590,22 +597,22 @@ class ScalarFEEdgeLocalLoadVector {
 
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
-ScalarFEEdgeLocalLoadVector(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
-    ->ScalarFEEdgeLocalLoadVector<typename PTR::element_type::Scalar, FUNCTOR,
-                                  EDGESELECTOR>;
+ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
+    ->ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
+                                   EDGESELECTOR>;
 
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
-unsigned int ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR, EDGESELECTOR>::ctrl_ =
-    0;
+unsigned int
+    ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
-typename ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR,
-                                     EDGESELECTOR>::ElemVec const
-ScalarFEEdgeLocalLoadVector<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
+typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR,
+                                      EDGESELECTOR>::ElemVec const
+ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{edge.RefEl()};
