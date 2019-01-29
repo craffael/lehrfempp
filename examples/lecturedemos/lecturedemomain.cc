@@ -29,6 +29,9 @@ int main(int argc, char **argv) {
     std::cout << "N = 2: demo of LehrFEM++ DofHandler capabilities"
               << std::endl;
     std::cout << "N = 3: demo of LehrFEM++ assembly of LSE" << std::endl;
+    std::cout << "N = 4: demo of numerical quadrature in LehrFEM++"
+              << std::endl;
+    std::cout << "N = 5: demo of solving a Dirichlet BVP" << std::endl;
   } else {
     int selector = vm["demo_number"].as<int>();
     if ((selector == 1) || (selector == 0)) {
@@ -42,6 +45,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 4) || (selector == 0)) {
       lecturedemo::lecturedemoquad();
+    }
+    if ((selector == 5) || (selector == 0)) {
+      lecturedemo::lecturedemoDirichlet();
     }
   }
 
