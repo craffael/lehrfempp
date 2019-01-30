@@ -519,7 +519,7 @@ TEST(Geometry, QuadO1) {
 
 TEST(Geometry, QuadO2) {
   Eigen::MatrixXd global_nodes(2, 8);
-  global_nodes << 3, 6, 7, 5, 4, 2, 1, 0, 1, 0, 3, 6, 7, 5, 8, 4;
+  global_nodes << 3, 7, 4, 1, 6, 5, 2, 0, 1, 3, 7, 8, 0, 6, 5, 4;
 
   lf::geometry::QuadO2 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
