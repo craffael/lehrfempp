@@ -20,7 +20,7 @@ QuadO2::QuadO2(Eigen::Matrix<double, Eigen::Dynamic, 8> coords)
       epsilon_(coords_.rows(), 2),
       gamma_x_2_(coords_.rows(), 2),
       epsilon_x_2_(coords_.rows(), 2) {
-  /**
+  /*
    *  3 - 6 - 2                     D - G - C
    *  |       |                     |       |
    *  7       5          ->         H       F

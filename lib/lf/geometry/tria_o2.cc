@@ -18,7 +18,7 @@ TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
       gamma_(coords_.rows(), 2),
       delta_(coords_.rows()),
       gamma_x_2_(coords_.rows(), 2) {
-  /**
+  /*
    *  2                                C
    *  | \                              | \
    *  5   4              ->            F   E

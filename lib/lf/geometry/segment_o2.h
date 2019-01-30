@@ -14,8 +14,7 @@
 namespace lf::geometry {
 
 /**
- * @brief A curved edge parametrized by means of polynomial of degree 2 defined
- * by the location of its two endpoints and its midpoint.
+ * @brief A second-order segment in the plane or in 3D space.
  *
  * Coordinates \f$ coords = [A, B, C] \f$ are mapped to the reference element as
  * follows:
@@ -61,7 +60,7 @@ class SegmentO2 : public Geometry {
    */
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
 
-  /**
+  /*
    * SegmentO2 is parametrized by:
    *    alpha_ * x^2 + beta_ * x + gamma_
    */
@@ -69,9 +68,9 @@ class SegmentO2 : public Geometry {
   Eigen::Matrix<double, Eigen::Dynamic, 1> beta_;
   Eigen::Matrix<double, Eigen::Dynamic, 1> gamma_;
 
-  /**
-   * @brief Coefficients for efficient evaluation of JacobianInverseGramian()
-   *        and IntegrationElement()
+  /*
+   * Coefficients for efficient evaluation of JacobianInverseGramian() and
+   * IntegrationElement()
    */
   double alpha_squared_;
   double alpha_beta_;

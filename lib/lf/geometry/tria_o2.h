@@ -64,7 +64,7 @@ class TriaO2 : public Geometry {
    */
   Eigen::Matrix<double, Eigen::Dynamic, 6> coords_;
 
-  /**
+  /*
    * TriaO2 is parametrized by:
    *    alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1 * x2]
    */
@@ -73,7 +73,7 @@ class TriaO2 : public Geometry {
   Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_;
   Eigen::Matrix<double, Eigen::Dynamic, 1> delta_;
 
-  /** @brief Coefficient for efficient evaluation of Jacobian() */
+  /* Coefficient for efficient evaluation of Jacobian() */
   Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_x_2_;
 };
 }  // namespace lf::geometry

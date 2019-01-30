@@ -15,6 +15,16 @@ namespace lf::geometry {
 
 /**
  * @brief A second-order quadrilateral in the plane or in 3D space
+ *
+ * Coordinates \f$ coords = [A, B, C, D, E, F, G, H] \f$ are mapped to the
+ * reference element as follows:
+ *
+ *     (0.0, 1.0) - (0.5, 1.0) - (1.0, 1.0)                  D - G - C
+ *          |                         |                      |       |
+ *     (0.0, 0.5)                (1.0, 0.5)        ->        H       F
+ *          |                         |                      |       |
+ *     (0.0, 0.0) - (0.5, 0.0) - (1.0, 0.0)                  A - E - B
+ *
  */
 class QuadO2 : public Geometry {
  public:
@@ -54,7 +64,7 @@ class QuadO2 : public Geometry {
    */
   Eigen::Matrix<double, Eigen::Dynamic, 8> coords_;
 
-  /**
+  /*
    * QuadO2 is parametrized by:
    *    alpha_ + beta_ * [x1, x2] + gamma_ * [x1^2, x2^2] + delta_ * [x1 * x2]
    *    + epsilon * [x1^2 * x2, x1 * x2^2]
@@ -65,7 +75,7 @@ class QuadO2 : public Geometry {
   Eigen::Matrix<double, Eigen::Dynamic, 1> delta_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> epsilon_;
 
-  /** @brief Coefficients for efficient evaluation of Jacobian() */
+  /* Coefficients for efficient evaluation of Jacobian() */
   Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_x_2_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> epsilon_x_2_;
 };
