@@ -51,3 +51,6 @@ build/
 .idea/
 venv/
 
+#OSX
+.DS_Store
+
