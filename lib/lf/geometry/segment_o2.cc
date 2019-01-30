@@ -19,6 +19,9 @@ SegmentO2::SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
       alpha_squared_(0),
       alpha_beta_(0),
       beta_squared_(0) {
+  /*
+   * 0 - 2 - 1           ->           vtx0 - midp - vtx1
+   */
   const Eigen::VectorXd& vtx0 = coords_.col(0);
   const Eigen::VectorXd& vtx1 = coords_.col(1);
   const Eigen::VectorXd& midp = coords_.col(2);

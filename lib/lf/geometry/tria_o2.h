@@ -14,7 +14,17 @@
 namespace lf::geometry {
 
 /**
- * @brief A second-order triangle in the plane or in 3D space
+ * @brief A second-order triangle in the plane or in 3D space.
+ *
+ * Coordinates \f$ coords = [A, B, C, D, E, F] \f$ are mapped to the reference
+ * element as follows:
+ *
+ *     (0.0, 1.0)                                            C
+ *          |     \                                          | \
+ *     (0.0, 0.5)   (0.5, 0.5)                     ->        F   E
+ *          |                  \                             |     \
+ *     (0.0, 0.0) - (0.5, 0.0) - (1.0, 0.0)                  A - D - B
+ *
  */
 class TriaO2 : public Geometry {
  public:

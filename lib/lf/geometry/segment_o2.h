@@ -15,7 +15,13 @@ namespace lf::geometry {
 
 /**
  * @brief A curved edge parametrized by means of polynomial of degree 2 defined
- *        by the location of its two endpoints and its midpoint
+ * by the location of its two endpoints and its midpoint.
+ *
+ * Coordinates \f$ coords = [A, B, C] \f$ are mapped to the reference element as
+ * follows:
+ *
+ *     (0.0) - (0.5) - (1.0)        ->        A - C - B
+ *
  */
 class SegmentO2 : public Geometry {
  public:
