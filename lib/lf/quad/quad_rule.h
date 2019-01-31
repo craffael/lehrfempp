@@ -15,7 +15,7 @@
 
 namespace lf::quad {
 
-using quadOrder_t = unsigned int;
+using quadDegree_t = unsigned int;
 
 /**
  * @brief Represents a Quadrature Rule over one of the Reference Elements
@@ -61,11 +61,11 @@ class QuadRule {
    * vectors
    * @param weights The weights of the quadrature rule, a vector of length
    * `num_points`
-   * @param degree The degree of exactness of the quadrature rule, see Order()
+   * @param degree The degree of exactness of the quadrature rule, see Degree()
    * for more info.
    */
   explicit QuadRule(base::RefEl ref_el, Eigen::MatrixXd points,
-                    Eigen::VectorXd weights, quadOrder_t degree)
+                    Eigen::VectorXd weights, quadDegree_t degree)
       : ref_el_(std::move(ref_el)),
         degree_(degree),
         points_(std::move(points)),
@@ -103,8 +103,16 @@ class QuadRule {
    * because it predicts the order of algebraic covergence of the quadrature
    * error when the rule is applied to a smooth integrand.
    */
-  quadOrder_t Order() const { return degree_; }
+  quadDegree_t Degree() const { return degree_; }
 
+  /** 
+   * @brief Return the order of the quadrature rule
+   *
+   * The order is the degree of (polynomial) exactness + 1
+   * @sa Degree()
+   */
+  unsigned int Order() const { return Degree() + 1; }
+  
   /**
    * @brief All quadrature points \f$ \begin{pmatrix} \vec{\xi}_0, \ldots,
    * \vec{\xi}_{n-1}  \end{pmatrix} \f$ as column vectors.
@@ -141,7 +149,7 @@ class QuadRule {
 
  private:
   base::RefEl ref_el_;
-  quadOrder_t degree_{0};
+  quadDegree_t degree_{0};
   Eigen::MatrixXd points_;
   Eigen::VectorXd weights_;
 

@@ -65,7 +65,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
   return {points, weights};
 }
 
-std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadDegree_t num_points,
                                                          double alpha,
                                                          double beta) {
   LF_ASSERT_MSG(num_points > 0, "num_points must be positive.");
@@ -86,7 +86,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
   Eigen::VectorXd weights(num_points);
 
   // Make an initial guess for the zeros:
-  for (quadOrder_t i = 0; i < num_points; ++i) {
+  for (quadDegree_t i = 0; i < num_points; ++i) {
     if (i == 0) {
       // initial guess for the largest root
       an = alpha / num_points;
@@ -127,7 +127,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
       z = 3.0 * points[i - 1] - 3.0 * points[i - 2] + points[i - 3];
     }
     alfbet = alpha + beta;
-    quadOrder_t its;
+    quadDegree_t its;
     for (its = 1; its <= MAX_IT; ++its) {
       // refinement by Newton's method
       temp = 2.0 + alfbet;
@@ -136,7 +136,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
       // alpha * beta = 0 or -1
       p1 = (alpha - beta + temp * z) / 2.0;
       p2 = 1.0;
-      for (quadOrder_t j = 2; j <= num_points; ++j) {
+      for (quadDegree_t j = 2; j <= num_points; ++j) {
         p3 = p2;
         p2 = p1;
         temp = 2 * j + alfbet;
@@ -169,7 +169,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
   }
 
   Eigen::VectorXd points_result(num_points);
-  for (quadOrder_t i = 0; i < num_points; ++i) {
+  for (quadDegree_t i = 0; i < num_points; ++i) {
     points_result(i) = points[i].convert_to<double>();
   }
 

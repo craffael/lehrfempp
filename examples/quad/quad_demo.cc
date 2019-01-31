@@ -18,10 +18,10 @@
 #include "lf/refinement/test/refinement_test_utils.h"
 
 template <class F>
-double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadOrder_t order, F f) {
+double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree, F f) {
   double result = 0.;
-  auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), order);
-  auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), order);
+  auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), degree);
+  auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), degree);
 
   Eigen::MatrixXd points(1, 1);
   Eigen::VectorXd weights(1);
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   // clang-format off
   desc.add_options()
   ("help", "produce this help message")
-  ("quad_order", po::value<int>()->default_value(3), "The order of the local quadrature rule.")
+  ("quad_degree", po::value<int>()->default_value(3), "The degree of the local quadrature rule.")
   ("max_level", po::value<int>()->default_value(5), "The number of refinement levels")
   ;
   // clang-format on
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   }
 
   int max_level = vm["max_level"].as<int>();
-  int quad_order = vm["quad_order"].as<int>();
+  int quad_degree = vm["quad_degree"].as<int>();
 
   // Create a three element mesh that contains two triangles and one
   // quadrilateral
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     lf::io::VtkWriter vtk_writer(mesh,
                                  "level" + std::to_string(level) + ".vtk");
 
-    auto approx = integrate(*mesh, quad_order, f);
+    auto approx = integrate(*mesh, quad_degree, f);
     errors(level) = std::abs(approx - exact_integral);
 
     lf::refinement::MeshHierarchy mh(
