@@ -14,7 +14,7 @@ namespace lf::quad {
 /**
  * @brief Returns a QuadRule object for the given Reference Element and Order
  * @param ref_el The type of reference element
- * @param order The minimum order that the QuadRule object should have.
+ * @param degree The minimum degree that the QuadRule object should have.
  * @return A QuadRule object for the given reference element and with an order
  * >= `order`
  *
@@ -25,7 +25,7 @@ namespace lf::quad {
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  */
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned order);
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree);
 
 /** @defgroup namedquad Special "named" quadrature rules
  * These functions provide a number of special quadrature rules

@@ -19,7 +19,7 @@ namespace lecturedemo {
     LF_VERIFY_MSG(tria.RefEl() == lf::base::RefEl::kTria(),
 		  "Unsupported cell type " << tria.RefEl());
     // Obtain vertex coordinates of the triangle in a 2x3 matrix
-    const auto vertices{lf::geometry::Corners(*(tria.Geometry()))};
+    const auto vertices = lf::geometry::Corners(*(tria.Geometry()));
     LF_ASSERT_MSG((vertices.cols() == 3) && (vertices.rows() == 2),
 		  "Invalid vertex coordinate " << vertices.rows() << "x"
 		  << vertices.cols() << " matrix");
@@ -49,7 +49,7 @@ namespace lecturedemo {
     LF_VERIFY_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
 		  "Unsupported edge type " << edge.RefEl());
     // Obtain endpoint coordinates of the triangle in a 2x3 matrix
-    const auto endpoints{lf::geometry::Corners(*(edge.Geometry()))};
+    const auto endpoints = lf::geometry::Corners(*(edge.Geometry()));
     // Compute length of edge
     const double edge_length = (endpoints.col(1) - endpoints.col(0)).norm();
     // Diagonal and off-diagonal entries of edge mass matrix
@@ -110,7 +110,7 @@ void lecturedemoassemble() {
   /* SAM_LISTING_END_5 */
   /* SAM_LISTING_BEGIN_4 */
   // Convert the matrix from triplet format to CRS format
-  const Eigen::SparseMatrix<double> A(mat.makeSparse());
+  const Eigen::SparseMatrix<double> A(mat.makeSparse());  // NOLINT
   /* SAM_LISTING_END_4 */
 
   // Print Galerkin matrix, posible because it is small
