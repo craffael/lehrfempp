@@ -17,9 +17,10 @@ using sub_idx_t = lf::base::sub_idx_t;
 
 /* SAM_LISTING_BEGIN_1 */
 int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
-  LF_ASSERT_MSG((codim <= mesh.DimMesh()), "codim " << +codim << " too large");
+  LF_ASSERT_MSG((codim <= mesh.DimMesh()),
+		"codim " << +codim << " too large");
   std::cout << "Mesh dimension = " << mesh.DimMesh()
-            << ", iterating over entities of co-dimension " << +codim << " : "
+            << ", iterating over entities of co-dim. " << codim << ": "
             << mesh.NumEntities(codim) << " exist" << std::endl;
   size_type cnt = 0;
   // Typical loop for running through all entities of a specific co-dimension
