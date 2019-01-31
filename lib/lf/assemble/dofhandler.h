@@ -82,9 +82,9 @@ namespace lf::assemble {
  * smaller indices than those blonding to entities of lower co-dimension. This
  * means that for 2D meshes d.o.f. for nodes are numbered first, then those for
  * edges, finally those for cells.
- * -# Within entities of the same co-dimension the _numbering follows their indexing_ through the 
- * member function @ref lf::mesh::Mesh::Index(). 
- * 
+ * -# Within entities of the same co-dimension the _numbering follows their
+ * indexing_ through the member function @ref lf::mesh::Mesh::Index().
+ *
  */
 class DofHandler {
  public:

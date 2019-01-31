@@ -27,4 +27,3 @@ void checkRelCodim(const Entity& e);
 }  // namespace lf::mesh::test_utils
 
 #endif  // __2633e7bf8dd548de839f74075687e81x
-

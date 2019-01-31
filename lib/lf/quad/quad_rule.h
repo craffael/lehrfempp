@@ -105,14 +105,14 @@ class QuadRule {
    */
   quadDegree_t Degree() const { return degree_; }
 
-  /** 
+  /**
    * @brief Return the order of the quadrature rule
    *
    * The order is the degree of (polynomial) exactness + 1
    * @sa Degree()
    */
   unsigned int Order() const { return Degree() + 1; }
-  
+
   /**
    * @brief All quadrature points \f$ \begin{pmatrix} \vec{\xi}_0, \ldots,
    * \vec{\xi}_{n-1}  \end{pmatrix} \f$ as column vectors.

@@ -18,7 +18,8 @@
 #include "lf/refinement/test/refinement_test_utils.h"
 
 template <class F>
-double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree, F f) {
+double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree,
+                 F f) {
   double result = 0.;
   auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), degree);
   auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), degree);

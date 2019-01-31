@@ -1,7 +1,7 @@
 /**
  * @file
- * @brief simple functions demontrating use and capabilities of LehrFEM++ mesh module
- *        meant to provide sample codes for lecture document
+ * @brief simple functions demontrating use and capabilities of LehrFEM++ mesh
+ * module meant to provide sample codes for lecture document
  * @author Ralf Hiptmair
  * @date   January 2019
  * @copyright MIT License
@@ -17,8 +17,7 @@ using sub_idx_t = lf::base::sub_idx_t;
 
 /* SAM_LISTING_BEGIN_1 */
 int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
-  LF_ASSERT_MSG((codim <= mesh.DimMesh()),
-		"codim " << +codim << " too large");
+  LF_ASSERT_MSG((codim <= mesh.DimMesh()), "codim " << +codim << " too large");
   std::cout << "Mesh dimension = " << mesh.DimMesh()
             << ", iterating over entities of co-dim. " << codim << ": "
             << mesh.NumEntities(codim) << " exist" << std::endl;

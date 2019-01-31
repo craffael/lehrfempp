@@ -65,9 +65,8 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
   return {points, weights};
 }
 
-std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadDegree_t num_points,
-                                                         double alpha,
-                                                         double beta) {
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
+    quadDegree_t num_points, double alpha, double beta) {
   LF_ASSERT_MSG(num_points > 0, "num_points must be positive.");
   LF_ASSERT_MSG(alpha > -1, "alpha > -1 required");
   LF_ASSERT_MSG(beta > -1, "beta > -1 required.");

@@ -59,10 +59,10 @@ EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
  * @param entity_matrix_provider entity_matrix_provider object for passing all
  * kinds of data
  * @param matrix matrix object to which the assembled matrix will be added.
- *               
- * @note The matrix object passed in `matrix` is not set to zero in the beginning!
- *       This makes is possible to assemble a matrix piecemeal via several successive
- *       calls to @ref AssembleMatrixLocally()
+ *
+ * @note The matrix object passed in `matrix` is not set to zero in the
+ * beginning! This makes is possible to assemble a matrix piecemeal via several
+ * successive calls to @ref AssembleMatrixLocally()
  *
  * This method performs cell-oriented assembly controlled by a local-to-global
  * index map ("dof handler").

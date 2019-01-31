@@ -147,14 +147,15 @@ class LinFEElemVecProvider {
 
 /**
  * @brief Driver routine for demos for LehrFEM++ matrix/vector
- * assembly functions 
+ * assembly functions
  */
 void lecturedemoassemble();
 
-  /** 
-   * @brief Driver code and demonstration of treatment of Dirichlet boundary conditions
-   */
-  void lecturedemoDirichlet();
+/**
+ * @brief Driver code and demonstration of treatment of Dirichlet boundary
+ * conditions
+ */
+void lecturedemoDirichlet();
 
 }  // namespace lecturedemo
 

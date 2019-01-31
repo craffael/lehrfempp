@@ -13,8 +13,8 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include "lecturedemo.h"
 #include "lf/assemble/assemble.h"
-#include "lf/mesh/utils/utils.h"
 #include "lf/io/io.h"
+#include "lf/mesh/utils/utils.h"
 
 namespace lecturedemo {
 
