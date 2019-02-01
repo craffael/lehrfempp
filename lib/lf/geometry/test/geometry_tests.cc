@@ -148,7 +148,7 @@ void checkSubGeometry(
         // map coordinates in RefEl.Dimension to geom.DimGlobal
         auto globalCoords = geom.Global(nodeCoords.col(subSubIdx));
 
-        EXPECT_EQ(globalCoordsFromSub, globalCoords)
+        EXPECT_TRUE(globalCoordsFromSub.isApprox(globalCoords))
             << "Global mapping of subNode " << subNode << " of subEntity "
             << subEntity << " in relative codim " << codim
             << " differs from global mapping of node " << subSubIdx;
@@ -519,7 +519,7 @@ TEST(Geometry, QuadO1) {
 
 TEST(Geometry, QuadO2) {
   Eigen::MatrixXd global_nodes(2, 8);
-  global_nodes << 3, 7, 4, 1, 6, 5, 2, 0, 1, 3, 7, 8, 0, 6, 5, 4;
+  global_nodes << 3, 7, 4, 1, 5, 5.4, 2.5, 1.8, 1, 3, 7, 8, 2.5, 5.9, 6.9, 4.1;
 
   lf::geometry::QuadO2 geom(global_nodes);
   auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
