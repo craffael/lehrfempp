@@ -99,7 +99,7 @@ class QuadRule {
    * - For base::RefEl::kQuad(), \f$ \mathbb{P}_k := \mathrm{span} \{ x^a y^b \,
    * | \, 0 \leq \mathrm{max}(a,b) \leq k \} \f$
    *
-   * @note the _degree_ of a quadrature rule is the degree of exactness + 1,
+   * @note the _order_ of a quadrature rule is the degree of exactness + 1,
    * because it predicts the order of algebraic covergence of the quadrature
    * error when the rule is applied to a smooth integrand.
    */
