@@ -11,7 +11,9 @@
 
 namespace lf::mesh::hybrid2d {
 
-CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
+//CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
+//                      "Diagnostics control for hybrid2d::Mesh");
+ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
                       "Diagnostics control for hybrid2d::Mesh");
 
 base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
@@ -31,7 +33,7 @@ base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
     case 2:
       return {points_.begin(), points_.end()};
     default: {
-      LF_VERIFY_MSG(false, "Something is horribyl wrong, codim = " +
+      LF_VERIFY_MSG(false, "Something is horribly wrong, codim = " +
                                std::to_string(codim) + " is out of bounds.");
       return {
           base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),

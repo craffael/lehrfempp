@@ -4,9 +4,19 @@
 
 #include <iostream>
 #include "lf/base/base.h"
+#include "lf/base/comm.h"
+namespace ci = lf::base::ci;
 
-int main() {
+int main(int argc, char** argv) {
   std::cout << "Output of information on reference elements" << std::endl;
+  ci::Init(argc, argv);
+  ci::Add()("help,h", "Print this help message.");
+  ci::ParseCommandLine();
+
+  if (ci::Help()) {
+    std::cout << "Try for instance: --RefEl_ctrl 2\n";
+    return 0L;
+  }
 
   // Node
   auto re_node = lf::base::RefEl::kPoint();

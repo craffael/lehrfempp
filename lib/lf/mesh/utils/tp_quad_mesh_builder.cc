@@ -6,7 +6,7 @@
 
 namespace lf::mesh::hybrid2d {
 
-CONTROLDECLARECOMMENT(TPQuadMeshBuilder, output_ctrl_, "tpquad_output_ctrl",
+ADDOPTION(TPQuadMeshBuilder::output_ctrl_, tpquad_ctrl,
                       "Diagnostics control for TPQuadMeshBuilder");
 
 std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {

@@ -16,6 +16,7 @@
 
 namespace lf::assemble {
 // Debugging output control variable, switched off by default
-unsigned int ass_mat_dbg_ctrl = 0;
+ADDOPTION(ass_mat_dbg_ctrl, Assembly_ctrl,
+                  "Debugging output control for AssembleMatrixLocally()");
 
 }  // namespace lf::assemble

@@ -42,8 +42,10 @@ const unsigned int amd_lass = 16;
 // static lf::base::StaticVar ctrlvarass_mat_dbg_ctrl(
 //     "Assembly_ctrl", ass_mat_dbg_ctrl, lf::base::ctrl_root,
 //     "Debugging output control for AssembleMatrixLocally()");
-EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
-                  "Debugging output control for AssembleMatrixLocally()");
+//EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
+//                  "Debugging output control for AssembleMatrixLocally()");
+
+extern unsigned int ass_mat_dbg_ctrl;
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -136,7 +138,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
             std::cout << gdof_idx << ' ';
           }
 	  std::cout << std::endl);
-      // clang-format on 
+      // clang-format on
       SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lmdim,
                         std::cout << "ASM: " << nrows_loc << " x " << ncols_loc
                                   << " element matrix" << std::endl);

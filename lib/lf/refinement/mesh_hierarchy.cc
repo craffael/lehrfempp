@@ -20,10 +20,10 @@ bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
   return true;
 }
 
-CONTROLDECLARECOMMENT(MeshHierarchy, output_ctrl_, "MeshHierarchy_output_ctrl",
+ADDOPTION(MeshHierarchy::output_ctrl_, MeshHierarchy_output_ctrl,
                       "Diagnostics control for MeshHierarchy");
 
-CONTROLDECLARECOMMENT(MeshHierarchy, ctrl_, "MeshHierarchy_ctrl",
+ADDOPTION(MeshHierarchy::ctrl_, MeshHierarchy_ctrl,
                       "Output control for MeshHierarchy");
 
 // Implementation of MeshHierarchy

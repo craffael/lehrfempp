@@ -17,7 +17,7 @@
 
 namespace lf::mesh::hybrid2d {
 
-CONTROLDECLARECOMMENT(TorusMeshBuilder, output_ctrl_, "torus_output_ctrl",
+ADDOPTION(TorusMeshBuilder::output_ctrl_, torus_ctrl,
                       "Diagnostics control for TorusMeshBuilder");
 
 std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {

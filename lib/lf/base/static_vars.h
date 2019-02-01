@@ -77,6 +77,12 @@ using StaticVar = Track<unsigned int>;
  * @name Macros for handling diagnostics control variables
  */
 /**@{*/
+
+#define ADDOPTION(uintvar, name, comment)                             \
+  unsigned int uintvar = 0;                                           \
+  static lf::base::Track<unsigned int> name(#name, uintvar,            \
+                                       lf::base::ctrl_root, comment)
+
 #define CONTROLDECLARE(intvar, varname)                       \
   unsigned int intvar = 0;                                    \
   static lf::base::StaticVar ctrlvar##intvar(varname, intvar, \

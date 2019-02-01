@@ -2,7 +2,7 @@
 
 namespace lf::geometry {
 
-CONTROLDECLARECOMMENT(Geometry, output_ctrl_, "output_ctrl_",
+ADDOPTION(Geometry::output_ctrl_, Geometry_ctrl,
                       "Diagnostics control for Geometry");
 
 void PrintInfo(const Geometry& geom, std::ostream& o) {

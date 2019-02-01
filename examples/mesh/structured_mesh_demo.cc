@@ -11,8 +11,8 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-CONTROLDECLAREINFO(Nx, "Nx", "No of cells in X direction");
-CONTROLDECLAREINFO(Ny, "Ny", "No of cells in X direction");
+ADDOPTION(Nx, Nx_cells, "No of cells in X direction");
+ADDOPTION(Ny, Ny_cells, "No of cells in Y direction");
 
 int main(int argc, const char *argv[]) {
   using size_type = lf::base::size_type;

@@ -305,6 +305,7 @@ int main(int argc, const char **argv) {
   if (ci::Help()) {
     // Nothing to be done!
   } else {
+    std::cout << "ass_mat_dbg_ctrl " << lf::assemble::ass_mat_dbg_ctrl << "\n";
     std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
               << std::endl;
     // Retrieve number of degrees of freedom for each entity type from

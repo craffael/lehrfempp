@@ -4,8 +4,8 @@
 namespace lf::mesh {
 // Introduce output_ctrl_
 
-CONTROLDECLARECOMMENT(Entity, output_ctrl_, "output_ctrl_",
-                      "Diagnostics control for Mesh/Entity");
+ADDOPTION(Entity::output_ctrl_, Entity_ctrl,
+          "Diagnostics control for Mesh/Entity");
 
 int to_sign(Orientation o) { return static_cast<int>(o); }
 char to_char(Orientation o) {
