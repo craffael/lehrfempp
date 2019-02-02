@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Declaration of second-order segments
+ * @brief Declaration of second-order parametric segments
  * @author Anian Ruoss
  * @date   2018-11-18 19:02:17
  * @copyright MIT License
@@ -17,10 +17,10 @@ namespace lf::geometry {
  * @brief A curved edge parametrized by means of polynomial of degree 2 defined
  * by the location of its two endpoints and its midpoint.
  *
- * Coordinates coords = [A, B, C] are mapped to the reference element as
+ * Coordinates \f$ coords = [A, B, C] \f$ are mapped to the reference element as
  * follows:
  *
- *     (0.) - (0.5) - (1.)        ->        A - C - B
+ *     (0.0) - (0.5) - (1.0)        ->        A - C - B
  *
  */
 class SegmentO2 : public Geometry {
@@ -33,7 +33,7 @@ class SegmentO2 : public Geometry {
   Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const override;
+      const Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;

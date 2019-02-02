@@ -19,7 +19,7 @@ class SegmentO1 : public Geometry {
   Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const override;
+      const Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;

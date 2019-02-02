@@ -12,7 +12,7 @@ Eigen::MatrixXd SegmentO1::Jacobian(const Eigen::MatrixXd& local) const {
 }
 
 Eigen::MatrixXd SegmentO1::JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const {
+    const Eigen::MatrixXd& local) const {
   if (DimGlobal() == 1) {
     return (coords_.col(1) - coords_.col(0))
         .cwiseInverse()

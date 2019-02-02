@@ -87,7 +87,7 @@ Eigen::MatrixXd QuadO1::Jacobian(const Eigen::MatrixXd& local) const {
 }
 
 Eigen::MatrixXd QuadO1::JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const {
+    const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(DimGlobal(), local.cols() * 2);
   Eigen::MatrixXd jacobian(DimGlobal(), 2);
 
@@ -285,7 +285,7 @@ Eigen::MatrixXd Parallelogram::Jacobian(const Eigen::MatrixXd& local) const {
 }
 
 Eigen::MatrixXd Parallelogram::JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const {
+    const Eigen::MatrixXd& local) const {
   return jacobian_inverse_gramian_.replicate(1, local.cols());
 }
 
