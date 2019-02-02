@@ -14,8 +14,7 @@
 namespace lf::geometry {
 
 /**
- * @brief A curved edge parametrized by means of polynomial of degree 2 defined
- * by the location of its two endpoints and its midpoint.
+ * @brief A second-order segment in the plane or in 3D space.
  *
  * Coordinates \f$ coords = [A, B, C] \f$ are mapped to the reference element as
  * follows:
@@ -25,39 +24,54 @@ namespace lf::geometry {
  */
 class SegmentO2 : public Geometry {
  public:
+  /**
+   * @brief Constructor building segment from vertex/midpoint coordinates
+   * @param coords w x 3 matrix, w = world dimension, whose columns contain the
+   *        world coordinates of the vertices/midpoints
+   */
   explicit SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);
 
   dim_t DimLocal() const override { return 1; }
   dim_t DimGlobal() const override { return coords_.rows(); }
   base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
+
   Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
+
+  /** @copydoc lf::geometry::Geometry::SubGeometry() */
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
 
-  /** @brief creation of child geometry for the sake of mesh refinement
+  /**
+   * @copydoc lf::geometry::Geometry::ChildGeometry()
    *
-   * @see Geometry::ChildGeometry()
-   * @see RefinementPattern
-   * @param ref_pat three refinement patterns are supported
-   * - rp_nil: empty refinement
-   * - rp_copy: just copies the geometry information of the segment
-   * - rp_split: split edge in the middle.
-   * @param codim _relative_ codimension of children whose shape is requested
+   * For a detailed description of the indexing of the vertices of child
+   * entities see `Refinement.xoj`
    */
   std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
  private:
+  /**
+   * @brief Coordinates of the 3 vertices/midpoints, stored in matrix columns
+   */
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
-  // polynomial of degree 2: alpha * x^2 + beta * x + gamma
+
+  /*
+   * SegmentO2 is parametrized by:
+   *    alpha_ * x^2 + beta_ * x + gamma_
+   */
   Eigen::Matrix<double, Eigen::Dynamic, 1> alpha_;
   Eigen::Matrix<double, Eigen::Dynamic, 1> beta_;
   Eigen::Matrix<double, Eigen::Dynamic, 1> gamma_;
-  // coefficients for JacobianInverseGramian and IntegrationElement
+
+  /*
+   * Coefficients for efficient evaluation of JacobianInverseGramian() and
+   * IntegrationElement()
+   */
   double alpha_squared_;
   double alpha_beta_;
   double beta_squared_;

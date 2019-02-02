@@ -1,29 +1,31 @@
 /**
  * @file
- * @brief Implementation of second-order parametric triangles
+ * @brief Implementation of second-order parametric quadrilaterals
  * @author Anian Ruoss
- * @date   2018-12-05 22:37:17
+ * @date   2018-12-27 21:16:17
  * @copyright MIT License
  */
 
-#include "tria_o2.h"
+#include "quad_o2.h"
 #include "point.h"
 
 namespace lf::geometry {
 
-TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
+QuadO2::QuadO2(Eigen::Matrix<double, Eigen::Dynamic, 8> coords)
     : coords_(std::move(coords)),
       alpha_(coords_.rows()),
       beta_(coords_.rows(), 2),
       gamma_(coords_.rows(), 2),
       delta_(coords_.rows()),
-      gamma_x_2_(coords_.rows(), 2) {
+      epsilon_(coords_.rows(), 2),
+      gamma_x_2_(coords_.rows(), 2),
+      epsilon_x_2_(coords_.rows(), 2) {
   /*
-   *  2                                C
-   *  | \                              | \
-   *  5   4              ->            F   E
-   *  |     \                          |     \
-   *  0 - 3 - 1                        A - D - B
+   *  3 - 6 - 2                     D - G - C
+   *  |       |                     |       |
+   *  7       5          ->         H       F
+   *  |       |                     |       |
+   *  0 - 4 - 1                     A - E - B
    */
   const Eigen::VectorXd& A = coords_.col(0);
   const Eigen::VectorXd& B = coords_.col(1);
@@ -31,47 +33,66 @@ TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
   const Eigen::VectorXd& D = coords_.col(3);
   const Eigen::VectorXd& E = coords_.col(4);
   const Eigen::VectorXd& F = coords_.col(5);
+  const Eigen::VectorXd& G = coords_.col(6);
+  const Eigen::VectorXd& H = coords_.col(7);
 
   alpha_ << A;
-  beta_ << 4. * D - 3. * A - B, 4. * F - 3. * A - C;
-  gamma_ << 2. * (A + B) - 4. * D, 2. * (A + C) - 4. * F;
-  delta_ << 4. * (A + E - D - F);
+  beta_ << -3. * A - B + 4. * E, -3. * A - D + 4. * H;
+  gamma_ << 2. * (A + B) - 4. * E, 2. * (A + D) - 4. * H;
+  delta_ << 5. * A - B - 3. * C - D - 4. * (E - F - G + H);
+  epsilon_ << -2. * (A + B - C - D) + 4. * (E - G),
+      -2. * (A - B - C + D) - 4. * (F - H);
 
-  // coefficient for Jacobian()
+  // coefficients for Jacobian()
   gamma_x_2_ << 2. * gamma_;
+  epsilon_x_2_ << 2. * epsilon_;
 }
 
-Eigen::MatrixXd TriaO2::Global(const Eigen::MatrixXd& local) const {
+Eigen::MatrixXd QuadO2::Global(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
 
-  return ((beta_ * local) + (gamma_ * local.array().square().matrix()) +
-          (delta_ * local.row(0).cwiseProduct(local.row(1))))
+  auto local_squared = local.array().square();
+  return ((beta_ * local) + (gamma_ * local_squared.matrix()) +
+          (delta_ * local.row(0).cwiseProduct(local.row(1))) +
+          (epsilon_ *
+           (local_squared * local.colwise().reverse().array()).matrix()))
              .colwise() +
          alpha_;
 }
 
-Eigen::MatrixXd TriaO2::Jacobian(const Eigen::MatrixXd& local) const {
+Eigen::MatrixXd QuadO2::Jacobian(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
 
-  Eigen::MatrixXd tmp(gamma_.rows(), 2 * local.cols());
+  auto local_squared_reversed = local.array().square().colwise().reverse();
+  auto local_colwise_product = local.row(0).cwiseProduct(local.row(1));
+
+  Eigen::MatrixXd tmp_epsilon(gamma_.rows(), 2 * local.cols());
+  Eigen::MatrixXd tmp_epsilon_x_2 = epsilon_x_2_.replicate(1, local.cols());
+  Eigen::MatrixXd tmp_gamma(gamma_.rows(), 2 * local.cols());
 
   for (int i = 0; i < local.cols(); ++i) {
-    tmp.block(0, 2 * i, tmp.rows(), 2) =
+    tmp_epsilon.block(0, 2 * i, tmp_epsilon.rows(), 2) =
+        epsilon_.rowwise().reverse().array().rowwise() *
+        local_squared_reversed.col(i).transpose().array();
+    tmp_epsilon_x_2.block(0, 2 * i, tmp_epsilon_x_2.rows(), 2) *=
+        local_colwise_product(i);
+    tmp_gamma.block(0, 2 * i, tmp_gamma.rows(), 2) =
         gamma_x_2_.array().rowwise() * local.col(i).transpose().array();
   }
 
   Eigen::MatrixXd local_reversed = local.colwise().reverse();
   local_reversed.resize(1, local.size());
 
-  return beta_.replicate(1, local.cols()) + tmp +
+  return beta_.replicate(1, local.cols()) + tmp_gamma + tmp_epsilon +
+         tmp_epsilon_x_2 +
          (local_reversed.replicate(delta_.rows(), 1).array().colwise() *
           delta_.array())
              .matrix();
 }
 
-Eigen::MatrixXd TriaO2::JacobianInverseGramian(
+Eigen::MatrixXd QuadO2::JacobianInverseGramian(
     const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
@@ -105,7 +126,7 @@ Eigen::MatrixXd TriaO2::JacobianInverseGramian(
   return jacInvGram;
 }
 
-Eigen::VectorXd TriaO2::IntegrationElement(const Eigen::MatrixXd& local) const {
+Eigen::VectorXd QuadO2::IntegrationElement(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
 
@@ -131,31 +152,31 @@ Eigen::VectorXd TriaO2::IntegrationElement(const Eigen::MatrixXd& local) const {
   return intElem;
 }
 
-std::unique_ptr<Geometry> TriaO2::SubGeometry(dim_t codim, dim_t i) const {
+std::unique_ptr<Geometry> QuadO2::SubGeometry(dim_t codim, dim_t i) const {
   switch (codim) {
     case 0: {
       LF_ASSERT_MSG(i == 0, "i is out of bounds");
-      return std::make_unique<TriaO2>(coords_);
+      return std::make_unique<QuadO2>(coords_);
     }
     case 1: {
-      LF_ASSERT_MSG(0 <= i && i <= 2, "i is out of bounds");
+      LF_ASSERT_MSG(0 <= i && i <= 3, "i is out of bounds");
       return std::make_unique<SegmentO2>(
           (Eigen::Matrix<double, Eigen::Dynamic, 3>(DimGlobal(), 3)
                << coords_.col(i),
-           coords_.col((i + 1) % 3), coords_.col(i + 3))
+           coords_.col((i + 1) % 4), coords_.col(i + 4))
               .finished());
     }
     case 2: {
-      LF_ASSERT_MSG(0 <= i && i <= 5, "i is out of bounds");
+      LF_ASSERT_MSG(0 <= i && i <= 8, "i is out of bounds");
       return std::make_unique<Point>(coords_.col(i));
     }
     default: { LF_VERIFY_MSG(false, "codim is out of bounds") }
   }
 }
 
-std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
+std::vector<std::unique_ptr<Geometry>> QuadO2::ChildGeometry(
     const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
-  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kTria(),
+  LF_VERIFY_MSG(ref_pat.RefEl() == lf::base::RefEl::kQuad(),
                 "Refinement pattern for " << ref_pat.RefEl().ToString());
   LF_VERIFY_MSG(codim < 3, "Illegal codim " << codim);
 
@@ -173,15 +194,16 @@ std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
 
   // create a geometry object for each child
   for (size_t child = 0; child < noChildren; ++child) {
-    // codim == 0: a child triangle is described by a lattice polygon with six
-    // vertices
+    // codim == 0: a child triangle/quadrilateral is described by a lattice
+    // polygon with six/eight vertices
     // codim == 1: a child segment is described by a polygon with three vertices
     // codim == 2: a child point by a single point ("polygon with one corner")
     LF_VERIFY_MSG(
         childPolygons[child].rows() == 2,
         "childPolygons[child].rows() = " << childPolygons[child].rows());
     LF_VERIFY_MSG(
-        childPolygons[child].cols() == (3 - codim),
+        (childPolygons[child].cols() == (3 - codim)) ||
+            (childPolygons[child].cols() == 4),
         "childPolygons[child].cols() = " << childPolygons[child].cols());
 
     const Eigen::MatrixXd locChildPolygonCoords(
@@ -189,14 +211,38 @@ std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
 
     switch (codim) {
       case 0: {
-        Eigen::MatrixXd locChildCoords(locChildPolygonCoords.rows(), 6);
-        locChildCoords << locChildPolygonCoords,
-            (locChildPolygonCoords.col(0) + locChildPolygonCoords.col(1)) / 2.,
-            (locChildPolygonCoords.col(1) + locChildPolygonCoords.col(2)) / 2.,
-            (locChildPolygonCoords.col(2) + locChildPolygonCoords.col(0)) / 2.;
+        if (childPolygons[child].cols() == 3) {
+          Eigen::MatrixXd locChildCoords(locChildPolygonCoords.rows(), 6);
+          locChildCoords << locChildPolygonCoords,
+              (locChildPolygonCoords.col(0) + locChildPolygonCoords.col(1)) /
+                  2.,
+              (locChildPolygonCoords.col(1) + locChildPolygonCoords.col(2)) /
+                  2.,
+              (locChildPolygonCoords.col(2) + locChildPolygonCoords.col(0)) /
+                  2.;
 
-        childGeoPtrs.push_back(
-            std::make_unique<TriaO2>(Global(locChildCoords)));
+          childGeoPtrs.push_back(
+              std::make_unique<TriaO2>(Global(locChildCoords)));
+
+        } else if (childPolygons[child].cols() == 4) {
+          Eigen::MatrixXd locChildCoords(locChildPolygonCoords.rows(), 8);
+          locChildCoords << locChildPolygonCoords,
+              (locChildPolygonCoords.col(0) + locChildPolygonCoords.col(1)) /
+                  2.,
+              (locChildPolygonCoords.col(1) + locChildPolygonCoords.col(2)) /
+                  2.,
+              (locChildPolygonCoords.col(2) + locChildPolygonCoords.col(3)) /
+                  2.,
+              (locChildPolygonCoords.col(3) + locChildPolygonCoords.col(0)) /
+                  2.;
+
+          childGeoPtrs.push_back(
+              std::make_unique<QuadO2>(Global(locChildCoords)));
+
+        } else {
+          LF_VERIFY_MSG(false, "childPolygons[" << child << "].cols() = "
+                                                << childPolygons[child].cols());
+        }
 
         break;
       }
