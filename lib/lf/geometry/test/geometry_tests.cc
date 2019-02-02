@@ -15,9 +15,8 @@
  * Checks if Jacobian() is implemented correctly by comparing it with the
  * symmetric difference quotient approximation
  */
-void checkJacobians(const lf::geometry::Geometry &geom,
-                    const Eigen::MatrixXd &eval_points,
-                    const double tolerance) {
+void checkJacobian(const lf::geometry::Geometry &geom,
+                   const Eigen::MatrixXd &eval_points, double tolerance) {
   const double h = 1e-6;
 
   const size_t num_points = eval_points.cols();
@@ -144,7 +143,7 @@ void checkSubGeometry(
         // map coordinates in subRefEl.Dimension to geom.DimGlobal
         auto globalCoordsFromSub = subGeom->Global(subNodeCoords.col(subNode));
         // get index of subSubEntity with respect to refEl
-        const int subSubIdx = refEl.SubSubEntity2SubEntity(
+        int subSubIdx = refEl.SubSubEntity2SubEntity(
             codim, subEntity, geom.DimLocal() - codim, subNode);
         // map coordinates in RefEl.Dimension to geom.DimGlobal
         auto globalCoords = geom.Global(nodeCoords.col(subSubIdx));
@@ -200,7 +199,7 @@ void checkSubGeometry(
 void runGeometryChecks(const lf::geometry::Geometry &geom,
                        const Eigen::MatrixXd &eval_points,
                        const double tolerance) {
-  checkJacobians(geom, eval_points, tolerance);
+  checkJacobian(geom, eval_points, tolerance);
   // JacobianInverseGramian is not defined for points
   if (geom.RefEl() != lf::base::RefEl::kPoint()) {
     checkJacobianInverseGramian(geom, eval_points);
@@ -217,14 +216,31 @@ void runGeometryChecks(const lf::geometry::Geometry &geom,
 void checkChildGeometryVolume(
     const lf::geometry::Geometry &geom, const lf::refinement::RefPat &refPat,
     const lf::base::sub_idx_t &anchor = lf::refinement::idx_nil) {
-  const double volume = lf::geometry::Volume(geom);
+  // compute volume by means of overkill quadrature
+  auto computeVolume = [](const lf::geometry::Geometry &geom) {
+    const auto qr = lf::quad::make_QuadRule(geom.RefEl(), 23);
+
+    const auto &points = qr.Points();
+    const auto &weights = qr.Weights();
+    const auto &integrationElements = geom.IntegrationElement(points);
+
+    double vol = 0.;
+
+    for (size_t j = 0; j < points.cols(); ++j) {
+      vol += weights(j) * integrationElements(j);
+    }
+
+    return vol;
+  };
+
+  const double volume = computeVolume(geom);
   double refinedVolume = 0.;
   auto children = geom.ChildGeometry(
       lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat, anchor),
       0);
 
   for (auto &childGeom : children) {
-    refinedVolume += lf::geometry::Volume(*childGeom);
+    refinedVolume += computeVolume(*childGeom);
   }
 
   switch (refPat) {
@@ -233,8 +249,87 @@ void checkChildGeometryVolume(
           << refPat << " should not produce any children";
       break;
     default:
-      EXPECT_EQ(volume, refinedVolume)
+      EXPECT_FLOAT_EQ(volume, refinedVolume)
           << "Parent and children volumes differ for " << refPat;
+  }
+}
+
+/**
+ * @brief Check that the mapping geom.ChildGeometry() is the same as geom
+ *    composed with the mapping imposed by ref_pat
+ * @param geom The geometry object whose ChildGeometry() method should be
+ * checked
+ * @param ref_pat The refinement pattern that is used for the test.
+ * @param qr_provider Provides the quadrature rules whose points are used to
+ *   check whether the two mappings agree.
+ *
+ * @warning For non-linear mappings, this test can fail, especially for
+ *   quadrilaterals which are split into triangles! In this case it makes sense
+ *   to use a nodal quadrature rule for the test (see
+ *   quad::make_QuadRuleNodal())
+ */
+void checkChildGeometry(
+    const lf::geometry::Geometry &geom,
+    const lf::geometry::RefinementPattern &ref_pat,
+    std::function<lf::quad::QuadRule(lf::base::RefEl)> qr_provider) {
+  LF_ASSERT_MSG(geom.RefEl() == ref_pat.RefEl(),
+                "This refinement pattern is not made for a " << geom.RefEl());
+  double h = 1. / ref_pat.LatticeConst();
+
+  for (auto codim = 0; codim <= geom.RefEl().Dimension(); ++codim) {
+    auto children = geom.ChildGeometry(ref_pat, codim);
+    auto child_polygons = ref_pat.ChildPolygons(codim);
+
+    EXPECT_EQ(children.size(), ref_pat.noChildren(codim));
+
+    for (int i = 0; i < children.size(); ++i) {
+      auto &child = children[i];
+      EXPECT_EQ(child->RefEl().Dimension(), geom.DimLocal() - codim);
+      EXPECT_EQ(child->DimGlobal(), geom.DimGlobal());
+      EXPECT_EQ(child->DimLocal(), geom.DimLocal() - codim);
+
+      if (child->RefEl() == lf::base::RefEl::kPoint()) {
+        // check that child == geom.Global(...)
+        EXPECT_EQ(child_polygons[i].rows(), geom.DimLocal());
+        EXPECT_EQ(child_polygons[i].cols(), 1);
+        auto child_coord = geom.Global(child_polygons[i].cast<double>() * h);
+
+        auto zero = Eigen::Matrix<double, 0, 1>::Zero();
+        EXPECT_TRUE(child_coord.isApprox(child->Global(zero)));
+      } else {
+        // Check that  the mapping child is the same as geom \cdot
+        // refinementPattern
+        auto qr = qr_provider(child->RefEl());
+        auto a = child->Global(qr.Points());
+
+        std::unique_ptr<lf::geometry::Geometry> ref_pat_geo = nullptr;
+
+        switch (child->RefEl()) {
+          case lf::base::RefEl::kSegment():
+            ref_pat_geo = std::make_unique<lf::geometry::SegmentO1>(
+                child_polygons[i].cast<double>() * h);
+            break;
+          case lf::base::RefEl::kTria():
+            ref_pat_geo = std::make_unique<lf::geometry::TriaO1>(
+                child_polygons[i].cast<double>() * h);
+            break;
+          case lf::base::RefEl::kQuad():
+            ref_pat_geo = std::make_unique<lf::geometry::QuadO1>(
+                child_polygons[i].cast<double>() * h);
+            break;
+          default:
+            LF_VERIFY_MSG(
+                false,
+                "This reference element is not yet supported by the test.");
+        }
+
+        auto b = geom.Global(ref_pat_geo->Global(qr.Points()));
+
+        EXPECT_TRUE(a.isApprox(b)) << std::endl
+                                   << a << "\n is not \n"
+                                   << b << std::endl;
+      }
+    }
   }
 }
 
@@ -244,13 +339,6 @@ TEST(Geometry, Point) {
   // QuadRule is not implemented and coordinate values are irrelevant
   Eigen::MatrixXd points = Eigen::MatrixXd::Random(0, 3);
   runGeometryChecks(geom, points, 1e-9);
-
-  std::vector<lf::refinement::RefPat> pointSymmetricRefPats = {
-      lf::refinement::RefPat::rp_copy};
-
-  for (const auto &refPat : pointSymmetricRefPats) {
-    checkChildGeometryVolume(geom, refPat);
-  }
 }
 
 TEST(Geometry, SegmentO1) {
@@ -265,6 +353,27 @@ TEST(Geometry, SegmentO1) {
 
   for (const auto &refPat : segSymmetricRefPats) {
     checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
+  }
+}
+
+TEST(Geometry, SegmentO2) {
+  lf::geometry::SegmentO2 geom(
+      (Eigen::MatrixXd(2, 3) << 1, 2, 3, 1, 4, 2).finished());
+  auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 5);
+  runGeometryChecks(geom, qr.Points(), 1e-9);
+
+  std::vector<lf::refinement::RefPat> segSymmetricRefPats = {
+      lf::refinement::RefPat::rp_nil, lf::refinement::RefPat::rp_copy,
+      lf::refinement::RefPat::rp_split};
+
+  for (const auto &refPat : segSymmetricRefPats) {
+    checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
 }
 
@@ -281,6 +390,9 @@ TEST(Geometry, TriaO1) {
 
   for (const auto &refPat : triaSymmetricRefPats) {
     checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
 
   std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
@@ -291,6 +403,11 @@ TEST(Geometry, TriaO1) {
   for (const auto &refPat : triaAsymmetricRefPats) {
     for (size_t anchor = 0; anchor < 3; ++anchor) {
       checkChildGeometryVolume(geom, refPat, anchor);
+      checkChildGeometry(
+          geom,
+          lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat,
+                                                    anchor),
+          [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
     }
   }
 }
@@ -308,6 +425,9 @@ TEST(Geometry, QuadO1) {
 
   for (const auto &refPat : quadSymmetricRefPats) {
     checkChildGeometryVolume(geom, refPat);
+    checkChildGeometry(
+        geom, lf::refinement::Hybrid2DRefinementPattern(geom.RefEl(), refPat),
+        [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
   }
 
   std::vector<lf::refinement::RefPat> triaAsymmetricRefPats = {
@@ -318,6 +438,10 @@ TEST(Geometry, QuadO1) {
   for (const auto &refPat : triaAsymmetricRefPats) {
     for (size_t anchor = 0; anchor < 4; ++anchor) {
       checkChildGeometryVolume(geom, refPat, anchor);
+      checkChildGeometry(geom,
+                         lf::refinement::Hybrid2DRefinementPattern(
+                             geom.RefEl(), refPat, anchor),
+                         lf::quad::make_QuadRuleNodal);
     }
   }
 }
