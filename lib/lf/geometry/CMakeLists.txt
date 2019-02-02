@@ -11,6 +11,8 @@ set(sources
   refinement_pattern.cc
   segment_o1.h
   segment_o1.cc
+  segment_o2.h
+  segment_o2.cc
   tria_o1.h
   tria_o1.cc
   print_info.h

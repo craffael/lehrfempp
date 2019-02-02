@@ -64,7 +64,7 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   // For each child create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
     // codim == 0:A single child must be described by an interval, that is
-    // two differente lattice coordinates
+    // two different lattice coordinates
     // codim == 1: a point's location is just one number
     LF_VERIFY_MSG(child_polygons[l].rows() == 1,
                   "child_polygons[l].rows() = " << child_polygons[l].rows());
