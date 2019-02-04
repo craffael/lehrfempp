@@ -9,7 +9,7 @@
 #include <lf/geometry/geometry.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-#include <experimental/filesystem>
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <string>
 
@@ -64,7 +64,7 @@ void storeParametrizationEvals(const std::string& base_file_path,
   // use quadrature to sample random points on the reference element
   auto qr = lf::quad::make_QuadRule(geom.RefEl(), qr_order);
 
-  const auto &points = qr.Points();
+  const auto& points = qr.Points();
   const Eigen::MatrixXd& jacobians = geom.Jacobian(points);
   Eigen::VectorXd determinants(points.cols());
 
@@ -75,6 +75,7 @@ void storeParametrizationEvals(const std::string& base_file_path,
                                   .determinant();
   }
 
+  writeMatrixToCSV(base_file_path + "_refpoints.csv", points);
   writeMatrixToCSV(base_file_path + "_points.csv", geom.Global(points));
   writeMatrixToCSV(base_file_path + "_jacdets.csv", determinants);
 }
@@ -103,7 +104,7 @@ double computeGeometryVolume(const lf::geometry::Geometry& geom) {
 int main() {
   // create a directory to store results
   const std::string results_dir = "results/";
-  std::experimental::filesystem::create_directories(results_dir);
+  boost::filesystem::create_directories(results_dir);
 
   // define second-order geometry elements
   lf::geometry::TriaO2 tria(

@@ -4,7 +4,6 @@ add_executable(
 )
 target_link_libraries(examples.geometry.parametrization_breakdown PUBLIC
         Eigen3::Eigen
+        Boost::filesystem Boost::system
         lf.geometry lf.quad lf.refinement
-        stdc++fs
 )
-target_compile_features(examples.geometry.parametrization_breakdown PUBLIC cxx_std_17)
