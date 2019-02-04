@@ -100,7 +100,7 @@ double computeGeometryVolume(const lf::geometry::Geometry& geom) {
   return vol;
 }
 
-int main(int argc, char** argv) {
+int main() {
   // create a directory to store results
   const std::string results_dir = "results/";
   std::experimental::filesystem::create_directories(results_dir);
