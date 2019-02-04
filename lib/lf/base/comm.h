@@ -110,7 +110,7 @@ extern bool IsSet(const std::string&);
 
 extern void ParseCommandLine(const int argc = 0, const char** argv = nullptr);
 
-extern void ParseFile(const std::string& file = "");
+extern bool ParseFile(const std::string& file = "");
 
 /**
  * @brief Add possible input for variable called `name` with description

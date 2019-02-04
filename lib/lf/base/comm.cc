@@ -170,14 +170,19 @@ void ParseCommandLine(const int argc, const char** argv) {
 /**
  * @brief Parse the config file for variables of form name=value.
  * @param file A file with variables. (optional)
+ * @return true if file exists (kConfigFile if file = ""), false if not.
  * @note If file is not provided, the file given to init will be used.
  *       If none has been given, no variables will be found.
  */
-void ParseFile(const std::string& file) {
+bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
   std::ifstream config_fs(file != "" ? file : kConfigFile);
+  if (!config_fs.good()) {
+    return false;
+  }
   po::store(po::parse_config_file(config_fs, kDesc), kVM);
   po::notify(kVM);
+  return true;
 }
 
 
