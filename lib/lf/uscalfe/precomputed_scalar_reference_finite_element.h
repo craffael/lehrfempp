@@ -136,7 +136,7 @@ class PrecomputedScalarReferenceFiniteElement
    * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Weights())`
    *
    * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
-   * for the packed format in which the gradients are returned. 
+   * for the packed format in which the gradients are returned.
    */
   const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
