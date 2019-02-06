@@ -17,6 +17,14 @@ namespace lf::uscalfe {
 
 /**
  * @ingroup mesh_function
+ * @brief MeshFunction wrapper for a simple function of physical coordinates
+ *
+ * @tparam F a functor type, offering an evaluation operator that acccepts
+ *           a single coordinate vector.
+ *
+ * This class is meant ot create MeshFunction compliant objects that wrap
+ * a function \f$d:\Omega\mapsto X\f$ on the physical domain. The image type
+ * of the function can be anything at this point.
  */
 template <class F>
 class MeshFunctionGlobal {
@@ -31,6 +39,9 @@ class MeshFunctionGlobal {
 
   explicit MeshFunctionGlobal(F f) : f_(std::move(f)) {}
 
+  /**
+   * @brief MeshFunction compliant evaluation operator
+   */
   std::vector<F_return_type> operator()(const mesh::Entity& e,
                                         const Eigen::MatrixXd& local) {
     LF_ASSERT_MSG(e.RefEl().Dimension() == local.rows(),

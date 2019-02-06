@@ -73,6 +73,10 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
   return o;
 }
 
+// ----------------------------------------------------------------------
+// Implementation UniformFEDofHandler
+// ----------------------------------------------------------------------
+
 UniformFEDofHandler::UniformFEDofHandler(
     std::shared_ptr<const lf::mesh::Mesh> mesh, dof_map_t dofmap)
     : mesh_(std::move(mesh)), no_dofs_() {

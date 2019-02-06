@@ -15,7 +15,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   // The following code is modeled after the example from
   // https://theboostcpplibraries.com/boost.program_options
   // and defines allowed command line arguments:
@@ -74,7 +74,9 @@ int main(int argc, char** argv) {
                  {lf::base::RefEl::kSegment(), ndof_edge},
                  {lf::base::RefEl::kTria(), ndof_tria},
                  {lf::base::RefEl::kQuad(), ndof_quad}});
+    // Copious output of information about dof handler
     lf::assemble::DofHandler::output_ctrl_ = 30;
     std::cout << dof_handler << std::endl;
   }
+  return 0L;
 }  // end main

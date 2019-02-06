@@ -442,17 +442,20 @@ class RefEl {
 
   /**
    * @brief Return a string representation of this Reference element
+   *
+   * This string is supposed to described  the _topological type_ of the entity:
+   * NODE, EDGE (2 nodes), TRIA (3-node triangle), QUAD (4-node quadrilateral)
    */
   std::string ToString() const {
     switch (type_) {
       case RefElType::kPoint:
-        return "kPoint";
+        return "NODE";
       case RefElType::kSegment:
-        return "kSegment";
+        return "EDGE";
       case RefElType::kTria:
-        return "kTria";
+        return "TRIA";
       case RefElType::kQuad:
-        return "kQuad";
+        return "QUAD";
       default:
         LF_VERIFY_MSG(false, "ToString() not implemented for this RefElType");
     }

@@ -12,19 +12,19 @@
 
 namespace lf::quad {
 namespace detail {
-template <base::RefElType REF_EL, int Order>
+template <base::RefElType REF_EL, int Degree>
 QuadRule HardcodedQuadRule();
 }
 
-QuadRule make_QuadRule(base::RefEl ref_el, unsigned order) {
+QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree) {
   if (ref_el == base::RefEl::kSegment()) {
-    quadOrder_t n = order / 2 + 1;
+    quadDegree_t n = degree / 2 + 1;
     auto [points, weights] = GaussLegendre(n);
     return QuadRule(base::RefEl::kSegment(), points.transpose(),
                     std::move(weights), 2 * n - 1);
   }
   if (ref_el == base::RefEl::kQuad()) {
-    quadOrder_t n = order / 2 + 1;
+    quadDegree_t n = degree / 2 + 1;
     auto [points1d, weights1d] = GaussLegendre(n);
     Eigen::MatrixXd points2d(2, n * n);
     points2d.row(0) = Eigen::kroneckerProduct(points1d.transpose(),
@@ -34,12 +34,12 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned order) {
                     Eigen::kroneckerProduct(weights1d, weights1d), 2 * n - 1);
   }
   if (ref_el == base::RefEl::kTria()) {
-    switch (order) {
+    switch (degree) {
       case 1:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 1>();
       case 2:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 2>();
-      case 3:  // use order 4 rule instead
+      case 3:  // use degree 4 rule instead
       case 4:
         return detail::HardcodedQuadRule<base::RefEl::kTria(), 4>();
       case 5:
@@ -137,7 +137,7 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned order) {
       default:
         // Create a quadrule using tensor product quadrature rule + duffy
         // transform
-        quadOrder_t n = order / 2 + 1;
+        quadDegree_t n = degree / 2 + 1;
         auto [leg_p, leg_w] = GaussLegendre(n);
         auto [jac_p, jac_w] = GaussJacobi(n, 1, 0);
         jac_p.array() = (jac_p.array() + 1) / 2.;  // rescale to [0,1]

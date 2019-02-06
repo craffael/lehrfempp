@@ -251,7 +251,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
 
     // ----------------------------------------------------------------------
-    // I: Assemble finite element Galerkin matrix
+    // III: Assemble finite element Galerkin matrix
     // First the volume part for the bilinear form
     // Initialize object taking care of local computations. No selection of a
     // subset of cells is specified in this demonstration
@@ -271,7 +271,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     lf::assemble::AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
 
     // ----------------------------------------------------------------------
-    // II: Right-hand side vector; has to be set to zero initially
+    // IV: Right-hand side vector; has to be set to zero initially
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(N_dofs);
     phi.setZero();
     // Assemble volume part of right-hand side vector depending on the source
