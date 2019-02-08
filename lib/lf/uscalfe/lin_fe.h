@@ -1,3 +1,9 @@
+/* **************************************************************************
+ * LehrFEM++ - A simple C++ finite element libray for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
+
 #ifndef LF_LINFE_H
 #define LF_LINFE_H
 /***************************************************************************
@@ -30,9 +36,10 @@ namespace lf::uscalfe {
  * @note the `Eval()` method will always return a _reference_ to a 4x4 matrix
  * also for triangles. In this case the last row and column must be ignored.
  *
- * This class complies with the requirements for the type `ELEM_MAT_COMP`
- * given as a template parameter to define an incarnation of the function
- * AssembleMatrixLocally().
+ * This class complies with the requirements for the type
+ * `ENTITY_MATRIX_PROVIDER` given as a template parameter to define an
+ * incarnation of the function
+ * @ref AssembleMatrixLocally().
  */
 class LinearFELaplaceElementMatrix {
  public:
@@ -47,7 +54,7 @@ class LinearFELaplaceElementMatrix {
    * @brief All cells are considered active in the default implementation
    */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  /*
+  /**
    * @brief main routine for the computation of element matrices
    *
    * @param cell reference to the (triangular or quadrilateral) cell for
@@ -76,7 +83,7 @@ class LinearFELaplaceElementMatrix {
       (Eigen::Matrix<double, 2, 1>() << 0.7, 0.3).finished()};
 
  public:
-  /*
+  /**
    * @brief static variable for controling debugging output
    */
   static unsigned int dbg_ctrl;
@@ -99,7 +106,7 @@ class LinearFELaplaceElementMatrix {
  * have length 4 also for triangles.
  *
  * This class complies with the requirements for the template parameter
- * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ * `ENTITY_VECTOR_PROVIDER` of the function AssembleVectorLocally().
  */
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {
@@ -111,14 +118,14 @@ class LinearFELocalLoadVector {
   explicit LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  /*
+  /**
    * @brief Main method for computing the element vector
    *
    * @param cell current cell for which the element vector is desired
    *
-   * The implementation uses simple vertex based quadrature and an approximation
-   * of the volume of a cell just using the integration element at the
-   * barycenter.
+   * The implementation uses simple edge midpoint based quadrature and an
+   * approximation of the volume of a cell just using the integration element at
+   * the barycenter.
    */
   ElemVec Eval(const lf::mesh::Entity &cell);
 
@@ -128,7 +135,7 @@ class LinearFELocalLoadVector {
   FUNCTOR f_;
 
  public:
-  /*
+  /**
    * @brief static variable for controling debugging output
    */
   static unsigned int dbg_ctrl;

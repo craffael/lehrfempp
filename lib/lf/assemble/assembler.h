@@ -59,7 +59,10 @@ EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
  * @param entity_matrix_provider entity_matrix_provider object for passing all
  * kinds of data
  * @param matrix matrix object to which the assembled matrix will be added.
- *               The matrix object is not set to zero in the beginning!
+ *
+ * @note The matrix object passed in `matrix` is not set to zero in the
+ * beginning! This makes is possible to assemble a matrix piecemeal via several
+ * successive calls to @ref AssembleMatrixLocally()
  *
  * This method performs cell-oriented assembly controlled by a local-to-global
  * index map ("dof handler").
@@ -92,11 +95,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                            const DofHandler &dof_handler_test,
                            ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
                            TMPMATRIX &matrix) {
-  // Type of matrix entries, usually either double or complex.
-  using scalar_t = typename TMPMATRIX::Scalar;
-  // Type for element matrix
-  using elem_mat_t = typename ENTITY_MATRIX_PROVIDER::ElemMat;
-  // Underlying mesh
+  // Pointer to underlying mesh
   auto mesh = dof_handler_trial.Mesh();
 
   LF_ASSERT_MSG(mesh == dof_handler_test.Mesh(),
@@ -121,7 +120,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
           dof_handler_trial.GlobalDofIndices(entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
-      const elem_mat_t elem_mat(entity_matrix_provider.Eval(entity));
+      const auto elem_mat{entity_matrix_provider.Eval(entity)};
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
                                       << ", entity " << mesh->Index(entity));
@@ -208,11 +207,11 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim,
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider, TMPMATRIX &matrix)
  */
 
-template <typename TMPMATRIX, class ELEMENT_MATRIX_PROVIDER>
+template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
-                                ELEMENT_MATRIX_PROVIDER &element_matrix_provider) {
-  return AssembleMatrixLocally<TMPMATRIX, ELEMENT_MATRIX_PROVIDER>(
-      codim, dof_handler, dof_handler, element_matrix_provider);
+                                ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
+  return AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
+      codim, dof_handler, dof_handler, entity_matrix_provider);
 }
 
 /**
@@ -245,11 +244,7 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
 template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                            ENTITY_VECTOR_PROVIDER &entity_vector_provider, VECTOR &resultvector) {
-  // Type of matrix entries, usually either double or complex.
-  using scalar_t = typename VECTOR::Scalar;
-  // Type for element matrix
-  using elem_vec_t = typename ENTITY_VECTOR_PROVIDER::ElemVec;
-  // Underlying mesh
+  // Pointer to underlying mesh
   auto mesh = dof_handler.Mesh();
 
   // Central assembly loop over entities of the co-dimension specified via
@@ -264,7 +259,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
           dof_handler.GlobalDofIndices(entity));
       // Request local vector from entity_vector_provider object. In the case CODIM = 0,
       // when `entity` is a cell, this is the element vector
-      const elem_vec_t elem_vec(entity_vector_provider.Eval(entity));
+      const auto elem_vec{entity_vector_provider.Eval(entity)};
       LF_ASSERT_MSG(elem_vec.size() >= veclen,
                     "length mismatch " << elem_vec.size() << " <-> " << veclen
                                        << ", entity " << mesh->Index(entity));

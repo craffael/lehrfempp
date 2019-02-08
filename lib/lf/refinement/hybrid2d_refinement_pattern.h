@@ -85,7 +85,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
       : geometry::RefinementPattern(ref_el),
         anchor_(anchor),
         ref_pat_(ref_pat),
-        anchor_set_(anchor == idx_nil ? false : true) {
+        anchor_set_(anchor != idx_nil) {
     if (anchor_set_) {
       LF_VERIFY_MSG(
           anchor < ref_el_.NumSubEntities(1),
@@ -204,7 +204,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
     anchor_ = anchor;
-    anchor_set_ = (anchor == idx_nil) ? false : true;
+    anchor_set_ = anchor != idx_nil;
     if (anchor_set_) {
       LF_VERIFY_MSG(
           anchor < ref_el_.NumSubEntities(1),

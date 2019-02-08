@@ -33,7 +33,7 @@ class TriaO1 : public Geometry {
     return jacobian_.replicate(1, local.cols());
   }
   Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const override {
+      const Eigen::MatrixXd& local) const override {
     return jacobian_inverse_gramian_.replicate(1, local.cols());
   }
   Eigen::VectorXd IntegrationElement(
