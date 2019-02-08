@@ -27,11 +27,11 @@
  * @note We have to pass pointer to the mesh, because vtk output requires the
  * the construction of a writer object that holds a shared pointer to the mesh.
  */
-void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-                            const char *filename);
+void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p,
+                            const char* filename);
 
-void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-                            const char *filename) {
+void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p,
+                            const char* filename) {
   // TikZ output
   using lf::io::TikzOutputCtrl;
   std::stringstream filename_tikz;
