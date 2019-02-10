@@ -31,9 +31,8 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
  * @param beta   The exponent of the weight function
  * @return The nodes(first) and weights(second) of the quadrature rule
  */
-std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(quadOrder_t num_points,
-                                                         double alpha,
-                                                         double beta);
+std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
+    quadDegree_t num_points, double alpha, double beta);
 
 }  // namespace lf::quad
 

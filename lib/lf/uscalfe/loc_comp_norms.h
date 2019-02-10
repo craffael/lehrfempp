@@ -73,7 +73,7 @@ class MeshFunctionL2NormDifference {
    */
   MeshFunctionL2NormDifference(
       const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
-      FUNCTOR u, quad::quadOrder_t loc_quad_order)
+      FUNCTOR u, quad::quadDegree_t loc_quad_order)
       : u_(std::move(u)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -251,7 +251,7 @@ class MeshFunctionL2GradientDifference {
    */
   MeshFunctionL2GradientDifference(
       const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
-      VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order)
+      VEC_FUNC vecfield, lf::quad::quadDegree_t loc_quad_order)
       : vecfield_(std::move(vecfield)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(

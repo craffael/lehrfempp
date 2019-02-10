@@ -34,10 +34,8 @@ namespace lf::uscalfe {
  *                    It should be either scalar- or matrix-valued.
  * @tparam REACTION_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                        reaction coefficient \f$ \mathbf{\gamma} \f$.
-     *                    It should be either scalar- or matrix-valued.
- * coefficient
- *
- *
+ *                    It should be either scalar- or matrix-valued.
+  *
  * @note This class complies with the type requirements for the template
  * argument ELEM_MAT_COMP of the function lf::assemble::AssembleMatrixLocally().
  *
@@ -49,6 +47,15 @@ namespace lf::uscalfe {
  * @f]
  * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
  * @f$\gamma@f$.
+ *
+ * ## Template parameter requirement
+ *
+ * - SCALAR must be a type like `double`
+ * - DIFF_COEFF must provide an evaluation operator
+ * `operator (const Entity &,ref_coord_t)` that returns either a scalar
+ * or a matrix type that is compatible with Eigen's matrices. Usually it will
+ * be an Eigen::Matrix either of variable of fixed size.
+ *
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class ReactionDiffusionElementMatrixProvider {
@@ -161,7 +168,8 @@ ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
-  auto &pfe = fe_precomp_[ref_el.Id()];
+  PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
+      fe_precomp_[ref_el.Id()];
 
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();

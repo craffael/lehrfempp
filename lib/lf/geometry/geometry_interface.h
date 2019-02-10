@@ -189,13 +189,31 @@ class Geometry {
 };  // class Geometry
 
 /**
- * @brief (Approximate) Volume of a shape
+ * @brief Compute the (approximate) volume (area) of a shape
  * @param geometry object
+ * @return approximate volume
  *
  * @note the volume can be computed exactly only for planar affine/bilinear (2D)
  * shapes Otherwise this functions returns a one-point quadrature approximation
  */
 double Volume(const Geometry& geo);
+
+/**
+ * @brief The corners of a shape with piecewise smooth boundary
+ * @param geometry object
+ * @return the coordinates vectors for the corners of the shape represented by
+ * the geometry object packed into the _columns_ of a dxn-matrix, where d is the
+ * dimension of physical space, and n stands for the number of corners.
+ *
+ * @note Only for 2D shapes with all straight edges the positions of the corners
+ * will completely define the shape. This is the case with shapes represented by
+ * the types
+ * @ref lf::geometry::TriaO1 and @ref lf::geometry::QuadO1
+ */
+inline Eigen::MatrixXd Corners(const Geometry& geo) {
+  return geo.Global(geo.RefEl().NodeCoords());
+}
+
 }  // namespace lf::geometry
 
 #endif  // __7ed6b0d4d9244155819c464fc4eb9bbb

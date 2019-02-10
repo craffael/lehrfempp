@@ -56,4 +56,34 @@ void checkLocalTopology(const Entity &e) {
   }
 }
 
+// clang-format off
+/* SAM_LISTING_BEGIN_1 */
+void checkRelCodim(const Entity &e) {
+  using dim_t = lf::base::RefEl::dim_t;
+  using RefEl = lf::base::RefEl;
+  using size_type = lf::mesh::Mesh::size_type;
+
+  // Obtain basic information about current Entity
+  const RefEl ref_el = e.RefEl();
+  const dim_t dimension = ref_el.Dimension();
+  // Loop over all possible co-dimensions of sub-entities
+  for (dim_t sub_codim = 1; sub_codim <= dimension; ++sub_codim) {
+    // Obtain array of sub-entities of co-dimensjon sub\_codim
+    base::RandomAccessRange<const Entity> sub_ent_array{
+        e.SubEntities(sub_codim)};
+    // Query number of sub-entities
+    const size_type num_subent = ref_el.NumSubEntities(sub_codim);
+    // Index-based loop over sub-entities
+    for (int sub_ent_idx = 0; sub_ent_idx < num_subent; ++sub_ent_idx) {
+      // Test whether relative dimension matches absolute dimensions
+      EXPECT_EQ(sub_codim,
+                dimension - sub_ent_array[sub_ent_idx].RefEl().Dimension())
+          << "Dimension mismatch: " << e << " <-> subent("
+	  << sub_ent_idx << ")"  << std::endl;
+    }
+  }
+}
+/* SAM_LISTING_END_1 */
+// clang-format on
+
 }  // namespace lf::mesh::test_utils

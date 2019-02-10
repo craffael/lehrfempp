@@ -129,6 +129,7 @@ void checkTwoElementMesh(const GmshReader& reader) {
   for (auto& e : entities0) {
     mesh::test_utils::checkGeometryOrientation(e);
     mesh::test_utils::checkLocalTopology(e);
+    mesh::test_utils::checkRelCodim(e);
   }
   mesh::test_utils::checkEntityIndexing(*reader.mesh());
   mesh::test_utils::checkMeshCompleteness(*reader.mesh());

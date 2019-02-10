@@ -29,7 +29,7 @@ void checkQuadRule(QuadRule qr, double precision = 1e-12,
   EXPECT_EQ(qr.Points().cols(), qr.Weights().size());
   EXPECT_EQ(qr.Points().rows(), qr.RefEl().Dimension());
 
-  auto order = qr.Order();
+  auto order = qr.Degree();
   if (qr.RefEl() == base::RefEl::kSegment()) {
     for (int i = 0; i <= order; ++i) {
       // integrate x^i
