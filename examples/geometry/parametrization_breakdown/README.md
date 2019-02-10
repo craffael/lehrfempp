@@ -1,4 +1,4 @@
-#LehrFEM++ Parameterization Breakdown Demo
+## LehrFEM++ Parameterization Breakdown Demo
 
 This example code illustrates when the second-order parametrization breaks 
 down. More concretely, we investigate when the volume computation becomes 
