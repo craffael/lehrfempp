@@ -403,6 +403,34 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
 
       break;
     }
+    case 7: {
+      // Hybrid mesh of the unit square comprising one quadrilateral and one
+      // triangle
+      // clang-format off
+    std::array<std::array<double, 2>, 5> node_coord{
+          std::array<double, 2>({0   , 0    }),
+          std::array<double, 2>({1   , 0    }),
+          std::array<double, 2>({1   , 1    }),
+          std::array<double, 2>({0   , 1    }),
+          std::array<double, 2>({0.5 , 1    })};
+      // clang-format on
+
+      // Create nodes
+      for (const auto &node : node_coord) {
+        mesh_factory_ptr->AddPoint(coord_t({node[0] * scale, node[1] * scale}));
+      }
+      // Register triangle
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({1, 2, 4}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      // Register quadrilateral
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kQuad(),
+          lf::base::ForwardRange<const size_type>({0, 1, 4, 3}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      break;
+    }
     default: {
       LF_VERIFY_MSG(false, "Illegal selector for test meshes");
       break;

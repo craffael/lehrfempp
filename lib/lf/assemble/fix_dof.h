@@ -28,13 +28,11 @@ namespace lf::assemble {
  *                  supplier of prescribed values
  * @tparam RHSVECTOR generic vector type for right hand side
  *
- * @param fixed_comp_flags boolean vector whose length agrees with the matrix
- * dimension. A value of `true` indicates that the corresponding solution
- * component is prescribed
- * @param fixed_vec prescribed values are stored in the corresponding
- * components of this vector
- * @param mat reference to the _square_ coefficient matrix in COO format
- * @param rhs reference to the right-hand-side vector
+ * @param selectvals reference to a selector object, whose purpose is twofold.
+ * It must flag degrees of ffreedom as being fixed and for those d.o.f.s it must
+ * provide the prescribed value.
+ * @param A reference to the _square_ coefficient matrix in COO format
+ * @param b reference to the right-hand-side vector
  *
  * ### Requirements for type RHSVECTOR and SELECTOR
  *

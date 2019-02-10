@@ -42,11 +42,12 @@ namespace lf::mesh::test_utils {
  * - selector = 5: test mesh of [0,3]^2 with triangles and parallelograms, all
  *                 _affine_
  * - selector = 6: hybrid mesh of a triangular domain
+ * - selector = 7: hybrid mesh comprising one quadrilateral and one triangle
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
                                                          double scale = 1.0);
 
-static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 6;
+static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 7;
 
 }  // namespace lf::mesh::test_utils
 
