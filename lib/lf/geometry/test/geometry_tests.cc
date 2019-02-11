@@ -503,8 +503,10 @@ TEST(Geometry, TriaO2) {
 TEST(Geometry, QuadO1) {
   Eigen::MatrixXd global_nodes_2D(2, 4);
   global_nodes_2D << -1, 3, 2, 1, -2, 0, 2, 1;
+  Eigen::MatrixXd global_nodes_3D(3, 4);
+  global_nodes_3D << 4, 5, -3, -5, -2, 1, 3, -3, -2, -3, 1, 3;
 
-  for (const auto &global_nodes : {global_nodes_2D}) {
+  for (const auto &global_nodes : {global_nodes_2D, global_nodes_3D}) {
     lf::geometry::QuadO1 geom(global_nodes);
     auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
     runGeometryChecks(geom, qr.Points(), 1e-9);
@@ -546,8 +548,11 @@ TEST(Geometry, QuadO2) {
   Eigen::MatrixXd global_nodes_2D(2, 8);
   global_nodes_2D << 3, 7, 4, 1, 5, 5.4, 2.5, 1.8, 1, 3, 7, 8, 2.5, 5.9, 6.9,
       4.1;
+  Eigen::MatrixXd global_nodes_3D(3, 8);
+  global_nodes_3D << 4, 5, -3, -5, 4.499, 0.999, -4.01, -0.499, -2, 1, 3, -3,
+      -0.5009, 2.01, 0.009, -2.501, -2, -3, 1, 3, -2.4999, -1.01, 2.01, .499;
 
-  for (const auto &global_nodes : {global_nodes_2D}) {
+  for (const auto &global_nodes : {global_nodes_2D, global_nodes_3D}) {
     lf::geometry::QuadO2 geom(global_nodes);
     auto qr = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 5);
     runGeometryChecks(geom, qr.Points(), 1e-9);
