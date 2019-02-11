@@ -49,7 +49,7 @@ void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p,
 
   // Python output
   std::stringstream filename_py;
-  filename_py << filename << ".py";
+  filename_py << filename;
   lf::io::writeMatplotlib(*mesh_p, filename_py.str());
 
   // VTK output
