@@ -151,40 +151,6 @@ namespace lf::base {
  */
 extern StaticVar *ctrl_root;
 
-/**
- * @brief Output of globally managed static integers
- *
- */
-unsigned int ListCtrlVars(std::ostream &out,
-                          const StaticVar *ctrl_var_root = nullptr);
-
-/**
- * @brief Setting a named control variable
- * @param varname string containing the name of the global control variable
- * @param ctrl_var_root pointer to the beginning of the variable list
- */
-bool SetCtrlVar(const std::string &varname, int value,
-                const StaticVar *ctrl_var_root = nullptr);
-
-/**
- * @brief Initialize variables from file
- *
- * File format is `varname=value` per line, where `value` has to be a string
- * that can be converted into an integer.
- * @param filename name of the file to read from
- */
-bool ReadCtrlVarsFile(const std::string &filename,
-                      const StaticVar *ctrl_var_root = nullptr);
-
-/** @brief Process command line arguments to set variables
- *
- * Command line arguments of the form
- *    `vaname=value'
- * can be used to set internal static integer variables.
- * The variable name `varname` must not contain the character `=`
- */
-int ReadCtrVarsCmdArgs(int argc, const char *argv[],
-                       const StaticVar *ctrl_var_root = nullptr);
 }  // end namespace lf::base
 
 #endif  // __c3c605c9e48646758bf03fab65d52836
