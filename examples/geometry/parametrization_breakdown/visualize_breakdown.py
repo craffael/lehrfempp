@@ -15,7 +15,7 @@ if len(argv) < 2:
     exit(-1)
 
 results_dir = argv[1]
-example_dir = path.dirname(results_dir)
+example_dir = path.dirname(path.abspath(results_dir))
 plots_dir = path.join(example_dir, 'plots')
 
 if not path.isdir(plots_dir):
