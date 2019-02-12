@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+from collections import OrderedDict
 from os import listdir, mkdir, path
 from sys import argv
 
@@ -229,9 +230,47 @@ def visualize_jacobian_determinants(geom_name):
     )
 
 
+def visualize_breakdown(geom_name):
+    fig, ax = plt.subplots(2, 2, sharex='row', sharey='row', figsize=(6, 6))
+
+    for idx, geom in enumerate([geom_name, geom_name + '_degenerate']):
+        coords, points, _, _ = load_visualization_files(geom)
+        plot_geom(ax[0, idx], coords)
+        ax[0, idx].scatter(points[0, :], points[1, :], s=0.5)
+
+        ref_points, determinants, _, _ = load_determinant_files(geom)
+        max_val = max(determinants)
+        min_val = min(determinants)
+        extrema = (min(min_val, 0), max(max_val, 0))
+        scat = plot_jacobian_determinants(
+            ax[1, idx], ref_points, determinants, extrema
+        )
+
+    cax, kw = mpl.colorbar.make_axes(
+        [axis for axis in ax[1].flat], fraction=0.015
+    )
+    fig.colorbar(scat, cax=cax, **kw)
+
+    handles, labels = ax[0, 0].get_legend_handles_labels()
+    by_label = OrderedDict(zip(labels, handles))
+    ax[0, 0].legend(by_label.values(), by_label.keys(), loc=4)
+
+    for i in range(2):
+        ax[0, i].set_xlim(left=-0.5, right=8.5)
+        ax[0, i].set_ylim(bottom=-3, top=11)
+
+    plt.savefig(
+        path.join(plots_dir, geom_name + '_breakdown.eps'),
+        bbox_inches='tight'
+    )
+
+
 for geom in ['tria', 'tria_degenerate', 'quad', 'quad_degenerate']:
     print(geom)
     check_volumes(geom)
     visualize_geom(geom)
     visualize_jacobian_determinants(geom)
     print()
+
+for geom in ['tria', 'quad']:
+    visualize_breakdown(geom)
