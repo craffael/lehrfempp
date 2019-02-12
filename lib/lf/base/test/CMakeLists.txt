@@ -6,7 +6,7 @@ set(sources
   forward_range_tests.cc
   random_access_iterator_tests.cc
   ref_el_tests.cc
-  static_vars_tests.cc
+ # static_vars_tests.cc
 )
 
 add_executable(lf.base.test ${sources})
