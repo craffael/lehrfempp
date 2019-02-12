@@ -33,16 +33,16 @@ namespace variables {
 extern std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
 template <typename T>
-void Add(const std::string&, const T&, const std::string& comment = "");
+void Add(const std::string& key, const T& value, const std::string& comment = "");
 
 template <typename T>
-T Get(const std::string&);
+T Get(const std::string& key);
 
 extern void ListVariables();
 
-extern bool IsSet(const std::string&);
+extern bool IsSet(const std::string& key);
 
-extern bool Remove(const std::string&);
+extern bool Remove(const std::string& key);
 
 /**
  * @brief Add a the value `value` to the global variables with key `key` Handle
@@ -80,30 +80,30 @@ extern std::string kConfigFile;
 extern po::variables_map kVM;
 extern po::options_description kDesc;
 
-extern void Init(int, char**, std::string);
-extern void Init(int, char**);
-extern void Init(std::string);
+extern void Init(int argc, char** argv, std::string file);
+extern void Init(int argc, char** argv);
+extern void Init(std::string file);
 extern void Init();
 
 extern po::options_description_easy_init Add();
-extern void Add(const std::string&, const std::string&);
+extern void Add(const std::string& name, const std::string& comment);
 template <typename T>
-void Add(const std::string&, const std::string&);
+void Add(const std::string& name, const std::string& comment);
 template <typename T>
-void Add(const std::string&, const std::string&, const T&);
+void Add(const std::string& name, const std::string& comment, const T& def);
 template <class A>
-void AddCtrl(const std::string&, A&, const std::string& comment = "");
+void AddCtrl(const std::string& name, A& class_instance, const std::string& comment = "");
 template <typename T>
-void AddSetter(const std::string&, T&, const std::string& comment = "");
+void AddSetter(const std::string& name, T& value, const std::string& comment = "");
 
 template <typename T>
-T Get(const std::string&);
+T Get(const std::string& name);
 template <typename T>
-T Get(const std::string&, const T&);
+T Get(const std::string& name, const T& alt);
 
 extern bool Help();
 
-extern bool IsSet(const std::string&);
+extern bool IsSet(const std::string& name);
 
 extern void ParseCommandLine(const int argc = 0, const char** argv = nullptr);
 
