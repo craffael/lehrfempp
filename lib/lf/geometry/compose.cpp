@@ -34,7 +34,7 @@ class CompositeGeometry : public Geometry {
   }
 
   Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const override {
+      const Eigen::MatrixXd& local) const override {
     Eigen::MatrixXd result;
     if (dim_global_ == dim_middle_ && dim_middle_ == dim_local_) {
       result = a_->JacobianInverseGramian(local);

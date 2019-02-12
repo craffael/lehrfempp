@@ -34,6 +34,11 @@
  > cd cmake
  > wget https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
  ```
+On Mac OSX use curl instead:
+ ```
+ > cd cmake
+ > curl -O https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ ```
    This file is needed to setup the hunter package manager (which runs completly inside CMake).
  4. Create the file `getting_started/CMakeLists.txt` with the following content
  ```
@@ -42,10 +47,9 @@ cmake_minimum_required(VERSION 3.10)
 ### Hunter package manager ###
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.65.tar.gz"
-    SHA1 "00e252171605c290390a3cc90a372beeeb406d3c"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.100.tar.gz"
+    SHA1 "55cc2f6701a3f368c4b1955b8b211a682e525f4a"
 )
-
 
 ### Setup CMake Project ###
 project(GettingStarted)
@@ -58,7 +62,7 @@ find_package(lehrfempp CONFIG REQUIRED)
 add_executable(getting_started main.cc)
 
 # link executable with LehrFEM++ module lf::base
-target_link_libraries(main.cpp LF::lf.base) 
+target_link_libraries(getting_started LF::lf.base) 
  ```
    Note that this `CMakeLists.txt` links only with the `lf.base` module of LehrFEM++. Because we only want to print the number of nodes of a triangle, it suffices to link to the `lf.base` module.
    However, if you want to use more functionality, you will probably need to link to other LehrFEM++ modules as well.

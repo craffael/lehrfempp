@@ -73,8 +73,8 @@ class MeshFunctionL2NormDifference {
    */
   MeshFunctionL2NormDifference(
       const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
-      FUNCTOR u, quad::quadOrder_t loc_quad_order)
-      : u_(u) {
+      FUNCTOR u, quad::quadDegree_t loc_quad_order)
+      : u_(std::move(u)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       auto fe = fe_space->ShapeFunctionLayout(ref_el);
       fe_precomp_[ref_el.Id()] =
@@ -148,7 +148,7 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
   const Eigen::VectorXd &qr_Weights{fe.Qr().Weights()};
   const size_type qr_NumPts = fe.Qr().NumPoints();
   const size_type num_LSF = fe.NumRefShapeFunctions();
-  const auto rsf_QuadPts{fe.PrecompReferenceShapeFunctions()};
+  const auto &rsf_QuadPts{fe.PrecompReferenceShapeFunctions()};
 
   SWITCHEDSTATEMENT(ctrl_, kout_cell,
                     std::cout << ref_el << ", (Nlsf = " << num_LSF
@@ -251,8 +251,8 @@ class MeshFunctionL2GradientDifference {
    */
   MeshFunctionL2GradientDifference(
       const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
-      VEC_FUNC vecfield, lf::quad::quadOrder_t loc_quad_order)
-      : vecfield_(vecfield) {
+      VEC_FUNC vecfield, lf::quad::quadDegree_t loc_quad_order)
+      : vecfield_(std::move(vecfield)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
           fe_space->ShapeFunctionLayout(ref_el),

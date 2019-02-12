@@ -331,6 +331,106 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       }
       break;
     }
+    case 6: {
+      // Hybrid mesh for triangle domain with vertices [0,0],[1,0],[0.2,1]
+      // Set coordinates of nodes
+      // clang-format off
+      std::array<std::array<double, 2>, 8> node_coord{
+          std::array<double, 2>({0   , 0    }),
+          std::array<double, 2>({1   , 0    }),
+          std::array<double, 2>({0.2 , 1.0  }),
+          std::array<double, 2>({0.5 , 0.0  }),
+          std::array<double, 2>({0.6 , 0.5  }),
+          std::array<double, 2>({0.1 , 0.5  }),
+          std::array<double, 2>({0.15, 0.75 }),
+          std::array<double, 2>({0.4 , 0.75 })};
+      // clang-format on
+
+      // Specify triangles (two)
+      std::array<std::array<size_type, 3>, 2> tria_nodes{
+          std::array<size_type, 3>({3, 1, 4}),
+          std::array<size_type, 3>({7, 6, 2})};
+
+      // Specify general quadrilateral
+      std::array<std::array<size_type, 4>, 1> quad_nodes{
+          std::array<size_type, 4>({5, 4, 7, 6})};
+
+      // Specify parallelogram
+      std::array<std::array<size_type, 4>, 1> parg_nodes{
+          std::array<size_type, 4>({0, 3, 4, 5})};
+
+      // Create nodes
+      for (const auto &node : node_coord) {
+        mesh_factory_ptr->AddPoint(coord_t({node[0] * scale, node[1] * scale}));
+      }
+
+      // generate triangles
+      for (const auto &node : tria_nodes) {
+        mesh_factory_ptr->AddEntity(
+            lf::base::RefEl::kTria(),
+            lf::base::ForwardRange<const size_type>(
+                {node[0], node[1], node[2]}),
+            std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      }
+
+      // generate quadrilaterals
+      for (const auto &node : quad_nodes) {
+        quad_coord_t quad_coord(2, 4);
+        for (int n_pt = 0; n_pt < 4; ++n_pt) {
+          quad_coord(0, n_pt) = node_coord[node[n_pt]][0];
+          quad_coord(1, n_pt) = node_coord[node[n_pt]][1];
+        }
+        mesh_factory_ptr->AddEntity(
+            lf::base::RefEl::kQuad(),
+            lf::base::ForwardRange<const size_type>(
+                {node[0], node[1], node[2], node[3]}),
+            std::make_unique<lf::geometry::QuadO1>(quad_coord));
+      }
+
+      // generate Parallelograms
+      for (const auto &node : parg_nodes) {
+        quad_coord_t quad_coord(2, 4);
+        for (int n_pt = 0; n_pt < 4; ++n_pt) {
+          quad_coord(0, n_pt) = node_coord[node[n_pt]][0];
+          quad_coord(1, n_pt) = node_coord[node[n_pt]][1];
+        }
+        mesh_factory_ptr->AddEntity(
+            lf::base::RefEl::kQuad(),
+            lf::base::ForwardRange<const size_type>(
+                {node[0], node[1], node[2], node[3]}),
+            std::make_unique<lf::geometry::Parallelogram>(quad_coord));
+      }
+
+      break;
+    }
+    case 7: {
+      // Hybrid mesh of the unit square comprising one quadrilateral and one
+      // triangle
+      // clang-format off
+    std::array<std::array<double, 2>, 5> node_coord{
+          std::array<double, 2>({0   , 0    }),
+          std::array<double, 2>({1   , 0    }),
+          std::array<double, 2>({1   , 1    }),
+          std::array<double, 2>({0   , 1    }),
+          std::array<double, 2>({0.5 , 1    })};
+      // clang-format on
+
+      // Create nodes
+      for (const auto &node : node_coord) {
+        mesh_factory_ptr->AddPoint(coord_t({node[0] * scale, node[1] * scale}));
+      }
+      // Register triangle
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kTria(),
+          lf::base::ForwardRange<const size_type>({1, 2, 4}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      // Register quadrilateral
+      mesh_factory_ptr->AddEntity(
+          lf::base::RefEl::kQuad(),
+          lf::base::ForwardRange<const size_type>({0, 1, 4, 3}),
+          std::unique_ptr<lf::geometry::Geometry>(nullptr));
+      break;
+    }
     default: {
       LF_VERIFY_MSG(false, "Illegal selector for test meshes");
       break;

@@ -12,7 +12,7 @@
 
 namespace lf::quad::test {
 
-double IntegrateMonomial(quadOrder_t num_points, quadOrder_t exponent,
+double IntegrateMonomial(quadDegree_t num_points, quadDegree_t exponent,
                          double alpha, double beta) {
   auto [points, weights] = GaussJacobi(num_points, alpha, beta);
 
@@ -20,7 +20,7 @@ double IntegrateMonomial(quadOrder_t num_points, quadOrder_t exponent,
   EXPECT_EQ(weights.size(), num_points);
 
   double result = 0;
-  for (quadOrder_t i = 0; i < num_points; ++i) {
+  for (quadDegree_t i = 0; i < num_points; ++i) {
     result += std::pow(points(i), exponent) * weights(i);
   }
   return result;

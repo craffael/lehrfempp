@@ -16,7 +16,7 @@ namespace lf::mesh::hybrid2d {
 ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
                       "Diagnostics control for hybrid2d::Mesh");
 
-base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
+base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");
   LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
 
@@ -42,7 +42,7 @@ base::ForwardRange<const Entity> Mesh::Entities(char codim) const {
   }
 }
 
-Mesh::size_type Mesh::NumEntities(char codim) const {
+Mesh::size_type Mesh::NumEntities(unsigned codim) const {
   switch (codim) {
     case 0:
       return trias_.size() + quads_.size();
