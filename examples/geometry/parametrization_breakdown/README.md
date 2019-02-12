@@ -21,4 +21,6 @@ lie within the global objects' boundaries and that the jacobian's determinant
 remains positive. However, the degenerate quadrilateral fails to conserve its 
 volume throughout refinement and we see that this is caused by large negative 
 determinant values. All plots are stored in 
-`build/examples/geometry/parametrization_breakdown/plots`.
+`build/examples/geometry/parametrization_breakdown/plots`. For simplicity, the 
+plots can also be generated directly with the file `visualize_breakdown.py` by 
+running the command `python visualize_breakdown.py /path/to/results`.
