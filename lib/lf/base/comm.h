@@ -33,7 +33,8 @@ namespace variables {
 extern std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
 template <typename T>
-void Add(const std::string& key, const T& value, const std::string& comment = "");
+void Add(const std::string& key, const T& value,
+         const std::string& comment = "");
 
 template <typename T>
 T Get(const std::string& key);
@@ -92,9 +93,11 @@ void Add(const std::string& name, const std::string& comment);
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def);
 template <class A>
-void AddCtrl(const std::string& name, A& class_instance, const std::string& comment = "");
+void AddCtrl(const std::string& name, A& class_instance,
+             const std::string& comment = "");
 template <typename T>
-void AddSetter(const std::string& name, T& value, const std::string& comment = "");
+void AddSetter(const std::string& name, T& value,
+               const std::string& comment = "");
 
 template <typename T>
 T Get(const std::string& name);
