@@ -1,4 +1,4 @@
-# include "comm.h"
+#include "comm.h"
 
 namespace lf::base {
 
@@ -11,9 +11,9 @@ std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 void ListVariables() {
   for (auto const& el : kGlobalVars) {
     std::string key = el.first;
-    auto val = el.second; // nested pairs. Clearer than el.second.second.
+    auto val = el.second;  // nested pairs. Clearer than el.second.second.
     std::cout << key << " = " << val.first;
-    if (val.second != "") // if description not empty
+    if (val.second != "")  // if description not empty
       std::cout << " : " << val.second;
     std::cout << "\n";
   }
@@ -42,7 +42,7 @@ bool Remove(const std::string& key) {
   return false;
 }
 
-} // namespace variables
+}  // namespace variables
 
 namespace input {
 
@@ -74,10 +74,9 @@ void Init(int argc, char** argv, std::string file) {
       // Don't add the option if it exists already (then no error is thrown)
       // false -> only exact match in name is admissible
       po::option_description el = kDesc.find(it->name_, false);
-    }
-    catch (const std::exception e) {
-      Add()
-        (it->name_.c_str(), po::value<unsigned int>(&it->ref_), it->comment_.c_str());
+    } catch (const std::exception e) {
+      Add()(it->name_.c_str(), po::value<unsigned int>(&it->ref_),
+            it->comment_.c_str());
     }
     it = it->next_;
   }
@@ -88,34 +87,26 @@ void Init(int argc, char** argv, std::string file) {
  * @param argc: int, argc from `int main(int argc, char** argv)`.
  * @param argv: char**, argv from `int main(int argc, char** argv)`.
  */
-void Init(int argc, char** argv) {
-  Init(argc, argv, std::string());
-}
+void Init(int argc, char** argv) { Init(argc, argv, std::string()); }
 
 /**
  * @brief Interface to input(argc, argv, file). Sets argc=0, argv=nullptr.
  * @param file A file containing options in form name=value.
  */
-void Init(std::string file) {
-  Init(0, nullptr, file);
-}
+void Init(std::string file) { Init(0, nullptr, file); }
 
 /**
  * @brief Interface to input(argc, argv, file).
  *        Sets argc=0, argv=nullptr, file=std:string().
  */
-void Init() {
-  Init(0, nullptr, std::string());
-}
+void Init() { Init(0, nullptr, std::string()); }
 
 /**
  * @brief Handle to po::options_description.add_options.
  * @return desc.add_options()
  * @note Use as: `ci::add()("v1", po::value<int>(), "Description")(..);
  */
-extern po::options_description_easy_init Add() {
-  return kDesc.add_options();
-}
+extern po::options_description_easy_init Add() { return kDesc.add_options(); }
 
 /**
  * @brief Add (name, comment) pair to options description.
@@ -144,9 +135,7 @@ bool Help() {
  * @param name The name of variable for which to check.
  * @return true, if found, false otherwise.
  */
-bool IsSet(const std::string& name) {
-  return kVM.count(name) > 0;
-}
+bool IsSet(const std::string& name) { return kVM.count(name) > 0; }
 
 /**
  * @brief Parse (argc, argv) for values of options.
@@ -159,9 +148,8 @@ void ParseCommandLine(const int argc, const char** argv) {
   // maybe argc/argv haven't been set yet and are given as arguments to this
   if (argc != 0 && argv != nullptr) {
     po::store(po::parse_command_line(argc, argv, kDesc), kVM);
-  }
-  else {
-  // if they have already been set via constructor, use them
+  } else {
+    // if they have already been set via constructor, use them
     po::store(po::parse_command_line(kArgc, kArgv, kDesc), kVM);
   }
   po::notify(kVM);
@@ -185,9 +173,8 @@ bool ParseFile(const std::string& file) {
   return true;
 }
 
+}  // namespace input
 
-} // namespace input
+}  // namespace comm
 
-} // namespace comm
-
-} // namepace lf::base
+}  // namespace lf::base

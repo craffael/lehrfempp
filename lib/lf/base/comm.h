@@ -1,19 +1,18 @@
-# ifndef __comm_h
-# define __comm_h
+#ifndef __comm_h
+#define __comm_h
 
-# include <iostream>
-# include <fstream>
-# include <sstream>
-# include <map>
-# include <stdexcept>
-# include <boost/spirit/home/support/detail/hold_any.hpp>
-# include <boost/program_options.hpp>
-# include <boost/program_options/options_description.hpp>
-# include <boost/algorithm/string/split.hpp>
-# include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/program_options.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/spirit/home/support/detail/hold_any.hpp>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <stdexcept>
 
-# include "lf/base/static_vars.h"
-
+#include "lf/base/static_vars.h"
 
 // namespace structure:
 // lf::base
@@ -21,11 +20,10 @@
 // --------------::variables (for global variables)
 // --------------::input (for reading variables from cmdline & files)
 
-
 namespace lf::base {
 
-namespace bs = boost::spirit; // faster, templated version of boost::any
-namespace po = boost::program_options; // keep in lf::base to avoid conflicts
+namespace bs = boost::spirit;  // faster, templated version of boost::any
+namespace po = boost::program_options;  // keep in lf::base to avoid conflicts
 
 namespace comm {
 
@@ -67,13 +65,12 @@ template <typename T>
 T Get(const std::string& key) {
   if (kGlobalVars.count(key)) {
     return bs::any_cast<T>(kGlobalVars[key].first);
-  }
-  else {
+  } else {
     throw std::invalid_argument("The key " + key + " couldn't be found.");
   }
 }
 
-} // namespace variables
+}  // namespace variables
 
 namespace input {
 
@@ -132,13 +129,15 @@ void Add(const std::string& name, const std::string& comment) {
  */
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def) {
-  kDesc.add_options()
-    (name.c_str(), po::value<T>()->default_value(def), comment.c_str());
+  kDesc.add_options()(name.c_str(), po::value<T>()->default_value(def),
+                      comment.c_str());
 }
 
 template <class A>
 std::function<void(unsigned int)> SetCtrl(A& a) {
-  std::function<void(unsigned int)> lambda = [&a](unsigned int c){ a.output_ctrl_ = c; };
+  std::function<void(unsigned int)> lambda = [&a](unsigned int c) {
+    a.output_ctrl_ = c;
+  };
   return lambda;
 }
 
@@ -158,16 +157,15 @@ void AddCtrl(const std::string& name, A& class_instance,
   //   AddCtrl("ctrl", MyClass.PublicVar, "Some comment");
   //   AddCtrl("ctrl", MyClass::StaticVar, "Some comment");
   // ?
-  kDesc.add_options()
-    (name.c_str(),
-     po::value<unsigned int>()->notifier(SetCtrl(class_instance)),
-     comment.c_str());
+  kDesc.add_options()(
+      name.c_str(),
+      po::value<unsigned int>()->notifier(SetCtrl(class_instance)),
+      comment.c_str());
 }
-
 
 template <typename T>
 std::function<void(T)> SetValue(T& value) {
-  std::function<void(T)> lambda = [&value](T new_value){ value = new_value; };
+  std::function<void(T)> lambda = [&value](T new_value) { value = new_value; };
   return lambda;
 }
 
@@ -185,11 +183,10 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
     po::option_description el = kDesc.find(name, false);
-  }
-  catch (const std::exception e) {
+  } catch (const std::exception e) {
     // If not found, then we add the option
-    kDesc.add_options()
-      (name.c_str(), po::value<T>()->notifier(SetValue(value)), comment.c_str());
+    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(SetValue(value)),
+                        comment.c_str());
   }
 }
 
@@ -202,10 +199,11 @@ template <typename T>
 T Get(const std::string& name) {
   if (kVM.count(name) > 0) {
     return kVM[name].as<T>();
-  }
-  else {
-    throw std::invalid_argument("In template Get<T>(const std::string&): " \
-                                "Value ``" + name + "'' not set. Terminating.");
+  } else {
+    throw std::invalid_argument(
+        "In template Get<T>(const std::string&): "
+        "Value ``" +
+        name + "'' not set. Terminating.");
     return T();
   }
 }
@@ -220,19 +218,18 @@ template <typename T>
 T Get(const std::string& name, const T& alt) {
   try {
     return Get<T>(name);
-  }
-  catch (const std::invalid_argument& e) {
+  } catch (const std::invalid_argument& e) {
     return alt;
   }
 }
 
-} // namespace input
+}  // namespace input
 
-} // namespace comm
+}  // namespace comm
 
 namespace ci = comm::input;
 namespace cv = comm::variables;
 
-} // namespace lf::base
+}  // namespace lf::base
 
-# endif // __comm_h
+#endif  // __comm_h
