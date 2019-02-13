@@ -47,8 +47,8 @@ cmake_minimum_required(VERSION 3.10)
 ### Hunter package manager ###
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.100.tar.gz"
-    SHA1 "55cc2f6701a3f368c4b1955b8b211a682e525f4a"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.104.tar.gz"
+    SHA1 "92f60c3474c6d8749320f1b9ce4218a648493de3"
 )
 
 ### Setup CMake Project ###
