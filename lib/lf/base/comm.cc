@@ -144,7 +144,7 @@ bool IsSet(const std::string& name) { return kVM.count(name) > 0; }
  * @note If argc and argv are not provided, the values given to init will
  *       be used. If none have been given, no variables will be found.
  */
-void ParseCommandLine(const int argc, const char** argv) {
+void ParseCommandLine(const int& argc, const char** argv) {
   // maybe argc/argv haven't been set yet and are given as arguments to this
   if (argc != 0 && argv != nullptr) {
     po::store(po::parse_command_line(argc, argv, kDesc), kVM);
@@ -165,9 +165,9 @@ void ParseCommandLine(const int argc, const char** argv) {
 bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
   std::ifstream config_fs(!file.empty() ? file : kConfigFile);
-  if (!config_fs.good()) {
+  if (!config_fs.good()) 
     return false;
-  }
+
   po::store(po::parse_config_file(config_fs, kDesc), kVM);
   po::notify(kVM);
   return true;

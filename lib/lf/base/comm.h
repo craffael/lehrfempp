@@ -66,8 +66,8 @@ template <typename T>
 T Get(const std::string& key) {
   if (kGlobalVars.count(key)) {
     return bs::any_cast<T>(kGlobalVars[key].first);
-  } else {
-    throw std::invalid_argument("The key " + key + " couldn't be found.");
+
+  throw std::invalid_argument("The key " + key + " couldn't be found.");
   }
 }
 
@@ -108,7 +108,7 @@ extern bool Help();
 
 extern bool IsSet(const std::string& name);
 
-extern void ParseCommandLine(const int argc = 0, const char** argv = nullptr);
+extern void ParseCommandLine(const int& argc = 0, const char** argv = nullptr);
 
 extern bool ParseFile(const std::string& file = "");
 
@@ -185,8 +185,8 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    po::option_description el = kDesc.find(name, false);
-  } catch (const std::exception e) {
+    const po::option_description& el = kDesc.find(name, false);
+  } catch (const std::exception& e) {
     // If not found, then we add the option
     kDesc.add_options()(name.c_str(), po::value<T>()->notifier(SetValue(value)),
                         comment.c_str());
@@ -200,15 +200,13 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
  */
 template <typename T>
 T Get(const std::string& name) {
-  if (kVM.count(name) > 0) {
+  if (kVM.count(name) > 0)
     return kVM[name].as<T>();
-  } else {
-    throw std::invalid_argument(
-        "In template Get<T>(const std::string&): "
-        "Value ``" +
-        name + "'' not set. Terminating.");
-    return T();
-  }
+  throw std::invalid_argument(
+      "In template Get<T>(const std::string&): "
+      "Value ``" +
+      name + "'' not set. Terminating.");
+  return T();
 }
 
 /**
