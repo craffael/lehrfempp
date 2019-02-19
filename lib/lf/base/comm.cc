@@ -73,8 +73,8 @@ void Init(int argc, char** argv, const std::string& file) {
     try {
       // Don't add the option if it exists already (then no error is thrown)
       // false -> only exact match in name is admissible
-      po::option_description el = kDesc.find(it->name_, false);
-    } catch (const std::exception e) {
+      const po::option_description& el = kDesc.find(it->name_, false);
+    } catch (const std::exception& e) {
       Add()(it->name_.c_str(), po::value<unsigned int>(&it->ref_),
             it->comment_.c_str());
     }
@@ -164,7 +164,7 @@ void ParseCommandLine(const int argc, const char** argv) {
  */
 bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
-  std::ifstream config_fs(file != "" ? file : kConfigFile);
+  std::ifstream config_fs(!file.empty() ? file : kConfigFile);
   if (!config_fs.good()) {
     return false;
   }
