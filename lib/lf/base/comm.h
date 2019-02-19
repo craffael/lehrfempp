@@ -81,9 +81,9 @@ extern std::string kConfigFile;
 extern po::variables_map kVM;
 extern po::options_description kDesc;
 
-extern void Init(int argc, char** argv, std::string file);
+extern void Init(int argc, char** argv, const std::string& file);
 extern void Init(int argc, char** argv);
-extern void Init(std::string file);
+extern void Init(const std::string& file);
 extern void Init();
 
 extern po::options_description_easy_init Add();

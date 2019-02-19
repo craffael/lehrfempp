@@ -60,7 +60,7 @@ po::options_description kDesc("Allowed options");
  * @param argv argv from `int main(int argc, char** argv)`.
  * @param file A file containing options in form name=value.
  */
-void Init(int argc, char** argv, std::string file) {
+void Init(int argc, char** argv, const std::string& file) {
   kArgc = argc;
   kArgv = argv;
   kConfigFile = file;
@@ -93,7 +93,7 @@ void Init(int argc, char** argv) { Init(argc, argv, std::string()); }
  * @brief Interface to input(argc, argv, file). Sets argc=0, argv=nullptr.
  * @param file A file containing options in form name=value.
  */
-void Init(std::string file) { Init(0, nullptr, file); }
+void Init(const std::string& file) { Init(0, nullptr, file); }
 
 /**
  * @brief Interface to input(argc, argv, file).
