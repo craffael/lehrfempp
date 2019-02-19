@@ -92,9 +92,6 @@ template <typename T>
 void Add(const std::string& name, const std::string& comment);
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def);
-template <class A>
-void AddCtrl(const std::string& name, A& class_instance,
-             const std::string& comment = "");
 template <typename T>
 void AddSetter(const std::string& name, T& value,
                const std::string& comment = "");
@@ -134,36 +131,6 @@ template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def) {
   kDesc.add_options()(name.c_str(), po::value<T>()->default_value(def),
                       comment.c_str());
-}
-
-template <class A>
-std::function<void(unsigned int)> SetCtrl(A& a) {
-  std::function<void(unsigned int)> lambda = [&a](unsigned int c) {
-    a.output_ctrl_ = c;
-  };
-  return lambda;
-}
-
-/**
- * @brief Possibility of setting the public member `ctrl` of the
- *        `class_instance`. Option is called `name` with description `comment`
- * @param name The name of the option.
- * @param class_instance Instance of the class wher to change member value.
- * @param comment (optional) Description of the option.
- */
-template <class A>
-void AddCtrl(const std::string& name, A& class_instance,
-             const std::string& comment) {
-  // Why not solve it like:
-  //   void AddCtrl(const string& name, const T& val, const string& comment);
-  // Call it like:
-  //   AddCtrl("ctrl", MyClass.PublicVar, "Some comment");
-  //   AddCtrl("ctrl", MyClass::StaticVar, "Some comment");
-  // ?
-  kDesc.add_options()(
-      name.c_str(),
-      po::value<unsigned int>()->notifier(SetCtrl(class_instance)),
-      comment.c_str());
 }
 
 template <typename T>
