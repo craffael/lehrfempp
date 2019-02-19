@@ -11,10 +11,10 @@
 
 namespace lf::mesh::hybrid2d {
 
-//CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
+// CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
 //                      "Diagnostics control for hybrid2d::Mesh");
 ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
-                      "Diagnostics control for hybrid2d::Mesh");
+          "Diagnostics control for hybrid2d::Mesh");
 
 base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");

@@ -21,10 +21,10 @@ bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
 }
 
 ADDOPTION(MeshHierarchy::output_ctrl_, MeshHierarchy_output_ctrl,
-                      "Diagnostics control for MeshHierarchy");
+          "Diagnostics control for MeshHierarchy");
 
 ADDOPTION(MeshHierarchy::ctrl_, MeshHierarchy_ctrl,
-                      "Output control for MeshHierarchy");
+          "Output control for MeshHierarchy");
 
 // Implementation of MeshHierarchy
 MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
@@ -346,7 +346,8 @@ void MeshHierarchy::RefineMarked() {
   PerformRefinement();
 }  // end RefineMarked
 
-// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
+// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size,
+// readability-function-size)
 void MeshHierarchy::PerformRefinement() {
   CONTROLLEDSTATEMENT(output_ctrl_, 10,
                       std::cout << "Entering MeshHierarchy::PerformRefinement: "

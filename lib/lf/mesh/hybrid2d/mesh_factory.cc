@@ -6,7 +6,7 @@
 namespace lf::mesh::hybrid2d {
 
 ADDOPTION(MeshFactory::output_ctrl_, hybrid2dmf_output_ctrl,
-                      "Enables printing of internal lists for MeshFactory");
+          "Enables printing of internal lists for MeshFactory");
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(coord.rows() == dim_world_,

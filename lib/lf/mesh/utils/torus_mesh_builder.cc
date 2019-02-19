@@ -18,7 +18,7 @@
 namespace lf::mesh::hybrid2d {
 
 ADDOPTION(TorusMeshBuilder::output_ctrl_, torus_ctrl,
-                      "Diagnostics control for TorusMeshBuilder");
+          "Diagnostics control for TorusMeshBuilder");
 
 std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   using coord_t = Eigen::Vector3d;

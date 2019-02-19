@@ -78,10 +78,10 @@ using StaticVar = Track<unsigned int>;
  */
 /**@{*/
 
-#define ADDOPTION(uintvar, name, comment)                             \
-  unsigned int uintvar = 0;                                           \
-  static lf::base::Track<unsigned int> name(#name, uintvar,            \
-                                       lf::base::ctrl_root, comment)
+#define ADDOPTION(uintvar, name, comment)                   \
+  unsigned int uintvar = 0;                                 \
+  static lf::base::Track<unsigned int> name(#name, uintvar, \
+                                            lf::base::ctrl_root, comment)
 
 #define CONTROLDECLARE(intvar, varname)                       \
   unsigned int intvar = 0;                                    \
@@ -105,7 +105,7 @@ using StaticVar = Track<unsigned int>;
   unsigned int class ::intvar = 0;                                  \
   static lf::base::StaticVar class##intvar(varname, class ::intvar, \
                                            lf::base::ctrl_root, comment)
-                                      // Why was this #comment and not comment?
+   // Why was this #comment and not comment?
 /**@}*/
 
 /**

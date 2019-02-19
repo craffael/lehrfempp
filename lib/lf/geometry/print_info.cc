@@ -3,7 +3,7 @@
 namespace lf::geometry {
 
 ADDOPTION(Geometry::output_ctrl_, Geometry_ctrl,
-                      "Diagnostics control for Geometry");
+          "Diagnostics control for Geometry");
 
 void PrintInfo(const Geometry& geom, std::ostream& o) {
   lf::base::RefEl geom_refel = geom.RefEl();

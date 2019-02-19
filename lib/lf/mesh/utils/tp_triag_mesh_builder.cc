@@ -7,7 +7,7 @@
 namespace lf::mesh::hybrid2d {
 
 ADDOPTION(TPTriagMeshBuilder::output_ctrl_, tpquad_ctrl,
-                      "Diagnostics control for TPTriagMeshBuilder");
+          "Diagnostics control for TPTriagMeshBuilder");
 
 std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;

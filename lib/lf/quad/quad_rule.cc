@@ -16,8 +16,7 @@
 
 namespace lf::quad {
 
-ADDOPTION(QuadRule::out_ctrl_, QuadRule_ctrl,
-                      "Output control for QuadRule");
+ADDOPTION(QuadRule::out_ctrl_, QuadRule_ctrl, "Output control for QuadRule");
 
 std::ostream& operator<<(std::ostream& stream,
                          const lf::quad::QuadRule& quadrule) {
