@@ -6,10 +6,7 @@
  * @copyright MIT License
  */
 
-// Not needed with comm
-//#include <boost/program_options.hpp>
-// instead only include the following
-#include "lf/base/comm.h"
+#include <lf/base/base.h>
 namespace ci = lf::base::ci; // avoid typing lf::base all the time
 
 #include <lf/assemble/assemble.h>

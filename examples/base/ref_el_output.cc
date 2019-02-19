@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include "lf/base/base.h"
-#include "lf/base/comm.h"
 namespace ci = lf::base::ci;
 
 int main(int argc, char** argv) {

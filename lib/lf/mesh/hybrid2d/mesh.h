@@ -11,7 +11,7 @@
 
 #include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
-#include "lf/base/comm.h"
+#include "lf/base/base.h"
 #include "lf/mesh/utils/print_info.h"
 #include "point.h"
 #include "quad.h"

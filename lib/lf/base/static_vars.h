@@ -78,6 +78,16 @@ using StaticVar = Track<unsigned int>;
  */
 /**@{*/
 
+/**
+ * @brief Create a new element of type lf::base::Track<unsigned> 
+ *        with the given variable, name and description.
+ *        This will later be used to add a command line option called
+ *        "name" for setting the variable "uintvar" with the 
+ *        description "comment".
+ * @param uintvar The variable we can set from command line.
+ * @param name What the option will be called (--<name>)
+ * @param comment The description of the option.
+ */
 #define ADDOPTION(uintvar, name, comment)                   \
   unsigned int uintvar = 0;                                 \
   static lf::base::Track<unsigned int> name(#name, uintvar, \

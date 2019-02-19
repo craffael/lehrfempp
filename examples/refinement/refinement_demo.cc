@@ -15,7 +15,6 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
-#include "lf/base/comm.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"

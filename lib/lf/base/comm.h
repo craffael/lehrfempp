@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lf/base/static_vars.h"
+#include "static_vars.h"
 
 // namespace structure:
 // lf::base
@@ -39,10 +39,23 @@ void Add(const std::string& key, const T& value,
 template <typename T>
 T Get(const std::string& key);
 
+/**
+ * @brief List all global variables as "name" "value" pairs
+ */
 extern void ListVariables();
 
+/**
+ * @brief Checks if key exists in kGlobalVars.
+ * @param key The key of the (key, value) pair.
+ * @return true, if key exists, false otherwise.
+ */
 extern bool IsSet(const std::string& key);
 
+/**
+ * @brief Removes key and return true if it existed, false otherwise.
+ * @param key The key of the (key, value) pair.
+ * @return true if key existed, false otherwise.
+ */
 extern bool Remove(const std::string& key);
 
 /**
@@ -81,33 +94,49 @@ extern std::string kConfigFile;
 extern po::variables_map kVM;
 extern po::options_description kDesc;
 
+/**
+ * @brief Initialises parameters to read from command line (argc, argv) and
+ *        for reading from a file. Also sets default options debug_code and
+ *        debug_levels.
+ * @param argc argc from `int main(int argc, char** argv)`.
+ * @param argv argv from `int main(int argc, char** argv)`.
+ * @param file A file containing options in form name=value.
+ */
 extern void Init(int argc, char** argv, const std::string& file);
+
+/**
+ * @brief Interface to input(argc, argv, file). Sets file=std::string().
+ * @param argc: int, argc from `int main(int argc, char** argv)`.
+ * @param argv: char**, argv from `int main(int argc, char** argv)`.
+ */
 extern void Init(int argc, char** argv);
+
+/**
+ * @brief Interface to input(argc, argv, file). Sets argc=0, argv=nullptr.
+ * @param file A file containing options in form name=value.
+ */
 extern void Init(const std::string& file);
+
+/**
+ * @brief Interface to input(argc, argv, file).
+ *        Sets argc=0, argv=nullptr, file=std:string().
+ */
 extern void Init();
 
+/**
+ * @brief Handle to po::options_description.add_options.
+ * @return desc.add_options()
+ * @note Use as: `ci::add()("v1", po::value<int>(), "Description")(..);
+ */
 extern po::options_description_easy_init Add();
+
+/**
+ * @brief Add (name, comment) pair to options description.
+ * @param name The name of variable.
+ * @param comment Description of the variable.
+ * @note Equivalent to `desc.add_options()(name.c_str(), comment.c_str())`.
+ */
 extern void Add(const std::string& name, const std::string& comment);
-template <typename T>
-void Add(const std::string& name, const std::string& comment);
-template <typename T>
-void Add(const std::string& name, const std::string& comment, const T& def);
-template <typename T>
-void AddSetter(const std::string& name, T& value,
-               const std::string& comment = "");
-
-template <typename T>
-T Get(const std::string& name);
-template <typename T>
-T Get(const std::string& name, const T& alt);
-
-extern bool Help();
-
-extern bool IsSet(const std::string& name);
-
-extern void ParseCommandLine(const int& argc = 0, const char** argv = nullptr);
-
-extern bool ParseFile(const std::string& file = "");
 
 /**
  * @brief Add possible input for variable called `name` with description
@@ -116,9 +145,7 @@ extern bool ParseFile(const std::string& file = "");
  * @param comment Description of the variable.
  */
 template <typename T>
-void Add(const std::string& name, const std::string& comment) {
-  kDesc.add_options()(name.c_str(), po::value<T>(), comment.c_str());
-}
+void Add(const std::string& name, const std::string& comment);
 
 /**
  * @brief Add possible input for variable called `name` with description
@@ -128,16 +155,7 @@ void Add(const std::string& name, const std::string& comment) {
  * @param def T The default value.
  */
 template <typename T>
-void Add(const std::string& name, const std::string& comment, const T& def) {
-  kDesc.add_options()(name.c_str(), po::value<T>()->default_value(def),
-                      comment.c_str());
-}
-
-template <typename T>
-std::function<void(T)> SetValue(T& value) {
-  std::function<void(T)> lambda = [&value](T new_value) { value = new_value; };
-  return lambda;
-}
+void Add(const std::string& name, const std::string& comment, const T& def);
 
 /**
  * @brief Possibility of setting any variable `value`. Option is called `name`
@@ -147,6 +165,84 @@ std::function<void(T)> SetValue(T& value) {
  * @param comment (optional) Description of the option.
  */
 template <typename T>
+void AddSetter(const std::string& name, T& value,
+               const std::string& comment = "");
+
+/**
+ * @brief Get the value of the variable `name`.
+ * @param name The name of the variable.
+ * @note Throws an invalid_argument exception if `name` doens't exist.
+ */
+template <typename T>
+T Get(const std::string& name);
+
+/**
+ * @brief Get the value of the variable `name`, return `alt` if `name` doesn't
+ *        exist. 'Safe' version of Get<T>(name).
+ * @param name The name of the variable.
+ * @param alt T Value that's returned, if `name` doesn't exist.
+ */
+template <typename T>
+T Get(const std::string& name, const T& alt);
+
+/**
+ * @brief Print help, if it exists in options_description.
+ * @return true, if "help" was set, false otherwise.
+ */
+extern bool Help();
+
+/**
+ * @brief Check if option "name" has been set.
+ * @param name The name of variable for which to check.
+ * @return true, if found, false otherwise.
+ */
+extern bool IsSet(const std::string& name);
+
+/**
+ * @brief Parse (argc, argv) for values of options.
+ * @param argc argc from `int main(int argc, char** argv)`. (optional)
+ * @param argv argv from `int main(int argc, char** argv)`. (optional)
+ * @note If argc and argv are not provided, the values given to init will
+ *       be used. If none have been given, no variables will be found.
+ */
+extern void ParseCommandLine(const int& argc = 0, const char** argv = nullptr);
+
+/**
+ * @brief Parse the config file for variables of form name=value.
+ * @param file A file with variables. (optional)
+ * @return true if file exists (kConfigFile if file = ""), false if not.
+ * @note If file is not provided, the file given to init will be used.
+ *       If none has been given, no variables will be found.
+ */
+extern bool ParseFile(const std::string& file = "");
+
+template <typename T>
+void Add(const std::string& name, const std::string& comment) {
+  kDesc.add_options()(name.c_str(), po::value<T>(), comment.c_str());
+}
+
+template <typename T>
+void Add(const std::string& name, const std::string& comment, const T& def) {
+  kDesc.add_options()(name.c_str(), po::value<T>()->default_value(def),
+                      comment.c_str());
+}
+
+
+namespace internal { // functions that are not supposed to be accessed by the user
+
+/**
+ * @brief Returns a lambda function to set the variable given to this function
+ * @return See brief.
+ */
+template <typename T>
+std::function<void(T)> SetValue(T& value) {
+  std::function<void(T)> lambda = [&value](T new_value) { value = new_value; };
+  return lambda;
+}
+
+} // namespace internal
+
+template <typename T>
 void AddSetter(const std::string& name, T& value, const std::string& comment) {
   // Avoid duplicate entries
   try {
@@ -155,16 +251,11 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
     const po::option_description& el = kDesc.find(name, false);
   } catch (const std::exception& e) {
     // If not found, then we add the option
-    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(SetValue(value)),
+    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(internal::SetValue(value)),
                         comment.c_str());
   }
 }
 
-/**
- * @brief Get the value of the variable `name`.
- * @param name The name of the variable.
- * @note Throws an invalid_argument exception if `name` doens't exist.
- */
 template <typename T>
 T Get(const std::string& name) {
   if (kVM.count(name) > 0)
@@ -176,12 +267,6 @@ T Get(const std::string& name) {
   return T();
 }
 
-/**
- * @brief Get the value of the variable `name`, return `alt` if `name` doesn't
- *        exist. 'Safe' version of Get<T>(name).
- * @param name The name of the variable.
- * @param alt T Value that's returned, if `name` doesn't exist.
- */
 template <typename T>
 T Get(const std::string& name, const T& alt) {
   try {

@@ -9,11 +9,11 @@
 
 #include <cmath>
 
-#include "lf/base/comm.h"
-namespace ci = lf::base::ci;
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
+#include <lf/base/base.h>
+namespace ci = lf::base::ci;
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>

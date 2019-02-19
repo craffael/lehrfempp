@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "lf/base/base.h"
-#include "lf/base/comm.h"
 #include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/mesh.h"
@@ -14,7 +13,6 @@
 
 ADDOPTION(Nx, Nx_cells, "No of cells in X direction, must be > 0");
 ADDOPTION(Ny, Ny_cells, "No of cells in Y direction, must be > 0");
-
 
 int main(int argc, char** argv) {
   using size_type = lf::base::size_type;

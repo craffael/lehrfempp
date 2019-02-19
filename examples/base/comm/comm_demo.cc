@@ -1,5 +1,5 @@
 # include <iostream>
-# include "lf/base/comm.h"
+# include "lf/base/base.h"
 # include "outside.h"
 
 using namespace lf::base;
