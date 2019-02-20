@@ -9,12 +9,10 @@
 #include <string>
 #include <utility>
 
-
 /**
  * @name Macros for handling diagnostics control variables
  */
 /**@{*/
-
 
 /*
 #define CONTROLDECLARE(intvar, varname)                       \

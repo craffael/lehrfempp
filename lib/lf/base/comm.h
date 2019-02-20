@@ -80,7 +80,7 @@ T Get(const std::string& key) {
   if (kGlobalVars.count(key)) {
     return bs::any_cast<T>(kGlobalVars[key].first);
 
-  throw std::invalid_argument("The key " + key + " couldn't be found.");
+    throw std::invalid_argument("The key " + key + " couldn't be found.");
   }
 }
 
@@ -230,10 +230,10 @@ class Track {
   Track(const std::string& name, T& ref, const T& def,
         const std::string& comment = std::string());
   Track() = delete;
-  Track(const Track &) = delete;
-  Track(Track &&) = delete;
-  Track &operator=(const Track &) = delete;
-  Track &operator=(Track &&) = delete;
+  Track(const Track&) = delete;
+  Track(Track&&) = delete;
+  Track& operator=(const Track&) = delete;
+  Track& operator=(Track&&) = delete;
   ~Track() = default;
 };
 
@@ -244,13 +244,12 @@ Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
     // false -> only exact match in name is admissible
     const po::option_description& el = kDesc.find(name, false);
   } catch (const std::exception& e) {
-    Add()(name.c_str(), po::value<unsigned int>(&ref),
-          comment.c_str());
+    Add()(name.c_str(), po::value<unsigned int>(&ref), comment.c_str());
   }
 }
 
 template <class T>
-Track<T>::Track(const std::string& name, T& ref, const T& def, 
+Track<T>::Track(const std::string& name, T& ref, const T& def,
                 const std::string& comment) {
   try {
     // Don't add the option if it exists already (then no error is thrown)
@@ -276,8 +275,8 @@ void Add(const std::string& name, const std::string& comment, const T& def) {
                       comment.c_str());
 }
 
-
-namespace internal { // functions that are not supposed to be accessed by the user
+namespace internal {  // functions that are not supposed to be accessed by the
+                      // user
 
 /**
  * @brief Returns a lambda function to set the variable given to this function
@@ -289,7 +288,7 @@ std::function<void(T)> SetValue(T& value) {
   return lambda;
 }
 
-} // namespace internal
+}  // namespace internal
 
 template <typename T>
 void AddSetter(const std::string& name, T& value, const std::string& comment) {
@@ -300,15 +299,15 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
     const po::option_description& el = kDesc.find(name, false);
   } catch (const std::exception& e) {
     // If not found, then we add the option
-    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(internal::SetValue(value)),
+    kDesc.add_options()(name.c_str(),
+                        po::value<T>()->notifier(internal::SetValue(value)),
                         comment.c_str());
   }
 }
 
 template <typename T>
 T Get(const std::string& name) {
-  if (kVM.count(name) > 0)
-    return kVM[name].as<T>();
+  if (kVM.count(name) > 0) return kVM[name].as<T>();
   throw std::invalid_argument(
       "In template Get<T>(const std::string&): "
       "Value ``" +
@@ -335,34 +334,33 @@ namespace cv = comm::variables;
 }  // namespace lf::base
 
 /**
- * @brief Create a new element of type lf::base::Track<unsigned> 
+ * @brief Create a new element of type lf::base::Track<unsigned>
  *        with the given variable, name and description.
  *        This will later be used to add a command line option called
- *        "name" for setting the variable "uintvar" with the 
+ *        "name" for setting the variable "uintvar" with the
  *        description "comment".
  * @param uintvar The variable we can set from command line.
  * @param name What the option will be called (--<name>)
  * @param comment The description of the option.
  */
-#define ADDOPTION(uintvar, name, comment)                   \
-  unsigned int uintvar = 0;                                 \
-  static lf::base::ci::Track<unsigned int> name(#name, uintvar, \
-                                            comment)
+#define ADDOPTION(uintvar, name, comment) \
+  unsigned int uintvar = 0;               \
+  static lf::base::ci::Track<unsigned int> name(#name, uintvar, comment)
 
 /**
- * @brief Create a new element of type lf::base::Track<unsigned> 
+ * @brief Create a new element of type lf::base::Track<unsigned>
  *        with the given variable, name and description.
  *        This will later be used to add a command line option called
- *        "name" for setting the variable "uintvar" with the 
+ *        "name" for setting the variable "uintvar" with the
  *        description "comment".
  * @param uintvar The variable we can set from command line.
  * @param default The default value for the variable.
  * @param name What the option will be called (--<name>)
  * @param comment The description of the option.
  */
-#define ADDOPTION_DEFAULT(uintvar, default, name, comment)      \
-  unsigned int uintvar = 0; /* could also set it =default */    \
-  static lf::base::ci::Track<unsigned int> name(#name, uintvar, \
-                                            default, comment)
+#define ADDOPTION_DEFAULT(uintvar, default, name, comment)               \
+  unsigned int uintvar = 0; /* could also set it =default */             \
+  static lf::base::ci::Track<unsigned int> name(#name, uintvar, default, \
+                                                comment)
 
 #endif  // __comm_h

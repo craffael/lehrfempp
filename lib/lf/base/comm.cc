@@ -2,7 +2,7 @@
 
 namespace lf::base {
 
-comm::input::StaticVar *ctrl_root = nullptr;
+comm::input::StaticVar* ctrl_root = nullptr;
 
 namespace comm {
 
@@ -104,8 +104,7 @@ void ParseCommandLine(const int& argc, const char** argv) {
 bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
   std::ifstream config_fs(!file.empty() ? file : kConfigFile);
-  if (!config_fs.good()) 
-    return false;
+  if (!config_fs.good()) return false;
 
   po::store(po::parse_config_file(config_fs, kDesc), kVM);
   po::notify(kVM);
