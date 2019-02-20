@@ -2,6 +2,8 @@
 
 namespace lf::base {
 
+comm::input::StaticVar *ctrl_root = nullptr;
+
 namespace comm {
 
 namespace variables {
@@ -43,6 +45,7 @@ po::variables_map kVM;
 po::options_description kDesc("Allowed options");
 
 void Init(int argc, char** argv, const std::string& file) {
+  /*
   kArgc = argc;
   kArgv = argv;
   kConfigFile = file;
@@ -62,6 +65,7 @@ void Init(int argc, char** argv, const std::string& file) {
     }
     it = it->next_;
   }
+  */
 }
 
 void Init(int argc, char** argv) { Init(argc, argv, std::string()); }

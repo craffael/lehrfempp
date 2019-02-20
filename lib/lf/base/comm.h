@@ -216,6 +216,55 @@ extern void ParseCommandLine(const int& argc = 0, const char** argv = nullptr);
  */
 extern bool ParseFile(const std::string& file = "");
 
+template <class T>
+class Track {
+ public:
+  /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  Constructor: Places a new item of the global info list in the list
+  Usually called via a macro (DECLARE, COUNTER).
+  The second version of the constructor also permits to add a comment to the
+  information item.
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+  Track(const std::string& name, T& ref,
+        const std::string& comment = std::string());
+  Track(const std::string& name, T& ref, const T& def,
+        const std::string& comment = std::string());
+  Track() = delete;
+  Track(const Track &) = delete;
+  Track(Track &&) = delete;
+  Track &operator=(const Track &) = delete;
+  Track &operator=(Track &&) = delete;
+  ~Track() = default;
+};
+
+template <class T>
+Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
+  try {
+    // Don't add the option if it exists already (then no error is thrown)
+    // false -> only exact match in name is admissible
+    const po::option_description& el = kDesc.find(name, false);
+  } catch (const std::exception& e) {
+    Add()(name.c_str(), po::value<unsigned int>(&ref),
+          comment.c_str());
+  }
+}
+
+template <class T>
+Track<T>::Track(const std::string& name, T& ref, const T& def, 
+                const std::string& comment) {
+  try {
+    // Don't add the option if it exists already (then no error is thrown)
+    // false -> only exact match in name is admissible
+    const po::option_description& el = kDesc.find(name, false);
+  } catch (const std::exception& e) {
+    Add()(name.c_str(), po::value<unsigned int>(&ref)->default_value(def),
+          comment.c_str());
+  }
+}
+
+// Type for managing static variables
+using StaticVar = Track<unsigned int>;
+
 template <typename T>
 void Add(const std::string& name, const std::string& comment) {
   kDesc.add_options()(name.c_str(), po::value<T>(), comment.c_str());
@@ -284,5 +333,36 @@ namespace ci = comm::input;
 namespace cv = comm::variables;
 
 }  // namespace lf::base
+
+/**
+ * @brief Create a new element of type lf::base::Track<unsigned> 
+ *        with the given variable, name and description.
+ *        This will later be used to add a command line option called
+ *        "name" for setting the variable "uintvar" with the 
+ *        description "comment".
+ * @param uintvar The variable we can set from command line.
+ * @param name What the option will be called (--<name>)
+ * @param comment The description of the option.
+ */
+#define ADDOPTION(uintvar, name, comment)                   \
+  unsigned int uintvar = 0;                                 \
+  static lf::base::ci::Track<unsigned int> name(#name, uintvar, \
+                                            comment)
+
+/**
+ * @brief Create a new element of type lf::base::Track<unsigned> 
+ *        with the given variable, name and description.
+ *        This will later be used to add a command line option called
+ *        "name" for setting the variable "uintvar" with the 
+ *        description "comment".
+ * @param uintvar The variable we can set from command line.
+ * @param default The default value for the variable.
+ * @param name What the option will be called (--<name>)
+ * @param comment The description of the option.
+ */
+#define ADDOPTION_DEFAULT(uintvar, default, name, comment)      \
+  unsigned int uintvar = 0; /* could also set it =default */    \
+  static lf::base::ci::Track<unsigned int> name(#name, uintvar, \
+                                            default, comment)
 
 #endif  // __comm_h

@@ -10,7 +10,7 @@
 #include <Eigen/Eigen>
 #include "base.h"
 #include "lf_assert.h"
-#include "static_vars.h"  // Added
+//#include "static_vars.h"  // Added
 
 namespace lf::base {
 

@@ -122,8 +122,7 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
 };
 
 /** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
-EXTERNDECLAREINFO(
-    LFELinSys_ctrl, "LFELinSys_ctrl",
+ADDOPTION(LFELinSys_ctrl, LFELinSys_control,
     "Output control variable for function SecOrdEllBVPLagrFELinSys()");
 static const unsigned int kLFELinSys_bdinfo = 2;
 

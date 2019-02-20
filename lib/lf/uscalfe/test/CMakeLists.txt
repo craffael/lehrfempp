@@ -9,7 +9,7 @@ set(src
   lagr_fe_test.cc
   mesh_function_traits_test.cc
   sec_ord_ell_bvp.h
-  sec_ord_ell_bvp.cc
+  #sec_ord_ell_bvp.cc // nothing in the cc file, all is in the header
 )
 
 add_executable(lf.uscalfe.test ${src})
