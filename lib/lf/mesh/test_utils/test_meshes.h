@@ -27,7 +27,8 @@ namespace lf::mesh::test_utils {
  * ~~~
  *   #include "lf/mesh/test_utils/test_meshes.h"
  *   ...
- *   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+ *   auto mesh_p =
+ *       lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector,scale);
  * ~~~
  *
  * - Test mesh selected with selector = 0: domain \f$[0.3]^2\f$*scale
@@ -39,15 +40,21 @@ namespace lf::mesh::test_utils {
  * @image html testmesh3.png
  * This is a purely triangular mesh
  * - selector = 4: test mesh of [0,3]^2 with triangles and quads
+ * @image html testmesh4.png
  * - selector = 5: test mesh of [0,3]^2 with triangles and parallelograms, all
  *                 _affine_
+ * @image html testmesh5.png
  * - selector = 6: hybrid mesh of a triangular domain
+ * @image html testmesh6.png
  * - selector = 7: hybrid mesh comprising one quadrilateral and one triangle
+ * @image html testmesh7.png
+ * - selector = 8: hybrid mesh containing triangles and _rectangles_ only.
+ * @image html testmesh8.png
  */
 std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector = 0,
                                                          double scale = 1.0);
 
-static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 7;
+static const lf::base::size_type GenerateHybrid2DTestMesh_maxsel = 8;
 
 }  // namespace lf::mesh::test_utils
 
