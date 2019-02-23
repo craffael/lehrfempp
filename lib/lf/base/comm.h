@@ -34,8 +34,8 @@ extern std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
 /**
  * @brief Add a new global variable triple with (key, value, comment)
- * @param key Key of the variable 
- * @param value Value of the variable 
+ * @param key Key of the variable
+ * @param value Value of the variable
  * @param comment Comment to the variable (optional)
  */
 template <typename T>
@@ -44,7 +44,7 @@ void Add(const std::string& key, const T& value,
 
 /**
  * @brief Retrieve the value of a global variable for a given key
- * @param key Key of the variable 
+ * @param key Key of the variable
  * @return Value of the variable to the given key
  */
 template <typename T>
@@ -211,14 +211,14 @@ extern bool IsSet(const std::string& name);
 
 /**
  * @brief Parse (argc, argv) for values of options.
- * @param argc argc from `int main(int argc, char** argv)`. 
- * @param argv argv from `int main(int argc, char** argv)`. 
+ * @param argc argc from `int main(int argc, char** argv)`.
+ * @param argv argv from `int main(int argc, char** argv)`.
  */
 extern void ParseCommandLine(const int& argc, char** argv);
 
 /**
  * @brief Parse the config file for variables of form name=value.
- * @param file A file with variables. 
+ * @param file A file with variables.
  * @return true if file exists (kConfigFile if file = ""), false if not.
  */
 extern bool ParseFile(const std::string& file);
@@ -228,19 +228,19 @@ class Track {
  public:
   /**
    * @brief Constructor for (option_name, &value_to_be_changed, comment)
-   *        triple 
-   * @param name The name of the option 
-   * @param ref If the option is set it will change the value of ref 
+   *        triple
+   * @param name The name of the option
+   * @param ref If the option is set it will change the value of ref
    * @param comment A description of the option
    */
   Track(const std::string& name, T& ref,
         const std::string& comment = std::string());
   /**
-   * @brief Constructor for (option_name, &value_to_be_changed, 
-   *        default_value, comment) quadrupel 
-   * @param name The name of the option 
-   * @param ref If the option is set it will change the value of ref 
-   * @param ref The default value of the option 
+   * @brief Constructor for (option_name, &value_to_be_changed,
+   *        default_value, comment) quadrupel
+   * @param name The name of the option
+   * @param ref If the option is set it will change the value of ref
+   * @param ref The default value of the option
    * @param comment A description of the option
    */
   Track(const std::string& name, T& ref, const T& def,
@@ -253,8 +253,8 @@ class Track {
   Track& operator=(const Track&) = delete;
   Track& operator=(Track&&) = delete;
 
-  /** 
-   * @brief The default destructor 
+  /**
+   * @brief The default destructor
    */
   ~Track() = default;
 };
@@ -306,9 +306,8 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
     kDesc.find(name, false);
   } catch (const std::exception& e) {
     // If not found, then we add the option
-    auto SetValue = [&value](T new_value){ value = new_value; };
-    kDesc.add_options()(name.c_str(),
-                        po::value<T>()->notifier(SetValue),
+    auto SetValue = [&value](T new_value) { value = new_value; };
+    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(SetValue),
                         comment.c_str());
   }
 }
