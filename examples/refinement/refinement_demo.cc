@@ -42,8 +42,9 @@ int main(int argc, char** argv) {
   }
   lf::base::ci::ParseCommandLine(argc, argv);
   // check for the help option (-h or --help)
-  if (lf::base::ci::Help()) 
+  if (lf::base::ci::Help()) {
     return 0;
+  }
   // get the value for refselector
   int refselector = lf::base::ci::Get<int>("refselector");
 

@@ -90,9 +90,8 @@ template <typename T>
 T Get(const std::string& key) {
   if (kGlobalVars.count(key)) {
     return bs::any_cast<T>(kGlobalVars[key].first);
-
-    throw std::invalid_argument("The key " + key + " couldn't be found.");
   }
+  throw std::invalid_argument("The key " + key + " couldn't be found.");
 }
 
 }  // namespace variables
@@ -104,35 +103,6 @@ extern char** kArgv;
 extern std::string kConfigFile;
 extern po::variables_map kVM;
 extern po::options_description kDesc;
-
-/**
- * @brief Initialises parameters to read from command line (argc, argv) and
- *        for reading from a file. Also sets default options debug_code and
- *        debug_levels.
- * @param argc argc from `int main(int argc, char** argv)`.
- * @param argv argv from `int main(int argc, char** argv)`.
- * @param file A file containing options in form name=value.
- */
-extern void Init(int argc, char** argv, const std::string& file);
-
-/**
- * @brief Interface to input(argc, argv, file). Sets file=std::string().
- * @param argc: int, argc from `int main(int argc, char** argv)`.
- * @param argv: char**, argv from `int main(int argc, char** argv)`.
- */
-extern void Init(int argc, char** argv);
-
-/**
- * @brief Interface to input(argc, argv, file). Sets argc=0, argv=nullptr.
- * @param file A file containing options in form name=value.
- */
-extern void Init(const std::string& file);
-
-/**
- * @brief Interface to input(argc, argv, file).
- *        Sets argc=0, argv=nullptr, file=std:string().
- */
-extern void Init();
 
 /**
  * @brief Handle to po::options_description.add_options.
@@ -314,12 +284,13 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
 
 template <typename T>
 T Get(const std::string& name) {
-  if (kVM.count(name) > 0) return kVM[name].as<T>();
+  if (kVM.count(name) > 0) { 
+    return kVM[name].as<T>(); 
+  }
   throw std::invalid_argument(
       "In template Get<T>(const std::string&): "
       "Value ``" +
       name + "'' not set. Terminating.");
-  return T();
 }
 
 template <typename T>
@@ -369,5 +340,39 @@ namespace cv = comm::variables;
   unsigned int uintvar = 0; /* could also set it =default */             \
   static lf::base::ci::Track<unsigned int> name(#name, uintvar, default, \
                                                 comment)
+
+/**
+ * @brief Macro for threshold-conditional output
+ * @param ctrlvar integer control variable
+ * @param level control level
+ * @statement code to be executed
+ *
+ * The code passed in statement is executed if the value of the
+ * control variable is larger than the value passed in level
+ *
+ * @note The executable code must not involve a comma operator.
+ * Commas inside strings are ok.
+ */
+#define CONTROLLEDSTATEMENT(ctrlvar, level, statement) \
+  if ((ctrlvar) >= (level)) {                          \
+    statement;                                         \
+  }
+
+/**
+ * @brief Macro for bit-flag-conditional output
+ * @param ctrlvar integer control variable
+ * @param flagpat selection bit pattern for flags
+ * @statement code to be executed
+ *
+ * The code passed in statement is executed if the value of the
+ * control variable is larger than the value passed in level
+ *
+ * @note The executable code must not involve a comma operator.
+ * Commas inside strings are ok.
+ */
+#define SWITCHEDSTATEMENT(ctrlvar, flagpat, statement) \
+  if (((ctrlvar) & (flagpat)) > 0) {                   \
+    statement;                                         \
+  }
 
 #endif  // __comm_h

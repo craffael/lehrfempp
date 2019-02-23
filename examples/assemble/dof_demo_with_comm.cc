@@ -19,7 +19,7 @@ namespace ci = lf::base::ci; // avoid typing lf::base all the time
 int main(int argc, char** argv) {
   // Add options
   ci::Add("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>");
-  ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1); // Default value 2
+  ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1); // Default value 1
   ci::Add<int>("ndof_edge,e", "No of dofs on edges", 2);
   ci::Add<int>("ndof_tria,t", "No of dofs on triangles", 1);
   ci::Add<int>("ndof_quad,q", "Mp of dofs on quadrilaterals", 4);
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
   // clang-format on
   ci::ParseCommandLine(argc, argv);
   if (ci::Help()) {
-    return 0;
+    // do nothing
   } else {
     // Retrieve number of degrees of freedom for each entity type from command
     // line arguments
@@ -75,4 +75,6 @@ int main(int argc, char** argv) {
     lf::assemble::DofHandler::output_ctrl_ = 30;
     std::cout << dof_handler << std::endl;
   }
+
+  return 0;
 }  // end main

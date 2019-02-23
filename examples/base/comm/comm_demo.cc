@@ -61,21 +61,24 @@ int main(int argc, char** argv) {
 
   // - Check for the set variables
   // -- Is the help option set?
-  if (ci::Help())  // print help & var names, if -h was specified
+  if (ci::Help()) { // print help & var names, if -h was specified
     return 0;      // and stop here! No need to go through the program :)
+  }
 
   // -- Check if verbose has been set to true
-  if (verbose)
+  if (verbose) {
     std::cout << "Verbosity on.\n";
-  else
+  } else {
     std::cout << "Verbose not set.\n";
+  }
  
   // -- Print the value of "v2" if it has been set.
   //    If it isn't set and Get is called a invalid argument exception is thrown
-  if (ci::IsSet("v2"))
+  if (ci::IsSet("v2")) {
     std::cout << "Value of v2 is " << ci::Get<double>("v2") << "\n";
-  else
+  } else {
     std::cout << "Variable v2 is not set.\n";
+  }
 
   // -- Print the value of v1. This is safe, since it has a default value
   std::cout << "Value of v1 is " << ci::Get<int>("v1") << "\n";

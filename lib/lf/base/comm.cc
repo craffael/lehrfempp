@@ -15,8 +15,9 @@ void ListVariables() {
     std::string key = el.first;
     auto val = el.second;  // nested pairs. Clearer than el.second.second.
     std::cout << key << " = " << val.first;
-    if (val.second != "")  // if description not empty
+    if (!val.second.empty()) { // if description not empty
       std::cout << " : " << val.second;
+    }
     std::cout << "\n";
   }
 }
@@ -43,36 +44,6 @@ char** kArgv;
 std::string kConfigFile;
 po::variables_map kVM;
 po::options_description kDesc("Allowed options");
-
-void Init(int argc, char** argv, const std::string& file) {
-  /*
-  kArgc = argc;
-  kArgv = argv;
-  kConfigFile = file;
-
-  // check for StaticVars defined
-  // ctrl_root globally defined in static_vars.cc
-  const StaticVar* it = ctrl_root;
-  while (it != nullptr) {
-    // Avoid duplicate entries
-    try {
-      // Don't add the option if it exists already (then no error is thrown)
-      // false -> only exact match in name is admissible
-      const po::option_description& el = kDesc.find(it->name_, false);
-    } catch (const std::exception& e) {
-      Add()(it->name_.c_str(), po::value<unsigned int>(&it->ref_),
-            it->comment_.c_str());
-    }
-    it = it->next_;
-  }
-  */
-}
-
-void Init(int argc, char** argv) { Init(argc, argv, std::string()); }
-
-void Init(const std::string& file) { Init(0, nullptr, file); }
-
-void Init() { Init(0, nullptr, std::string()); }
 
 extern po::options_description_easy_init Add() { return kDesc.add_options(); }
 
@@ -104,7 +75,9 @@ void ParseCommandLine(const int& argc, char** argv) {
 bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
   std::ifstream config_fs(!file.empty() ? file : kConfigFile);
-  if (!config_fs.good()) return false;
+  if (!config_fs.good()) {
+    return false;
+  }
 
   po::store(po::parse_config_file(config_fs, kDesc), kVM);
   po::notify(kVM);

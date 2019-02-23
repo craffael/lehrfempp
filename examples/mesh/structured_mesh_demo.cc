@@ -27,8 +27,9 @@ int main(int argc, char** argv) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
   lf::base::ci::ParseCommandLine(argc, argv);
-  if (lf::base::ci::Help())
+  if (lf::base::ci::Help()) {
     return 0;
+  }
 
   // number of cells cannot be 0, that would result in segfault!
   if (Nx == 0 || Ny == 0) {
