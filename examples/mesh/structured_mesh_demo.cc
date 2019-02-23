@@ -21,13 +21,12 @@ int main(int argc, char** argv) {
             << "Use the option `-h` to display the control variables.\n";
 
   // Set control variables from command line or file "setup vars"
-  lf::base::ci::Init(argc, argv);
   lf::base::ci::Add("help,h", "Display help");
   // check for file with options 
   if (!lf::base::ci::ParseFile("setup.vars")) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
-  lf::base::ci::ParseCommandLine();
+  lf::base::ci::ParseCommandLine(argc, argv);
   if (lf::base::ci::Help())
     return 0;
 

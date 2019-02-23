@@ -17,7 +17,6 @@ namespace ci = lf::base::ci; // avoid typing lf::base all the time
 #include "lf/mesh/utils/utils.h"
 
 int main(int argc, char** argv) {
-  ci::Init(argc, argv); // Initialise input reader with command line arguments
   // Add options
   ci::Add("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>");
   ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1); // Default value 2
@@ -33,7 +32,7 @@ int main(int argc, char** argv) {
   //("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on triangles")
   //("ndof_quad,q", po::value<int>()->default_value(4), "Mp of dofs on quadrilaterals");
   // clang-format on
-  ci::ParseCommandLine();
+  ci::ParseCommandLine(argc, argv);
   if (ci::Help()) {
     return 0;
   } else {

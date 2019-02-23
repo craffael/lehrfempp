@@ -283,10 +283,9 @@ std::vector<double> SolveDirLaplSeqMesh(
   return errors;
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, char **argv) {
   // Pointer to the current mesh
   std::shared_ptr<lf::mesh::Mesh> mesh_p;
-  ci::Init();
 
   // Processing command line arguments
   bool verbose = false;

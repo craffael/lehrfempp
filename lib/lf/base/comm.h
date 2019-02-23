@@ -200,21 +200,17 @@ extern bool IsSet(const std::string& name);
 
 /**
  * @brief Parse (argc, argv) for values of options.
- * @param argc argc from `int main(int argc, char** argv)`. (optional)
- * @param argv argv from `int main(int argc, char** argv)`. (optional)
- * @note If argc and argv are not provided, the values given to init will
- *       be used. If none have been given, no variables will be found.
+ * @param argc argc from `int main(int argc, char** argv)`. 
+ * @param argv argv from `int main(int argc, char** argv)`. 
  */
-extern void ParseCommandLine(const int& argc = 0, const char** argv = nullptr);
+extern void ParseCommandLine(const int& argc, char** argv);
 
 /**
  * @brief Parse the config file for variables of form name=value.
- * @param file A file with variables. (optional)
+ * @param file A file with variables. 
  * @return true if file exists (kConfigFile if file = ""), false if not.
- * @note If file is not provided, the file given to init will be used.
- *       If none has been given, no variables will be found.
  */
-extern bool ParseFile(const std::string& file = "");
+extern bool ParseFile(const std::string& file);
 
 template <class T>
 class Track {
@@ -242,7 +238,7 @@ Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    const po::option_description& el = kDesc.find(name, false);
+    kDesc.find(name, false);
   } catch (const std::exception& e) {
     Add()(name.c_str(), po::value<unsigned int>(&ref), comment.c_str());
   }
@@ -254,7 +250,7 @@ Track<T>::Track(const std::string& name, T& ref, const T& def,
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    const po::option_description& el = kDesc.find(name, false);
+    kDesc.find(name, false);
   } catch (const std::exception& e) {
     Add()(name.c_str(), po::value<unsigned int>(&ref)->default_value(def),
           comment.c_str());
@@ -275,32 +271,18 @@ void Add(const std::string& name, const std::string& comment, const T& def) {
                       comment.c_str());
 }
 
-namespace internal {  // functions that are not supposed to be accessed by the
-                      // user
-
-/**
- * @brief Returns a lambda function to set the variable given to this function
- * @return See brief.
- */
-template <typename T>
-std::function<void(T)> SetValue(T& value) {
-  std::function<void(T)> lambda = [&value](T new_value) { value = new_value; };
-  return lambda;
-}
-
-}  // namespace internal
-
 template <typename T>
 void AddSetter(const std::string& name, T& value, const std::string& comment) {
   // Avoid duplicate entries
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    const po::option_description& el = kDesc.find(name, false);
+    kDesc.find(name, false);
   } catch (const std::exception& e) {
     // If not found, then we add the option
+    auto SetValue = [&value](T new_value){ value = new_value; };
     kDesc.add_options()(name.c_str(),
-                        po::value<T>()->notifier(internal::SetValue(value)),
+                        po::value<T>()->notifier(SetValue),
                         comment.c_str());
   }
 }

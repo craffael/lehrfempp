@@ -90,7 +90,7 @@ bool Help() {
 
 bool IsSet(const std::string& name) { return kVM.count(name) > 0; }
 
-void ParseCommandLine(const int& argc, const char** argv) {
+void ParseCommandLine(const int& argc, char** argv) {
   // maybe argc/argv haven't been set yet and are given as arguments to this
   if (argc != 0 && argv != nullptr) {
     po::store(po::parse_command_line(argc, argv, kDesc), kVM);

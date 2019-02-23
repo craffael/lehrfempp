@@ -33,8 +33,6 @@ int main(int argc, char** argv) {
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
 
-  // Init variable input from command line / file
-  lf::base::ci::Init(argc, argv);
   // Add help and variable refselector
   lf::base::ci::Add("help,h", "Display help");
   lf::base::ci::Add<int>("refselector", "Selector for refinement method (0 [default] to 3)", 0);
@@ -42,7 +40,7 @@ int main(int argc, char** argv) {
   if (!lf::base::ci::ParseFile("setup.vars")) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
-  lf::base::ci::ParseCommandLine();
+  lf::base::ci::ParseCommandLine(argc, argv);
   // check for the help option (-h or --help)
   if (lf::base::ci::Help()) 
     return 0;

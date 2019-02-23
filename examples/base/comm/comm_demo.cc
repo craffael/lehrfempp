@@ -30,8 +30,6 @@ int main(int argc, char** argv) {
     std::cout << "Demo for lf::base::comm. Try the help option "\
                  "(-h, --help) for more instructions.\n";
   }
-  // initialise input reading
-  ci::Init(argc, argv); // argc, argv optional, can also be specified later
 
   // - Adding variables
   //   To read in from the command line (or file) we add variables 
@@ -58,7 +56,7 @@ int main(int argc, char** argv) {
   ci::AddSetter<unsigned int>("ctrl", Dummy::ctrl, "Set static member ctrl class Dummy.");
 
   // - Parse command line & file for variables
-  ci::ParseCommandLine(); // can also take argc, argv as arguments
+  ci::ParseCommandLine(argc, argv);
   ci::ParseFile("params.par"); // get value from params.par
 
   // - Check for the set variables

@@ -8,9 +8,8 @@ namespace ci = lf::base::ci;
 
 int main(int argc, char** argv) {
   std::cout << "Output of information on reference elements" << std::endl;
-  ci::Init(argc, argv);
   ci::Add()("help,h", "Print this help message.");
-  ci::ParseCommandLine();
+  ci::ParseCommandLine(argc, argv);
 
   if (ci::Help()) {
     std::cout << "Try for instance: --RefEl_ctrl 2\n";
