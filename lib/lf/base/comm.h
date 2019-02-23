@@ -32,10 +32,21 @@ namespace variables {
 // (key, (value, comment)) = (string, (hold_any, string))
 extern std::map<std::string, std::pair<bs::hold_any, std::string>> kGlobalVars;
 
+/**
+ * @brief Add a new global variable triple with (key, value, comment)
+ * @param key Key of the variable 
+ * @param value Value of the variable 
+ * @param comment Comment to the variable (optional)
+ */
 template <typename T>
 void Add(const std::string& key, const T& value,
          const std::string& comment = "");
 
+/**
+ * @brief Retrieve the value of a global variable for a given key
+ * @param key Key of the variable 
+ * @return Value of the variable to the given key
+ */
 template <typename T>
 T Get(const std::string& key);
 
@@ -215,21 +226,36 @@ extern bool ParseFile(const std::string& file);
 template <class T>
 class Track {
  public:
-  /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  Constructor: Places a new item of the global info list in the list
-  Usually called via a macro (DECLARE, COUNTER).
-  The second version of the constructor also permits to add a comment to the
-  information item.
-  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+  /**
+   * @brief Constructor for (option_name, &value_to_be_changed, comment)
+   *        triple 
+   * @param name The name of the option 
+   * @param ref If the option is set it will change the value of ref 
+   * @param comment A description of the option
+   */
   Track(const std::string& name, T& ref,
         const std::string& comment = std::string());
+  /**
+   * @brief Constructor for (option_name, &value_to_be_changed, 
+   *        default_value, comment) quadrupel 
+   * @param name The name of the option 
+   * @param ref If the option is set it will change the value of ref 
+   * @param ref The default value of the option 
+   * @param comment A description of the option
+   */
   Track(const std::string& name, T& ref, const T& def,
         const std::string& comment = std::string());
+
+  // delete default & copy constructor, not needed
   Track() = delete;
   Track(const Track&) = delete;
   Track(Track&&) = delete;
   Track& operator=(const Track&) = delete;
   Track& operator=(Track&&) = delete;
+
+  /** 
+   * @brief The default destructor 
+   */
   ~Track() = default;
 };
 
