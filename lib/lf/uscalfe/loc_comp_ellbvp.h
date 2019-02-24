@@ -145,6 +145,12 @@ template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 unsigned int ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
                                                     REACTION_COEFF>::ctrl_ = 0;
 
+template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
+ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
+                                       REACTION_COEFF gamma)
+    ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
+                                             DIFF_COEFF, REACTION_COEFF>;
+
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(

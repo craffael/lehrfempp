@@ -1,3 +1,9 @@
+/***************************************************************************
+ * LehrFEM++ - A simple C++ finite element libray for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
+
 /**
  * @file
  * @brief Module include file for the module `lf::assemble`
@@ -15,7 +21,7 @@
 #include "dofhandler.h"
 #include "fix_dof.h"
 
-/** @brief Local assembly facilities
+/** @brief D.o.f. index mapping and assembly facilities
  *
  * This module comprises classes and functions supporting the generation of
  * (Galerkin) finite element matrices and right-hand-side vectors from
