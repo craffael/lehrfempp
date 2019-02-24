@@ -1,6 +1,14 @@
 /** \mainpage Welcome to LehrFEM++
 
-Simplistic Finite Element Framework for research and education optimized for clarity and flexibility with some trade-off concerning performance.
+LehrFEM++ is a simple Finite Element Framework for research and education optimized for
+clarity and flexibility with some trade-off concerning performance.
+
+LehrFEM++ has been developed by as code platform for the course "Numerical Methods for
+Partial Differential Equations" regularly taught for second-year BSc students at ETH
+Zurich. Chapter 2 of the [lecture
+notes](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE19.pdf) (work in progress!)
+discuss fundamental algorithms for finite element methods and Sections 2.7 and 2.8 even
+give details about data structures and algorithms used in LehrFEM++.
 
 Content:
 - \ref getting_started
