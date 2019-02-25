@@ -15,7 +15,7 @@ void ListVariables() {
     std::string key = el.first;
     auto val = el.second;  // nested pairs. Clearer than el.second.second.
     std::cout << key << " = " << val.first;
-    if (!val.second.empty()) { // if description not empty
+    if (!val.second.empty()) {  // if description not empty
       std::cout << " : " << val.second;
     }
     std::cout << "\n";
