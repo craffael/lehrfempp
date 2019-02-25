@@ -2,7 +2,8 @@
 # include "lf/base/base.h"
 # include "outside.h"
 
-using namespace lf::base;
+namespace ci = lf::base::ci;
+namespace cv = lf::base::cv;
 
 // a class with a static member which we will set from 
 // the command line 
@@ -11,7 +12,7 @@ public:
   // We will set ctrl from the command line later.
   static unsigned int ctrl;
 };
-unsigned int Dummy::ctrl; // define the variable
+unsigned int Dummy::ctrl;  // define the variable
 
 // Accessing global variables from another function
 // than in which they were added (which is main)
@@ -38,9 +39,10 @@ int main(int argc, char** argv) {
   ci::Add("help,h", "Print this help message.");  
   // -- Add some variables via:
   //    ci::Add<T>("name", "description", [optional] default value)
-  ci::Add<int>("v1", "Set variable #1", 0); // with default value
-  ci::Add<double>("v2", "Set variable #2"); // no default value
+  ci::Add<int>("v1", "Set variable #1", 0);  // with default value
+  ci::Add<double>("v2", "Set variable #2");  // no default value
   // -- Or via the boost::program_options interface:
+  namespace po = boost::program_options;  // boost itself already included in base.h
   bool verbose = false;
   ci::Add()
     ("v3", po::value<int>()->default_value(10), "Set variable #3.")
@@ -61,8 +63,8 @@ int main(int argc, char** argv) {
 
   // - Check for the set variables
   // -- Is the help option set?
-  if (ci::Help()) { // print help & var names, if -h was specified
-    return 0;      // and stop here! No need to go through the program :)
+  if (ci::Help()) {  // print help & var names, if -h was specified
+    return 0;        // and stop here! No need to go through the program :)
   }
 
   // -- Check if verbose has been set to true
