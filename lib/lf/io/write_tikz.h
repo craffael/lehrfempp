@@ -111,9 +111,10 @@ activated.
      \begin{document}
      \input{"filename.txt"}
      \end{document}
-\endverbatim
+ * \endverbatim
  *
  * ##### selector function
+ *
  * \verbatim
 
   // Example of selector function
