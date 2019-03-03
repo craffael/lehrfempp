@@ -14,13 +14,14 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief A mesh function which combines two other \ref mesh_function "mesh
  * functions" using a binary operator (advanced use).
  * @tparam OP The type of operator that combines the mesh functions.
  * @tparam A The type of the lhs mesh function.
  * @tparam B The type of the rhs mesh function.
  *
- * # Requirements for OP
+ * ### Requirements for OP
  * The Operator `OP` must fulfill the following requirements:
  * - It must be moveable
  * - It should overload `operator()` as follows:
@@ -32,6 +33,10 @@ namespace lf::uscalfe {
  * where `U` is the MeshFunctionReturnType of the lhs MeshFunction, `V` is the
  * MeshFunctionReturnType of the rhs MeshFunction and `Z` is the type of the
  * mesh function `A OP B`.
+ *
+ * @note Usually there is no need to use MeshFunctionBinary directly. There are
+ * a number of operator overloads which use MeshFunctionBinary internally.
+ *
  */
 template <class OP, class A, class B>
 class MeshFunctionBinary {
@@ -241,7 +246,9 @@ struct OperatorSubtraction {
 }  // namespace internal
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Add's two mesh functions
+ * @relatesalso lf::uscalfe::MeshFunctionBinary
  * @tparam A Type of the lhs mesh function
  * @tparam B Type of the rhs mesh function
  * @param a the lhs mesh function
@@ -259,7 +266,9 @@ auto operator+(const A& a, const B& b) {
 }
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Subtracts two mesh functions
+ * @relatesalso lf::uscalfe::MeshFunctionBinary
  * @tparam A Type of the lhs mesh function
  * @tparam B Type of the rhs mesh function
  * @param a the lhs mesh function
@@ -269,6 +278,7 @@ auto operator+(const A& a, const B& b) {
  *
  * @note the two mesh functions `a` and `b` should produce the same type of
  * values, e.g. both should be scalar valued or both matrix/vector valued.
+ *
  */
 template <class A, class B,
           class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>

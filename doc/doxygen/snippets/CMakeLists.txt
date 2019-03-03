@@ -4,6 +4,7 @@ set(sources
   forward_iterator.cc
   gmsh_reader.cc
   lambda_mesh_data_set.cc
+  mesh_function_binary.cc
   ref_el.cc
   vtk_writer.cc
   mesh_utils.cc

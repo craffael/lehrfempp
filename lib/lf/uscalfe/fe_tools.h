@@ -7,6 +7,7 @@
  ***************************************************************************/
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @file
  * @brief Functions acting on finite element spaces
  * @author Ralf Hiptmair
@@ -71,6 +72,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
 };  // namespace internal
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Integrate a \ref mesh_function over a mesh (with quadrature rules)
  * @tparam MF The type of the \ref mesh_function "mesh function".
  * @tparam QR_SELECTOR The type of qr_selector (see below)

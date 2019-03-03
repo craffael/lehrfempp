@@ -14,8 +14,8 @@
 namespace lf::uscalfe {
 
 /**
- * @brief A mesh function representing another \ref mesh_function "mesh
- * function" under a pointwise, unary operation.
+ * @brief A mesh function representing another \ref mesh_function
+ * "mesh function" under a pointwise, unary operation.
  * @tparam OP The operator that should be applied (see below)
  * @tparam MF The type of the original mesh function.
  *
@@ -29,6 +29,9 @@ namespace lf::uscalfe {
  * ```
  * where `U` is the MeshFunctionReturnType of the original MeshFunction, and `Z`
  * is the type of the mesh function `OP MF`.
+ *
+ * @note Usually there is no need to use MeshFunctionUnary directly. There are
+ * a number of operator overloads which use MeshFunctionUnary internally.
  */
 template <class OP, class MF>
 class MeshFunctionUnary {
@@ -133,8 +136,9 @@ struct UnaryOpSquaredNorm {
 }  // namespace internal
 
 /**
- * @brief Applies the unary minus operator to a \ref mesh_function "mesh
- * function".
+ * @brief Applies the unary minus operator to a \ref mesh_function
+ * "mesh function".
+ * @relates lf::uscalfe::MeshFunctionUnary
  * @tparam A The type of the original mesh function.
  * @param a The original mesh function.
  * @return `-a`, where the minus operator is applied pointwise everywhere on the
@@ -149,6 +153,7 @@ auto operator-(const A& a) {
 
 /**
  * @brief Pointwise squared norm of another \ref mesh_function "mesh function"
+ * @relates lf::uscalfe::MeshFunctionUnary
  * @tparam A The type of the wrapped mesh function.
  * @param a The original mesh function
  * @return \ref mesh_function representing `|a|^2` (pointwise)

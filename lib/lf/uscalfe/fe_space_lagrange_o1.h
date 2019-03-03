@@ -14,6 +14,7 @@
 
 namespace lf::uscalfe {
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrangian Finite Element space
  *
  * Just a specialization of ScalarUniformFESpace based on

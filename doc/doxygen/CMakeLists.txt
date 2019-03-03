@@ -5,6 +5,7 @@ FIND_PACKAGE(Doxygen)
 if(DOXYGEN_FOUND)
   SET(DOXYGEN_INPUT Doxyfile.in)
   SET(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  SET(DOXYGEN_STRIP_FROM_INC_PATH ${CMAKE_CURRENT_LIST_DIR}/../../lib)
   
   # request to configure the file
   configure_file(${DOXYGEN_INPUT} ${DOXYGEN_OUTPUT} @ONLY)
