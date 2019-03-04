@@ -15,7 +15,7 @@
 
 namespace lf::quad {
 
-using quadOrder_t = unsigned char;
+using quadDegree_t = unsigned int;
 
 /**
  * @brief Represents a Quadrature Rule over one of the Reference Elements
@@ -61,12 +61,13 @@ class QuadRule {
    * vectors
    * @param weights The weights of the quadrature rule, a vector of length
    * `num_points`
-   * @param order The order of the quadrature rule, see Order() for more info.
+   * @param degree The degree of exactness of the quadrature rule, see Degree()
+   * for more info.
    */
   explicit QuadRule(base::RefEl ref_el, Eigen::MatrixXd points,
-                    Eigen::VectorXd weights, quadOrder_t order)
+                    Eigen::VectorXd weights, quadDegree_t degree)
       : ref_el_(std::move(ref_el)),
-        order_(order),
+        degree_(degree),
         points_(std::move(points)),
         weights_(std::move(weights)) {
     LF_ASSERT_MSG(points_.rows() == ref_el_.Dimension(), "Dimension mismatch");
@@ -80,10 +81,11 @@ class QuadRule {
   base::RefEl RefEl() const { return ref_el_; }
 
   /**
-   * @brief Return the order of this Quadrature Rule.
+   * @brief Return the degree of exactness of this Quadrature Rule.
    *
-   * The order of a quadrature rule is defined as the largest integer \f$k\f$
-   * such that \f[
+   * The degree of exactness a quadrature rule is defined as
+   * the largest integer \f$k\f$ such that
+   * \f[
    * \forall p \in \mathbb{P}_k, \quad \int_K p(\vec{x}) \,
    * d\vec{x} = \sum_{i=0}^{n-1} \omega_i f(\vec{\xi_i})
    * \f]
@@ -97,8 +99,19 @@ class QuadRule {
    * - For base::RefEl::kQuad(), \f$ \mathbb{P}_k := \mathrm{span} \{ x^a y^b \,
    * | \, 0 \leq \mathrm{max}(a,b) \leq k \} \f$
    *
+   * @note the _order_ of a quadrature rule is the degree of exactness + 1,
+   * because it predicts the order of algebraic covergence of the quadrature
+   * error when the rule is applied to a smooth integrand.
    */
-  quadOrder_t Order() const { return order_; }
+  quadDegree_t Degree() const { return degree_; }
+
+  /**
+   * @brief Return the order of the quadrature rule
+   *
+   * The order is the degree of (polynomial) exactness + 1
+   * @sa Degree()
+   */
+  unsigned int Order() const { return Degree() + 1; }
 
   /**
    * @brief All quadrature points \f$ \begin{pmatrix} \vec{\xi}_0, \ldots,
@@ -136,7 +149,7 @@ class QuadRule {
 
  private:
   base::RefEl ref_el_;
-  quadOrder_t order_{0};
+  quadDegree_t degree_{0};
   Eigen::MatrixXd points_;
   Eigen::VectorXd weights_;
 

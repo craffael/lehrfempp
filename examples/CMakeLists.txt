@@ -9,4 +9,5 @@ add_subdirectory(quad)
 add_subdirectory(refinement)
 add_subdirectory(assemble)
 add_subdirectory(ellbvp_linfe)
-
+add_subdirectory(lecturedemos)
+add_subdirectory(ellbvp_msh)

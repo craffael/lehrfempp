@@ -24,11 +24,11 @@ namespace lf::uscalfe {
  * @tparam SCALAR The scalar type of the shape functions.
  *
  * This class does essentially three things:
- * 1. It wraps any ScalarReferenceFiniteElement and forwards all calls to the
+ * -# It wraps any ScalarReferenceFiniteElement and forwards all calls to the
  * wrapped instance.
- * 2. It provides access to a quad::QuadratureRule (passed in constructor)
- * 3. It provides additional member functions to access the precomputed values
- * of the shape functions/gradients at the nodes of the quadrature rule.
+ * -# It provides access to a quad::QuadratureRule (passed in constructor)
+ * -# It provides additional member functions to access the precomputed values
+ * -# the shape functions/gradients at the nodes of the quadrature rule.
  */
 template <class SCALAR>
 class PrecomputedScalarReferenceFiniteElement
@@ -135,6 +135,9 @@ class PrecomputedScalarReferenceFiniteElement
 
   /**
    * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Weights())`
+   *
+   * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
+   * for the packed format in which the gradients are returned.
    */
   const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
@@ -145,9 +148,14 @@ class PrecomputedScalarReferenceFiniteElement
   ~PrecomputedScalarReferenceFiniteElement() override = default;
 
  private:
+  /** The underlying scalar-valued parametric finite element */
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_;
+  /** Uniform parametric quadrature rule for the associated type of reference
+   * element */
   quad::QuadRule qr_;
+  /** Holds values of reference shape functions at reference quadrature nodes */
   Eigen::MatrixXd shap_fun_;
+  /** Holds gradients of reference shape functions at quadrature nodes */
   Eigen::MatrixXd grad_shape_fun_;
 };
 

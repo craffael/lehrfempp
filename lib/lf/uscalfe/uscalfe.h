@@ -29,8 +29,10 @@
 #include "scalar_uniform_fe_space.h"
 
 /**
- * @brief Implementation of Uniform Scalar Finite Elements
- *
+ * @brief Collects data structures and algorithms designed for scalar finite
+ * element methods primarily meant for second-order elliptic boundary value
+ * problems.
+ * 
  * This namespace contains a number of classes/functions which
  * can be used to solve boundary value problems with uniform,
  * scalar Finite elements:

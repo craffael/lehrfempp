@@ -78,7 +78,7 @@ Triangle::Triangle(size_type index,
 
 // Acessing sub-entities
 base::RandomAccessRange<const mesh::Entity> Triangle::SubEntities(
-    char rel_codim) const {
+    unsigned rel_codim) const {
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   switch (rel_codim) {
     case 2:

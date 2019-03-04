@@ -224,7 +224,8 @@ TEST(lf_fe, lf_fe_ellbvp) {
   // Set up objects taking care of local computations
   auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
   auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
-  LagrangeFEEllBVPElementMatrix<double, decltype(alpha), decltype(gamma)>
+  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
+                                         decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -241,13 +242,47 @@ TEST(lf_fe, lf_fe_ellbvp) {
               << std::endl;
     LinearFELaplaceElementMatrix::ElemMat lfe_mat{lfe_elem_mat.Eval(cell)};
     std::cout << lfe_mat << std::endl;
-    std::cout << "Element matrix from LagrangeFEEllBVPElementMatrix:"
+    std::cout << "Element matrix from ReactionDiffusionElementMatrixProvider:"
               << std::endl;
     typename decltype(comp_elem_mat)::ElemMat quad_mat{
         comp_elem_mat.Eval(cell)};
     std::cout << quad_mat << std::endl;
     EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
   }
+}
+
+// Test that the ReactionDiffusionElementMatrixProvider works as expected
+// for tensor valued coefficients.
+TEST(lf_fe, ReactionDiffusionEMPTensor) {
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Set up finite elements
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+
+  // Set up objects taking care of local computations
+  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
+  });
+  auto gamma =
+      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  ReactionDiffusionElementMatrixProvider emp{fe_space, alpha, gamma};
+
+  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
+                                     fe_space->LocGlobMap().NoDofs());
+  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
+                        matrix);
+
+  // project two linear functions onto the fespace:
+  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  auto a_vec = NodalProjection<double>(fe_space, a);
+  auto b_vec = NodalProjection<double>(fe_space, b);
+
+  auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
+  EXPECT_NEAR(
+      product(0, 0), 7911. / 8.,
+      5);  // values do not agree very well because quadrature order is too low
 }
 
 TEST(lf_fe, lf_fe_edgemass) {
@@ -262,7 +297,7 @@ TEST(lf_fe, lf_fe_edgemass) {
 
   // Set up objects taking care of local computations
   auto gamma = MeshFunctionConstant(1.0);
-  LagrangeFEEdgeMassMatrix comp_elem_mat(fe_space, gamma);
+  MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;
@@ -297,7 +332,7 @@ TEST(lf_fe, lf_fe_loadvec) {
   // Set up objects taking care of local computations
   auto f = MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
-  using loc_comp_t = ScalarFELocalLoadVector<double, decltype(f)>;
+  using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
   // Set debugging flags
   loc_comp_t::ctrl_ = 0;                                       // 255;
@@ -319,7 +354,8 @@ TEST(lf_fe, lf_fe_loadvec) {
     LinearFELocalLoadVector<double, decltype(f)>::ElemVec lfe_vec{
         lfe_elem_vec.Eval(cell)};
     std::cout << "[ " << lfe_vec.transpose() << "] " << std::endl;
-    std::cout << "Element vector from ScalarFELocalLoadVector:" << std::endl;
+    std::cout << "Element vector from ScalarLoadElementVectorProvider:"
+              << std::endl;
     loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};
     std::cout << "[ " << quad_vec.transpose() << "] " << std::endl;
     EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
@@ -336,7 +372,7 @@ TEST(lf_fe, lf_fe_edgeload) {
 
   // Set up objects taking care of local computations
   auto g = MeshFunctionConstant(1.0);
-  ScalarFEEdgeLocalLoadVector comp_elem_vec{fe_space, g};
+  ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
   // lf::quad::QuadRule::out_ctrl_ = 1;

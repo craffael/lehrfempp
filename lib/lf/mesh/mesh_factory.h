@@ -23,7 +23,7 @@ class MeshFactory {
   /** @copydoc Mesh::coord_t */
   using coord_t = Eigen::VectorXd;
 
-  using dim_t = unsigned char;
+  using dim_t = base::dim_t;
 
   /**
    * @brief Return the Mesh::DimWorld() of the mesh that will be returned.
@@ -75,7 +75,7 @@ class MeshFactory {
    * #### If `geometry == nullptr`
    * If the geometry object is not specified, the mesh will try to
    * deduce the geometry from super entities (i.e. entities that contain
-   * the givene entity as a sub-entity). E.g. if you add an entity with
+   * the given entity as a sub-entity). E.g. if you add an entity with
    * `ref_el=RefEl::kSegment` to a mesh with `dimMesh=2` and you don't
    * specify a `geometry`, then the geometry of the entity will be deduced
    * from any triangle/quadrilateral that contains this entity

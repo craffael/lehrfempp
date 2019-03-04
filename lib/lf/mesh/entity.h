@@ -45,7 +45,7 @@ class Entity {
    * @brief The codimension of this entity w.r.t. the Mesh.dimMesh()
    * of the owning mesh manager.
    */
-  virtual char Codim() const = 0;
+  virtual unsigned Codim() const = 0;
 
   /**
    * @brief Return all sub entities of this entity that have the given
@@ -65,7 +65,7 @@ class Entity {
    sub-entitities of relative co-dimension 1.
    */
   virtual base::RandomAccessRange<const Entity> SubEntities(
-      char rel_codim) const = 0;
+      unsigned rel_codim) const = 0;
 
   /**
    * @brief return array of relative orientations of sub-entities

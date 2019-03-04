@@ -10,6 +10,7 @@
 #define __1f1e78e74a804e5490813ec6a9148231
 
 #include "make_quad_rule.h"
+#include "make_quad_rule_nodal.h"
 
 /** @brief Rules for numerical quadrature on reference entity shapes
  *

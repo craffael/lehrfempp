@@ -252,12 +252,12 @@ int main(int /*argc*/, const char** /*argv*/) {
     lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
 
     // ----------------------------------------------------------------------
-    // I: Assemble finite element Galerkin matrix
+    // III: Assemble finite element Galerkin matrix
     // First the volume part for the bilinear form
     // Initialize object taking care of local computations. No selection of a
     // subset of cells is specified in this demonstration
-    lf::uscalfe::LagrangeFEEllBVPElementMatrix<double, decltype(mf_alpha),
-                                               decltype(mf_gamma)>
+    lf::uscalfe::ReactionDiffusionElementMatrixProvider<
+        double, decltype(mf_alpha), decltype(mf_gamma)>
         elmat_builder(fe_space, mf_alpha, mf_gamma);
     // Invoke assembly on cells (co-dimension = 0)
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
@@ -265,21 +265,21 @@ int main(int /*argc*/, const char** /*argv*/) {
     // conditions!). To that end initialize object taking care of local
     // computations on segments. A predicate ensure that computations are
     // confined to edges on the impredance boundary
-    lf::uscalfe::LagrangeFEEdgeMassMatrix<double, decltype(mf_eta),
-                                          decltype(edge_sel_imp)>
+    lf::uscalfe::MassEdgeMatrixProvider<double, decltype(mf_eta),
+                                        decltype(edge_sel_imp)>
         edgemat_builder(fe_space, mf_eta, edge_sel_imp);
     // Invoke assembly on edges by specifying co-dimension = 1
     lf::assemble::AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
 
     // ----------------------------------------------------------------------
-    // II: Right-hand side vector; has to be set to zero initially
+    // IV: Right-hand side vector; has to be set to zero initially
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(N_dofs);
     phi.setZero();
     // Assemble volume part of right-hand side vector depending on the source
     // function f.
     // Initialize object taking care of local computations on all cells.
-    lf::uscalfe::ScalarFELocalLoadVector<double, decltype(mf_f)> elvec_builder(
-        fe_space, mf_f);
+    lf::uscalfe::ScalarLoadElementVectorProvider<double, decltype(mf_f)>
+        elvec_builder(fe_space, mf_f);
     // Invoke assembly on cells (codim == 0)
     AssembleVectorLocally(0, dofh, elvec_builder, phi);
 
@@ -293,8 +293,8 @@ int main(int /*argc*/, const char** /*argv*/) {
       };
       // Object taking care of local computations. A predicate selects the edges
       // to be processed
-      lf::uscalfe::ScalarFEEdgeLocalLoadVector<double, decltype(mf_h),
-                                               decltype(edge_sel)>
+      lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_h),
+                                                decltype(edge_sel)>
           elvec_builder_neu(fe_space, mf_h, edge_sel);
       // Invoke assembly on edges (codim == 1), update vector
       AssembleVectorLocally(1, dofh, elvec_builder_neu, phi);

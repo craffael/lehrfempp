@@ -19,7 +19,7 @@ class SegmentO1 : public Geometry {
   Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
   Eigen::MatrixXd JacobianInverseGramian(
-      const ::Eigen::MatrixXd& local) const override;
+      const Eigen::MatrixXd& local) const override;
   Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
   std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
@@ -29,8 +29,9 @@ class SegmentO1 : public Geometry {
    * @see Geometry::ChildGeometry()
    * @see RefinementPattern
    * @param ref_pat three refinement patterns are supported
+   * - rp_nil: empty refinement
    * - rp_copy: just copies the geometry information of the segment
-   * - rp_split, rp_regular: split edge in the middle.
+   * - rp_split: split edge in the middle.
    * @param codim _relative_ codimension of children whose shape is
    *        requested
    */

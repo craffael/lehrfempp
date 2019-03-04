@@ -18,10 +18,10 @@ namespace lf::uscalfe {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @ingroup mesh_function
- * @brief Helper \ref mesh_function "Mesh Function" which represents a function
- * that depends only on the global coordinates of the mesh.
- * @tparam F The type of the function object which is wrapped and which
- * describes the mesh function in terms of global coordinates.
+ * @brief MeshFunction wrapper for a simple function of physical coordinates
+ *
+ * @tparam F a functor type, offering an evaluation operator that acccepts
+ *           a single coordinate vector.
  *
  * MeshFunctionGlobal essentially wraps a [function
  * object](https://en.wikipedia.org/wiki/Function_object) which represents a
@@ -56,6 +56,9 @@ class MeshFunctionGlobal {
 
   explicit MeshFunctionGlobal(F f) : f_(std::move(f)) {}
 
+  /**
+   * @brief MeshFunction compliant evaluation operator
+   */
   std::vector<F_return_type> operator()(const mesh::Entity& e,
                                         const Eigen::MatrixXd& local) const {
     LF_ASSERT_MSG(e.RefEl().Dimension() == local.rows(),

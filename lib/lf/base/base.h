@@ -1,5 +1,3 @@
-
-
 #ifndef __986f32316282425d9be137cb399482f3
 #define __986f32316282425d9be137cb399482f3
 
@@ -27,7 +25,7 @@ using sub_idx_t = unsigned int;
 /**
  * @brief type for dimensions and co-dimensions and numbers derived from them
  */
-using dim_t = unsigned char;
+using dim_t = unsigned int;
 /**
  * @brief Index flagged as invalid
  */

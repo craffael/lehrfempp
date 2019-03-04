@@ -12,7 +12,7 @@ Eigen::MatrixXd Point::Jacobian(const Eigen::MatrixXd& local) const {
 }
 
 Eigen::MatrixXd Point::JacobianInverseGramian(
-    const ::Eigen::MatrixXd& local) const {  // NOLINT(misc-unused-parameters)
+    const Eigen::MatrixXd& local) const {  // NOLINT(misc-unused-parameters)
   LF_VERIFY_MSG(false, "JacobianInverseGramian undefined for points.");
 }
 

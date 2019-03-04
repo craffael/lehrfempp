@@ -34,6 +34,11 @@
  > cd cmake
  > wget https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
  ```
+On Mac OSX use curl instead:
+ ```
+ > cd cmake
+ > curl -O https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ ```
    This file is needed to setup the hunter package manager (which runs completly inside CMake).
  4. Create the file `getting_started/CMakeLists.txt` with the following content
  ```
@@ -42,10 +47,9 @@ cmake_minimum_required(VERSION 3.10)
 ### Hunter package manager ###
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.65.tar.gz"
-    SHA1 "00e252171605c290390a3cc90a372beeeb406d3c"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.122.tar.gz"
+    SHA1 "d8c252862a9900a703167ba703bfb1b17977948f"
 )
-
 
 ### Setup CMake Project ###
 project(GettingStarted)

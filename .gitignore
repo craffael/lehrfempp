@@ -53,3 +53,8 @@ build/
 venv/
 
 
+#OSX
+.DS_Store
+
+#emacs backup files
+*~

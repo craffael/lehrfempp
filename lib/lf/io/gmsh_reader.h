@@ -1,3 +1,9 @@
+/***************************************************************************
+ * LehrFEM++ - A simple C++ finite element library for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
+
 /**
  * @file
  * @brief Declares the class GmshReader
@@ -141,7 +147,7 @@ struct MshFile {
                   //!< the volume)
   };
 
-  /// Contains a list of allement types that are possible.
+  /// Contains a list of all element types that are possible.
   static const std::vector<ElementType> AllElementTypes;
 
   /**
@@ -271,7 +277,7 @@ MshFile readGmshFile(std::string path);
  *   them, make sure you don't tick `Save all (ignore physical groups)` and
  *   make sure that every surface (2d) / volume (3d) belongs to at least one
  *   physical entity.
- *   (Otherwise the corresponding mesh elements are not expored by Gmsh)
+ *   (Otherwise the corresponding mesh elements are not exported by Gmsh)
  * - If you didn't specify any physical entities in Gmsh, you should tick
  *   `Save all (ignore physical groups)`.
  * - The GmshReader doesn't support the options "Save parametric coordinates"

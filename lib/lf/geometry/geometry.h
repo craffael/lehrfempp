@@ -12,9 +12,12 @@
 #include "geometry_interface.h"
 #include "point.h"
 #include "quad_o1.h"
+#include "quad_o2.h"
 #include "refinement_pattern.h"
 #include "segment_o1.h"
+#include "segment_o2.h"
 #include "tria_o1.h"
+#include "tria_o2.h"
 
 /**
  * \brief Defines the Geometry interface and provides a number of
