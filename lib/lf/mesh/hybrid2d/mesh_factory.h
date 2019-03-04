@@ -48,7 +48,7 @@ class MeshFactory : public mesh::MeshFactory {
 
   std::shared_ptr<mesh::Mesh> Build() override;
 
-  /** @brief output function printing asssembled lists of entity information */
+  /** @brief output function printing assembled lists of entity information */
   void PrintLists(std::ostream& o = std::cout) const;
 
   ~MeshFactory() override = default;
