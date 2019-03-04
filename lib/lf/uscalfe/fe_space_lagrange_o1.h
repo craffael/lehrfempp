@@ -15,10 +15,13 @@
 namespace lf::uscalfe {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @brief Linear Lagrangian Finite Element space
+ * @brief (Bi)Linear Lagrangian Finite Element space
  *
  * Just a specialization of ScalarUniformFESpace based on
- * FeLagrangeO1Tria, FeLagrangeO1Quad.
+ * FeLagrangeO1Tria, FeLagrangeO1Quad and FeLagrangePoint.
+ *
+ * ### Example
+ * @snippet fe_space_lagrange_o1.cc usage
  *
  */
 template <typename SCALAR>

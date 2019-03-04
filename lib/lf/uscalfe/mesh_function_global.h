@@ -16,7 +16,32 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @ingroup mesh_function
+ * @brief Helper \ref mesh_function "Mesh Function" which represents a function
+ * that depends only on the global coordinates of the mesh.
+ * @tparam F The type of the function object which is wrapped and which
+ * describes the mesh function in terms of global coordinates.
+ *
+ * MeshFunctionGlobal essentially wraps a [function
+ * object](https://en.wikipedia.org/wiki/Function_object) which represents a
+ * function defined on the mesh that depends only on the global coordinates.
+ * An example is e.g. the function \f$ \vec{x} \mapsto \norm{x}^2 \f$.
+ *
+ * ### Requirements for `F`
+ * `F` is a function object that should overload the call operator as follows:
+ * ```
+ * auto operator()(const Eigen::Vector2d& x) const
+ * ```
+ * which should return the value of the mesh function at the global coordinates
+ * `x`. The return type of the call operator can in principle be anything, but
+ * usually it is one of:
+ * - `double` for a scalar valued mesh function
+ * - `std::complex<double>` for complex valued mesh function
+ * - `Eigen::Vector2d` for a tensor valued mesh function.
+ *
+ * @note For `DimGlobal==3`, the call operator should of course accept a
+ * `Eigen::Vector3d`.
  */
 template <class F>
 class MeshFunctionGlobal {

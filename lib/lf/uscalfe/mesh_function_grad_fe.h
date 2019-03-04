@@ -13,6 +13,8 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing the gradient of a
  * function from a finite element space (e.g. gradient of a solution of BVP).
  * @tparam SCALAR_FE The scalar type of the finite element basis functions.

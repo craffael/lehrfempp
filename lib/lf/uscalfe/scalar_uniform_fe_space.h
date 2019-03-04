@@ -20,6 +20,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Space of scalar valued finite element functions on a hybrid 2D mesh
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or

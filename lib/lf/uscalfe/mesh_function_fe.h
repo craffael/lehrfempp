@@ -14,6 +14,8 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing an element from a
  * ScalarUniformFESpace (e.g. solution of BVP)
  * @tparam SCALAR_FE The scalar type of the finite element basis functions.

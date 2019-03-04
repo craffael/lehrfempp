@@ -20,7 +20,9 @@
 #include "lagr_fe.h"
 
 namespace lf::uscalfe {
-/** @brief Computing the element matrix for the (negative) Laplacian
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Computing the element matrix for the (negative) Laplacian
  *         and linear finite elements.
  *
  * The main purpose of this class is to compute the element matrix for
@@ -86,7 +88,9 @@ class LinearFELaplaceElementMatrix {
   static const unsigned int dbg_geo = 8;
 };
 
-/** @brief Class for computation of local load vector for linear finite
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Class for computation of local load vector for linear finite
  * elements.
  *
  * @tparam FUNCTOR object with an evaluation operator of signature

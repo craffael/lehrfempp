@@ -33,6 +33,7 @@ using glb_idx_t = lf::assemble::glb_idx_t;
 using sub_idx_t = lf::base::sub_idx_t;
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Interface class for parametric scalar valued finite elements
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
@@ -345,6 +346,7 @@ unsigned int ScalarReferenceFiniteElement<SCALAR>::ctrl_ = 0;
 
 /** @brief Stream output operator: just calls the
  * ScalarReferenceFiniteElement::print() method
+ * @relates ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 std::ostream& operator<<(std::ostream& o,
@@ -353,6 +355,7 @@ std::ostream& operator<<(std::ostream& o,
 }
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on triangular reference element
  *
  * This is a specialization of ScalarReferenceFiniteElement.
@@ -449,6 +452,7 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on the quadrilateral reference element
  *
  * The reference shape functions are
@@ -552,6 +556,7 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on a line segment
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
@@ -646,6 +651,7 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on a point
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity

@@ -18,6 +18,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Helper class which stores a ScalarReferenceFiniteElement with
  * precomputed values at the nodes of a quadrature rule.
  * @tparam SCALAR The scalar type of the shape functions.

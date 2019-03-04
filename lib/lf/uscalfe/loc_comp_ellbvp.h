@@ -1,11 +1,3 @@
-#ifndef LF_LOCCOMPELLBVP
-#define LF_LOCCOMPELLBVP
-/***************************************************************************
- * LehrFEM++ - A simple C++ finite element libray for teaching
- * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
- * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
- ***************************************************************************/
-
 /**
  * @file
  * @brief Classes taking care of local computations for scalar 2nd-order
@@ -14,6 +6,14 @@
  * @date October 2018
  * @copyright MIT License
  */
+
+#ifndef LF_LOCCOMPELLBVP
+#define LF_LOCCOMPELLBVP
+/***************************************************************************
+ * LehrFEM++ - A simple C++ finite element libray for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
 
 #include <lf/quad/quad.h>
 #include <iostream>
@@ -24,6 +24,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
  *
@@ -214,7 +215,9 @@ LagrangeFEEllBVPElementMatrix<SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(
   return mat;
 }
 
-/** @brief Quadrature-based computation of local mass matrix for an edge
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Quadrature-based computation of local mass matrix for an edge
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
  * @tparam COEFF \ref mesh_function "MeshFunction" that defines the
@@ -360,6 +363,7 @@ LagrangeFEEdgeMassMatrix<SCALAR, COEFF, EDGESELECTOR>::Eval(
 }
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Local computation of general element (load) vector for scalar
  finite
  * elements; volume contributions only
@@ -509,6 +513,7 @@ ScalarFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
 }
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Local edge contributions to element vector
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>

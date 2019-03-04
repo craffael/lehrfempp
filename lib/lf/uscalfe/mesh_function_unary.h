@@ -14,6 +14,8 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @ingroup mesh_function
  * @brief A mesh function representing another \ref mesh_function
  * "mesh function" under a pointwise, unary operation.
  * @tparam OP The operator that should be applied (see below)

@@ -15,6 +15,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" which takes the same constant
  * value on the whole mesh.

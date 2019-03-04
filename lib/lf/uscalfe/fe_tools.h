@@ -72,7 +72,6 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
 };  // namespace internal
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
  * @brief Integrate a \ref mesh_function over a mesh (with quadrature rules)
  * @tparam MF The type of the \ref mesh_function "mesh function".
  * @tparam QR_SELECTOR The type of qr_selector (see below)
@@ -100,6 +99,9 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
  * ```
  * It should return `true`, if `e` is part of the integration domain and `false`
  * if it is not.
+ *
+ * ### Example
+ * @snippet fe_tools.cc integrateMeshFunction2
  */
 template <class MF, class QR_SELECTOR,
           class ENTITY_PREDICATE = base::PredicateTrue>
@@ -129,7 +131,8 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * @param mesh The mesh over which `mf` is integrated.
  * @param mf The \ref mesh_function "mesh function" which is integrated
  * @param quad_order The quadrature order of the quadrature rules that are to be
- * used for integration.
+ * used for integration. Internally Gauss-rules created by `quad::make_QuadRule`
+ * are used.
  * @param ep The entity predicate selecting the entities over which `mf` is
  * integrated.
  * @param codim The codimension of the entities over which `mf` is integrated.
@@ -142,6 +145,9 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * ```
  * It should return `true`, if `e` is part of the integration domain and `false`
  * if it is not.
+ *
+ * ### Example
+ * @snippet fe_tools.cc integrateMeshFunction
  */
 template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,

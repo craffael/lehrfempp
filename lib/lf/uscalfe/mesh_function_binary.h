@@ -15,8 +15,9 @@ namespace lf::uscalfe {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @brief A mesh function which combines two other \ref mesh_function "mesh
- * functions" using a binary operator (advanced use).
+ * @ingroup mesh_function
+ * @brief A \ref mesh_function which combines two other \ref mesh_function
+ * "mesh functions" using a binary operator (advanced use).
  * @tparam OP The type of operator that combines the mesh functions.
  * @tparam A The type of the lhs mesh function.
  * @tparam B The type of the rhs mesh function.
@@ -50,6 +51,9 @@ class MeshFunctionBinary {
   MeshFunctionBinary(OP op, A a, B b)
       : op_(std::move(op)), a_(std::move(a)), b_(std::move(b)) {}
 
+  /**
+   * see \ref mesh_function for details.
+   */
   auto operator()(const lf::mesh::Entity& e,
                   const Eigen::MatrixXd& local) const {
     return op_(a_(e, local), b_(e, local), 0);
@@ -247,17 +251,21 @@ struct OperatorSubtraction {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @brief Add's two mesh functions
+ * @brief Add's two \ref mesh_function "mesh functions"
  * @relatesalso lf::uscalfe::MeshFunctionBinary
- * @tparam A Type of the lhs mesh function
- * @tparam B Type of the rhs mesh function
- * @param a the lhs mesh function
- * @param b the rhs mesh function
- * @return `a + b`, i.e. a new mesh function which represents the pointwise
- * addition of `a` and `b`
+ * @tparam A Type of the lhs \ref mesh_function
+ * @tparam B Type of the rhs \ref mesh_function
+ * @param a the lhs \ref mesh_function
+ * @param b the rhs \ref mesh_function
+ * @return `a + b`, i.e. a \ref mesh_function "new mesh function" which
+ * represents the pointwise addition of `a` and `b`
  *
- * @note the two mesh functions `a` and `b` should produce the same type of
- * values, e.g. both should be scalar valued or both matrix/vector valued.
+ * @note the two \ref mesh_function "mesh functions" `a` and `b` should produce
+ * the same type of values, e.g. both should be scalar valued or both
+ * matrix/vector valued.
+ *
+ * ### Example
+ * @snippet mesh_function_binary.cc one_trig
  */
 template <class A, class B,
           class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
@@ -267,18 +275,21 @@ auto operator+(const A& a, const B& b) {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @brief Subtracts two mesh functions
+ * @brief Subtracts two \ref mesh_function "mesh functions"
  * @relatesalso lf::uscalfe::MeshFunctionBinary
- * @tparam A Type of the lhs mesh function
- * @tparam B Type of the rhs mesh function
- * @param a the lhs mesh function
- * @param b the rhs mesh function
- * @return `a - b`, i.e. a new mesh function which represents the pointwise
- * difference of `a` minus `b`
+ * @tparam A Type of the lhs \ref mesh_function
+ * @tparam B Type of the rhs \ref mesh_function
+ * @param a the lhs \ref mesh_function
+ * @param b the rhs \ref mesh_function
+ * @return `a - b`, i.e. a \ref mesh_function "new mesh function" which
+ * represents the pointwise difference of `a` minus `b`
  *
- * @note the two mesh functions `a` and `b` should produce the same type of
- * values, e.g. both should be scalar valued or both matrix/vector valued.
+ * @note the two \ref mesh_function "mesh functions" `a` and `b` should produce
+ * the same type of values, e.g. both should be scalar valued or both
+ * matrix/vector valued.
  *
+ * ### Example
+ * @snippet mesh_function_binary.cc subtract
  */
 template <class A, class B,
           class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
