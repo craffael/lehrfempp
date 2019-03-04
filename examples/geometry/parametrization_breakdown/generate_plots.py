@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 from collections import OrderedDict
-from os import listdir, mkdir, path
+from os import listdir, makedirs, path
 from sys import argv
 
 import matplotlib as mpl
@@ -11,15 +11,18 @@ import numpy as np
 from matplotlib import cm
 
 if len(argv) < 2:
-    print('usage: python visualize_breakdown.py path_to_results')
+    print('usage: python generate_plots.py path_to_results')
     exit(-1)
 
 results_dir = argv[1]
 example_dir = path.dirname(path.abspath(results_dir))
 plots_dir = path.join(example_dir, 'plots')
+lecture_plots_dir = path.join(plots_dir, 'lecture_document')
+jupyter_plots_dir = path.join(plots_dir, 'jupyter_notbook')
 
-if not path.isdir(plots_dir):
-    mkdir(plots_dir)
+makedirs(plots_dir, exist_ok=True)
+makedirs(lecture_plots_dir, exist_ok=True)
+makedirs(jupyter_plots_dir, exist_ok=True)
 
 result_files = listdir(results_dir)
 
@@ -156,8 +159,13 @@ def visualize_geom(geom_name):
         plot_geom(ax[child + 1], coords)
         ax[child + 1].scatter(points[0, :], points[1, :], s=0.5)
 
-    plt.legend()
-    plt.savefig(path.join(plots_dir, geom_name + '.eps'), bbox_inches='tight')
+    handles, labels = ax[0].get_legend_handles_labels()
+    by_label = OrderedDict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys())
+    plt.savefig(
+        path.join(jupyter_plots_dir, geom_name + '.eps'), bbox_inches='tight'
+    )
+    plt.close(fig)
 
 
 def check_volumes(geom_name):
@@ -225,44 +233,64 @@ def visualize_jacobian_determinants(geom_name):
     plt.colorbar(scat, cax=cax, **kw)
 
     plt.savefig(
-        path.join(plots_dir, geom_name + '_jacobian_determinants.eps'),
+        path.join(jupyter_plots_dir, geom_name + '_jacobian_determinants.eps'),
         bbox_inches='tight'
     )
+    plt.close(fig)
 
 
 def visualize_breakdown(geom_name):
-    fig, ax = plt.subplots(2, 2, sharex='row', sharey='row', figsize=(6, 6))
+    for idx, geom in enumerate([geom_name, geom_name + '_degenerate']):
+        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+        coords, points, _, _ = load_visualization_files(geom)
+        plot_geom(ax, coords)
+        ax.scatter(points[0, :], points[1, :], s=0.5)
+
+        plt.savefig(
+            path.join(lecture_plots_dir, geom + '_parametrization.eps'),
+            bbox_inches='tight'
+        )
+        plt.close(fig)
+
+    handles, labels = ax.get_legend_handles_labels()
+    by_label = OrderedDict(zip(labels, handles))
+    fig = plt.figure()
+    legend = fig.legend(
+        by_label.values(), by_label.keys(), loc=10, frameon=False
+    )
+    fig.canvas.draw()
+    plt.savefig(
+        path.join(lecture_plots_dir, 'legend_parametrization.eps'),
+        bbox_inches=legend.get_window_extent().transformed(
+            fig.dpi_scale_trans.inverted())
+    )
+    plt.close(fig)
 
     for idx, geom in enumerate([geom_name, geom_name + '_degenerate']):
-        coords, points, _, _ = load_visualization_files(geom)
-        plot_geom(ax[0, idx], coords)
-        ax[0, idx].scatter(points[0, :], points[1, :], s=0.5)
-
+        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
         ref_points, determinants, _, _ = load_determinant_files(geom)
         max_val = max(determinants)
         min_val = min(determinants)
         extrema = (min(min_val, 0), max(max_val, 0))
         scat = plot_jacobian_determinants(
-            ax[1, idx], ref_points, determinants, extrema
+            ax, ref_points, determinants, extrema
         )
+        plt.savefig(
+            path.join(lecture_plots_dir, geom + '_determinant.eps'),
+            bbox_inches='tight'
+        )
+        plt.close(fig)
 
-    cax, kw = mpl.colorbar.make_axes(
-        [axis for axis in ax[1].flat], fraction=0.015
-    )
-    fig.colorbar(scat, cax=cax, **kw)
-
-    handles, labels = ax[0, 0].get_legend_handles_labels()
-    by_label = OrderedDict(zip(labels, handles))
-    ax[0, 0].legend(by_label.values(), by_label.keys(), loc=4)
-
-    for i in range(2):
-        ax[0, i].set_xlim(left=-0.5, right=8.5)
-        ax[0, i].set_ylim(bottom=-3, top=11)
-
-    plt.savefig(
-        path.join(plots_dir, geom_name + '_breakdown.eps'),
-        bbox_inches='tight'
-    )
+        fig, ax = plt.subplots(1, 1)
+        fig.colorbar(scat)
+        ax.remove()
+        plt.savefig(
+            path.join(
+                lecture_plots_dir, f'legend_determinant_{geom_name}.eps'
+            ),
+            bbox_inches='tight'
+        )
+        plt.close(fig)
 
 
 for geom in ['tria', 'tria_degenerate', 'quad', 'quad_degenerate']:
