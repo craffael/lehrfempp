@@ -9,13 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
-#include <lf/geometry/test_utils/check_child_geometry.h>
-#include <lf/geometry/test_utils/check_integration_element.h>
-#include <lf/geometry/test_utils/check_jacobian.h>
-#include <lf/geometry/test_utils/check_jacobian_inverse_gramian.h>
-#include <lf/geometry/test_utils/check_sub_geometry.h>
-#include <lf/quad/quad.h>
-#include <lf/refinement/refinement.h>
+#include <lf/geometry/test_utils/test_utils.h>
 
 namespace lf::geometry::test {
 

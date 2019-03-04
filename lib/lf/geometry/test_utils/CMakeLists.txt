@@ -7,14 +7,14 @@ set(sources
   check_jacobian.h
   check_jacobian_inverse_gramian.cc
   check_jacobian_inverse_gramian.h
-  check_sub_geometry.cpp
+  check_sub_geometry.cc
   check_sub_geometry.h
+  test_utils.cc
+  test_utils.h
 )
 
 lf_add_library(lf.geometry.test_utils ${sources})
 target_link_libraries(lf.geometry.test_utils PUBLIC
-  Eigen3::Eigen
-  Boost::boost
   GTest::main
   lf.base
   lf.geometry
