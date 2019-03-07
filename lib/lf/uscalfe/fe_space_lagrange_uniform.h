@@ -40,20 +40,20 @@ namespace lf::uscalfe {
  * @note Some of the pointers may be NULL. For instance, if all computations
  *       are done on purely triangular meshes then a finite element
  * specification for quadrilaterals need not be given, \see
- * ScalarUniformFESpace().
+ * UniformScalarFESpace().
  */
 template <typename SCALAR>
-class ScalarUniformFESpace {
+class UniformScalarFESpace {
  public:
   using Scalar = SCALAR;
 
   /** @brief default constructor, needed by std::vector
    * @note creates an invalid object that cannot be used. */
-  ScalarUniformFESpace() = default;
-  ScalarUniformFESpace(const ScalarUniformFESpace &) = delete;
-  ScalarUniformFESpace(ScalarUniformFESpace &&) noexcept = default;
-  ScalarUniformFESpace &operator=(const ScalarUniformFESpace &) = delete;
-  ScalarUniformFESpace &operator=(ScalarUniformFESpace &&) noexcept = default;
+  UniformScalarFESpace() = default;
+  UniformScalarFESpace(const UniformScalarFESpace &) = delete;
+  UniformScalarFESpace(UniformScalarFESpace &&) noexcept = default;
+  UniformScalarFESpace &operator=(const UniformScalarFESpace &) = delete;
+  UniformScalarFESpace &operator=(UniformScalarFESpace &&) noexcept = default;
   /**
    * @brief Main constructor: sets up the local-to-global index mapping (dof
    * handler)
@@ -76,7 +76,7 @@ class ScalarUniformFESpace {
    *       a null pointer. This will then restrict the applicability of
    *       the resulting finite element space objects to particular meshes.
    */
-  ScalarUniformFESpace(
+  UniformScalarFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p,
@@ -123,7 +123,7 @@ class ScalarUniformFESpace {
   size_type NumRefShapeFunctions(lf::base::RefEl ref_el_type) const;
 
   /** @brief No special destructor */
-  virtual ~ScalarUniformFESpace() = default;
+  virtual ~UniformScalarFESpace() = default;
 
  private:
   /** Underlying mesh */
@@ -158,20 +158,20 @@ class ScalarUniformFESpace {
   static const unsigned int kout_mesh = 1;
   static const unsigned int kout_dofh = 2;
   static const unsigned int kout_rsfs = 4;
-};  // end class definition ScalarUniformFESpace
+};  // end class definition UniformScalarFESpace
 
 /** @brief output operator for scalar parametric finite element space */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
-                         const ScalarUniformFESpace<SCALAR> &fes);
+                         const UniformScalarFESpace<SCALAR> &fes);
 
 // Output control variable
 template <typename SCALAR>
-unsigned int ScalarUniformFESpace<SCALAR>::ctrl_ = 0;
+unsigned int UniformScalarFESpace<SCALAR>::ctrl_ = 0;
 
 // Initialization methods
 template <typename SCALAR>
-void ScalarUniformFESpace<SCALAR>::init() {
+void UniformScalarFESpace<SCALAR>::init() {
   LF_VERIFY_MSG(mesh_p_ != nullptr, "Missing mesh!");
   LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
                 "Missing FE specification for cells");
@@ -266,7 +266,7 @@ void ScalarUniformFESpace<SCALAR>::init() {
 
 template <typename SCALAR>
 std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
-ScalarUniformFESpace<SCALAR>::ShapeFunctionLayout(
+UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
     lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
@@ -294,7 +294,7 @@ ScalarUniformFESpace<SCALAR>::ShapeFunctionLayout(
 /* number of _interior_ shape functions associated to entities of various types
  */
 template <typename SCALAR>
-size_type ScalarUniformFESpace<SCALAR>::NumRefShapeFunctions(
+size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
     lf::base::RefEl ref_el_type) const {
   LF_ASSERT_MSG((rfs_quad_p_ != nullptr) && (rfs_quad_p_ != nullptr),
                 "No valid FE space object: no rsfs");
@@ -320,19 +320,19 @@ size_type ScalarUniformFESpace<SCALAR>::NumRefShapeFunctions(
 /** output operator for scalar parametric finite element space */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
-                         const ScalarUniformFESpace<SCALAR> &fes) {
+                         const UniformScalarFESpace<SCALAR> &fes) {
   o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NoDofs()
     << std::endl;
-  if (ScalarUniformFESpace<SCALAR>::ctrl_ &
-      ScalarUniformFESpace<SCALAR>::kout_mesh) {
+  if (UniformScalarFESpace<SCALAR>::ctrl_ &
+      UniformScalarFESpace<SCALAR>::kout_mesh) {
     o << fes.Mesh() << std::endl;
   }
-  if (ScalarUniformFESpace<SCALAR>::ctrl_ &
-      ScalarUniformFESpace<SCALAR>::kout_dofh) {
+  if (UniformScalarFESpace<SCALAR>::ctrl_ &
+      UniformScalarFESpace<SCALAR>::kout_dofh) {
     o << fes.LocGlobMap() << std::endl;
   }
-  if (ScalarUniformFESpace<SCALAR>::ctrl_ &
-      ScalarUniformFESpace<SCALAR>::kout_rsfs) {
+  if (UniformScalarFESpace<SCALAR>::ctrl_ &
+      UniformScalarFESpace<SCALAR>::kout_rsfs) {
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
       << std::endl;
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())

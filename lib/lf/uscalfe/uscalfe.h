@@ -22,7 +22,7 @@
 #include "mesh_function_constant.h"
 #include "mesh_function_global.h"
 #include "mesh_function_traits.h"
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 /**
  * @brief Collects data structures and algorithms designed for scalar finite

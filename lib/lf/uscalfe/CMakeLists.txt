@@ -17,9 +17,8 @@ mesh_function_constant.h
 mesh_function_global.h
 mesh_function_traits.h
 precomputed_scalar_reference_finite_element.h				
-scalar_uniform_fe_space.h
-scalar_uniform_fe_space.cc
-uniform_scalar_finite_element_space.h
+uniform_scalar_fe_space.h
+uniform_scalar_fe_space.cc
 uscalfe.h
 )
 

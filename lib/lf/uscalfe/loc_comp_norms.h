@@ -72,7 +72,7 @@ class MeshFunctionL2NormDifference {
    *       for all cell types if these cell types do not occur.
    */
   MeshFunctionL2NormDifference(
-      const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
+      const std::shared_ptr<const UniformScalarFESpace<double>> &fe_space,
       FUNCTOR u, quad::quadDegree_t loc_quad_order)
       : u_(std::move(u)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
@@ -250,7 +250,7 @@ class MeshFunctionL2GradientDifference {
    *       corresponding cell type are never requested.
    */
   MeshFunctionL2GradientDifference(
-      const std::shared_ptr<const ScalarUniformFESpace<double>> &fe_space,
+      const std::shared_ptr<const UniformScalarFESpace<double>> &fe_space,
       VEC_FUNC vecfield, lf::quad::quadDegree_t loc_quad_order)
       : vecfield_(std::move(vecfield)) {
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {

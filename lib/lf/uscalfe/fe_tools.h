@@ -17,7 +17,7 @@
 #include <lf/assemble/assemble.h>
 #include <lf/quad/quad.h>
 #include "loc_comp_norms.h"
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -183,7 +183,7 @@ static const unsigned int kout_prj_vals = 2;
  */
 template <typename SCALAR, typename FUNCTOR,
           typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
+auto NodalProjection(std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
                      FUNCTOR &&u, SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<FUNCTOR>>);
   // choose scalar type so it can hold the scalar type of u as well as SCALAR
