@@ -17,9 +17,9 @@
 
 #include <lf/quad/quad.h>
 #include <iostream>
-#include "lagr_fe.h"
 #include "mesh_function_traits.h"
 #include "precomputed_scalar_reference_finite_element.h"
+#include "uscalfe.h"
 
 namespace lf::uscalfe {
 

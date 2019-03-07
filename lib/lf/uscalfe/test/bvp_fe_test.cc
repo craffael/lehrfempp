@@ -13,7 +13,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <iostream>
 #include "fe_testutils.h"
 
