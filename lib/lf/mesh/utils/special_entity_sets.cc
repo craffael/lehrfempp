@@ -45,7 +45,7 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
       countNoSuperEntities(mesh_p, 1, 1)};
   // flag array
   CodimMeshDataSet<bool> bd_flags{mesh_p, codim, false};
-  // relative codimension with respect to faces (entities of co-dimensio 1)
+  // relative codimension with respect to faces (entities of co-dimension 1)
   const lf::base::dim_t rel_codim = codim - 1;
   // Run through  faces and flag sub-entities
   for (const lf::mesh::Entity& edge : mesh_p->Entities(1)) {

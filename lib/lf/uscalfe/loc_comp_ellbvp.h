@@ -37,7 +37,8 @@ namespace lf::uscalfe {
  *                    It should be either scalar- or matrix-valued.
   *
  * @note This class complies with the type requirements for the template
- * argument ELEM_MAT_COMP of the function lf::assemble::AssembleMatrixLocally().
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
@@ -85,8 +86,11 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief Constructor: cell-independent precomputations
    *
-   * @param fe_trie_p finite element to be used on triangles
-   * @param fe_quad_p finite element for quadrilaterals
+   * @param fe_space collection of specifications for scalar-valued parametric
+   * reference elements
+   * @param alpha mesh function for the (possibly matrix-valued) diffusion
+   * coefficient
+   * @param gamma mesh function providing scalar-valued diffusion coefficient
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
