@@ -18,7 +18,7 @@ void integrateMeshFunction() {
   auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
   auto mesh = gmsh_reader.mesh();
 
-  // integrate the function sin(x)*cos(y) over the mesh using 5th-order
+  // integrate the function sin(x)*cos(y) over the mesh using 5th-degree
   // quadrature rules
   auto mf = MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return std::sin(x[0]) * std::cos(x[1]); });
@@ -33,7 +33,7 @@ void integrateMeshFunction2() {
   auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
   auto mesh = gmsh_reader.mesh();
 
-  // integrate the function sin(x)*cos(y) over the mesh using 5th-order
+  // integrate the function sin(x)*cos(y) over the mesh using 5th-degree
   // quadrature rules
   auto mf = MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return std::sin(x[0]) * std::cos(x[1]); });
@@ -43,6 +43,25 @@ void integrateMeshFunction2() {
     return quad::make_QuadRule(e.RefEl(), 5);
   });
   //! [integrateMeshFunction2]
+}
+
+void nodalProjection() {
+  //! [nodalProjection]
+  auto mesh_factory = std::make_unique<mesh::hybrid2d::MeshFactory>(2);
+  auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
+  auto mesh = gmsh_reader.mesh();
+
+  // project a first-degree polynomial onto a first order lagrange space and
+  // make sure the representation is exact:
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
+  auto mf_linear = MeshFunctionGlobal(
+      [](const Eigen::Vector2d& x) { return 2 + 3 * x[0] + 4 * x[1]; });
+
+  auto dof_vector = NodalProjection(*fe_space, mf_linear);
+  auto mf_fe = MeshFunctionFE(fe_space, dof_vector);
+
+  assert(IntegrateMeshFunction(squaredNorm(mf_fe - mf_linear), 2) < 1e-12);
+  //! [nodalProjection]
 }
 
 }  // namespace lf::uscalfe

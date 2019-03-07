@@ -130,9 +130,9 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * @tparam ENTITY_PREDICATE type of entity predicate (see below)
  * @param mesh The mesh over which `mf` is integrated.
  * @param mf The \ref mesh_function "mesh function" which is integrated
- * @param quad_order The quadrature order of the quadrature rules that are to be
- * used for integration. Internally Gauss-rules created by `quad::make_QuadRule`
- * are used.
+ * @param quad_degree The quadrature degree of the quadrature rules that are to
+ * be used for integration. Internally Gauss-rules created by
+ * `quad::make_QuadRule` are used.
  * @param ep The entity predicate selecting the entities over which `mf` is
  * integrated.
  * @param codim The codimension of the entities over which `mf` is integrated.
@@ -151,13 +151,13 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  */
 template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
-                           int quad_order,
+                           int quad_degree,
                            const ENTITY_PREDICATE &ep = base::PredicateTrue{},
                            int codim = 0) {
   std::array<quad::QuadRule, 5> qrs;
   for (auto ref_el :
        {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
-    qrs[ref_el.Id()] = quad::make_QuadRule(ref_el, quad_order);
+    qrs[ref_el.Id()] = quad::make_QuadRule(ref_el, quad_degree);
   }
   return IntegrateMeshFunction(
       mesh, mf, [&](const mesh::Entity &e) { return qrs[e.RefEl().Id()]; }, ep,
@@ -195,6 +195,8 @@ static const unsigned int kout_prj_vals = 2;
  * documentation. This method is called for each active cell to **set** the
  * coefficients for the global shape functions associated with that cell.
  *
+ * ### Example
+ * @snippet fe_tools.cc nodalProjection
  */
 template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
 auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
@@ -265,8 +267,7 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
 
 /**
  * @brief Initialization of flags/values for dofs of a uniform Lagrangian
- *        finite element space whose values are imposed by a specified
- * function.
+ * finite element space whose values are imposed by a specified function.
  *
  * @tparam SCALAR scalar type for BVP = return type of the function g
  * @tparam EDGESELECTOR predicate returning true for edges with fixed dofs

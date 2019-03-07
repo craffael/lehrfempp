@@ -1,5 +1,4 @@
-set(sources
-fe_space.h					
+set(sources				
 fe_space_lagrange_o1.h				
 fe_space_lagrange_uniform.h
 fe_space_lagrange_uniform.cc			
