@@ -43,7 +43,7 @@ class MeshFunctionGlobal {
    * @brief MeshFunction compliant evaluation operator
    */
   std::vector<F_return_type> operator()(const mesh::Entity& e,
-                                        const Eigen::MatrixXd& local) {
+                                        const Eigen::MatrixXd& local) const {
     LF_ASSERT_MSG(e.RefEl().Dimension() == local.rows(),
                   "mismatch between entity dimension and local.rows()");
     std::vector<F_return_type> result;
