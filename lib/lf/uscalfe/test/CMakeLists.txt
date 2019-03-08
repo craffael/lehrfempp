@@ -10,6 +10,7 @@ set(src
   mesh_function_traits_test.cc
   sec_ord_ell_bvp.h
   sec_ord_ell_bvp.cc
+  loc_comp_test.cc
 )
 
 add_executable(lf.uscalfe.test ${src})

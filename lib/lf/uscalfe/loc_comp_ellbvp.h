@@ -14,6 +14,7 @@
  * @date October 2018
  * @copyright MIT License
  */
+#include <map>
 
 #include <lf/quad/quad.h>
 #include <iostream>
@@ -22,6 +23,12 @@
 #include "precomputed_scalar_reference_finite_element.h"
 
 namespace lf::uscalfe {
+/** @brief Auxiliary data structure for passing collections of quadrature rules
+ *
+ * This type can be used to pass several quadrature rules to a function, when
+ * different quadrature rules for different types of entities are required.
+ */
+using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
 
 /**
  * @brief Class for local quadrature based computations for Lagrangian finite
@@ -93,10 +100,30 @@ class ReactionDiffusionElementMatrixProvider {
    * @param gamma mesh function providing scalar-valued diffusion coefficient
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
+   *
+   * This constructor uses local quadature rules with double the degree of
+   * exactness as the polynomial degree of the finite element space.
    */
   ReactionDiffusionElementMatrixProvider(
       std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
       REACTION_COEFF gamma);
+  /** @brief Constructor: cell-independent precomputations and custom quadrature
+   * rule
+   * @param fe_space collection of specifications for scalar-valued parametric
+   * reference elements
+   * @param alpha mesh function for the (possibly matrix-valued) diffusion
+   * coefficient
+   * @param gamma mesh function providing scalar-valued diffusion coefficient
+   * @param qr_collection collection of quadrature rules. A quadrature rule is
+   *  required for every cell type for which the finite element space provides
+   * local shape functions.
+   *
+   * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
+   */
+  ReactionDiffusionElementMatrixProvider(
+      std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
+      REACTION_COEFF gamma, quad_rule_collection_t qr_collection);
+
   /**
    * @brief All cells are considered active in the default implementation
    *
@@ -155,6 +182,7 @@ ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
     ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
                                              DIFF_COEFF, REACTION_COEFF>;
 
+// First constructor (internal construction of quadrature rules
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
@@ -163,8 +191,46 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
-    fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
-        fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+    // Check whether shape functions for that entity type are available
+    if (fe != nullptr) {
+      // Precompute cell-independent quantities based on quadrature rules
+      // with twice the degree of exactness compared to the degree of the
+      // finite element space.
+      fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
+          fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+    }
+  }
+}
+
+// Second constructor (quadrature rules passed as arguments)
+template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
+ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
+    ReactionDiffusionElementMatrixProvider(
+        std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space,
+        DIFF_COEFF alpha, REACTION_COEFF gamma,
+        quad_rule_collection_t qr_collection)
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
+  for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    // Obtain pointer to an object describing local shape functions
+    auto fe = fe_space->ShapeFunctionLayout(ref_el);
+    // Check whether shape functions for that entity type are available
+    if (fe != nullptr) {
+      // Obtain quadrature rule from user-supplied collection.
+      auto qr_coll_ptr = qr_collection.find(ref_el);
+      if (qr_coll_ptr != qr_collection.end()) {
+        // A quadrature rule for the current entity type is available
+        lf::quad::QuadRule qr = qr_coll_ptr->second;
+        LF_ASSERT_MSG(qr.RefEl() == ref_el,
+                      "qr.RefEl() = " << qr.RefEl() << " <-> " << ref_el);
+        // Precomputations of cell-independent quantities
+        fe_precomp_[ref_el.Id()] =
+            PrecomputedScalarReferenceFiniteElement(fe, qr);
+      } else {
+        // Quadrature rule is missing for an entity type for which
+        // local shape functions are available
+        LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
+      }
+    }
   }
 }
 
@@ -420,17 +486,25 @@ class ScalarLoadElementVectorProvider {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_tria_p pointer to local shape functions to be used on
-   triangles
-   * @param fe_quad_p pointer local shape functions for quadrilaterals
+   * @param fe_space specification of local shape functions
    * @param f functor object for source function
    *
-   * Either pointer may be NULL, which is acceptable, if local computatioins
-   for
-   * that element type are not requested.
+   * Uses quadrature rule of double the degree of exactness compared to the
+   * degree of the finite element space.
    */
   ScalarLoadElementVectorProvider(
       std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f);
+  /** @brief Constructor, performs precomputations based on user-supplied
+   * quadrature rules.
+   *
+   * @param fe_space specification of local shape functions
+   * @param f functor object for source function
+   * @param qr_collection collection of quadrature rule.
+   *
+   */
+  ScalarLoadElementVectorProvider(
+      std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f,
+      quad_rule_collection_t qr_collection);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -473,8 +547,46 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
-    fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement<SCALAR>(
-        fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+    // Check whether shape functions for that entity type are available
+    if (fe != nullptr) {
+      // Precompute cell-independent quantities based on quadrature rules
+      // with twice the degree of exactness compared to the degree of the
+      // finite element space.
+      fe_precomp_[ref_el.Id()] =
+          PrecomputedScalarReferenceFiniteElement<SCALAR>(
+              fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+    }
+  }
+}
+
+template <typename SCALAR, typename FUNCTOR>
+ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+    ScalarLoadElementVectorProvider(
+        std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f,
+        quad_rule_collection_t qr_collection)
+    : f_(std::move(f)) {
+  for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    auto fe = fe_space->ShapeFunctionLayout(ref_el);
+    // Check whether shape functions for that entity type are available
+    if (fe != nullptr) {
+      // Obtain quadrature rule from user-supplied collection.
+      auto qr_coll_ptr = qr_collection.find(ref_el);
+      if (qr_coll_ptr != qr_collection.end()) {
+        // A quadrature rule for the current entity type is available
+        lf::quad::QuadRule qr = qr_coll_ptr->second;
+        LF_ASSERT_MSG(qr.RefEl() == ref_el,
+                      "qr.RefEl() = " << qr.RefEl() << " <-> " << ref_el);
+        // Precompute cell-independent quantities using the user-supplied
+        // quadrature rules
+        fe_precomp_[ref_el.Id()] =
+            PrecomputedScalarReferenceFiniteElement<SCALAR>(
+                fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+      } else {
+        // Quadrature rule is missing for an entity type for which
+        // local shape functions are available
+        LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
+      }
+    }
   }
 }
 
