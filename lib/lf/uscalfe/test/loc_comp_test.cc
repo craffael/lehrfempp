@@ -83,10 +83,13 @@ TEST(lf_uscalfe, cross_val) {
   // Coefficients, reasonably complicated
   auto alpha = MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return x[0] * x[0] + x[1] * x[1]; });
-  
+
   auto gamma = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return 1.0 / (1 + x[0] * x[0] + x[1] * x[1]);
   });
+
+  auto f = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return x[0] * x[0] - x[1] * x[1]; });
 
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
@@ -95,6 +98,12 @@ TEST(lf_uscalfe, cross_val) {
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
       elmat_builder_noqr(fe_space, alpha, gamma);
+
+  ScalarLoadElementVectorProvider<double, decltype(f)> elvec_builder_qr(
+      fe_space, f, quad_rules);
+
+  ScalarLoadElementVectorProvider<double, decltype(f)> elvec_builder_noqr(
+      fe_space, f);
 
   // Traverse the cells of the mesh and compute element matrices
   for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
@@ -108,6 +117,15 @@ TEST(lf_uscalfe, cross_val) {
 
     EXPECT_NEAR((M_qr - M_no).norm(), 0.0, 1.0E-10)
         << "M_qr = " << M_qr << " M_no = " << M_no;
+
+    const typename ScalarLoadElementVectorProvider<double, decltype(f)>::ElemVec
+        phi_qr{elvec_builder_qr.Eval(cell)};
+
+    const typename ScalarLoadElementVectorProvider<double, decltype(f)>::ElemVec
+        phi_no{elvec_builder_noqr.Eval(cell)};
+
+    EXPECT_NEAR((phi_qr - phi_no).norm(), 0.0, 1.0E-10)
+        << "phi_qr = " << phi_qr << " phi_no = " << phi_no;
   }
 }
 
