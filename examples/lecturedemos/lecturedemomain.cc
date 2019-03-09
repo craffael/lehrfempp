@@ -11,6 +11,7 @@
 #include "lecturedemodof.h"
 #include "lecturedemomesh.h"
 #include "lecturedemoquad.h"
+#include "lecturedemorefine.h"
 
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
@@ -48,6 +49,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 5) || (selector == 0)) {
       lecturedemo::lecturedemoDirichlet();
+    }
+    if ((selector == 6) || (selector == 0)) {
+      lecturedemo::lecturedemorefine();
     }
   }
 
