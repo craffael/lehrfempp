@@ -242,6 +242,8 @@ TEST(lf_gfe, set_dirbdc) {
   // Specification of local shape functions for a edge
   auto fe_spec_edge_p{
       fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment())};
+  LF_ASSERT_MSG(fe_spec_edge_p,
+                "Reference Finite Element for segment is missing.");
   // Local to global index mapping
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 

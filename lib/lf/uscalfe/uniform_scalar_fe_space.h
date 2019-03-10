@@ -112,8 +112,9 @@ class UniformScalarFESpace {
    * @param ref_el_type type of entit, can be anything except for
    * lf::base::RefEl::kPoint()
    *
-   * @note NULL pointers may be returned by this method in case a finite element
-   * specification was not given for a particular topological type of entity.
+   * @warning NULL pointers may be returned by this method in case a finite
+   * element specification was not given for a particular topological type of
+   * entity.
    */
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(lf::base::RefEl ref_el_type) const;

@@ -35,7 +35,7 @@ class PrecomputedScalarReferenceFiniteElement
  public:
   /**
    * @brief Default constructor which does not initialize this class at all
-   * (invalid state).
+   * (invalid state). If any method is called upon it, an error is thrown.
    */
   PrecomputedScalarReferenceFiniteElement() = default;
 
