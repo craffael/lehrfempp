@@ -55,10 +55,12 @@ int main(int /*argc*/, const char** /*argv*/) {
   auto eta = [](Eigen::Vector2d x) -> double { return (1.0 + x[0] + x[1]); };
   lf::uscalfe::MeshFunctionGlobal mf_eta{eta};
 
+  /* SAM_LISTING_BEGIN_1 */
   // Exact solution u
   auto u = [](Eigen::Vector2d x) -> double {
     return std::log(x[0] * x[0] + x[1] + 1.0);
   };
+  // Has to be wrapped into a mesh function for error computation
   lf::uscalfe::MeshFunctionGlobal mf_u{u};
 
   // Gradient of exact solution
@@ -66,7 +68,9 @@ int main(int /*argc*/, const char** /*argv*/) {
     double den = x[0] * x[0] + x[1] + 1.0;
     return ((Eigen::Vector2d() << 2.0 * x[0], 1.0).finished()) / den;
   };
+  // Convert into mesh function to use for error computation
   lf::uscalfe::MeshFunctionGlobal mf_grad_u{grad_u};
+  /* SAM_LISTING_END_1 */
 
   // Right-hand side source function f
   auto f = [&gamma, &u](Eigen::Vector2d x) -> double {
@@ -326,14 +330,17 @@ int main(int /*argc*/, const char** /*argv*/) {
           A, phi);
     }
 
-    // Assembly completed: Convert COO matrix into CRS format using Eigen's
+    /* SAM_LISTING_BEGIN_2 */
+    // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
     Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
+    LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
     Eigen::VectorXd sol_vec = solver.solve(phi);
+    LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
     // Helper class for L2 error computation
@@ -343,6 +350,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
     double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
+    /* SAM_LISTING_END_2 */
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 

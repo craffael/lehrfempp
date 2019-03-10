@@ -396,7 +396,11 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
  * @brief Utility class: selection of entities according to the position of
  * their midpoint
  * @tparam POSPRED predicate depending on physical point location
- * @param pos_pred object for true/false classification of of physicals points
+ *
+ * ### Type requirements
+ * POSPRED must have an evaluation operator that accepts an Eigen matrix/vector
+ * object whose columns are viewed as coordinate vectors. It should return a
+ * boolean value.
  */
 template <typename POSPRED>
 class EntityCenterPositionSelector {
@@ -417,6 +421,7 @@ class EntityCenterPositionSelector {
       : pos_pred_(std::move(pos_pred)) {}
   /** @brief Operator testing location of "center"
    *  @param ent reference to a mesh entity
+   *  @return value of the predicate when given the center of the entity
    */
   bool operator()(const lf::mesh::Entity &ent) const {
     const lf::base::RefEl ref_el_type = ent.RefEl();
@@ -425,19 +430,19 @@ class EntityCenterPositionSelector {
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {
-        Eigen::MatrixXd pos(geo_ptr->Global(kpoint_center_));
+        const Eigen::MatrixXd pos(geo_ptr->Global(kpoint_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kSegment(): {
-        Eigen::MatrixXd pos(geo_ptr->Global(kedge_center_));
+        const Eigen::MatrixXd pos(geo_ptr->Global(kedge_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kTria(): {
-        Eigen::MatrixXd pos(geo_ptr->Global(ktria_center_));
+        const Eigen::MatrixXd pos(geo_ptr->Global(ktria_center_));
         return pos_pred_(pos);
       }
       case lf::base::RefEl::kQuad(): {
-        Eigen::MatrixXd pos(geo_ptr->Global(kquad_center_));
+        const Eigen::MatrixXd pos(geo_ptr->Global(kquad_center_));
         return pos_pred_(pos);
       }
       default: {

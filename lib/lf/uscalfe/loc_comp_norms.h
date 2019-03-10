@@ -28,20 +28,17 @@ namespace lf::uscalfe {
  *        a Lagrangian finite element function and a generic function
  *
  * @tparam FUNCTOR describes the function from which the finite element function
- is subtracted, should model the concept \ref mesh_function .
-
+ * is subtracted, should model the concept \ref mesh_function .
  *
  * This class complies with the type requirements for the template argument
- * LOCAL_NORM_COMP of the function lf::uscalfe::L2NormDifference. Its main
- method
- * is the evaluation operator `operator ()`.
+ * LOCAL_NORM_COMP of the function lf::uscalfe::L2NormDifference.
+ * Its main method is the evaluation operator `operator ()`.
  *
  * ### Use case
  *
  * ~~~
  *   MeshFunctionL2NormDifference loc_comp(
- *     fe_space.ShapeFunctionLayout(kTria), fe_space.ShapeFunctionLayout(kQuad),
- *      [](auto x) { return (x[0] * (1.0 - x[1])); }, quad_order);
+ *     fe_space,[](auto x) { return (x[0] * (1.0 - x[1])); }, quad_order);
  * ~~~
  */
 template <typename FUNCTOR>
@@ -64,9 +61,9 @@ class MeshFunctionL2NormDifference {
    *
    * @param fe_space Describes the Shapefunctions over which to integrate.
    * @param u object providing scalar-valued function
-   * @param loc_quad_order desired order of local quadrature, default value = 0.
-   *        If = 0, the quadrature order is determined from the polynomial
-   *        degree of the reference shape functions.
+   * @param loc_quad_degree desired degree of exctness of local quadrature,
+   * default value = 0. If = 0, the quadrature degree is determined from the
+   * polynomial degree of the reference shape functions.
    *
    * @note The finite element space need not provide reference shape functions
    *       for all cell types if these cell types do not occur.
@@ -75,11 +72,14 @@ class MeshFunctionL2NormDifference {
       const std::shared_ptr<const UniformScalarFESpace<double>> &fe_space,
       FUNCTOR u, quad::quadDegree_t loc_quad_order)
       : u_(std::move(u)) {
+    LF_ASSERT_MSG(fe_space != nullptr, "Invalid FE space passed");
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
       auto fe = fe_space->ShapeFunctionLayout(ref_el);
-      fe_precomp_[ref_el.Id()] =
-          PrecomputedScalarReferenceFiniteElement<double>(
-              std ::move(fe), quad ::make_QuadRule(ref_el, loc_quad_order));
+      if (fe != nullptr) {
+        fe_precomp_[ref_el.Id()] =
+            PrecomputedScalarReferenceFiniteElement<double>(
+                std ::move(fe), quad ::make_QuadRule(ref_el, loc_quad_order));
+      }
     }
   }
 
@@ -207,8 +207,7 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  * ### Template parameter type requirements
  *
  * - VEC_FUNC must behave like `std::function<VECTOR(Eigen::DenseBase)>`
- where
- *   VECTOR is a vector type like a vector of Eigen or std::vector.
+ * where VECTOR is a vector type like a vector of Eigen or std::vector.
  *
  * This class complies with the type requirements for the template argument
  * LOCAL_NORM_COMP of the function lf::uscalfe::L2NormDifference. Its main
@@ -219,7 +218,8 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  * ### Use case
  *
  * ~~~
- * todo
+ * MeshFunctionL2GradientDifference lc_H1(fe_space,
+ *    [](auto x) { return Eigen::Vector2d(-x[1],x[0]); },2)
  * ~~~
  */
 template <typename VEC_FUNC>
@@ -244,19 +244,23 @@ class MeshFunctionL2GradientDifference {
    *
    * @param fe_space Describes the shape functions that should be used.
    * @param vecfield object providing a generic vector field
-   * @param loc_quad_order desired order of local quadrature
+   * @param loc_quad_order desired degree of exactness of the local quadrature
+   * rule
    *
-   * @note NULL pointers amy be passed, if evaluations for the
-   *       corresponding cell type are never requested.
+   * If loc_quad_order == 0, the required degree of exactness is deduced from
+   * the polynomial degree of the finite element space.
    */
   MeshFunctionL2GradientDifference(
       const std::shared_ptr<const UniformScalarFESpace<double>> &fe_space,
       VEC_FUNC vecfield, lf::quad::quadDegree_t loc_quad_order)
       : vecfield_(std::move(vecfield)) {
+    LF_ASSERT_MSG(fe_space != nullptr, "Invalid FE space passed!");
     for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
-      fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
-          fe_space->ShapeFunctionLayout(ref_el),
-          quad::make_QuadRule(ref_el, loc_quad_order));
+      auto sfl{fe_space->ShapeFunctionLayout(ref_el)};
+      if (sfl != nullptr) {
+        fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
+            sfl, quad::make_QuadRule(ref_el, loc_quad_order));
+      }
     }
   }
   /**
