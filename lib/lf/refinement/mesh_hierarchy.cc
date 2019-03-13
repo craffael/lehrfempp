@@ -1733,7 +1733,7 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
   // Perform the desired number of steps of uniform refinement
   for (int refstep = 0; refstep < ref_lev; ++refstep) {
     // Conduct regular refinement of all cells of the currently finest mesh.
-    // This adds another mesh to the sequence of meshes. 
+    // This adds another mesh to the sequence of meshes.
     multi_mesh_p->RefineRegular(ref_pat);
   }
   return multi_mesh_p;

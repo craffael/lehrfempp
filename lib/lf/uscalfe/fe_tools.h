@@ -216,18 +216,19 @@ auto NodalProjection(std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
     //                             << std::endl);
 
     // Information about local shape functions on reference element
-    const ScalarReferenceFiniteElement<double> &ref_shape_fns{
-        *fe_space->ShapeFunctionLayout(ref_el)};
+    auto ref_shape_fns = fe_space->ShapeFunctionLayout(ref_el);
+    LF_ASSERT_MSG(ref_shape_fns, "reference shape function for "
+                                     << ref_el << " not available.");
     // Number of evaluation nodes
-    const size_type num_eval_nodes = ref_shape_fns.NumEvaluationNodes();
+    const size_type num_eval_nodes = ref_shape_fns->NumEvaluationNodes();
     // Obtain reference coordinates for evaluation nodes
-    const Eigen::MatrixXd ref_nodes(ref_shape_fns.EvaluationNodes());
+    const Eigen::MatrixXd ref_nodes(ref_shape_fns->EvaluationNodes());
 
     // Collect values of function to be projected in a row vector
     auto uvalvec = u(cell, ref_nodes);
 
     // Compute the resulting local degrees of freedom
-    auto dofvec(ref_shape_fns.NodalValuesToDofs(
+    auto dofvec(ref_shape_fns->NodalValuesToDofs(
         Eigen::Map<Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>>(
             &uvalvec[0], uvalvec.size(), 1)));
 

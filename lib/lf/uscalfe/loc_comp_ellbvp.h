@@ -700,6 +700,7 @@ class ScalarLoadEdgeVectorProvider {
       EDGESELECTOR edge_sel = base::PredicateTrue{})
       : g_(std::move(g)), edge_sel_(std::move(edge_sel)), pfe_() {
     auto fe = fe_space->ShapeFunctionLayout(base::RefEl::kSegment());
+    LF_ASSERT_MSG(fe, "Reference Finite Element for segments not available");
     pfe_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
   }
