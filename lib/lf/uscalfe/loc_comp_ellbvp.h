@@ -649,6 +649,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
  * @tparam FUNCTOR `SCALAR` valued \ref mesh_function "MeshFunction" which
  * defines the function \f$ g \f$
+ * @tparam EDGESELECTOR selector type for active edges
  *
  * The underlying local linear form for an edge @f$e@f$ is
  * @f[
@@ -661,6 +662,14 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ *
+ * ### Type requirements
+ *
+ * - The EDGESELECTOR type must provide 
+ * ~~~
+ bool operator(const lf::mesh::Entity &edge) const
+ * ~~~
+ * which returns true, if the edge is to be included in assembly.
  */
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
@@ -684,6 +693,7 @@ class ScalarLoadEdgeVectorProvider {
    *
    * @param fe_edge_p FE specification on edge
    * @param g functor object providing edge data
+   * @param edge_sel selector predicate for active edges. 
    */
   ScalarLoadEdgeVectorProvider(
       std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR g,
