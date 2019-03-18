@@ -267,7 +267,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     // Update with potential contributions from edges (impedance boundary
     // conditions!). To that end initialize object taking care of local
     // computations on segments. A predicate ensure that computations are
-    // confined to edges on the impredance boundary
+    // confined to edges on the impedance boundary
     lf::uscalfe::MassEdgeMatrixProvider<double, decltype(mf_eta),
                                         decltype(edge_sel_imp)>
         edgemat_builder(fe_space, mf_eta, edge_sel_imp);
