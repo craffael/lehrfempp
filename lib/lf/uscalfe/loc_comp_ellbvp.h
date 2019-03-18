@@ -373,7 +373,7 @@ class MassEdgeMatrixProvider {
     // quadrature rule
     fe_precomp_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
-    LF_ASSERT_MSG(fe_precomp_.isInitialized(),"PFE object not initialized!");
+    LF_ASSERT_MSG(fe_precomp_.isInitialized(), "PFE object not initialized!");
   }
   /**
    * @brief Constructor performing cell-independent initializations
@@ -398,7 +398,7 @@ class MassEdgeMatrixProvider {
                   "Quadrature rule not meant for EDGE entities!");
     // Precompute entity-independent quantities
     fe_precomp_ = PrecomputedScalarReferenceFiniteElement(fe, quadrule);
-    LF_ASSERT_MSG(fe_precomp_.isInitialized(),"PFE object not initialized!");
+    LF_ASSERT_MSG(fe_precomp_.isInitialized(), "PFE object not initialized!");
   }
 
   /**
@@ -768,7 +768,7 @@ class ScalarLoadEdgeVectorProvider {
     // quadrature rule
     pfe_ = PrecomputedScalarReferenceFiniteElement(
         fe, quad::make_QuadRule(base::RefEl::kSegment(), 2 * fe->Degree()));
-    LF_ASSERT_MSG(pfe_.isInitialized(),"PFE object not initialized!");
+    LF_ASSERT_MSG(pfe_.isInitialized(), "PFE object not initialized!");
   }
 
   /** @brief Constructor, performs precomputations
@@ -789,7 +789,7 @@ class ScalarLoadEdgeVectorProvider {
                   "Quadrature rule not meant for EDGE entities!");
     // Precompute entity-independent quantities
     pfe_ = PrecomputedScalarReferenceFiniteElement(fe, quadrule);
-    LF_ASSERT_MSG(pfe_.isInitialized(),"PFE object not initialized!");
+    LF_ASSERT_MSG(pfe_.isInitialized(), "PFE object not initialized!");
   }
 
   /** @brief Default implement: all edges are active */
