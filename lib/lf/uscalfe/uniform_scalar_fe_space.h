@@ -21,7 +21,7 @@
 namespace lf::uscalfe {
 
 /**
- * @brief Space of scalar valued finite element functions on a hybrid 2D mesh
+ * @brief Space of scalar valued finite element functions on a _hybrid 2D mesh_
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
  * `complex<double>`
@@ -174,35 +174,42 @@ unsigned int UniformScalarFESpace<SCALAR>::ctrl_ = 0;
 // Initialization methods
 template <typename SCALAR>
 void UniformScalarFESpace<SCALAR>::init() {
+  // Check validity and consistency of mesh pointer
   LF_VERIFY_MSG(mesh_p_ != nullptr, "Missing mesh!");
   LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
                 "Missing FE specification for cells");
   LF_VERIFY_MSG((mesh_p_->DimMesh() == 2), "Only for 2D meshes");
 
   // Check whether all required finite element specifications are provided
-  LF_VERIFY_MSG((mesh_p_->NumEntities(lf::base::RefEl::kTria()) == 0) ||
-                    (rfs_tria_p_ != nullptr),
-                "Missing FE specification for triangles");
+  LF_VERIFY_MSG(
+      (mesh_p_->NumEntities(lf::base::RefEl::kTria()) == 0) ||
+          (rfs_tria_p_ != nullptr),
+      "Missing FE specification for triangles though mesh contains some");
   LF_VERIFY_MSG((mesh_p_->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
                     (rfs_quad_p_ != nullptr),
-                "Missing FE specification for quads");
+                "Missing FE specification for quads though mesh contains some");
 
   // Compatibility checks and initialization of numbers of shape functions
   // In particular only a single shape function may be associated to a node
+  // in the case of a SCALAR finite element space
   if (rfs_tria_p_ != nullptr) {
+    // Probe local shape functions on a triangle
     LF_VERIFY_MSG((*rfs_tria_p_).RefEl() == lf::base::RefEl::kTria(),
                   "Wrong type for triangle!");
     LF_VERIFY_MSG((*rfs_tria_p_).NumRefShapeFunctions(2) <= 1,
                   "At most one shape function can be assigned to each vertex");
+    // Initialize numbers of shape functions associated to entities
     num_rsf_node_ = (*rfs_tria_p_).NumRefShapeFunctions(2);
     num_rsf_edge_ = (*rfs_tria_p_).NumRefShapeFunctions(1);
     num_rsf_tria_ = (*rfs_tria_p_).NumRefShapeFunctions(0);
   }
   if (rfs_quad_p_ != nullptr) {
+    // Probe local shape functions for QUADs
     LF_VERIFY_MSG((*rfs_quad_p_).RefEl() == lf::base::RefEl::kQuad(),
                   "Wrong type for quad!");
     LF_VERIFY_MSG((*rfs_quad_p_).NumRefShapeFunctions(2) <= 1,
                   "At most one shape function can be assigned to each vertex");
+    // Initialize numbers of shape functions associated to entities
     num_rsf_node_ = (*rfs_quad_p_).NumRefShapeFunctions(2);
     num_rsf_edge_ = (*rfs_quad_p_).NumRefShapeFunctions(1);
     num_rsf_quad_ = (*rfs_quad_p_).NumRefShapeFunctions(0);
@@ -217,7 +224,8 @@ void UniformScalarFESpace<SCALAR>::init() {
   }
 
   // Compatibility check for numbers of local shape functions associated with
-  // edges
+  // edges. Those must be the same for all reference shape function descriptions
+  // passed to the finite element space.
   if ((rfs_tria_p_ != nullptr) && (rfs_quad_p_ != nullptr)) {
     LF_ASSERT_MSG(((*rfs_tria_p_).NumRefShapeFunctions(2) ==
                    (*rfs_quad_p_).NumRefShapeFunctions(2)),
@@ -277,14 +285,20 @@ UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
       break;
     }
     case lf::base::RefEl::kSegment(): {
+      // Null pointer valid return value: indicates that a shape function
+      // description for edges is missing.
       // LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
       return rfs_edge_p_;
     }
     case lf::base::RefEl::kTria(): {
+      // Null pointer valid return value: indicates that a shape function
+      // description for triangular cells is missing.
       // LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
       return rfs_tria_p_;
     }
     case lf::base::RefEl::kQuad(): {
+      // Null pointer valid return value: indicates that a shape function
+      // description for quadrilaterals is missing.
       // LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
       return rfs_quad_p_;
     }
