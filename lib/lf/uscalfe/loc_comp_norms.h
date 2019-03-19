@@ -136,6 +136,8 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   auto &fe = fe_precomp_[ref_el.Id()];
+  LF_ASSERT_MSG(fe.isInitialized(),
+                "No Shape functions available for " << ref_el);
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -316,6 +318,7 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   auto &pfe = fe_precomp_[ref_el.Id()];
+  LF_ASSERT_MSG(pfe.isInitialized(), "No ShapeFunctions for " << ref_el);
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
