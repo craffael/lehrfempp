@@ -630,7 +630,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
         // quadrature rules
         fe_precomp_[ref_el.Id()] =
             PrecomputedScalarReferenceFiniteElement<SCALAR>(
-                fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+                fe, qr);
       } else {
         // Quadrature rule is missing for an entity type for which
         // local shape functions are available
