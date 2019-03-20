@@ -629,8 +629,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
         // Precompute cell-independent quantities using the user-supplied
         // quadrature rules
         fe_precomp_[ref_el.Id()] =
-            PrecomputedScalarReferenceFiniteElement<SCALAR>(
-                fe, qr);
+            PrecomputedScalarReferenceFiniteElement<SCALAR>(fe, qr);
       } else {
         // Quadrature rule is missing for an entity type for which
         // local shape functions are available
