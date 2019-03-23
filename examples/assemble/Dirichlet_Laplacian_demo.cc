@@ -326,7 +326,7 @@ int main(int argc, char **argv) {
       std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
                 << std::endl;
       if (ci::IsSet("selector")) {
-        const int selector = ci::Get<int>("selector");
+        auto selector = ci::Get<int>("selector");
         std::cout << "Using test mesh no " << selector << std::endl;
         if ((selector >= 0) && (selector <= 4)) {
           mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
@@ -334,7 +334,7 @@ int main(int argc, char **argv) {
       }
     }
     // Set number of refinement levels
-    unsigned int reflevels = ci::Get<int>("reflevels", 2); // default value: 2
+    unsigned int reflevels = ci::Get<int>("reflevels", 2);  // default value: 2
     unsigned int bvpsel = ci::Get<int>("bvpsel", 0);
     if (mesh_p == nullptr) {
       // Default mesh

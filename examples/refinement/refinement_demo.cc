@@ -26,7 +26,7 @@
 // 2 -> global marking of edges
 // 3 -> local marking of edges with midpoints in [0,1]^2
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   using size_type = lf::base::size_type;
   using lf::io::TikzOutputCtrl;
 
@@ -35,7 +35,8 @@ int main(int argc, char** argv) {
 
   // Add help and variable refselector
   lf::base::ci::Add("help,h", "Display help");
-  lf::base::ci::Add<int>("refselector", "Selector for refinement method (0 [default] to 3)", 0);
+  lf::base::ci::Add<int>(
+      "refselector", "Selector for refinement method (0 [default] to 3)", 0);
   // Set control variables from command line or file "setup.vars"
   if (!lf::base::ci::ParseFile("setup.vars")) {
     std::cout << "No file `setup.vars` specifying control variables\n";
@@ -46,7 +47,7 @@ int main(int argc, char** argv) {
     return 0;
   }
   // get the value for refselector
-  int refselector = lf::base::ci::Get<int>("refselector");
+  auto refselector = lf::base::ci::Get<int>("refselector");
 
   // Generate hybrid test mesh and obtain a pointer to it
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr =

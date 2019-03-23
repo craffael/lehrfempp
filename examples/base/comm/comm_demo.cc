@@ -1,14 +1,14 @@
-# include <iostream>
-# include "lf/base/base.h"
-# include "outside.h"
+#include <iostream>
+#include "lf/base/base.h"
+#include "outside.h"
 
 namespace ci = lf::base::ci;
 namespace cv = lf::base::cv;
 
-// a class with a static member which we will set from 
-// the command line 
+// a class with a static member which we will set from
+// the command line
 class Dummy {
-public:
+ public:
   // We will set ctrl from the command line later.
   static unsigned int ctrl;
 };
@@ -28,38 +28,39 @@ int main(int argc, char** argv) {
   // cv (comm::variables) for global variables
 
   if (argc <= 1) {
-    std::cout << "Demo for lf::base::comm. Try the help option "\
+    std::cout << "Demo for lf::base::comm. Try the help option "
                  "(-h, --help) for more instructions.\n";
   }
 
   // - Adding variables
-  //   To read in from the command line (or file) we add variables 
+  //   To read in from the command line (or file) we add variables
   //   to comm::input (or simply `ci`)
   // -- Add help message, this should always be done!
-  ci::Add("help,h", "Print this help message.");  
+  ci::Add("help,h", "Print this help message.");
   // -- Add some variables via:
   //    ci::Add<T>("name", "description", [optional] default value)
   ci::Add<int>("v1", "Set variable #1", 0);  // with default value
   ci::Add<double>("v2", "Set variable #2");  // no default value
   // -- Or via the boost::program_options interface:
-  namespace po = boost::program_options;  // boost itself already included in base.h
+  namespace po =
+      boost::program_options;  // boost itself already included in base.h
   bool verbose = false;
-  ci::Add()
-    ("v3", po::value<int>()->default_value(10), "Set variable #3.")
-    ("v4", po::value<std::string>(), "Set variable #4.")
-    ("verbose,v", po::bool_switch(&verbose), "Set verbosity.");
- 
-  // - Add the possibility to set existing variables from 
+  ci::Add()("v3", po::value<int>()->default_value(10), "Set variable #3.")(
+      "v4", po::value<std::string>(), "Set variable #4.")(
+      "verbose,v", po::bool_switch(&verbose), "Set verbosity.");
+
+  // - Add the possibility to set existing variables from
   //   the commend line (or file):
   //     ci::AddSetter<T>("name", variable, "comment")
   //   So the variable verbose could also be set this way:
   //     ci::AddSetter<bool>("verbose,v", verbose, "Set verbosity.");
   //   Set the member variable ctrl of Dummy
-  ci::AddSetter<unsigned int>("ctrl", Dummy::ctrl, "Set static member ctrl class Dummy.");
+  ci::AddSetter<unsigned int>("ctrl", Dummy::ctrl,
+                              "Set static member ctrl class Dummy.");
 
   // - Parse command line & file for variables
   ci::ParseCommandLine(argc, argv);
-  ci::ParseFile("params.par"); // get value from params.par
+  ci::ParseFile("params.par");  // get value from params.par
 
   // - Check for the set variables
   // -- Is the help option set?
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
   } else {
     std::cout << "Verbose not set.\n";
   }
- 
+
   // -- Print the value of "v2" if it has been set.
   //    If it isn't set and Get is called a invalid argument exception is thrown
   if (ci::IsSet("v2")) {
@@ -89,7 +90,7 @@ int main(int argc, char** argv) {
   // std::cout << ci::Get<double>("v5") << "\n"; // invalid_argument exception!
 
   // -- Print value of Dummy::ctrl
-  std::cout << "Value of Dummy::ctrl is " << Dummy::ctrl<< "\n";
+  std::cout << "Value of Dummy::ctrl is " << Dummy::ctrl << "\n";
 
   // - Global variables
   // -- Add an integer and a string

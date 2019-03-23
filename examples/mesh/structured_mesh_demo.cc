@@ -17,12 +17,13 @@ ADDOPTION(Ny, Ny_cells, "No of cells in Y direction, must be > 0");
 int main(int argc, char** argv) {
   using size_type = lf::base::size_type;
 
-  std::cout << "LehrFEM++ demo: construction of tensor producy triangular mesh\n"
-            << "Use the option `-h` to display the control variables.\n";
+  std::cout
+      << "LehrFEM++ demo: construction of tensor producy triangular mesh\n"
+      << "Use the option `-h` to display the control variables.\n";
 
   // Set control variables from command line or file "setup vars"
   lf::base::ci::Add("help,h", "Display help");
-  // check for file with options 
+  // check for file with options
   if (!lf::base::ci::ParseFile("setup.vars")) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
@@ -33,7 +34,8 @@ int main(int argc, char** argv) {
 
   // number of cells cannot be 0, that would result in segfault!
   if (Nx == 0 || Ny == 0) {
-    std::cout << "Nx and Ny must not be zero, set using options --Nx_cells and --Ny_cells\n";
+    std::cout << "Nx and Ny must not be zero, set using options --Nx_cells and "
+                 "--Ny_cells\n";
     return 0;
   }
 

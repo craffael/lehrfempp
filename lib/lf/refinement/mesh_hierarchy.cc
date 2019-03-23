@@ -346,8 +346,7 @@ void MeshHierarchy::RefineMarked() {
   PerformRefinement();
 }  // end RefineMarked
 
-// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size,
-// readability-function-size)
+// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
 void MeshHierarchy::PerformRefinement() {
   CONTROLLEDSTATEMENT(output_ctrl_, 10,
                       std::cout << "Entering MeshHierarchy::PerformRefinement: "

@@ -284,8 +284,8 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
 
 template <typename T>
 T Get(const std::string& name) {
-  if (kVM.count(name) > 0) { 
-    return kVM[name].as<T>(); 
+  if (kVM.count(name) > 0) {
+    return kVM[name].as<T>();
   }
   throw std::invalid_argument(
       "In template Get<T>(const std::string&): "

@@ -7,7 +7,7 @@
  */
 
 #include <lf/base/base.h>
-namespace ci = lf::base::ci; // avoid typing lf::base all the time
+namespace ci = lf::base::ci;  // avoid typing lf::base all the time
 
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
@@ -18,19 +18,23 @@ namespace ci = lf::base::ci; // avoid typing lf::base all the time
 
 int main(int argc, char** argv) {
   // Add options
-  ci::Add("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>");
-  ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1); // Default value 1
+  ci::Add("help,h",
+          "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>");
+  ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1);  // Default value 1
   ci::Add<int>("ndof_edge,e", "No of dofs on edges", 2);
   ci::Add<int>("ndof_tria,t", "No of dofs on triangles", 1);
   ci::Add<int>("ndof_quad,q", "Mp of dofs on quadrilaterals", 4);
   // Alternatively:
-  //namespace po = boost::program_options;
-  //ci::Add()
-  //("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>")
+  // namespace po = boost::program_options;
+  // ci::Add()
+  //("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad
+  //<N>")
   //("ndof_node,n", po::value<int>()->default_value(1), "No of dofs on nodes")
   //("ndof_edge,e", po::value<int>()->default_value(2), "No of dofs on edges")
-  //("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on triangles")
-  //("ndof_quad,q", po::value<int>()->default_value(4), "Mp of dofs on quadrilaterals");
+  //("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on
+  //triangles")
+  //("ndof_quad,q", po::value<int>()->default_value(4), "Mp of dofs on
+  //quadrilaterals");
   // clang-format on
   ci::ParseCommandLine(argc, argv);
   if (ci::Help()) {
@@ -39,14 +43,16 @@ int main(int argc, char** argv) {
     // Retrieve number of degrees of freedom for each entity type from command
     // line arguments
     // Instead of:
-    //lf::base::size_type ndof_node = 1;
-    //if (vm.count("ndof_node") > 0) {
+    // lf::base::size_type ndof_node = 1;
+    // if (vm.count("ndof_node") > 0) {
     //  ndof_node = vm["ndof_node"].as<int>();
     //}
-    // Simply use the following. Note that the default value has already been set.
-    lf::base::size_type ndof_node = ci::Get<int>("ndof_node"); // does this int to size_type cast work??
+    // Simply use the following. Note that the default value has already been
+    // set.
+    lf::base::size_type ndof_node =
+        ci::Get<int>("ndof_node");  // does this int to size_type cast work??
     // If we wouldn't have set a default value we could call it like this:
-    //ndof_node = ci::Get<lf::base::size_type>("ndof_node", 1);
+    // ndof_node = ci::Get<lf::base::size_type>("ndof_node", 1);
     lf::base::size_type ndof_edge = ci::Get<int>("ndof_edge");
     lf::base::size_type ndof_tria = ci::Get<int>("ndof_tria");
     lf::base::size_type ndof_quad = ci::Get<int>("ndof_quad");
