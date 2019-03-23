@@ -474,6 +474,10 @@ class RefEl {
   /**
    * @brief Return a unique id for this reference element.
    *
+   * The id numbers are contiguous over the known entity types starting from 0.
+   * Thus, this identification number can be used as an array index, if one
+   * wants to store information for (all) type of entities.
+   *
    * #### Usage example
    * @snippet ref_el.cc id
    */

@@ -40,3 +40,13 @@ target_link_libraries(examples.refinement.torus_refinement_demo
         lf.mesh.hybrid2d
         lf.refinement
         )
+
+set(second_order_demo second_order_demo.cc)
+add_executable(examples.refinement.second_order_demo ${second_order_demo})
+target_link_libraries(examples.refinement.second_order_demo
+        PUBLIC Eigen3::Eigen Boost::filesystem Boost::system
+        lf.io
+        lf.mesh
+        lf.mesh.hybrid2d
+        lf.refinement
+        )

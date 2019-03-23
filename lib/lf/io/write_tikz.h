@@ -1,3 +1,8 @@
+/***************************************************************************
+ * LehrFEM++ - A simple C++ finite element libray for teaching
+ * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
+ * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
+ ***************************************************************************/
 
 #ifndef WRITE_TIKZ_H
 #define WRITE_TIKZ_H
@@ -97,18 +102,19 @@ activated.
     // Without specifying last argument
     writeTikZ(*mesh, "filename.txt"); is equivalent to writeTikZ(*mesh,
 "filename.txt", 7);
- \endverbatim
+ * \endverbatim
  *
- * ##### LaTeX input
+ * ##### How to include into LaTeX source
  * \verbatim
      \documentclass{article}
      \usepackage{tikz}
      \begin{document}
      \input{"filename.txt"}
      \end{document}
-\endverbatim
+ * \endverbatim
  *
  * ##### selector function
+ *
  * \verbatim
 
   // Example of selector function
@@ -117,7 +123,7 @@ activated.
       return (entity.RefEl() == lf::base::RefEl::kPoint());
     };
 
-\endverbatim
+    * \endverbatim
  */
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,

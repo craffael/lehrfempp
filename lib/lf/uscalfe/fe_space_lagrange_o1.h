@@ -10,18 +10,18 @@
 #ifndef __7a41e223dd0e4176af0371c2b57d2b67
 #define __7a41e223dd0e4176af0371c2b57d2b67
 
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
 /**
  * @brief Linear Lagrangian Finite Element space
  *
- * Just a specialization of ScalarUniformFESpace based on
+ * Just a specialization of UniformScalarFESpace based on
  * FeLagrangeO1Tria, FeLagrangeO1Quad.
  *
  */
 template <typename SCALAR>
-class FeSpaceLagrangeO1 : public ScalarUniformFESpace<SCALAR> {
+class FeSpaceLagrangeO1 : public UniformScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
@@ -38,7 +38,7 @@ class FeSpaceLagrangeO1 : public ScalarUniformFESpace<SCALAR> {
    * @param mesh_p shared pointer to underlying mesh (immutable)
    */
   explicit FeSpaceLagrangeO1(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
-      : ScalarUniformFESpace<SCALAR>(
+      : UniformScalarFESpace<SCALAR>(
             mesh_p, std::make_shared<FeLagrangeO1Tria<SCALAR>>(),
             std::make_shared<FeLagrangeO1Quad<SCALAR>>(),
             std::make_shared<FeLagrangeO1Segment<SCALAR>>()) {}

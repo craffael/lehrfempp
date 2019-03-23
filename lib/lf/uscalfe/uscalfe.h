@@ -22,8 +22,13 @@
 #include "mesh_function_constant.h"
 #include "mesh_function_global.h"
 #include "mesh_function_traits.h"
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
+/**
+ * @brief Collects data structures and algorithms designed for scalar finite
+ * element methods primarily meant for second-order elliptic boundary value
+ * problems.
+ */
 namespace lf::uscalfe {}  // namespace lf::uscalfe
 
 #endif

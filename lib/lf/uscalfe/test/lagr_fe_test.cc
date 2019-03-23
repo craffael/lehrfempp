@@ -13,12 +13,11 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <iostream>
 
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
-#include <lf/uscalfe/lagrfe.h>
 
 namespace lf::uscalfe::test {
 
@@ -250,6 +249,40 @@ TEST(lf_fe, lf_fe_ellbvp) {
     std::cout << quad_mat << std::endl;
     EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
   }
+}
+
+// Test that the ReactionDiffusionElementMatrixProvider works as expected
+// for tensor valued coefficients.
+TEST(lf_fe, ReactionDiffusionEMPTensor) {
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Set up finite elements
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+
+  // Set up objects taking care of local computations
+  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
+  });
+  auto gamma =
+      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  ReactionDiffusionElementMatrixProvider emp{fe_space, alpha, gamma};
+
+  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
+                                     fe_space->LocGlobMap().NoDofs());
+  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
+                        matrix);
+
+  // project two linear functions onto the fespace:
+  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  auto a_vec = NodalProjection<double>(fe_space, a);
+  auto b_vec = NodalProjection<double>(fe_space, b);
+
+  auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
+  EXPECT_NEAR(
+      product(0, 0), 7911. / 8.,
+      5);  // values do not agree very well because quadrature order is too low
 }
 
 TEST(lf_fe, lf_fe_edgemass) {

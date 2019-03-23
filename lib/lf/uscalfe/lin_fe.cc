@@ -32,7 +32,7 @@ LinearFELaplaceElementMatrix::DervRefShapFncts(const Eigen::Vector2d &xh) {
 }
 
 LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
-    const lf::mesh::Entity &cell) {
+    const lf::mesh::Entity &cell) const {
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
 

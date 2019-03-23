@@ -9,7 +9,7 @@ namespace lf::mesh {
 /**
  * @brief Abstract interface for objects representing a single mesh
  *
- * This abstract base class desccribes the basic functionality of objects
+ * This abstract base class describes the basic functionality of objects
  * that manage single-level conforming finite element meshes. These objects
  * essentially boil down to containers for mesh entities of different
  * co-dimensions. Thus they allow sequential traversal of these entities.

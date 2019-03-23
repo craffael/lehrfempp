@@ -19,7 +19,7 @@ namespace ci = lf::base::ci;
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 

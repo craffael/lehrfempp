@@ -31,7 +31,10 @@ class TriaO2 : public Geometry {
   /**
    * @brief Constructor building triangle from vertex/midpoint coordinates
    * @param coords w x 6 matrix, w = world dimension, whose columns contain the
-   *        world coordinates of the vertices/mipoints
+   *        world coordinates of the vertices/midpoints.
+   *
+   * The numbering convention for vertices and midpoints follows the usual
+   * rules for numbering local interpolation nodes in LehrFEM++.
    */
   explicit TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords);
 

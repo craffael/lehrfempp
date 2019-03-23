@@ -16,7 +16,7 @@
 
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace lf::uscalfe::test {
 
@@ -55,7 +55,7 @@ namespace lf::uscalfe::test {
 template <typename SCALAR, typename TMPMATRIX, typename DIFF_COEFF,
           typename REACTION_COEFF>
 void SecOrdBVPLagrFEFullInteriorGalMat(
-    std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
+    std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
     REACTION_COEFF gamma, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
@@ -104,7 +104,7 @@ void SecOrdBVPLagrFEFullInteriorGalMat(
 template <typename SCALAR, typename TMPMATRIX, typename COEFF,
           typename EDGESELECTOR>
 void SecOrdBVPLagrFEBoundaryGalMat(
-    std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, COEFF eta,
+    std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, COEFF eta,
     EDGESELECTOR edge_sel, TMPMATRIX &A) {
   using scalar_t = typename TMPMATRIX::Scalar;
   // The underlying finite element mesh
@@ -141,7 +141,7 @@ void SecOrdBVPLagrFEBoundaryGalMat(
  */
 template <typename SCALAR, typename VECTOR, typename FUNCTOR>
 void LagrFEVolumeRightHandSideVector(
-    std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR f,
+    std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
     VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
@@ -183,7 +183,7 @@ void LagrFEVolumeRightHandSideVector(
 template <typename SCALAR, typename VECTOR, typename FUNCTOR,
           typename EDGESELECTOR>
 void LagrFEBoundaryRightHandSideVector(
-    std::shared_ptr<ScalarUniformFESpace<SCALAR>> fe_space, FUNCTOR data,
+    std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR data,
     EDGESELECTOR edge_sel, VECTOR &phi) {
   using scalar_t = typename VECTOR::value_type;
   // The underlying finite element mesh
@@ -231,7 +231,7 @@ std::vector<std::pair<double, double>> InterpolationErrors(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    auto fe_space = std::make_shared<ScalarUniformFESpace<double>>(
+    auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
         mesh_p, rfs_tria_p, rfs_quad_p);
 
     // Helper class for L2 error computation
@@ -314,7 +314,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
-    auto fe_space = std::make_shared<ScalarUniformFESpace<double>>(
+    auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
         mesh_p, rfs_tria_p, rfs_quad_p);
     // Build finite element space and set up local-to-global index map
     const assemble::DofHandler &dofh{fe_space->LocGlobMap()};
@@ -407,7 +407,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    auto fe_space = std::make_shared<ScalarUniformFESpace<double>>(
+    auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
         mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p);
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
@@ -495,7 +495,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    auto fe_space = std::make_shared<ScalarUniformFESpace<SCALAR>>(
+    auto fe_space = std::make_shared<UniformScalarFESpace<SCALAR>>(
         mesh_p, rfs_tria_p, rfs_quad_p);
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
@@ -577,7 +577,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    auto fe_space = std::make_shared<ScalarUniformFESpace<SCALAR>>(
+    auto fe_space = std::make_shared<UniformScalarFESpace<SCALAR>>(
         mesh_p, rfs_tria_p, rfs_quad_p, rfs_edge_p);
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 

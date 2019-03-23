@@ -29,3 +29,5 @@ target_link_libraries(lf.geometry PUBLIC Eigen3::Eigen lf.base)
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)
 endif()
+
+add_subdirectory(test_utils)

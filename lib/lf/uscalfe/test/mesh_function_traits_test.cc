@@ -6,7 +6,7 @@
  * @copyright MIT License
  */
 
-#include <lf/uscalfe/lagrfe.h>
+#include <lf/uscalfe/uscalfe.h>
 
 #include <gtest/gtest.h>
 

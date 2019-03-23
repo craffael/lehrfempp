@@ -32,25 +32,31 @@ TriaO2::TriaO2(Eigen::Matrix<double, Eigen::Dynamic, 6> coords)
   const Eigen::VectorXd& E = coords_.col(4);
   const Eigen::VectorXd& F = coords_.col(5);
 
+  // Compute monomial coeffcients of componentwise quadratic
+  // polynomial
   alpha_ << A;
   beta_ << 4. * D - 3. * A - B, 4. * F - 3. * A - C;
   gamma_ << 2. * (A + B) - 4. * D, 2. * (A + C) - 4. * F;
   delta_ << 4. * (A + E - D - F);
-
   // coefficient for Jacobian()
   gamma_x_2_ << 2. * gamma_;
 }
 
+/* SAM_LISTING_BEGIN_1 */
 Eigen::MatrixXd TriaO2::Global(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
-
+  // Direct vectorized evaluation of componentwise quadratic mapping
+  // given through its monomial coefficients.
   return ((beta_ * local) + (gamma_ * local.array().square().matrix()) +
           (delta_ * local.row(0).cwiseProduct(local.row(1))))
              .colwise() +
          alpha_;
 }
 
+/* SAM_LISTING_END_1 */
+
+/* SAM_LISTING_BEGIN_2 */
 Eigen::MatrixXd TriaO2::Jacobian(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
@@ -71,6 +77,9 @@ Eigen::MatrixXd TriaO2::Jacobian(const Eigen::MatrixXd& local) const {
              .matrix();
 }
 
+/* SAM_LISTING_END_2 */
+
+/* SAM_LISTING_BEGIN_3 */
 Eigen::MatrixXd TriaO2::JacobianInverseGramian(
     const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
@@ -104,7 +113,9 @@ Eigen::MatrixXd TriaO2::JacobianInverseGramian(
 
   return jacInvGram;
 }
+/* SAM_LISTING_END_3 */
 
+/* SAM_LISTING_BEGIN_4 */
 Eigen::VectorXd TriaO2::IntegrationElement(const Eigen::MatrixXd& local) const {
   LF_VERIFY_MSG((0. <= local.array()).all() && (local.array() <= 1.).all(),
                 "local coordinates out of bounds for reference element");
@@ -127,9 +138,9 @@ Eigen::VectorXd TriaO2::IntegrationElement(const Eigen::MatrixXd& local) const {
       intElem(i) = std::sqrt(std::abs(A.dot(A) * B.dot(B) - AB * AB));
     }
   }
-
   return intElem;
 }
+/* SAM_LISTING_END_4 */
 
 std::unique_ptr<Geometry> TriaO2::SubGeometry(dim_t codim, dim_t i) const {
   switch (codim) {

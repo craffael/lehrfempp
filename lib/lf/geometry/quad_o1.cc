@@ -60,8 +60,12 @@ QuadO1::QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords)
   assertNonDegenerateQuad(coords_);
 }
 
+/* SAM_LISTING_BEGIN_1 */
 Eigen::MatrixXd QuadO1::Global(const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(local.rows() == 2, "reference coords must be 2-vectors");
+  // Componentwise bilinear transformation from unit square in a
+  // vectorized fashion.
+  // Note the use of array and matrix views offered by Eigen.
   return coords_.col(0) *
              ((1 - local.array().row(0)) * (1 - local.array().row(1)))
                  .matrix() +
@@ -72,32 +76,47 @@ Eigen::MatrixXd QuadO1::Global(const Eigen::MatrixXd& local) const {
          coords_.col(3) *
              ((1 - local.array().row(0)) * local.array().row(1)).matrix();
 }
+/* SAM_LISTING_END_1 */
 
+/* SAM_LISTING_BEGIN_2 */
 Eigen::MatrixXd QuadO1::Jacobian(const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(DimGlobal(), local.cols() * 2);
 
+  // Note that coords\_ stores the coordinates of the vertices of
+  // the quadrilateral in its columns.
   for (int i = 0; i < local.cols(); ++i) {
+    // Partial derivative of componentwise bilinear mapping
+    // w.r.t. to first reference coordinate
     result.col(2 * i) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
                         (coords_.col(2) - coords_.col(3)) * local(1, i);
+    // Partial derivative of componentwise bilinear mapping
+    // w.r.t. to second reference coordinate
     result.col(2 * i + 1) =
         (coords_.col(3) - coords_.col(0)) * (1 - local(0, i)) +
         (coords_.col(2) - coords_.col(1)) * local(0, i);
   }
   return result;
 }
+/* SAM_LISTING_END_2 */
 
+/* SAM_LISTING_BEGIN_3 */
 Eigen::MatrixXd QuadO1::JacobianInverseGramian(
     const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(DimGlobal(), local.cols() * 2);
   Eigen::MatrixXd jacobian(DimGlobal(), 2);
 
+  // Loop over all evaluatin points
   for (int i = 0; i < local.cols(); ++i) {
+    // Compute Jacobian matrix in one evaluation point.
     jacobian.col(0) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
                       (coords_.col(2) - coords_.col(3)) * local(1, i);
     jacobian.col(1) = (coords_.col(3) - coords_.col(0)) * (1 - local(0, i)) +
                       (coords_.col(2) - coords_.col(1)) * local(0, i);
-
+    // Distinguish whether the cell lies in a planar mesh or a surface mesh
     if (DimGlobal() == 2) {
+      // Standard case: 2D planar mesh
+      // Eigen has a built-in function for computing the inverse of a small
+      // matrix
       result.block(0, 2 * i, DimGlobal(), 2) = jacobian.transpose().inverse();
     } else {
       result.block(0, 2 * i, DimGlobal(), 2) = (jacobian.transpose() * jacobian)
@@ -106,19 +125,24 @@ Eigen::MatrixXd QuadO1::JacobianInverseGramian(
                                                    .transpose();
     }
   }
-
   return result;
 }
+/* SAM_LISTING_END_3 */
 
+/* SAM_LISTING_BEGIN_4 */
 Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
   Eigen::VectorXd result(local.cols());
   Eigen::MatrixXd jacobian(DimGlobal(), 2);
+
+  // Loop over all evaluatin points
   for (int i = 0; i < local.cols(); ++i) {
+    // Compute Jacobian matrix in one evaluation point.
     jacobian.col(0) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
                       (coords_.col(2) - coords_.col(3)) * local(1, i);
     jacobian.col(1) = (coords_.col(3) - coords_.col(0)) * (1 - local(0, i)) +
                       (coords_.col(2) - coords_.col(1)) * local(0, i);
-
+    // For planar cell, simply the determinant, for a cell in 3D space, the
+    // volume form
     if (DimGlobal() == 2) {
       result(i) = std::abs(jacobian.determinant());
     } else {
@@ -127,6 +151,7 @@ Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
   }
   return result;
 }
+/* SAM_LISTING_END_4 */
 
 std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
   using std::make_unique;

@@ -110,6 +110,9 @@ int main() {
   lf::geometry::TriaO2 tria(
       (Eigen::MatrixXd(2, 6) << 1, 6, 3, 3.7, 4.2, 2.3, 1, 3, 8, 1.2, 5.2, 4.5)
           .finished());
+  lf::geometry::TriaO2 tria_degenerate(
+      (Eigen::MatrixXd(2, 6) << 1, 6, 3, 5, 4.5, 1.75, 1, 3, 8, 4, 9, 6.5)
+          .finished());
   lf::geometry::QuadO2 quad((Eigen::MatrixXd(2, 8) << 3, 7, 4, 1, 5, 5.4, 2.5,
                              1.8, 1, 3, 7, 8, 2.5, 5.9, 6.9, 4.1)
                                 .finished());
@@ -121,6 +124,8 @@ int main() {
   // corresponding jacobian determinants for every geometry object
   for (const auto& geom_element :
        {std::pair<std::string, lf::geometry::Geometry*>{"tria", &tria},
+        std::pair<std::string, lf::geometry::Geometry*>{"tria_degenerate",
+                                                        &tria_degenerate},
         std::pair<std::string, lf::geometry::Geometry*>{"quad", &quad},
         std::pair<std::string, lf::geometry::Geometry*>{"quad_degenerate",
                                                         &quad_degenerate}}) {

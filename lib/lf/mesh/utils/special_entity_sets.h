@@ -76,8 +76,6 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
  * The boundary of a mesh is the set of all entities that are either entities
  * of co-dimension 1 located on the boundary or sub-entities of those.
  *
- * @note the current implementation returns an integer array, because
- *       of an error in the implementation of AllCodimMeshDataSet.
  */
 AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
     const std::shared_ptr<const Mesh>& mesh_p);

@@ -873,13 +873,29 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
           ref_el = base::RefEl::kSegment();
           geom = std::make_unique<geometry::SegmentO1>(node_coords);
           break;
+        case MshFile::ElementType::EDGE3:
+          ref_el = base::RefEl::kSegment();
+          geom = std::make_unique<geometry::SegmentO2>(node_coords);
+          break;
         case MshFile::ElementType::TRIA3:
           ref_el = base::RefEl::kTria();
           geom = std::make_unique<geometry::TriaO1>(node_coords);
           break;
+        case MshFile::ElementType::TRIA6:
+          ref_el = base::RefEl::kTria();
+          geom = std::make_unique<geometry::TriaO2>(node_coords);
+          break;
         case MshFile::ElementType::QUAD4:
           ref_el = base::RefEl::kQuad();
           geom = std::make_unique<geometry::QuadO1>(node_coords);
+          break;
+        case MshFile::ElementType::QUAD8:
+          ref_el = base::RefEl::kQuad();
+          geom = std::make_unique<geometry::QuadO2>(node_coords);
+          break;
+        case MshFile::ElementType::QUAD9:
+          ref_el = base::RefEl::kQuad();
+          geom = std::make_unique<geometry::QuadO2>(node_coords.leftCols(8));
           break;
         default:
           LF_VERIFY_MSG(false, "Gmsh element type "

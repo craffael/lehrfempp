@@ -5,6 +5,7 @@ set(lecturedemo
   lecturedemodof.h lecturedemodof.cc
   lecturedemoassemble.h lecturedemoassemble.cc
   lecturedemoquad.h lecturedemoquad.cc
+  lecturedemorefine.h lecturedemorefine.cc
   lecturedemo.h lecturedemomain.cc)
 
 add_executable(examples.lecturedemo ${lecturedemo})
