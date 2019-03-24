@@ -41,46 +41,57 @@ namespace input {
 
 int kArgc;
 char** kArgv;
-std::string kConfigFile;
-po::variables_map kVM;
-po::options_description kDesc("Allowed options");
+std::string& getConfigFile() {
+  static std::string value;
+  return value;
+}
+po::variables_map& getVM() {
+  static po::variables_map value;
+  return value;
+};
+po::options_description& getDesc() {
+  static po::options_description value("Allowed options");
+  return value;
+}
 
-extern po::options_description_easy_init Add() { return kDesc.add_options(); }
+extern po::options_description_easy_init Add() {
+  return getDesc().add_options();
+}
 
 void Add(const std::string& name, const std::string& comment) {
-  kDesc.add_options()(name.c_str(), comment.c_str());
+  getDesc().add_options()(name.c_str(), comment.c_str());
 }
 
 bool Help() {
-  if (kVM.count("help") > 0) {
-    std::cout << kDesc << "\n";
+  if (getVM().count("help") > 0) {
+    std::cout << getDesc() << "\n";
     return true;
   }
   return false;
 }
 
-bool IsSet(const std::string& name) { return kVM.count(name) > 0; }
+bool IsSet(const std::string& name) { return getVM().count(name) > 0; }
 
 void ParseCommandLine(const int& argc, char** argv) {
   // maybe argc/argv haven't been set yet and are given as arguments to this
   if (argc != 0 && argv != nullptr) {
-    po::store(po::parse_command_line(argc, argv, kDesc), kVM);
+    po::store(po::parse_command_line(argc, argv, getDesc()), getVM());
   } else {
     // if they have already been set via constructor, use them
-    po::store(po::parse_command_line(kArgc, kArgv, kDesc), kVM);
+    po::store(po::parse_command_line(kArgc, kArgv, getDesc()), getVM());
   }
-  po::notify(kVM);
+  po::notify(getVM());
 }
 
 bool ParseFile(const std::string& file) {
   // if file is set, use it. otherwise use this->kConfigFile
-  std::ifstream config_fs(!file.empty() ? file : kConfigFile);
+  std::ifstream config_fs(!file.empty() ? file : getConfigFile());
   if (!config_fs.good()) {
     return false;
   }
 
-  po::store(po::parse_config_file(config_fs, kDesc), kVM);
-  po::notify(kVM);
+  po::store(po::parse_config_file(config_fs, getDesc()), getVM());
+  po::notify(getVM());
   return true;
 }
 

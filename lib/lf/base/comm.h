@@ -100,9 +100,9 @@ namespace input {
 
 extern int kArgc;
 extern char** kArgv;
-extern std::string kConfigFile;
-extern po::variables_map kVM;
-extern po::options_description kDesc;
+extern std::string& getConfigFile();
+extern po::variables_map& getVM();
+extern po::options_description& getDesc();
 
 /**
  * @brief Handle to po::options_description.add_options.
@@ -234,7 +234,7 @@ Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    kDesc.find(name, false);
+    getDesc().find(name, false);
   } catch (const std::exception& e) {
     Add()(name.c_str(), po::value<unsigned int>(&ref), comment.c_str());
   }
@@ -246,7 +246,7 @@ Track<T>::Track(const std::string& name, T& ref, const T& def,
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    kDesc.find(name, false);
+    getDesc().find(name, false);
   } catch (const std::exception& e) {
     Add()(name.c_str(), po::value<unsigned int>(&ref)->default_value(def),
           comment.c_str());
@@ -258,13 +258,13 @@ using StaticVar = Track<unsigned int>;
 
 template <typename T>
 void Add(const std::string& name, const std::string& comment) {
-  kDesc.add_options()(name.c_str(), po::value<T>(), comment.c_str());
+  getDesc().add_options()(name.c_str(), po::value<T>(), comment.c_str());
 }
 
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def) {
-  kDesc.add_options()(name.c_str(), po::value<T>()->default_value(def),
-                      comment.c_str());
+  getDesc().add_options()(name.c_str(), po::value<T>()->default_value(def),
+                          comment.c_str());
 }
 
 template <typename T>
@@ -273,19 +273,19 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
   try {
     // Don't add the option if it exists already (then no error is thrown)
     // false -> only exact match in name is admissible
-    kDesc.find(name, false);
+    getDesc().find(name, false);
   } catch (const std::exception& e) {
     // If not found, then we add the option
     auto SetValue = [&value](T new_value) { value = new_value; };
-    kDesc.add_options()(name.c_str(), po::value<T>()->notifier(SetValue),
-                        comment.c_str());
+    getDesc().add_options()(name.c_str(), po::value<T>()->notifier(SetValue),
+                            comment.c_str());
   }
 }
 
 template <typename T>
 T Get(const std::string& name) {
-  if (kVM.count(name) > 0) {
-    return kVM[name].as<T>();
+  if (getVM().count(name) > 0) {
+    return getVM()[name].as<T>();
   }
   throw std::invalid_argument(
       "In template Get<T>(const std::string&): "
