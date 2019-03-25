@@ -609,7 +609,7 @@ class MVMultAssembler {
   using ElemMat = elem_mat_t &;
 
   MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
-  bool isActive(const lf::mesh::Entity &/*cell*/) { return true; }
+  bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   ElemMat Eval(const lf::mesh::Entity &cell);
 
  private:
@@ -623,14 +623,12 @@ MVMultAssembler::ElemMat MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
       mat_ = Eigen::Matrix3d::Constant(3, 3, -1.0);
-      mat_.diagonal() =
-          (Eigen::Vector3d::Constant(3, 1.0) * (double)cell_idx);
+      mat_.diagonal() = (Eigen::Vector3d::Constant(3, 1.0) * (double)cell_idx);
       break;
     }
     case lf::base::RefEl::kQuad(): {
       mat_ = Eigen::Matrix4d::Constant(4, 4, -1.0);
-      mat_.diagonal() =
-          (Eigen::Vector4d::Constant(4, 1.0) * (double)cell_idx);
+      mat_.diagonal() = (Eigen::Vector4d::Constant(4, 1.0) * (double)cell_idx);
       break;
     }
     default: {
