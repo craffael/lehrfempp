@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "lf_assert.h"
 #include "static_vars.h"
 
 // namespace structure:
@@ -98,8 +99,6 @@ T Get(const std::string& key) {
 
 namespace input {
 
-extern int kArgc;
-extern char** kArgv;
 extern std::string& getConfigFile();
 extern po::variables_map& getVM();
 extern po::options_description& getDesc();
@@ -231,26 +230,35 @@ class Track {
 
 template <class T>
 Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
-  try {
-    // Don't add the option if it exists already (then no error is thrown)
-    // false -> only exact match in name is admissible
-    getDesc().find(name, false);
-  } catch (const std::exception& e) {
-    Add()(name.c_str(), po::value<unsigned int>(&ref), comment.c_str());
-  }
+  auto temp = getDesc().find_nothrow(name.c_str(), false);
+
+// TODO(craffael): Remove the following line if
+// https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
+// is fixed
+#ifndef _MSC_VER
+  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+                "Name conflict: There is already another boost program option "
+                "with the name " +
+                    name + " registered.");
+#endif
+
+  Add()(name.c_str(), po::value<unsigned int>(&ref), comment.c_str());
 }
 
 template <class T>
 Track<T>::Track(const std::string& name, T& ref, const T& def,
                 const std::string& comment) {
-  try {
-    // Don't add the option if it exists already (then no error is thrown)
-    // false -> only exact match in name is admissible
-    getDesc().find(name, false);
-  } catch (const std::exception& e) {
-    Add()(name.c_str(), po::value<unsigned int>(&ref)->default_value(def),
-          comment.c_str());
-  }
+// TODO(craffael): Remove the following line if
+// https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
+// is fixed
+#ifndef _MSC_VER
+  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+                "Name conflict: There is already another boost program option "
+                "with the name " +
+                    name + " registered.");
+#endif
+  Add()(name.c_str(), po::value<unsigned int>(&ref)->default_value(def),
+        comment.c_str());
 }
 
 // Type for managing static variables
@@ -258,28 +266,48 @@ using StaticVar = Track<unsigned int>;
 
 template <typename T>
 void Add(const std::string& name, const std::string& comment) {
+// TODO(craffael): Remove the following line if
+// https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
+// is fixed
+#ifndef _MSC_VER
+  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+                "Name conflict: There is already another boost program option "
+                "with the name " +
+                    name + " registered.");
+#endif
   getDesc().add_options()(name.c_str(), po::value<T>(), comment.c_str());
 }
 
 template <typename T>
 void Add(const std::string& name, const std::string& comment, const T& def) {
+// TODO(craffael): Remove the following line if
+// https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
+// is fixed
+#ifndef _MSC_VER
+  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+                "Name conflict: There is already another boost program option "
+                "with the name " +
+                    name + " registered.");
+#endif
   getDesc().add_options()(name.c_str(), po::value<T>()->default_value(def),
                           comment.c_str());
 }
 
 template <typename T>
 void AddSetter(const std::string& name, T& value, const std::string& comment) {
-  // Avoid duplicate entries
-  try {
-    // Don't add the option if it exists already (then no error is thrown)
-    // false -> only exact match in name is admissible
-    getDesc().find(name, false);
-  } catch (const std::exception& e) {
-    // If not found, then we add the option
-    auto SetValue = [&value](T new_value) { value = new_value; };
-    getDesc().add_options()(name.c_str(), po::value<T>()->notifier(SetValue),
-                            comment.c_str());
-  }
+// TODO(craffael): Remove the following line if
+// https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
+// is fixed
+#ifndef _MSC_VER
+  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+                "Name conflict: There is already another boost program option "
+                "with the name " +
+                    name + " registered.");
+#endif
+
+  auto SetValue = [&value](T new_value) { value = new_value; };
+  getDesc().add_options()(name.c_str(), po::value<T>()->notifier(SetValue),
+                          comment.c_str());
 }
 
 template <typename T>
@@ -321,9 +349,10 @@ namespace cv = comm::variables;
  * @param name What the option will be called (--<name>)
  * @param comment The description of the option.
  */
-#define ADDOPTION(uintvar, name, comment) \
-  unsigned int uintvar = 0;               \
-  static lf::base::ci::Track<unsigned int> name(#name, uintvar, comment)
+#define ADDOPTION(uintvar, name, comment)                         \
+  inline unsigned int uintvar = 0;                                \
+  inline lf::base::ci::Track<unsigned int> ____comm_##name##____( \
+      #name, uintvar, comment)
 
 /**
  * @brief Create a new element of type lf::base::Track<unsigned>
@@ -336,10 +365,10 @@ namespace cv = comm::variables;
  * @param name What the option will be called (--<name>)
  * @param comment The description of the option.
  */
-#define ADDOPTION_DEFAULT(uintvar, default, name, comment)               \
-  unsigned int uintvar = 0; /* could also set it =default */             \
-  static lf::base::ci::Track<unsigned int> name(#name, uintvar, default, \
-                                                comment)
+#define ADDOPTION_DEFAULT(uintvar, default, name, comment)          \
+  inline unsigned int uintvar = 0; /* could also set it =default */ \
+  inline lf::base::ci::Track<unsigned int> ____comm_##name##____(   \
+      #name, uintvar, default, comment)
 
 /**
  * @brief Macro for threshold-conditional output

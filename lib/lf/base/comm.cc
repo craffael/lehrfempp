@@ -39,8 +39,6 @@ bool Remove(const std::string& key) {
 
 namespace input {
 
-int kArgc;
-char** kArgv;
 std::string& getConfigFile() {
   static std::string value;
   return value;
@@ -73,13 +71,7 @@ bool Help() {
 bool IsSet(const std::string& name) { return getVM().count(name) > 0; }
 
 void ParseCommandLine(const int& argc, char** argv) {
-  // maybe argc/argv haven't been set yet and are given as arguments to this
-  if (argc != 0 && argv != nullptr) {
-    po::store(po::parse_command_line(argc, argv, getDesc()), getVM());
-  } else {
-    // if they have already been set via constructor, use them
-    po::store(po::parse_command_line(kArgc, kArgv, getDesc()), getVM());
-  }
+  po::store(po::parse_command_line(argc, argv, getDesc()), getVM());
   po::notify(getVM());
 }
 
