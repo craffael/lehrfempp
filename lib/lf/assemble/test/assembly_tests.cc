@@ -604,25 +604,41 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
  */
 class MVMultAssembler {
  public:
-  using elem_mat_t = Eigen::MatrixXd;
-  using ElemMat = elem_mat_t;
+  using elem_mat_t = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
+                                   Eigen::RowMajor, 4, 4>;
+  using ElemMat = elem_mat_t &;
 
   MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
-  bool isActive(const lf::mesh::Entity &) { return true; }
+  bool isActive(const lf::mesh::Entity &/*cell*/) { return true; }
   ElemMat Eval(const lf::mesh::Entity &cell);
 
  private:
   const lf::mesh::Mesh &mesh_;
+  elem_mat_t mat_;
 };
 
 MVMultAssembler::ElemMat MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
   const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
   const lf::base::RefEl ref_el = cell.RefEl();
-  const lf::base::size_type num_nodes = ref_el.NumNodes();
-  elem_mat_t elem_mat = Eigen::MatrixXd::Constant(num_nodes, num_nodes, -1.0);
-  elem_mat.diagonal() =
-      (Eigen::VectorXd::Constant(num_nodes, 1.0) * (double)cell_idx);
-  return elem_mat;
+  switch (ref_el) {
+    case lf::base::RefEl::kTria(): {
+      mat_ = Eigen::Matrix3d::Constant(3, 3, -1.0);
+      mat_.diagonal() =
+          (Eigen::Vector3d::Constant(3, 1.0) * (double)cell_idx);
+      break;
+    }
+    case lf::base::RefEl::kQuad(): {
+      mat_ = Eigen::Matrix4d::Constant(4, 4, -1.0);
+      mat_.diagonal() =
+          (Eigen::Vector4d::Constant(4, 1.0) * (double)cell_idx);
+      break;
+    }
+    default: {
+      LF_ASSERT_MSG(false, "Illegal cell type");
+      break;
+    }
+  }  // end switch
+  return mat_;
 }
 
 // Test agreement of result for multiplication of Galerkin matrix
