@@ -558,4 +558,116 @@ TEST(lf_assembly, boundary_assembly) {
   linfe_boundary_assembly(mesh_p, dof_handler);
 }
 
+// A function for local multiplication of Galerkin matrix with vectors
+template <typename SCALAR, typename ENTITY_MATRIX_PROVIDER>
+SCALAR multVecAssMat(lf::assemble::dim_t codim,
+                     const lf::assemble::DofHandler &dofh,
+                     ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
+                     Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> &vec) {
+  // Pointer to underlying mesh
+  auto mesh = dofh.Mesh();
+  // Summation variable
+  SCALAR s{};
+  // Loop over entities of co-dimension codim
+  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
+    // Some entities may be skipped
+    if (entity_matrix_provider.isActive(entity)) {
+      // Size, aka number of rows and columns, of element matrix
+      const lf::assemble::size_type elmat_dim = dofh.NoLocalDofs(entity);
+      // Global indices of local shape functions
+      lf::base::RandomAccessRange<const gdof_idx_t> global_idx(
+          dofh.GlobalDofIndices(entity));
+      // Request local matrix from entity_matrix_provider object. In the case
+      // codim = 0, when `entity` is a cell, this is the element matrix
+      const auto elem_mat{entity_matrix_provider.Eval(entity)};
+      LF_ASSERT_MSG(elem_mat.rows() == elmat_dim,
+                    "nrows mismatch " << elem_mat.rows() << " <-> " << elmat_dim
+                                      << ", entity " << mesh->Index(entity));
+      LF_ASSERT_MSG(elem_mat.cols() == elmat_dim,
+                    "ncols mismatch " << elem_mat.cols() << " <-> " << elmat_dim
+                                      << ", entity " << mesh->Index(entity));
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> locvec(elmat_dim);
+      for (int l = 0; l < elmat_dim; ++l) {
+        locvec[l] = vec[global_idx[l]];
+      }
+      s += locvec.dot(elem_mat * locvec);
+    }
+  }
+  return s;
+}
+
+/** An ENTITY_MATRIX_PROVIDER for testing
+ *
+ * It returns an element matrix with the number of the cell
+ * on its diagonal and the negative number of the cell on
+ * all other positions.
+ */
+class MVMultAssembler {
+ public:
+  using elem_mat_t = Eigen::MatrixXd;
+  using ElemMat = elem_mat_t;
+
+  MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
+  bool isActive(const lf::mesh::Entity &) { return true; }
+  ElemMat Eval(const lf::mesh::Entity &cell);
+
+ private:
+  const lf::mesh::Mesh &mesh_;
+};
+
+MVMultAssembler::ElemMat MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
+  const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
+  const lf::base::RefEl ref_el = cell.RefEl();
+  const lf::base::size_type num_nodes = ref_el.NumNodes();
+  elem_mat_t elem_mat = Eigen::MatrixXd::Constant(num_nodes, num_nodes, -1.0);
+  elem_mat.diagonal() =
+      (Eigen::VectorXd::Constant(num_nodes, 1.0) * (double)cell_idx);
+  return elem_mat;
+}
+
+// Test agreement of result for multiplication of Galerkin matrix
+// with vector from left and right
+double test_vec_lr_mult(const lf::mesh::Mesh &mesh,
+                        const lf::assemble::DofHandler &dof_handler) {
+  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  std::cout << N_dofs << " degrees of freedom" << std::endl;
+  // A random vector
+  Eigen::VectorXd vec = Eigen::VectorXd::Random(N_dofs);
+
+  // Dummy assembler
+  MVMultAssembler assembler{mesh};
+  lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
+  mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+      0, dof_handler, assembler);
+  std::cout << "Assembled " << mat.rows() << "x" << mat.cols() << " matrix"
+            << std::endl;
+  // Build sparse matrix from COO format
+  Eigen::SparseMatrix<double> A = mat.makeSparse();
+  // Compute product of matrix with vector from left and right
+  double s1 = vec.dot(A * vec);
+
+  // Alternative way to comput product
+  double s2 = multVecAssMat<double, decltype(assembler)>(0, dof_handler,
+                                                         assembler, vec);
+
+  EXPECT_NEAR(s1, s2, 1.0E-9);
+  return s2;
+}
+
+TEST(lf_assembly, mat_vec_mult_test) {
+  std::cout << "### TEST: Local and global multiplication with vector"
+            << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Construct dofhandler using a map for local dof layout
+  lf::assemble::UniformFEDofHandler dof_handler(
+      mesh_p, {{lf::base::RefEl::kPoint(), 1}});
+
+  DofHandler::output_ctrl_ = 30;
+  std::cout << dof_handler << std::endl;
+
+  std::cout << " s= " << test_vec_lr_mult(*mesh_p, dof_handler) << std::endl;
+}
+
 }  // namespace lf::assemble::test
