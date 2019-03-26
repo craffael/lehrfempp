@@ -308,9 +308,9 @@ int main(int /*argc*/, const char** /*argv*/) {
     // right-hand side contribution of these two boundary conditions are given
     // by the same expression involving the source function h.
     if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
-      auto edge_sel = [&bd_flags,&edge_sel_neu,
+      auto edge_sel = [&bd_flags, &edge_sel_neu,
                        &edge_sel_imp](const lf::mesh::Entity& edge) -> bool {
-			return (bd_flags(edge) && (edge_sel_neu(edge) || edge_sel_imp(edge)));
+        return (bd_flags(edge) && (edge_sel_neu(edge) || edge_sel_imp(edge)));
       };
       // Object taking care of local computations. A predicate selects the edges
       // to be processed
