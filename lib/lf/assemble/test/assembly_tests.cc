@@ -564,6 +564,8 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
                      const lf::assemble::DofHandler &dofh,
                      ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
                      Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> &vec) {
+  LF_ASSERT_MSG(dofh.NoDofs() == vec.size(),
+                "NoDof mismatch " << dofh.NoDofs() << " <-> " << vec.size());
   // Pointer to underlying mesh
   auto mesh = dofh.Mesh();
   // Summation variable
@@ -659,7 +661,8 @@ double test_vec_lr_mult(const lf::mesh::Mesh &mesh,
   Eigen::SparseMatrix<double> A = mat.makeSparse();
   // Compute product of matrix with vector from left and right
   double s1 = vec.dot(A * vec);
-
+  double s1_alt = vec.transpose()*A * vec;
+  
   // Alternative way to comput product
   double s2 = multVecAssMat<double, decltype(assembler)>(0, dof_handler,
                                                          assembler, vec);
