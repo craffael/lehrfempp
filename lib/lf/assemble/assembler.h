@@ -102,7 +102,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                 "Trial and test space must be defined on the same mesh");
 
   // Central assembly loop over entities of co-dimension specified by
-  // the template argument CODIM
+  // the function argument codim
   for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
     // Some entities may be skipped
     if (entity_matrix_provider.isActive(entity)) {

@@ -79,6 +79,8 @@ int main() {
   // Matrix in triplet format holding Galerkin matrix, zero initially.
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
 
+  // Obtain an object that computes the element matrix for the
+  // volumne part of the bilinear form
   lf::uscalfe::ReactionDiffusionElementMatrixProvider<
       double, decltype(mf_identity), decltype(mf_identity)>
       elmat_builder(fe_space, mf_identity, mf_identity);
