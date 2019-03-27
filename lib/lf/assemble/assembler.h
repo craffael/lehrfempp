@@ -78,10 +78,8 @@ EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
  * + have an `Eval()` method returning the element matrix for a cell
  * + supply an `isActive()` method for selecting cells to be taken into account
  * in assembly
- * + provide a matrix type `ElemMat` for objects containing the element
- * matrices.
- * - ElemMat as provided by ENTITY_MATRIX_PROVIDER is a dense matrix type
- * modelled after Eigen::Matrix. It must provide:
+ * - The return type of `Eval()` must be a dense matrix type modelled after 
+ *   Eigen::Matrix. It must provide:
  * + methods `rows()` and `cols()` telling the number of rows and columns
  * + access to entries via `operator (int,int) const`
  *

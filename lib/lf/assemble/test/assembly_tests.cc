@@ -608,18 +608,17 @@ class MVMultAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
                                    Eigen::RowMajor, 4, 4>;
-  using ElemMat = elem_mat_t &;
 
   MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  ElemMat Eval(const lf::mesh::Entity &cell);
+  elem_mat_t &Eval(const lf::mesh::Entity &cell);
 
  private:
   const lf::mesh::Mesh &mesh_;
   elem_mat_t mat_;
 };
 
-MVMultAssembler::ElemMat MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
+MVMultAssembler::elem_mat_t &MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
   const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
   const lf::base::RefEl ref_el = cell.RefEl();
   switch (ref_el) {
