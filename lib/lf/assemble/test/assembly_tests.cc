@@ -618,7 +618,8 @@ class MVMultAssembler {
   elem_mat_t mat_;
 };
 
-MVMultAssembler::elem_mat_t &MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
+MVMultAssembler::elem_mat_t &MVMultAssembler::Eval(
+    const lf::mesh::Entity &cell) {
   const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
   const lf::base::RefEl ref_el = cell.RefEl();
   switch (ref_el) {
