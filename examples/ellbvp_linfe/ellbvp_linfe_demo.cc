@@ -377,9 +377,9 @@ int main(int /*argc*/, const char** /*argv*/) {
     auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
     auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
     // compute errors with 10-th order quadrature rules
-    L2err =
+    double L2err_2 =  // NOLINT
         std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
-    H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    double H1serr_2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(  // NOLINT
         mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
