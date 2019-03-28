@@ -7,9 +7,12 @@
  * @copyright MIT License
  */
 
+#ifndef __4ee2d6e8004446558bc6d2186596e392
+#define __4ee2d6e8004446558bc6d2186596e392
+
 #include <memory>
 
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -45,7 +48,7 @@ class MeshFunctionFE {
    * functions of `fe_space`
    */
   MeshFunctionFE(
-      std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space,
+      std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
       : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {
     for (auto& ref_el : {base::RefEl::kPoint(), base::RefEl::kSegment(),
@@ -74,7 +77,7 @@ class MeshFunctionFE {
   }
 
  private:
-  std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space_;
+  std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
   std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
       fe_;
@@ -87,3 +90,5 @@ MeshFunctionFE(std::shared_ptr<T>,
     ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 
 }  // namespace lf::uscalfe
+
+#endif  // __4ee2d6e8004446558bc6d2186596e392

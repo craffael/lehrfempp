@@ -60,7 +60,8 @@ void nodalProjection() {
   auto dof_vector = NodalProjection(*fe_space, mf_linear);
   auto mf_fe = MeshFunctionFE(fe_space, dof_vector);
 
-  assert(IntegrateMeshFunction(squaredNorm(mf_fe - mf_linear), 2) < 1e-12);
+  assert(IntegrateMeshFunction(*mesh, squaredNorm(mf_fe - mf_linear), 2) <
+         1e-12);
   //! [nodalProjection]
 }
 

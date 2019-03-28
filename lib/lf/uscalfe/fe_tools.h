@@ -199,7 +199,7 @@ static const unsigned int kout_prj_vals = 2;
  * @snippet fe_tools.cc nodalProjection
  */
 template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
+auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
                      SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(isMeshFunction<std::remove_reference_t<MF>>);
   // choose scalar type so it can hold the scalar type of u as well as
@@ -233,7 +233,7 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
     //                             << std::endl);
 
     // Information about local shape functions on reference element
-    auto ref_shape_fns = fe_space->ShapeFunctionLayout(ref_el);
+    auto ref_shape_fns = fe_space.ShapeFunctionLayout(ref_el);
     LF_ASSERT_MSG(ref_shape_fns, "reference shape function for "
                                      << ref_el << " not available.");
     // Obtain reference coordinates for evaluation nodes

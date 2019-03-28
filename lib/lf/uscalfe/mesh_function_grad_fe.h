@@ -8,7 +8,7 @@
 
 #ifndef __b6997524e2834b5b8e4bba019fb35cc6
 #define __b6997524e2834b5b8e4bba019fb35cc6
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -43,11 +43,11 @@ class MeshFunctionGradFE {
    * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
    * coefficient vector
    * @param fe_space the approximation space in which the function lies.
-   * @param coeff_vector Defines the coefficients in front of the basis
+   * @param dof_vector Defines the coefficients in front of the basis
    * functions of `fe_space`
    */
   MeshFunctionGradFE(
-      std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space,
+      std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
       : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {
     for (auto& ref_el : {base::RefEl::kSegment(), base::RefEl::kTria(),
@@ -84,7 +84,7 @@ class MeshFunctionGradFE {
   }
 
  private:
-  std::shared_ptr<ScalarUniformFESpace<SCALAR_FE>> fe_space_;
+  std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
   std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
       fe_;
