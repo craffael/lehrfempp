@@ -19,6 +19,7 @@
 #include "fe_tools.h"
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
+#include "loc_comp_norms.h"
 #include "mesh_function_binary.h"
 #include "mesh_function_constant.h"
 #include "mesh_function_fe.h"
@@ -32,7 +33,7 @@
  * @brief Collects data structures and algorithms designed for scalar finite
  * element methods primarily meant for second-order elliptic boundary value
  * problems.
- * 
+ *
  * This namespace contains a number of classes/functions which
  * can be used to solve boundary value problems with uniform,
  * scalar Finite elements:

@@ -363,6 +363,130 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   return flag_val_vec;
 }
 
+/**
+ * @brief Summation of cell values computed based on a finite element
+ *        function specified through its basis expansion coefficients
+ *
+ * @tparam LOC_COMP type taking care of local computations
+ * @tparam COEFFVECTOR a vanilla vector type
+ * @tparam SELECTOR a predicate for selecting cells
+ *
+ * ### type requirements
+ *
+ * - The type LOC_COMP must feature an `isActive()` method for the
+ *   selection of cells to be visited, must provide a type `dofvector_t`
+ *   for passing coefficients of local shape functions and a method
+ * ~~~
+ * double operator ()(const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
+ * ~~~
+ *   that performs the local computations.
+ * - The type COEFFVECTOR must provide component access through `[]`,
+ *   a `size()` method telling the vector length, and `value_type` typedef
+ *   telling the  component type.
+ * - The type functor must provide an evaluation operator `()` taking
+ *   a point coordinate vector `Eigen::Vector2d` as an argument.
+ *
+ * @param dofh Local-to-global index mapping belonging to a finite element space
+ * @param loc_comp reference to helper object for local computations
+ *        This object must be aware of the shape functions!
+ * @param uh coefficient vector of finite element function
+ *
+ */
+template <typename LOC_COMP, typename COEFFVECTOR, typename SELECTOR>
+double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
+                        LOC_COMP &loc_comp, const COEFFVECTOR &uh,
+                        SELECTOR &&pred) {
+  // Type for passing local coefficient vectors
+  using dofvector_t = std::vector<typename COEFFVECTOR::value_type>;
+  // Retrieve the mesh
+  const lf::mesh::Mesh &mesh{*dofh.Mesh()};
+
+  // Check whether sufficiently large vector uh
+  LF_ASSERT_MSG(uh.size() >= dofh.NoDofs(), "uh vector too short!");
+
+  double sum = 0.0;
+  /// loop over cells ( = codim-0 entities)
+  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+    if (pred(cell)) {
+      // Number of local shape functions
+      const size_type num_loc_dofs = dofh.NoLocalDofs(cell);
+      // Allocate a temporary vector of appropriate size
+      dofvector_t loc_coeffs(num_loc_dofs);
+      // Fetch global numbers of local shape functions
+      lf::base::RandomAccessRange<const gdof_idx_t> ldof_gidx(
+          dofh.GlobalDofIndices(cell));
+      // Copy degrees of freedom into temporory vector
+      for (int j = 0; j < num_loc_dofs; ++j) {
+        loc_coeffs[j] = uh[ldof_gidx[j]];
+      }
+      // Sum local contribution
+      sum += loc_comp(cell, loc_coeffs);
+    }  // end if (isACtive())
+  }
+  return sum;
+}
+
+/**
+ * @brief Summation of local contributions over _all_ cells
+ *
+ * @sa SumCellFEContrib()
+ */
+
+template <typename LOC_COMP, typename COEFFVECTOR>
+double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
+                        LOC_COMP &loc_comp, const COEFFVECTOR &uh) {
+  return SumCellFEContrib(dofh, loc_comp, uh, base::PredicateTrue{});
+}
+
+/**
+ * @brief Computation of an inner product norm of the difference of a finite
+ * element function and a general functions.
+ *
+ * @tparam LOC_NORM_COMP helper type like
+ * lf::uscalfe::MeshFunctionL2NormDifference
+ * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
+ * @tparam SELECTOR a predicate for selecting cells
+ *
+ * ### type requirements
+ *
+ * - The type LOC_NORM_COMP must feature an `isActive()` method for the
+ *   selection of cells to be visited, must provide a type `dofvector_t`
+ *   for passing coefficients of local shape functions and a method
+ * ~~~
+ * double operator () (const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
+ * ~~~
+ *   that performs the local computations and returns the **square** of
+ *   the local norm of the difference function
+ * - The type COEFFVECTOR must provide component access through `[]`,
+ *   a `size()` method telling the vector length, and `value_type` typedef
+ *   telling the  component type.
+ * - The type functor must provide an evaluation operator `()` taking
+ *   a point coordinate vector `Eigen::Vector2d` as an argument.
+ *
+ * @param dofh Local-to-global index mapping belonging to a finite element space
+ * @param loc_comp reference to helper object for local computations
+ *        This object must be aware of the shape functions!
+ * @param uh coefficient vector of finite element function
+ *
+ */
+template <typename LOC_NORM_COMP, typename COEFFVECTOR, typename SELECTOR>
+double NormOfDifference(const lf::assemble::DofHandler &dofh,
+                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh,
+                        SELECTOR &&pred) {
+  const double norm_sq = SumCellFEContrib(dofh, loc_comp, uh, pred);
+  return std::sqrt(norm_sq);
+}
+
+/** @brief Computation of difference of norms for _all_ cells
+ *
+ * @sa NormOfDifference()
+ */
+template <typename LOC_NORM_COMP, typename COEFFVECTOR>
+double NormOfDifference(const lf::assemble::DofHandler &dofh,
+                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
+  return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
+}
+
 }  // namespace lf::uscalfe
 
 #endif

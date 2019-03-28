@@ -362,16 +362,24 @@ int main(int /*argc*/, const char** /*argv*/) {
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
+    // Helper class for L2 error computation
+    lf::uscalfe::MeshFunctionL2NormDifference lc_L2(fe_space, mf_u, 2);
+    // Helper class for H1 semi norm
+    lf::uscalfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
 
+    double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
+    double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
+
+    /* SAM_LISTING_END_2 */
+
+    // Modern way to compute error:
     // create mesh functions representing solution / gradient of solution
     auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
     auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
-    /* SAM_LISTING_END_2 */
-
     // compute errors with 10-th order quadrature rules
-    double L2err =
+    L2err =
         std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
-    double H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
         mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
