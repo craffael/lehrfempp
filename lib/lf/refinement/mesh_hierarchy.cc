@@ -1718,11 +1718,13 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
 }
 
 // Utility function for generating a hierarchy of meshes
+/* SAM_LISTING_BEGIN_1 */
 std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
     std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat) {
-  LF_ASSERT_MSG(mesh_p != nullptr, "No vavlid mesh supplied!");
-  // Set up the builder object for mesh entities
+  LF_ASSERT_MSG(mesh_p != nullptr, "No valid mesh supplied!");
+  // Set up the builder object for mesh entities, here suitable for a 2D hybrid
+  // mesh comprising triangles and quadrilaterals
   std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   // Create a mesh hierarchy with a single level
@@ -1730,9 +1732,12 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
       std::make_shared<MeshHierarchy>(std::move(mesh_p), mesh_factory_ptr);
   // Perform the desired number of steps of uniform refinement
   for (int refstep = 0; refstep < ref_lev; ++refstep) {
+    // Conduct regular refinement of all cells of the currently finest mesh.
+    // This adds another mesh to the sequence of meshes.
     multi_mesh_p->RefineRegular(ref_pat);
   }
   return multi_mesh_p;
 }
+/* SAM_LISTING_END_1 */
 
 }  // namespace lf::refinement

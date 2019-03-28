@@ -1,10 +1,8 @@
 set(sources				
-fe_space_lagrange_o1.h				
-fe_space_lagrange_uniform.h
-fe_space_lagrange_uniform.cc			
+fe_space_lagrange_o1.h						
 fe_tools.h
-fe_tools.cc	
-lagr_fe.h	
+fe_tools.cc
+lagr_fe.h
 lagr_fe.cc
 lin_fe.h
 lin_fe.cc
@@ -18,10 +16,9 @@ mesh_function_global.h
 mesh_function_traits.h
 mesh_function_unary.h
 precomputed_scalar_reference_finite_element.h				
-scalar_uniform_fe_space.h
-scalar_uniform_fe_space.cc
+uniform_scalar_fe_space.h
+uniform_scalar_fe_space.cc
 uscalfe.h
-uniform_scalar_finite_element_space.h
 uscalfe.h
 )
 

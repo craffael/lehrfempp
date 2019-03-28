@@ -6,7 +6,7 @@ set(src
   mesh_function_utils.h
   sec_ord_ell_bvp.h
   sec_ord_ell_bvp.cc
-
+  loc_comp_test.cc
   bvp_fe_tests.cc
   fe_tools_tests.cc
   full_gal_tests.cc

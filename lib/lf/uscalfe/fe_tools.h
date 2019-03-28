@@ -18,7 +18,7 @@
 #include <lf/assemble/assemble.h>
 #include <lf/quad/quad.h>
 #include "mesh_function_traits.h"
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -233,17 +233,17 @@ auto NodalProjection(const ScalarUniformFESpace<SCALAR> &fe_space, MF &&u,
     //                             << std::endl);
 
     // Information about local shape functions on reference element
-    const ScalarReferenceFiniteElement<double> &ref_shape_fns{
-        *fe_space.ShapeFunctionLayout(ref_el)};
-
+    auto ref_shape_fns = fe_space->ShapeFunctionLayout(ref_el);
+    LF_ASSERT_MSG(ref_shape_fns, "reference shape function for "
+                                     << ref_el << " not available.");
     // Obtain reference coordinates for evaluation nodes
-    const Eigen::MatrixXd ref_nodes(ref_shape_fns.EvaluationNodes());
+    const Eigen::MatrixXd ref_nodes(ref_shape_fns->EvaluationNodes());
 
     // Collect values of function to be projected in a row vector
     auto uvalvec = u(cell, ref_nodes);
 
     // Compute the resulting local degrees of freedom
-    auto dofvec(ref_shape_fns.NodalValuesToDofs(
+    auto dofvec(ref_shape_fns->NodalValuesToDofs(
         Eigen::Map<Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>>(
             &uvalvec[0], uvalvec.size(), 1)));
 

@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#include "lagr_fe.h"
+#include "uscalfe.h"
 
 namespace lf::uscalfe {
 /**
@@ -55,7 +55,9 @@ class LinearFELaplaceElementMatrix {
   /**
    * @brief All cells are considered active in the default implementation
    */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
+    return true;
+  }
   /**
    * @brief main routine for the computation of element matrices
    *
@@ -64,7 +66,7 @@ class LinearFELaplaceElementMatrix {
    * @return a 4x4 matrix, containing the element matrix. The bottom row/column
    *         is not used in the case of a triangle.
    */
-  ElemMat Eval(const lf::mesh::Entity &cell);
+  ElemMat Eval(const lf::mesh::Entity &cell) const;
 
  private:
   /// quadrature points on reference quadrilateral
@@ -121,7 +123,9 @@ class LinearFELocalLoadVector {
   /** @brief Constructor storing the right hand side function */
   explicit LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
   /** @brief Default implement: all cells are active */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
+    return true;
+  }
   /**
    * @brief Main method for computing the element vector
    *
@@ -131,7 +135,7 @@ class LinearFELocalLoadVector {
    * approximation of the volume of a cell just using the integration element at
    * the barycenter.
    */
-  ElemVec Eval(const lf::mesh::Entity &cell);
+  ElemVec Eval(const lf::mesh::Entity &cell) const;
 
  private:
   /** `f_(x)` where `x` is a 2D vector provides the evaluation of the source
@@ -155,7 +159,8 @@ unsigned int LinearFELocalLoadVector<SCALAR, FUNCTOR>::dbg_ctrl = 0;
 // is resolved
 template <typename SCALAR, typename FUNCTOR>
 typename LinearFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
-LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(const lf::mesh::Entity &cell) {
+LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
+    const lf::mesh::Entity &cell) const {
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   const lf::base::size_type num_nodes{ref_el.NumNodes()};

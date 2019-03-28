@@ -56,10 +56,12 @@ int main(int /*argc*/, const char** /*argv*/) {
   auto eta = [](Eigen::Vector2d x) -> double { return (1.0 + x[0] + x[1]); };
   lf::uscalfe::MeshFunctionGlobal mf_eta{eta};
 
+  /* SAM_LISTING_BEGIN_1 */
   // Exact solution u
   auto u = [](Eigen::Vector2d x) -> double {
     return std::log(x[0] * x[0] + x[1] + 1.0);
   };
+  // Has to be wrapped into a mesh function for error computation
   lf::uscalfe::MeshFunctionGlobal mf_u{u};
 
   // Gradient of exact solution
@@ -67,7 +69,9 @@ int main(int /*argc*/, const char** /*argv*/) {
     double den = x[0] * x[0] + x[1] + 1.0;
     return ((Eigen::Vector2d() << 2.0 * x[0], 1.0).finished()) / den;
   };
+  // Convert into mesh function to use for error computation
   lf::uscalfe::MeshFunctionGlobal mf_grad_u{grad_u};
+  /* SAM_LISTING_END_1 */
 
   // Right-hand side source function f
   auto f = [&gamma, &u](Eigen::Vector2d x) -> double {
@@ -109,6 +113,10 @@ int main(int /*argc*/, const char** /*argv*/) {
   auto imp_sel = [](const Eigen::Vector2d& x) -> bool {
     return (x[1] - 5.0 * x[0] > -1.0E-7);
   };
+  // Set up a predicate: this object is a functor taking an entity and returning
+  // 'true' or 'false' depending on the location of the center of gravity of
+  // that entity. In this demo code this is the way how to tell, which type of
+  // boundary conditions prevails at different parts of the boundary.
   lf::refinement::EntityCenterPositionSelector edge_sel_imp{imp_sel};
 
   // Source term h on the right-hand side of Neumann and impedance boundary
@@ -226,7 +234,11 @@ int main(int /*argc*/, const char** /*argv*/) {
     size_type no_Dirichlet_edges = 0;
     size_type no_Neumann_edges = 0;
     size_type no_impedance_edges = 0;
+    // Obtain an array of boolean flags for the edges of the mesh, 'true'
+    // indicates that the edge lies on the boundary
     auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
+    // Traverse the edges of the mesh and check their boundary flags and the
+    // type of boundary condition
     for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
       if (bd_flags(edge)) {
         if (edge_sel_dir(edge)) {
@@ -255,19 +267,29 @@ int main(int /*argc*/, const char** /*argv*/) {
     // III: Assemble finite element Galerkin matrix
     // First the volume part for the bilinear form
     // Initialize object taking care of local computations. No selection of a
-    // subset of cells is specified in this demonstration
+    // subset of cells is specified in this demonstration: assembly will cover
+    // all cells.
     lf::uscalfe::ReactionDiffusionElementMatrixProvider<
         double, decltype(mf_alpha), decltype(mf_gamma)>
         elmat_builder(fe_space, mf_alpha, mf_gamma);
-    // Invoke assembly on cells (co-dimension = 0)
+    // Invoke assembly on cells (co-dimension = 0 as first argument)
+    // Information about the mesh and the local-to-global map is passed through
+    // a Dofhandler object, argument 'dofh'. This function call adds triplets to
+    // the internal COO-format representation of the sparse matrix A.
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
-    // Update with potential contributions from edges (impedance boundary
-    // conditions!). To that end initialize object taking care of local
-    // computations on segments. A predicate ensure that computations are
-    // confined to edges on the impredance boundary
+    // Update with potential contributions from edges (boundary part of bilinear
+    // form due to impedance boundary conditions!). To that end initialize an
+    // object taking care of local computations on edges. A predicate, that is,
+    // a functor returning boolean values, must ensure that computations are
+    // confined to edges on the impedance boundary! This predicate is defined
+    // next using the location-based predicate for impedance edges.
+    auto imp_edge_sel = [&bd_flags,
+                         &edge_sel_imp](const lf::mesh::Entity& edge) -> bool {
+      return (bd_flags(edge) && edge_sel_imp(edge));
+    };
     lf::uscalfe::MassEdgeMatrixProvider<double, decltype(mf_eta),
-                                        decltype(edge_sel_imp)>
-        edgemat_builder(fe_space, mf_eta, edge_sel_imp);
+                                        decltype(imp_edge_sel)>
+        edgemat_builder(fe_space, mf_eta, imp_edge_sel);
     // Invoke assembly on edges by specifying co-dimension = 1
     lf::assemble::AssembleMatrixLocally(1, dofh, dofh, edgemat_builder, A);
 
@@ -287,9 +309,9 @@ int main(int /*argc*/, const char** /*argv*/) {
     // right-hand side contribution of these two boundary conditions are given
     // by the same expression involving the source function h.
     if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
-      auto edge_sel = [&edge_sel_neu,
+      auto edge_sel = [&bd_flags, &edge_sel_neu,
                        &edge_sel_imp](const lf::mesh::Entity& edge) -> bool {
-        return (edge_sel_neu(edge) || edge_sel_imp(edge));
+        return (bd_flags(edge) && (edge_sel_neu(edge) || edge_sel_imp(edge)));
       };
       // Object taking care of local computations. A predicate selects the edges
       // to be processed
@@ -327,20 +349,24 @@ int main(int /*argc*/, const char** /*argv*/) {
           A, phi);
     }
 
-    // Assembly completed: Convert COO matrix into CRS format using Eigen's
+    /* SAM_LISTING_BEGIN_2 */
+    // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
     Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
+    LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
     Eigen::VectorXd sol_vec = solver.solve(phi);
+    LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
 
     // create mesh functions representing solution / gradient of solution
     auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
     auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
+    /* SAM_LISTING_END_2 */
 
     // compute errors with 10-th order quadrature rules
     double L2err =

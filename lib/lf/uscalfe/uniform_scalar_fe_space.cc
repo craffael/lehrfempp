@@ -13,6 +13,6 @@
  * @copyright MIT License
  */
 
-#include "scalar_uniform_fe_space.h"
+#include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {}  // namespace lf::uscalfe
