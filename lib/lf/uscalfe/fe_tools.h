@@ -301,6 +301,9 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
  * This function is meant to supply the information needed for the
  * elimination of Dirichlet boundary conditions by means of the function
  * lf::assemble::fix_flagged_solution_components().
+ *
+ * ### Example
+ * @snippet fe_tools.cc InitEssentialConditionFromFunction
  */
 template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(

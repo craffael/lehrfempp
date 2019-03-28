@@ -65,4 +65,53 @@ void nodalProjection() {
   //! [nodalProjection]
 }
 
+void InitEssentialConditionFromFunction() {
+  //! [InitEssentialConditionFromFunction]
+  auto mesh_factory = std::make_unique<mesh::hybrid2d::MeshFactory>(2);
+  auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
+  auto mesh = gmsh_reader.mesh();
+
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
+
+  // We want to solve the pde
+  // - \laplace u = 0
+  // u = cos(x)*sin(y) on the boundary
+
+  // 1) Setup a mesh function that represents the prescribed values of u on the
+  // boundary
+  auto mf_boundary = MeshFunctionGlobal([&](const Eigen::Vector2d& x) {
+    return std::cos(x[0]) * std::sin(x[1]);
+  });
+
+  // 2) determine the dofs on the boundary and to what value the should be set
+  auto boundary_cond = InitEssentialConditionFromFunction(
+      fe_space->LocGlobMap(),
+      *fe_space->ShapeFunctionLayout(base::RefEl::kSegment()),
+      base::PredicateTrue{}, mf_boundary);
+
+  // 3) Assemble the stiffness matrix:
+  assemble::COOMatrix<double> lhs(fe_space->LocGlobMap().NoDofs(),
+                                  fe_space->LocGlobMap().NoDofs());
+  auto mf_one = MeshFunctionConstant(1.);
+  auto mf_zero = MeshFunctionConstant(0.);
+  auto matrix_provider =
+      ReactionDiffusionElementMatrixProvider(fe_space, mf_one, mf_zero);
+  assemble::AssembleMatrixLocally(0, fe_space->LocGlobMap(),
+                                  fe_space->LocGlobMap(), matrix_provider, lhs);
+
+  // 4) Modify the system of equations such that the boundary values are
+  // enforced
+  Eigen::VectorXd rhs(fe_space->LocGlobMap().NoDofs());
+  assemble::fix_flagged_solution_components(
+      [&](unsigned int idx) { return boundary_cond[idx]; }, lhs, rhs);
+
+  // 5) solve the problem:
+  auto lhs_sparse = lhs.makeSparse();
+  Eigen::SimplicialLDLT<decltype(lhs_sparse)> solver;
+  solver.compute(lhs_sparse);
+  auto x = solver.solve(rhs);
+
+  //! [InitEssentialConditionFromFunction]
+}
+
 }  // namespace lf::uscalfe
