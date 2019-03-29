@@ -276,8 +276,8 @@ TEST(lf_fe, ReactionDiffusionEMPTensor) {
   // project two linear functions onto the fespace:
   MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
   MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
-  auto a_vec = NodalProjection<double>(fe_space, a);
-  auto b_vec = NodalProjection<double>(fe_space, b);
+  auto a_vec = NodalProjection<double>(*fe_space, a);
+  auto b_vec = NodalProjection<double>(*fe_space, b);
 
   auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
   EXPECT_NEAR(

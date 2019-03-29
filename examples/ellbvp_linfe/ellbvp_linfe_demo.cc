@@ -17,6 +17,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include "lf/uscalfe/test/mesh_function_utils.h"
 
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
@@ -368,7 +369,18 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
     double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
+
     /* SAM_LISTING_END_2 */
+
+    // Modern way to compute error:
+    // create mesh functions representing solution / gradient of solution
+    auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
+    // compute errors with 10-th order quadrature rules
+    double L2err_2 =  // NOLINT
+        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
+    double H1serr_2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(  // NOLINT
+        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 

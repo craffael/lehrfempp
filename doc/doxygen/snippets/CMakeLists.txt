@@ -1,9 +1,12 @@
 # Here we want to compile all snippets to make sure that they stay up-to-date, even when the code is refactored.
 
 set(sources
+  fe_tools.cc
+  fe_space_lagrange_o1.cc
   forward_iterator.cc
   gmsh_reader.cc
   lambda_mesh_data_set.cc
+  mesh_function_binary.cc
   ref_el.cc
   vtk_writer.cc
   mesh_utils.cc

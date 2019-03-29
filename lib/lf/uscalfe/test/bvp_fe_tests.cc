@@ -93,13 +93,12 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
     solver.compute(A);
     Eigen::VectorXd sol_vec = solver.solve(phi);
     // Compute error norms
-    // Helper class for L2 error computation
-    MeshFunctionL2NormDifference lc_L2(fe_space, solution, 2);
-    // Helper class for H1 semi norm
-    MeshFunctionL2GradientDifference lc_H1(fe_space, sol_grad, 2);
-
-    double L2err = NormOfDifference(dofh, lc_L2, sol_vec);
-    double H1serr = NormOfDifference(dofh, lc_H1, sol_vec);
+    MeshFunctionFE<double, double> mf_solution(fe_space, sol_vec);
+    MeshFunctionGradFE<double, double> mf_grad_solution(fe_space, sol_vec);
+    double L2err = std::sqrt(
+        IntegrateMeshFunction(*mesh_p, squaredNorm(solution - mf_solution), 2));
+    double H1serr = std::sqrt(IntegrateMeshFunction(
+        *mesh_p, squaredNorm(sol_grad - mf_grad_solution), 2));
     std::cout << "Level " << l << " : errors, L2 = " << L2err
               << ", H1 = " << H1serr << std::endl;
     errnorms.emplace_back(L2err, H1serr);
@@ -180,6 +179,9 @@ TEST(lfe_bvpfe, bvp_DirNeu) {
                                    0.00183394, 0.00091702};
 
   int k = 0;
+  // TODO(ralfh) : Comparing the L2 Norm to a reference value is not really
+  // meaningful, e.g. if we increase the local quadrature order with which the
+  // error is computed, this test fails!
   for (auto& err : errnorms) {
     if (k < 8) {
       EXPECT_NEAR(err.first, exp_l2err[k], 1.0E-5)

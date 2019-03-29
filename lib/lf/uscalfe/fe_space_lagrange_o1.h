@@ -14,10 +14,14 @@
 
 namespace lf::uscalfe {
 /**
- * @brief Linear Lagrangian Finite Element space
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief (Bi)Linear Lagrangian Finite Element space
  *
  * Just a specialization of UniformScalarFESpace based on
- * FeLagrangeO1Tria, FeLagrangeO1Quad.
+ * FeLagrangeO1Tria, FeLagrangeO1Quad and FeLagrangePoint.
+ *
+ * ### Example
+ * @snippet fe_space_lagrange_o1.cc usage
  *
  */
 template <typename SCALAR>
@@ -41,7 +45,8 @@ class FeSpaceLagrangeO1 : public UniformScalarFESpace<SCALAR> {
       : UniformScalarFESpace<SCALAR>(
             mesh_p, std::make_shared<FeLagrangeO1Tria<SCALAR>>(),
             std::make_shared<FeLagrangeO1Quad<SCALAR>>(),
-            std::make_shared<FeLagrangeO1Segment<SCALAR>>()) {}
+            std::make_shared<FeLagrangeO1Segment<SCALAR>>(),
+            std::make_shared<FeLagrangePoint<SCALAR>>(1)) {}
   ~FeSpaceLagrangeO1() override = default;
 };
 }  // namespace lf::uscalfe
