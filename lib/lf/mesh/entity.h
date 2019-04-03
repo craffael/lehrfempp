@@ -76,8 +76,17 @@ class Entity {
 
   /**
    * @brief Describes the geometry of this entity.
-   * @return A pointer to a Geometry object that will remain valid for as long
+   * @return A _pointer_ to a Geometry object that will remain valid for as long
    *         as the Mesh remains valid.
+   *
+   * Why does this member function return a pointer instead of a reference? One
+   * reason is that entities without a geometric shape are conceivable as
+   * building block of a "mesh graph", where only topological information
+   * matters. Another reason is that during the construction of a mesh, it turns
+   * out to be convenient to build entities "without geometry" first and then
+   * endow them with geometric information. A `nullptr` is a good way to
+   * indicate missing geometric information.
+   *
    */
   virtual geometry::Geometry* Geometry() const = 0;
 
