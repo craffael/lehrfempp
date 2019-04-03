@@ -45,12 +45,12 @@ namespace lecturedemo {
 /* SAM_LISTING_BEGIN_1 */
 template <typename FUNCTOR>
 auto localQuadFunction(const lf::mesh::Mesh &mesh,
-    std::map<lf::base::RefEl, lf::quad::QuadRule> quadrules,
-    FUNCTOR &&f, dim_t codim,
-    std::function<bool(const lf::mesh::Entity &)> pred =
-        [](const lf::mesh::Entity & /*entity*/) -> bool {
-      return true;
-    }) {
+                       std::map<lf::base::RefEl, lf::quad::QuadRule> quadrules,
+                       FUNCTOR &&f, dim_t codim,
+                       std::function<bool(const lf::mesh::Entity &)> pred =
+                           [](const lf::mesh::Entity & /*entity*/) -> bool {
+                         return true;
+                       }) {
   LF_ASSERT_MSG(mesh.DimMesh() >= codim, "Illegal codim = " << codim);
   // Variable for summing the result
   using value_t = std::invoke_result_t<FUNCTOR, Eigen::VectorXd>;

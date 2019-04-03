@@ -15,6 +15,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" which takes the same constant
  * value on the whole mesh.
@@ -34,7 +35,7 @@ class MeshFunctionConstant {
    * @brief the key evaluation operator to be supplied by all MeshFunctions
    */
   std::vector<R> operator()(const mesh::Entity& /*unused*/,
-                            const Eigen::MatrixXd& local) {
+                            const Eigen::MatrixXd& local) const {
     return std::vector<R>(local.cols(), value_);
   }
 

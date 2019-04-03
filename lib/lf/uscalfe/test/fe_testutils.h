@@ -234,19 +234,18 @@ std::vector<std::pair<double, double>> InterpolationErrors(
     auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
         mesh_p, rfs_tria_p, rfs_quad_p);
 
-    // Helper class for L2 error computation
-    MeshFunctionL2NormDifference lc_L2(fe_space, f, 2);
-    // Helper class for H1 semi norm
-    MeshFunctionL2GradientDifference lc_H1(fe_space, grad_f, 2);
-
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
     // Perform (nodal) projection of the passed function onto the finite element
     // space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
     // Compute norms of interpolation error by means of numerical quadrature
     // whose order is controlled by the polynomials degree of the FE space
-    double L2err = NormOfDifference(dofh, lc_L2, coeff_vec);
-    double H1serr = NormOfDifference(dofh, lc_H1, coeff_vec);
+    auto mf_fe = MeshFunctionFE<double, double>(fe_space, coeff_vec);
+    auto mf_grad_fe = MeshFunctionGradFE<double, double>(fe_space, coeff_vec);
+    double L2err =
+        std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(f - mf_fe), 2));
+    double H1serr = std::sqrt(
+        IntegrateMeshFunction(*mesh_p, squaredNorm(grad_f - mf_grad_fe), 2));
     err_norms.emplace_back(L2err, H1serr);
   }
   return err_norms;
@@ -321,7 +320,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
 
     // II: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
@@ -420,7 +419,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
 
     // II: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
 
     // III: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
@@ -501,7 +500,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
 
     // I: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, v, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, v, base::PredicateTrue{})};
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`
@@ -590,7 +589,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
 
     // II: Perform (nodal) projection of the passed function onto the finite
     // element space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(fe_space, v, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space, v, base::PredicateTrue{})};
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`

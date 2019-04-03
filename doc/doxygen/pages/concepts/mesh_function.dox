@@ -40,7 +40,7 @@ the following expressions are valid:
 
 ## Usage scenarios
 The concept of a MeshFunction is used widely in the `lf::fe` module:
-- Assembler classes such as lf::fe::ScalarFEEdgeLocalLoadVector or lf::fe::LagrangeFEEllBVPElementMatrix accept MeshFunctions that describe coefficients or source functions.
+- Assembler classes such as lf::uscalfe::ScalarFEEdgeLocalLoadVector or lf::uscalfe::LagrangeFEEllBVPElementMatrix accept MeshFunctions that describe coefficients or source functions.
 
 
 */
