@@ -86,9 +86,14 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
         dofh.GlobalDofIndices(cell)};
     switch (ref_el) {
       case lf::base::RefEl::kTria(): {
+        // Edge-midpoint based local quadrature, exact for quadratic
+        // polynomials, hence exact for the sqaure of piecewise linear finite
+        // element functions
         const Eigen::Vector3d uloc(uvec[idx[0]], uvec[idx[1]], uvec[idx[2]]);
         const Eigen::Vector3d mpv(uloc[0] + uloc[1], uloc[1] + uloc[2],
                                   uloc[2] + uloc[0]);
+        // Factor 1/12 = 1/3*1/4, 1/3|K| from quadrature weight, 1/4 from
+        // squaring the factor 1/2 occurring in the midpoint value
         l2n_square += 1 / 12.0 * area * mpv.squaredNorm();
         break;
       }
@@ -120,7 +125,7 @@ void lecturedemotwonorm() {
   // Obtain a purely triangular mesh of the unit square from the collection of
   // LehrFEM++'s built-in meshes
   std::shared_ptr<lf::mesh::Mesh> mesh_p{
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(3,1.0 / 3.0)};
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(3, 1.0 / 3.0)};
   // Optional: Output information on the mesh
   // std::cout << "Mesh: " << std::endl << *mesh_p << std::endl;
 
@@ -136,12 +141,13 @@ void lecturedemotwonorm() {
   size_type n_dofs{dofh.NoDofs()};
 
   // Build finite element coefficient vector by interpolating
-  // a known function.
+  // a known linear (!) function.
   auto u = lf::uscalfe::MeshFunctionGlobal(
       [](auto x) -> double { return 2 * x[0] + x[1]; });
   const Eigen::VectorXd uvec =
       lf::uscalfe::NodalProjection<double>(*fe_space_p, u);
-  // const Eigen::VectorXd uvec{Eigen::VectorXd::Constant(n_dofs,1.0)};
+  // Other, simpler, ways to set the coefficient vector
+  // const Eigen::VectorXd uvec{Eigen::VectorXd::LinSpaced(n_dofs,0.0,1.0)};
   // const Eigen::VectorXd uvec{Eigen::VectorXd::Random(n_dofs,1.0)};
 
   std::cout << "Euclidean norm = " << uvec.norm() << std::endl;
