@@ -1,6 +1,7 @@
 # cmake configuration file for compilation of LehrFEM++ lecture demo codes:
 
 set(lecturedemo
+  lecturedemotwonorm.h lecturedemotwonorm.cc
   lecturedemomesh.h lecturedemomesh.cc
   lecturedemodof.h lecturedemodof.cc
   lecturedemoassemble.h lecturedemoassemble.cc
