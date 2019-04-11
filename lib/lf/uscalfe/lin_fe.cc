@@ -57,7 +57,8 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
     case lf::base::RefEl::kTria(): {
       // Triangular cell: straight edges assumed, which means that the triangle
       // is an affine image of the unit triangle and that the gradients of the
-      // local shape functions (= barycentric coordinate functions) are constant.
+      // local shape functions (= barycentric coordinate functions) are
+      // constant.
       LF_ASSERT_MSG((vertices.cols() == 3) && (vertices.rows() == 2),
                     "Wrong size of vertex matrix!");
       // Set up an auxiliary 3x3-matrix with a leading column 1 and
