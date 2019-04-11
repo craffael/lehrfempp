@@ -47,7 +47,7 @@ class MeshFunctionGradFE {
    * functions of `fe_space`
    */
   MeshFunctionGradFE(
-      std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space,
+      std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
       : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {
     for (auto& ref_el : {base::RefEl::kSegment(), base::RefEl::kTria(),
@@ -84,7 +84,7 @@ class MeshFunctionGradFE {
   }
 
  private:
-  std::shared_ptr<UniformScalarFESpace<SCALAR_FE>> fe_space_;
+  std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
   std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
       fe_;

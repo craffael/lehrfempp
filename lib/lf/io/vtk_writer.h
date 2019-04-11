@@ -12,11 +12,13 @@
 
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <Eigen/Eigen>
 #include <boost/variant/variant.hpp>
 #include <string>
 #include <utility>
 #include <vector>
+#include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 namespace lf::io {
 
@@ -375,14 +377,77 @@ class VtkWriter {
    * @brief Add a new vector attribute dataset that attaches vectors to
    * the points/nodes of the mesh.
    * @param name The name of the attribute set.
-   * @param mds The mesh dataset that that attaches the data to the points of
-   *            the mesh.
+   * @param mds The mesh dataset that that attaches the data to the points
+   * of the mesh.
    * @param undefined_value The value that should be written for a point to
    * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
    */
   void WritePointData(const std::string& name,
                       const mesh::utils::MeshDataSet<Eigen::Vector3f>& mds,
                       const Eigen::Vector3f& undefined_value = {0, 0, 0});
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   * @note This version accepts in principle arbitrary size double Vectors,
+   * however only the first three components are visualized!
+   */
+  void WritePointData(
+      const std::string& name,
+      const mesh::utils::MeshDataSet<Eigen::VectorXd>& mds,
+      const Eigen::VectorXd& undefined_value = Eigen::Vector3d(0, 0, 0));
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the points/nodes of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the points of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a point to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   * @note This version accepts in principle arbitrary size float Vectors,
+   * however only the first three components are visualized!
+   */
+  void WritePointData(
+      const std::string& name,
+      const mesh::utils::MeshDataSet<Eigen::VectorXf>& mds,
+      const Eigen::VectorXf& undefined_value = Eigen::Vector3f(0, 0, 0));
+
+  /**
+   * @brief Sample a \ref mesh_function "MeshFunction" at points of the mesh and
+   * write it into the VTK file.
+   * @tparam MESH_FUNCTION An object fulfilling the \ref mesh_function
+   * concept. The \ref uscalfe::MeshFunctionReturnType should be one of
+   * - unsigned char
+   * - char
+   * - unsigned int
+   * - int
+   * - float
+   * - double
+   * - Eigen::Vector2d
+   * - Eigen::Vector2f
+   * - Eigen::Vector3d
+   * - Eigen::Vector3f
+   * @param name The name of the dataset, shouldn't contain any spaces!
+   * @param mesh_function The \ref mesh_function "Mesh Function" to be sampled.
+   *
+   * @note this function will evaluate the MeshFunction on the points
+   * of the mesh, i.e. at entities with codim=dimMesh. Some \ref mesh_functions
+   * are not well defined on points, e.g. the gradient of the solution of a BVP
+   * is not well defined on the points of the mesh.
+   *
+   * ### Example usage
+   * @snippet vtk_writer.cc mfPointUsage
+   */
+  template <class MESH_FUNCTION,
+            class = std::enable_if_t<uscalfe::isMeshFunction<MESH_FUNCTION>>>
+  void WritePointData(const std::string& name,
+                      const MESH_FUNCTION& mesh_function);
 
   /**
    * @brief Add a new `unsigned char` attribute dataset that attaches data to
@@ -521,6 +586,71 @@ class VtkWriter {
                      const Eigen::Vector3f& undefined_value = {0, 0, 0});
 
   /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   * @note This version accepts in principle arbitrary size double Vectors,
+   * however only the first three components are visualized!
+   */
+  void WriteCellData(
+      const std::string& name,
+      const mesh::utils::MeshDataSet<Eigen::VectorXd>& mds,
+      const Eigen::VectorXd& undefined_value = Eigen::Vector3d(0, 0, 0));
+
+  /**
+   * @brief Add a new vector attribute dataset that attaches vectors to
+   * the cells of the mesh.
+   * @param name The name of the attribute set.
+   * @param mds The mesh dataset that that attaches the data to the cells of
+   *            the mesh.
+   * @param undefined_value The value that should be written for a cell to
+   * which `mds` does not attach data (i.e. if `mds.DefinedOn() == false`)
+   * @note This version accepts in principle arbitrary size float Vectors,
+   * however only the first three components are visualized!
+   */
+  void WriteCellData(
+      const std::string& name,
+      const mesh::utils::MeshDataSet<Eigen::VectorXf>& mds,
+      const Eigen::VectorXf& undefined_value = Eigen::Vector3f(0, 0, 0));
+
+  /**
+   * @brief Sample a \ref mesh_function "MeshFunction" at the barycenter of the
+   * cell and visualize it as cell data in the Vtk File.
+   * @tparam MESH_FUNCTION An object fulfilling the \ref mesh_function
+   * concept. The \ref uscalfe::MeshFunctionReturnType should be one of
+   * - unsigned char
+   * - char
+   * - unsigned int
+   * - int
+   * - float
+   * - double
+   * - Eigen::Vector2d
+   * - Eigen::Vector2f
+   * - Eigen::Vector3d
+   * - Eigen::Vector3f
+   * - Eigen::VectorXd
+   * - Eigen::VectorXf
+   * @param name The name of the dataset, shouldn't contain any spaces!
+   * @param mesh_function The \ref mesh_function "Mesh Function" to be sampled.
+   *
+   * @note this function will evaluate the MeshFunction on barycenters
+   * of the cells of the mesh, i.e. at codim=0 entities. Some \ref
+   * mesh_functions are not well defined on cells (e.g. boudnary conditions) and
+   * cannot be visualized with this function. (An assert will fail)
+   *
+   * ### Example usage
+   * @snippet vtk_writer.cc mfCellUsage
+   */
+  template <class MESH_FUNCTION,
+            class = std::enable_if_t<uscalfe::isMeshFunction<MESH_FUNCTION>>>
+  void WriteCellData(const std::string& name,
+                     const MESH_FUNCTION& mesh_function);
+
+  /**
    * @brief Write global data into the vtk file that is not related to the mesh
    *        at all.
    * @param name Name of the global dataset.
@@ -592,6 +722,33 @@ class VtkWriter {
   template <class T>
   void WriteFieldData(const std::string& name, std::vector<T> data);
 };
+
+template <class MESH_FUNCTION, class>
+void VtkWriter::WritePointData(const std::string& name,
+                               const MESH_FUNCTION& mesh_function) {
+  Eigen::Matrix<double, 0, 1> origin{};
+  WritePointData(name, *mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
+                   return mesh_function(e, origin)[0];
+                 }));
+}
+
+template <class MESH_FUNCTION, class>
+void VtkWriter::WriteCellData(const std::string& name,
+                              const MESH_FUNCTION& mesh_function) {
+  // maps from RefEl::Id() -> barycenter of the reference element
+  std::vector<Eigen::VectorXd> barycenters(5);
+  barycenters[base::RefEl::kPoint().Id()] = Eigen::Matrix<double, 0, 1>();
+  barycenters[base::RefEl::kSegment().Id()] =
+      base::RefEl::kSegment().NodeCoords().rowwise().sum() / 2.;
+  barycenters[base::RefEl::kTria().Id()] =
+      base::RefEl::kTria().NodeCoords().rowwise().sum() / 3.;
+  barycenters[base::RefEl::kQuad().Id()] =
+      base::RefEl::kTria().NodeCoords().rowwise().sum() / 4.;
+
+  WriteCellData(name, *mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
+                  return mesh_function(e, barycenters[e.RefEl().Id()])[0];
+                }));
+}
 
 }  // namespace lf::io
 

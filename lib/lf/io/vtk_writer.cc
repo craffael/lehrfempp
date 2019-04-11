@@ -597,6 +597,20 @@ void VtkWriter::WritePointData(
   WriteVectorPointData<3, float>(name, mds, undefined_value);
 }
 
+void VtkWriter::WritePointData(
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::VectorXd>& mds,
+    const Eigen::VectorXd& undefined_value) {
+  WriteVectorPointData<Eigen::Dynamic, double>(name, mds, undefined_value);
+}
+
+void VtkWriter::WritePointData(
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::VectorXf>& mds,
+    const Eigen::VectorXf& undefined_value) {
+  WriteVectorPointData<Eigen::Dynamic, float>(name, mds, undefined_value);
+}
+
 void VtkWriter::WriteCellData(
     const std::string& name, const mesh::utils::MeshDataSet<unsigned char>& mds,
     unsigned char undefined_value) {
@@ -661,6 +675,20 @@ void VtkWriter::WriteCellData(
   WriteVectorCellData<3, float>(name, mds, undefined_value);
 }
 
+void VtkWriter::WriteCellData(
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::VectorXd>& mds,
+    const Eigen::VectorXd& undefined_value) {
+  WriteVectorCellData<Eigen::Dynamic, double>(name, mds, undefined_value);
+}
+
+void VtkWriter::WriteCellData(
+    const std::string& name,
+    const mesh::utils::MeshDataSet<Eigen::VectorXf>& mds,
+    const Eigen::VectorXf& undefined_value) {
+  WriteVectorCellData<Eigen::Dynamic, float>(name, mds, undefined_value);
+}
+
 void VtkWriter::WriteGlobalData(const std::string& name,
                                 std::vector<int> data) {
   WriteFieldData(name, std::move(data));
@@ -719,8 +747,12 @@ void PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
   } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
   } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
-    out(2) = T(0);
-    out.topRows(in.rows()) = in;
+    if (in.rows() == 2) {
+      out(2) = T(0);
+      out.topRows(in.rows()) = in;
+    } else {
+      out = in;
+    }
   }
 }
 
