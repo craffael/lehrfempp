@@ -114,8 +114,8 @@ class ReactionDiffusionElementMatrixProvider {
    * exactness as the polynomial degree of the finite element space.
    */
   ReactionDiffusionElementMatrixProvider(
-      std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
-      REACTION_COEFF gamma);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      DIFF_COEFF alpha, REACTION_COEFF gamma);
   /** @brief Constructor: cell-independent precomputations and custom quadrature
    * rule
    * @param fe_space collection of specifications for scalar-valued parametric
@@ -130,8 +130,9 @@ class ReactionDiffusionElementMatrixProvider {
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
   ReactionDiffusionElementMatrixProvider(
-      std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
-      REACTION_COEFF gamma, quad_rule_collection_t qr_collection);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      DIFF_COEFF alpha, REACTION_COEFF gamma,
+      quad_rule_collection_t qr_collection);
 
   /**
    * @brief All cells are considered active in the default implementation
@@ -195,7 +196,7 @@ ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
-        std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
     : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
@@ -218,7 +219,7 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
-        std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma,
         quad_rule_collection_t qr_collection)
     : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
@@ -364,9 +365,9 @@ class MassEdgeMatrixProvider {
    * This constructor chooses a local quadature rule with double the degree of
    * exactness as the polynomial degree of the finite element space.
    */
-  MassEdgeMatrixProvider(std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
-                         COEFF gamma,
-                         EDGESELECTOR edge_selector = base::PredicateTrue{})
+  MassEdgeMatrixProvider(
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, COEFF gamma,
+      EDGESELECTOR edge_selector = base::PredicateTrue{})
       : gamma_(std::move(gamma)),
         edge_sel_(std::move(edge_selector)),
         fe_precomp_() {
@@ -388,9 +389,10 @@ class MassEdgeMatrixProvider {
    *
    * This constructor takes a user-supplied quadrature rule.
    */
-  MassEdgeMatrixProvider(std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space,
-                         COEFF gamma, lf::quad::QuadRule quadrule,
-                         EDGESELECTOR edge_selector = base::PredicateTrue{})
+  MassEdgeMatrixProvider(
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, COEFF gamma,
+      lf::quad::QuadRule quadrule,
+      EDGESELECTOR edge_selector = base::PredicateTrue{})
       : gamma_(std::move(gamma)),
         edge_sel_(std::move(edge_selector)),
         fe_precomp_() {
@@ -547,7 +549,7 @@ class ScalarLoadElementVectorProvider {
    * degree of the finite element space.
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f);
   /** @brief Constructor, performs precomputations based on user-supplied
    * quadrature rules.
    *
@@ -557,7 +559,7 @@ class ScalarLoadElementVectorProvider {
    *
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
       quad_rule_collection_t qr_collection);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
@@ -597,7 +599,7 @@ unsigned int ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ctrl_ = 0;
 template <typename SCALAR, typename FUNCTOR>
 ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -616,7 +618,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
 template <typename SCALAR, typename FUNCTOR>
 ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
         quad_rule_collection_t qr_collection)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
