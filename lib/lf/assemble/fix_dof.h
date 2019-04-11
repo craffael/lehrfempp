@@ -225,7 +225,7 @@ using fixed_components_t =
  * vector entries.
  *
  * This function is basedon \ref fix_flagged_solution_components_alt()
- * 
+ *
  * @sa fix_flagged_solution_components_alt()
  */
 template <typename SCALAR, typename RHSVECTOR>

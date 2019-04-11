@@ -50,11 +50,11 @@ double l2normByMassMatrix(const lf::assemble::DofHandler &dofh,
   LF_ASSERT_MSG(
       N_dofs == uvec.size(),
       "Size mismatch: NoDofs = " << N_dofs << " <-> size = " << uvec.size());
-  // Obtain Galerkin mass matrix
-  // Matrix in triplet format holding Galerkin matrix, zero initially.
-  lf::assemble::COOMatrix<double> M_coo(N_dofs, N_dofs);
+  // Obtain Galerkin mass matrix by local cell-oriented assembly
   LinFEMassMatrixProvider M_loc{};  // ENTITY_MATRIX_PROVIDER
-  lf::assemble::AssembleMatrixLocally(0, dofh, dofh, M_loc, M_coo);
+  lf::assemble::COOMatrix<double> M_coo{
+      lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+          0, dofh, M_loc)};
   // Optional: output of mass matrix for debugging purposes
   // std::cout << "Mass matrix" << std::endl << M_coo.makeDense() << std::endl;
   // Multiply coefficient vector onto mass matrix from left and right
@@ -141,7 +141,8 @@ void lecturedemotwonorm() {
   size_type n_dofs{dofh.NoDofs()};
 
   // Build finite element coefficient vector by interpolating
-  // a known linear (!) function.
+  // a known linear (!) function. The L2-norm of linear functions
+  // should be computed exactly.
   auto u = lf::uscalfe::MeshFunctionGlobal(
       [](auto x) -> double { return 2 * x[0] + x[1]; });
   const Eigen::VectorXd uvec =
