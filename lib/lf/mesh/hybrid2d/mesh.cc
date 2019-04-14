@@ -563,7 +563,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       nodeHasSuperEntity[p1] = true;
 
       // make sure that the edge belongs to at least one cell:
-      LF_ASSERT_MSG(!edge.second.adj_cells_list.empty(),
+      LF_VERIFY_MSG(!edge.second.adj_cells_list.empty(),
                     "Mesh is incomplete: Edge with global index "
                         << edge.second.edge_global_index
                         << " does not belong to a cell.");
@@ -583,7 +583,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   if (check_completeness) {
     // Check that all nodes have a super entity:
     for (int i = 0; i < nodes.size(); ++i) {
-      LF_ASSERT_MSG(nodeHasSuperEntity[i],
+      LF_VERIFY_MSG(nodeHasSuperEntity[i],
                     "Mesh is incomplete: Node with global index "
                         << i << " is not part of any edge.");
     }
