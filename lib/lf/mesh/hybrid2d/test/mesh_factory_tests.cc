@@ -82,7 +82,6 @@ TEST(lf_edge_create, TestMesh1) {
   EXPECT_TRUE(mesh_sanity_check(*mesh_p)) << "Second test mesh with problems!";
 }
 
-// TODO Enable this once issue #33 is resolved
 TEST(lf_hybrid2d, EdgeNumbering) {
   // Construct a one element mesh that consists of a quad:
   MeshFactory mf(2);
@@ -153,6 +152,49 @@ TEST(lf_hybrid2d, EdgeNumbering) {
 
   // check index of element:
   EXPECT_EQ(mesh->Index(*mesh->Entities(0).begin()), 0);
+}
+
+TEST(lf_hybrid2d, IncompleteMeshes) {
+  // construct a mesh with a triangle + an additional point and make sure it
+  // fails:
+  auto factory = std::make_unique<MeshFactory>(2, true);
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
+  factory->AddEntity(
+      base::RefEl::kTria(), {0, 1, 2},
+      std::make_unique<geometry::TriaO1>(
+          (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
+
+  EXPECT_DEATH(factory->Build(), "Mesh is incomplete");
+
+  // construct the same mesh but with check_completeness = false
+  factory = std::make_unique<MeshFactory>(2, false);
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
+  factory->AddEntity(
+      base::RefEl::kTria(), {0, 1, 2},
+      std::make_unique<geometry::TriaO1>(
+          (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
+  EXPECT_NO_FATAL_FAILURE(factory->Build());
+
+  // construct a mesh with a triangle + a detached edge:
+  factory = std::make_unique<MeshFactory>(2, true);
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 0)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
+  factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
+  factory->AddEntity(
+      base::RefEl::kTria(), {0, 1, 2},
+      std::make_unique<geometry::TriaO1>(
+          (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
+  factory->AddEntity(base::RefEl::kSegment(), {2, 3},
+                     std::make_unique<geometry::SegmentO1>(
+                         (Eigen::Matrix2d() << 0, 1, 1, 1).finished()));
+  EXPECT_DEATH(factory->Build(), "Mesh is incomplete");
 }
 
 }  // namespace lf::mesh::hybrid2d::test

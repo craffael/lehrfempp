@@ -54,6 +54,7 @@ class Mesh : public mesh::Mesh {
   std::vector<hybrid2d::Triangle> trias_;
   /** @brief array of quadrilateral cell objects, oo-dimension 0 */
   std::vector<hybrid2d::Quadrilateral> quads_;
+
   /** @brief Auxliary array of cell (co-dim ==0 entities) pointers
    *
    * This array serves two purposes. It facilitates the construction
@@ -75,43 +76,40 @@ class Mesh : public mesh::Mesh {
    * @param dim_world Dimension of the ambient space.
    * @param nodes sequential container of node coordinates
    * @param edges sequential container of pairs of
-                  (i) vectors of indices of the nodes of an edge
-                  (ii) pointers to the geometry object describing an edge
+   *               (i) vectors of indices of the nodes of an edge
+   *               (ii) pointers to the geometry object describing an edge
    * @param cells sequential container of pairs of
-                  (i) vectors of indices of the nodes of a cell
-                  (ii) pointers to the geometry object for the cell
+   *               (i) vectors of indices of the nodes of a cell
+   *               (ii) pointers to the geometry object for the cell
+   * @param check_completeness If set to true, the constructor will check that
+   * the mesh is topologically complete. That means that every entity with
+   * codimension `codim>0` is a subentity of at least one entity with
+   * codimension `codim-1`. If `check_completeness = true` and the mesh is not
+   * complete, an assert will fail.
    *
    * ### Shape guessing
    *
    * Shape information usually supplied by a unique pointer to a
-   lf::geometry::Geometry
-   * object attached to an entity may be missing for some of the entities. In
-   this
-   * case the constructor tries to reconstruct the shape from that of other
-   entities.
+   * lf::geometry::Geometry object attached to an entity may be missing for some
+   * of the entities. In this case the constructor tries to reconstruct the
+   * shape from that of other entities.
    *
    * The main example is missing geometry information for nodes or edges. In
-   this case
-   * a call to the lf::geometry::SubGeometry() method of cell entities is used
-   to
-   * generate shape information for its lower-dimensional sub-entities. Note
-   that
-   * any adjacent cell can be used and no selection rule is given.
+   * this case a call to the lf::geometry::SubGeometry() method of cell entities
+   * is used to generate shape information for its lower-dimensional
+   * sub-entities. Note that any adjacent cell can be used and no selection rule
+   * is given.
    *
    * Even cells without shape information may be passed. In this case the
-   current implementation
-   * builds a cell with straight edges of type lf::geometry::TriaO1 (in the case
-   of a topological
-   * triangle) or lf::geometry::QuadO1 (in the case of a quadrilateral) from the
-   node positions.
-   * The shape of edges is not taken into account.
+   * current implementation builds a cell with straight edges of type
+   * lf::geometry::TriaO1 (in the case of a topological triangle) or
+   * lf::geometry::QuadO1 (in the case of a quadrilateral) from the node
+   * positions. The shape of edges is not taken into account.
    *
    * An extreme situation is marked by passing node positions as the only
-   geometric information
-   * together with topological node-cell incidence relationships. In this case
-   the constructor
-   * will build a mesh with straight edges throughout, type
-   lf::geometry::SegmentO1.
+   * geometric information together with topological node-cell incidence
+   * relationships. In this case the constructor will build a mesh with straight
+   * edges throughout, type lf::geometry::SegmentO1.
    *
    * ### Missing entities
    *
@@ -124,7 +122,8 @@ class Mesh : public mesh::Mesh {
    *        that is the n-th node in the container has index n-1.
    *
    */
-  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells);
+  Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
+       bool check_completeness);
 
   friend class MeshFactory;
 
