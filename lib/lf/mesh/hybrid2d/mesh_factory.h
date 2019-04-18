@@ -31,8 +31,14 @@ class MeshFactory : public mesh::MeshFactory {
    *        mesh.
    * @param dim_world The dimension of the euclidean space in which the
    *                  mesh is embedded.
+   * @param check_completeness If set to true, calling Build() will check that
+   * the mesh is topologically complete. That means that every entity with
+   * codimension `codim>0` is a subentity of at least one entity with
+   * codimension `codim-1`. If `check_completeness = true` and the mesh is not
+   * complete, an assert will fail.
    */
-  explicit MeshFactory(dim_t dim_world) : dim_world_(dim_world) {}
+  explicit MeshFactory(dim_t dim_world, bool check_completeness = true)
+      : dim_world_(dim_world), check_completeness_(check_completeness) {}
 
   dim_t DimWorld() const override { return dim_world_; }
 
@@ -58,6 +64,10 @@ class MeshFactory : public mesh::MeshFactory {
   hybrid2d::Mesh::NodeCoordList nodes_;
   hybrid2d::Mesh::EdgeList edges_;
   hybrid2d::Mesh::CellList elements_;
+
+  // If set to true, the Build() method will check whether all sub-entities
+  // belong to at least one entity */
+  bool check_completeness_;
 
  public:
   // Switch for verbosity level of output
