@@ -18,8 +18,8 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
   using tria_coord_t = Eigen::Matrix<double, 2, 3>;
 
   // Obtain mesh factory
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
 
   switch (selector) {
     case 0: {
@@ -261,7 +261,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
     case 4: {
       // Triangular tensor product mesh
       // Construct a structured mesh with 18 triangles
-      hybrid2d::TPTriagMeshBuilder builder(mesh_factory_ptr);
+      hybrid2d::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
       // Set mesh parameters following the Builder pattern
       // Domain is the unit square
       builder.setBottomLeftCorner(Eigen::Vector2d{0 * scale, 0 * scale})

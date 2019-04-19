@@ -105,11 +105,11 @@ int main(int argc, char **argv) {
   using size_type = lf::base::size_type;
   using lf::io::TikzOutputCtrl;
 
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
 
   // build single-cell tensor product mesh on unit square
-  lf::mesh::hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
+  lf::mesh::hybrid2d::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0});
   builder.setTopRightCorner(Eigen::Vector2d{1, 1});
   builder.setNoXCells(1);
@@ -122,7 +122,8 @@ int main(int argc, char **argv) {
   std::cout << std::endl;
 
   // build mesh hierarchy
-  lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
+  lf::refinement::MeshHierarchy multi_mesh(
+      mesh_ptr, std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
 
   // mark edges of cells containing point
   auto marker = [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge,

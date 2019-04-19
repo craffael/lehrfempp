@@ -23,7 +23,7 @@ class StructuredMeshBuilder {
    *
    */
   explicit StructuredMeshBuilder(
-      std::shared_ptr<mesh::MeshFactory> mesh_factory)
+      std::unique_ptr<mesh::MeshFactory> mesh_factory)
       : mesh_factory_(std::move(mesh_factory)) {
     LF_ASSERT_MSG(
         mesh_factory_->DimMesh() == 2,
@@ -75,7 +75,7 @@ class StructuredMeshBuilder {
 
  protected:
   /** mesh factory object that has to be supplied to the MeshBuilder */
-  std::shared_ptr<mesh::MeshFactory> mesh_factory_;
+  std::unique_ptr<mesh::MeshFactory> mesh_factory_;
   /** corners of rectangle defining the domain */
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;
   /** Mesh resolution parameters */

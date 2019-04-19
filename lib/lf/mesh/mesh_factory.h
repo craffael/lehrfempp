@@ -105,7 +105,8 @@ class MeshFactory {
    * @return The created mesh.
    *
    * @note All data supplied to the MeshFactory will be cleared after
-   *       a mesh has been built successfully.
+   *       a mesh has been built successfully. I.e. the mesh factory can
+   *       be used to construct another mesh after calling `Build()`.
    */
   virtual std::shared_ptr<Mesh> Build() = 0;
 

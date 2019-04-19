@@ -259,10 +259,10 @@ std::vector<double> SolveDirLaplSeqMesh(
     std::shared_ptr<lf::mesh::Mesh> coarse_mesh_p, unsigned int reflevels,
     SOLFUNCTOR &&u, RHSFUNCTOR &&f) {
   // Prepare for creating a hierarchy of meshes
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(std::move(coarse_mesh_p),
-                                           mesh_factory_ptr);
+                                           std::move(mesh_factory_ptr));
 
   // Perform several steps of regular refinement of the given mesh
   for (int refstep = 0; refstep < reflevels; ++refstep) {
