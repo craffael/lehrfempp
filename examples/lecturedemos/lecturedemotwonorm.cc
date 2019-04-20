@@ -107,7 +107,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
 }
 
 double l2normByMeshFunction(
-    std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space,
+    std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> &fe_space,
     const Eigen::VectorXd &uvec) {
   // Compute norms of finite element function by means of numerical quadrature
   // which is exact for piecewise quadratic polynomials (degree of exactness 2)
@@ -151,6 +151,8 @@ void lecturedemotwonorm() {
   // const Eigen::VectorXd uvec{Eigen::VectorXd::LinSpaced(n_dofs,0.0,1.0)};
   // const Eigen::VectorXd uvec{Eigen::VectorXd::Random(n_dofs,1.0)};
 
+  std::cout << "Pw. linear FE function from " << n_dofs
+            << "-dimenmsional FE space" << std::endl;
   std::cout << "Euclidean norm = " << uvec.norm() << std::endl;
 
   std::cout << "l2normByMassMatrix = " << l2normByMassMatrix(dofh, uvec)
