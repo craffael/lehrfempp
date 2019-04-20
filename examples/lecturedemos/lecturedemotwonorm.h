@@ -45,7 +45,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
  *  @return L2-norm of FE function
  */
 double l2normByMeshFunction(
-    std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space,
+    const std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> &fe_space,
     const Eigen::VectorXd &uvec);
 
 /**
