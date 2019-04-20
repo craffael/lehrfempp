@@ -12,6 +12,7 @@
 #include "lecturedemomesh.h"
 #include "lecturedemoquad.h"
 #include "lecturedemorefine.h"
+#include "lecturedemotwonorm.h"
 
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
@@ -33,6 +34,8 @@ int main(int argc, char **argv) {
     std::cout << "N = 4: demo of numerical quadrature in LehrFEM++"
               << std::endl;
     std::cout << "N = 5: demo of solving a Dirichlet BVP" << std::endl;
+    std::cout << "N = 6: demo of mesh refinement" << std::endl;
+    std::cout << "N = 7: Various of ways of computing an L2-norm" << std::endl;
   } else {
     int selector = vm["demo_number"].as<int>();
     if ((selector == 1) || (selector == 0)) {
@@ -52,6 +55,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 6) || (selector == 0)) {
       lecturedemo::lecturedemorefine();
+    }
+    if ((selector == 7) || (selector == 0)) {
+      lecturedemo::lecturedemotwonorm();
     }
   }
 
