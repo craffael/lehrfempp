@@ -27,8 +27,7 @@ CONTROLDECLARECOMMENT(MeshHierarchy, ctrl_, "MeshHierarchy_ctrl",
                       "Output control for MeshHierarchy");
 
 // Implementation of MeshHierarchy
-MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
-                             std::shared_ptr<mesh::MeshFactory> mesh_factory)
+MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh, std::unique_ptr<mesh::MeshFactory> mesh_factory)
     : mesh_factory_(std::move(mesh_factory)) {
   LF_VERIFY_MSG(base_mesh, "No valid mesh supplied");
   LF_VERIFY_MSG(base_mesh->DimMesh() == 2, "Implemented only for 2D meshes");

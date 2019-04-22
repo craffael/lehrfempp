@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
     errors(level) = std::abs(approx - exact_integral);
 
     lf::refinement::MeshHierarchy mh(
-        mesh, std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
+        mesh, std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
     mh.RefineRegular();
     mesh = mh.getMesh(1);
   }
