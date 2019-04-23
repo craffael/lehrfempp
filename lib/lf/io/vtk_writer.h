@@ -57,7 +57,14 @@ class VtkFile {
     VTK_QUADRATIC_TRIANGLE = 22,
     VTK_QUADRATIC_QUAD = 23,
     VTK_QUADRATIC_TETRA = 24,
-    VTK_QUADRATIC_HEXAHEDRON = 25
+    VTK_QUADRATIC_HEXAHEDRON = 25,
+    VTK_LAGRANGE_CURVE = 68,
+    VTK_LAGRANGE_TRIANGLE = 69,
+    VTK_LAGRANGE_QUADRILATERAL = 70,
+    VTK_LAGRANGE_TETRAHEDRON = 71,
+    VTK_LAGRANGE_HEXAHEDRON = 72,
+    VTK_LAGRANGE_WEDGE = 73,
+    VTK_LAGRANGE_PYRAMID = 74
   };
 
   class UnstructuredGrid {
@@ -241,7 +248,7 @@ class VtkWriter {
    *              on the skeleton
    */
   VtkWriter(std::shared_ptr<const mesh::Mesh> mesh, std::string filename,
-            dim_t codim = 0);
+            dim_t codim = 0, unsigned char order = 1);
 
   /**
    * @brief Determines whether the Vtk file is written in binary or ASCII mode
@@ -696,6 +703,14 @@ class VtkWriter {
   VtkFile vtk_file_;
   std::string filename_;
   dim_t codim_;
+  unsigned char order_;
+
+  // entry [i] stores the reference coordinates for the auxilliary nodes for
+  // RefEl.Id() == i
+  std::array<Eigen::MatrixXd, 5> aux_nodes_;
+
+  // contains the index of the first auxiliary node for the codim=0 entity
+  mesh::utils::CodimMeshDataSet<unsigned int> aux_node_offset_;
 
   template <class T>
   void WriteScalarPointData(const std::string& name,

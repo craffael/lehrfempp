@@ -8,11 +8,13 @@
 
 #include "vtk_writer.h"
 #include <lf/base/base.h>
+#include <unsupported/Eigen/src/KroneckerProduct/KroneckerTensorProduct.h>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/phoenix/phoenix.hpp>
 #include <boost/phoenix/scope/let.hpp>
 #include <boost/spirit/include/karma.hpp>
 #include <fstream>
+#include "../../../../../../../Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/iso646.h"
 #include "eigen_fusion_adapter.h"
 
 template <class RESULT_TYPE, class LAMBDA>
@@ -451,6 +453,83 @@ void ValidateVtkFile(const VtkFile& vtk_file) {
         d);
   }
 }
+
+/// Number of auxilliary nodes on this ref_el type (for order > 1)
+unsigned int NumAuxNodes(base::RefEl ref_el, unsigned char order) {
+  switch (ref_el) {
+    case base::RefEl::kPoint():
+      return 1;
+    case base::RefEl::kSegment():
+      return order - 1;
+    case base::RefEl::kTria():
+      return (2 - 3 * order + order * order) / 2;
+    case base::RefEl::kQuad():
+      return (order - 1) * (order - 1);
+    default:
+      LF_VERIFY_MSG(false, "RefElType " << ref_el << " not supported.");
+  }
+}
+
+// Compute aux reference coordinates of lagrange points on segment
+Eigen::MatrixXd AuxNodesSegment(unsigned char order) {
+  LF_ASSERT_MSG(order > 1, "order <= 1");
+  return Eigen::VectorXd::LinSpaced(order - 1, 1. / (order),
+                                    (order - 1.) / order);
+}
+
+// compute aux reference coordinates of lagrange points on Tria:
+Eigen::MatrixXd AuxNodesTria(unsigned char order) {
+  if (order < 3) return Eigen::MatrixXd();
+  Eigen::MatrixXd result(2, NumAuxNodes(base::RefEl::kTria(), order));
+  if (order == 3) {
+    result << 1. / 3., 1. / 3.;
+  } else if (order == 4) {
+    result << 0.25, 0.5, 0.25, 0.25, 0.25, 0.5;
+  } else {
+    // assign nodes:
+    result(0, 0) = 1. / order;
+    result(1, 0) = 1. / order;
+    result(0, 1) = (order - 2.) / order;
+    result(1, 1) = 1. / order;
+    result(0, 2) = 1. / order;
+    result(1, 2) = (order - 2.) / order;
+
+    if (order > 4) {
+      auto segment_points = AuxNodesSegment(order - 3).transpose().eval();
+      // assign edges:
+      result.block(0, 3, 2, order - 4) =
+          Eigen::Vector2d::UnitX() * segment_points * (order - 3.) / order +
+          Eigen::Vector2d(1. / order, 1. / order);
+      result.block(0, order - 1, 2, order - 4) =
+          Eigen::Vector2d(-1, 1) * segment_points +
+          Eigen::Vector2d(1. / order, (order - 2.) / order);
+      result.block(0, 2 * order - 5, 2, order - 4) =
+          -Eigen::Vector2d::UnitY() * segment_points +
+          Eigen::Vector2d((order - 2.) / order, 1. / order);
+    }
+    if (order > 5) {
+      // assign interior points recursively:
+      auto points = AuxNodesTria(order - 3);
+      result.block(0, 3 * order - 9, 2, points.cols()) =
+          AuxNodesTria(order - 3) * (order - 5.) / order +
+          Eigen::Vector2d(2. / order, 2. / order);
+    }
+  }
+  return result;
+}
+
+// compute aux reference coordinates of lagrange points on quad:
+Eigen::MatrixXd AuxNodesQuad(unsigned char order) {
+  Eigen::MatrixXd result(2, NumAuxNodes(base::RefEl::kQuad(), order));
+  result.row(0) =
+      Eigen::VectorXd::LinSpaced(order - 1, 1. / order, (1. - order) / order)
+          .replicate(1, order - 1);
+  result.row(1) = Eigen::kroneckerProduct(
+      Eigen::VectorXd::LinSpaced(order - 1, 1. / order, (1. - order) / order),
+      Eigen::VectorXd::Ones(order - 1));
+  return result;
+}
+
 }  // namespace
 
 void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
@@ -480,16 +559,36 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
 }
 
 VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
-                     std::string filename, dim_t codim)
-    : mesh_(std::move(mesh)), filename_(std::move(filename)), codim_(codim) {
+                     std::string filename, dim_t codim, unsigned char order)
+    : mesh_(std::move(mesh)),
+      filename_(std::move(filename)),
+      codim_(codim),
+      order_(order),
+      aux_node_offset_(mesh_, 0) {
   auto dim_mesh = mesh_->DimMesh();
   auto dim_world = mesh_->DimWorld();
   LF_ASSERT_MSG(dim_world > 0 && dim_world <= 4,
                 "VtkWriter supports only dim_world = 1,2 or 3");
   LF_ASSERT_MSG(codim >= 0 && codim < dim_mesh, "codim out of bounds.");
+  LF_ASSERT_MSG(order > 0 && order <= 10, "order must lie in [1,10]");
 
-  // insert nodes:
-  vtk_file_.unstructured_grid.points.resize(mesh_->NumEntities(dim_mesh));
+  // initialize reference coordinates of auxilliary nodes (if order_ > 0)
+  if (order_ > 1) {
+    aux_nodes_[base::RefEl::kSegment().Id()] = AuxNodesSegment(order);
+    aux_nodes_[base::RefEl::kTria().Id()] = AuxNodesTria(order);
+    aux_nodes_[base::RefEl::kQuad().Id()] = AuxNodesTria(order);
+  }
+
+  // calculate total number of nodes (main + auxilliary nodes)
+  unsigned int numNodes = mesh_->NumEntities(dim_mesh);
+  for (auto ref_el :
+       {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
+    if (ref_el.Dimension() > dim_mesh - codim_) continue;
+    numNodes += NumAuxNodes(ref_el, order_) * mesh_->NumEntities(ref_el);
+  }
+
+  // insert main nodes:
+  vtk_file_.unstructured_grid.points.resize(numNodes);
   Eigen::Matrix<double, 0, 1> zero;
   for (auto& p : mesh_->Entities(dim_mesh)) {
     auto index = mesh_->Index(p);
@@ -508,27 +607,183 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     vtk_file_.unstructured_grid.points[index] = std::move(coord);
   }
 
+  // insert auxilliary nodes:
+  if (order > 1) {
+    // nodes for the segment:
+    auto index_offset = mesh_->NumEntities(dim_mesh);
+    for (auto& s : mesh_->Entities(dim_mesh - 1)) {
+      auto index = mesh_->Index(s);
+      Eigen::MatrixXf coords(dim_world,
+                             NumAuxNodes(base::RefEl::kSegment(), order));
+      if (dim_world == 1) {
+        coords.row(0) = s.Geometry()
+                            ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
+                            .cast<float>();
+        coords.row(1).setZero();
+        coords.row(2).setZero();
+      } else if (dim_world == 2) {
+        coords.topRows(2) =
+            s.Geometry()
+                ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
+                .cast<float>();
+        coords.row(2).setZero();
+      } else {
+        coords = s.Geometry()
+                     ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
+                     .cast<float>();
+      }
+      for (int i = 0; i < coords.cols(); ++i) {
+        vtk_file_.unstructured_grid
+            .points[index_offset + coords.cols() * index + i] = coords.col(i);
+      }
+    }
+
+    if (dim_mesh - codim_ > 1) {
+      // nodes for tria/quad:
+      index_offset +=
+          mesh_->NumEntities(1) * NumAuxNodes(base::RefEl::kSegment(), order);
+
+      for (auto& e : mesh_->Entities(0)) {
+        auto index = mesh_->Index(e);
+        auto ps = e.Geometry()
+                      ->Global(aux_nodes_[e.RefEl().Id()])
+                      .cast<float>()
+                      .eval();
+
+        Eigen::MatrixXf coords(dim_world, ps.cols());
+        if (dim_world == 2) {
+          coords.topRows(2) = std::move(ps);
+          coords.row(2).setZero();
+        } else {
+          coords = std::move(ps);
+        }
+        for (int i = 0; i < coords.cols(); ++i) {
+          vtk_file_.unstructured_grid.points[index_offset + i] = coords.col(i);
+        }
+        aux_node_offset_(e) = index_offset;
+        index_offset += coords.cols();
+      }
+    }
+  }
+
+  // compute number of main/aux nodes for each element:
+  std::array<unsigned int, 5> num_nodes{};
+  num_nodes[base::RefEl::kSegment().Id()] =
+      2 + NumAuxNodes(base::RefEl::kSegment(), order);
+  num_nodes[base::RefEl::kTria().Id()] =
+      3 + 3 * NumAuxNodes(base::RefEl::kSegment(), order) +
+      NumAuxNodes(base::RefEl::kTria(), order);
+  num_nodes[base::RefEl::kQuad().Id()] =
+      4 + 4 * NumAuxNodes(base::RefEl::kSegment(), order) +
+      NumAuxNodes(base::RefEl::kQuad(), order);
+
   // insert elements:
   vtk_file_.unstructured_grid.cells.resize(mesh_->NumEntities(codim));
   vtk_file_.unstructured_grid.cell_types.resize(mesh_->NumEntities(codim));
+  auto points_per_segment = NumAuxNodes(base::RefEl::kSegment(), order);
   for (auto& e : mesh_->Entities(codim)) {
     auto index = mesh_->Index(e);
     auto ref_el = e.RefEl();
     auto& node_indices = vtk_file_.unstructured_grid.cells[index];
-    node_indices.reserve(ref_el.NumNodes());
+    node_indices.reserve(num_nodes[ref_el.Id()]);
+
+    // node indices that make up this cell:
     for (auto& p : e.SubEntities(dim_mesh - codim)) {
       node_indices.push_back(mesh_->Index(p));
     }
 
-    if (ref_el == base::RefEl::kSegment()) {
-      vtk_file_.unstructured_grid.cell_types[index] =
-          VtkFile::CellType::VTK_LINE;
-    } else if (ref_el == base::RefEl::kTria()) {
-      vtk_file_.unstructured_grid.cell_types[index] =
-          VtkFile::CellType::VTK_TRIANGLE;
-    } else if (ref_el == base::RefEl::kQuad()) {
-      vtk_file_.unstructured_grid.cell_types[index] =
-          VtkFile::CellType::VTK_QUAD;
+    // node indices of segments of this cell:
+    auto addSegmentNodes = [&](const mesh::Entity& s, bool invert) {
+      auto start_index =
+          mesh_->NumEntities(dim_mesh) + index * points_per_segment;
+      if (invert == false) {
+        for (int i = 0; i < points_per_segment; ++i) {
+          node_indices.push_back(start_index + i);
+        }
+      } else {
+        for (int i = points_per_segment - 1; i >= 0; --i) {
+          node_indices.push_back(start_index + i);
+        }
+      }
+    };
+    switch (ref_el) {
+      case base::RefEl::kSegment():
+        addSegmentNodes(e, false);
+        break;
+      case base::RefEl::kTria(): {
+        auto iterator = e.SubEntities(1).begin();
+        auto o_iterator = e.RelativeOrientations().begin();
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        break;
+      }
+      case base::RefEl::kQuad(): {
+        auto iterator = e.SubEntities(1).begin();
+        auto o_iterator = e.RelativeOrientations().begin();
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::negative);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::negative);
+        break;
+      }
+      default:
+        LF_VERIFY_MSG(false, "something is wrong");
+    }
+
+    // indices in the interior of the cell:
+    if (dim_mesh - codim > 1) {
+      auto offset = aux_node_offset_(e);
+      for (int i = 0; i < NumAuxNodes(e.RefEl(), order); ++i) {
+        node_indices.push_back(offset + i);
+      }
+    }
+
+    if (order_ == 1) {
+      if (ref_el == base::RefEl::kSegment()) {
+        vtk_file_.unstructured_grid.cell_types[index] =
+            VtkFile::CellType::VTK_LINE;
+      } else if (ref_el == base::RefEl::kTria()) {
+        vtk_file_.unstructured_grid.cell_types[index] =
+            VtkFile::CellType::VTK_TRIANGLE;
+      } else if (ref_el == base::RefEl::kQuad()) {
+        vtk_file_.unstructured_grid.cell_types[index] =
+            VtkFile::CellType::VTK_QUAD;
+      }
+    } else {
+      switch (ref_el) {
+        case base::RefEl::kSegment():
+          vtk_file_.unstructured_grid.cell_types[index] =
+              VtkFile::CellType::VTK_LAGRANGE_CURVE;
+          break;
+        case base::RefEl::kTria():
+          vtk_file_.unstructured_grid.cell_types[index] =
+              VtkFile::CellType::VTK_LAGRANGE_TRIANGLE;
+          break;
+        case base::RefEl::kQuad():
+          vtk_file_.unstructured_grid.cell_types[index] =
+              VtkFile::CellType::VTK_LAGRANGE_QUADRILATERAL;
+          break;
+        default:
+          LF_VERIFY_MSG(false, "Unsupported RefElType " << ref_el);
+      }
     }
   }
 }

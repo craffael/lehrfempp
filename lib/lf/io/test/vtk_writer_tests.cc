@@ -356,4 +356,9 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
                base::LfException);
 }
 
+TEST(lf_io_VtkWriter, circle2ndOrderQuad) {
+  auto reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
+  VtkWriter vtk(reader.mesh(), "circle_second_order_quad.vtk", 0, 1);
+}
+
 }  // namespace lf::io::test
