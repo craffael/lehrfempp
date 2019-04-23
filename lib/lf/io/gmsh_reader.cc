@@ -776,31 +776,14 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       dim_mesh >= 2 && dim_mesh <= 3 && dim_world >= 2 && dim_world <= 3,
       "GmshReader supports only 2D and 3D meshes.");
 
-  // 1) Insert nodes into MeshFactory
-  //////////////////////////////////////////////////////////////////////////////
-
-  // gmsh_index_2_mesh_index for nodes:
-  // gi2mi[i] = j means that gmsh node with gmsh index i has mesh index j
-  std::vector<size_type> gi2mi;
-  gi2mi.resize(msh_file.Nodes.size());
-  for (auto& n : msh_file.Nodes) {
-    size_type mi;
-    if (dim_world == 2) {
-      LF_ASSERT_MSG(
-          n.second(2) == 0,
-          "In a 2D GmshMesh, the z-coordinate of every node must be zero");
-      mi = mesh_factory_->AddPoint(n.second.topRows(2));
-    } else if (dim_mesh == 3) {
-      mi = mesh_factory_->AddPoint(n.second);
-    }
-    if (gi2mi.size() <= n.first) {
-      gi2mi.resize(n.first + 1);
-    }
-    gi2mi[n.first] = mi;
-  }
-
-  // 2) Count the number of entities of each codim and reserve space
-  //////////////////////////////////////////////////////////////////////////////
+  // 1) Determine which nodes of gmsh are also nodes of the LehrFEM++ mesh +
+  // count number of entities of each codimension (exclude auxilliary nodes).
+  // This is necessary because e.g. second order meshes in gmsh need a lot of
+  // auxilliary nodes to define their geometry...
+  /////////////////////////////////////////////////////////////////////////////
+  // is_main_node[i] = true means that node i is one of the main nodes of an
+  // element
+  std::vector<bool> is_main_node(msh_file.Nodes.size(), false);
 
   // mi2gi = mesh_index_2_gmsh_index
   // mi2gi[c][i] contains the gmsh entities that belong to the mesh entity with
@@ -819,6 +802,14 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
                         << DimOf(e.Type));
 
       ++num_entities[DimOf(e.Type)];
+
+      if (DimOf(e.Type) == dim_mesh) {
+        // mark main nodes
+        auto ref_el = RefElOf(e.Type);
+        for (int i = 0; i < ref_el.NumNodes(); ++i) {
+          is_main_node[e.NodeNumbers[i]] = true;
+        }
+      }
     }
 
     for (dim_t c = 0; c <= dim_mesh; ++c) {
@@ -828,6 +819,35 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
     LF_ASSERT_MSG(num_entities[dim_mesh] > 0,
                   "MshFile contains no elements with dimension " << dim_mesh);
   }
+
+  // 2) Insert main nodes into MeshFactory
+  /////////////////////////////////////////////////////////////////////////////
+
+  // gmsh_index_2_mesh_index for nodes:
+  // gi2mi[i] = j means that gmsh node with gmsh index i has mesh index j
+  std::vector<size_type> gi2mi;
+  gi2mi.resize(msh_file.Nodes.size());
+  for (int i = 0; i < msh_file.Nodes.size(); ++i) {
+    if (!is_main_node[i]) continue;
+
+    auto& n = msh_file.Nodes[i];
+    size_type mi;
+    if (dim_world == 2) {
+      LF_ASSERT_MSG(
+          n.second(2) == 0,
+          "In a 2D GmshMesh, the z-coordinate of every node must be zero");
+      mi = mesh_factory_->AddPoint(n.second.topRows(2));
+    } else if (dim_mesh == 3) {
+      mi = mesh_factory_->AddPoint(n.second);
+    }
+    if (gi2mi.size() <= n.first) {
+      gi2mi.resize(n.first + 1);
+    }
+    gi2mi[n.first] = mi;
+  }
+
+  // 2) Count the number of entities of each codim and reserve space
+  //////////////////////////////////////////////////////////////////////////////
 
   // 3) Insert entities (except nodes) into MeshFactory:
   //////////////////////////////////////////////////////////////////////////////
