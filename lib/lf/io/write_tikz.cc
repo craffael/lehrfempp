@@ -39,6 +39,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   bool RenderCellsOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::RenderCells);
   bool ArrowsOn = static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
+  bool SecondOrder =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::SecondOrder);
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
@@ -58,7 +60,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   outfile << "% TikZ document graphics \n";
 
   // Scale font size for large meshes
-  if (no_of_nodes > 50) {
+  if (no_of_nodes > 50 || SecondOrder) {
     outfile << "\\begin{tikzpicture}[scale=6, >= stealth, inner sep=0pt, "
                "minimum size=0.2cm]\n";
     outfile << "\\tikzstyle{every node}=[font=\\tiny]\n";
@@ -108,60 +110,71 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                 vertices * 0.95 + center_mat * 0.05;
 
             if (ArrowsOn) {
-              if (EdgeNumOn && NodeNumOn) {
+              if (NodeNumOn) {
                 outfile << "\\draw[->] (" << scaled_vertices(0, 0) << ","
-                        << scaled_vertices(1, 0) << ") -- node[black] {"
-                        << obj_idx << "} "
-                        << "(" << scaled_vertices(0, 1) << ","
-                        << scaled_vertices(1, 1) << ");\n";
-              } else if (NodeNumOn && !EdgeNumOn) {
-                outfile << "\\draw[->] (" << scaled_vertices(0, 0) << ","
-                        << scaled_vertices(1, 0) << ") -- "
-                        << "(" << scaled_vertices(0, 1) << ","
-                        << scaled_vertices(1, 1) << ");\n";
-              } else if (!NodeNumOn && EdgeNumOn) {
-                outfile << "\\draw[->] (" << semi_scaled_vertices(0, 0) << ","
-                        << semi_scaled_vertices(1, 0) << ") -- node[black] {"
-                        << obj_idx << "} "
-                        << "(" << semi_scaled_vertices(0, 1) << ","
-                        << semi_scaled_vertices(1, 1) << ");\n";
-              } else if (!NodeNumOn && !EdgeNumOn) {
-                outfile << "\\draw[->] (" << semi_scaled_vertices(0, 0) << ","
-                        << semi_scaled_vertices(1, 0) << ") -- "
-                        << "(" << semi_scaled_vertices(0, 1) << ","
-                        << semi_scaled_vertices(1, 1) << ");\n";
+                        << scaled_vertices(1, 0) << ")";
               } else {
-                std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
-                          << obj_idx << std::endl;
+                outfile << "\\draw[->] (" << semi_scaled_vertices(0, 0) << ","
+                        << semi_scaled_vertices(1, 0) << ")";
               }
 
-            } else {
-              if (EdgeNumOn && NodeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- node[black] {" << obj_idx
-                        << "} "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
-              } else if (NodeNumOn && !EdgeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
-              } else if (!NodeNumOn && EdgeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- node[black] {" << obj_idx
-                        << "} "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
-              } else if (!NodeNumOn && !EdgeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
+              if (SecondOrder) {
+                Eigen::Vector2d midpoint = obj_geo_ptr->Global(
+                    (Eigen::MatrixXd(1, 1) << 0.5).finished());
+                // parabolas don't work
+                /*
+                outfile << " parabola bend "
+                        << "(" << midpoint(0) << "," << midpoint(1) << ")";
+                */
+                // Bézier curves work but they seem to be cubic by default
+                outfile << " .. controls "
+                        << "(" << midpoint(0) << "," << midpoint(1) << ")"
+                        << ".. ";
               } else {
-                std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
-                          << obj_idx << std::endl;
+                outfile << " -- ";
               }
+
+              if (EdgeNumOn) {
+                outfile << " node[pos=0.5,black] {" << obj_idx << "}";
+              }
+
+              if (NodeNumOn) {
+                outfile << "(" << scaled_vertices(0, 1) << ","
+                        << scaled_vertices(1, 1) << ")";
+              } else {
+                outfile << "(" << semi_scaled_vertices(0, 1) << ","
+                        << semi_scaled_vertices(1, 1) << ")";
+              }
+
+              outfile << ";\n";
+
+            } else {
+              outfile << "\\draw[] "
+                      << "(" << vertices(0, 0) << "," << vertices(1, 0) << ")";
+
+              if (SecondOrder) {
+                Eigen::Vector2d midpoint = obj_geo_ptr->Global(
+                    (Eigen::MatrixXd(1, 1) << 0.5).finished());
+                // parabolas don't work
+                /*
+                outfile << " parabola bend "
+                        << "(" << midpoint(0) << "," << midpoint(1) << ")";
+                */
+                // Bézier curves work but they seem to be cubic by default
+                outfile << " .. controls "
+                        << "(" << midpoint(0) << "," << midpoint(1) << ")"
+                        << ".. ";
+              } else {
+                outfile << " -- ";
+              }
+
+              outfile << "(" << vertices(0, 1) << "," << vertices(1, 1) << ")";
+
+              if (EdgeNumOn) {
+                outfile << " node[pos=0.5,black] {" << obj_idx << "}";
+              }
+
+              outfile << ";\n";
             }  // arrows on
 
             break;

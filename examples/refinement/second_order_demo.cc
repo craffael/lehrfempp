@@ -23,19 +23,20 @@ int main() {
        {"square_quads.msh", "square_trias.msh"}) {
     auto mesh_path = file_path.parent_path() / "meshes" / mesh_name;
 
+    // TODO: remove check_correctness=false once it is fixed
     // read mesh from file
-    auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+    auto mesh_factory =
+        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2, false);
     const lf::io::GmshReader reader(std::move(mesh_factory),
                                     mesh_path.string());
 
+    // TODO: remove check_correctness=false once it is fixed
     // create mesh hierarchy from mesh for refinement
     lf::refinement::MeshHierarchy multi_mesh(
         std::const_pointer_cast<lf::mesh::Mesh>(reader.mesh()),
-        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
+        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2, false));
 
-    int refinement_steps = 2;
-
-    for (int step = 0; step < refinement_steps; ++step) {
+    for (int step = 0; step < 2; ++step) {
       // refine mesh and store to TikZ
       multi_mesh.RefineRegular();
       auto mesh = multi_mesh.getMesh(multi_mesh.NumLevels() - 1);
@@ -45,7 +46,7 @@ int main() {
               std::to_string(step) + ".tex",
           TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
               TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
-              TikzOutputCtrl::EdgeNumbering);
+              TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::SecondOrder);
     }
   }
 

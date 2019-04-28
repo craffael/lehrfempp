@@ -1,5 +1,5 @@
 /***************************************************************************
- * LehrFEM++ - A simple C++ finite element libray for teaching
+ * LehrFEM++ - A simple C++ finite element library for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
@@ -26,7 +26,8 @@ enum class TikzOutputCtrl : unsigned int {
   VerticeNumbering = 4,
   NodeNumbering = 8,
   EdgeNumbering = 16,
-  ArrowTips = 32
+  ArrowTips = 32,
+  SecondOrder = 64
 };
 
 TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
@@ -67,6 +68,7 @@ addition to the mesh grid
 cells
  * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
  * - TikzOutputCtrl::EdgeNumbering to display edge numbering
+ * - TikzOutputCtrl::SecondOrder for second order geometry elements
  *
  *
  * @note If no details about nodes, cells or edges are wanted, simply pass 0 as
