@@ -119,7 +119,7 @@ bool Mesh::Contains(const Entity &e) const {
 }
 
 namespace /*anonymous */ {
-/** @brief Auxliary class for mesh_from_node_incidence */
+/** @brief Auxiliary class for mesh_from_node_incidence */
 class EndpointIndexPair {
  public:
   using size_type = Mesh::size_type;
@@ -350,7 +350,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     if (cell_geometry != nullptr) {
       for (int j = 0; j < no_of_vertices; ++j) {
         if (nodes[cell_node_list[j]] == nullptr) {
-          // if no geometry for node exists request geomtry for an vertex from
+          // if no geometry for node exists request geometry for an vertex from
           // the cell Note: vertices are entities of relative co-dimension 2
           nodes[cell_node_list[j]] = cell_geometry->SubGeometry(2, j);
         }
@@ -479,7 +479,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
 
   size_type node_index = 0;
   for (hybrid2d::Mesh::GeometryPtr &pt_geo_ptr : nodes) {
-    // OLD VERSION. In the new version the geomtry of a point is passed in
+    // OLD VERSION. In the new version the geometry of a point is passed in
     // 'nodes' const Eigen::VectorXd &node_coordinates(v); GeometryPtr point_geo
     // = std::make_unique<geometry::Point>(node_coordinates);
     LF_VERIFY_MSG(pt_geo_ptr != nullptr,
@@ -545,7 +545,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     }
     // Determine index of current edge. Two cases have to be distinguished:
     // (i) the edge geometry was specified in the `edges` argument. In this case
-    // the edge index must agree with its possition in that array. This position
+    // the edge index must agree with its position in that array. This position
     /// is stored in the 'edge_global_index' field of the EdgeData structure.
     // (ii) the edge has to be created internally. In this case assign an index
     // larger than the index of any supplied edge.

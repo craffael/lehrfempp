@@ -916,7 +916,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   //////////////////////////////////////////////////////////////////////////////
   mesh_ = mesh_factory_->Build();
 
-  // 5) Build MeshDataSet that assigns the physical entitiies:
+  // 5) Build MeshDataSet that assigns the physical entities;
   //////////////////////////////////////////////////////////////////////////////
   physical_nrs_ =
       mesh::utils::make_AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
