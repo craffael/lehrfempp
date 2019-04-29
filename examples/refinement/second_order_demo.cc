@@ -23,18 +23,15 @@ int main() {
        {"square_quads.msh", "square_trias.msh"}) {
     auto mesh_path = file_path.parent_path() / "meshes" / mesh_name;
 
-    // TODO: remove check_correctness=false once it is fixed
     // read mesh from file
-    auto mesh_factory =
-        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2, false);
+    auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
     const lf::io::GmshReader reader(std::move(mesh_factory),
                                     mesh_path.string());
 
-    // TODO: remove check_correctness=false once it is fixed
     // create mesh hierarchy from mesh for refinement
     lf::refinement::MeshHierarchy multi_mesh(
         std::const_pointer_cast<lf::mesh::Mesh>(reader.mesh()),
-        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2, false));
+        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
 
     for (int step = 0; step < 2; ++step) {
       // refine mesh and store to TikZ
