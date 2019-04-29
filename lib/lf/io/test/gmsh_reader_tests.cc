@@ -146,11 +146,55 @@ TEST(lf_io, readTwoElementMesh) {
   checkTwoElementMesh(
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  test_utils::getMeshPath("two_element_hybrid_2d.msh")));
+
+  // Make sure, that we can read a second order mesh:
+  auto reader =
+      test_utils::getGmshReader("two_element_hybrid_2d_second_order.msh", 2);
+  checkTwoElementMesh(reader);
+  for (auto& e : reader.mesh()->Entities(0)) {
+    if (e.RefEl() == base::RefEl::kTria()) {
+      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e.Geometry()));
+    } else {
+      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e.Geometry()));
+    }
+  }
 }
 
 TEST(lf_io, readLectureDemoMesh) {
   // the following file contains an extra whitespace at the end of a line...
   // check that we can still read it.
   auto reader = test_utils::getGmshReader("lecturedemomesh.msh", 2);
+}
+
+// loads a coarse mesh of a circle parametrized with first order/second order
+// elements and computes the volume of the circle and compares it with the exact
+// volume.
+TEST(lf_io, secondOrderMesh) {
+  std::vector<quad::QuadRule> quad_rules(5);
+  quad_rules[base::RefEl::kTria().Id()] =
+      quad::make_QuadRule(base::RefEl::kTria(), 10);
+  quad_rules[base::RefEl::kQuad().Id()] =
+      quad::make_QuadRule(base::RefEl::kQuad(), 10);
+  auto computeVolume = [&](const mesh::Mesh& m) {
+    double result = 0;
+    for (auto& e : m.Entities(0)) {
+      auto& qr = quad_rules[e.RefEl().Id()];
+      auto ie = e.Geometry()->IntegrationElement(qr.Points());
+      result += ie.cwiseProduct(qr.Weights()).sum();
+    }
+    return result;
+  };
+
+  // with first order triangles:
+  auto reader = test_utils::getGmshReader("circle_first_order.msh", 2);
+  EXPECT_GT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.3);
+
+  // with triangles
+  reader = test_utils::getGmshReader("circle_second_order.msh", 2);
+  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
+
+  // with quadrilaterals:
+  reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
+  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
 }
 }  // namespace lf::io::test

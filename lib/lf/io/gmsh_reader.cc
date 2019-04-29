@@ -781,8 +781,8 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // This is necessary because e.g. second order meshes in gmsh need a lot of
   // auxilliary nodes to define their geometry...
   /////////////////////////////////////////////////////////////////////////////
-  // is_main_node[i] = true means that node i is one of the main nodes of an
-  // element
+  // is_main_node[i] = true means that gmsh-node i is one of the main nodes of
+  // an element
   std::vector<bool> is_main_node(msh_file.Nodes.size(), false);
 
   // mi2gi = mesh_index_2_gmsh_index
@@ -807,6 +807,10 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
         // mark main nodes
         auto ref_el = RefElOf(e.Type);
         for (int i = 0; i < ref_el.NumNodes(); ++i) {
+          auto node_number = e.NodeNumbers[i];
+          if (is_main_node.size() <= node_number) {
+            is_main_node.resize(node_number + 1);
+          }
           is_main_node[e.NodeNumbers[i]] = true;
         }
       }
@@ -826,11 +830,23 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // gmsh_index_2_mesh_index for nodes:
   // gi2mi[i] = j means that gmsh node with gmsh index i has mesh index j
   std::vector<size_type> gi2mi;
-  gi2mi.resize(msh_file.Nodes.size());
-  for (int i = 0; i < msh_file.Nodes.size(); ++i) {
-    if (!is_main_node[i]) continue;
+  gi2mi.resize(is_main_node.size(), -1);
 
+  // gi2i[i] = j implies msh_file.Nodes[j].first = i
+  std::vector<size_type> gi2i;
+  gi2i.resize(is_main_node.size(), -1);
+
+  for (int i = 0; i < msh_file.Nodes.size(); ++i) {
     auto& n = msh_file.Nodes[i];
+    if (gi2i.size() <= n.first) {
+      gi2i.resize(n.first + 1, -1);
+    }
+    gi2i[n.first] = i;
+
+    if (is_main_node.size() <= n.first || !is_main_node[n.first]) {
+      continue;
+    }
+
     size_type mi;
     if (dim_world == 2) {
       LF_ASSERT_MSG(
@@ -840,14 +856,8 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
     } else if (dim_mesh == 3) {
       mi = mesh_factory_->AddPoint(n.second);
     }
-    if (gi2mi.size() <= n.first) {
-      gi2mi.resize(n.first + 1);
-    }
     gi2mi[n.first] = mi;
   }
-
-  // 2) Count the number of entities of each codim and reserve space
-  //////////////////////////////////////////////////////////////////////////////
 
   // 3) Insert entities (except nodes) into MeshFactory:
   //////////////////////////////////////////////////////////////////////////////
@@ -879,7 +889,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       Eigen::MatrixXd node_coords(dim_world, num_nodes);
       for (size_type i = 0; i < num_nodes; ++i) {
         auto node_coord =
-            msh_file.Nodes[gi2mi[end_element.NodeNumbers[i]]].second;
+            msh_file.Nodes[gi2i[end_element.NodeNumbers[i]]].second;
         if (dim_world == 2) {
           node_coords.col(i) = node_coord.topRows(2);
         } else {
