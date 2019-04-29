@@ -44,6 +44,11 @@ int main() {
           TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
               TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
               TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::SecondOrder);
+
+      lf::io::writeMatplotlib(*mesh,
+                              mesh_name.substr(0, mesh_name.find_last_of('.')) +
+                                  "_" + std::to_string(step) + ".txt",
+                              true);
     }
   }
 

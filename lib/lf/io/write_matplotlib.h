@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Declares the writeMatplotlib function which writes a mesh to a .csv
+ * @brief Declares the writeMatplotlib function which writes a mesh to a .txt
  *        file which can be visualized with matplotlib
  * @author Anian Ruoss
  * @date   2018-10-08 18:27:17
@@ -18,9 +18,9 @@ namespace lf::io {
 /**
  * @brief Write affine triangulation data to file in matplotlib format
  * @param mesh the mesh to be stored to file
- * @param filename name of output file: .csv appended unless present
+ * @param filename name of output file: .txt appended unless present
  *
- * This function creates a .csv file containing all relevant information
+ * This function creates a .txt file containing all relevant information
  * about the given mesh in the following format:
  *
  * Points:
@@ -32,9 +32,10 @@ namespace lf::io {
  * Triangles/Quadrilaterals:
  * codim, index, segment1_idx, segment2_idx, ...
  *
- * The .csv file can be read by plot_mesh.py to visualize the mesh
+ * The .txt file can be read by plot_mesh.py to visualize the mesh
  */
-void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename);
+void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename,
+                     bool second_order);
 
 }  // namespace lf::io
 
