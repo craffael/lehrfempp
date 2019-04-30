@@ -9,16 +9,16 @@
 #include "write_matplotlib.h"
 
 #include <fstream>
-#include <iostream>
 
 namespace lf::io {
 
-void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
+void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename,
+                     bool second_order) {
   using dim_t = lf::base::RefEl::dim_t;
 
-  // append .csv to filename if necessary
-  if (filename.compare(filename.size() - 4, 4, ".csv") != 0) {
-    filename += ".csv";
+  // append .txt to filename if necessary
+  if (filename.compare(filename.size() - 4, 4, ".txt") != 0) {
+    filename += ".txt";
   }
 
   std::ofstream file(filename);
@@ -28,49 +28,109 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
     LF_VERIFY_MSG(dim_mesh == 2,
                   "write_matplotlib() only available for 2D meshes");
 
-    // loop through all elements of every codimension
-    for (int codim = 0; codim <= dim_mesh; ++codim) {
-      for (const lf::mesh::Entity &obj : mesh.Entities(codim)) {
-        const size_t obj_idx = mesh.Index(obj);
-        const lf::base::RefEl obj_ref_el = obj.RefEl();
-        const lf::geometry::Geometry *obj_geo_ptr = obj.Geometry();
-        const Eigen::MatrixXd vertices =
-            obj_geo_ptr->Global(obj_ref_el.NodeCoords());
+    // store points to file
+    {
+      std::vector<std::pair<size_t, Eigen::Vector2d>> points;
 
-        switch (obj_ref_el) {
-          case lf::base::RefEl::kPoint(): {
-            file << codim << ',' << obj_idx << ',' << vertices(0, 0) << ','
-                 << vertices(1, 0) << std::endl;
-            break;
-          }
-          case lf::base::RefEl::kSegment(): {
-            file << codim << ',' << obj_idx << ',';
-            // to access points of segment use SubEntities(1)
-            for (const auto &sub : obj.SubEntities(codim)) {
-              file << mesh.Index(sub) << ',';
-            }
-            file << std::endl;
+      for (const lf::mesh::Entity &point : mesh.Entities(2)) {
+        points.emplace_back(std::make_pair(
+            mesh.Index(point),
+            point.Geometry()->Global(point.RefEl().NodeCoords())));
+      }
 
-            break;
-          }
-          case lf::base::RefEl::kTria():
-          case lf::base::RefEl::kQuad(): {
-            file << codim << ',' << obj_idx << ',';
-            // to access points of cell use SubEntities(1)
-            for (const auto &sub : obj.SubEntities(codim + 1)) {
-              file << mesh.Index(sub) << ',';
-            }
-            file << std::endl;
+      for (const auto &point : points) {
+        const Eigen::Vector2d coords = point.second;
+        file << "Point"
+             << " " << point.first << " " << coords(0) << " " << coords(1)
+             << std::endl;
+      }
+    }
 
-            break;
-          }
-          default: {
-            LF_VERIFY_MSG(false, "Error for object " + std::to_string(obj_idx) +
-                                     " in codim " + std::to_string(codim) +
-                                     " of type " + obj_ref_el.ToString());
-            break;
-          }
+    // store segments to file
+    {
+      std::vector<std::pair<size_t, Eigen::Matrix<double, 2, Eigen::Dynamic>>>
+          segments;
+
+      for (const lf::mesh::Entity &segment : mesh.Entities(1)) {
+        if (second_order) {
+          segments.emplace_back(std::make_pair(
+              mesh.Index(segment),
+              segment.Geometry()->Global(
+                  (Eigen::MatrixXd(1, 3) << 0, 1, 0.5).finished())));
+        } else {
+          segments.emplace_back(
+              std::make_pair(mesh.Index(segment),
+                             segment.Geometry()->Global(
+                                 (Eigen::MatrixXd(1, 2) << 0, 1).finished())));
         }
+      }
+
+      for (const auto &segment : segments) {
+        file << (second_order ? "SegmentO2" : "SegmentO1") << " "
+             << segment.first;
+        const Eigen::Matrix<double, 2, Eigen::Dynamic> coords = segment.second;
+
+        for (int col = 0; col < coords.cols(); ++col) {
+          file << " " << coords(0, col) << " " << coords(1, col);
+        }
+
+        file << std::endl;
+      }
+    }
+
+    {
+      std::vector<std::pair<size_t, Eigen::Matrix<double, 2, Eigen::Dynamic>>>
+          cells;
+
+      for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+        const lf::geometry::Geometry *geometry_ptr = cell.Geometry();
+        const Eigen::MatrixXd local_vertices = cell.RefEl().NodeCoords();
+        const Eigen::MatrixXd vertices = geometry_ptr->Global(local_vertices);
+
+        if (!second_order) {
+          cells.emplace_back(std::make_pair(mesh.Index(cell), vertices));
+
+        } else {
+          // compute midpoints
+          const int num_points = vertices.cols();
+          Eigen::MatrixXd lower_diagonal =
+              Eigen::MatrixXd::Zero(num_points, num_points);
+          lower_diagonal.diagonal<-1>() = Eigen::VectorXd::Ones(num_points - 1);
+          lower_diagonal(0, num_points - 1) = 1;
+
+          const Eigen::MatrixXd local_midpoints =
+              local_vertices *
+              (.5 * (lower_diagonal +
+                     Eigen::MatrixXd::Identity(num_points, num_points)));
+          const Eigen::MatrixXd midpoints =
+              geometry_ptr->Global(local_midpoints);
+
+          cells.emplace_back(std::make_pair(
+              mesh.Index(cell),
+              (Eigen::MatrixXd(2, 2 * num_points) << vertices, midpoints)
+                  .finished()));
+        }
+      }
+
+      for (const auto &cell : cells) {
+        const Eigen::Matrix<double, 2, Eigen::Dynamic> coords = cell.second;
+
+        if (coords.cols() == 3 || coords.cols() == 6) {
+          file << (second_order ? "TriaO2" : "TriaO1");
+        } else if (coords.cols() == 4 || coords.cols() == 8) {
+          file << (second_order ? "QuadO2" : "QuadO1");
+
+        } else {
+          LF_VERIFY_MSG(false, "Unknown cell geometry");
+        }
+
+        file << " " << cell.first;
+
+        for (int col = 0; col < coords.cols(); ++col) {
+          file << " " << coords(0, col) << " " << coords(1, col);
+        }
+
+        file << std::endl;
       }
     }
   }

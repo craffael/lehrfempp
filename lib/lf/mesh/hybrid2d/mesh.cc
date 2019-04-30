@@ -31,7 +31,7 @@ base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
     case 2:
       return {points_.begin(), points_.end()};
     default: {
-      LF_VERIFY_MSG(false, "Something is horribyl wrong, codim = " +
+      LF_VERIFY_MSG(false, "Something is horribly wrong, codim = " +
                                std::to_string(codim) + " is out of bounds.");
       return {
           base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),

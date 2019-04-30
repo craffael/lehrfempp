@@ -4,42 +4,51 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 if len(argv) < 2:
-    print('usage: python plot_mesh.py mesh.csv')
+    print('usage: python plot_mesh.py writeMatplotlib_output.txt')
     exit(-1)
 
-vertices = []
-segments = []
-triangles = []
-quads = []
+points = dict()
+segments = dict()
+triangles = dict()
+quadrilaterals = dict()
 
 with open(argv[1]) as f:
     for line in f:
-        array = np.fromstring(line.split()[0], sep=',')
+        data = line.rstrip().split(' ')
+        geometry_type = data[0]
+        index = int(data[1])
+        coordinates = [
+            np.array([float(x), float(y)])
+            for x, y in zip(data[2::2], data[3::2])
+        ]
 
-        if array[0] == 0:
-            if array.size == 5:
-                triangles.append(array)
-            elif array.size == 6:
-                quads.append(array)
-            else:
-                raise ValueError('triangles and quadrilaterals only')
-        if array[0] == 1:
-            segments.append(array)
-        if array[0] == 2:
-            vertices.append(array)
+        if geometry_type == 'Point':
+            geometry_list = points
+        elif geometry_type.startswith('Segment'):
+            geometry_list = segments
+        elif geometry_type.startswith('Tria'):
+            geometry_list = triangles
+        elif geometry_type.startswith('Quad'):
+            geometry_list = quadrilaterals
+        else:
+            raise RuntimeError('Unknown geometry')
 
-vertices = np.vstack(vertices)
-segments = np.vstack(segments)
-if triangles != []:
-    triangles = np.vstack(triangles)
-if quads != []:
-    quads = np.vstack(quads)
+        geometry_list[index] = coordinates
+
+x_min, x_max = float('inf'), float('-inf')
+y_min, y_max = float('inf'), float('-inf')
 
 # plot vertices
-for i, num in enumerate(vertices[:, 1]):
+for idx, coords in points.items():
+    for coord in coords:
+        x_min = min(coord[0], x_min)
+        x_max = max(coord[0], x_max)
+        y_min = min(coord[1], y_min)
+        y_max = max(coord[1], y_max)
+
     plt.annotate(
-        int(num),
-        vertices[np.where(vertices[:, 1] == num)][0, -2:],
+        idx,
+        coords[0],
         fontsize='xx-large',
         weight='bold',
         bbox=dict(boxstyle='circle', facecolor='none', edgecolor='red'),
@@ -48,56 +57,96 @@ for i, num in enumerate(vertices[:, 1]):
         va='center'
     )
 
-# plot segments
-for segment in segments:
-    x_coords, y_coords = np.column_stack((
-        vertices[np.where(vertices[:, 1] == int(segment[2]))][0, -2:],
-        vertices[np.where(vertices[:, 1] == int(segment[3]))][0, -2:]
-    ))
-    plt.plot(x_coords, y_coords, 'k-')
 
-    midpoint = .5 * (
-            vertices[np.where(vertices[:, 1] == segment[2])][0, -2:] +
-            vertices[np.where(vertices[:, 1] == segment[3])][0, -2:]
-    )
+def poly_coeffs(x, coeffs):
+    order = len(coeffs)
+    y = 0
 
-    plt.annotate(
-        int(segment[1]),
-        midpoint,
-        fontsize='xx-large',
-        ha='center',
-        va='center'
-    )
+    for i in range(order):
+        y += coeffs[i] * x ** (order - (i + 1))
+
+    return y
+
+
+def collinear(p0, p1, p2):
+    x1, y1 = p1[0] - p0[0], p1[1] - p0[1]
+    x2, y2 = p2[0] - p0[0], p2[1] - p0[1]
+    return abs(x1 * y2 - x2 * y1) < 1e-12
 
 
 # plot cells
-def plot_cells(cells):
-    for cell in cells:
-        cell_vertices = []
-        for i in range(2, cell.size):
-            segment = segments[np.where(segments[:, 1] == cell[i])][0]
-            cell_vertices.append(
-                vertices[np.where(vertices[:, 1] == segment[2])][0, -2:]
-            )
-            cell_vertices.append(
-                vertices[np.where(vertices[:, 1] == segment[3])][0, -2:]
-            )
+for idx, coords in segments.items():
+    for coord in coords:
+        x_min = min(coord[0], x_min)
+        x_max = max(coord[0], x_max)
+        y_min = min(coord[1], y_min)
+        y_max = max(coord[1], y_max)
 
-        cell_vertices = np.vstack(cell_vertices)
+    # SegmentO1
+    if len(coords) == 2:
+        coordinates = np.vstack(coords)
+        x_coords = coordinates[:, 0]
+        y_coords = coordinates[:, 1]
+        plt.plot(x_coords, y_coords, 'k-')
 
         plt.annotate(
-            int(cell[1]),
-            np.mean(cell_vertices, axis=0),
+            idx,
+            [x_coords.mean(), y_coords.mean()],
             fontsize='xx-large',
-            color='deeppink',
+            ha='center',
+            va='center'
+        )
+
+    # SegmentO2
+    elif len(coords) == 3:
+        vertex_0 = coords[0]
+        vertex_1 = coords[1]
+        midpoint = coords[2]
+
+        # check if points are collinear
+        if collinear(vertex_0, midpoint, vertex_1):
+            plt.plot(
+                [vertex_0[0], vertex_1[0]], [vertex_0[1], vertex_1[1]], 'k-'
+            )
+        else:
+            coefficients = np.polyfit(
+                [vertex_0[0], midpoint[0], vertex_1[0]],
+                [vertex_0[1], midpoint[1], vertex_1[1]],
+                2
+            )
+            x = np.linspace(vertex_0[0], vertex_1[0], 1000)
+            plt.plot(x, poly_coeffs(x, coefficients), 'k-')
+
+        plt.annotate(
+            idx,
+            midpoint,
+            fontsize='xx-large',
+            ha='center',
+            va='center'
+        )
+# plot cells
+cell_data = {'limegreen': triangles, 'm': quadrilaterals}
+
+for color, cells in cell_data.items():
+    for idx, coords in cells.items():
+        for coord in coords:
+            x_min = min(coord[0], x_min)
+            x_max = max(coord[0], x_max)
+            y_min = min(coord[1], y_min)
+            y_max = max(coord[1], y_max)
+
+        plt.annotate(
+            idx,
+            np.vstack(coords).mean(0),
+            fontsize='xx-large',
+            color=color,
             weight='bold',
             ha='center',
             va='center'
         )
 
-
-plot_cells(triangles)
-plot_cells(quads)
-
+offset = 1e-2
+plt.xlim(left=x_min - offset, right=x_max + offset)
+plt.ylim(bottom=y_min - offset, top=y_max + offset)
 plt.axis('off')
 plt.show()
