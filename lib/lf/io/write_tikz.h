@@ -141,6 +141,20 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                TikzOutputCtrl output_ctrl = TikzOutputCtrl::RenderCells);
 
+/**
+ * @brief Checks if points are collinear. If not, computes the control points
+ * for the cubic Bézier curve parametrized by the parabola going through the
+ * vertices and the midpoint
+ *
+ * @param vertices vertex coordinates
+ * @param midpoint midpoint coordinates
+ * @param control_points matrix where control point coordinates are stored
+ * @return true if points are collinear
+ */
+bool ControlPointsCubicBezier(const Eigen::Matrix2d &vertices,
+                              const Eigen::Vector2d &midpoint,
+                              Eigen::Matrix2d &control_points);
+
 }  // namespace lf::io
 
 #endif  // WRITE_TIKZ_H
