@@ -35,7 +35,7 @@ namespace lf::io {
  * The .txt file can be read by plot_mesh.py to visualize the mesh
  */
 void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename,
-                     bool second_order);
+                     bool second_order = false);
 
 }  // namespace lf::io
 
