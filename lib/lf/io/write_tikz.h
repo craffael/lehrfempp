@@ -153,7 +153,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
  */
 bool ControlPointsCubicBezier(const Eigen::Matrix2d &vertices,
                               const Eigen::Vector2d &midpoint,
-                              Eigen::Matrix2d &control_points);
+                              Eigen::Matrix2d *control_points);
 
 }  // namespace lf::io
 

@@ -20,7 +20,7 @@ TikzOutputCtrl operator&(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {
 
 bool ControlPointsCubicBezier(const Eigen::Matrix2d &vertices,
                               const Eigen::Vector2d &midpoint,
-                              Eigen::Matrix2d &control_points) {
+                              Eigen::Matrix2d *control_points) {
   auto collinear = [](const Eigen::Vector2d &p0, const Eigen::Vector2d &p1,
                       const Eigen::Vector2d &p2) {
     Eigen::Matrix2d tmp;
@@ -57,7 +57,7 @@ bool ControlPointsCubicBezier(const Eigen::Matrix2d &vertices,
   quadratic_control_point << (x1 + x2) / 2., y1 + df(x1) * (x2 - x1) / 2.;
 
   // compute control points for cubic Bézier curve
-  control_points << (2. * quadratic_control_point + vertices.col(0)) / 3.,
+  *control_points << (2. * quadratic_control_point + vertices.col(0)) / 3.,
       (2. * quadratic_control_point + vertices.col(1)) / 3.;
 
   return false;
@@ -173,7 +173,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 
                 Eigen::Matrix2d control;
                 bool collinear =
-                    ControlPointsCubicBezier(vertices, midpoint, control);
+                    ControlPointsCubicBezier(vertices, midpoint, &control);
 
                 if (!collinear) {
                   edge = " .. controls (" + std::to_string(control(0, 0)) +
@@ -217,7 +217,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 
                 Eigen::Matrix2d control;
                 bool collinear =
-                    ControlPointsCubicBezier(vertices, midpoint, control);
+                    ControlPointsCubicBezier(vertices, midpoint, &control);
 
                 if (!collinear) {
                   edge = " .. controls (" + std::to_string(control(0, 0)) +

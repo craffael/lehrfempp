@@ -33,9 +33,8 @@ int main() {
         std::const_pointer_cast<lf::mesh::Mesh>(reader.mesh()),
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
 
-    for (int step = 0; step < 2; ++step) {
+    for (int step = 0; step < 3; ++step) {
       // refine mesh and store to TikZ
-      multi_mesh.RefineRegular();
       auto mesh = multi_mesh.getMesh(multi_mesh.NumLevels() - 1);
       lf::io::writeTikZ(
           *mesh,
@@ -44,6 +43,7 @@ int main() {
           TikzOutputCtrl::RenderCells | TikzOutputCtrl::CellNumbering |
               TikzOutputCtrl::VerticeNumbering | TikzOutputCtrl::NodeNumbering |
               TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::SecondOrder);
+      multi_mesh.RefineRegular();
     }
   }
 
