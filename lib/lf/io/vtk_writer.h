@@ -709,8 +709,9 @@ class VtkWriter {
   // RefEl.Id() == i
   std::array<Eigen::MatrixXd, 5> aux_nodes_;
 
-  // contains the index of the first auxiliary node for the codim=0 entity
-  mesh::utils::CodimMeshDataSet<unsigned int> aux_node_offset_;
+  // entry[cd] contains the index of the first auxiliary node for the codim=cd
+  // entity
+  std::array<mesh::utils::CodimMeshDataSet<unsigned int>, 2> aux_node_offset_;
 
   template <class T>
   void WriteScalarPointData(const std::string& name,
@@ -736,15 +737,106 @@ class VtkWriter {
 
   template <class T>
   void WriteFieldData(const std::string& name, std::vector<T> data);
+
+  template <class DATA>
+  void CheckAttributeSetName(const DATA& data, const std::string& name);
+
+  template <int ROWS, class T>
+  static void PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
+                           const Eigen::Matrix<T, ROWS, 1>& in);
 };
 
 template <class MESH_FUNCTION, class>
 void VtkWriter::WritePointData(const std::string& name,
                                const MESH_FUNCTION& mesh_function) {
-  Eigen::Matrix<double, 0, 1> origin{};
-  WritePointData(name, *mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
-                   return mesh_function(e, origin)[0];
-                 }));
+  if (order_ == 1) {
+    Eigen::Matrix<double, 0, 1> origin{};
+    WritePointData(
+        name, *mesh::utils::make_LambdaMeshDataSet(
+                  [&](const auto& e) { return mesh_function(e, origin)[0]; }));
+  } else {
+    // for higher orders, we have to evaluate the mesh function at all points
+    // and write this into the vtk file:
+    CheckAttributeSetName(vtk_file_.point_data, name);
+    using T = uscalfe::MeshFunctionReturnType<MESH_FUNCTION>;
+    auto dim_mesh = mesh_->DimMesh();
+
+    Eigen::Matrix<double, 0, 1> origin;
+
+    if constexpr (std::is_same_v<T, unsigned char> || std::is_same_v<T, char> ||
+                  std::is_same_v<T, unsigned> || std::is_same_v<T, int> ||
+                  std::is_same_v<T, float> || std::is_same_v<T, double>) {
+      // MeshFunction is scalar valued:
+      VtkFile::ScalarData<T> data{};
+      data.data.resize(vtk_file_.unstructured_grid.points.size());
+      data.name = name;
+
+      // evaluate at nodes:
+      for (auto& n : mesh_->Entities(dim_mesh)) {
+        data.data[mesh_->Index(n)] = mesh_function(n, origin)[0];
+      }
+
+      for (char codim = dim_mesh - 1; codim >= static_cast<char>(codim_);
+           --codim) {
+        for (auto& e : mesh_->Entities(codim)) {
+          auto ref_el = e.RefEl();
+          if (order_ < 3 && ref_el == base::RefEl::kTria()) {
+            continue;
+          }
+          auto values = mesh_function(e, aux_nodes_[ref_el.Id()]);
+          auto offset = aux_node_offset_[codim](e);
+          for (int i = 0; i < values.size(); ++i) {
+            data.data[offset + i] = values[i];
+          }
+        }
+      }
+      vtk_file_.point_data.push_back(std::move(data));
+    } else if constexpr (base::is_eigen_matrix<T>) {
+      static_assert(T::ColsAtCompileTime == 1,
+                    "The MeshFunction must return row-vectors");
+      static_assert(
+          T::RowsAtCompileTime == Eigen::Dynamic ||
+              (T::RowsAtCompileTime > 1 && T::RowsAtCompileTime < 4),
+          "The Row vectors returned by the MeshFunction must be either dynamic "
+          "or must have 2 or 3 rows (at compile time).");
+      using Scalar = typename T::Scalar;
+      static_assert(
+          std::is_same_v<double, Scalar> || std::is_same_v<float, Scalar>,
+          "The RowVectors returned by the MeshFunction must be either double "
+          "or float valued.");
+      VtkFile::VectorData<Scalar> data{};
+      data.data.resize(vtk_file_.unstructured_grid.points.size());
+      data.name = name;
+
+      // evaluate at nodes:
+      for (auto& n : mesh_->Entities(dim_mesh)) {
+        PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[mesh_->Index(n)],
+                                                   mesh_function(n, origin)[0]);
+      }
+
+      for (char codim = dim_mesh - 1; codim >= static_cast<char>(codim_);
+           --codim) {
+        for (auto& e : mesh_->Entities(codim)) {
+          auto ref_el = e.RefEl();
+          if (order_ < 3 && ref_el == base::RefEl::kTria()) {
+            continue;
+          }
+          auto values = mesh_function(e, aux_nodes_[ref_el.Id()]);
+          auto offset = aux_node_offset_[codim](e);
+          for (int i = 0; i < values.size(); ++i) {
+            PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[offset + i],
+                                                       values[i]);
+          }
+        }
+      }
+      vtk_file_.point_data.push_back(std::move(data));
+    } else {
+      LF_VERIFY_MSG(false,
+                    "MeshFunction values must be one of: unsigned char, char, "
+                    "unsigned, int, float, double, Eigen::Vector<double, ...> "
+                    "or Eigen::Vector<float, ...>");
+    }
+  }
 }
 
 template <class MESH_FUNCTION, class>
@@ -763,6 +855,42 @@ void VtkWriter::WriteCellData(const std::string& name,
   WriteCellData(name, *mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
                   return mesh_function(e, barycenters[e.RefEl().Id()])[0];
                 }));
+}
+
+template <class DATA>
+void VtkWriter::CheckAttributeSetName(const DATA& data,
+                                      const std::string& name) {
+  if (std::find_if(data.begin(), data.end(), [&](auto& d) {
+        return boost::apply_visitor([&](auto&& d2) { return d2.name; }, d) ==
+               name;
+      }) != data.end()) {
+    throw base::LfException(
+        "There is already another Point/Cell Attribute Set with the "
+        "name " +
+        name);
+  }
+  if (name.find(' ') != std::string::npos) {
+    throw base::LfException(
+        "The name of the attribute set cannot contain spaces!");
+  }
+}
+
+template <int ROWS, class T>
+void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
+                             const Eigen::Matrix<T, ROWS, 1>& in) {
+  if constexpr (ROWS == 2) {  // NOLINT
+    out.template block<2, 1>(0, 0) = in;
+    out(2) = T(0);
+  } else if constexpr (ROWS == 3) {  // NOLINT
+    out = in;
+  } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
+    if (in.rows() == 2) {
+      out(2) = T(0);
+      out.topRows(in.rows()) = in;
+    } else {
+      out = in;
+    }
+  }
 }
 
 }  // namespace lf::io

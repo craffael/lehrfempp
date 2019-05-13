@@ -14,7 +14,6 @@
 #include <boost/phoenix/scope/let.hpp>
 #include <boost/spirit/include/karma.hpp>
 #include <fstream>
-#include "../../../../../../../Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/iso646.h"
 #include "eigen_fusion_adapter.h"
 
 template <class RESULT_TYPE, class LAMBDA>
@@ -474,12 +473,15 @@ unsigned int NumAuxNodes(base::RefEl ref_el, unsigned char order) {
 Eigen::MatrixXd AuxNodesSegment(unsigned char order) {
   LF_ASSERT_MSG(order > 1, "order <= 1");
   return Eigen::VectorXd::LinSpaced(order - 1, 1. / (order),
-                                    (order - 1.) / order);
+                                    (order - 1.) / order)
+      .transpose();
 }
 
 // compute aux reference coordinates of lagrange points on Tria:
 Eigen::MatrixXd AuxNodesTria(unsigned char order) {
-  if (order < 3) return Eigen::MatrixXd();
+  if (order < 3) {
+    return Eigen::MatrixXd();
+  }
   Eigen::MatrixXd result(2, NumAuxNodes(base::RefEl::kTria(), order));
   if (order == 3) {
     result << 1. / 3., 1. / 3.;
@@ -495,24 +497,28 @@ Eigen::MatrixXd AuxNodesTria(unsigned char order) {
     result(1, 2) = (order - 2.) / order;
 
     if (order > 4) {
-      auto segment_points = AuxNodesSegment(order - 3).transpose().eval();
+      auto segment_points = AuxNodesSegment(order - 3).eval();
       // assign edges:
       result.block(0, 3, 2, order - 4) =
           Eigen::Vector2d::UnitX() * segment_points * (order - 3.) / order +
-          Eigen::Vector2d(1. / order, 1. / order);
+          Eigen::Vector2d(1. / order, 1. / order) *
+              Eigen::MatrixXd::Ones(1, order - 4);
       result.block(0, order - 1, 2, order - 4) =
-          Eigen::Vector2d(-1, 1) * segment_points +
-          Eigen::Vector2d(1. / order, (order - 2.) / order);
+          Eigen::Vector2d(-1, 1) * (order - 3.) / order * segment_points +
+          Eigen::Vector2d((order - 2.) / order, 1. / order) *
+              Eigen::MatrixXd::Ones(1, order - 4);
       result.block(0, 2 * order - 5, 2, order - 4) =
-          -Eigen::Vector2d::UnitY() * segment_points +
-          Eigen::Vector2d((order - 2.) / order, 1. / order);
+          -Eigen::Vector2d::UnitY() * (order - 3.) / order * segment_points +
+          Eigen::Vector2d(1. / order, (order - 2.) / order) *
+              Eigen::MatrixXd::Ones(1, order - 4);
     }
     if (order > 5) {
       // assign interior points recursively:
       auto points = AuxNodesTria(order - 3);
       result.block(0, 3 * order - 9, 2, points.cols()) =
           AuxNodesTria(order - 3) * (order - 5.) / order +
-          Eigen::Vector2d(2. / order, 2. / order);
+          Eigen::Vector2d(2. / order, 2. / order) *
+              Eigen::MatrixXd::Ones(1, points.cols());
     }
   }
   return result;
@@ -522,11 +528,14 @@ Eigen::MatrixXd AuxNodesTria(unsigned char order) {
 Eigen::MatrixXd AuxNodesQuad(unsigned char order) {
   Eigen::MatrixXd result(2, NumAuxNodes(base::RefEl::kQuad(), order));
   result.row(0) =
-      Eigen::VectorXd::LinSpaced(order - 1, 1. / order, (1. - order) / order)
+      Eigen::VectorXd::LinSpaced(order - 1, 1. / order, (order - 1.) / order)
+          .transpose()
           .replicate(1, order - 1);
-  result.row(1) = Eigen::kroneckerProduct(
-      Eigen::VectorXd::LinSpaced(order - 1, 1. / order, (1. - order) / order),
-      Eigen::VectorXd::Ones(order - 1));
+  result.row(1) =
+      Eigen::kroneckerProduct(Eigen::VectorXd::LinSpaced(order - 1, 1. / order,
+                                                         (order - 1.) / order),
+                              Eigen::VectorXd::Ones(order - 1))
+          .transpose();
   return result;
 }
 
@@ -564,7 +573,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
       filename_(std::move(filename)),
       codim_(codim),
       order_(order),
-      aux_node_offset_(mesh_, 0) {
+      aux_node_offset_{{{mesh_, 0}, {mesh_, 1}}} {
   auto dim_mesh = mesh_->DimMesh();
   auto dim_world = mesh_->DimWorld();
   LF_ASSERT_MSG(dim_world > 0 && dim_world <= 4,
@@ -576,7 +585,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   if (order_ > 1) {
     aux_nodes_[base::RefEl::kSegment().Id()] = AuxNodesSegment(order);
     aux_nodes_[base::RefEl::kTria().Id()] = AuxNodesTria(order);
-    aux_nodes_[base::RefEl::kQuad().Id()] = AuxNodesTria(order);
+    aux_nodes_[base::RefEl::kQuad().Id()] = AuxNodesQuad(order);
   }
 
   // calculate total number of nodes (main + auxilliary nodes)
@@ -609,58 +618,33 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
   // insert auxilliary nodes:
   if (order > 1) {
-    // nodes for the segment:
     auto index_offset = mesh_->NumEntities(dim_mesh);
-    for (auto& s : mesh_->Entities(dim_mesh - 1)) {
-      auto index = mesh_->Index(s);
-      Eigen::MatrixXf coords(dim_world,
-                             NumAuxNodes(base::RefEl::kSegment(), order));
-      if (dim_world == 1) {
-        coords.row(0) = s.Geometry()
-                            ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
-                            .cast<float>();
-        coords.row(1).setZero();
-        coords.row(2).setZero();
-      } else if (dim_world == 2) {
-        coords.topRows(2) =
-            s.Geometry()
-                ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
-                .cast<float>();
-        coords.row(2).setZero();
-      } else {
-        coords = s.Geometry()
-                     ->Global(aux_nodes_[base::RefEl::kSegment().Id()])
-                     .cast<float>();
-      }
-      for (int i = 0; i < coords.cols(); ++i) {
-        vtk_file_.unstructured_grid
-            .points[index_offset + coords.cols() * index + i] = coords.col(i);
-      }
-    }
+    for (char cd = dim_mesh - 1; cd >= static_cast<char>(codim); --cd) {
+      for (auto& e : mesh_->Entities(cd)) {
+        auto ref_el = e.RefEl();
+        if (ref_el == base::RefEl::kTria() && order < 3) {
+          continue;
+        }
 
-    if (dim_mesh - codim_ > 1) {
-      // nodes for tria/quad:
-      index_offset +=
-          mesh_->NumEntities(1) * NumAuxNodes(base::RefEl::kSegment(), order);
-
-      for (auto& e : mesh_->Entities(0)) {
         auto index = mesh_->Index(e);
-        auto ps = e.Geometry()
-                      ->Global(aux_nodes_[e.RefEl().Id()])
-                      .cast<float>()
-                      .eval();
+        Eigen::MatrixXf coords(3, NumAuxNodes(ref_el, order));
 
-        Eigen::MatrixXf coords(dim_world, ps.cols());
-        if (dim_world == 2) {
-          coords.topRows(2) = std::move(ps);
+        if (dim_world == 1) {
+          coords.row(0) =
+              e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
+          coords.row(1).setZero();
+          coords.row(2).setZero();
+        } else if (dim_world == 2) {
+          coords.topRows(2) =
+              e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
           coords.row(2).setZero();
         } else {
-          coords = std::move(ps);
+          coords = e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
         }
         for (int i = 0; i < coords.cols(); ++i) {
           vtk_file_.unstructured_grid.points[index_offset + i] = coords.col(i);
         }
-        aux_node_offset_(e) = index_offset;
+        aux_node_offset_[cd](e) = index_offset;
         index_offset += coords.cols();
       }
     }
@@ -694,9 +678,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
     // node indices of segments of this cell:
     auto addSegmentNodes = [&](const mesh::Entity& s, bool invert) {
-      auto start_index =
-          mesh_->NumEntities(dim_mesh) + index * points_per_segment;
-      if (invert == false) {
+      auto start_index = aux_node_offset_[dim_mesh - 1](s);
+      if (!invert) {
         for (int i = 0; i < points_per_segment; ++i) {
           node_indices.push_back(start_index + i);
         }
@@ -714,34 +697,34 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         auto iterator = e.SubEntities(1).begin();
         auto o_iterator = e.RelativeOrientations().begin();
         addSegmentNodes(*iterator,
-                        (*o_iterator) == mesh::Orientation::positive);
+                        (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
         addSegmentNodes(*iterator,
-                        (*o_iterator) == mesh::Orientation::positive);
+                        (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
         addSegmentNodes(*iterator,
-                        (*o_iterator) == mesh::Orientation::positive);
+                        (*o_iterator) == mesh::Orientation::negative);
         break;
       }
       case base::RefEl::kQuad(): {
         auto iterator = e.SubEntities(1).begin();
         auto o_iterator = e.RelativeOrientations().begin();
         addSegmentNodes(*iterator,
-                        (*o_iterator) == mesh::Orientation::positive);
-        ++iterator;
-        ++o_iterator;
-        addSegmentNodes(*iterator,
-                        (*o_iterator) == mesh::Orientation::positive);
-        ++iterator;
-        ++o_iterator;
-        addSegmentNodes(*iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
         addSegmentNodes(*iterator,
                         (*o_iterator) == mesh::Orientation::negative);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
+        ++iterator;
+        ++o_iterator;
+        addSegmentNodes(*iterator,
+                        (*o_iterator) == mesh::Orientation::positive);
         break;
       }
       default:
@@ -750,7 +733,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
     // indices in the interior of the cell:
     if (dim_mesh - codim > 1) {
-      auto offset = aux_node_offset_(e);
+      auto offset = aux_node_offset_[0](e);
       for (int i = 0; i < NumAuxNodes(e.RefEl(), order); ++i) {
         node_indices.push_back(offset + i);
       }
@@ -959,26 +942,13 @@ void VtkWriter::WriteGlobalData(const std::string& name,
   WriteFieldData(name, std::move(data));
 }
 
-template <class DATA>
-void CheckAttributeSetName(const DATA& data, const std::string& name) {
-  if (std::find_if(data.begin(), data.end(), [&](auto& d) {
-        return boost::apply_visitor([&](auto&& d2) { return d2.name; }, d) ==
-               name;
-      }) != data.end()) {
-    throw base::LfException(
-        "There is already another Point/Cell Attribute Set with the name " +
-        name);
-  }
-  if (name.find(' ') != std::string::npos) {
-    throw base::LfException(
-        "The name of the attribute set cannot contain spaces!");
-  }
-}
-
 template <class T>
 void VtkWriter::WriteScalarPointData(const std::string& name,
                                      const mesh::utils::MeshDataSet<T>& mds,
                                      T undefined_value) {
+  LF_ASSERT_MSG(order_ == 1,
+                "WritePointData accepts MeshDataSets only if order = 1. For "
+                "order > 1 you have to provide MeshFunctions.");
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));
@@ -994,28 +964,13 @@ void VtkWriter::WriteScalarPointData(const std::string& name,
 }
 
 template <int ROWS, class T>
-void PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
-                  const Eigen::Matrix<T, ROWS, 1>& in) {
-  if constexpr (ROWS == 2) {  // NOLINT
-    out.template block<2, 1>(0, 0) = in;
-    out(2) = T(0);
-  } else if constexpr (ROWS == 3) {  // NOLINT
-    out = in;
-  } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
-    if (in.rows() == 2) {
-      out(2) = T(0);
-      out.topRows(in.rows()) = in;
-    } else {
-      out = in;
-    }
-  }
-}
-
-template <int ROWS, class T>
 void VtkWriter::WriteVectorPointData(
     const std::string& name,
     const mesh::utils::MeshDataSet<Eigen::Matrix<T, ROWS, 1>>& mds,
     const Eigen::Matrix<T, ROWS, 1>& undefined_value) {
+  LF_ASSERT_MSG(order_ == 1,
+                "WritePointData accepts MeshDataSets only if order = 1. For "
+                "order > 1 you have to provide MeshFunctions.");
   CheckAttributeSetName(vtk_file_.point_data, name);
   VtkFile::VectorData<T> data{};
   data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));

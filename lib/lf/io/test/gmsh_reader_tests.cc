@@ -191,7 +191,7 @@ TEST(lf_io, secondOrderMesh) {
 
   // with triangles
   reader = test_utils::getGmshReader("circle_second_order.msh", 2);
-  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
+  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.0032);
 
   // with quadrilaterals:
   reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);

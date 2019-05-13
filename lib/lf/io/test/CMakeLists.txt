@@ -7,5 +7,5 @@ set(sources
 )
 
 add_executable(lf.io.test ${sources})
-target_link_libraries(lf.io.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.io lf.io.test_utils lf.mesh.hybrid2d lf.mesh.test_utils)
+target_link_libraries(lf.io.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.io lf.io.test_utils lf.mesh.hybrid2d lf.mesh.test_utils lf.refinement)
 gtest_discover_tests(lf.io.test)
