@@ -592,7 +592,9 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   unsigned int numNodes = mesh_->NumEntities(dim_mesh);
   for (auto ref_el :
        {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
-    if (ref_el.Dimension() > dim_mesh - codim_) continue;
+    if (ref_el.Dimension() > dim_mesh - codim_) {
+      continue;
+    }
     numNodes += NumAuxNodes(ref_el, order_) * mesh_->NumEntities(ref_el);
   }
 
@@ -626,7 +628,6 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
           continue;
         }
 
-        auto index = mesh_->Index(e);
         Eigen::MatrixXf coords(3, NumAuxNodes(ref_el, order));
 
         if (dim_world == 1) {
