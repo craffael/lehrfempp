@@ -416,26 +416,13 @@ void writeSomeData(VtkWriter& vtk) {
 
 TEST(lf_io_VtkWriter, circle2ndOrderQuad) {
   auto reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
-  VtkWriter vtk(reader.mesh(), "circle_second_order_quad.vtk", 0, 8);
+  VtkWriter vtk(reader.mesh(), "circle_second_order_quad.vtk", 0, 2);
   writeSomeData(vtk);
   VtkWriter vtk2(reader.mesh(), "circle_second_order_quad_codim1.vtk", 1, 5);
   writeSomeData(vtk2);
 
   auto readerTria = test_utils::getGmshReader("circle_second_order.msh", 2);
-  VtkWriter vtkt(readerTria.mesh(), "circle_second_order_tria.vtk", 0, 8);
+  VtkWriter vtkt(readerTria.mesh(), "circle_second_order_tria.vtk", 0, 2);
   writeSomeData(vtkt);
 }
-
-TEST(lf_io_demo, test123) {
-  auto reader = GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
-                           "/mnt/c/Users/raffael/Downloads/square_quads.msh");
-  VtkWriter vtk(reader.mesh(), "square_quads.vtk", 0, 2);
-  refinement::MeshHierarchy mh(
-      reader.mesh(), std::make_shared<mesh::hybrid2d::MeshFactory>(2));
-  mh.RefineRegular();
-  mh.RefineRegular();
-  VtkWriter vtk1(mh.getMesh(1), "square_quads_1.vtk", 0, 2);
-  VtkWriter vtk2(mh.getMesh(2), "square_quads_2.vtk", 0, 2);
-}
-
 }  // namespace lf::io::test
