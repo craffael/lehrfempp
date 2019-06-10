@@ -13,7 +13,7 @@ branches:
   except:
   - gh-pages
 stages:
-# - clang-format
+- clang-format
 - clang-tidy
 - compile_test
 - doxygen
