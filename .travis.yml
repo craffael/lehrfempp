@@ -36,7 +36,7 @@ jobs:
       apt:
         update: true
         sources:
-        - llvm-toolchain-trusty-6.0
+        - llvm-toolchain-xenial-6.0
         - ubuntu-toolchain-r-test
         packages:
         - clang-tidy-6.0
