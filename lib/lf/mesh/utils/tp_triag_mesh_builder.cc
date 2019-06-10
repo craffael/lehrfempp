@@ -44,7 +44,8 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
     for (size_type i = 0; i <= nx; ++i, ++node_cnt) {
       // Tensor-product node locations
       coord_t node_coord(2);
-      node_coord << i * hx, j * hy;
+      node_coord << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[1] + j * hy;
       // Diagnostics
       if (output_ctrl_ != 0) {
         std::cout << "Adding vertex " << node_cnt << ": " << node_coord
@@ -75,7 +76,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
-      edge_geo << i * hx, (i + 1) * hx, j * hy, j * hy;
+      edge_geo << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[1] + j * hy, bottom_left_corner_[1] + j * hy;
       e_idx[edge_cnt] = mesh_factory_->AddEntity(
           lf::base::RefEl::kSegment(), nodes_index_list,
           std::make_unique<geometry::SegmentO1>(edge_geo));
@@ -96,7 +99,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
-      edge_geo << i * hx, i * hx, j * hy, (j + 1) * hy;
+      edge_geo << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + i * hx, bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + (j + 1) * hy;
       e_idx[edge_cnt] = mesh_factory_->AddEntity(
           lf::base::RefEl::kSegment(), nodes_index_list,
           std::make_unique<geometry::SegmentO1>(edge_geo));
@@ -117,7 +122,10 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           first_endpoint_idx, second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
-      edge_geo << i * hx, (i + 1) * hx, j * hy, (j + 1) * hy;
+      edge_geo << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + (j + 1) * hy;
       e_idx[edge_cnt] = mesh_factory_->AddEntity(
           lf::base::RefEl::kSegment(), nodes_index_list,
           std::make_unique<geometry::SegmentO1>(edge_geo));
@@ -138,8 +146,11 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           v_idx[VertexIndex(i, j + 1)]};
       // Construct geometry
       Eigen::Matrix<double, Eigen::Dynamic, 3> tria_geo_up(2, 3);
-      tria_geo_up << i * hx, (i + 1) * hx, i * hx, j * hy, (j + 1) * hy,
-          (j + 1) * hy;
+      tria_geo_up << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[0] + i * hx, bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + (j + 1) * hy,
+          bottom_left_corner_[1] + (j + 1) * hy;
       // Enroll the triangle entity
       t_idx[tria_cnt] = mesh_factory_->AddEntity(
           lf::base::RefEl::kTria(), vertex_index_list_up,
@@ -151,8 +162,11 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           v_idx[VertexIndex(i + 1, j + 1)]};
       // Construct geometry
       Eigen::Matrix<double, Eigen::Dynamic, 3> tria_geo_low(2, 3);
-      tria_geo_low << i * hx, (i + 1) * hx, (i + 1) * hx, j * hy, j * hy,
-          (j + 1) * hy;
+      tria_geo_low << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[1] + j * hy, bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + (j + 1) * hy;
       auto tria_geo_low_ptr = std::make_unique<geometry::TriaO1>(tria_geo_low);
       // Generate the triangle entity
       t_idx[tria_cnt + 1] = mesh_factory_->AddEntity(
