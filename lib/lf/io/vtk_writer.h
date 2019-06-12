@@ -244,6 +244,8 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
  * where we can see that the boundary of the circle is still not very smooth. In order to get a better representation of the second order basis functions, we can instruct
  * Paraview to subdivide the cells even more with the tesselate filter (see below for instructions). This gives the desired result (on the right).
  * 
+ * @note you need a recent version of Paraview to visualize higher-order cells. Version 5.6.0 is known to work.
+ * 
  * @note By using higher order cells, not only the geometry is better approximated, the \emph Point datasets are also much better approximated. This is unfortunately not
  * true for cell datasets.
  * 
