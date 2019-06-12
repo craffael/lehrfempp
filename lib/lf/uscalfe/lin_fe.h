@@ -117,7 +117,7 @@ class LinearFELaplaceElementMatrix {
  * This class complies with the requirements for the template parameter
  * `ENTITY_VECTOR_PROVIDER` of the function AssembleVectorLocally().
  *
- * TODO: Adjust size of vector returned. 
+ * TODO: Adjust size of vector returned.
  */
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {

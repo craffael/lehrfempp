@@ -107,8 +107,9 @@ const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
 bool Mesh::Contains(const Entity &e) const {
   switch (e.Codim()) {
     case 0:
-      return (&e >= &trias_.front() && &e <= &trias_.back()) ||
-             (&e >= &quads_.front() && &e <= &quads_.back());
+      return (!trias_.empty() && &e >= &trias_.front() &&
+              &e <= &trias_.back()) ||
+             (!quads_.empty() && &e >= &quads_.front() && &e <= &quads_.back());
     case 1:
       return &e >= &segments_.front() && &e <= &segments_.back();
     case 2:

@@ -1,5 +1,5 @@
 // Gmsh project created on Mon Apr 22 19:52:11 2019
-SetFactory("OpenCASCADE");
+//SetFactory("OpenCASCADE");
 
 Point(1) = {0,0,0};
 Point(2) = {1,0,0};

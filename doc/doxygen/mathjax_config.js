@@ -5,7 +5,8 @@ MathJax.Hub.Config({
   TeX: {
     Macros: {
       vec: ["\\boldsymbol{#1}", 1],
-      grad: "\\vec{\\operatorname{grad}}"
+      grad: "\\vec{\\operatorname{grad}}",
+      norm: ["\\left\\lVert#1\\right\\rVert", 1]
     }
   }
 });
