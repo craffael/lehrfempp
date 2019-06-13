@@ -13,9 +13,9 @@ branches:
   except:
   - gh-pages
 stages:
-# - clang-format
-# - clang-tidy
-# - compile_test
+- clang-format
+- clang-tidy
+- compile_test
 - doxygen
 jobs:
   include:
