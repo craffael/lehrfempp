@@ -39,6 +39,7 @@ constexpr double kPi = 3.14159265358979323846;
 // public header files that make up the base library:
 #include "comm.h"
 #include "dereference_lambda_random_access_iterator.h"
+#include "eigen_tools.h"
 #include "forward_iterator.h"
 #include "forward_range.h"
 #include "invalid_type_exception.h"

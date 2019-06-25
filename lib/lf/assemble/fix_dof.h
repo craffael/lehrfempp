@@ -216,15 +216,17 @@ using fixed_components_t =
  *
  * @tparam SCALAR underlying scalar type, e.g. double
  * @tparam RHSVEC generic vector type for right hand side
- * @param mat reference to the _square_ coefficient matrix in COO format
- * @param rhs reference to the right-hand-side vector
+ * @param A reference to the _square_ coefficient matrix in COO format
+ * @param b reference to the right-hand-side vector
  *
  * ### Requirements for type RHSVECTOR
  * An object of type VECTOR or RESULTVECTOR must provide a method `Size()`
  * telling the length of the vector and `operator []` for read/write access to
  * vector entries.
  *
- * @sa fix_flagged_solution_components()
+ * This function is basedon \ref fix_flagged_solution_components_alt()
+ *
+ * @sa fix_flagged_solution_components_alt()
  */
 template <typename SCALAR, typename RHSVECTOR>
 void fix_solution_components_lse(

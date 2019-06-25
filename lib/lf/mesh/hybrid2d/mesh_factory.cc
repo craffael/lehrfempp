@@ -103,8 +103,9 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
   // Obtain points to new mesh object; the actual construction of the
   // mesh is done by the constructor of that object
-  mesh::Mesh* mesh_ptr = new hybrid2d::Mesh(
-      dim_world_, std::move(nodes_), std::move(edges_), std::move(elements_));
+  mesh::Mesh* mesh_ptr =
+      new hybrid2d::Mesh(dim_world_, std::move(nodes_), std::move(edges_),
+                         std::move(elements_), check_completeness_);
 
   // Clear all information supplied to the MeshFactory object
   nodes_ = hybrid2d::Mesh::NodeCoordList{};  // .clear();

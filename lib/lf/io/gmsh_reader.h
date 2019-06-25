@@ -286,6 +286,21 @@ MshFile readGmshFile(std::string path);
  * #### Sample usage:
  * @snippet gmsh_reader.cc usage
  *
+ * #### Note about mesh completeness:
+ * In principle, Gmsh can export meshes that are not "complete", i.e. meshes
+ * containing entities with codim>0 that are not sub-entities of cell-entities.
+ * Also, if Gmsh exports a higher-order mesh, it has to introduce
+ * "auxilliary nodes" in order to define the higher-order mesh elements (these
+ * auxilliary nodes are normally placed on edges, faces or in the interior of
+ * cells).
+ *
+ * Since incomplete meshes are usually not useful in a FEM context, GmshReader
+ * doesn't insert into the mesh auxilliary nodes or nodes not belonging to at
+ * least one cell. Auxilliary nodes are however used in the construction of
+ * higher order geometry objects.
+ *
+ *
+ *
  */
 class GmshReader {
  public:

@@ -80,10 +80,8 @@ extern unsigned int ass_mat_dbg_ctrl;
  * + have an `Eval()` method returning the element matrix for a cell
  * + supply an `isActive()` method for selecting cells to be taken into account
  * in assembly
- * + provide a matrix type `ElemMat` for objects containing the element
- * matrices.
- * - ElemMat as provided by ENTITY_MATRIX_PROVIDER is a dense matrix type
- * modelled after Eigen::Matrix. It must provide:
+ * - The return type of `Eval()` must be a dense matrix type modelled after
+ *   Eigen::Matrix. It must provide:
  * + methods `rows()` and `cols()` telling the number of rows and columns
  * + access to entries via `operator (int,int) const`
  *
@@ -104,7 +102,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                 "Trial and test space must be defined on the same mesh");
 
   // Central assembly loop over entities of co-dimension specified by
-  // the template argument CODIM
+  // the function argument codim
   for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
     // Some entities may be skipped
     if (entity_matrix_provider.isActive(entity)) {

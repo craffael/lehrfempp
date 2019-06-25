@@ -55,20 +55,18 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   // Computations differ depending on the type of the cell
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
+      // Triangular cell: straight edges assumed, which means that the triangle
+      // is an affine image of the unit triangle and that the gradients of the
+      // local shape functions (= barycentric coordinate functions) are
+      // constant.
       LF_ASSERT_MSG((vertices.cols() == 3) && (vertices.rows() == 2),
                     "Wrong size of vertex matrix!");
-      // Obtain area (not needed, can also be obtained from determinant
-      // of auxiliary matrix
-      // Eigen::Matrix<double, 2, 1> refc;
-      // refc << 1.0 / 3, 1.0 / 3;
-      // const double area = 0.5 * (geo_ptr->IntegrationElement(refc))[0];
-
       // Set up an auxiliary 3x3-matrix with a leading column 1 and
       // the vertex coordinates in its right 3x2 block
       Eigen::Matrix<double, 3, 3> X;  // temporary matrix
       X.block<3, 1>(0, 0) = Eigen::Vector3d::Ones();
       X.block<3, 2>(0, 1) = vertices.transpose();
-      // The determinant of the auxliriary matrix also supplies the determinant
+      // The determinant of the auxliriary matrix also supplies the area
       const double area = 0.5 * std::abs(X.determinant());
       SWITCHEDSTATEMENT(dbg_ctrl, dbg_det,
                         std::cout

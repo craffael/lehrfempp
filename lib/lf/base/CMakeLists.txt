@@ -3,6 +3,7 @@ set(sources
   comm.h
   comm.cc
   dereference_lambda_random_access_iterator.h
+  eigen_tools.h
   forward_iterator.h
   forward_range.h
   invalid_type_exception.h

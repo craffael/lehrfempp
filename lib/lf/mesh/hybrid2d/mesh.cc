@@ -109,8 +109,9 @@ const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
 bool Mesh::Contains(const Entity &e) const {
   switch (e.Codim()) {
     case 0:
-      return (&e >= &trias_.front() && &e <= &trias_.back()) ||
-             (&e >= &quads_.front() && &e <= &quads_.back());
+      return (!trias_.empty() && &e >= &trias_.front() &&
+              &e <= &trias_.back()) ||
+             (!quads_.empty() && &e >= &quads_.front() && &e <= &quads_.back());
     case 1:
       return &e >= &segments_.front() && &e <= &segments_.back();
     case 2:
@@ -169,7 +170,8 @@ class EndpointIndexPair {
 // EdgeList = std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
 // CellList = std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
 // **********************************************************************
-Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
+Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
+           bool check_completeness)
     : dim_world_(dim_world) {
   // Auxiliary data type for gathering information about cells adjacent to an
   // edge
@@ -232,6 +234,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   }
   EdgeMap edge_map;
   glb_idx_t edge_index = 0;  // position in the array gives index of edge
+
   for (auto &e : edges) {
     // Node indices of endpoints: the KEY
     std::array<size_type, 2> end_nodes(e.first);
@@ -262,7 +265,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
       if (nodes[end_nodes[j]] == nullptr) {
         // if no geometry for node exists request geomtry for an endpoint of the
         // edge Note: endpoints are entities of relative co-dimension 1
-        nodes[end_nodes[j]] = std::move(e.second->SubGeometry(1, j));
+        nodes[end_nodes[j]] = e.second->SubGeometry(1, j);
       }
     }
 
@@ -305,6 +308,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   if (output_ctrl_ > 0) {
     std::cout << "Scanning list of cells" << std::endl;
   }
+
   for (const auto &c : cells) {
     // node indices of corners of cell c
     const std::array<size_type, 4> &cell_node_list(c.first);
@@ -351,8 +355,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         if (nodes[cell_node_list[j]] == nullptr) {
           // if no geometry for node exists request geomtry for an vertex from
           // the cell Note: vertices are entities of relative co-dimension 2
-          nodes[cell_node_list[j]] =
-              std::move(cell_geometry->SubGeometry(2, j));
+          nodes[cell_node_list[j]] = cell_geometry->SubGeometry(2, j);
         }
       }
     }
@@ -389,7 +392,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
         // Inherit geometry of edge from adjacent cell
         GeometryPtr edge_geo_ptr;
         if (cell_geometry) {
-          edge_geo_ptr = std::move(cell_geometry->SubGeometry(1, j));
+          edge_geo_ptr = cell_geometry->SubGeometry(1, j);
         }
         // Beginning of list of adjacent elements
         AdjCellsList single_cell_list{edge_cell_info};
@@ -502,6 +505,13 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   // Initialized vector of Edge entities here
   segments_.reserve(no_of_edges);
 
+  // if we check for mesh completeness, initialize a vector that stores for
+  // every node if he has a super entity.
+  std::vector<bool> nodeHasSuperEntity;
+  if (check_completeness) {
+    nodeHasSuperEntity.resize(nodes.size(), false);
+  }
+
   // Note: the variable edge_index contains the number externally supplied
   // edges, whose index must agree with their position in the
   // 'edges' array.
@@ -550,6 +560,18 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
       edge_index++;
     }
 
+    if (check_completeness) {
+      // record that the nodes of this edge have a super-entity (this edge):
+      nodeHasSuperEntity[p0] = true;
+      nodeHasSuperEntity[p1] = true;
+
+      // make sure that the edge belongs to at least one cell:
+      LF_VERIFY_MSG(!edge.second.adj_cells_list.empty(),
+                    "Mesh is incomplete: Edge with global index "
+                        << edge.second.edge_global_index
+                        << " does not belong to a cell.");
+    }
+
     // Diagnostics
     if (output_ctrl_ > 10) {
       std::cout << "Registering edge " << edge.second.edge_global_index << ": "
@@ -561,6 +583,14 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells)
   }  // end loop over all edges
   LF_ASSERT_MSG(edge_index == no_of_edges, "Edge index mismatch");
 
+  if (check_completeness) {
+    // Check that all nodes have a super entity:
+    for (int i = 0; i < nodes.size(); ++i) {
+      LF_VERIFY_MSG(nodeHasSuperEntity[i],
+                    "Mesh is incomplete: Node with global index "
+                        << i << " is not part of any edge.");
+    }
+  }
   // ======================================================================
   // NEXT STEP: Create cells
 

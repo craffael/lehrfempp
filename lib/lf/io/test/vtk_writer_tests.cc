@@ -9,7 +9,9 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
+#include <lf/mesh/utils/utils.h>
+#include <lf/refinement/refinement.h>
+#include <complex>
 
 namespace lf::io::test {
 
@@ -105,6 +107,23 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim1NoData) {
   VtkWriter writer(reader.mesh(), "two_element_1d_nodata.vtk", 1);
 }
 
+template <class F>
+struct MeshFunctionLambda {
+  MeshFunctionLambda(F f) : f_(f) {}
+
+  auto operator()(const mesh::Entity& e, const Eigen::MatrixXd& x) const {
+    std::vector<std::invoke_result_t<F, const mesh::Entity&, Eigen::Matrix2d>>
+        result(x.cols());
+    for (int i = 0; i < x.cols(); ++i) {
+      result[i] = f_(e, x.col(i));
+    }
+    return result;
+  }
+
+ private:
+  F f_;
+};
+
 TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
   auto reader = test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
 
@@ -126,25 +145,54 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
         return static_cast<unsigned char>(reader.mesh()->Index(e));
       }));
   writer.WritePointData(
+      "uchar_mf",
+      MeshFunctionLambda([&](const auto& e, const Eigen::MatrixXd& x) {
+        return static_cast<unsigned char>(reader.mesh()->Index(e));
+      }));
+  writer.WritePointData(
       "char", *make_LambdaMeshDataSet(
                   [&](const auto& e) {
                     return static_cast<char>(reader.mesh()->Index(e));
                   },
                   [&](const auto& e) { return reader.mesh()->Index(e) < 3; }));
   writer.WritePointData(
+      "char_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
+        return static_cast<unsigned int>(reader.mesh()->Index(e));
+      }));
+  writer.WritePointData(
       "uint", *make_LambdaMeshDataSet([&](const auto& e) {
+        return static_cast<unsigned int>(reader.mesh()->Index(e));
+      }));
+  writer.WritePointData(
+      "uint_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
         return static_cast<unsigned int>(reader.mesh()->Index(e));
       }));
   writer.WritePointData("int", *make_LambdaMeshDataSet([&](const auto& e) {
                           return static_cast<int>(reader.mesh()->Index(e));
                         }));
+  writer.WritePointData("int_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
+                          return static_cast<int>(reader.mesh()->Index(e));
+                        }));
   writer.WritePointData("float", *make_LambdaMeshDataSet([&](const auto& e) {
+                          return static_cast<float>(reader.mesh()->Index(e));
+                        }));
+  writer.WritePointData("float_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
                           return static_cast<float>(reader.mesh()->Index(e));
                         }));
   writer.WritePointData("double", *make_LambdaMeshDataSet([&](const auto& e) {
                           return static_cast<double>(reader.mesh()->Index(e));
                         }));
+  writer.WritePointData("double_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
+                          return static_cast<double>(reader.mesh()->Index(e));
+                        }));
   writer.WritePointData("vector2d", *make_LambdaMeshDataSet([&](const auto& e) {
+                          return Eigen::Vector2d(e.Geometry()->Global(zero));
+                        }));
+  writer.WritePointData("vector2d_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
                           return Eigen::Vector2d(e.Geometry()->Global(zero));
                         }));
   writer.WritePointData(
@@ -152,15 +200,51 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
         return Eigen::Vector2f(
             e.Geometry()->Global(zero).template cast<float>());
       }));
+  writer.WritePointData(
+      "vector2f_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
+        return Eigen::Vector2f(
+            e.Geometry()->Global(zero).template cast<float>());
+      }));
   writer.WritePointData("vector3d", *make_LambdaMeshDataSet([&](const auto& e) {
+                          return Eigen::Vector3d(0, 1, 2);
+                        }));
+  writer.WritePointData("vector3d_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
                           return Eigen::Vector3d(0, 1, 2);
                         }));
   writer.WritePointData("vector3f", *make_LambdaMeshDataSet([&](const auto& e) {
                           return Eigen::Vector3f{0, 1, 2};
                         }));
+  writer.WritePointData("vector3f_mf",
+                        MeshFunctionLambda([&](const auto& e, const auto& x) {
+                          return Eigen::Vector3f(0, 1, 2);
+                        }));
+
+  writer.WritePointData("vectorXd", *make_LambdaMeshDataSet(
+                                        [&](const auto& e) -> Eigen::VectorXd {
+                                          return Eigen::Vector2d(0, 1);
+                                        }));
+  writer.WritePointData(
+      "vectorXd_mf",
+      MeshFunctionLambda([&](const auto& e, const auto& x) -> Eigen::VectorXd {
+        return Eigen::Vector2d(0, 1);
+      }));
+  writer.WritePointData("vectorXf", *make_LambdaMeshDataSet(
+                                        [&](const auto& e) -> Eigen::VectorXf {
+                                          return Eigen::Vector2f{0, 1};
+                                        }));
+  writer.WritePointData(
+      "vectorXf_mf",
+      MeshFunctionLambda([&](const auto& e, const auto& x) -> Eigen::VectorXf {
+        return Eigen::Vector2f(0, 1);
+      }));
 
   writer.WriteCellData(
       "uchar", *make_LambdaMeshDataSet([&](const auto& e) {
+        return static_cast<unsigned char>(reader.mesh()->Index(e));
+      }));
+  writer.WriteCellData(
+      "uchar_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
         return static_cast<unsigned char>(reader.mesh()->Index(e));
       }));
   writer.WriteCellData(
@@ -173,16 +257,36 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
       "uint", *make_LambdaMeshDataSet([&](const auto& e) {
         return static_cast<unsigned int>(reader.mesh()->Index(e));
       }));
+  writer.WriteCellData(
+      "uint_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
+        return static_cast<unsigned int>(reader.mesh()->Index(e));
+      }));
   writer.WriteCellData("int", *make_LambdaMeshDataSet([&](const auto& e) {
+                         return static_cast<int>(reader.mesh()->Index(e));
+                       }));
+  writer.WriteCellData("int_mf",
+                       MeshFunctionLambda([&](const auto& e, const auto& x) {
                          return static_cast<int>(reader.mesh()->Index(e));
                        }));
   writer.WriteCellData("float", *make_LambdaMeshDataSet([&](const auto& e) {
                          return static_cast<float>(reader.mesh()->Index(e));
                        }));
+  writer.WriteCellData("float_mf",
+                       MeshFunctionLambda([&](const auto& e, const auto& x) {
+                         return static_cast<float>(reader.mesh()->Index(e));
+                       }));
   writer.WriteCellData("double", *make_LambdaMeshDataSet([&](const auto& e) {
                          return static_cast<double>(reader.mesh()->Index(e));
                        }));
+  writer.WriteCellData(
+      "double_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
+        return static_cast<unsigned int>(reader.mesh()->Index(e));
+      }));
   writer.WriteCellData("vector2d", *make_LambdaMeshDataSet([&](const auto& e) {
+                         return Eigen::Vector2d(e.Geometry()->Global(zero2));
+                       }));
+  writer.WriteCellData("vector2d_mf",
+                       MeshFunctionLambda([&](const auto& e, const auto& x) {
                          return Eigen::Vector2d(e.Geometry()->Global(zero2));
                        }));
   writer.WriteCellData(
@@ -190,12 +294,44 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
         return Eigen::Vector2f(
             e.Geometry()->Global(zero2).template cast<float>());
       }));
+  writer.WriteCellData(
+      "vector2f_mf", MeshFunctionLambda([&](const auto& e, const auto& x) {
+        return Eigen::Vector2f(
+            e.Geometry()->Global(zero2).template cast<float>());
+      }));
   writer.WriteCellData("vector3d", *make_LambdaMeshDataSet([&](const auto& e) {
+                         return Eigen::Vector3d(0, 1, 2);
+                       }));
+  writer.WriteCellData("vector3d_mf",
+                       MeshFunctionLambda([&](const auto& e, const auto& x) {
                          return Eigen::Vector3d(0, 1, 2);
                        }));
   writer.WriteCellData("vector3f", *make_LambdaMeshDataSet([&](const auto& e) {
                          return Eigen::Vector3f{0, 1, 2};
                        }));
+  writer.WriteCellData("vector3f_mf",
+                       MeshFunctionLambda([&](const auto& e, const auto& x) {
+                         return Eigen::Vector3f{0, 1, 2};
+                       }));
+  writer.WriteCellData("vectorXd", *make_LambdaMeshDataSet(
+                                       [&](const auto& e) -> Eigen::VectorXd {
+                                         return Eigen::Vector3d(0, 1, 2);
+                                       }));
+  writer.WriteCellData(
+      "vectorXd_mf",
+      MeshFunctionLambda([&](const auto& e, const auto& x) -> Eigen::VectorXd {
+        return Eigen::Vector3d(0, 1, 2);
+      }));
+
+  writer.WriteCellData("vectorXf", *make_LambdaMeshDataSet(
+                                       [&](const auto& e) -> Eigen::VectorXf {
+                                         return Eigen::Vector3f(0, 1, 2);
+                                       }));
+  writer.WriteCellData(
+      "vectorXf_mf",
+      MeshFunctionLambda([&](const auto& e, const auto& x) -> Eigen::VectorXf {
+        return Eigen::Vector3f(0, 1, 2);
+      }));
 
   // try to write data with a name that is already used:
   EXPECT_THROW(
@@ -222,4 +358,71 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
                base::LfException);
 }
 
+void writeSomeData(VtkWriter& vtk) {
+  auto scalarfn = [&](const Eigen::Vector2d& x) {
+    return std::pow(std::complex<double>(x[0], x[1]), 6).real();
+  };
+
+  vtk.WritePointData("linear",
+                     uscalfe::MeshFunctionGlobal(
+                         [](const Eigen::Vector2d& x) { return x[0] + x[1]; }));
+
+  vtk.WritePointData("unsigned_char",
+                     uscalfe::MeshFunctionGlobal(
+                         [&](const Eigen::Vector2d& x) -> unsigned char {
+                           return scalarfn(x);
+                         }));
+  vtk.WritePointData("char", uscalfe::MeshFunctionGlobal(
+                                 [&](const Eigen::Vector2d& x) -> char {
+                                   return scalarfn(x);
+                                 }));
+  vtk.WritePointData("unsigned", uscalfe::MeshFunctionGlobal(
+                                     [&](const Eigen::Vector2d& x) -> unsigned {
+                                       return scalarfn(x);
+                                     }));
+  vtk.WritePointData(
+      "int", uscalfe::MeshFunctionGlobal(
+                 [&](const Eigen::Vector2d& x) -> int { return scalarfn(x); }));
+  vtk.WritePointData("float", uscalfe::MeshFunctionGlobal(
+                                  [&](const Eigen::Vector2d& x) -> float {
+                                    return scalarfn(x);
+                                  }));
+  vtk.WritePointData("double", uscalfe::MeshFunctionGlobal(scalarfn));
+  vtk.WritePointData("vec2_float",
+                     uscalfe::MeshFunctionGlobal(
+                         [](const Eigen::Vector2d& x) -> Eigen::Vector2f {
+                           return x.cast<float>();
+                         }));
+  vtk.WritePointData(
+      "vec2_double",
+      uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; }));
+  vtk.WritePointData("vec3_float",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::Vector3f(x[0], x[1], std::sin(x[0]));
+                     }));
+  vtk.WritePointData("vec3_double",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::Vector3d(x[0], x[1], std::sin(x[0]));
+                     }));
+  vtk.WritePointData("vecd_float",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::VectorXf(x.cast<float>());
+                     }));
+  vtk.WritePointData("vecd_double",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::VectorXd(x);
+                     }));
+}
+
+TEST(lf_io_VtkWriter, circle2ndOrderQuad) {
+  auto reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
+  VtkWriter vtk(reader.mesh(), "circle_second_order_quad.vtk", 0, 2);
+  writeSomeData(vtk);
+  VtkWriter vtk2(reader.mesh(), "circle_second_order_quad_codim1.vtk", 1, 5);
+  writeSomeData(vtk2);
+
+  auto readerTria = test_utils::getGmshReader("circle_second_order.msh", 2);
+  VtkWriter vtkt(readerTria.mesh(), "circle_second_order_tria.vtk", 0, 2);
+  writeSomeData(vtkt);
+}
 }  // namespace lf::io::test

@@ -111,9 +111,8 @@ class LinFEElemVecProvider {
    *
    * @param cell current cell for which the element vector is desired
    *
-   * The implementation uses simple vertex based quadrature and an approximation
-   * of the volume of a cell just using the integration element at the
-   * barycenter.
+   * The implementation uses simple vertex based quadrature and obtains
+   * the area of the triangle by calling the `Volume()` function.
    */
   Eigen::Vector3d Eval(const lf::mesh::Entity &tria);
 

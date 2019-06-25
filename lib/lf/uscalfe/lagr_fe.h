@@ -33,6 +33,7 @@ using glb_idx_t = lf::assemble::glb_idx_t;
 using sub_idx_t = lf::base::sub_idx_t;
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Interface class for parametric scalar valued finite elements
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
@@ -345,6 +346,7 @@ unsigned int ScalarReferenceFiniteElement<SCALAR>::ctrl_ = 0;
 
 /** @brief Stream output operator: just calls the
  * ScalarReferenceFiniteElement::print() method
+ * @relates ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 std::ostream& operator<<(std::ostream& o,
@@ -353,6 +355,7 @@ std::ostream& operator<<(std::ostream& o,
 }
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on triangular reference element
  *
  * This is a specialization of ScalarReferenceFiniteElement.
@@ -449,6 +452,7 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on the quadrilateral reference element
  *
  * The reference shape functions are
@@ -552,6 +556,7 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on a line segment
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
@@ -643,6 +648,50 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
+};
+
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Linear Lagrange finite element on a point
+ *
+ * This is a specialization of ScalarReferenceFiniteElement for an entity
+ * of dimension 0, which is exactly one scalar value. It is an ingredient
+ * of all Lagrange type finite element spaces (any degree).
+ */
+template <class SCALAR>
+class FeLagrangePoint : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
+  /**
+   * @brief Create a new FeLagrangePoint by specifying the degree of the shape
+   * functions.
+   * @param degree The degree of the shape function.
+   */
+  explicit FeLagrangePoint(unsigned degree) : degree_(degree) {}
+
+  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
+  unsigned Degree() const override { return degree_; }
+  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t subidx) const override {
+    LF_ASSERT_MSG(codim == 0, "Codim out of bounds");
+    LF_ASSERT_MSG(subidx == 0, "subidx out of bounds.");
+    return 1;
+  }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 0, "refcoords has too many rows.");
+    return Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Ones(1, refcoords.cols());
+  }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& /*refcoords*/) const override {
+    LF_VERIFY_MSG(false, "gradients not defined in points of mesh.");
+  }
+  Eigen::MatrixXd EvaluationNodes() const override {
+    return Eigen::MatrixXd(0, 1);
+  }
+  size_type NumEvaluationNodes() const override { return 1; }
+
+ private:
+  unsigned degree_;
 };
 
 }  // namespace lf::uscalfe

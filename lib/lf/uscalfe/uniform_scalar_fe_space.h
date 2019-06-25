@@ -21,6 +21,7 @@
 namespace lf::uscalfe {
 
 /**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief Space of scalar valued finite element functions on a _hybrid 2D mesh_
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
@@ -82,11 +83,14 @@ class UniformScalarFESpace {
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p,
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p =
+          nullptr,
+      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_point_p =
           nullptr)
       : mesh_p_(std::move(mesh_p)),
         rfs_tria_p_(std::move(rfs_tria_p)),
         rfs_quad_p_(std::move(rfs_quad_p)),
-        rfs_edge_p_(std::move(rfs_edge_p)) {
+        rfs_edge_p_(std::move(rfs_edge_p)),
+        rfs_point_p_(std::move(rfs_point_p)) {
     init();
   }
 
@@ -136,6 +140,8 @@ class UniformScalarFESpace {
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p_;
   /** Description of reference shape functions on an edge */
   std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p_;
+  /** Description of refererence shape functions on a point */
+  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_point_p_;
   /** Numbers of local shape functions for different types of entities */
   size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
       num_rsf_quad_{0};
@@ -281,8 +287,7 @@ UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
-      LF_VERIFY_MSG(false, "No shape functions for point!");
-      break;
+      return rfs_point_p_;
     }
     case lf::base::RefEl::kSegment(): {
       // Null pointer valid return value: indicates that a shape function
