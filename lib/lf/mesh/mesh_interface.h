@@ -136,13 +136,14 @@ class Mesh {
    *        to be unique and contiguous for a given co-dimension
    * @param index an integer between 0 and number of entities of the given
    * co-dimension -1. It passes the index.
-   * @return pointer to the entity object with the given index. 
+   * @return pointer to the entity object with the given index.
    *
    * Based on the bijectition between entities of a given co-dimension and an
-   * integer range. The following expression should evaluate to `true`, if 
+   * integer range. The following expression should evaluate to `true`, if
    * `mesh` is a reference to a @ref Mesh object, and `idx` a valid index
    * ~~~
-      ((idx < mesh.NumEntities(codim)) && mesh.Index(*mesh.EntityByIndex(codim,idx)) == idx)
+      ((idx < mesh.NumEntities(codim)) &&
+   mesh.Index(*mesh.EntityByIndex(codim,idx)) == idx)
    * ~~~
    *
    * @note O(1) access complexity due to table lookup.
