@@ -9,7 +9,6 @@
 #ifndef TORUS_MESH_BUILDER_H
 #define TORUS_MESH_BUILDER_H
 
-#include <lf/base/static_vars.h>
 #include "lf/mesh/mesh_factory.h"
 #include "structured_mesh_builder.h"
 

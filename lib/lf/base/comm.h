@@ -13,7 +13,6 @@
 #include <stdexcept>
 
 #include "lf_assert.h"
-#include "static_vars.h"
 
 // namespace structure:
 // lf::base
@@ -230,13 +229,13 @@ class Track {
 
 template <class T>
 Track<T>::Track(const std::string& name, T& ref, const std::string& comment) {
-  auto temp = getDesc().find_nothrow(name.c_str(), false);
+  auto temp = getDesc().find_nothrow(name, false);
 
 // TODO(craffael): Remove the following line if
 // https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
 // is fixed
 #ifndef _MSC_VER
-  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+  LF_ASSERT_MSG(getDesc().find_nothrow(name, false) == nullptr,
                 "Name conflict: There is already another boost program option "
                 "with the name " +
                     name + " registered.");
@@ -252,7 +251,7 @@ Track<T>::Track(const std::string& name, T& ref, const T& def,
 // https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
 // is fixed
 #ifndef _MSC_VER
-  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+  LF_ASSERT_MSG(getDesc().find_nothrow(name, false) == nullptr,
                 "Name conflict: There is already another boost program option "
                 "with the name " +
                     name + " registered.");
@@ -270,7 +269,7 @@ void Add(const std::string& name, const std::string& comment) {
 // https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
 // is fixed
 #ifndef _MSC_VER
-  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+  LF_ASSERT_MSG(getDesc().find_nothrow(name, false) == nullptr,
                 "Name conflict: There is already another boost program option "
                 "with the name " +
                     name + " registered.");
@@ -284,7 +283,7 @@ void Add(const std::string& name, const std::string& comment, const T& def) {
 // https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
 // is fixed
 #ifndef _MSC_VER
-  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+  LF_ASSERT_MSG(getDesc().find_nothrow(name, false) == nullptr,
                 "Name conflict: There is already another boost program option "
                 "with the name " +
                     name + " registered.");
@@ -299,7 +298,7 @@ void AddSetter(const std::string& name, T& value, const std::string& comment) {
 // https://developercommunity.visualstudio.com/content/problem/297876/static-inline-variable-gets-destroyed-multiple-tim.html
 // is fixed
 #ifndef _MSC_VER
-  LF_ASSERT_MSG(getDesc().find_nothrow(name.c_str(), false) == nullptr,
+  LF_ASSERT_MSG(getDesc().find_nothrow(name, false) == nullptr,
                 "Name conflict: There is already another boost program option "
                 "with the name " +
                     name + " registered.");

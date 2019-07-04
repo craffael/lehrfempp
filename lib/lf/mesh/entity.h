@@ -2,7 +2,6 @@
 #define __37e385afbd3b4b1dba8611fb71787822
 
 #include <lf/base/base.h>
-#include <lf/base/static_vars.h>
 #include <lf/geometry/geometry.h>
 
 namespace lf::mesh {

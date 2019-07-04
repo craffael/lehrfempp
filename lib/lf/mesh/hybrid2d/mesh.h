@@ -9,7 +9,6 @@
 #ifndef __62731052ee4a4a2d9f256c2caac43835
 #define __62731052ee4a4a2d9f256c2caac43835
 
-#include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
 #include "lf/base/base.h"
 #include "lf/mesh/utils/print_info.h"
