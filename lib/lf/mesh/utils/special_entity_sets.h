@@ -27,7 +27,8 @@ namespace lf::mesh::utils {
  * @param codim_sub co-dimension of the queried entities
  * @param codim_super _relative_ co-dimension (with positive sign) of
  *                      super entities.
- * @return an array of cardinals storing adjacency numbers
+ * @return a cardinal-valued @ref CodimMeshDataSet (= an array of cardinals
+ * indexed by entities of a particular co-dimension) storing adjacency numbers
  *
  * For each entity of a given co-dimension, this function counts the number of
  * adjacent super-entities of some smaller co-dimension.
@@ -50,7 +51,8 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
  * @brief flag entities of a specific co-dimension located on the boundary
  *
  * @param codim co-dimension of entities to be flagged, must be > 0.
- * @return an array of boolean values for the entities of the specified
+ * @return an object of a boolean-valued @ref CodimMeshDataSet (= an array of
+ * boolean values index by entities) for the entities of the specified
  * co-dimension
  *
  * An entity of co-dimension 1 is located on the boundary, if it is adjacent
@@ -59,6 +61,16 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
  * The boundary of a mesh is the set of all entities that are either entities
  * of co-dimension 1 located on the boundary or sub-entities of those.
  *
+ * The implementation of this  function relies on @ref countNoSuperEntities().
+ *
+ * The following example code shows how to create a flag array for marking the
+ * boundary edges of a 2D mesh:
+ * ~~~
+   std::shared_ptr<lf::mesh::Mesh> mesh_p{
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(3)};
+   lf::mesh::utils::CodimMeshDataSet<bool> bd_flags{
+      lf::mesh::utils::flagEntitiesOnBoundary(mesh_p, 1)};
+ * ~~~
  */
 CodimMeshDataSet<bool> flagEntitiesOnBoundary(
     const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim);
@@ -67,8 +79,8 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
  * @brief flag entities of _any co-dimension_ located on the boundary
  *
  * @param codim co-dimension of entities to be flagged, must be > 0.
- * @return an array of boolean values for the entities of the specified
- * co-dimension
+ * @return an array of boolean values (actually an object of type @ref
+ * AllCodimMeshDataSet) for the entities of the specified co-dimension
  *
  * An entity of co-dimension 1 is located on the boundary, if it is adjacent
  * to exactly 1 cell (= entity of co-dimension 0).
