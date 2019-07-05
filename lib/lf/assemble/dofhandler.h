@@ -137,7 +137,8 @@ class DofHandler {
    *
    * @param entity reference to the entity for which the dof's are to be
    *        fetched. This entity must belong to the underlying mesh.
-   * @return cardinal number range of global dof indices
+   * @return cardinal number range of global dof indices, see [std::span data
+   * type documentation](https://en.cppreference.com/w/cpp/container/span).
    *
    * The basis functions of every finite element space must be associated with a
    * unique geometric entity. Conversely, every entity can possess a finite
@@ -155,7 +156,9 @@ class DofHandler {
    * @brief global indices of shape functions _associated with_ an entity_
    *
    * @param entity entity for which shape functin indices are queried
-   * @return cardinal number range of global indices of shape functions
+   * @return cardinal number range of global indices of shape functions, see
+   * [std::span data type
+   * documentation](https://en.cppreference.com/w/cpp/container/span).
    *
    * Each global shape function is associated with a unique mesh entity.
    * This method provides all the global indices of the shape function
