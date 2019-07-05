@@ -6,7 +6,7 @@
  */
 namespace lf::base {
 
-/** @defgroup lftypes
+/** @defgroup lftypes Common Typedefs
  * @brief various integral types meant to enhance readability of the code
  */
 /** @{ */

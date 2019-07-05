@@ -27,7 +27,7 @@ namespace lf::quad {
  */
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree);
 
-/** @defgroup namedquad Special "named" quadrature rules
+/** @name Special "named" quadrature rules
  * These functions provide a number of special quadrature rules
  * in the forms of @ref QuadRule objects. They are meant to be
  * used in low-order finite element methods when the quadrature

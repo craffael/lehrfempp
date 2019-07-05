@@ -163,8 +163,7 @@ class ReactionDiffusionElementMatrixProvider {
   virtual ~ReactionDiffusionElementMatrixProvider() = default;
 
  private:
-  /** @defgroup coefficient functors
-   * @brief functors providing coefficient functions
+  /** @name functors providing coefficient functions
    * @{ */
   /** Diffusion coefficient */
   DIFF_COEFF alpha_;
@@ -345,9 +344,8 @@ class MassEdgeMatrixProvider {
   using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
   using ElemMat = const elem_mat_t;
 
-  /** @defgroup
-      @brief standard constructors
-     * @{ */
+  /** @name standard constructors
+   * @{ */
   MassEdgeMatrixProvider(const MassEdgeMatrixProvider &) = delete;
   MassEdgeMatrixProvider(MassEdgeMatrixProvider &&) noexcept = default;
   MassEdgeMatrixProvider &operator=(const MassEdgeMatrixProvider &) = delete;
@@ -527,8 +525,7 @@ class ScalarLoadElementVectorProvider {
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
   using ElemVec = const elem_vec_t;
 
-  /** @defgroup stdc
-   * @brief standard constructors
+  /** @name standard constructors
    *@{*/
   ScalarLoadElementVectorProvider(const ScalarLoadElementVectorProvider &) =
       delete;
@@ -740,8 +737,7 @@ class ScalarLoadEdgeVectorProvider {
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
   using ElemVec = const elem_vec_t;
 
-  /** @defgroup stdc
-   * @brief standard constructors
+  /** @name standard constructors
    *@{*/
   ScalarLoadEdgeVectorProvider(const ScalarLoadEdgeVectorProvider &) = delete;
   ScalarLoadEdgeVectorProvider(ScalarLoadEdgeVectorProvider &&) noexcept =

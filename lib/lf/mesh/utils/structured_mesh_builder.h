@@ -30,7 +30,7 @@ class StructuredMeshBuilder {
   }
 
   /**
-   * @defgroup tpinit Initialization methods
+   * @name Initialization methods
    * @{
    */
   template <typename VECTOR>

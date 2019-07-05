@@ -32,7 +32,7 @@ class Triangle : public mesh::Entity {
   /** @brief default constructors, needed by std::vector */
   Triangle() = default;
 
-  /** @defgroup Default and disabled constructors
+  /** @name Default and disabled constructors
    * @{ */
   Triangle(const Triangle&) = delete;
   Triangle(Triangle&&) noexcept = default;
@@ -89,7 +89,7 @@ class Triangle : public mesh::Entity {
         edge_ori_.begin(), edge_ori_.end());
   }
 
-  /** @defgroup Standard methods of an Entity object
+  /** @name Standard methods of an Entity object
    * @sa mesh::Entity
    * @{
    */

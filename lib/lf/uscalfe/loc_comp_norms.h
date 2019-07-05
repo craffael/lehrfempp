@@ -229,8 +229,7 @@ class MeshFunctionL2GradientDifference {
   static_assert(isMeshFunction<VEC_FUNC>);
 
  public:
-  /** defgroup stdc
-   * @brief standard constructors
+  /** @name standard constructors
    * @{ */
   MeshFunctionL2GradientDifference(const MeshFunctionL2GradientDifference &) =
       delete;

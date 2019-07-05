@@ -32,13 +32,15 @@ class Quadrilateral : public mesh::Entity {
   /** @brief default constructors, needed by std::vector */
   Quadrilateral() = default;
 
-  /** @defgroup Default and disabled constructors
-   * @{ */
+  /**
+   * @name Default and disabled constructors
+   */
+  //@{
   Quadrilateral(const Quadrilateral&) = delete;
   Quadrilateral(Quadrilateral&&) noexcept = default;
   Quadrilateral& operator=(const Quadrilateral&) = delete;
   Quadrilateral& operator=(Quadrilateral&&) noexcept = default;
-  /** @} */
+  //@}
 
   /**
    * @brief constructor, is called from MeshFactory
@@ -94,7 +96,8 @@ class Quadrilateral : public mesh::Entity {
   /** @brief access to index of an entity */
   size_type index() const { return index_; }
 
-  /** @defgroup Standard methods of an Entity object
+  /** 
+   * @name Standard methods inherited from Entity object
    * @sa mesh::Entity
    * @{
    */

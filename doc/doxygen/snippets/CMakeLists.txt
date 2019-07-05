@@ -7,9 +7,9 @@ set(sources
   gmsh_reader.cc
   lambda_mesh_data_set.cc
   mesh_function_binary.cc
+  mesh_utils.cc
   ref_el.cc
   vtk_writer.cc
-  mesh_utils.cc
 )
 
 add_library(docsnippets ${sources})

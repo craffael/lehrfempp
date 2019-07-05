@@ -226,8 +226,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
     return *this;
   }
 
-  /** @defgroup getRefPat
-   * @brief Access methods
+  /** @name Access methods
    * @{
    */
   lf::base::sub_idx_t anchor() const { return anchor_; }

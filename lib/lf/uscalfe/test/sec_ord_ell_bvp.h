@@ -47,8 +47,7 @@ class SecondOrderEllipticBVP {
   /** @} */
 
   /**
-   * @defgroup sel
-   * @brief selectors for boundary/interface conditions
+   * @name selectors for boundary/interface conditions
    *
    * All boundary edges are visited.
    * - If EssentialConditionsOnEdge() is `true`, then the edge is treated as an
@@ -65,8 +64,7 @@ class SecondOrderEllipticBVP {
   virtual bool IsImpedanceEdge(const lf::mesh::Entity& edge) const = 0;
   /** @} */
 
-  /** @defgroup data
-   * @brief Data functions
+  /** @name Data functions
    * @{ */
   /** @brief right-hand side source function in @f$\in L^2 @f$ */
   virtual SCALAR f(Eigen::Vector2d x) const = 0;

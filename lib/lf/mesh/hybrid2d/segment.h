@@ -33,7 +33,7 @@ class Segment : public mesh::Entity {
   /** @brief default constructors, needed by std::vector */
   Segment() = default;
 
-  /** @defgroup Default and disabled constructors
+  /** @name Default and disabled constructors
    * @{ */
   Segment(const Segment&) = delete;
   Segment(Segment&&) noexcept = default;
@@ -95,7 +95,7 @@ class Segment : public mesh::Entity {
   /** @brief access to index of an entity */
   size_type index() const { return index_; }
 
-  /** @defgroup Standard methods of an Entity object
+  /** @name Standard methods of an Entity object
    * @sa mesh::Entity
    * @{
    */
