@@ -71,7 +71,7 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   return status;
 }  // end checkMeshCompleteness
 
-CONTROLDECLARE(watertight_mesh_ctrl, "watertight_mesh");
+ADDOPTION(watertight_mesh_ctrl, watertight_mesh, "");
 
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only) {

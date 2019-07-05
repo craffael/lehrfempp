@@ -1,5 +1,7 @@
-set(sources 
+set(sources
   base.h
+  comm.h
+  comm.cc
   dereference_lambda_random_access_iterator.h
   eigen_tools.h
   forward_iterator.h
@@ -13,12 +15,10 @@ set(sources
   random_access_range.h
   ref_el.cc
   ref_el.h
-  static_vars.h
-  static_vars.cc
 )
 
 lf_add_library(lf.base ${sources})
-target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost)
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options)
 
 if(MSVC)
   if(${MSVC_VERSION} GREATER_EQUAL 1915) 

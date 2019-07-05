@@ -33,4 +33,17 @@ target_link_libraries(examples.assemble.Dirichlet_Laplacian_demo
 
 target_compile_features(examples.assemble.Dirichlet_Laplacian_demo PUBLIC cxx_std_17)
 
+set (dof_demo_with_comm dof_demo_with_comm.cc)
 
+add_executable(examples.assemble.dof_demo_with_comm ${dof_demo_with_comm})
+
+target_link_libraries(examples.assemble.dof_demo_with_comm
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.assemble
+  )
+
+target_compile_features(examples.assemble.dof_demo_with_comm PUBLIC cxx_std_17)

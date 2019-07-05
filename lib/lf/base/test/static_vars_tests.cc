@@ -1,6 +1,5 @@
 
 #include <gtest/gtest.h>
-#include <lf/base/static_vars.h>
 
 using namespace lf::base;
 

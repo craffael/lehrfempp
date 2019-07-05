@@ -2,8 +2,7 @@
 
 namespace lf::base {
 
-CONTROLDECLARECOMMENT(RefEl, output_ctrl_, "output_ctrl_",
-                      "Diagnostics control for RefEl");
+ADDOPTION(RefEl::output_ctrl_, RefEl_ctrl, "Diagnostics control for RefEl");
 
 const Eigen::MatrixXd RefEl::ncoords_point_dynamic_ = Eigen::VectorXd(0);
 

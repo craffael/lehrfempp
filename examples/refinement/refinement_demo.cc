@@ -25,23 +25,29 @@
 // 1 -> global baryccentric refinement
 // 2 -> global marking of edges
 // 3 -> local marking of edges with midpoints in [0,1]^2
-CONTROLDECLAREINFO(refselector, "refselector",
-                   "Selector for refinement method");
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char **argv) {
   using size_type = lf::base::size_type;
   using lf::io::TikzOutputCtrl;
 
   std::cout << "LehrFEM++ demo of mesh construction and refinement"
             << std::endl;
 
-  // Set control variables from command line or file "setup vars"
-  lf::base::ReadCtrVarsCmdArgs(argc, argv);
-  if (!lf::base::ReadCtrlVarsFile("setup.vars")) {
-    std::cout << "No file specifying control variables" << std::endl;
+  // Add help and variable refselector
+  lf::base::ci::Add("help,h", "Display help");
+  lf::base::ci::Add<int>(
+      "refselector", "Selector for refinement method (0 [default] to 3)", 0);
+  // Set control variables from command line or file "setup.vars"
+  if (!lf::base::ci::ParseFile("setup.vars")) {
+    std::cout << "No file `setup.vars` specifying control variables\n";
   }
-  std::cout << "##### Control variables:" << std::endl;
-  lf::base::ListCtrlVars(std::cout);
+  lf::base::ci::ParseCommandLine(argc, argv);
+  // check for the help option (-h or --help)
+  if (lf::base::ci::Help()) {
+    return 0;
+  }
+  // get the value for refselector
+  auto refselector = lf::base::ci::Get<int>("refselector");
 
   // Generate hybrid test mesh and obtain a pointer to it
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr =

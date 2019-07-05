@@ -42,8 +42,10 @@ const unsigned int amd_lass = 16;
 // static lf::base::StaticVar ctrlvarass_mat_dbg_ctrl(
 //     "Assembly_ctrl", ass_mat_dbg_ctrl, lf::base::ctrl_root,
 //     "Debugging output control for AssembleMatrixLocally()");
-EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
-                  "Debugging output control for AssembleMatrixLocally()");
+// EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
+//                  "Debugging output control for AssembleMatrixLocally()");
+
+extern unsigned int ass_mat_dbg_ctrl;
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -137,7 +139,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
             std::cout << gdof_idx << ' ';
           }
 	  std::cout << std::endl);
-      // clang-format on 
+      // clang-format on
       SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lmdim,
                         std::cout << "ASM: " << nrows_loc << " x " << ncols_loc
                                   << " element matrix" << std::endl);
@@ -155,17 +157,14 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
           // Add the element at position (i,j) of the local matrix
           // to the entry at (row_idx[i], col_idx[j]) of the global matrix
           matrix.AddToEntry(row_idx[i], col_idx[j], elem_mat(i, j));
-	  SWITCHEDSTATEMENT(ass_mat_dbg_ctrl,amd_lass ,
-			    std::cout << "(" << row_idx[i] << ','
-			    <<  col_idx[j] << ")+= " <<  elem_mat(i, j) << ", ";
-			);
+          SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lass,
+                            std::cout << "(" << row_idx[i] << ',' << col_idx[j]
+                                      << ")+= " << elem_mat(i, j) << ", ";);
         }
       }  // end assembly local double loop
-      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl,amd_lass ,
-			std::cout << std::endl;
-			);
-    }    // end if(isActive() )
-  }      // end main assembly loop
+      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lass, std::cout << std::endl;);
+    }  // end if(isActive() )
+  }    // end main assembly loop
 }  // end AssembleMatrixLocally
 
 /**
@@ -174,21 +173,23 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
- * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &entity_matrix_provider, TMPMATRIX &matrix)
+ * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
+ * TMPMATRIX &matrix)
  *
  * @note An extra requirement for the type TMPMATRIX is imposed; it must
  *       provide the method `setZero()` for setting all entries of the
  *       matrix to zero.
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
-TMPMATRIX AssembleMatrixLocally(dim_t codim,
-                                const DofHandler &dof_handler_trial,
-                                const DofHandler &dof_handler_test,
-                                ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
+TMPMATRIX AssembleMatrixLocally(
+    dim_t codim, const DofHandler &dof_handler_trial,
+    const DofHandler &dof_handler_test,
+    ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
   TMPMATRIX matrix{dof_handler_test.NoDofs(), dof_handler_trial.NoDofs()};
   matrix.setZero();
   AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
-      codim, dof_handler_trial, dof_handler_test, entity_matrix_provider, matrix);
+      codim, dof_handler_trial, dof_handler_test, entity_matrix_provider,
+      matrix);
   return matrix;
 }
 
@@ -202,12 +203,14 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim,
  * space are the same.
  *
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
- * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider, TMPMATRIX &matrix)
+ * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider,
+ * TMPMATRIX &matrix)
  */
 
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
-TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
-                                ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
+TMPMATRIX AssembleMatrixLocally(
+    dim_t codim, const DofHandler &dof_handler,
+    ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
   return AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
       codim, dof_handler, dof_handler, entity_matrix_provider);
 }
@@ -217,12 +220,14 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  * vectors
  *
  * @tparam VECTOR a generic vector type with component access through []
- * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local vectors
+ * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
+ * vectors
  * @param codim co-dimension of entities over which assembly should be carried
  * out
  * @param dof_handler object providing local-to-global dof index mapping, see
  * DofHandler
- * @param entity_vector_provider local entity_vector_provider object (passed as non-const!)
+ * @param entity_vector_provider local entity_vector_provider object (passed as
+ * non-const!)
  * @param resultvector generic vector for returning the assembled vector
  *
  * ### Type requirements for template arguments
@@ -241,7 +246,8 @@ TMPMATRIX AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler,
  */
 template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
-                           ENTITY_VECTOR_PROVIDER &entity_vector_provider, VECTOR &resultvector) {
+                           ENTITY_VECTOR_PROVIDER &entity_vector_provider,
+                           VECTOR &resultvector) {
   // Pointer to underlying mesh
   auto mesh = dof_handler.Mesh();
 
@@ -255,8 +261,8 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       // global dof indices for contribution of the entity
       lf::base::RandomAccessRange<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(entity));
-      // Request local vector from entity_vector_provider object. In the case CODIM = 0,
-      // when `entity` is a cell, this is the element vector
+      // Request local vector from entity_vector_provider object. In the case
+      // CODIM = 0, when `entity` is a cell, this is the element vector
       const auto elem_vec{entity_vector_provider.Eval(entity)};
       LF_ASSERT_MSG(elem_vec.size() >= veclen,
                     "length mismatch " << elem_vec.size() << " <-> " << veclen
@@ -275,7 +281,8 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  * @return assembled vector as an object of a type specified by the
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
- *                           ENTITY_VECTOR_PROVIDER &entity_vector_provider, VECTOR &resultvector)
+ *                           ENTITY_VECTOR_PROVIDER &entity_vector_provider,
+ * VECTOR &resultvector)
  *
  * ### Additional type requirements for VECTOR template argument
  *
@@ -292,8 +299,8 @@ VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
   // Initialize to zero: assembly of new vector
   resultvector.setZero();
   // Perform actual assembly
-  AssembleVectorLocally<VECTOR, ENTITY_VECTOR_PROVIDER>(codim, dof_handler, entity_vector_provider,
-                                               resultvector);
+  AssembleVectorLocally<VECTOR, ENTITY_VECTOR_PROVIDER>(
+      codim, dof_handler, entity_vector_provider, resultvector);
   return resultvector;
 }  // end AssembleVectorLocally
 
