@@ -32,7 +32,14 @@ void getData_REF(double offset, std::vector<double> &res) {
   }
 }
 
-int main(int /*argc*/, const char * /*unused*/ []) {
+nonstd::span<const double> getData_SPAN(double offset) {
+  for (int j = 0; j < N; j++) {
+    stat_tmp[j] = 1.0 / (j + offset);
+  }
+  return {static_cast<double *>(stat_tmp), (stat_tmp + N)};
+}
+
+int main(int /*argc*/, const char * /*unused*/[]) {
   std::cout << "Runtime test for range access" << std::endl;
 
   std::cout << "I. Access through RandomAccessRange" << std::endl;
@@ -66,6 +73,18 @@ int main(int /*argc*/, const char * /*unused*/ []) {
     std::vector<double> res(N);
     for (long int i = 0; i < reps; i++) {
       getData_REF(i, res);
+      double s = 0.0;
+      for (int j = 0; j < N; j++) {
+        s += res[j];
+      }
+    }
+  }
+
+  std::cout << "IV. Returning result through span" << std::endl;
+  {
+    boost::timer::auto_cpu_timer t;
+    for (long int i = 0; i < reps; i++) {
+      auto res = getData_SPAN(i);
       double s = 0.0;
       for (int j = 0; j < N; j++) {
         s += res[j];

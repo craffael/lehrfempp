@@ -255,7 +255,7 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
         dofvec.size() == num_loc_dofs,
         "Size mismatch: " << dofvec.size() << " <-> " << num_loc_dofs);
     // Fetch global numbers of local shape functions
-    lf::base::RandomAccessRange<const gdof_idx_t> ldof_gidx(
+    nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
         dofh.GlobalDofIndices(cell));
     // Insert dof values into the global coefficient vector
     for (int j = 0; j < num_loc_dofs; ++j) {
@@ -416,7 +416,7 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
       // Allocate a temporary vector of appropriate size
       dofvector_t loc_coeffs(num_loc_dofs);
       // Fetch global numbers of local shape functions
-      lf::base::RandomAccessRange<const gdof_idx_t> ldof_gidx(
+      nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
           dofh.GlobalDofIndices(cell));
       // Copy degrees of freedom into temporory vector
       for (int j = 0; j < num_loc_dofs; ++j) {

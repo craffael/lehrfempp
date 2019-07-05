@@ -81,10 +81,12 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
   auto new_last = std::remove_if(
       A->triplets().begin(), A->triplets().end(),
       [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
-        SWITCHEDSTATEMENT(dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
-          std::cout << "EBD: removing " << triplet.row() << ',' << triplet.col()
-                    << "[" << triplet.value() << "]" << std::endl;
-        });
+        SWITCHEDSTATEMENT(
+            dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
+              std::cout << "EBD: removing " << triplet.row() << ','
+                        << triplet.col() << "[" << triplet.value() << "]"
+                        << std::endl;
+            });
         return tmp_bd_flags[triplet.row()];
       });
   A->triplets().erase(new_last, A->triplets().end());
@@ -187,7 +189,7 @@ double L2ErrorLinearFEDirichletLaplacian(
     const lf::assemble::size_type num_int_dof =
         loc_glob_map.NoInteriorDofs(node);
     LF_ASSERT_MSG(num_int_dof == 1, "Node with " << num_int_dof << " dof");
-    const lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> gsf_idx(
+    nonstd::span<const lf::assemble::gdof_idx_t> gsf_idx(
         loc_glob_map.InteriorGlobalDofIndices(node));
     const lf::assemble::gdof_idx_t node_dof_idx = gsf_idx[0];
     dirichlet_data[node_dof_idx] = u(point);
@@ -232,8 +234,8 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Compute the norm of nodal error cell by cell
   double nodal_err = 0.0;
   for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
-    const lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t>
-        cell_dof_idx(loc_glob_map.GlobalDofIndices(cell));
+    nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
+        loc_glob_map.GlobalDofIndices(cell));
     LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
                   "Inconsistent node number");
     const lf::base::size_type num_nodes = cell.RefEl().NumNodes();

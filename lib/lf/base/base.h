@@ -49,5 +49,6 @@ constexpr double kPi = 3.14159265358979323846;
 #include "random_access_iterator.h"
 #include "random_access_range.h"
 #include "ref_el.h"
+#include "span.h"
 
 #endif  // __986f32316282425d9be137cb399482f3

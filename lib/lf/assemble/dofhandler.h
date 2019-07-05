@@ -148,7 +148,7 @@ class DofHandler {
    * The size of the returned range must agree with the value returned
    * by NoLocalDofs() when supplied with the same arguments.
    */
-  virtual lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
+  virtual nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -164,8 +164,8 @@ class DofHandler {
    * @note Be aware of the difference of @ref GlobalDofIndices() and @ref
    * InteriorGlobalDofIndices()
    */
-  virtual lf::base::RandomAccessRange<const gdof_idx_t>
-  InteriorGlobalDofIndices(const lf::mesh::Entity &entity) const = 0;
+  virtual nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+      const lf::mesh::Entity &entity) const = 0;
 
   /**
    * @brief retrieve unique entity at which a basis function is located
@@ -250,14 +250,14 @@ class UniformFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
+  nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
   /** @copydoc DofHandler::InteriorGlobalDofIndices() */
-  lf::base::RandomAccessRange<const gdof_idx_t> InteriorGlobalDofIndices(
+  nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -290,10 +290,10 @@ class UniformFEDofHandler : public DofHandler {
   void initTotalNoDofs();
 
   // Access method to numbers and values of indices of shape functions
-  lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
-      lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
+  nonstd::span<const gdof_idx_t> GlobalDofIndices(lf::base::RefEl ref_el_type,
+                                                  glb_idx_t entity_index) const;
 
-  lf::base::RandomAccessRange<const gdof_idx_t> InteriorGlobalDofIndices(
+  nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
   size_type GetNoLocalDofs(lf::base::RefEl ref_el_type,
@@ -594,13 +594,13 @@ class DynamicFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  lf::base::RandomAccessRange<const gdof_idx_t> GlobalDofIndices(
+  nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  lf::base::RandomAccessRange<const gdof_idx_t> InteriorGlobalDofIndices(
+  nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**

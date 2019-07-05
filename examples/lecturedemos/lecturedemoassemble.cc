@@ -215,8 +215,8 @@ void lecturedemoDirichlet() {
     // rule
     double nodal_err = 0.0;
     for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
-      const lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t>
-          cell_dof_idx(dof_handler.GlobalDofIndices(cell));
+      nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
+          dof_handler.GlobalDofIndices(cell));
       LF_ASSERT_MSG(dof_handler.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
                     "Inconsistent node number");
       const lf::base::size_type num_nodes = cell.RefEl().NumNodes();

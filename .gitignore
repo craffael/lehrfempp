@@ -41,6 +41,7 @@ bin_32/
 bin_clang/
 bin_clang5/
 bin_clang7/
+bin_clang8/
 bin_clang_release/
 gcc/
 bin_gcc/
