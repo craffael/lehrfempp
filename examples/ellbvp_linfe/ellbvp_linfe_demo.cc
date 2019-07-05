@@ -342,7 +342,7 @@ int main(int /*argc*/, const char** /*argv*/) {
           },
           mf_g)};
       // Eliminate Dirichlet dofs from linear system
-      lf::assemble::fix_flagged_solution_components<double>(
+      lf::assemble::FixFlaggedSolutionComponents<double>(
           [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
             return ess_bdc_flags_values[gdof_idx];
           },

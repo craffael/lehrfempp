@@ -502,7 +502,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * elements; volume contributions only
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
- * @tparam FUNCTOR \ref mesh_function "MeshFunction" which defines the source
+ * @tparam MESH_FUNCTION \ref mesh_function "MeshFunction" which defines the
+ source
  * function \f$ f \f$
  *
  * The underlying local linear form is
@@ -517,9 +518,9 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
-template <typename SCALAR, typename FUNCTOR>
+template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
-  static_assert(isMeshFunction<FUNCTOR>);
+  static_assert(isMeshFunction<MESH_FUNCTION>);
 
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
@@ -546,7 +547,8 @@ class ScalarLoadElementVectorProvider {
    * degree of the finite element space.
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      MESH_FUNCTION f);
   /** @brief Constructor, performs precomputations based on user-supplied
    * quadrature rules.
    *
@@ -556,8 +558,8 @@ class ScalarLoadElementVectorProvider {
    *
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
-      quad_rule_collection_t qr_collection);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      MESH_FUNCTION f, quad_rule_collection_t qr_collection);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -573,7 +575,7 @@ class ScalarLoadElementVectorProvider {
 
  private:
   /** @brief An object providing the source function */
-  FUNCTOR f_;
+  MESH_FUNCTION f_;
 
   std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
 
@@ -591,6 +593,12 @@ class ScalarLoadElementVectorProvider {
 
 template <typename SCALAR, typename FUNCTOR>
 unsigned int ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ctrl_ = 0;
+
+// Deduction guide
+template <class PTR, class MESH_FUNCTION>
+ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
+    ->ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
+                                      MESH_FUNCTION>;
 
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
@@ -645,12 +653,12 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename FUNCTOR>
-typename ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ElemVec const
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
+template <typename SCALAR, typename MESH_FUNCTION>
+typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec const
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) {
   // Type for source function
-  using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
+  using source_fn_t = MeshFunctionReturnType<MESH_FUNCTION>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Obtain precomputed information about values of local shape functions

@@ -69,7 +69,7 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
 
 /** @brief Eliminate degrees of freedom located on the boundary
  *
- * No longer in use. Replaced with lf::assemble::fix_flagged_solution_components
+ * No longer in use. Replaced with lf::assemble::FixFlaggedSolutionComponents
  */
 void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
                            lf::assemble::COOMatrix<double> *A) {
@@ -203,7 +203,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Identify dof indices associated with the boundary
   // >>
   // >> Equivalent new versions
-  lf::assemble::fix_flagged_solution_comp_alt<double>(
+  lf::assemble::FixFlaggedSolutionCompAlt<double>(
       [&tmp_bd_flags,
        &dirichlet_data](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
         LF_ASSERT_MSG((i < tmp_bd_flags.size()) && (i < dirichlet_data.size()),
@@ -211,7 +211,7 @@ double L2ErrorLinearFEDirichletLaplacian(
         return std::make_pair(tmp_bd_flags[i], dirichlet_data[i]);
       },
       mat, rhsvec);
-  // lf::assemble::fix_flagged_solution_components<double>(
+  // lf::assemble::FixFlaggedSolutionComponents<double>(
   //   tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output

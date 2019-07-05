@@ -243,7 +243,7 @@ SecOrdEllBVPLagrFELinSys(
         MeshFunctionGlobal(
             [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); }))};
     // Eliminate Dirichlet dofs from linear system
-    lf::assemble::fix_flagged_solution_components<SCALAR>(
+    lf::assemble::FixFlaggedSolutionComponents<SCALAR>(
         [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
           return ess_bdc_flags_values[gdof_idx];
         },

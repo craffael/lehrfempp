@@ -193,7 +193,7 @@ void lecturedemoDirichlet() {
     }
   }
   // modify linear system of equations 
-  lf::assemble::fix_flagged_solution_comp_alt<double>(
+  lf::assemble::FixFlaggedSolutionCompAlt<double>(
       [&ess_dof_select](glb_idx_t dof_idx) -> std::pair<bool, double> {
         return ess_dof_select[dof_idx];
       },
