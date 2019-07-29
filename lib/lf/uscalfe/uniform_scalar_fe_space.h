@@ -97,14 +97,14 @@ class UniformScalarFESpace {
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
-  std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
+  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
     return mesh_p_;
   }
   /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
-  const lf::assemble::DofHandler &LocGlobMap() const {
+  [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
     LF_VERIFY_MSG(dofh_p_ != nullptr,
                   "No valid FE space object: no dof handler");
@@ -120,13 +120,14 @@ class UniformScalarFESpace {
    * element specification was not given for a particular topological type of
    * entity.
    */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(lf::base::RefEl ref_el_type) const;
 
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
    */
-  size_type NumRefShapeFunctions(lf::base::RefEl ref_el_type) const;
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      lf::base::RefEl ref_el_type) const;
 
   /** @brief No special destructor */
   virtual ~UniformScalarFESpace() = default;
@@ -151,7 +152,7 @@ class UniformScalarFESpace {
   /** Initialization of class member variables and consistency checks */
   void init();
   /** Checks whether some pointer are not valid */
-  bool check_ptr() const {
+  [[nodiscard]] bool check_ptr() const {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
     LF_VERIFY_MSG(dofh_p_ != nullptr,
                   "No valid FE space object: no dof handler");
@@ -307,7 +308,9 @@ UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
       // LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
       return rfs_quad_p_;
     }
-    default: { LF_VERIFY_MSG(false, "Illegal entity type"); }
+    default: {
+      LF_VERIFY_MSG(false, "Illegal entity type");
+    }
   }
   return nullptr;
 }

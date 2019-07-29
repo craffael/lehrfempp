@@ -1,6 +1,6 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay'
-WarningsAsErrors: '*'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape'
+WarningsAsErrors: '*,-clang-analyzer-core*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
@@ -130,6 +130,8 @@ CheckOptions:
     value:           '1'
   - key:             misc-misplaced-widening-cast.CheckImplicitCasts
     value:           '0'
+  - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
   - key:             misc-sizeof-expression.WarnOnSizeOfCompareToConstant
     value:           '1'
   - key:             misc-sizeof-expression.WarnOnSizeOfConstant

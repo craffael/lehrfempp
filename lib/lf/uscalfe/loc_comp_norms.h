@@ -361,7 +361,7 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   auto vfval = vecfield_(cell, qr_Points);
 
   // Loop over quadrature points
-  for (int k = 0; k < qr_NumPts; ++k) {
+  for (unsigned k = 0; k < qr_NumPts; ++k) {
     // Value of the gradient of the finite element function at quadrature point
     // Transformed gradients
     const auto trf_grad(
@@ -371,7 +371,7 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
     // the finite element function in the quadrature point
     Eigen::Matrix<dof_t, Eigen::Dynamic, 1> grad_uh_val(world_dim, 1);
     grad_uh_val.setZero();
-    for (int j = 0; j < num_LSF; ++j) {
+    for (unsigned j = 0; j < num_LSF; ++j) {
       grad_uh_val += (dofs[j] * trf_grad.col(j));
     }
     // form the difference

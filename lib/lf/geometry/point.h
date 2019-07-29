@@ -11,25 +11,30 @@ class Point : public Geometry {
  public:
   explicit Point(Eigen::VectorXd coord) : coord_(std::move(coord)) {}
 
-  dim_t DimLocal() const override { return 0; }
+  [[nodiscard]] dim_t DimLocal() const override { return 0; }
 
-  dim_t DimGlobal() const override { return coord_.rows(); }
+  [[nodiscard]] dim_t DimGlobal() const override { return coord_.rows(); }
 
-  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kPoint();
+  }
 
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
-
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
-  Eigen::VectorXd IntegrationElement(
+
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override;
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
 
   /**
    * @brief the child geometry is just a copy of the point geometry
    */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pattern, base::dim_t codim) const override;
 
  private:

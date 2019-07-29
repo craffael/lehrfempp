@@ -65,10 +65,10 @@ class Triangle : public mesh::Entity {
                     const Segment* edge1, const Segment* edge2);
 
   /** @brief an edge is an entity of co-dimension 1 */
-  unsigned Codim() const override { return 0; }
+  [[nodiscard]] unsigned Codim() const override { return 0; }
 
   /** @brief access to index of an entity */
-  size_type index() const { return index_; }
+  [[nodiscard]] size_type index() const { return index_; }
 
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select edges, if 2 select nodes, if 0 select cell
@@ -77,14 +77,14 @@ class Triangle : public mesh::Entity {
      - for rel_codim == 1: return 3-range covering corners
      - for rel_codim == 2: return 3-range containing the edges
    */
-  base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
-      const override {
+  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
+  RelativeOrientations() const override {
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         edge_ori_.begin(), edge_ori_.end());
   }
@@ -93,9 +93,13 @@ class Triangle : public mesh::Entity {
    * @sa mesh::Entity
    * @{
    */
-  geometry::Geometry* Geometry() const override { return geometry_.get(); }
-  base::RefEl RefEl() const override { return base::RefEl::kTria(); }
-  bool operator==(const mesh::Entity& rhs) const override {
+  [[nodiscard]] geometry::Geometry* Geometry() const override {
+    return geometry_.get();
+  }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kTria();
+  }
+  [[nodiscard]] bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
   }
   /** @} */

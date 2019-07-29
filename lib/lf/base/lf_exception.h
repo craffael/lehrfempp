@@ -26,7 +26,9 @@ class LfException : public std::exception {
    */
   explicit LfException(std::string what) : what_(std::move(what)) {}
 
-  char const* what() const noexcept override { return what_.c_str(); }
+  [[nodiscard]] char const* what() const noexcept override {
+    return what_.c_str();
+  }
 
  private:
   std::string what_;

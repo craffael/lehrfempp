@@ -2,6 +2,7 @@
 #define __bae24f2390174bff85f65c2c2e558a9e
 
 #include <boost/container/vector.hpp>
+#include <utility>
 #include "mesh_data_set.h"
 
 namespace lf::mesh::utils {
@@ -55,15 +56,16 @@ class CodimMeshDataSet : public MeshDataSet<T> {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  T& operator()(const Entity& e) {
+  [[nodiscard]] T& operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
-  const T operator()(const Entity& e) const override {
+  // NOLINTNEXTLINE(readability-const-return-type)
+  [[nodiscard]] const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
-  bool DefinedOn(const Entity& e) const override {
+  [[nodiscard]] bool DefinedOn(const Entity& e) const override {
     return e.Codim() == codim_ && mesh_->Contains(e);
   }
 
@@ -109,9 +111,9 @@ class CodimMeshDataSet : public MeshDataSet<T> {
  */
 template <class T>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
-    std::shared_ptr<const Mesh> mesh, base::dim_t codim) {
+    const std::shared_ptr<const Mesh>& mesh, base::dim_t codim) {
   using impl_t = CodimMeshDataSet<T>;
-  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), codim));
+  return std::shared_ptr<impl_t>(new impl_t(mesh, codim));
 }
 
 /**
@@ -125,9 +127,9 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
 template <class T, class = typename std::enable_if<
                        std::is_copy_constructible<T>::value>::type>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
-    std::shared_ptr<const Mesh> mesh, base::dim_t codim, T init) {
+    const std::shared_ptr<const Mesh>& mesh, base::dim_t codim, T init) {
   using impl_t = CodimMeshDataSet<T>;
-  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), codim, init));
+  return std::shared_ptr<impl_t>(new impl_t(mesh, codim, init));
 }
 
 }  // namespace lf::mesh::utils

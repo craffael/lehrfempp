@@ -72,7 +72,7 @@ Eigen::MatrixXd QuadO2::Jacobian(const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd tmp_epsilon_x_2 = epsilon_x_2_.replicate(1, local.cols());
   Eigen::MatrixXd tmp_gamma(gamma_.rows(), 2 * local.cols());
 
-  for (int i = 0; i < local.cols(); ++i) {
+  for (long i = 0; i < local.cols(); ++i) {
     tmp_epsilon.block(0, 2 * i, tmp_epsilon.rows(), 2) =
         epsilon_.rowwise().reverse().array().rowwise() *
         local_squared_reversed.col(i).transpose().array();
@@ -101,14 +101,14 @@ Eigen::MatrixXd QuadO2::JacobianInverseGramian(
   Eigen::MatrixXd jacInvGram(jac.rows(), jac.cols());
 
   if (DimGlobal() == 2) {
-    for (int i = 0; i < local.cols(); ++i) {
+    for (long i = 0; i < local.cols(); ++i) {
       auto jacobian = jac.block(0, 2 * i, 2, 2);
       jacInvGram.block(0, 2 * i, 2, 2) << jacobian(1, 1), -jacobian(1, 0),
           -jacobian(0, 1), jacobian(0, 0);
       jacInvGram.block(0, 2 * i, 2, 2) /= jacobian.determinant();
     }
   } else {
-    for (int i = 0; i < local.cols(); ++i) {
+    for (long i = 0; i < local.cols(); ++i) {
       auto jacobian = jac.block(0, 2 * i, jac.rows(), 2);
 
       auto A = jacobian.col(0);
@@ -134,11 +134,11 @@ Eigen::VectorXd QuadO2::IntegrationElement(const Eigen::MatrixXd& local) const {
   Eigen::VectorXd intElem(local.cols());
 
   if (DimGlobal() == 2) {
-    for (int i = 0; i < local.cols(); ++i) {
+    for (long i = 0; i < local.cols(); ++i) {
       intElem(i) = std::abs(jac.block(0, 2 * i, 2, 2).determinant());
     }
   } else {
-    for (int i = 0; i < local.cols(); ++i) {
+    for (long i = 0; i < local.cols(); ++i) {
       auto jacobian = jac.block(0, 2 * i, jac.rows(), 2);
 
       auto A = jacobian.col(0);
@@ -170,7 +170,9 @@ std::unique_ptr<Geometry> QuadO2::SubGeometry(dim_t codim, dim_t i) const {
       LF_ASSERT_MSG(0 <= i && i <= 8, "i is out of bounds");
       return std::make_unique<Point>(coords_.col(i));
     }
-    default: { LF_VERIFY_MSG(false, "codim is out of bounds") }
+    default: {
+      LF_VERIFY_MSG(false, "codim is out of bounds")
+    }
   }
 }
 
@@ -262,7 +264,9 @@ std::vector<std::unique_ptr<Geometry>> QuadO2::ChildGeometry(
 
         break;
       }
-      default: { LF_VERIFY_MSG(false, "Illegal co-dimension"); }
+      default: {
+        LF_VERIFY_MSG(false, "Illegal co-dimension");
+      }
     }
   }
 

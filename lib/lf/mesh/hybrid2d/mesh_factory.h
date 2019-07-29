@@ -40,19 +40,22 @@ class MeshFactory : public mesh::MeshFactory {
   explicit MeshFactory(dim_t dim_world, bool check_completeness = true)
       : dim_world_(dim_world), check_completeness_(check_completeness) {}
 
-  dim_t DimWorld() const override { return dim_world_; }
+  [[nodiscard]] dim_t DimWorld() const override { return dim_world_; }
 
-  dim_t DimMesh() const override { return 2; }
+  [[nodiscard]] dim_t DimMesh() const override { return 2; }
 
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddPoint(coord_t coord) override;
 
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) override;
 
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddEntity(base::RefEl ref_el,
                       const base::ForwardRange<const size_type>& nodes,
                       std::unique_ptr<geometry::Geometry>&& geometry) override;
 
-  std::shared_ptr<mesh::Mesh> Build() override;
+  [[nodiscard]] std::shared_ptr<mesh::Mesh> Build() override;
 
   /** @brief output function printing assembled lists of entity information */
   void PrintLists(std::ostream& o = std::cout) const;

@@ -111,7 +111,7 @@ class MeshHierarchy {
   /**
    * @brief number of meshes contained in the hierarchy, 1 for a single mesh
    */
-  size_type NumLevels() const { return meshes_.size(); }
+  [[nodiscard]] size_type NumLevels() const { return meshes_.size(); }
 
   /**
    * @brief access the mesh on a particular level
@@ -119,7 +119,8 @@ class MeshHierarchy {
    * @param level specifies level of interest, 0 stands for coarsest level
    * @return shared pointer to mesh on specified level
    */
-  std::shared_ptr<const mesh::Mesh> getMesh(size_type level) const {
+  [[nodiscard]] std::shared_ptr<const mesh::Mesh> getMesh(
+      size_type level) const {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
@@ -127,7 +128,7 @@ class MeshHierarchy {
   /**
    * @copydoc lf::refinement::MeshHierarchy::getMesh()
    */
-  std::shared_ptr<mesh::Mesh> getMesh(size_type level) {
+  [[nodiscard]] std::shared_ptr<mesh::Mesh> getMesh(size_type level) {
     LF_VERIFY_MSG(level < meshes_.size(),
                   "Level " << level << " outside scope");
     return meshes_.at(level);
@@ -139,7 +140,8 @@ class MeshHierarchy {
    *
    * @return vector of shared pointers to lf::mesh:Mesh objects
    */
-  std::vector<std::shared_ptr<const mesh::Mesh>> getMeshes() const {
+  [[nodiscard]] std::vector<std::shared_ptr<const mesh::Mesh>> getMeshes()
+      const {
     return {meshes_.begin(), meshes_.end()};
   }
 
@@ -151,7 +153,8 @@ class MeshHierarchy {
    *
    * @sa PointChildInfo
    */
-  const std::vector<PointChildInfo> &PointChildInfos(size_type level) const {
+  [[nodiscard]] const std::vector<PointChildInfo> &PointChildInfos(
+      size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return point_child_infos_[level];
   }
@@ -163,7 +166,8 @@ class MeshHierarchy {
    *
    * @sa EdgeChildInfo
    */
-  const std::vector<EdgeChildInfo> &EdgeChildInfos(size_type level) const {
+  [[nodiscard]] const std::vector<EdgeChildInfo> &EdgeChildInfos(
+      size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return edge_child_infos_[level];
   }
@@ -175,7 +179,8 @@ class MeshHierarchy {
    *
    * @sa CellChildInfo
    */
-  const std::vector<CellChildInfo> &CellChildInfos(size_type level) const {
+  [[nodiscard]] const std::vector<CellChildInfo> &CellChildInfos(
+      size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return cell_child_infos_[level];
   }
@@ -188,8 +193,8 @@ class MeshHierarchy {
    *
    * @sa ParentInfo
    */
-  const std::vector<ParentInfo> &ParentInfos(size_type level,
-                                             dim_t codim) const {
+  [[nodiscard]] const std::vector<ParentInfo> &ParentInfos(size_type level,
+                                                           dim_t codim) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     LF_VERIFY_MSG(codim < 3, "Codim = " << codim << " illegal");
     return parent_infos_[level][codim];
@@ -201,7 +206,8 @@ class MeshHierarchy {
    * @return vector of (local) sub-entity index of refinement edge for every
    * cell
    */
-  const std::vector<sub_idx_t> &RefinementEdges(size_type level) const {
+  [[nodiscard]] const std::vector<sub_idx_t> &RefinementEdges(
+      size_type level) const {
     LF_VERIFY_MSG(level < NumLevels(), "Illegal level " << level);
     return refinement_edges_[level];
   }
@@ -342,7 +348,7 @@ class MeshHierarchy {
    * This method is used for setting refinement edges on coarsest meshes.
    * Called in the constructor of MeshHierarchy.
    */
-  sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
+  [[nodiscard]] sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 
  public:
   /** @brief diagnostics control variable */

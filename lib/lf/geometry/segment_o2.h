@@ -31,27 +31,25 @@ class SegmentO2 : public Geometry {
    */
   explicit SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);
 
-  dim_t DimLocal() const override { return 1; }
-  dim_t DimGlobal() const override { return coords_.rows(); }
-  base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
+  [[nodiscard]] dim_t DimLocal() const override { return 1; }
+  [[nodiscard]] dim_t DimGlobal() const override { return coords_.rows(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
 
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
-  Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
 
-  /** @copydoc lf::geometry::Geometry::SubGeometry() */
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
 
-  /**
-   * @copydoc lf::geometry::Geometry::ChildGeometry()
-   *
-   * For a detailed description of the indexing of the vertices of child
-   * entities see `Refinement.xoj`
-   */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
  private:

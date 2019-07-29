@@ -70,13 +70,13 @@ class Mesh {
    *        equivalently the maximum dimension of the reference elements
    *        present in the mesh.
    */
-  virtual unsigned DimMesh() const = 0;
+  [[nodiscard]] virtual unsigned DimMesh() const = 0;
 
   /**
    * @brief The dimension of the Euclidean space in which the mesh is
    *        embedded.
    */
-  virtual unsigned DimWorld() const = 0;
+  [[nodiscard]] virtual unsigned DimWorld() const = 0;
 
   /**
    * @brief All entities of a given codimension.
@@ -100,21 +100,23 @@ class Mesh {
    immutable
    * object of type @ref Entity whose co-dimension is `codim`.
    */
-  virtual base::ForwardRange<const Entity> Entities(unsigned codim) const = 0;
+  [[nodiscard]] virtual base::ForwardRange<const Entity> Entities(
+      unsigned codim) const = 0;
 
   /**
    * @brief The number of Entities that have the given codimension.
    * @param codim The codimension of the entities that should be counted.
    * @return That number of entities that have the given codimension.
    */
-  virtual size_type NumEntities(unsigned codim) const = 0;
+  [[nodiscard]] virtual size_type NumEntities(unsigned codim) const = 0;
 
   /**
    * @brief Tells number of entities of a particular topological/geometric type
    * @param ref_el_type topological/geometric type
    * @return number of entities of that type
    */
-  virtual size_type NumEntities(lf::base::RefEl ref_el_type) const = 0;
+  [[nodiscard]] virtual size_type NumEntities(
+      lf::base::RefEl ref_el_type) const = 0;
 
   /**
    * @brief Acess to the index of a mesh entity of any co-dimension
@@ -128,7 +130,7 @@ class Mesh {
    * @note The index of a mesh entity is NOT related to its position in the
    * range returned by the Entities() method.
    */
-  virtual size_type Index(const Entity& e) const = 0;
+  [[nodiscard]] virtual size_type Index(const Entity& e) const = 0;
 
   /**
    * @brief Method for accessing an entity through its index
@@ -148,15 +150,15 @@ class Mesh {
    *
    * @note O(1) access complexity due to table lookup.
    */
-  virtual const mesh::Entity* EntityByIndex(dim_t codim,
-                                            base::glb_idx_t index) const = 0;
+  [[nodiscard]] virtual const mesh::Entity* EntityByIndex(
+      dim_t codim, base::glb_idx_t index) const = 0;
 
   /**
    * @brief Check if the given entity is a part of this mesh.
    * @param e The entity that should be checked.
    * @return true if the entity belongs to the mesh.
    */
-  virtual bool Contains(const Entity& e) const = 0;
+  [[nodiscard]] virtual bool Contains(const Entity& e) const = 0;
 
   /**
    * @brief virtual destructor

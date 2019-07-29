@@ -78,7 +78,7 @@ class QuadRule {
    * @brief The reference element \f$ K \f$ over which this QuadRule
    * integrates.
    */
-  base::RefEl RefEl() const { return ref_el_; }
+  [[nodiscard]] base::RefEl RefEl() const { return ref_el_; }
 
   /**
    * @brief Return the degree of exactness of this Quadrature Rule.
@@ -103,7 +103,7 @@ class QuadRule {
    * because it predicts the order of algebraic covergence of the quadrature
    * error when the rule is applied to a smooth integrand.
    */
-  quadDegree_t Degree() const { return degree_; }
+  [[nodiscard]] quadDegree_t Degree() const { return degree_; }
 
   /**
    * @brief Return the order of the quadrature rule
@@ -111,7 +111,7 @@ class QuadRule {
    * The order is the degree of (polynomial) exactness + 1
    * @sa Degree()
    */
-  unsigned int Order() const { return Degree() + 1; }
+  [[nodiscard]] unsigned int Order() const { return Degree() + 1; }
 
   /**
    * @brief All quadrature points \f$ \begin{pmatrix} \vec{\xi}_0, \ldots,
@@ -119,20 +119,20 @@ class QuadRule {
    * @return A matrix of size `RefEl().Dimension() x ` \f$ n \f$ that contains
    *         the point coordinates as column vectors.
    */
-  const Eigen::MatrixXd& Points() const { return points_; }
+  [[nodiscard]] const Eigen::MatrixXd& Points() const { return points_; }
 
   /**
    * @brief All quadrature weights \f$ \begin{pmatrix} \omega_0, \ldots,
    * \omega_{n-1} \end{pmatrix} \f$ as a vector.
    * @return A vector of length \f$ n \f$
    */
-  const Eigen::VectorXd& Weights() const { return weights_; }
+  [[nodiscard]] const Eigen::VectorXd& Weights() const { return weights_; }
 
   /**
    * @brief Return the total number \f$ n \f$ of quadrature points (num of
    * columns of points/weights)
    */
-  base::size_type NumPoints() const { return points_.cols(); }
+  [[nodiscard]] base::size_type NumPoints() const { return points_.cols(); }
 
   /**
    * @brief Output function controlled by variable out_ctrl_;

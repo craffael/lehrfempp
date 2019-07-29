@@ -42,7 +42,7 @@ struct FusionIterator
   using category = boost::fusion::random_access_traversal_tag;
 
   explicit FusionIterator(STRUCT& str) : struct_(str) {}
-  STRUCT& struct_;
+  STRUCT& struct_;  // NOLINT
 };
 }  // namespace Eigen
 

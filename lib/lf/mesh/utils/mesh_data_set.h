@@ -49,7 +49,7 @@ class MeshDataSet {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  virtual const T operator()(const Entity& e) const = 0;
+  [[nodiscard]] virtual const T operator()(const Entity& e) const = 0;
 
   /**
    * @brief Does the dataset store information with this entity?
@@ -57,7 +57,7 @@ class MeshDataSet {
    * @return true if this dataset associates information with this entity.
    *              Otherwise false.
    */
-  virtual bool DefinedOn(const Entity& e) const = 0;
+  [[nodiscard]] virtual bool DefinedOn(const Entity& e) const = 0;
 
   /// Virtual destructor
   virtual ~MeshDataSet() = default;

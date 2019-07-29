@@ -181,7 +181,7 @@ void FixFlaggedSolutionCompAlt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t) {
+  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t /*unused*/) {
     return (selectvals(i).first);
   });
   // Old implementation showing the algorithm:

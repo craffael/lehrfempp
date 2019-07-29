@@ -13,29 +13,22 @@ class SegmentO1 : public Geometry {
   explicit SegmentO1(Eigen::Matrix<double, Eigen::Dynamic, 2> coords)
       : coords_(std::move(coords)) {}
 
-  dim_t DimLocal() const override { return 1; }
-  dim_t DimGlobal() const override { return coords_.rows(); }
-  base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] dim_t DimLocal() const override { return 1; }
+  [[nodiscard]] dim_t DimGlobal() const override { return coords_.rows(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
-  Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override;
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
-
-  /** @brief creation of child geometry for the sake of mesh refinement
-   *
-   * @see Geometry::ChildGeometry()
-   * @see RefinementPattern
-   * @param ref_pat three refinement patterns are supported
-   * - rp_nil: empty refinement
-   * - rp_copy: just copies the geometry information of the segment
-   * - rp_split: split edge in the middle.
-   * @param codim _relative_ codimension of children whose shape is
-   *        requested
-   */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
  private:

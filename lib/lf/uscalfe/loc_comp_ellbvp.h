@@ -85,7 +85,7 @@ class ReactionDiffusionElementMatrixProvider {
    */
   using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
   /** @brief Return type for @ref Eval() method */
-  using ElemMat = const elem_mat_t;
+  using ElemMat = elem_mat_t;
 
   /** @brief standard constructors */
   /** @{ */
@@ -254,7 +254,7 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 // is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 typename lf::uscalfe::ReactionDiffusionElementMatrixProvider<
-    SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat const
+    SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat
 ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
   // Topological type of the cell
@@ -342,7 +342,7 @@ class MassEdgeMatrixProvider {
  public:
   using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
   using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
-  using ElemMat = const elem_mat_t;
+  using ElemMat = elem_mat_t;
 
   /** @name standard constructors
    * @{ */
@@ -457,7 +457,7 @@ unsigned int MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 // developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class COEFF, class EDGESELECTOR>
-typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
+typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat
 MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
@@ -483,7 +483,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
   auto gammaval = gamma_(edge, fe_precomp_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < determinants.size(); ++k) {
+  for (long k = 0; k < determinants.size(); ++k) {
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
     const auto w =
@@ -524,7 +524,7 @@ class ScalarLoadElementVectorProvider {
 
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = const elem_vec_t;
+  using ElemVec = elem_vec_t;
 
   /** @name standard constructors
    *@{*/
@@ -654,7 +654,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename MESH_FUNCTION>
-typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec const
+typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) {
   // Type for source function
@@ -695,7 +695,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   auto fval = f_(cell, pfe.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < determinants.size(); ++k) {
+  for (long k = 0; k < determinants.size(); ++k) {
     SWITCHEDSTATEMENT(
         ctrl_, kout_loop,
         std::cout << "LOCVEC: [" << pfe.Qr().Points().transpose() << "] -> ["
@@ -743,7 +743,7 @@ template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
   using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = const elem_vec_t;
+  using ElemVec = elem_vec_t;
 
   /** @name standard constructors
    *@{*/
@@ -845,8 +845,7 @@ unsigned int
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
-typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR,
-                                      EDGESELECTOR>::ElemVec const
+typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell

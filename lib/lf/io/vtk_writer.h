@@ -388,7 +388,7 @@ class VtkWriter {
    */
   void WritePointData(const std::string& name,
                       const mesh::utils::MeshDataSet<float>& mds,
-                      float undefined_value = 0.f);
+                      float undefined_value = 0.F);
 
   /**
    * @brief Add a new `double` attribute dataset that attaches data to
@@ -865,8 +865,8 @@ void VtkWriter::WritePointData(const std::string& name,
         data.data[mesh_->Index(n)] = mesh_function(n, origin)[0];
       }
 
-      for (char codim = dim_mesh - 1; codim >= static_cast<char>(codim_);
-           --codim) {
+      for (int codim = static_cast<int>(dim_mesh - 1);
+           codim >= static_cast<char>(codim_); --codim) {
         for (auto& e : mesh_->Entities(codim)) {
           auto ref_el = e.RefEl();
           if (order_ < 3 && ref_el == base::RefEl::kTria()) {
@@ -903,8 +903,8 @@ void VtkWriter::WritePointData(const std::string& name,
                                                    mesh_function(n, origin)[0]);
       }
 
-      for (char codim = dim_mesh - 1; codim >= static_cast<char>(codim_);
-           --codim) {
+      for (int codim = static_cast<int>(dim_mesh - 1);
+           codim >= static_cast<char>(codim_); --codim) {
         for (auto& e : mesh_->Entities(codim)) {
           auto ref_el = e.RefEl();
           if (order_ < 3 && ref_el == base::RefEl::kTria()) {

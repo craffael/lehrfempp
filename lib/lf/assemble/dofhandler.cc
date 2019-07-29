@@ -25,6 +25,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
   auto mesh = dof_handler.Mesh();
   // Number of degrees of freedom managed by the DofHandler object
   const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+
   o << "DofHandler(" << dof_handler.NoDofs() << " dofs)";
   if (DofHandler::output_ctrl_ > 0) {
     // More detailed output
@@ -146,7 +147,7 @@ void UniformFEDofHandler::initIndexArrays() {
     // Beginning of section for concrete node in the dof index vector
     // for entities of co-dimension 2
     glb_idx_t node_dof_offset = node_idx * no_dofs_[kNodeOrd];
-    for (int j = 0; j < no_loc_dof_point_; j++) {
+    for (unsigned j = 0; j < no_loc_dof_point_; j++) {
       dofs_[kNodeOrd][node_dof_offset++] = dof_idx;
       dof_entities_.push_back(node_p);  // Store entity for current dof
       dof_idx++;                        // Move on to next index
@@ -175,12 +176,12 @@ void UniformFEDofHandler::initIndexArrays() {
       const glb_idx_t ep_idx(mesh_->Index(endpoint));
       glb_idx_t ep_dof_offset = ep_idx * no_dofs_[kNodeOrd];
       // Copy indices of shape functions from nodes to edge
-      for (int j = 0; j < no_dofs_[kNodeOrd]; j++) {
+      for (unsigned j = 0; j < no_dofs_[kNodeOrd]; j++) {
         dofs_[kEdgeOrd][edge_dof_offset++] = dofs_[kNodeOrd][ep_dof_offset++];
       }
     }
     // Set indices for interior edge degrees of freedom
-    for (int j = 0; j < no_loc_dof_segment_; j++) {
+    for (unsigned j = 0; j < no_loc_dof_segment_; j++) {
       dofs_[kEdgeOrd][edge_dof_offset++] = dof_idx;
       dof_entities_.push_back(edge_p);
       dof_idx++;
@@ -212,7 +213,7 @@ void UniformFEDofHandler::initIndexArrays() {
       const glb_idx_t vt_idx(mesh_->Index(vertex));
       glb_idx_t vt_dof_offset = vt_idx * no_dofs_[kNodeOrd];
       // Copy indices of shape functions from nodes to cell
-      for (int j = 0; j < no_dofs_[kNodeOrd]; j++) {
+      for (unsigned j = 0; j < no_dofs_[kNodeOrd]; j++) {
         dofs_[kCellOrd][cell_dof_offset++] = dofs_[kNodeOrd][vt_dof_offset++];
       }
     }
@@ -239,7 +240,7 @@ void UniformFEDofHandler::initIndexArrays() {
           break;
         }
         case lf::mesh::Orientation::negative: {
-          for (int j = no_int_dof_edge - 1; j >= 0; j--) {
+          for (int j = static_cast<int>(no_int_dof_edge - 1); j >= 0; j--) {
             dofs_[kCellOrd][cell_dof_offset++] =
                 dofs_[kEdgeOrd][edge_int_dof_offset + j];
           }
@@ -261,7 +262,7 @@ void UniformFEDofHandler::initIndexArrays() {
     }
 
     // enlist new interior cell-associated dofs
-    for (int j = 0; j < num_int_dofs_cell; j++) {
+    for (unsigned j = 0; j < num_int_dofs_cell; j++) {
       dofs_[kCellOrd][cell_dof_offset++] = dof_idx;
       dof_entities_.push_back(cell_p);
       dof_idx++;

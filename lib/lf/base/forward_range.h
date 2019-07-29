@@ -28,9 +28,9 @@ class ForwardRange {
     WrapperInterface& operator=(const WrapperInterface&) = delete;
     WrapperInterface& operator=(WrapperInterface&&) = delete;
 
-    virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
-    virtual ForwardIterator<T> begin() const = 0;
-    virtual ForwardIterator<T> end() const = 0;
+    [[nodiscard]] virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
+    [[nodiscard]] virtual ForwardIterator<T> begin() const = 0;
+    [[nodiscard]] virtual ForwardIterator<T> end() const = 0;
 
     virtual ~WrapperInterface() = default;
   };
@@ -46,7 +46,7 @@ class ForwardRange {
                 typename std::enable_if<!std::is_reference<Inner>::value>::type>
   class OwningImpl : public virtual WrapperInterface {
    protected:
-    Inner inner_;
+    Inner inner_;  // NOLINT
 
    public:
     explicit OwningImpl(Inner&& inner) : inner_(inner) {}
@@ -65,22 +65,26 @@ class ForwardRange {
             class = typename std::enable_if<!std::is_const<Inner>::value>::type>
   class ConstReferenceImpl : public virtual WrapperInterface {
    protected:
-    const Inner& inner_;
+    const Inner& inner_;  // NOLINT
 
    public:
     explicit ConstReferenceImpl(const Inner& inner) : inner_(inner) {}
 
-    std::unique_ptr<WrapperInterface> Clone() const override {
+    [[nodiscard]] std::unique_ptr<WrapperInterface> Clone() const override {
       return std::unique_ptr<WrapperInterface>(new ConstReferenceImpl(inner_));
     }
 
-    ForwardIterator<T> begin() const override { return inner_.begin(); }
-    ForwardIterator<T> end() const override { return inner_.end(); }
+    [[nodiscard]] ForwardIterator<T> begin() const override {
+      return inner_.begin();
+    }
+    [[nodiscard]] ForwardIterator<T> end() const override {
+      return inner_.end();
+    }
   };
 
   class InitializerListImpl : public virtual WrapperInterface {
    protected:
-    std::vector<std::remove_const_t<T>> list_{};
+    std::vector<std::remove_const_t<T>> list_{};  // NOLINT
 
     InitializerListImpl(const InitializerListImpl& other)
         : list_{other.list_} {}
@@ -104,8 +108,8 @@ class ForwardRange {
 
   class IteratorPairImpl : public virtual WrapperInterface {
    protected:
-    ForwardIterator<T> begin_;
-    ForwardIterator<T> end_;
+    ForwardIterator<T> begin_;  // NOLINT
+    ForwardIterator<T> end_;    // NOLINT
 
    public:
     explicit IteratorPairImpl(ForwardIterator<T> begin, ForwardIterator<T> end)
@@ -120,7 +124,7 @@ class ForwardRange {
     ForwardIterator<T> end() const override { return end_; }
   };
 
-  std::unique_ptr<WrapperInterface> wrapper_;
+  std::unique_ptr<WrapperInterface> wrapper_;  // NOLINT
 
  public:
   ForwardRange(const ForwardRange& rhs) : wrapper_(rhs->Clone()) {}
@@ -148,8 +152,8 @@ class ForwardRange {
   ForwardRange(ForwardIterator<T> begin, ForwardIterator<T> end)
       : wrapper_(new IteratorPairImpl(std::move(begin), std::move(end))) {}
 
-  ForwardIterator<T> begin() const { return wrapper_->begin(); }
-  ForwardIterator<T> end() const { return wrapper_->end(); }
+  [[nodiscard]] ForwardIterator<T> begin() const { return wrapper_->begin(); }
+  [[nodiscard]] ForwardIterator<T> end() const { return wrapper_->end(); }
 };
 
 // user defined deduction guide:

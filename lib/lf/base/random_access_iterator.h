@@ -59,31 +59,31 @@ class RandomAccessIterator : public ForwardIterator<T> {
 
     explicit WrapperImpl(InnerIterator&& iterator) : base_t(iterator) {}
 
-    T& operator[](difference_type i) const override {
+    [[nodiscard]] T& operator[](difference_type i) const override {
       return base_t::iterator_[i];
     }
 
-    WrapperInterface* operator+=(difference_type n) override {
+    [[nodiscard]] WrapperInterface* operator+=(difference_type n) override {
       base_t::iterator_ += n;
       return this;
     }
 
-    WrapperInterface* operator-=(difference_type n) override {
+    [[nodiscard]] WrapperInterface* operator-=(difference_type n) override {
       base_t::iterator_ -= n;
       return this;
     }
 
-    std::unique_ptr<WrapperInterface> operator+(
+    [[nodiscard]] std::unique_ptr<WrapperInterface> operator+(
         difference_type n) const override {
       return std::make_unique<WrapperImpl>(base_t::iterator_ + n);
     }
 
-    std::unique_ptr<WrapperInterface> operator-(
+    [[nodiscard]] std::unique_ptr<WrapperInterface> operator-(
         difference_type n) const override {
       return std::make_unique<WrapperImpl>(base_t::iterator_ - n);
     }
 
-    difference_type operator-(
+    [[nodiscard]] difference_type operator-(
         const ForwardWrapperInterface* rhs) const override {
       const auto* rhs_casted = dynamic_cast<const base_t*>(rhs);
       if (rhs) {
@@ -95,7 +95,8 @@ class RandomAccessIterator : public ForwardIterator<T> {
           typeid(*rhs).name());
     }
 
-    bool operator<(const ForwardWrapperInterface* other) const override {
+    [[nodiscard]] bool operator<(
+        const ForwardWrapperInterface* other) const override {
       const auto* other_casted = dynamic_cast<const base_t*>(other);
       if (other_casted) {
         return base_t::iterator_ < other_casted->iterator_;
@@ -106,7 +107,8 @@ class RandomAccessIterator : public ForwardIterator<T> {
           typeid(*other).name());
     }
 
-    bool operator<=(const ForwardWrapperInterface* other) const override {
+    [[nodiscard]] bool operator<=(
+        const ForwardWrapperInterface* other) const override {
       const auto* other_casted = dynamic_cast<const base_t*>(other);
       if (other_casted) {
         return base_t::iterator_ <= other_casted->iterator_;
@@ -117,7 +119,8 @@ class RandomAccessIterator : public ForwardIterator<T> {
           typeid(*other).name());
     }
 
-    bool operator>(const ForwardWrapperInterface* other) const override {
+    [[nodiscard]] bool operator>(
+        const ForwardWrapperInterface* other) const override {
       const auto* other_casted = dynamic_cast<const base_t*>(other);
       if (other_casted) {
         return base_t::iterator_ > other_casted->iterator_;
@@ -128,7 +131,8 @@ class RandomAccessIterator : public ForwardIterator<T> {
           typeid(*other).name());
     }
 
-    bool operator>=(const ForwardWrapperInterface* other) const override {
+    [[nodiscard]] bool operator>=(
+        const ForwardWrapperInterface* other) const override {
       const auto* other_casted = dynamic_cast<const base_t*>(other);
       if (other_casted) {
         return base_t::iterator_ >= other_casted->iterator_;
@@ -139,8 +143,8 @@ class RandomAccessIterator : public ForwardIterator<T> {
           typeid(*other).name());
     }
 
-    std::unique_ptr<typename ForwardIterator<T>::WrapperInterface> Clone()
-        const override {
+    [[nodiscard]] std::unique_ptr<typename ForwardIterator<T>::WrapperInterface>
+    Clone() const override {
       return std::make_unique<WrapperImpl>(base_t::iterator_);
     }
   };

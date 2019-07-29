@@ -41,7 +41,8 @@ class FeSpaceLagrangeO1 : public UniformScalarFESpace<SCALAR> {
    *
    * @param mesh_p shared pointer to underlying mesh (immutable)
    */
-  explicit FeSpaceLagrangeO1(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
+  explicit FeSpaceLagrangeO1(
+      const std::shared_ptr<const lf::mesh::Mesh> &mesh_p)
       : UniformScalarFESpace<SCALAR>(
             mesh_p, std::make_shared<FeLagrangeO1Tria<SCALAR>>(),
             std::make_shared<FeLagrangeO1Quad<SCALAR>>(),

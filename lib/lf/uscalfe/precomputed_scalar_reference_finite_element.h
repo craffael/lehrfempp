@@ -71,53 +71,54 @@ class PrecomputedScalarReferenceFiniteElement
    *
    * An object is in an undefined state when built by the default constructor
    */
-  inline bool isInitialized() const { return (fe_ != nullptr); }
+  [[nodiscard]] bool isInitialized() const { return (fe_ != nullptr); }
 
-  base::RefEl RefEl() const override {
+  [[nodiscard]] base::RefEl RefEl() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->RefEl();
   }
 
-  unsigned Degree() const override {
+  [[nodiscard]] unsigned Degree() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->Degree();
   }
 
-  size_type NumRefShapeFunctions() const override {
+  [[nodiscard]] size_type NumRefShapeFunctions() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NumRefShapeFunctions();
   }
 
-  size_type NumRefShapeFunctions(dim_t codim) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NumRefShapeFunctions(codim);
   }
 
-  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t subidx) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NumRefShapeFunctions(codim, subidx);
   }
 
-  Eigen::MatrixXd EvalReferenceShapeFunctions(
+  [[nodiscard]] Eigen::MatrixXd EvalReferenceShapeFunctions(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->EvalReferenceShapeFunctions(local);
   }
-  Eigen::MatrixXd GradientsReferenceShapeFunctions(
+  [[nodiscard]] Eigen::MatrixXd GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->GradientsReferenceShapeFunctions(local);
   }
-  Eigen::MatrixXd EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->EvaluationNodes();
   }
-  size_type NumEvaluationNodes() const override {
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NumEvaluationNodes();
   }
 
-  Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->NodalValuesToDofs(nodvals);
@@ -132,7 +133,7 @@ class PrecomputedScalarReferenceFiniteElement
    * @brief Return the Quadrature rule at which the shape functions (and their
    * gradients) have been precomputed.
    */
-  const quad::QuadRule& Qr() const {
+  [[nodiscard]] const quad::QuadRule& Qr() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return qr_;
   }
@@ -140,7 +141,7 @@ class PrecomputedScalarReferenceFiniteElement
   /**
    * @brief Value of `EvalReferenceShapeFunctions(Qr().Points())`
    */
-  const Eigen::MatrixXd& PrecompReferenceShapeFunctions() const {
+  [[nodiscard]] const Eigen::MatrixXd& PrecompReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return shap_fun_;
   }
@@ -151,7 +152,8 @@ class PrecomputedScalarReferenceFiniteElement
    * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
    * for the packed format in which the gradients are returned.
    */
-  const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions() const {
+  [[nodiscard]] const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions()
+      const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return grad_shape_fun_;
   }

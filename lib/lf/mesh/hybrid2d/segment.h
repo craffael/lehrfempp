@@ -70,7 +70,7 @@ class Segment : public mesh::Entity {
   }
 
   /** @brief an edge is an entity of co-dimension 1 */
-  unsigned Codim() const override { return 1; }
+  [[nodiscard]] unsigned Codim() const override { return 1; }
 
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select endnodes, if 0 select edge itself
@@ -78,7 +78,7 @@ class Segment : public mesh::Entity {
      - for rel_codim == 1: return 2-range covering endnodes
      - for rel_codim == 0: return the Segment entity itself
    */
-  base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of endpoints
@@ -86,22 +86,26 @@ class Segment : public mesh::Entity {
    * This method just returns {+,-}, because points always have the intrinsic
    * orientation + and the orientation of an edge is defined through the
    * ordering of its vertices. */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
-      const override {
+  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
+  RelativeOrientations() const override {
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         endpoint_ori_.begin(), endpoint_ori_.end());
   }
 
   /** @brief access to index of an entity */
-  size_type index() const { return index_; }
+  [[nodiscard]] size_type index() const { return index_; }
 
   /** @name Standard methods of an Entity object
    * @sa mesh::Entity
    * @{
    */
-  geometry::Geometry* Geometry() const override { return geometry_.get(); }
-  base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
-  bool operator==(const mesh::Entity& rhs) const override {
+  [[nodiscard]] geometry::Geometry* Geometry() const override {
+    return geometry_.get();
+  }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
+  [[nodiscard]] bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
   }
   /** @} */

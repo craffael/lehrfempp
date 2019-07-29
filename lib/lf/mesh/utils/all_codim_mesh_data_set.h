@@ -41,17 +41,20 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  entry_ref_t operator()(const Entity& e) {
+  [[nodiscard]] entry_ref_t operator()(const Entity& e) {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     std::vector<T>& ref_data_vec{data_[e.Codim()]};
     entry_ref_t entry{ref_data_vec[mesh_->Index(e)]};
     return entry;
   }
-  const T operator()(const Entity& e) const override {
+  // NOLINTNEXTLINE(readability-const-return-type)
+  [[nodiscard]] const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet is not defined on this entity.");
     return data_[e.Codim()][mesh_->Index(e)];
   }
-  bool DefinedOn(const Entity& e) const override { return mesh_->Contains(e); }
+  [[nodiscard]] bool DefinedOn(const Entity& e) const override {
+    return mesh_->Contains(e);
+  }
 
   /** @brief set up default-initialized data arrays
    *
@@ -60,10 +63,11 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    * allocates arrays containing a value of type T for _every_ entity of the
    * mesh
    */
-  explicit AllCodimMeshDataSet(std::shared_ptr<const lf::mesh::Mesh> mesh)
+  explicit AllCodimMeshDataSet(
+      const std::shared_ptr<const lf::mesh::Mesh>& mesh)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
-        mesh_(std::move(mesh)),
+        mesh_(mesh),
         data_(dim_mesh_ + 1) {
     for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
       data_[codim].resize(mesh_->NumEntities(codim));
@@ -80,10 +84,11 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
    */
   template <class = typename std::enable_if<
                 std::is_copy_constructible<T>::value>::type>
-  AllCodimMeshDataSet(std::shared_ptr<const lf::mesh::Mesh> mesh, T init_value)
+  AllCodimMeshDataSet(const std::shared_ptr<const lf::mesh::Mesh>& mesh,
+                      T init_value)
       : MeshDataSet<T>(),
         dim_mesh_(mesh->DimMesh()),
-        mesh_(std::move(mesh)),
+        mesh_(mesh),
         data_(dim_mesh_ + 1) {
     for (dim_t codim = 0; codim <= dim_mesh_; ++codim) {
       data_[codim] = std::vector<T>(mesh_->NumEntities(codim), init_value);
@@ -116,9 +121,10 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
  */
 template <class T>
 std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
-    std::shared_ptr<const lf::mesh::Mesh> mesh) {
+    const std::shared_ptr<const lf::mesh::Mesh>& mesh) {
   using impl_t = AllCodimMeshDataSet<T>;
-  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh)));
+  auto t = new AllCodimMeshDataSet<T>(mesh);
+  return std::shared_ptr<impl_t>(t);
 }
 
 /**
@@ -131,9 +137,9 @@ std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
 template <class T, class = typename std::enable_if<
                        std::is_copy_constructible<T>::value>::type>
 std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
-    std::shared_ptr<const lf::mesh::Mesh> mesh, T init_value) {
+    const std::shared_ptr<const lf::mesh::Mesh>& mesh, T init_value) {
   using impl_t = AllCodimMeshDataSet<T>;
-  return std::shared_ptr<impl_t>(new impl_t(std::move(mesh), init_value));
+  return std::shared_ptr<impl_t>(new impl_t(mesh, init_value));
 }
 
 }  // namespace lf::mesh::utils

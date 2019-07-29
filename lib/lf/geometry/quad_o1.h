@@ -37,22 +37,27 @@ class QuadO1 : public Geometry {
    */
   explicit QuadO1(Eigen::Matrix<double, Eigen::Dynamic, 4> coords);
 
-  dim_t DimLocal() const override { return 2; }
-  dim_t DimGlobal() const override { return coords_.rows(); }
-  base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
+  [[nodiscard]] dim_t DimLocal() const override { return 2; }
+  [[nodiscard]] dim_t DimGlobal() const override { return coords_.rows(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kQuad();
+  }
 
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
-  Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
 
   /** @copydoc Geometry::SubGeometry() */
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
 
   /** @copydoc Geometry::isAffine() */
-  bool isAffine() const override { return false; }
+  [[nodiscard]] bool isAffine() const override { return false; }
 
   /**
    * @copydoc lf::geometry::Geometry::ChildGeometry()
@@ -60,7 +65,7 @@ class QuadO1 : public Geometry {
    * For a detailed description of the indexing of the vertices of child
    * entities see `Refinement.xoj`.
    */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:
@@ -98,26 +103,31 @@ class Parallelogram : public Geometry {
   explicit Parallelogram(const Eigen::VectorXd& p0, const Eigen::VectorXd& p1,
                          const Eigen::VectorXd& p2);
 
-  dim_t DimLocal() const override { return 2; }
-  dim_t DimGlobal() const override { return coords_.rows(); }
-  base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
+  [[nodiscard]] dim_t DimLocal() const override { return 2; }
+  [[nodiscard]] dim_t DimGlobal() const override { return coords_.rows(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kQuad();
+  }
 
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override;
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
-  Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
 
   /** @copydoc Geometry::SubGeometry() */
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
 
   /** @copydoc Geometry::isAffine()
    *
    * @note In contrast to a general quadrilateral a parallelogram is
    *       is the **affine image** of a square.
    */
-  bool isAffine() const override { return true; }
+  [[nodiscard]] bool isAffine() const override { return true; }
 
   /**
    * @copydoc lf::geometry::Geometry::ChildGeometry()
@@ -125,7 +135,7 @@ class Parallelogram : public Geometry {
    * For a detailed description of the indexing of the vertices of child
    * entities see `Refinement.xoj`.
    */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:
