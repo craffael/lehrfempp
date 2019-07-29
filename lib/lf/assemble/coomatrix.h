@@ -160,6 +160,9 @@ class COOMatrix {
    */
   [[nodiscard]] Eigen::SparseMatrix<Scalar> makeSparse() const {
     Eigen::SparseMatrix<Scalar> result;
+    LF_VERIFY_MSG(
+        rows_ > 0 && cols_ > 0,
+        "matrix has zero rows or columns, this is probably an error.");
     result.resize(rows_, cols_);
     result.setFromTriplets(triplets_.cbegin(), triplets_.cend());
     return result;

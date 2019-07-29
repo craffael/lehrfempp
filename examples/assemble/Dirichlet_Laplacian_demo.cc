@@ -269,7 +269,7 @@ std::vector<double> SolveDirLaplSeqMesh(
                                            mesh_factory_ptr);
 
   // Perform several steps of regular refinement of the given mesh
-  for (int refstep = 0; refstep < reflevels; ++refstep) {
+  for (unsigned int refstep = 0; refstep < reflevels; ++refstep) {
     // Barycentric refinement is the other option
     multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
   }
@@ -277,7 +277,7 @@ std::vector<double> SolveDirLaplSeqMesh(
   lf::assemble::size_type L = multi_mesh.NumLevels();
   std::vector<double> errors;
   errors.reserve(L);
-  for (int level = 0; level < L; level++) {
+  for (unsigned level = 0; level < L; level++) {
     // Register norm of errors
     errors.push_back(
         L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));
@@ -351,20 +351,21 @@ int main(int argc, char **argv) {
     std::cout << reflevels << " refinement levels requested" << std::endl;
 
     // Problem data provided by function pointers
-    std::function<double(const Eigen::Vector2d &)> u, f;
+    std::function<double(const Eigen::Vector2d &)> u;
+    std::function<double(const Eigen::Vector2d &)> f;
 
     // Initialize the problem data
     std::cout << "Problem setting " << bvpsel << " selected" << std::endl;
     switch (bvpsel) {
       case 0: {
         // A linear solution, no error, if contained in FE space
-        f = [](const Eigen::Vector2d &) { return 0.0; };
+        f = [](const Eigen::Vector2d & /*unused*/) { return 0.0; };
         u = [](const Eigen::Vector2d &x) { return (x[0] + 2.0 * x[1]); };
         break;
       }
       case 1: {
         // Quadratic polynomial solution
-        f = [](const Eigen::Vector2d &) { return -4.0; };
+        f = [](const Eigen::Vector2d & /*unused*/) { return -4.0; };
         u = [](const Eigen::Vector2d &x) {
           return (std::pow(x[0], 2) + std::pow(x[1], 2));
         };

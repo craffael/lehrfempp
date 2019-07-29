@@ -1,6 +1,6 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape'
-WarningsAsErrors: '*,-clang-analyzer-core*'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-clang-analyzer-core.NonNullParamChecker,-clang-analyzer-core.uninitialized.UndefReturn'
+WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
