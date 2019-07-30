@@ -115,13 +115,13 @@ class ForwardRange {
     explicit IteratorPairImpl(ForwardIterator<T> begin, ForwardIterator<T> end)
         : begin_(std::move(begin)), end_(std::move(end)) {}
 
-    std::unique_ptr<WrapperInterface> Clone() const override {
+    [[nodiscard]] std::unique_ptr<WrapperInterface> Clone() const override {
       return std::unique_ptr<WrapperInterface>(
           new IteratorPairImpl(begin_, end_));
     }
 
-    ForwardIterator<T> begin() const override { return begin_; }
-    ForwardIterator<T> end() const override { return end_; }
+    [[nodiscard]] ForwardIterator<T> begin() const override { return begin_; }
+    [[nodiscard]] ForwardIterator<T> end() const override { return end_; }
   };
 
   std::unique_ptr<WrapperInterface> wrapper_;  // NOLINT

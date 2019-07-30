@@ -138,8 +138,8 @@ class EndpointIndexPair {
     }
   }
   // Access operators
-  size_type first_node() const { return p0_; }
-  size_type second_node() const { return p1_; }
+  [[nodiscard]] size_type first_node() const { return p0_; }
+  [[nodiscard]] size_type second_node() const { return p1_; }
   // The only comparison operator expected from a Map key
   // Edges are considered equal even if they have the opposite orientation
   friend bool operator<(const EndpointIndexPair &e1,

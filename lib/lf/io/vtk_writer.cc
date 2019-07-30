@@ -94,6 +94,7 @@ void cell_list_size(unsigned int& result,  // NOLINT
 }
 }  // namespace
 
+// NOLINTNEXTLINE
 BOOST_PHOENIX_ADAPT_FUNCTION(void, CellListSize, cell_list_size, 2);
 
 namespace lf::io {
@@ -120,6 +121,7 @@ struct VtkGrammar : karma::grammar<Iterator, VtkFile()> {
   //   return karma::int_[karma::_1 = boost::phoenix::size(karma::_val)];
   // }
 
+  // NOLINTNEXTLINE
   VtkGrammar() : VtkGrammar::base_type(root) {
     using boost::phoenix::at_c;
     using boost::phoenix::size;
@@ -606,11 +608,11 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     Eigen::Vector3f coord;
     if (dim_world == 1) {
       coord(0) = p.Geometry()->Global(zero)(0);
-      coord(1) = 0.f;
-      coord(2) = 0.f;
+      coord(1) = 0.F;
+      coord(2) = 0.F;
     } else if (dim_world == 2) {
       coord.topRows<2>() = p.Geometry()->Global(zero).cast<float>();
-      coord(2) = 0.f;
+      coord(2) = 0.F;
     } else {
       coord = p.Geometry()->Global(zero).cast<float>();
     }
@@ -621,7 +623,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   // insert auxilliary nodes:
   if (order > 1) {
     auto index_offset = mesh_->NumEntities(dim_mesh);
-    for (char cd = dim_mesh - 1; cd >= static_cast<char>(codim); --cd) {
+    for (char cd = static_cast<char>(dim_mesh - 1);
+         cd >= static_cast<char>(codim); --cd) {
       for (auto& e : mesh_->Entities(cd)) {
         auto ref_el = e.RefEl();
         if (ref_el == base::RefEl::kTria() && order < 3) {
@@ -642,7 +645,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         } else {
           coords = e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
         }
-        for (int i = 0; i < coords.cols(); ++i) {
+        for (Eigen::Index i = 0; i < coords.cols(); ++i) {
           vtk_file_.unstructured_grid.points[index_offset + i] = coords.col(i);
         }
         aux_node_offset_[cd](e) = index_offset;
@@ -681,11 +684,11 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     auto addSegmentNodes = [&](const mesh::Entity& s, bool invert) {
       auto start_index = aux_node_offset_[dim_mesh - 1](s);
       if (!invert) {
-        for (int i = 0; i < points_per_segment; ++i) {
+        for (unsigned int i = 0; i < points_per_segment; ++i) {
           node_indices.push_back(start_index + i);
         }
       } else {
-        for (int i = points_per_segment - 1; i >= 0; --i) {
+        for (int i = static_cast<int>(points_per_segment - 1); i >= 0; --i) {
           node_indices.push_back(start_index + i);
         }
       }
@@ -735,7 +738,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     // indices in the interior of the cell:
     if (dim_mesh - codim > 1) {
       auto offset = aux_node_offset_[0](e);
-      for (int i = 0; i < NumAuxNodes(e.RefEl(), order); ++i) {
+      for (unsigned i = 0; i < NumAuxNodes(e.RefEl(), order); ++i) {
         node_indices.push_back(offset + i);
       }
     }

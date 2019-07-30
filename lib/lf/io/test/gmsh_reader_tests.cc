@@ -20,6 +20,8 @@ namespace lf::io::test {
 using size_type = mesh::Mesh::size_type;
 
 void checkTwoElementMesh(const GmshReader& reader) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
   auto mesh = reader.mesh();
   EXPECT_EQ(mesh->NumEntities(0), 2);
   EXPECT_EQ(mesh->NumEntities(1), 6);
@@ -133,6 +135,7 @@ void checkTwoElementMesh(const GmshReader& reader) {
   }
   mesh::test_utils::checkEntityIndexing(*reader.mesh());
   mesh::test_utils::checkMeshCompleteness(*reader.mesh());
+#pragma GCC diagnostic pop
 }
 
 TEST(lf_io, readTwoElementMesh) {

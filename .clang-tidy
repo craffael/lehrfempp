@@ -1,10 +1,11 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-clang-analyzer-core.NonNullParamChecker,-clang-analyzer-core.uninitialized.UndefReturn'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-modernize-use-trailing-return-type,-clang-analyzer-core.NonNullParamChecker'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
 User:            raffael
+ExtraArgs: ['-DEIGEN_INTERNAL_DEBUGGING']
 CheckOptions:    
   - key:             bugprone-argument-comment.StrictMode
     value:           '0'
