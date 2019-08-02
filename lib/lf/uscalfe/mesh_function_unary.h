@@ -109,7 +109,7 @@ struct UnaryOpSquaredNorm {
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
                   int /*unused*/) const {
     std::vector<double> result(u.size());
-    if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
+    if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {  // NOLINT
       static_assert(
           R > 0 && C > 0,
           "squaredNorm only supported for matrices with at least 1 row "
@@ -127,8 +127,8 @@ struct UnaryOpSquaredNorm {
                                                            1);
         rm = um.cwiseAbs2().rowwise().sum();
       }
-    } else {
-      for (int i = 0; i < u.size(); ++i) {
+    } else {  // NOLINT
+      for (std::size_t i = 0; i < u.size(); ++i) {
         result[i] = u[i].squaredNorm();
       }
     }

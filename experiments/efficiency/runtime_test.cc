@@ -8,7 +8,7 @@
 
 static const int N = 10;
 
-static double stat_tmp[N];
+static double stat_tmp[N];  // NOLINT
 
 lf::base::RandomAccessRange<const double> getData_RAR(double offset) {
   for (int j = 0; j < N; j++) {
@@ -47,7 +47,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
   {
     boost::timer::auto_cpu_timer t;
     for (long int i = 0; i < reps; i++) {
-      auto res = getData_RAR(i);
+      auto res = getData_RAR(static_cast<double>(i));
       double s = 0.0;
       for (int j = 0; j < N; j++) {
         s += res[j];
@@ -59,7 +59,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
   {
     boost::timer::auto_cpu_timer t;
     for (long int i = 0; i < reps; i++) {
-      auto res = getData_VEC(i);
+      auto res = getData_VEC(static_cast<double>(i));
       double s = 0.0;
       for (int j = 0; j < N; j++) {
         s += res[j];
@@ -72,7 +72,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
     boost::timer::auto_cpu_timer t;
     std::vector<double> res(N);
     for (long int i = 0; i < reps; i++) {
-      getData_REF(i, res);
+      getData_REF(static_cast<double>(i), res);
       double s = 0.0;
       for (int j = 0; j < N; j++) {
         s += res[j];
@@ -84,7 +84,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
   {
     boost::timer::auto_cpu_timer t;
     for (long int i = 0; i < reps; i++) {
-      auto res = getData_SPAN(i);
+      auto res = getData_SPAN(static_cast<double>(i));
       double s = 0.0;
       for (int j = 0; j < N; j++) {
         s += res[j];

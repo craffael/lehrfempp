@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-clang-analyzer-core.NullDereference,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-modernize-use-trailing-return-type,-clang-analyzer-core.NonNullParamChecker'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-modernize-use-trailing-return-type,-clang-analyzer-core.NonNullParamChecker,-clang-analyzer-core.uninitialized.Assign,-clang-analyzer-core.UndefinedBinaryOperatorResult'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false
@@ -233,6 +233,8 @@ CheckOptions:
     value:           llvm
   - key:             performance-unnecessary-value-param.IncludeStyle
     value:           llvm
+  - key:             performance-unnecessary-value-param.AllowedTypes
+    value:           ''
   - key:             readability-braces-around-statements.ShortStatementLines
     value:           '0'
   - key:             readability-function-size.BranchThreshold

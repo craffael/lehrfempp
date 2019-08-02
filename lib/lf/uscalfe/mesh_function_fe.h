@@ -65,7 +65,7 @@ class MeshFunctionFE {
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(1,
                                                               sf_eval.rows());
     auto global_dofs = fe_space_->LocGlobMap().GlobalDofIndices(e);
-    for (int i = 0; i < sf_eval.rows(); ++i) {
+    for (Eigen::Index i = 0; i < sf_eval.rows(); ++i) {
       local_dofs(i) = dof_vector_(global_dofs[i]);
     }
 

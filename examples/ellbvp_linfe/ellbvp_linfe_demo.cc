@@ -92,7 +92,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   const Eigen::Vector2d n_imp =
       ((Eigen::Vector2d() << -1.0, 0.2).finished()).normalized();
   // Dirichlet data borrowed from the known exact solution.
-  auto g = [&u](Eigen::Vector2d x) -> double { return u(x); };
+  auto g = [&u](const Eigen::Vector2d& x) -> double { return u(x); };
   lf::uscalfe::MeshFunctionGlobal mf_g{g};
 
   // Predicates and selectors for boundary conditions
@@ -121,7 +121,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // Source term h on the right-hand side of Neumann and impedance boundary
   // conditions
-  auto h = [&](Eigen::Vector2d x) -> double {
+  auto h = [&](const Eigen::Vector2d& x) -> double {
     if (imp_sel(x)) {
       // Impedance boundary
       return ((alpha(x) * grad_u(x)).dot(n_imp) + eta(x) * u(x));
@@ -220,7 +220,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::vector<std::tuple<size_type, double, double>> errs{};
 
   // Do computations on all levels
-  for (int level = 0; level < L; ++level) {
+  for (size_type level = 0; level < L; ++level) {
     mesh_p = multi_mesh.getMesh(level);
     // Set up global FE space; lowest order Lagrangian finite elements
     auto fe_space =

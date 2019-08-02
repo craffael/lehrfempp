@@ -31,7 +31,7 @@ namespace lf::assemble::test {
 class TestAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 4, 4>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   TestAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -53,7 +53,7 @@ TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
 class TestVectorAssembler {
  public:
   using elem_vec_t = Eigen::Matrix<double, 4, 1>;
-  using ElemVec = elem_vec_t &;
+  using ElemVec = const elem_vec_t &;
 
   TestVectorAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -292,7 +292,7 @@ TEST(lf_assembly, dynamic_dof_test) {
 class EdgeDofAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 8, 8>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   EdgeDofAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -462,7 +462,7 @@ TEST(lf_assembly, edge_dof_dynamic) {
 class BoundaryAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 2, 2>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   BoundaryAssembler(std::shared_ptr<lf::mesh::Mesh> mesh_p);
   bool isActive(const lf::mesh::Entity &);
@@ -608,20 +608,19 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
  */
 class MVMultAssembler {
  public:
-  using elem_mat_t = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
-                                   Eigen::RowMajor, 4, 4>;
+  using ElemMat = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
+                                Eigen::RowMajor, 4, 4>;
 
   MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  elem_mat_t &Eval(const lf::mesh::Entity &cell);
+  ElemMat &Eval(const lf::mesh::Entity &cell);
 
  private:
   const lf::mesh::Mesh &mesh_;
-  elem_mat_t mat_;
+  ElemMat mat_;
 };
 
-MVMultAssembler::elem_mat_t &MVMultAssembler::Eval(
-    const lf::mesh::Entity &cell) {
+MVMultAssembler::ElemMat &MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
   const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
   const lf::base::RefEl ref_el = cell.RefEl();
   switch (ref_el) {

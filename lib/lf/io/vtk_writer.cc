@@ -536,7 +536,7 @@ Eigen::MatrixXd AuxNodesQuad(unsigned char order) {
   result.row(1) =
       Eigen::kroneckerProduct(Eigen::VectorXd::LinSpaced(order - 1, 1. / order,
                                                          (order - 1.) / order),
-                              Eigen::VectorXd::Ones(order - 1))
+                              Eigen::VectorXd::Constant(order - 1, 1.))
           .transpose();
   return result;
 }

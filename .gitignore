@@ -43,6 +43,7 @@ bin_clang5/
 bin_clang7/
 bin_clang8/
 bin_clang_release/
+bin_scanbuild/
 gcc/
 bin_gcc/
 bin_gcc_release/

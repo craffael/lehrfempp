@@ -246,6 +246,17 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       std::cout << "Register edge: " << end_nodes[0] << " <-> " << end_nodes[1]
                 << std::endl;
     }
+
+    // If one of the endpoints of a edge does not have a geometry, supply it
+    // with one inherited from the edge.
+    for (int j = 0; j < 2; ++j) {
+      if (nodes[end_nodes[j]] == nullptr) {
+        // if no geometry for node exists request geomtry for an endpoint of the
+        // edge Note: endpoints are entities of relative co-dimension 1
+        nodes[end_nodes[j]] = e.second->SubGeometry(1, j);
+      }
+    }
+
     // Store provided geometry information; information on adjacent cells
     // not yet available.
     LF_ASSERT_MSG(e.second != nullptr,
@@ -258,16 +269,6 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         edge_map.insert(std::move(edge_info));
     LF_ASSERT_MSG(insert_status.second,
                   "Duplicate edge " << end_nodes[0] << " <-> " << end_nodes[1]);
-
-    // If one of the endpoints of a edge does not have a geometry, supply it
-    // with one inherited from the edge.
-    for (int j = 0; j < 2; ++j) {
-      if (nodes[end_nodes[j]] == nullptr) {
-        // if no geometry for node exists request geomtry for an endpoint of the
-        // edge Note: endpoints are entities of relative co-dimension 1
-        nodes[end_nodes[j]] = e.second->SubGeometry(1, j);
-      }
-    }
 
     edge_index++;
   }  // end loop over predefined edges
@@ -341,7 +342,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     }
 
     // Verify validity of vertex indices
-    for (int l = 0; l < no_of_vertices; l++) {
+    for (unsigned l = 0; l < no_of_vertices; l++) {
       LF_VERIFY_MSG(cell_node_list[l] < no_of_nodes,
                     "Node " << l << " of cell " << cell_index
                             << ": invalid index " << cell_node_list[l]);
@@ -351,7 +352,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     // geometry for its vertices through the SubGeometry() method of Geometry
     // objects
     if (cell_geometry != nullptr) {
-      for (int j = 0; j < no_of_vertices; ++j) {
+      for (unsigned j = 0; j < no_of_vertices; ++j) {
         if (nodes[cell_node_list[j]] == nullptr) {
           // if no geometry for node exists request geomtry for an vertex from
           // the cell Note: vertices are entities of relative co-dimension 2
@@ -585,7 +586,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
 
   if (check_completeness) {
     // Check that all nodes have a super entity:
-    for (int i = 0; i < nodes.size(); ++i) {
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
       LF_VERIFY_MSG(nodeHasSuperEntity[i],
                     "Mesh is incomplete: Node with global index "
                         << i << " is not part of any edge.");
@@ -647,7 +648,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     }
 
     // Verify validity of node/ede indices
-    for (int l = 0; l < no_of_vertices; l++) {
+    for (unsigned l = 0; l < no_of_vertices; l++) {
       LF_VERIFY_MSG(c_node_indices[l] < no_of_nodes,
                     "Node " << l << " of cell " << cell_index
                             << ": invalid index " << c_node_indices[l]);

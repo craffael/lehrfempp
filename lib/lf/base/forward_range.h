@@ -51,14 +51,18 @@ class ForwardRange {
    public:
     explicit OwningImpl(Inner&& inner) : inner_(inner) {}
 
-    std::unique_ptr<WrapperInterface> Clone() const override {
+    [[nodiscard]] std::unique_ptr<WrapperInterface> Clone() const override {
       Inner copy = inner_;
       return std::unique_ptr<WrapperInterface>(new OwningImpl(std::move(copy)));
     }
 
-    ForwardIterator<T> begin() const override { return inner_.begin(); }
+    [[nodiscard]] ForwardIterator<T> begin() const override {
+      return inner_.begin();
+    }
 
-    ForwardIterator<T> end() const override { return inner_.end(); }
+    [[nodiscard]] ForwardIterator<T> end() const override {
+      return inner_.end();
+    }
   };
 
   template <class Inner,
@@ -98,12 +102,16 @@ class ForwardRange {
     InitializerListImpl& operator=(InitializerListImpl&&) = delete;
     ~InitializerListImpl() override = default;
 
-    std::unique_ptr<WrapperInterface> Clone() const override {
+    [[nodiscard]] std::unique_ptr<WrapperInterface> Clone() const override {
       return std::unique_ptr<WrapperInterface>(new InitializerListImpl(*this));
     }
 
-    ForwardIterator<T> begin() const override { return list_.begin(); }
-    ForwardIterator<T> end() const override { return list_.end(); }
+    [[nodiscard]] ForwardIterator<T> begin() const override {
+      return list_.begin();
+    }
+    [[nodiscard]] ForwardIterator<T> end() const override {
+      return list_.end();
+    }
   };
 
   class IteratorPairImpl : public virtual WrapperInterface {

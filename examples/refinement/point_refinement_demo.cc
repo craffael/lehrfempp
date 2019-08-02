@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
 
-  if (vm.count("help") != 0u) {
+  if (vm.count("help") != 0U) {
     std::cout << desc << std::endl;
     return 1;
   }
@@ -125,12 +125,13 @@ int main(int argc, char **argv) {
   lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
 
   // mark edges of cells containing point
-  auto marker = [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge,
-                   CodimMeshDataSet_t mesh_data) -> bool {
+  auto marker = [](const lf::mesh::Mesh & /*mesh*/,
+                   const lf::mesh::Entity &edge,
+                   const CodimMeshDataSet_t &mesh_data) -> bool {
     return mesh_data->operator()(edge);
   };
 
-  for (int step = 0; step < num_steps; ++step) {
+  for (std::size_t step = 0; step < num_steps; ++step) {
     // obtain pointer to mesh on finest level
     const size_type n_levels = multi_mesh.NumLevels();
     std::shared_ptr<const lf::mesh::Mesh> mesh_fine =

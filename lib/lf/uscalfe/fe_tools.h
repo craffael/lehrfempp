@@ -64,7 +64,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
   }
   // fallback: we cannot make any optimizations:
   MfType temp = weights_ie(0) * values[0];
-  for (int i = 1; i < qr.NumPoints(); ++i) {
+  for (Eigen::Index i = 1; i < qr.NumPoints(); ++i) {
     temp = temp + weights_ie(i) * values[i];
   }
   return temp;

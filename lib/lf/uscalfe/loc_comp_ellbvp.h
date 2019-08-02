@@ -83,9 +83,7 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief type of returned element matrix
    */
-  using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
-  /** @brief Return type for @ref Eval() method */
-  using ElemMat = elem_mat_t;
+  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
@@ -299,11 +297,11 @@ ReactionDiffusionElementMatrixProvider<
   auto gammaval = gamma_(cell, pfe.Qr().Points());
 
   // Element matrix
-  elem_mat_t mat(pfe.NumRefShapeFunctions(), pfe.NumRefShapeFunctions());
+  ElemMat mat(pfe.NumRefShapeFunctions(), pfe.NumRefShapeFunctions());
   mat.setZero();
 
   // Loop over quadrature points
-  for (int k = 0; k < pfe.Qr().NumPoints(); ++k) {
+  for (base::size_type k = 0; k < pfe.Qr().NumPoints(); ++k) {
     const double w = pfe.Qr().Weights()[k] * determinants[k];
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
@@ -341,8 +339,7 @@ template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
   using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
-  using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
-  using ElemMat = elem_mat_t;
+  using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @name standard constructors
    * @{ */
@@ -476,8 +473,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
                             << fe_precomp_.Qr().NumPoints());
 
   // Element matrix
-  elem_mat_t mat(fe_precomp_.NumRefShapeFunctions(),
-                 fe_precomp_.NumRefShapeFunctions());
+  ElemMat mat(fe_precomp_.NumRefShapeFunctions(),
+              fe_precomp_.NumRefShapeFunctions());
   mat.setZero();
 
   auto gammaval = gamma_(edge, fe_precomp_.Qr().Points());
@@ -523,8 +520,7 @@ class ScalarLoadElementVectorProvider {
   static_assert(isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = elem_vec_t;
+  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -689,7 +685,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
                     std::cout << "LOCVEC(" << ref_el << "): Metric factors :\n "
                               << determinants.transpose() << std::endl);
   // Element vector
-  elem_vec_t vec(pfe.NumRefShapeFunctions());
+  ElemVec vec(pfe.NumRefShapeFunctions());
   vec.setZero();
 
   auto fval = f_(cell, pfe.Qr().Points());
@@ -742,8 +738,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = elem_vec_t;
+  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -870,13 +865,13 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
       "Mismatch " << determinants.size() << " <-> " << pfe_.Qr().NumPoints());
 
   // Element vector
-  elem_vec_t vec(pfe_.NumRefShapeFunctions());
+  ElemVec vec(pfe_.NumRefShapeFunctions());
   vec.setZero();
 
   auto g_vals = g_(edge, pfe_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < pfe_.Qr().NumPoints(); ++k) {
+  for (base::size_type k = 0; k < pfe_.Qr().NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
     const auto w = (pfe_.Qr().Weights()[k] * determinants[k]) * g_vals[k];
     vec += pfe_.PrecompReferenceShapeFunctions().col(k) * w;

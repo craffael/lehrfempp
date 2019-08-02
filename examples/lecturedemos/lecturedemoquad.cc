@@ -19,7 +19,7 @@ void lecturedemoquad() {
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(5)};
   /* SAM_LISTING_BEGIN_1 */
   // Function to be integrated
-  auto f = [](const Eigen::VectorXd x) -> double {
+  auto f = [](const Eigen::VectorXd& x) -> double {
     return (x[0] * x[0] + x[1] * x[1]);
   };
   // Cell-based composite quadrature covering all cells

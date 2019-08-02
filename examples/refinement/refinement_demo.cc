@@ -70,12 +70,12 @@ int main(int argc, char **argv) {
   // lambda functions for (local) marking
   // First, a global marker
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)>
-      allmarker = [](const lf::mesh::Mesh &mesh,
-                     const lf::mesh::Entity &edge) -> bool { return true; };
+      allmarker = [](const lf::mesh::Mesh & /*mesh*/, const lf::mesh::Entity &
+                     /*edge*/) -> bool { return true; };
   // Mark edges whose center lies inside a square
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
-      locmarker =
-          [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {
+      locmarker = [](const lf::mesh::Mesh & /*mesh*/,
+                     const lf::mesh::Entity &edge) -> bool {
     Eigen::MatrixXd ref_c(1, 1);
     ref_c(0, 0) = 0.5;
     Eigen::VectorXd c(edge.Geometry()->Global(ref_c));
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
   std::cout << "No of refinement steps: ";
   std::cin >> Nrefs;
   std::cout << "Entering main refinement loop" << std::endl;
-  for (int refstep = 0; refstep < Nrefs; refstep++) {
+  for (std::size_t refstep = 0; refstep < Nrefs; refstep++) {
     std::cout << "#### Refinement step " << refstep + 1 << std::endl;
     // Depending on the value of the control variable do different types
     // of refinement
