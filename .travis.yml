@@ -25,7 +25,7 @@ jobs:
       apt:
         update: true
         sources:
-        - llvm-toolchain-xenial-8.0
+        - llvm-toolchain-xenial-8
         - ubuntu-toolchain-r-test
         packages:
         - clang-format-8
