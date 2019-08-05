@@ -231,17 +231,17 @@ std::vector<std::pair<double, double>> InterpolationErrors(
   // Loop over all meshes
   for (auto mesh_p : mesh_ptrs) {
     // Build finite element space and set up local-to-global index map
-    auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+    auto fe_space_p = std::make_shared<UniformScalarFESpace<double>>(
         mesh_p, rfs_tria_p, rfs_quad_p);
 
-    const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
+    const lf::assemble::DofHandler &dofh{fe_space_p->LocGlobMap()};
     // Perform (nodal) projection of the passed function onto the finite element
     // space and obtain basis expansion coefficient vector
-    auto coeff_vec{NodalProjection(*fe_space, f, base::PredicateTrue{})};
+    auto coeff_vec{NodalProjection(*fe_space_p, f)};
     // Compute norms of interpolation error by means of numerical quadrature
     // whose order is controlled by the polynomials degree of the FE space
-    auto mf_fe = MeshFunctionFE<double, double>(fe_space, coeff_vec);
-    auto mf_grad_fe = MeshFunctionGradFE<double, double>(fe_space, coeff_vec);
+    auto mf_fe = MeshFunctionFE<double, double>(fe_space_p, coeff_vec);
+    auto mf_grad_fe = MeshFunctionGradFE<double, double>(fe_space_p, coeff_vec);
     double L2err =
         std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(f - mf_fe), 2));
     double H1serr = std::sqrt(

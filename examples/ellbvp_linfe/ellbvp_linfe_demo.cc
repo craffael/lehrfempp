@@ -138,7 +138,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
   // Since this example relies on a manufactured solution tied to a particular
-  // domain, using a hard-wirdd mesh is justified. Another example will address
+  // domain, using a hard-wired mesh is justified. Another example will address
   // solving a boundary value problem on a mesh read from file.
   // ======================================================================
 

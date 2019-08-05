@@ -244,8 +244,8 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
 
     // Compute the resulting local degrees of freedom
     auto dofvec(ref_shape_fns->NodalValuesToDofs(
-        Eigen::Map<Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>>(
-            &uvalvec[0], uvalvec.size(), 1)));
+        Eigen::Map<Eigen::Matrix<scalar_t, 1, Eigen::Dynamic>>(
+            &uvalvec[0], 1, uvalvec.size())));
 
     // Set the corresponing global degrees of freedom
     // Note: "Setting", not "adding to"
