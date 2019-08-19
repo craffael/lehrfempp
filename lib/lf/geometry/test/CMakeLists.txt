@@ -13,6 +13,7 @@ target_link_libraries(lf.geometry.test
   lf.base
   lf.geometry
   lf.geometry.test_utils
+  lf.io
   lf.quad
   lf.refinement
 )

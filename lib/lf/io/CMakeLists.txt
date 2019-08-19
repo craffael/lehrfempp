@@ -1,4 +1,6 @@
 set(sources
+  gmsh_file_v2.cc
+  gmsh_file_v2.h
   gmsh_reader.cc
   gmsh_reader.h
   io.h
