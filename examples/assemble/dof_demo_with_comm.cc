@@ -32,9 +32,9 @@ int main(int argc, char** argv) {
   //("ndof_node,n", po::value<int>()->default_value(1), "No of dofs on nodes")
   //("ndof_edge,e", po::value<int>()->default_value(2), "No of dofs on edges")
   //("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on
-  //triangles")
+  // triangles")
   //("ndof_quad,q", po::value<int>()->default_value(4), "Mp of dofs on
-  //quadrilaterals");
+  // quadrilaterals");
   // clang-format on
   ci::ParseCommandLine(argc, argv);
   if (ci::Help()) {

@@ -143,14 +143,14 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lmdim,
                         std::cout << "ASM: " << nrows_loc << " x " << ncols_loc
                                   << " element matrix" << std::endl);
-      SWITCHEDSTATEMENT(
-          ass_mat_dbg_ctrl, amd_locmat, for (int i = 0; i < nrows_loc; i++) {
-            std::cout << "[ ";
-            for (int j = 0; j < ncols_loc; j++) {
-              std::cout << elem_mat(i, j) << ' ';
-            }
-            std::cout << "]" << std::endl;
-          });
+      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_locmat,
+                        for (int i = 0; i < nrows_loc; i++) {
+                          std::cout << "[ ";
+                          for (int j = 0; j < ncols_loc; j++) {
+                            std::cout << elem_mat(i, j) << ' ';
+                          }
+                          std::cout << "]" << std::endl;
+                        });
       // Assembly double loop
       for (int i = 0; i < nrows_loc; i++) {
         for (int j = 0; j < ncols_loc; j++) {
