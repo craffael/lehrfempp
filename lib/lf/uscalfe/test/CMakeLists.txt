@@ -5,7 +5,7 @@ set(src
   fe_testutils.cc
   mesh_function_utils.h
   sec_ord_ell_bvp.h
-  sec_ord_ell_bvp.cc
+  #sec_ord_ell_bvp.cc // nothing in the cc file, all is in the header
   loc_comp_test.cc
   bvp_fe_tests.cc
   fe_tools_tests.cc

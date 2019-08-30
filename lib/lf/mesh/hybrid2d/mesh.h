@@ -9,8 +9,8 @@
 #ifndef __62731052ee4a4a2d9f256c2caac43835
 #define __62731052ee4a4a2d9f256c2caac43835
 
-#include <lf/base/static_vars.h>
 #include <lf/mesh/mesh.h>
+#include "lf/base/base.h"
 #include "lf/mesh/utils/print_info.h"
 #include "point.h"
 #include "quad.h"
@@ -19,6 +19,7 @@
 
 namespace lf::mesh::hybrid2d {
 
+namespace ci = lf::base::ci;
 using size_type = lf::base::size_type;
 using dim_t = lf::base::dim_t;
 using sub_idx_t = lf::base::sub_idx_t;

@@ -6,8 +6,8 @@
 
 namespace lf::mesh::hybrid2d {
 
-CONTROLDECLARECOMMENT(TPQuadMeshBuilder, output_ctrl_, "tpquad_output_ctrl",
-                      "Diagnostics control for TPQuadMeshBuilder");
+ADDOPTION(TPQuadMeshBuilder::output_ctrl_, tpquad_ctrl,
+          "Diagnostics control for TPQuadMeshBuilder");
 
 std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
@@ -45,7 +45,8 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
     for (size_type i = 0; i <= nx; ++i, ++node_cnt) {
       // Tensor-product node locations
       coord_t node_coord(2);
-      node_coord << i * hx, j * hy;
+      node_coord << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[1] + j * hy;
       // Diagnostics
       if (output_ctrl_ > 0) {
         std::cout << "Adding vertex " << node_cnt << ": "
@@ -68,8 +69,13 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
           v_idx[VertexIndex(i + 1, j + 1)], v_idx[VertexIndex(i, j + 1)]};
       // Construct geometry of rectangle
       Eigen::Matrix<double, 2, 4> quad_geo(2, 4);
-      quad_geo << i * hx, (i + 1) * hx, (i + 1) * hx, i * hx, j * hy, j * hy,
-          (j + 1) * hy, (j + 1) * hy;
+      quad_geo << bottom_left_corner_[0] + i * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[0] + (i + 1) * hx,
+          bottom_left_corner_[0] + i * hx, bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + j * hy,
+          bottom_left_corner_[1] + (j + 1) * hy,
+          bottom_left_corner_[1] + (j + 1) * hy;
       // Diagnostics
       if (output_ctrl_ > 0) {
         std::cout << "Adding quad " << quad_cnt << ": " << quad_geo

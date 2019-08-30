@@ -11,8 +11,10 @@
 
 namespace lf::mesh::hybrid2d {
 
-CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
-                      "Diagnostics control for hybrid2d::Mesh");
+// CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
+//                      "Diagnostics control for hybrid2d::Mesh");
+ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
+          "Diagnostics control for hybrid2d::Mesh");
 
 base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");
@@ -31,7 +33,7 @@ base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
     case 2:
       return {points_.begin(), points_.end()};
     default: {
-      LF_VERIFY_MSG(false, "Something is horribyl wrong, codim = " +
+      LF_VERIFY_MSG(false, "Something is horribly wrong, codim = " +
                                std::to_string(codim) + " is out of bounds.");
       return {
           base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),
@@ -107,8 +109,9 @@ const Entity *Mesh::EntityByIndex(dim_t codim, glb_idx_t index) const {
 bool Mesh::Contains(const Entity &e) const {
   switch (e.Codim()) {
     case 0:
-      return (&e >= &trias_.front() && &e <= &trias_.back()) ||
-             (&e >= &quads_.front() && &e <= &quads_.back());
+      return (!trias_.empty() && &e >= &trias_.front() &&
+              &e <= &trias_.back()) ||
+             (!quads_.empty() && &e >= &quads_.front() && &e <= &quads_.back());
     case 1:
       return &e >= &segments_.front() && &e <= &segments_.back();
     case 2:

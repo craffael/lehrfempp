@@ -54,6 +54,14 @@ void mfPointUsage() {
   // Trying to sample the gradient directly on the points of the mesh
   // will fail an assert, see note above:
   // vtk_writer.WritePointData("GradShapeFun", mfGradShapeFun);
+
+  // Sample the geometry and the mesh function with 3rd order lagrange basis
+  // functions (see documentation of VtkWriter):
+  io::VtkWriter vtk_writerOrder3(mesh, "order3.vtk", 0, 3);
+  auto mfTrig = uscalfe::MeshFunctionGlobal(
+      [](const auto& x) { return std::sin(x[0]) * std::cos(x[1]); });
+  vtk_writer.WritePointData("mfTrig", mfTrig);
+
   //! [mfPointUsage]
 }
 
@@ -73,6 +81,29 @@ void mfCellUsage() {
   io::VtkWriter vtk_writer(mesh, "filename.vtk");
   vtk_writer.WriteCellData("shapeFun", mfShapeFun);
   //! [mfCellUsage]
+}
+
+void highOrder() {
+  //! [highOrder]
+  // read a 2nd order gmsh mesh:
+  GmshReader reader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
+                    "unit_circle.msh");
+  std::shared_ptr<mesh::Mesh> mesh = reader.mesh();
+
+  // define mesh function of the form sin(\pi*x)*cos(\pi*y) (in global
+  // coordinates)
+  auto mfTrig = uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+    return std::sin(base::kPi * x[0]) * std::cos(base::kPi * x[1]);
+  });
+
+  // output the mesh + mesh function using 1st order cells:
+  VtkWriter vtk1(mesh, "1storder.vtk");
+  vtk1.WritePointData("trig", mfTrig);
+
+  // output the mesh + mesh function using 2nd order cells:
+  VtkWriter vtk2(mesh, "2ndorder.vtk", 0, 2);
+  vtk2.WritePointData("trig", mfTrig);
+  //! [highOrder]
 }
 
 }  // namespace lf::io

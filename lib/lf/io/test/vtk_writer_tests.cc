@@ -9,7 +9,9 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
+#include <lf/mesh/utils/utils.h>
+#include <lf/refinement/refinement.h>
+#include <complex>
 
 namespace lf::io::test {
 
@@ -356,4 +358,71 @@ TEST(lf_io_VtkWriter, twoElementMeshCodim0AllData) {
                base::LfException);
 }
 
+void writeSomeData(VtkWriter& vtk) {
+  auto scalarfn = [&](const Eigen::Vector2d& x) {
+    return std::pow(std::complex<double>(x[0], x[1]), 6).real();
+  };
+
+  vtk.WritePointData("linear",
+                     uscalfe::MeshFunctionGlobal(
+                         [](const Eigen::Vector2d& x) { return x[0] + x[1]; }));
+
+  vtk.WritePointData("unsigned_char",
+                     uscalfe::MeshFunctionGlobal(
+                         [&](const Eigen::Vector2d& x) -> unsigned char {
+                           return scalarfn(x);
+                         }));
+  vtk.WritePointData("char", uscalfe::MeshFunctionGlobal(
+                                 [&](const Eigen::Vector2d& x) -> char {
+                                   return scalarfn(x);
+                                 }));
+  vtk.WritePointData("unsigned", uscalfe::MeshFunctionGlobal(
+                                     [&](const Eigen::Vector2d& x) -> unsigned {
+                                       return scalarfn(x);
+                                     }));
+  vtk.WritePointData(
+      "int", uscalfe::MeshFunctionGlobal(
+                 [&](const Eigen::Vector2d& x) -> int { return scalarfn(x); }));
+  vtk.WritePointData("float", uscalfe::MeshFunctionGlobal(
+                                  [&](const Eigen::Vector2d& x) -> float {
+                                    return scalarfn(x);
+                                  }));
+  vtk.WritePointData("double", uscalfe::MeshFunctionGlobal(scalarfn));
+  vtk.WritePointData("vec2_float",
+                     uscalfe::MeshFunctionGlobal(
+                         [](const Eigen::Vector2d& x) -> Eigen::Vector2f {
+                           return x.cast<float>();
+                         }));
+  vtk.WritePointData(
+      "vec2_double",
+      uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; }));
+  vtk.WritePointData("vec3_float",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::Vector3f(x[0], x[1], std::sin(x[0]));
+                     }));
+  vtk.WritePointData("vec3_double",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::Vector3d(x[0], x[1], std::sin(x[0]));
+                     }));
+  vtk.WritePointData("vecd_float",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::VectorXf(x.cast<float>());
+                     }));
+  vtk.WritePointData("vecd_double",
+                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+                       return Eigen::VectorXd(x);
+                     }));
+}
+
+TEST(lf_io_VtkWriter, circle2ndOrderQuad) {
+  auto reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
+  VtkWriter vtk(reader.mesh(), "circle_second_order_quad.vtk", 0, 2);
+  writeSomeData(vtk);
+  VtkWriter vtk2(reader.mesh(), "circle_second_order_quad_codim1.vtk", 1, 5);
+  writeSomeData(vtk2);
+
+  auto readerTria = test_utils::getGmshReader("circle_second_order.msh", 2);
+  VtkWriter vtkt(readerTria.mesh(), "circle_second_order_tria.vtk", 0, 2);
+  writeSomeData(vtkt);
+}
 }  // namespace lf::io::test

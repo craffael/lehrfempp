@@ -30,6 +30,7 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
   for (const lf::mesh::Entity& e : mesh_p->Entities(super_codim)) {
     // Traverse all sub-entities of a specific relative co-dimension
     for (const lf::mesh::Entity& subent : e.SubEntities(codim_super)) {
+      // Write access to an entry in the data set
       sup_ent_cnt(subent) += 1;
     }
   }

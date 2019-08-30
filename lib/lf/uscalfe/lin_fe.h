@@ -102,17 +102,22 @@ class LinearFELaplaceElementMatrix {
  * @brief Class for computation of local load vector for linear finite
  * elements.
  *
- * @tparam FUNCTOR object with an evaluation operator of signature
- *         std::function<double(const Eigen::Vector2d &)>, which supplies
- *         the source function
+ * @tparam FUNCTOR object compatible with a `MeshFunction` type. This means
+ *         that is must supply an evaluation operator of signature
+ * ~~~
+ * std::function<auto(const lf::mesh::Entity &cell,const Eigen::MatrixXd &)>
+ * ~~~
+ *         which supplies the source function, see @ref MeshFunctionGlobal.
  *
- * Computation is based on vertex based quadrature
+ * Computations employ edge midpoint quadrature.
  *
  * @note The element vector returned by the `Eval()` method will always
  * have length 4 also for triangles.
  *
  * This class complies with the requirements for the template parameter
  * `ENTITY_VECTOR_PROVIDER` of the function AssembleVectorLocally().
+ *
+ * TODO: Adjust size of vector returned.
  */
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {
@@ -208,7 +213,6 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
   elem_vec_t elem_vec = elem_vec_t::Zero();
   // Run over the midpoints of edges and fetch values of the source function
   // there
-
   auto fvals = f_(cell, ref_mp);
 
   for (int k = 0; k < num_nodes; k++) {

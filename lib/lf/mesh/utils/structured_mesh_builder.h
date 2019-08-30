@@ -1,7 +1,6 @@
 #ifndef STRUCTURED_MESH_BUILDER_H
 #define STRUCTURED_MESH_BUILDER_H
 
-#include <lf/base/static_vars.h>
 #include "lf/mesh/mesh_factory.h"
 
 namespace lf::mesh::hybrid2d {

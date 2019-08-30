@@ -1,4 +1,10 @@
-
+/**
+ * @file
+ * @brief Abstract base class for generators of lf::mesh::Mesh objects
+ * @author Raffael Casagrande
+ * @date   2018
+ * @copyright MIT License
+ */
 #ifndef __5ac8f981f27e45d3b9d15fc9d52f7136
 #define __5ac8f981f27e45d3b9d15fc9d52f7136
 
