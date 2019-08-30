@@ -25,11 +25,11 @@ jobs:
       apt:
         update: true
         sources:
-        - llvm-toolchain-xenial-6.0
+        - llvm-toolchain-xenial-8
         - ubuntu-toolchain-r-test
         packages:
-        - clang-format-6.0
-    script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-6.0
+        - clang-format-8
+    script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
       --color always ./lib/"
   - stage: clang-tidy
     os: linux
@@ -37,10 +37,10 @@ jobs:
       apt:
         update: true
         sources:
-        - llvm-toolchain-xenial-6.0
+        - llvm-toolchain-xenial-8
         - ubuntu-toolchain-r-test
         packages:
-        - clang-tidy-6.0
+        - clang-tidy-8
         - g++-7
     script: "./travis/run_clang_tidy.sh"
   - stage: compile_test

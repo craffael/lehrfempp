@@ -148,6 +148,8 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
           }  // end switch ref_pat
           break;
         }
+        default:
+          LF_VERIFY_MSG(false, "invalid codim");
       }  // end switch codim
       break;
     }  // end case of an edge
@@ -187,6 +189,8 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
             }
           }  // end switch ref_pat
           break;
+          default:
+            LF_VERIFY_MSG(false, "invalid codim");
         }  // end case codim = 0
         case 1: {
           switch (ref_pat_) {
@@ -310,6 +314,8 @@ lf::base::size_type Hybrid2DRefinementPattern::noChildren(
           return 0;
           break;
         }
+        default:
+          LF_VERIFY_MSG(false, "invalid codim");
       }  // end switch codim
       break;
     }  // end case of a quadrilateral
@@ -326,9 +332,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> child_poly{};
 
   // Lattice point coordinates (lattice_const_ should be a multiple of 6)
-  const int lt_half = lattice_const_ / 2;
-  const int lt_third = lattice_const_ / 3;
-  const int lt_one = lattice_const_;
+  const unsigned int lt_half = lattice_const_ / 2;
+  const unsigned int lt_third = lattice_const_ / 3;
+  const unsigned int lt_one = lattice_const_;
   // Depending on the type of cell do something different
   switch (ref_el_) {
     case lf::base::RefEl::kPoint(): {
@@ -376,7 +382,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           }
           break;
         }  // end case codim = 1
-      }    // end switch codim
+        default:
+          LF_VERIFY_MSG(false, "invalid codim");
+      }  // end switch codim
       break;
     }  // end case of an edge
     case lf::base::RefEl::kTria(): {
@@ -393,9 +401,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
       lt_midpoint_coords << lt_half, lt_half, 0, 0, lt_half, lt_half;
 
       // Remap local indices according to anchor values
-      const int mod_0 = (0 + anchor_) % 3;
-      const int mod_1 = (1 + anchor_) % 3;
-      const int mod_2 = (2 + anchor_) % 3;
+      const unsigned int mod_0 = (0 + anchor_) % 3;
+      const unsigned int mod_1 = (1 + anchor_) % 3;
+      const unsigned int mod_2 = (2 + anchor_) % 3;
 
       switch (codim) {
         case 0: {
@@ -720,7 +728,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           }
           break;
         }  // end codim == 2
-      }    // end switch codim
+        default:
+          LF_VERIFY_MSG(false, "invalid codim");
+      }  // end switch codim
       break;
     }  // end case of a triangle
     case lf::base::RefEl::kQuad(): {
@@ -735,10 +745,10 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           lt_half;
 
       // Remap local indices according to anchor values
-      const int mod_0 = (0 + anchor_) % 4;
-      const int mod_1 = (1 + anchor_) % 4;
-      const int mod_2 = (2 + anchor_) % 4;
-      const int mod_3 = (3 + anchor_) % 4;
+      const unsigned int mod_0 = (0 + anchor_) % 4;
+      const unsigned int mod_1 = (1 + anchor_) % 4;
+      const unsigned int mod_2 = (2 + anchor_) % 4;
+      const unsigned int mod_3 = (3 + anchor_) % 4;
 
       switch (codim) {
         case 0: {
@@ -1010,7 +1020,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
           }
           break;
         }  // end codim == 2
-      }    // end switch codim
+        default:
+          LF_VERIFY_MSG(false, "invalid codim");
+      }  // end switch codim
       break;
     }  // end case of a quadrilateral
   }    // end switch cell type

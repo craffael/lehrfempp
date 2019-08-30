@@ -100,7 +100,7 @@ TEST(lf_assembly, fix_dof_test) {
   fixed_components_t<double> fixed_solution_components{
       {2, -1.0}, {4, -2.0}, {8, -3.0}};
 
-  fix_solution_components_lse(fixed_solution_components, A, b);
+  FixSolutionComponentsLse(fixed_solution_components, A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 
@@ -151,7 +151,7 @@ TEST(lf_assembly, fix_dof_flags_alt) {
   valvec[4] = -2.0;
   valvec[8] = -3.0;
 
-  fix_flagged_solution_comp_alt<double>(
+  FixFlaggedSolutionCompAlt<double>(
       [&flagvec,
        &valvec](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
         LF_ASSERT_MSG((i < flagvec.size()) && (i < valvec.size()),
@@ -216,7 +216,7 @@ TEST(lf_assembly, fix_dof_flags) {
     return std::make_pair(flagvec[i], valvec[i]);
   };
 
-  fix_flagged_solution_components<double>(setvals, A, b);
+  FixFlaggedSolutionComponents<double>(setvals, A, b);
   std::cout << "Modified matrix A = \n" << A.makeDense() << std::endl;
   std::cout << "Modified rhs = " << b.transpose() << std::endl;
 

@@ -21,7 +21,7 @@ namespace lf::assemble {
 
 /**
  * @brief enforce prescribed solution components
- * @sa fix_solution_components_lse()
+ * @sa FixSolutionComponentsLse()
  *
  * @tparam SCALAR underlying scalar type, e.g. double
  * @tparam SELECTOR both predicate for selection of vector components and
@@ -78,8 +78,8 @@ namespace lf::assemble {
    \f]
  */
 template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
-void fix_flagged_solution_components(SELECTOR &&selectvals,
-                                     COOMatrix<SCALAR> &A, RHSVECTOR &b) {
+void FixFlaggedSolutionComponents(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
+                                  RHSVECTOR &b) {
   const lf::assemble::size_type N(A.cols());
   LF_ASSERT_MSG(A.rows() == N, "Matrix must be square!");
   LF_ASSERT_MSG(N == b.size(),
@@ -134,7 +134,7 @@ void fix_flagged_solution_components(SELECTOR &&selectvals,
 /**
  * @brief Setting unknowns of a sparse linear system of equations
  *        to fixed values
- * @sa fix_flagged_solution_components()
+ * @sa FixFlaggedSolutionComponents()
  *
  * ### Algorithm
  *
@@ -165,8 +165,8 @@ void fix_flagged_solution_components(SELECTOR &&selectvals,
  \f]
 */
 template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
-void fix_flagged_solution_comp_alt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
-                                   RHSVECTOR &b) {
+void FixFlaggedSolutionCompAlt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
+                               RHSVECTOR &b) {
   const lf::assemble::size_type N(A.cols());
   LF_ASSERT_MSG(A.rows() == N, "Matrix must be square!");
   LF_ASSERT_MSG(N == b.size(),
@@ -181,7 +181,7 @@ void fix_flagged_solution_comp_alt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
   }
   // Set rows and columns of the sparse matrix corresponding to the fixed
   // solution components to zero
-  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t) {
+  A.setZero([&selectvals](gdof_idx_t i, gdof_idx_t /*unused*/) {
     return (selectvals(i).first);
   });
   // Old implementation showing the algorithm:
@@ -229,7 +229,7 @@ using fixed_components_t =
  * @sa fix_flagged_solution_components_alt()
  */
 template <typename SCALAR, typename RHSVECTOR>
-void fix_solution_components_lse(
+void FixSolutionComponentsLse(
     const fixed_components_t<SCALAR> &fixed_components, COOMatrix<SCALAR> &A,
     RHSVECTOR &b) {
   const lf::assemble::size_type N(A.cols());
@@ -249,8 +249,8 @@ void fix_solution_components_lse(
     fixed_vec[idx_val_pair.first] += idx_val_pair.second;
     fixed_comp_flags[idx_val_pair.first] = true;
   }
-  // fix_flagged_solution_components<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
-  fix_flagged_solution_comp_alt<SCALAR>(
+  // FixFlaggedSolutionComponents<SCALAR>(fixed_comp_flags, fixed_vec, A, b);
+  FixFlaggedSolutionCompAlt<SCALAR>(
       [&fixed_comp_flags,
        &fixed_vec](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
         LF_ASSERT_MSG((i < fixed_comp_flags.size()) && (i < fixed_vec.size()),

@@ -37,7 +37,7 @@ double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree,
     }
     auto mapped_points = e.Geometry()->Global(points);
     auto integration_elements = e.Geometry()->IntegrationElement(points);
-    for (int j = 0; j < points.cols(); ++j) {
+    for (Eigen::Index j = 0; j < points.cols(); ++j) {
       result += f(mapped_points.col(j)) * weights(j) * integration_elements(j);
     }
   }
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
-  if (vm.count("help") != 0u) {
+  if (vm.count("help") != 0U) {
     std::cout << desc << std::endl;
     return 1;
   }

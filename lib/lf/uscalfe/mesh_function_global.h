@@ -66,7 +66,7 @@ class MeshFunctionGlobal {
     std::vector<F_return_type> result;
     result.reserve(local.cols());
     auto global_points = e.Geometry()->Global(local);
-    for (base::dim_t i = 0; i < local.cols(); ++i) {
+    for (long i = 0; i < local.cols(); ++i) {
       result.push_back(f_(global_points.col(i)));
     }
     return result;

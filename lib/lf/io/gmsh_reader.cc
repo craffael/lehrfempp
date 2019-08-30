@@ -144,18 +144,18 @@ std::ostream& operator<<(std::ostream& stream, const MshFile& mf) {
   stream << "======================================================="
          << std::endl;
   stream << "PHYSICAL ENTITIES (Dimension, Number, Name):" << std::endl;
-  for (auto pe : mf.PhysicalEntities) {
+  for (auto& pe : mf.PhysicalEntities) {
     stream << "  " << pe.Dimension << "\t , " << pe.Number << "\t , " << pe.Name
            << std::endl;
   }
   stream << "NODES (Number, coords)" << std::endl;
-  for (auto n : mf.Nodes) {
+  for (auto& n : mf.Nodes) {
     stream << "  " << n.first << "\t , " << n.second.transpose() << std::endl;
   }
   stream << "ELEMENTS (Number, Type, PhysicalEntity Nr, ElementaryEntityNr, "
             "Mesh partitions to which it belongs, Node numbers in it)"
          << std::endl;
-  for (auto e : mf.Elements) {
+  for (auto& e : mf.Elements) {
     stream << "  " << e.Number << "\t " << e.Type << '\t' << e.PhysicalEntityNr
            << "\t" << e.ElementaryEntityNr << "\t";
     for (auto p : e.MeshPartitions) {
@@ -169,7 +169,7 @@ std::ostream& operator<<(std::ostream& stream, const MshFile& mf) {
   }
   stream << std::endl;
   stream << "PERIODIC ENTITIES:" << std::endl;
-  for (auto pe : mf.Periodic) {
+  for (auto& pe : mf.Periodic) {
     std::cout << "  dim=" << pe.Dimension
               << ", slaveNr=" << pe.ElementarySlaveNr
               << ", masterNr=" << pe.ElementaryMasterNr << std::endl;
@@ -429,6 +429,7 @@ struct gmshElementType : qi::symbols<char, unsigned> {
   }
 };
 
+// NOLINTNEXTLINE
 BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
 
 /// Defines the Grammar of a msh file using boost::spirit
@@ -529,6 +530,7 @@ struct MshGrammarText
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
   }
 
+ private:
   qi::rule<ITERATOR, std::string(), ascii::space_type> quotedString_;
   qi::rule<ITERATOR, std::string()> startComment_;
   qi::rule<ITERATOR, qi::locals<std::string>, ascii::space_type> comment_;
@@ -806,7 +808,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       if (DimOf(e.Type) == dim_mesh) {
         // mark main nodes
         auto ref_el = RefElOf(e.Type);
-        for (int i = 0; i < ref_el.NumNodes(); ++i) {
+        for (unsigned int i = 0; i < ref_el.NumNodes(); ++i) {
           auto node_number = e.NodeNumbers[i];
           if (is_main_node.size() <= node_number) {
             is_main_node.resize(node_number + 1);
@@ -836,7 +838,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   std::vector<size_type> gi2i;
   gi2i.resize(is_main_node.size(), -1);
 
-  for (int i = 0; i < msh_file.Nodes.size(); ++i) {
+  for (std::size_t i = 0; i < msh_file.Nodes.size(); ++i) {
     auto& n = msh_file.Nodes[i];
     if (gi2i.size() <= n.first) {
       gi2i.resize(n.first + 1, -1);
@@ -853,7 +855,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
           n.second(2) == 0,
           "In a 2D GmshMesh, the z-coordinate of every node must be zero");
       mi = mesh_factory_->AddPoint(n.second.topRows(2));
-    } else if (dim_mesh == 3) {
+    } else {
       mi = mesh_factory_->AddPoint(n.second);
     }
     gi2mi[n.first] = mi;
@@ -862,8 +864,8 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // 3) Insert entities (except nodes) into MeshFactory:
   //////////////////////////////////////////////////////////////////////////////
 
-  size_type begin = 0;
-  for (size_type end = 0; end < msh_file.Elements.size(); ++end) {
+  std::size_t begin = 0;
+  for (std::size_t end = 0; end < msh_file.Elements.size(); ++end) {
     auto& begin_element = msh_file.Elements[begin];
     auto& end_element = msh_file.Elements[end];
     auto ref_el = RefElOf(end_element.Type);
@@ -887,7 +889,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       // gmsh element is not a point -> insert entity:
       auto num_nodes = end_element.NodeNumbers.size();
       Eigen::MatrixXd node_coords(dim_world, num_nodes);
-      for (size_type i = 0; i < num_nodes; ++i) {
+      for (std::size_t i = 0; i < num_nodes; ++i) {
         auto node_coord =
             msh_file.Nodes[gi2i[end_element.NodeNumbers[i]]].second;
         if (dim_world == 2) {
@@ -938,7 +940,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
       }
 
       mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
-      mi2gi[codim].emplace_back(std::vector{end});
+      mi2gi[codim].emplace_back(std::vector{static_cast<unsigned int>(end)});
     }
   }
 
@@ -973,7 +975,7 @@ GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
   // 6) Create mapping physicalEntityNr <-> physicalEntityName:
   //////////////////////////////////////////////////////////////////////////
 
-  for (auto pe : msh_file.PhysicalEntities) {
+  for (auto& pe : msh_file.PhysicalEntities) {
     name_2_nr_.insert(
         std::pair{pe.Name, std::pair{pe.Number, dim_mesh - pe.Dimension}});
     nr_2_name_.insert(

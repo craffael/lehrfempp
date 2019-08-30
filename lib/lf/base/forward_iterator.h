@@ -76,11 +76,11 @@ class ForwardIterator {
     WrapperInterface& operator=(const WrapperInterface&) = delete;
     WrapperInterface& operator=(WrapperInterface&&) = delete;
 
-    virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
-    virtual bool Compare(const WrapperInterface* other) const = 0;
-    virtual T& Dereference() const = 0;
-    virtual WrapperInterface* operator++() = 0;
-    virtual std::unique_ptr<WrapperInterface> operator++(int) = 0;
+    [[nodiscard]] virtual std::unique_ptr<WrapperInterface> Clone() const = 0;
+    [[nodiscard]] virtual bool Compare(const WrapperInterface* other) const = 0;
+    [[nodiscard]] virtual T& Dereference() const = 0;
+    virtual WrapperInterface* operator++() = 0;  // NOLINT
+    [[nodiscard]] virtual std::unique_ptr<WrapperInterface> operator++(int) = 0;
 
     virtual ~WrapperInterface() = default;
   };
@@ -92,13 +92,13 @@ class ForwardIterator {
                 !std::is_reference<InnerIterator>::value>::type>
   class WrapperImpl : public virtual WrapperInterface {
    protected:
-    InnerIterator iterator_;
+    InnerIterator iterator_;  // NOLINT
 
    public:
     explicit WrapperImpl(InnerIterator iterator)
         : iterator_(std::move(iterator)) {}
 
-    std::unique_ptr<WrapperInterface> Clone() const override {
+    [[nodiscard]] std::unique_ptr<WrapperInterface> Clone() const override {
       return std::make_unique<WrapperImpl>(iterator_);
     }
 
@@ -110,7 +110,7 @@ class ForwardIterator {
       return false;
     }
 
-    T& Dereference() const override { return *iterator_; }
+    [[nodiscard]] T& Dereference() const override { return *iterator_; }
 
     WrapperInterface* operator++() override {
       ++iterator_;
@@ -153,7 +153,7 @@ class ForwardIterator {
     }
   };
 
-  std::unique_ptr<WrapperInterface> wrapper_;
+  std::unique_ptr<WrapperInterface> wrapper_;  // NOLINT
   // needed by operator++()
   explicit ForwardIterator(std::unique_ptr<WrapperInterface>&& ptr)
       : wrapper_(std::move(ptr)) {}

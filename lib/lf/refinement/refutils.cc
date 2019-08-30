@@ -9,7 +9,11 @@
 
 namespace lf::refinement {
 
-inline int normalize_idx(glb_idx_t idx) { return (idx == idx_nil) ? -1 : idx; }
+inline int normalize_idx(glb_idx_t idx) {
+  LF_ASSERT_MSG(idx == idx_nil || idx <= std::numeric_limits<int>::max(),
+                "Error, trying to convert " << idx << "into an int");
+  return (idx == idx_nil) ? int(-1) : int(idx);
+}
 
 void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
                       std::string filename) {

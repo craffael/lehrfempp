@@ -50,7 +50,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
                               << vertices << std::endl);
 
   // 4x4 dense matrix for returning result
-  elem_mat_t elem_mat = elem_mat_t::Zero(4, 4);
+  ElemMat elem_mat = ElemMat::Zero(4, 4);
 
   // Computations differ depending on the type of the cell
   switch (ref_el) {
@@ -150,7 +150,9 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
       elem_mat *= 0.25;
       break;
     }
-    default: { LF_ASSERT_MSG(false, "Illegal cell type"); }
+    default: {
+      LF_ASSERT_MSG(false, "Illegal cell type");
+    }
   }  // end switch
 
   SWITCHEDSTATEMENT(

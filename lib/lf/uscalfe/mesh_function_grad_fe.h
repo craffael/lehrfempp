@@ -64,7 +64,7 @@ class MeshFunctionGradFE {
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(
         1, grad_sf_eval.rows());
     auto global_dofs = fe_space_->LocGlobMap().GlobalDofIndices(e);
-    for (int i = 0; i < grad_sf_eval.rows(); ++i) {
+    for (Eigen::Index i = 0; i < grad_sf_eval.rows(); ++i) {
       local_dofs(i) = dof_vector_(global_dofs[i]);
     }
 
@@ -75,7 +75,7 @@ class MeshFunctionGradFE {
     auto dim_local = e.RefEl().Dimension();
     std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> result(local.cols());
 
-    for (int i = 0; i < result.size(); ++i) {
+    for (std::size_t i = 0; i < result.size(); ++i) {
       result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *
                   local_grads.block(0, i * dim_local, 1, dim_local).transpose();
     }

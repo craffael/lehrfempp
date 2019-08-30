@@ -70,10 +70,9 @@ int main() {
   const size_type N_dofs(dofh.NoDofs());
 
   // identity mesh function for very simple problem
-  auto identity = [](Eigen::Vector2d x) -> double { return 1.; };
-  lf::uscalfe::MeshFunctionGlobal mf_identity{identity};
+  lf::uscalfe::MeshFunctionConstant mf_identity(1.0);
 
-  auto zero = [](Eigen::Vector2d x) -> double { return 0.; };
+  auto zero = [](const Eigen::Vector2d & /*x*/) -> double { return 0.; };
   lf::uscalfe::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
@@ -81,9 +80,8 @@ int main() {
 
   // Obtain an object that computes the element matrix for the
   // volumne part of the bilinear form
-  lf::uscalfe::ReactionDiffusionElementMatrixProvider<
-      double, decltype(mf_identity), decltype(mf_identity)>
-      elmat_builder(fe_space, mf_identity, mf_identity);
+  lf::uscalfe::ReactionDiffusionElementMatrixProvider elmat_builder(
+      fe_space, mf_identity, mf_identity);
 
   // Invoke assembly on cells (co-dimension = 0)
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
@@ -94,8 +92,8 @@ int main() {
 
   // Initialize object taking care of local computations on all cells for the
   // source f. The source is the identity function
-  lf::uscalfe::ScalarLoadElementVectorProvider<double, decltype(mf_identity)>
-      elvec_builder(fe_space, mf_identity);
+  lf::uscalfe::ScalarLoadElementVectorProvider elvec_builder(fe_space,
+                                                             mf_identity);
   // Invoke assembly on cells (codim == 0)
   AssembleVectorLocally(0, dofh, elvec_builder, phi);
 
@@ -138,7 +136,7 @@ int main() {
         },
         mf_zero)};
     // Eliminate Dirichlet dofs from linear system
-    lf::assemble::fix_flagged_solution_components<double>(
+    lf::assemble::FixFlaggedSolutionComponents<double>(
         [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
           return ess_bdc_flags_values[gdof_idx];
         },
@@ -153,33 +151,36 @@ int main() {
   solver.compute(A_crs);
   Eigen::VectorXd sol_vec = solver.solve(phi);
 
-  // Compute Energy
-  // Matrix in triplet format holding Stiffness matrix.
+  // Compute H1 Norm
   if (N_dofs > 0) {
+    // Version 1: Using Mesh Functions
+    auto mf_FE = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_GradFe = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
+    auto h1_norm = std::sqrt(IntegrateMeshFunction(
+        *mesh, squaredNorm(mf_FE) + squaredNorm(mf_GradFe), 2));
+
+    std::cout << "Computed H1 Norm: " << h1_norm << std::endl;
+
+    // Version 2: Compute Energy by assembling Stiffness matrix/mass matrix
     lf::assemble::COOMatrix<double> Stiffness(N_dofs, N_dofs);
-    lf::uscalfe::ReactionDiffusionElementMatrixProvider<
-        double, decltype(mf_identity), decltype(mf_zero)>
-        stiffness_mat_builder(fe_space, mf_identity, mf_zero);
+    lf::uscalfe::ReactionDiffusionElementMatrixProvider stiffness_mat_builder(
+        fe_space, mf_identity, mf_zero);
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, stiffness_mat_builder,
                                         Stiffness);
     Eigen::SparseMatrix<double> Stiffness_crs = Stiffness.makeSparse();
 
     // Matrix in triplet format holding Mass matrix.
     lf::assemble::COOMatrix<double> Mass(N_dofs, N_dofs);
-    lf::uscalfe::ReactionDiffusionElementMatrixProvider<
-        double, decltype(mf_zero), decltype(mf_identity)>
-        mass_mat_builder(fe_space, mf_zero, mf_identity);
+    lf::uscalfe::ReactionDiffusionElementMatrixProvider mass_mat_builder(
+        fe_space, mf_zero, mf_identity);
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, mass_mat_builder, Mass);
     Eigen::SparseMatrix<double> Mass_crs = Mass.makeSparse();
 
-    // energy_stiffness_sq = 1' A 1
-    double energy_stiffness_sq =
-        Eigen::VectorXd::Constant(N_dofs, 1.0).transpose() *
-        (Stiffness_crs * Eigen::VectorXd::Constant(N_dofs, 1.0));
-    // energy_mass_sq = \mu' M \mu
-    double energy_mass_sq = sol_vec.transpose() * Mass_crs * sol_vec;
+    // h1_seminorm_sq = \mu' A \mu
+    double h1_semi2 = sol_vec.transpose() * (Stiffness_crs * sol_vec);
+    // l2_norm_sq = \mu' M \mu
+    double l22 = sol_vec.transpose() * Mass_crs * sol_vec;
 
-    std::cout << "Computed Energy Norm: "
-              << std::sqrt(energy_stiffness_sq + energy_mass_sq) << "\n";
+    std::cout << "Computed H1 Norm: " << std::sqrt(h1_semi2 + l22) << "\n";
   }
 }

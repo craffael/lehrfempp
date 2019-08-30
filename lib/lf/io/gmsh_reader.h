@@ -310,12 +310,12 @@ class GmshReader {
   /**
    * @brief Get the mesh that was read by this reader.
    */
-  std::shared_ptr<mesh::Mesh> mesh() { return mesh_; }
+  [[nodiscard]] std::shared_ptr<mesh::Mesh> mesh() { return mesh_; }
 
   /**
    * @brief Get the mesh that was read by this reader.
    */
-  std::shared_ptr<const mesh::Mesh> mesh() const { return mesh_; }
+  [[nodiscard]] std::shared_ptr<const mesh::Mesh> mesh() const { return mesh_; }
 
   /**
    * @brief maps the name of a physical entity to the physical entity number
@@ -329,8 +329,8 @@ class GmshReader {
    * giving it a name, you cannot use this function.
    * @sa PhysicalEntityNr2Name()
    */
-  size_type PhysicalEntityName2Nr(const std::string& name,
-                                  dim_t codim = -1) const;
+  [[nodiscard]] size_type PhysicalEntityName2Nr(const std::string& name,
+                                                dim_t codim = -1) const;
 
   /**
    * @brief Gives the name of a physical entity (inverse of
@@ -340,14 +340,15 @@ class GmshReader {
    * @return The name of the physical entity with number `number`
    * @sa PhysicalEntityNr2Name
    */
-  std::string PhysicalEntityNr2Name(size_type number, dim_t codim = -1) const;
+  [[nodiscard]] std::string PhysicalEntityNr2Name(size_type number,
+                                                  dim_t codim = -1) const;
 
   /**
    * @brief Retrieve a list of all (Gmsh) physical entities of the given codim.
    * @param codim The codimension
    * @return A list of physical entities (number, name)
    */
-  std::vector<std::pair<size_type, std::string>> PhysicalEntities(
+  [[nodiscard]] std::vector<std::pair<size_type, std::string>> PhysicalEntities(
       dim_t codim) const;
 
   /**
@@ -356,7 +357,8 @@ class GmshReader {
    * \param e  The entity of the grid.
    * \return   The Physical Entity Number that was assigned in GMSH.
    */
-  std::vector<size_type> PhysicalEntityNr(const mesh::Entity& e) const;
+  [[nodiscard]] std::vector<size_type> PhysicalEntityNr(
+      const mesh::Entity& e) const;
 
   /**
    * @brief Test whether the given entity belongs to a Gmsh physical entity.
@@ -370,8 +372,8 @@ class GmshReader {
    *
    * @sa PhysicalEntityNr()
    */
-  bool IsPhysicalEntity(const mesh::Entity& e,
-                        size_type physical_entity_nr) const;
+  [[nodiscard]] bool IsPhysicalEntity(const mesh::Entity& e,
+                                      size_type physical_entity_nr) const;
 
   /**
    * @brief Create a new GmshReader from the given MshFile (advanced usage)

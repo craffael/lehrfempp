@@ -84,7 +84,7 @@ Eigen::MatrixXd QuadO1::Jacobian(const Eigen::MatrixXd& local) const {
 
   // Note that coords\_ stores the coordinates of the vertices of
   // the quadrilateral in its columns.
-  for (int i = 0; i < local.cols(); ++i) {
+  for (Eigen::Index i = 0; i < local.cols(); ++i) {
     // Partial derivative of componentwise bilinear mapping
     // w.r.t. to first reference coordinate
     result.col(2 * i) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
@@ -106,7 +106,7 @@ Eigen::MatrixXd QuadO1::JacobianInverseGramian(
   Eigen::MatrixXd jacobian(DimGlobal(), 2);
 
   // Loop over all evaluatin points
-  for (int i = 0; i < local.cols(); ++i) {
+  for (Eigen::Index i = 0; i < local.cols(); ++i) {
     // Compute Jacobian matrix in one evaluation point.
     jacobian.col(0) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
                       (coords_.col(2) - coords_.col(3)) * local(1, i);
@@ -135,7 +135,7 @@ Eigen::VectorXd QuadO1::IntegrationElement(const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd jacobian(DimGlobal(), 2);
 
   // Loop over all evaluatin points
-  for (int i = 0; i < local.cols(); ++i) {
+  for (Eigen::Index i = 0; i < local.cols(); ++i) {
     // Compute Jacobian matrix in one evaluation point.
     jacobian.col(0) = (coords_.col(1) - coords_.col(0)) * (1 - local(1, i)) +
                       (coords_.col(2) - coords_.col(3)) * local(1, i);

@@ -15,6 +15,7 @@ set(sources
   random_access_range.h
   ref_el.cc
   ref_el.h
+  span.h
 )
 
 lf_add_library(lf.base ${sources})

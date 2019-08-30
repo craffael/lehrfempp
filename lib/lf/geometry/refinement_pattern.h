@@ -50,13 +50,16 @@ class RefinementPattern {
                   "Lattice constant should be multiple of 6");
   }
 
-  lf::base::RefEl RefEl() const { return ref_el_; }
-  lf::base::size_type LatticeConst() const { return lattice_const_; }
+  [[nodiscard]] lf::base::RefEl RefEl() const { return ref_el_; }
+  [[nodiscard]] lf::base::size_type LatticeConst() const {
+    return lattice_const_;
+  }
   /**
    * @brief provide number of child entities of a given co-dimension
    * to be created by refinement
    */
-  virtual lf::base::size_type noChildren(lf::base::dim_t codim) const = 0;
+  [[nodiscard]] virtual lf::base::size_type noChildren(
+      lf::base::dim_t codim) const = 0;
   /**
    * @brief provide lattice reference coordinates of vertices of child polygons
    *
@@ -87,13 +90,17 @@ class RefinementPattern {
    * The integer entries of the matrices must be non-negative and the
    * column sums must be <= the lattice constant.
    */
-  virtual std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+  [[nodiscard]] virtual std::vector<
+      Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
   ChildPolygons(lf::base::dim_t codim) const = 0;
 
   virtual ~RefinementPattern() = default;
 
  protected:
-  lf::base::RefEl ref_el_;            /**< cell type */
+  // TODO(craffael): make this a pure virtual base class
+  // NOLINTNEXTLINE
+  lf::base::RefEl ref_el_; /**< cell type */
+  // NOLINTNEXTLINE
   lf::base::size_type lattice_const_; /**< defines spacing of integer lattice */
 };
 

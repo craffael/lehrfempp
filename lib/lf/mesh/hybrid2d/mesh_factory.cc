@@ -119,7 +119,7 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 void MeshFactory::PrintLists(std::ostream& o) const {
   o << "hybrid2d::MeshFactory: Internal information" << std::endl;
   o << nodes_.size() << " nodes:" << std::endl;
-  for (size_type j = 0; j < nodes_.size(); j++) {
+  for (std::size_t j = 0; j < nodes_.size(); j++) {
     o << "Node " << j << " at ";
     if (nodes_[j] != nullptr) {
       o << (nodes_[j]->Global(Eigen::Matrix<double, 0, 1>())).transpose()
@@ -129,7 +129,7 @@ void MeshFactory::PrintLists(std::ostream& o) const {
     }
   }
   o << edges_.size() << " edges " << std::endl;
-  for (size_type j = 0; j < edges_.size(); j++) {
+  for (std::size_t j = 0; j < edges_.size(); j++) {
     o << "Edge " << j << ": " << edges_[j].first[0] << " <-> "
       << edges_[j].first[1];
     if (edges_[j].second) {
@@ -139,7 +139,7 @@ void MeshFactory::PrintLists(std::ostream& o) const {
   }
 
   std::cout << elements_.size() << " cells " << std::endl;
-  for (size_type j = 0; j < elements_.size(); j++) {
+  for (std::size_t j = 0; j < elements_.size(); j++) {
     o << "Cell " << j << " : ";
     for (int l = 0; l < 4; l++) {
       if (elements_[j].first[l] != static_cast<size_type>(-1)) {

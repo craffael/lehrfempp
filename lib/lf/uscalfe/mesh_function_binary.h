@@ -206,7 +206,7 @@ struct OperatorSubtraction {
 
       std::vector<Eigen::Matrix<scalar_t, fixedRows, fixedCols>> result(
           u.size());
-      for (int i = 0; i < u.size(); ++i) {
+      for (std::size_t i = 0; i < u.size(); ++i) {
         LF_ASSERT_MSG(
             u[i].rows() == v[i].rows(),
             "mismatch in #rows of matrices subtracted from each other.");

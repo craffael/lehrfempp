@@ -47,8 +47,7 @@ class SecondOrderEllipticBVP {
   /** @} */
 
   /**
-   * @defgroup sel
-   * @brief selectors for boundary/interface conditions
+   * @name selectors for boundary/interface conditions
    *
    * All boundary edges are visited.
    * - If EssentialConditionsOnEdge() is `true`, then the edge is treated as an
@@ -65,8 +64,7 @@ class SecondOrderEllipticBVP {
   virtual bool IsImpedanceEdge(const lf::mesh::Entity& edge) const = 0;
   /** @} */
 
-  /** @defgroup data
-   * @brief Data functions
+  /** @name Data functions
    * @{ */
   /** @brief right-hand side source function in @f$\in L^2 @f$ */
   virtual SCALAR f(Eigen::Vector2d x) const = 0;
@@ -245,7 +243,7 @@ SecOrdEllBVPLagrFELinSys(
         MeshFunctionGlobal(
             [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); }))};
     // Eliminate Dirichlet dofs from linear system
-    lf::assemble::fix_flagged_solution_components<SCALAR>(
+    lf::assemble::FixFlaggedSolutionComponents<SCALAR>(
         [&ess_bdc_flags_values](glb_idx_t gdof_idx) {
           return ess_bdc_flags_values[gdof_idx];
         },

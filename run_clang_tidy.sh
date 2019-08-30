@@ -26,9 +26,12 @@ fi
 if [ -x "$(command -v clang-tidy-6.0)" ]; then
   ct=clang-tidy-6.0
 fi
+if [ -x "$(command -v clang-tidy-8)" ]; then
+  ct=clang-tidy-8
+fi
 
 if [ -z "$ct" ]; then
-  echo "clang-tidy, clang-tidy-6.0 or clang-tidy-5.0 not found in path"
+  echo "clang-tidy, clang-tidy-8, clang-tidy-6.0 or clang-tidy-5.0 not found in path"
 fi
 echo $ct
 $ct --version

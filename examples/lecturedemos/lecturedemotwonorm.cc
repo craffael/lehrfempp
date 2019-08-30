@@ -82,7 +82,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
     // Query volume of the cell
     const double area = lf::geometry::Volume(*geo_p);
     // Obtain global indices of global shape functions covering the cell
-    lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> idx{
+    nonstd::span<const lf::assemble::gdof_idx_t> idx{
         dofh.GlobalDofIndices(cell)};
     switch (ref_el) {
       case lf::base::RefEl::kTria(): {

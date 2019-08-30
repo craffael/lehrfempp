@@ -33,17 +33,18 @@ class MeshFactory;
  */
 class Mesh : public mesh::Mesh {
  public:
-  unsigned DimMesh() const override { return 2; }
-  unsigned DimWorld() const override { return dim_world_; }
+  [[nodiscard]] unsigned DimMesh() const override { return 2; }
+  [[nodiscard]] unsigned DimWorld() const override { return dim_world_; }
 
-  base::ForwardRange<const mesh::Entity> Entities(
+  [[nodiscard]] base::ForwardRange<const mesh::Entity> Entities(
       unsigned codim) const override;
-  size_type NumEntities(unsigned codim) const override;
-  size_type NumEntities(lf::base::RefEl ref_el_type) const override;
-  size_type Index(const Entity& e) const override;
-  const mesh::Entity* EntityByIndex(dim_t codim,
-                                    glb_idx_t index) const override;
-  bool Contains(const mesh::Entity& e) const override;
+  [[nodiscard]] size_type NumEntities(unsigned codim) const override;
+  [[nodiscard]] size_type NumEntities(
+      lf::base::RefEl ref_el_type) const override;
+  [[nodiscard]] size_type Index(const Entity& e) const override;
+  [[nodiscard]] const mesh::Entity* EntityByIndex(
+      dim_t codim, glb_idx_t index) const override;
+  [[nodiscard]] bool Contains(const mesh::Entity& e) const override;
 
  private:
   dim_t dim_world_{};

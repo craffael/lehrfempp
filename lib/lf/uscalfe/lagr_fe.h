@@ -105,7 +105,7 @@ class ScalarReferenceFiniteElement {
    * @brief Tells the type of reference cell underlying the parametric finite
    * element
    */
-  virtual base::RefEl RefEl() const = 0;
+  [[nodiscard]] virtual base::RefEl RefEl() const = 0;
 
   /**
    * @brief Request the polynomial degree of the finite element space
@@ -113,12 +113,12 @@ class ScalarReferenceFiniteElement {
    * @sa ScalarReferenceFiniteElement(lf::base::RefEl ref_el, unsigned int
    * degree)
    */
-  virtual unsigned int Degree() const = 0;
+  [[nodiscard]] virtual unsigned int Degree() const = 0;
 
   /**
    * @brief Returns the spatial dimension of the reference cell
    */
-  dim_t Dimension() const { return RefEl().Dimension(); }
+  [[nodiscard]] dim_t Dimension() const { return RefEl().Dimension(); }
 
   /**
    * @brief Total number of reference shape functions associated with the
@@ -127,7 +127,7 @@ class ScalarReferenceFiniteElement {
    * @note the _total_ number of shape functions is the sum of the number
    * of interior shape functions for all sub-entities and the entity itself.
    */
-  virtual size_type NumRefShapeFunctions() const {
+  [[nodiscard]] virtual size_type NumRefShapeFunctions() const {
     size_type cnt = 0;
     for (dim_t codim = 0; codim <= Dimension(); ++codim) {
       for (sub_idx_t subidx = 0; subidx < RefEl().NumSubEntities(codim);
@@ -150,7 +150,7 @@ class ScalarReferenceFiniteElement {
    *       reference shape functions are assigned to different sub-entities
    *       of the same co-dimension
    */
-  virtual size_type NumRefShapeFunctions(dim_t /*codim*/) const {
+  [[nodiscard]] virtual size_type NumRefShapeFunctions(dim_t /*codim*/) const {
     LF_VERIFY_MSG(false, "Illegal call for non-uniform sub-entity dof numbers");
     return 0;
   }
@@ -164,8 +164,8 @@ class ScalarReferenceFiniteElement {
    * @return number of _interior_ reference shape function belonging to the
    *         specified sub-entity.
    */
-  virtual size_type NumRefShapeFunctions(dim_t codim,
-                                         sub_idx_t subidx) const = 0;
+  [[nodiscard]] virtual size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t subidx) const = 0;
 
   /**
    * @brief Evaluation of _all_ reference shape functions in a number of points
@@ -199,7 +199,7 @@ class ScalarReferenceFiniteElement {
      \f]
    *
    */
-  virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
@@ -231,7 +231,7 @@ class ScalarReferenceFiniteElement {
   \grad^T\hat{b}^3(\mathbf{x}_1) & \grad^T\hat{b}^3(\mathbf{x}_2)
   \end{pmatrix} \f]
    */
-  virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] virtual Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const = 0;
 
   /**
@@ -276,12 +276,12 @@ class ScalarReferenceFiniteElement {
    * The quadrature rule must be exact for the polynomials contained in the
    * local finite element spaces.
    */
-  virtual Eigen::MatrixXd EvaluationNodes() const = 0;
+  [[nodiscard]] virtual Eigen::MatrixXd EvaluationNodes() const = 0;
 
   /**
    * @brief Tell the number of evaluation (interpolation) nodes
    */
-  virtual size_type NumEvaluationNodes() const = 0;
+  [[nodiscard]] virtual size_type NumEvaluationNodes() const = 0;
 
   /**
    * @brief Computes the linear combination of reference shape functions
@@ -308,7 +308,8 @@ class ScalarReferenceFiniteElement {
    * at the evaluation nodes, then this method must return the very coefficients
    * of the linear combination.
    */
-  virtual Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
+  [[nodiscard]] virtual Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>
+  NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const {
     LF_ASSERT_MSG(nodvals.cols() == NumEvaluationNodes(),
                   "nodvals = " << nodvals << " <-> " << NumEvaluationNodes());
@@ -380,20 +381,22 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Tria() = default;
   ~FeLagrangeO1Tria() override = default;
 
-  base::RefEl RefEl() const override { return base::RefEl::kTria(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kTria();
+  }
 
-  unsigned Degree() const override { return 1; }
+  [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
-  size_type NumRefShapeFunctions() const override { return 3; }
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 3; }
 
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
@@ -402,14 +405,14 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc
    * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim,
-                                 sub_idx_t /*subidx*/) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
@@ -423,7 +426,7 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -441,14 +444,16 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   /** @brief Evalutation nodes are just the vertices of the triangle
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
-  Eigen::MatrixXd EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return RefEl().NumNodes();
+  }
 };
 
 /**
@@ -475,33 +480,35 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Quad() = default;
   ~FeLagrangeO1Quad() override = default;
 
-  base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kQuad();
+  }
 
-  unsigned Degree() const override { return 1; }
+  [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: four bilinear basis functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
-  size_type NumRefShapeFunctions() const override { return 4; }
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 4; }
 
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     return (codim == 2) ? 1 : 0;
   }
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim,
-                                 sub_idx_t /*subidx*/) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
     return (codim == 2) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
@@ -523,7 +530,7 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -548,11 +555,13 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
-  Eigen::MatrixXd EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
-  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return RefEl().NumNodes();
+  }
 };
 
 /**
@@ -580,19 +589,21 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO1Segment() = default;
   ~FeLagrangeO1Segment() override = default;
 
-  base::RefEl RefEl() const override { return base::RefEl::kSegment(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
 
-  unsigned Degree() const override { return 1; }
+  [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
-  size_type NumRefShapeFunctions() const override { return 2; }
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 2; }
 
   /** @brief All shape functions attached to nodes
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }
@@ -600,14 +611,14 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc
    * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
-  size_type NumRefShapeFunctions(dim_t codim,
-                                 sub_idx_t /*subidx*/) const override {
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }
 
   /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
@@ -622,7 +633,7 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
@@ -640,14 +651,16 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   /** @brief Evalutation nodes are just the vertices of the triangle
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
-  Eigen::MatrixXd EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
-  size_type NumEvaluationNodes() const override { return RefEl().NumNodes(); }
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return RefEl().NumNodes();
+  }
 };
 
 /**
@@ -668,27 +681,30 @@ class FeLagrangePoint : public ScalarReferenceFiniteElement<SCALAR> {
    */
   explicit FeLagrangePoint(unsigned degree) : degree_(degree) {}
 
-  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
-  unsigned Degree() const override { return degree_; }
-  size_type NumRefShapeFunctions(dim_t codim, sub_idx_t subidx) const override {
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kPoint();
+  }
+  [[nodiscard]] unsigned Degree() const override { return degree_; }
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim == 0, "Codim out of bounds");
     LF_ASSERT_MSG(subidx == 0, "subidx out of bounds.");
     return 1;
   }
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 0, "refcoords has too many rows.");
     return Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Ones(1, refcoords.cols());
   }
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& /*refcoords*/) const override {
     LF_VERIFY_MSG(false, "gradients not defined in points of mesh.");
   }
-  Eigen::MatrixXd EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return Eigen::MatrixXd(0, 1);
   }
-  size_type NumEvaluationNodes() const override { return 1; }
+  [[nodiscard]] size_type NumEvaluationNodes() const override { return 1; }
 
  private:
   unsigned degree_;

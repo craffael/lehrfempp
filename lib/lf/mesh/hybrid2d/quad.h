@@ -32,13 +32,15 @@ class Quadrilateral : public mesh::Entity {
   /** @brief default constructors, needed by std::vector */
   Quadrilateral() = default;
 
-  /** @defgroup Default and disabled constructors
-   * @{ */
+  /**
+   * @name Default and disabled constructors
+   */
+  //@{
   Quadrilateral(const Quadrilateral&) = delete;
   Quadrilateral(Quadrilateral&&) noexcept = default;
   Quadrilateral& operator=(const Quadrilateral&) = delete;
   Quadrilateral& operator=(Quadrilateral&&) noexcept = default;
-  /** @} */
+  //@}
 
   /**
    * @brief constructor, is called from MeshFactory
@@ -68,7 +70,7 @@ class Quadrilateral : public mesh::Entity {
                          const Segment* edge2, const Segment* edge3);
 
   /** @brief an edge is an entity of co-dimension 1 */
-  unsigned Codim() const override { return 0; }
+  [[nodiscard]] unsigned Codim() const override { return 0; }
 
   /** @brief Access to all subentities selected by **relative** co-dimension
    * @param rel_codim if 1 select edges, if 2 select nodes, if 0 select cell
@@ -79,28 +81,33 @@ class Quadrilateral : public mesh::Entity {
      - for rel_codim == 1: return 4-range covering corners
      - for rel_codim == 2: return 4-range containing the edges
    */
-  base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
-      const override {
+  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
+  RelativeOrientations() const override {
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         edge_ori_.begin(), edge_ori_.end());
   }
 
   /** @brief access to index of an entity */
-  size_type index() const { return index_; }
+  [[nodiscard]] size_type index() const { return index_; }
 
-  /** @defgroup Standard methods of an Entity object
+  /**
+   * @name Standard methods inherited from Entity object
    * @sa mesh::Entity
    * @{
    */
-  geometry::Geometry* Geometry() const override { return geometry_.get(); }
-  base::RefEl RefEl() const override { return base::RefEl::kQuad(); }
-  bool operator==(const mesh::Entity& rhs) const override {
+  [[nodiscard]] geometry::Geometry* Geometry() const override {
+    return geometry_.get();
+  }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kQuad();
+  }
+  [[nodiscard]] bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
   }
   /** @} */

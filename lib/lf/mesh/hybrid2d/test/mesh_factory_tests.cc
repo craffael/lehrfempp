@@ -155,6 +155,8 @@ TEST(lf_hybrid2d, EdgeNumbering) {
 }
 
 TEST(lf_hybrid2d, IncompleteMeshes) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
   // construct a mesh with a triangle + an additional point and make sure it
   // fails:
   auto factory = std::make_unique<MeshFactory>(2, true);
@@ -195,6 +197,7 @@ TEST(lf_hybrid2d, IncompleteMeshes) {
                      std::make_unique<geometry::SegmentO1>(
                          (Eigen::Matrix2d() << 0, 1, 1, 1).finished()));
   EXPECT_DEATH(factory->Build(), "Mesh is incomplete");
+#pragma GCC diagnostic pop
 }
 
 }  // namespace lf::mesh::hybrid2d::test

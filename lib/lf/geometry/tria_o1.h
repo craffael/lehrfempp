@@ -24,23 +24,28 @@ class TriaO1 : public Geometry {
  public:
   explicit TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords);
 
-  dim_t DimLocal() const override { return 2; }
-  dim_t DimGlobal() const override { return coords_.rows(); }
-  base::RefEl RefEl() const override { return base::RefEl::kTria(); }
-  Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const override;
+  [[nodiscard]] dim_t DimLocal() const override { return 2; }
+  [[nodiscard]] dim_t DimGlobal() const override { return coords_.rows(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kTria();
+  }
+  [[nodiscard]] Eigen::MatrixXd Global(
+      const Eigen::MatrixXd& local) const override;
 
-  Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const override {
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override {
     return jacobian_.replicate(1, local.cols());
   }
-  Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const override {
     return jacobian_inverse_gramian_.replicate(1, local.cols());
   }
-  Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override {
     return Eigen::VectorXd::Constant(local.cols(), integrationElement_);
   }
-  std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const override;
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override;
 
   /**
    * @brief creation of child geometries as specified in refinement pattern
@@ -50,7 +55,7 @@ class TriaO1 : public Geometry {
    *
    * @sa lf:refinement::Hybrid2DRefinementPattern
    */
-  std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
  private:

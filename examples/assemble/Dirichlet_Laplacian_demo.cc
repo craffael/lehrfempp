@@ -69,7 +69,7 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
 
 /** @brief Eliminate degrees of freedom located on the boundary
  *
- * No longer in use. Replaced with lf::assemble::fix_flagged_solution_components
+ * No longer in use. Replaced with lf::assemble::FixFlaggedSolutionComponents
  */
 void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
                            lf::assemble::COOMatrix<double> *A) {
@@ -81,10 +81,12 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
   auto new_last = std::remove_if(
       A->triplets().begin(), A->triplets().end(),
       [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
-        SWITCHEDSTATEMENT(dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
-          std::cout << "EBD: removing " << triplet.row() << ',' << triplet.col()
-                    << "[" << triplet.value() << "]" << std::endl;
-        });
+        SWITCHEDSTATEMENT(
+            dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
+              std::cout << "EBD: removing " << triplet.row() << ','
+                        << triplet.col() << "[" << triplet.value() << "]"
+                        << std::endl;
+            });
         return tmp_bd_flags[triplet.row()];
       });
   A->triplets().erase(new_last, A->triplets().end());
@@ -187,7 +189,7 @@ double L2ErrorLinearFEDirichletLaplacian(
     const lf::assemble::size_type num_int_dof =
         loc_glob_map.NoInteriorDofs(node);
     LF_ASSERT_MSG(num_int_dof == 1, "Node with " << num_int_dof << " dof");
-    const lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> gsf_idx(
+    nonstd::span<const lf::assemble::gdof_idx_t> gsf_idx(
         loc_glob_map.InteriorGlobalDofIndices(node));
     const lf::assemble::gdof_idx_t node_dof_idx = gsf_idx[0];
     dirichlet_data[node_dof_idx] = u(point);
@@ -201,7 +203,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Identify dof indices associated with the boundary
   // >>
   // >> Equivalent new versions
-  lf::assemble::fix_flagged_solution_comp_alt<double>(
+  lf::assemble::FixFlaggedSolutionCompAlt<double>(
       [&tmp_bd_flags,
        &dirichlet_data](lf::assemble::gdof_idx_t i) -> std::pair<bool, double> {
         LF_ASSERT_MSG((i < tmp_bd_flags.size()) && (i < dirichlet_data.size()),
@@ -209,7 +211,7 @@ double L2ErrorLinearFEDirichletLaplacian(
         return std::make_pair(tmp_bd_flags[i], dirichlet_data[i]);
       },
       mat, rhsvec);
-  // lf::assemble::fix_flagged_solution_components<double>(
+  // lf::assemble::FixFlaggedSolutionComponents<double>(
   //   tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output
@@ -232,8 +234,8 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Compute the norm of nodal error cell by cell
   double nodal_err = 0.0;
   for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
-    const lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t>
-        cell_dof_idx(loc_glob_map.GlobalDofIndices(cell));
+    nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
+        loc_glob_map.GlobalDofIndices(cell));
     LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
                   "Inconsistent node number");
     const lf::base::size_type num_nodes = cell.RefEl().NumNodes();
@@ -267,7 +269,7 @@ std::vector<double> SolveDirLaplSeqMesh(
                                            mesh_factory_ptr);
 
   // Perform several steps of regular refinement of the given mesh
-  for (int refstep = 0; refstep < reflevels; ++refstep) {
+  for (unsigned int refstep = 0; refstep < reflevels; ++refstep) {
     // Barycentric refinement is the other option
     multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
   }
@@ -275,7 +277,7 @@ std::vector<double> SolveDirLaplSeqMesh(
   lf::assemble::size_type L = multi_mesh.NumLevels();
   std::vector<double> errors;
   errors.reserve(L);
-  for (int level = 0; level < L; level++) {
+  for (unsigned level = 0; level < L; level++) {
     // Register norm of errors
     errors.push_back(
         L2ErrorLinearFEDirichletLaplacian(multi_mesh.getMesh(level), u, f));
@@ -349,20 +351,21 @@ int main(int argc, char **argv) {
     std::cout << reflevels << " refinement levels requested" << std::endl;
 
     // Problem data provided by function pointers
-    std::function<double(const Eigen::Vector2d &)> u, f;
+    std::function<double(const Eigen::Vector2d &)> u;
+    std::function<double(const Eigen::Vector2d &)> f;
 
     // Initialize the problem data
     std::cout << "Problem setting " << bvpsel << " selected" << std::endl;
     switch (bvpsel) {
       case 0: {
         // A linear solution, no error, if contained in FE space
-        f = [](const Eigen::Vector2d &) { return 0.0; };
+        f = [](const Eigen::Vector2d & /*unused*/) { return 0.0; };
         u = [](const Eigen::Vector2d &x) { return (x[0] + 2.0 * x[1]); };
         break;
       }
       case 1: {
         // Quadratic polynomial solution
-        f = [](const Eigen::Vector2d &) { return -4.0; };
+        f = [](const Eigen::Vector2d & /*unused*/) { return -4.0; };
         u = [](const Eigen::Vector2d &x) {
           return (std::pow(x[0], 2) + std::pow(x[1], 2));
         };

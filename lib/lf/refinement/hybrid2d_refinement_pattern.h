@@ -98,7 +98,8 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    *
    * For a point: 0 (`rp_nil`), 1(`rp_copy`)
    */
-  lf::base::size_type noChildren(lf::base::dim_t codim) const override;
+  [[nodiscard]] lf::base::size_type noChildren(
+      lf::base::dim_t codim) const override;
   /**
    * @copydoc lf::geometry::RefinementPattern::ChildPolygons()
    *
@@ -198,8 +199,8 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    * - codim=2: information about _interior_ child nodes
    *
    */
-  std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> ChildPolygons(
-      lf::base::dim_t codim) const override;
+  [[nodiscard]] std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+  ChildPolygons(lf::base::dim_t codim) const override;
 
   /** @brief set local number of anchor edge */
   Hybrid2DRefinementPattern& setAnchor(lf::base::sub_idx_t anchor) {
@@ -226,12 +227,11 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
     return *this;
   }
 
-  /** @defgroup getRefPat
-   * @brief Access methods
+  /** @name Access methods
    * @{
    */
-  lf::base::sub_idx_t anchor() const { return anchor_; }
-  RefPat refpat() const {
+  [[nodiscard]] lf::base::sub_idx_t anchor() const { return anchor_; }
+  [[nodiscard]] RefPat refpat() const {
     LF_VERIFY_MSG(
         !(((ref_pat_ == rp_bisect) || (ref_pat_ == rp_trisect) ||
            (ref_pat_ == rp_trisect_left) || (ref_pat_ == rp_quadsect) ||
