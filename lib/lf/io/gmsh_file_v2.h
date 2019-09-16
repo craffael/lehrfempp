@@ -7,11 +7,14 @@
  * @copyright MIT License
  */
 
+#ifndef __1fd687af60b74bf6aad50d509ecbc4da
+#define __1fd687af60b74bf6aad50d509ecbc4da
+
 #include <lf/mesh/mesh.h>
 
 namespace lf::io {
 
-/// A representation of a .msh file in a c++ data structure.
+/// A representation of a .msh file (V2) in a c++ data structure.
 struct GMshFileV2 {
   using size_type = mesh::Mesh::size_type;
   /// The version of GMSH of the msh file, equals usually 2.2
@@ -259,3 +262,5 @@ base::RefEl RefElOf(GMshFileV2::ElementType et);
 GMshFileV2 readGmshFileV2(const std::string& path);
 
 }  // namespace lf::io
+
+#endif  // __1fd687af60b74bf6aad50d509ecbc4da

@@ -2,8 +2,9 @@
 include(GoogleTest)
 
 set(sources
-  gmsh_reader_tests.cc
-  vtk_writer_tests.cc
+  gmsh_file_v4_tests.cc
+  #gmsh_reader_tests.cc
+  #vtk_writer_tests.cc
 )
 
 add_executable(lf.io.test ${sources})

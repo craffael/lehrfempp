@@ -1,6 +1,10 @@
 #include "gmsh_reader.h"
 
 #include <lf/geometry/geometry.h>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_string.hpp>
+#include "eigen_fusion_adapter.h"
+
 #include <fstream>
 
 using size_type = lf::mesh::Mesh::size_type;
@@ -326,6 +330,56 @@ std::vector<std::pair<size_type, std::string>> GmshReader::PhysicalEntities(
 std::vector<size_type> GmshReader::PhysicalEntityNr(
     const mesh::Entity& e) const {
   return physical_nrs_->operator()(e);
+}
+
+std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename) {
+  // Open file and copy it into memory:
+  /////////////////////////////////////////////////////////////////////////////
+  std::ifstream in(filename, std::ios_base::in);
+  if (!in) {
+    std::string error("Could not open file ");
+    error += filename;
+    throw lf::base::LfException(error);
+  }
+
+  std::string storage;
+  in.unsetf(std::ios::skipws);  // no white space skipping
+  std::copy(std::istream_iterator<char>(in), std::istream_iterator<char>(),
+            std::back_inserter(storage));
+
+  // Parse header to determine if we are dealing with ASCII format or binary
+  // format + little or big endian:
+  /////////////////////////////////////////////////////////////////////////////
+  std::string version;
+  bool is_binary;
+  int size_t_size;
+  int one;
+  auto iter = storage.cbegin();
+  auto end = storage.cend();
+
+  namespace qi = boost::spirit::qi;
+  namespace ascii = boost::spirit::ascii;
+
+  bool succesful;
+  succesful = qi::phrase_parse(
+      iter, end,
+      qi::lit("$MeshFormat") >>
+          ((qi::lexeme[+(ascii::alnum | ascii::punct)] >> qi::lit('0') >>
+            qi::attr(false) >> qi::int_ >> qi::attr(1)) |
+           (qi::lexeme[+(ascii::alnum | ascii::punct)] >> qi::lit('1') >>
+            qi::attr(true) >> qi::int_ >> qi::little_dword)) >>
+          "$EndMeshFormat",
+      ascii::space, version, is_binary, size_t_size, one);
+
+  LF_VERIFY_MSG(succesful, "Could not read header of file " << filename);
+
+  if (version == "4.1") {
+    return ReadGmshFileV4(iter, end, version, is_binary, size_t_size, one,
+                          filename);
+  } else {
+    LF_VERIFY_MSG(false, "GmshFiles with Version "
+                             << version << " are not yet supported.");
+  }
 }
 
 }  // namespace lf::io

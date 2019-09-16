@@ -18,8 +18,10 @@
 #include <lf/mesh/utils/utils.h>
 #include <map>
 #include <string>
+#include <variant>
 #include <vector>
 #include "gmsh_file_v2.h"
+#include "gmsh_file_v4.h"
 
 namespace lf::io {
 
@@ -173,6 +175,8 @@ class GmshReader {
   /// Map from physicalEntity nr -> name, codim
   std::multimap<size_type, std::pair<std::string, dim_t>> nr_2_name_;
 };
+
+std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename);
 
 }  // namespace lf::io
 

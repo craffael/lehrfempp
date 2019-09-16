@@ -360,7 +360,7 @@ int DimOf(GMshFileV2::ElementType et) {
 }  // namespace lf::io
 
 // Boost Fusion Adaptions (needed so boost spirit can parse directly into
-// MshFile struct)
+// GMshFileV2 struct)
 //////////////////////////////////////////////////////////////////////////
 BOOST_FUSION_ADAPT_STRUCT(lf::io::GMshFileV2::PhysicalEntity,
                           (int, Dimension)(int, Number)(std::string, Name));
