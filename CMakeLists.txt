@@ -67,6 +67,7 @@ add_subdirectory(doc/doxygen)
 if(LF_BUILD_EXAMPLES)
   add_subdirectory(examples)
   add_subdirectory(experiments)
+  add_subdirectory(projects)
 endif()
 
 
