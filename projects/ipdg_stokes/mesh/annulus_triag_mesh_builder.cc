@@ -1,10 +1,11 @@
+#define _USE_MATH_DEFINES
+
 #include "annulus_triag_mesh_builder.h"
 
 #include <lf/base/base.h>
 #include <lf/base/forward_range.h>
 #include <lf/geometry/geometry.h>
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <vector>
 
