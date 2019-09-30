@@ -63,12 +63,11 @@ Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
     // will be the sum of two entries of element matrices but we want it still
     // to be equal to 1/sigma. For this reason, we divide the local contribution
     // by 2
-    if (!boundary_(edge))
-      elem_mat(edge_idx + 3, edge_idx + 3) /= 2;
+    if (!boundary_(edge)) elem_mat(edge_idx + 3, edge_idx + 3) /= 2;
   }
   return elem_mat;
 }
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

@@ -17,7 +17,10 @@ PiecewiseConstElementVectorProvider::PiecewiseConstElementVectorProvider(
     const lf::quad::QuadRule &quadrule,
     const lf::mesh::utils::MeshDataSet<bool> &boundary,
     const lf::mesh::utils::MeshDataSet<Eigen::Vector2d> &dirichlet_data)
-    : sigma_(sigma), f_(f), quadrule_(quadrule), boundary_(boundary),
+    : sigma_(sigma),
+      f_(f),
+      quadrule_(quadrule),
+      boundary_(boundary),
       dirichlet_data_(dirichlet_data) {}
 
 Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
@@ -64,6 +67,6 @@ Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
   return element_vector;
 }
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

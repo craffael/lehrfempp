@@ -37,11 +37,10 @@
  * original one
  * @returns A vector of basis function coefficients for the solution
  */
-Eigen::VectorXd
-solveNestedCylindersZeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-                           const lf::assemble::DofHandler &dofh, double r,
-                           double R, double omega1, double omega2,
-                           bool modified_penalty) {
+Eigen::VectorXd solveNestedCylindersZeroBC(
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const lf::assemble::DofHandler &dofh, double r, double R, double omega1,
+    double omega2, bool modified_penalty) {
   // The volume forces are equal to zero everywhere
   auto f = [](const Eigen::Vector2d &x) { return Eigen::Vector2d::Zero(); };
   // Drive the inner and outer cylinder with omega1 and omega2
@@ -66,13 +65,14 @@ solveNestedCylindersZeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Assemble the Matrix
   lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
-  const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider elem_mat_provider(
-      100, boundary, modified_penalty);
+  const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
+      elem_mat_provider(100, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A);
   // Assemble the right hand side
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
-  const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider elem_vec_provider(
-      100, f, lf::quad::make_TriaQR_MidpointRule(), boundary, dirichlet);
+  const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider
+      elem_vec_provider(100, f, lf::quad::make_TriaQR_MidpointRule(), boundary,
+                        dirichlet);
   lf::assemble::AssembleVectorLocally(0, dofh, elem_vec_provider, rhs);
 
   // Enforce the no-flow boundary conditions
@@ -103,11 +103,10 @@ solveNestedCylindersZeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
  * original one
  * @returns A vector of basis function coefficients for the solution
  */
-Eigen::VectorXd
-solveNestedCylindersNonzeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-                              const lf::assemble::DofHandler &dofh, double r,
-                              double R, double omega1, double omega2,
-                              bool modified_penalty) {
+Eigen::VectorXd solveNestedCylindersNonzeroBC(
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const lf::assemble::DofHandler &dofh, double r, double R, double omega1,
+    double omega2, bool modified_penalty) {
   // The volume forces are equal to zero everywhere
   auto f = [](const Eigen::Vector2d &x) { return Eigen::Vector2d::Zero(); };
   // Drive the inner and outer cylinder with omega1 and omega2
@@ -132,13 +131,14 @@ solveNestedCylindersNonzeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Assemble the Matrix
   lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
-  const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider elem_mat_provider(
-      100, boundary, modified_penalty);
+  const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
+      elem_mat_provider(100, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A);
   // Assemble the right hand side
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
-  const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider elem_vec_provider(
-      100, f, lf::quad::make_TriaQR_MidpointRule(), boundary, dirichlet);
+  const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider
+      elem_vec_provider(100, f, lf::quad::make_TriaQR_MidpointRule(), boundary,
+                        dirichlet);
   lf::assemble::AssembleVectorLocally(0, dofh, elem_vec_provider, rhs);
 
   // Combine the basis functions on the inside boundary to a single one
@@ -197,7 +197,8 @@ solveNestedCylindersNonzeroBC(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
  * `operator<<(std::ostream&)`
  * @returns A string with the objects concatenated
  */
-template <typename... Args> static std::string concat(Args &&... args) {
+template <typename... Args>
+static std::string concat(Args &&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -320,15 +321,17 @@ int main(int argc, char *argv[]) {
     const Eigen::VectorXd solution_nonzero_modified =
         solveNestedCylindersNonzeroBC(mesh, dofh, r, R, omega1, omega2, true);
     const auto velocity_zero =
-        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh, solution_zero);
+        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh,
+                                                                solution_zero);
     const auto velocity_nonzero =
-        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh, solution_nonzero);
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            mesh, dofh, solution_nonzero);
     const auto velocity_zero_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh,
-                                                 solution_zero_modified);
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            mesh, dofh, solution_zero_modified);
     const auto velocity_nonzero_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh,
-                                                 solution_nonzero_modified);
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            mesh, dofh, solution_nonzero_modified);
     // Store the solution
     lf::io::VtkWriter writer_zero(
         mesh, concat("result_zero_", dofh.NoDofs(), ".vtk"));
@@ -390,23 +393,27 @@ int main(int argc, char *argv[]) {
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };
-    const double L2_zero =
-        projects::ipdg_stokes::post_processing::L2norm(mesh, diff_velocity_zero, 10);
-    const double L2_nonzero =
-        projects::ipdg_stokes::post_processing::L2norm(mesh, diff_velocity_nonzero, 10);
+    const double L2_zero = projects::ipdg_stokes::post_processing::L2norm(
+        mesh, diff_velocity_zero, 10);
+    const double L2_nonzero = projects::ipdg_stokes::post_processing::L2norm(
+        mesh, diff_velocity_nonzero, 10);
     const double DG_zero = projects::ipdg_stokes::post_processing::DGnorm(
         mesh, diff_velocity_zero, diff_gradient_zero, 10);
     const double DG_nonzero = projects::ipdg_stokes::post_processing::DGnorm(
         mesh, diff_velocity_nonzero, diff_gradient_nonzero, 10);
     const double L2_zero_modified =
-        projects::ipdg_stokes::post_processing::L2norm(mesh, diff_velocity_zero_modified, 10);
-    const double L2_nonzero_modified = projects::ipdg_stokes::post_processing::L2norm(
-        mesh, diff_velocity_nonzero_modified, 10);
-    const double DG_zero_modified = projects::ipdg_stokes::post_processing::DGnorm(
-        mesh, diff_velocity_zero_modified, diff_gradient_zero_modified, 10);
+        projects::ipdg_stokes::post_processing::L2norm(
+            mesh, diff_velocity_zero_modified, 10);
+    const double L2_nonzero_modified =
+        projects::ipdg_stokes::post_processing::L2norm(
+            mesh, diff_velocity_nonzero_modified, 10);
+    const double DG_zero_modified =
+        projects::ipdg_stokes::post_processing::DGnorm(
+            mesh, diff_velocity_zero_modified, diff_gradient_zero_modified, 10);
     const double DG_nonzero_modified =
-        projects::ipdg_stokes::post_processing::DGnorm(mesh, diff_velocity_nonzero_modified,
-                                        diff_gradient_nonzero_modified, 10);
+        projects::ipdg_stokes::post_processing::DGnorm(
+            mesh, diff_velocity_nonzero_modified,
+            diff_gradient_nonzero_modified, 10);
     std::cout << mesh->NumEntities(2) << ' ' << L2_zero << ' ' << DG_zero << ' '
               << L2_nonzero << ' ' << DG_nonzero << ' ' << L2_zero_modified
               << ' ' << DG_zero_modified << ' ' << L2_nonzero_modified << ' '

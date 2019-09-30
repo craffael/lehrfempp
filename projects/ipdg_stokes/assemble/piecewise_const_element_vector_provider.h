@@ -33,7 +33,7 @@ namespace assemble {
  * @f]
  */
 class PiecewiseConstElementVectorProvider {
-public:
+ public:
   /**
    * @brief Constructor
    * @param sigma The stabilization parameter for IP-DG
@@ -65,7 +65,7 @@ public:
    */
   bool isActive(const lf::mesh::Entity &entity) const { return true; }
 
-private:
+ private:
   const double sigma_;
   const std::function<Eigen::Vector2d(const Eigen::Vector2d &)> f_;
   const lf::quad::QuadRule quadrule_;
@@ -73,8 +73,8 @@ private:
   const lf::mesh::utils::MeshDataSet<Eigen::Vector2d> &dirichlet_data_;
 };
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_ASSEMBLE_PIECEWISE_CONST_ELEMENT_VECTOR_PROVIDER_H
+#endif  // THESIS_ASSEMBLE_PIECEWISE_CONST_ELEMENT_VECTOR_PROVIDER_H

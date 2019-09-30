@@ -33,7 +33,8 @@
  * `operator<<(std::ostream&)`
  * @returns A string with the objects concatenated
  */
-template <typename... Args> static std::string concat(Args &&... args) {
+template <typename... Args>
+static std::string concat(Args &&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -97,11 +98,13 @@ Eigen::VectorXd solveStep(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
           mesh, dofh, f, dirichlet_funct, 1,
           lf::quad::make_TriaQR_MidpointRule(), modified_penalty);
   lf::io::VtkWriter writer(mesh, "offset_function.vtk");
-  writer.WriteCellData("v", projects::ipdg_stokes::post_processing::extractVelocity(
-                                mesh, dofh, offset_function));
+  writer.WriteCellData("v",
+                       projects::ipdg_stokes::post_processing::extractVelocity(
+                           mesh, dofh, offset_function));
   writer.WritePointData(
-      "c", projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
-               mesh, dofh, offset_function));
+      "c",
+      projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
+          mesh, dofh, offset_function));
   auto As = A.makeSparse();
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(As);
   return solver.solve(rhs) + offset_function;
@@ -215,9 +218,10 @@ int main() {
   for (lf::base::size_type lvl = 0; lvl < refinement_level + 1; ++lvl) {
     const auto v = projects::ipdg_stokes::post_processing::extractVelocity(
         solutions[lvl].mesh, *(solutions[lvl].dofh), solutions[lvl].solution);
-    const auto v_modified = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh),
-        solutions[lvl].solution_modified);
+    const auto v_modified =
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            solutions[lvl].mesh, *(solutions[lvl].dofh),
+            solutions[lvl].solution_modified);
     velocity[lvl] = [v](const lf::mesh::Entity &entity,
                         const Eigen::Vector2d &x) -> Eigen::Vector2d {
       return v(entity);
@@ -226,9 +230,9 @@ int main() {
                        const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return Eigen::Matrix2d::Zero();
     };
-    velocity_modified[lvl] =
-        [v_modified](const lf::mesh::Entity &entity,
-                     const Eigen::Vector2d &x) -> Eigen::Vector2d {
+    velocity_modified[lvl] = [v_modified](
+                                 const lf::mesh::Entity &entity,
+                                 const Eigen::Vector2d &x) -> Eigen::Vector2d {
       return v_modified(entity);
     };
     gradient_modified[lvl] = [](const lf::mesh::Entity &entity,
@@ -237,13 +241,17 @@ int main() {
     };
   }
   auto fine_velocity =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy, velocity);
+      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy,
+                                                                velocity);
   auto fine_gradient =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy, gradient);
-  auto fine_velocity_modified = projects::ipdg_stokes::post_processing::bringToFinestMesh(
-      *mesh_hierarchy, velocity_modified);
-  auto fine_gradient_modified = projects::ipdg_stokes::post_processing::bringToFinestMesh(
-      *mesh_hierarchy, gradient_modified);
+      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy,
+                                                                gradient);
+  auto fine_velocity_modified =
+      projects::ipdg_stokes::post_processing::bringToFinestMesh(
+          *mesh_hierarchy, velocity_modified);
+  auto fine_gradient_modified =
+      projects::ipdg_stokes::post_processing::bringToFinestMesh(
+          *mesh_hierarchy, gradient_modified);
 
   // Perform post processing on the data
   lf::io::VtkWriter writer(solutions.back().mesh, "result.vtk");

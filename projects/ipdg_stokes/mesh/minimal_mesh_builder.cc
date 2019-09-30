@@ -32,6 +32,6 @@ std::shared_ptr<lf::mesh::Mesh> MinimalMeshBuilder::Build() {
   return mesh_factory_->Build();
 }
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

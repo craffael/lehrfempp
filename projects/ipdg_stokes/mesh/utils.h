@@ -19,8 +19,8 @@ namespace mesh {
  * computed
  * @returns A matrix containing the outward pointing normals in its columns
  */
-Eigen::Matrix<double, 2, 3>
-computeOutwardNormals(const lf::mesh::Entity &entity);
+Eigen::Matrix<double, 2, 3> computeOutwardNormals(
+    const lf::mesh::Entity &entity);
 
 /**
  * @brief Compute the tangentials onto a triangle
@@ -29,8 +29,8 @@ computeOutwardNormals(const lf::mesh::Entity &entity);
  */
 Eigen::Matrix<double, 2, 3> computeTangentials(const lf::mesh::Entity &entity);
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_MESH_UTILS_H
+#endif  // THESIS_MESH_UTILS_H

@@ -79,8 +79,8 @@ buildSystemMatrixInOutFlow(
     double sigma, const lf::quad::QuadRule &quadrule,
     bool modified_penalty = false);
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_ASSEMBLE_BUILD_SYSTEM_MATRIX_H
+#endif  // THESIS_ASSEMBLE_BUILD_SYSTEM_MATRIX_H

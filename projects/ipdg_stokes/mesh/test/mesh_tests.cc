@@ -10,8 +10,8 @@
 
 #include <utils.h>
 
-std::shared_ptr<lf::mesh::Mesh>
-buildTriangle(const Eigen::Matrix<double, 2, 3> &vertices) {
+std::shared_ptr<lf::mesh::Mesh> buildTriangle(
+    const Eigen::Matrix<double, 2, 3> &vertices) {
   lf::mesh::hybrid2d::MeshFactory factory(2);
   lf::base::size_type v_idx[3];
   v_idx[0] = factory.AddPoint(vertices.col(0));
@@ -33,7 +33,8 @@ TEST(projects_ipdg_stokes_mesh, triangle_counterclockwise) {
   const auto mesh = buildTriangle(vertices);
   const auto entity = mesh->EntityByIndex(0, 0);
   // Compute the outward pointing normals
-  const auto normals = projects::ipdg_stokes::mesh::computeOutwardNormals(*entity);
+  const auto normals =
+      projects::ipdg_stokes::mesh::computeOutwardNormals(*entity);
   // These are the reference normals
   Eigen::Matrix<double, 2, 3> normals_ref;
   normals_ref << 0, 1. / std::sqrt(2), -1, -1, 1. / std::sqrt(2), 0;
@@ -56,7 +57,8 @@ TEST(projects_ipdg_stokes_mesh, triangle_clockwise) {
   const auto mesh = buildTriangle(vertices);
   const auto entity = mesh->EntityByIndex(0, 0);
   // Compute the outward pointing normals
-  const auto normals = projects::ipdg_stokes::mesh::computeOutwardNormals(*entity);
+  const auto normals =
+      projects::ipdg_stokes::mesh::computeOutwardNormals(*entity);
   // These are the reference normals
   Eigen::Matrix<double, 2, 3> normals_ref;
   normals_ref << -1, 1. / std::sqrt(2), 0, 0, 1. / std::sqrt(2), -1;

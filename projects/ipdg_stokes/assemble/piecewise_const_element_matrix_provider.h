@@ -37,7 +37,7 @@ namespace assemble {
  * edge.
  */
 class PiecewiseConstElementMatrixProvider {
-public:
+ public:
   /**
    * @brief Constructor
    * @param sigma The stabilization coefficient of the IPDG method
@@ -63,14 +63,14 @@ public:
    */
   bool isActive(const lf::mesh::Entity &entity) const { return true; }
 
-private:
+ private:
   const double sigma_;
   const lf::mesh::utils::MeshDataSet<bool> &boundary_;
   const bool modified_;
 };
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_ASSEMBLE_PIECEWISE_CONST_ELEMENT_MATRIX_PROVIDER_H
+#endif  // THESIS_ASSEMBLE_PIECEWISE_CONST_ELEMENT_MATRIX_PROVIDER_H

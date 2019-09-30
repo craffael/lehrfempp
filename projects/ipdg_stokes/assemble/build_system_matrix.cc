@@ -35,8 +35,8 @@ buildSystemMatrixNoFlow(
   // Assemble the system matrix
   lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
   const auto elem_mat_builder =
-      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(sigma, boundary,
-                                                            modified_penalty);
+      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(
+          sigma, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_builder, A);
   // Assemble the right hand side
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
@@ -72,8 +72,8 @@ buildSystemMatrixInOutFlow(
   // Assemble the system matrix
   lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
   const auto elem_mat_builder =
-      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(sigma, boundary,
-                                                            modified_penalty);
+      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(
+          sigma, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_builder, A);
   // Assemble the right hand side
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
@@ -99,6 +99,6 @@ buildSystemMatrixInOutFlow(
   return {A, rhs, offset_function};
 }
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

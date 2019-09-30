@@ -37,13 +37,12 @@ lf::mesh::utils::CodimMeshDataSet<double> extractBasisFunctionCoefficients(
  * @returns A mesh data set mapping cells of the mesh to the flow velocity on
  * them
  */
-lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>
-extractVelocity(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-                const lf::assemble::DofHandler &dofh,
-                const Eigen::VectorXd &solution);
+lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> extractVelocity(
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const lf::assemble::DofHandler &dofh, const Eigen::VectorXd &solution);
 
-} // end namespace post_processing
+}  // end namespace post_processing
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_POST_PROCESSING_SOLUTION_TO_MESH_DATA_SET_H
+#endif  // THESIS_POST_PROCESSING_SOLUTION_TO_MESH_DATA_SET_H

@@ -28,7 +28,7 @@ namespace assemble {
  * uses the nodal values as basis function coefficients.
  */
 class PiecewiseBoundaryNormalJumpAssembler {
-public:
+ public:
   /**
    * @brief Constructor
    * @param mesh A shared pointer to the mesh on which the PDE is solved
@@ -50,7 +50,7 @@ public:
    */
   bool isActive(const lf::mesh::Entity &entity) const { return true; }
 
-private:
+ private:
   const std::shared_ptr<const lf::mesh::Mesh> mesh_;
   const lf::mesh::utils::MeshDataSet<bool> &boundary_;
 };
@@ -73,8 +73,8 @@ Eigen::VectorXd createOffsetFunction(
         &dirichlet_data,
     const Eigen::SparseMatrix<double> &A);
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_ASSEMBLE_OFFSET_FUNCTION_H
+#endif  // THESIS_ASSEMBLE_OFFSET_FUNCTION_H

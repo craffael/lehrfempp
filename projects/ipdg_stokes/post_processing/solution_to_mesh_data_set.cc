@@ -16,10 +16,9 @@ lf::mesh::utils::CodimMeshDataSet<double> extractBasisFunctionCoefficients(
   return coefficients;
 }
 
-lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>
-extractVelocity(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-                const lf::assemble::DofHandler &dofh,
-                const Eigen::VectorXd &solution) {
+lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> extractVelocity(
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const lf::assemble::DofHandler &dofh, const Eigen::VectorXd &solution) {
   lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> velocity(mesh, 0);
   for (const auto &cell : mesh->Entities(0)) {
     const auto geom = cell.Geometry();
@@ -41,6 +40,6 @@ extractVelocity(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   return velocity;
 }
 
-} // end namespace post_processing
+}  // end namespace post_processing
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

@@ -32,10 +32,11 @@ TEST(projects_ipdg_stokes_assembly, piecewise_const_matrix_assembler_test) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
   const lf::mesh::utils::AllCodimMeshDataSet<bool> boundary(
-      mesh, false); // Assume that this triangle does not touch the boundary
+      mesh, false);  // Assume that this triangle does not touch the boundary
   const double sigma = 1;
   const auto elem_mat_provider =
-      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(sigma, boundary);
+      projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(
+          sigma, boundary);
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(6, 6);
@@ -103,8 +104,8 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
       mesh, {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   const double sigma = 10;
-  projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider elem_mat_provider(
-      sigma, boundary);
+  projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
+      elem_mat_provider(sigma, boundary);
   lf::assemble::COOMatrix<double> A_coo(dofh.NoDofs(), dofh.NoDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A_coo);
   const Eigen::MatrixXd A = A_coo.makeDense().unaryExpr(
@@ -179,8 +180,8 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
       mesh, {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   const double sigma = 10;
-  projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider elem_mat_provider(
-      sigma, boundary);
+  projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
+      elem_mat_provider(sigma, boundary);
   lf::assemble::COOMatrix<double> A_coo(dofh.NoDofs(), dofh.NoDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A_coo);
   const Eigen::MatrixXd A = A_coo.makeDense().unaryExpr(

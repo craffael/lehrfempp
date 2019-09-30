@@ -51,16 +51,15 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
  * \,\mathrm{d}x
  * @f]
  */
-double
-DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-       const std::function<Eigen::Vector2d(const lf::mesh::Entity &,
-                                           const Eigen::Vector2d &)> &f,
-       const std::function<Eigen::Matrix2d(const lf::mesh::Entity &,
-                                           const Eigen::Vector2d &)> &f_grad,
-       unsigned quadrule_order = 50);
+double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+              const std::function<Eigen::Vector2d(const lf::mesh::Entity &,
+                                                  const Eigen::Vector2d &)> &f,
+              const std::function<Eigen::Matrix2d(
+                  const lf::mesh::Entity &, const Eigen::Vector2d &)> &f_grad,
+              unsigned quadrule_order = 50);
 
-} // end namespace post_processing
+}  // end namespace post_processing
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_POST_PROCESSING_NORMS_H
+#endif  // THESIS_POST_PROCESSING_NORMS_H

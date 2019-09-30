@@ -19,7 +19,6 @@ bringToFinestMesh(
     const std::map<lf::base::size_type,
                    std::function<Ret(const lf::mesh::Entity &,
                                      const Eigen::Vector2d &)>> &f) {
-
   // Build a data structure storing the parent information for each entity in
   // the mesh hierarchy
   const lf::base::size_type num_cells =
@@ -33,8 +32,7 @@ bringToFinestMesh(
     const auto &child_info = meshes.CellChildInfos(lvl - 1);
     std::vector<lf::base::size_type> parent_info(mesh->NumEntities(0));
     for (lf::base::size_type i = 0; i < child_info.size(); ++i)
-      for (auto child : child_info[i].child_cell_idx)
-        parent_info[child] = i;
+      for (auto child : child_info[i].child_cell_idx) parent_info[child] = i;
     for (lf::base::size_type n = 0; n < num_cells; ++n)
       is_part_of[lvl - 1][n] = parent_info[is_part_of[lvl][n]];
   }
@@ -48,9 +46,9 @@ bringToFinestMesh(
   for (const auto [lvl, func] : f) {
     const auto mesh = meshes.getMesh(lvl);
     const auto lvl_is_part_of = is_part_of[lvl];
-    auto fine_func = [mesh, mesh_finest, lvl_is_part_of,
-                      func=func](const lf::mesh::Entity &entity,
-                                 const Eigen::Vector2d &x) -> Ret {
+    auto fine_func = [mesh, mesh_finest, lvl_is_part_of, func = func](
+                         const lf::mesh::Entity &entity,
+                         const Eigen::Vector2d &x) -> Ret {
       const lf::base::size_type idx_finest = mesh_finest->Index(entity);
       const lf::base::size_type idx_coarse = lvl_is_part_of[idx_finest];
       const auto entity_coarse = mesh->EntityByIndex(0, idx_coarse);
@@ -62,8 +60,8 @@ bringToFinestMesh(
   return f_fine;
 }
 
-} // end namespace post_processing
+}  // end namespace post_processing
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_POST_PROCESSING_MESH_HIERARCHY_FUNCTION_H
+#endif  // THESIS_POST_PROCESSING_MESH_HIERARCHY_FUNCTION_H

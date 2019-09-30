@@ -35,13 +35,12 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   return std::sqrt(norm2);
 }
 
-double
-DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-       const std::function<Eigen::Vector2d(const lf::mesh::Entity &,
-                                           const Eigen::Vector2d &)> &f,
-       const std::function<Eigen::Matrix2d(const lf::mesh::Entity &,
-                                           const Eigen::Vector2d &)> &f_grad,
-       unsigned quadrule_order) {
+double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+              const std::function<Eigen::Vector2d(const lf::mesh::Entity &,
+                                                  const Eigen::Vector2d &)> &f,
+              const std::function<Eigen::Matrix2d(
+                  const lf::mesh::Entity &, const Eigen::Vector2d &)> &f_grad,
+              unsigned quadrule_order) {
   double norm2 = 0;
   // Compute the DG norm on the elements
   const lf::quad::QuadRule quadrule_triangle =
@@ -65,7 +64,8 @@ DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
   for (const auto &entity : mesh->Entities(0)) {
     const auto edges = entity.SubEntities(1);
-    const auto normals = projects::ipdg_stokes::mesh::computeOutwardNormals(entity);
+    const auto normals =
+        projects::ipdg_stokes::mesh::computeOutwardNormals(entity);
     for (int i = 0; i < 3; ++i) {
       const auto &edge = edges[i];
       if (!boundary(edge)) {
@@ -82,11 +82,10 @@ DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
       }
     }
   }
-  for (const auto &jump : jumps)
-    norm2 += jump.squaredNorm();
+  for (const auto &jump : jumps) norm2 += jump.squaredNorm();
   return std::sqrt(norm2);
 }
 
-} // end namespace post_processing
+}  // end namespace post_processing
 
-} // namespace projects::ipdg_stokes
+}  // namespace projects::ipdg_stokes

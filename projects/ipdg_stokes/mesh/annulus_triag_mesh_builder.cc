@@ -4,6 +4,7 @@
 #include <lf/base/forward_range.h>
 #include <lf/geometry/geometry.h>
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <vector>
 
@@ -69,6 +70,6 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   return mesh_factory_->Build();
 }
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

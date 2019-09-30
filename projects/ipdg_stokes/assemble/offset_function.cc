@@ -45,11 +45,9 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   int boundary_node_count = 0;
   int boundary_edge_count = 0;
   for (const auto &node : nodes)
-    if (boundary_(node))
-      ++boundary_node_count;
+    if (boundary_(node)) ++boundary_node_count;
   for (const auto &edge : edges)
-    if (boundary_(edge))
-      ++boundary_edge_count;
+    if (boundary_(edge)) ++boundary_edge_count;
   // Assemble the element matrix itself
   Eigen::MatrixXd elem_mat = Eigen::MatrixXd::Zero(
       std::max(1, boundary_edge_count), std::max(1, boundary_node_count));
@@ -138,6 +136,6 @@ Eigen::VectorXd createOffsetFunction(
   return offset_function;
 }
 
-} // end namespace assemble
+}  // end namespace assemble
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes

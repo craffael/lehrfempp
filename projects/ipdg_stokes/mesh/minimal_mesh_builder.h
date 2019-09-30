@@ -9,7 +9,7 @@ namespace projects::ipdg_stokes {
 namespace mesh {
 
 class MinimalMeshBuilder : public lf::mesh::hybrid2d::StructuredMeshBuilder {
-public:
+ public:
   explicit MinimalMeshBuilder(
       std::shared_ptr<lf::mesh::MeshFactory> mesh_factory)
       : lf::mesh::hybrid2d::StructuredMeshBuilder(std::move(mesh_factory)) {
@@ -19,8 +19,8 @@ public:
   std::shared_ptr<lf::mesh::Mesh> Build() override;
 };
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_MESH_MINIMAL_MESH_BUILDER_H
+#endif  // THESIS_MESH_MINIMAL_MESH_BUILDER_H

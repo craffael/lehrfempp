@@ -89,7 +89,8 @@ Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
  * `operator<<(std::ostream&)`
  * @returns A string with the objects concatenated
  */
-template <typename... Args> static std::string concat(Args &&... args) {
+template <typename... Args>
+static std::string concat(Args &&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -144,10 +145,11 @@ int main() {
     auto dirichlet_funct = [](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       return Eigen::Vector2d::Zero();
     };
-    const auto [A, rhs] = projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(
-        sol.mesh, *(sol.dofh), f, dirichlet_funct, 1,
-        lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quadrule_degree),
-        false);
+    const auto [A, rhs] =
+        projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(
+            sol.mesh, *(sol.dofh), f, dirichlet_funct, 1,
+            lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quadrule_degree),
+            false);
     sol.A = A.makeSparse();
     sol.rhs = rhs;
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(sol.A);
@@ -183,11 +185,14 @@ int main() {
         return computeF(n, center);
       });
   for (lf::base::size_type lvl = 0; lvl < mesh_count; ++lvl) {
-    const auto velocity = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh), solutions[lvl].solution);
-    const auto velocity_modified = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh),
-        solutions[lvl].solution_modified);
+    const auto velocity =
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            solutions[lvl].mesh, *(solutions[lvl].dofh),
+            solutions[lvl].solution);
+    const auto velocity_modified =
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            solutions[lvl].mesh, *(solutions[lvl].dofh),
+            solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));
     writer.WriteCellData("analyticU", analyticU);
@@ -251,12 +256,12 @@ int main() {
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -computeUGrad(n, x);
     };
-    const double L2 =
-        projects::ipdg_stokes::post_processing::L2norm(solutions[lvl].mesh, diff_v, 10);
-    const double DG = projects::ipdg_stokes::post_processing::DGnorm(solutions[lvl].mesh,
-                                                      diff_v, diff_g, 10);
-    const double L2f =
-        projects::ipdg_stokes::post_processing::L2norm(solutions[lvl].mesh, diff_v_fac, 10);
+    const double L2 = projects::ipdg_stokes::post_processing::L2norm(
+        solutions[lvl].mesh, diff_v, 10);
+    const double DG = projects::ipdg_stokes::post_processing::DGnorm(
+        solutions[lvl].mesh, diff_v, diff_g, 10);
+    const double L2f = projects::ipdg_stokes::post_processing::L2norm(
+        solutions[lvl].mesh, diff_v_fac, 10);
     const double DGf = projects::ipdg_stokes::post_processing::DGnorm(
         solutions[lvl].mesh, diff_v_fac, diff_g_fac, 10);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(

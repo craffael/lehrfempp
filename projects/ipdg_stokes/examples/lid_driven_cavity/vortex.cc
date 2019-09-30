@@ -31,10 +31,9 @@
  * otherwise use the original one
  * @returns A vector containing the basis function coefficients of the solution
  */
-Eigen::VectorXd
-solveLidDrivenCavity(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
-                     const lf::assemble::DofHandler &dofh,
-                     bool modified = false) {
+Eigen::VectorXd solveLidDrivenCavity(
+    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const lf::assemble::DofHandler &dofh, bool modified = false) {
   // No volume forces are present in this experiment
   auto f = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
     return Eigen::Vector2d::Zero();
@@ -53,9 +52,10 @@ solveLidDrivenCavity(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   };
 
   // Solve the LSE using sparse cholesky
-  const auto [A, rhs] = projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(
-      mesh, dofh, f, dirichlet_funct, 1, lf::quad::make_TriaQR_MidpointRule(),
-      modified);
+  const auto [A, rhs] =
+      projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(
+          mesh, dofh, f, dirichlet_funct, 1,
+          lf::quad::make_TriaQR_MidpointRule(), modified);
   Eigen::SparseMatrix<double> As = A.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(As);
   return solver.solve(rhs);
@@ -89,7 +89,8 @@ int main() {
       projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
           mesh, dofh, solution_original);
   const auto v_original =
-      projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh, solution_original);
+      projects::ipdg_stokes::post_processing::extractVelocity(
+          mesh, dofh, solution_original);
   std::cout << "solving modified" << std::endl;
   const Eigen::VectorXd solution_modified =
       solveLidDrivenCavity(mesh, dofh, true);
@@ -98,7 +99,8 @@ int main() {
       projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
           mesh, dofh, solution_modified);
   const auto v_modified =
-      projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh, solution_modified);
+      projects::ipdg_stokes::post_processing::extractVelocity(
+          mesh, dofh, solution_modified);
 
   std::cout << "writing" << std::endl;
   lf::io::VtkWriter writer(mesh, "vortex.vtk");

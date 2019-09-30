@@ -18,7 +18,7 @@ namespace mesh {
  */
 class AnnulusTriagMeshBuilder
     : public lf::mesh::hybrid2d::StructuredMeshBuilder {
-public:
+ public:
   /**
    * @brief Constructor
    * @param mesh_factory A shared pointer to a mesh factory object used for the
@@ -38,8 +38,8 @@ public:
   std::shared_ptr<lf::mesh::Mesh> Build() override;
 };
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
 
-#endif // THESIS_MESH_ANNULUS_TRIAG_MESH_BUILDER_H
+#endif  // THESIS_MESH_ANNULUS_TRIAG_MESH_BUILDER_H

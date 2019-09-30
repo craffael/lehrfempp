@@ -33,7 +33,8 @@
  * `operator<<(std::ostream&)`
  * @returns A string with the objects concatenated
  */
-template <typename... Args> static std::string concat(Args &&... args) {
+template <typename... Args>
+static std::string concat(Args &&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -173,11 +174,14 @@ int main(int argc, char *argv[]) {
   // Perform post processing on the data
   lf::io::VtkWriter writer(solutions.back().mesh, "result.vtk");
   for (lf::base::size_type lvl = 0; lvl <= refinement_level; ++lvl) {
-    const auto velocity = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh), solutions[lvl].solution);
-    const auto velocity_modified = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh),
-        solutions[lvl].solution_modified);
+    const auto velocity =
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            solutions[lvl].mesh, *(solutions[lvl].dofh),
+            solutions[lvl].solution);
+    const auto velocity_modified =
+        projects::ipdg_stokes::post_processing::extractVelocity(
+            solutions[lvl].mesh, *(solutions[lvl].dofh),
+            solutions[lvl].solution_modified);
     // Store the result on the finest mesh to vtk
     if (lvl == refinement_level) {
       const auto v = *lf::mesh::utils::make_LambdaMeshDataSet(
@@ -215,10 +219,10 @@ int main(int argc, char *argv[]) {
                                const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };
-    const double L2 =
-        projects::ipdg_stokes::post_processing::L2norm(solutions[lvl].mesh, diff_v, 0);
-    const double DG =
-        projects::ipdg_stokes::post_processing::DGnorm(solutions[lvl].mesh, diff_v, diff_g, 0);
+    const double L2 = projects::ipdg_stokes::post_processing::L2norm(
+        solutions[lvl].mesh, diff_v, 0);
+    const double DG = projects::ipdg_stokes::post_processing::DGnorm(
+        solutions[lvl].mesh, diff_v, diff_g, 0);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(
         solutions[lvl].mesh, diff_v_modified, 0);
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(

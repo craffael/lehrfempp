@@ -6,8 +6,8 @@ namespace projects::ipdg_stokes {
 
 namespace mesh {
 
-Eigen::Matrix<double, 2, 3>
-computeOutwardNormals(const lf::mesh::Entity &entity) {
+Eigen::Matrix<double, 2, 3> computeOutwardNormals(
+    const lf::mesh::Entity &entity) {
   // Get the geometry of the entity
   const auto geom = entity.Geometry();
   // Compute the global vertex coordinates
@@ -43,6 +43,6 @@ Eigen::Matrix<double, 2, 3> computeTangentials(const lf::mesh::Entity &entity) {
   return tang;
 }
 
-} // end namespace mesh
+}  // end namespace mesh
 
-} // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes
