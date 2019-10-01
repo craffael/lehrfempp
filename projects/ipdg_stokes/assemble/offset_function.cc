@@ -13,14 +13,12 @@
 #include <iostream>
 #include <vector>
 
-namespace projects::ipdg_stokes {
-
-namespace assemble {
+namespace projects::ipdg_stokes::assemble {
 
 PiecewiseBoundaryNormalJumpAssembler::PiecewiseBoundaryNormalJumpAssembler(
-    const std::shared_ptr<const lf::mesh::Mesh> &mesh,
+    const std::shared_ptr<const lf::mesh::Mesh> mesh,
     const lf::mesh::utils::MeshDataSet<bool> &boundary)
-    : mesh_(mesh), boundary_(boundary) {}
+    : mesh_(std::move(mesh)), boundary_(boundary) {}
 
 Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
     const lf::mesh::Entity &entity) const {
@@ -44,10 +42,16 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   // to get the size of the element matrix
   int boundary_node_count = 0;
   int boundary_edge_count = 0;
-  for (const auto &node : nodes)
-    if (boundary_(node)) ++boundary_node_count;
-  for (const auto &edge : edges)
-    if (boundary_(edge)) ++boundary_edge_count;
+  for (const auto &node : nodes) {
+    if (boundary_(node)) {
+      ++boundary_node_count;
+    }
+  }
+  for (const auto &edge : edges) {
+    if (boundary_(edge)) {
+      ++boundary_edge_count;
+    }
+  }
   // Assemble the element matrix itself
   Eigen::MatrixXd elem_mat = Eigen::MatrixXd::Zero(
       std::max(1, boundary_edge_count), std::max(1, boundary_node_count));
@@ -80,15 +84,18 @@ Eigen::VectorXd createOffsetFunction(
   // Create a new dofhandler for the boundary nodes of the mesh
   lf::assemble::DynamicFEDofHandler boundary_node_dofh(
       mesh, [&](const lf::mesh::Entity &entity) {
-        if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity))
+        if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
           return 1;
+        }
         return 0;
       });
   // Create a new dofhandler for the boundary edges of the mesh
   lf::assemble::DynamicFEDofHandler boundary_edge_dofh(
       mesh, [&](const lf::mesh::Entity &entity) {
-        if (entity.RefEl() == lf::base::RefElType::kSegment && boundary(entity))
+        if (entity.RefEl() == lf::base::RefElType::kSegment &&
+            boundary(entity)) {
           return 1;
+        }
         return 0;
       });
   // Assemble a matrix mapping the basis function coefficients on the boundary
@@ -100,10 +107,12 @@ Eigen::VectorXd createOffsetFunction(
                                       element_matrix_provider, J);
   // Add the lagrange multiplier needed such that the average over all
   // coefficients is zero
-  for (lf::base::size_type i = 0; i < boundary_node_dofh.NoDofs(); ++i)
+  for (lf::base::size_type i = 0; i < boundary_node_dofh.NoDofs(); ++i) {
     J.AddToEntry(boundary_edge_dofh.NoDofs(), i, 1);
-  for (lf::base::size_type i = 0; i < boundary_edge_dofh.NoDofs(); ++i)
+  }
+  for (lf::base::size_type i = 0; i < boundary_edge_dofh.NoDofs(); ++i) {
     J.AddToEntry(i, boundary_node_dofh.NoDofs(), 1);
+  }
   Eigen::SparseMatrix<double> Js = J.makeSparse();
   // Assemble the right hand side from the provided dirichlet data
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NoDofs() + 1);
@@ -113,9 +122,10 @@ Eigen::VectorXd createOffsetFunction(
     const auto edges = cell.SubEntities(1);
     for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
       const auto &edge = edges[edge_idx];
-      if (boundary(edge))
+      if (boundary(edge)) {
         rhs[boundary_edge_dofh.GlobalDofIndices(edge)[0]] =
             normals.col(edge_idx).transpose() * dirichlet_data(edge);
+      }
     }
   }
   // Solve for the basis function coefficients of the offset function ordered
@@ -125,7 +135,8 @@ Eigen::VectorXd createOffsetFunction(
       solver.solve(rhs).head(boundary_node_dofh.NoDofs());
   // Compute the full offset function including the jump terms
   Eigen::VectorXd offset_function = Eigen::VectorXd::Zero(dofh.NoDofs());
-  for (int node_idx = 0; node_idx < boundary_node_dofh.NoDofs(); ++node_idx) {
+  for (lf::assemble::size_type node_idx = 0;
+       node_idx < boundary_node_dofh.NoDofs(); ++node_idx) {
     const auto &node = boundary_node_dofh.Entity(node_idx);
     offset_function[dofh.GlobalDofIndices(node)[0]] =
         offset_function_local[node_idx];
@@ -136,6 +147,4 @@ Eigen::VectorXd createOffsetFunction(
   return offset_function;
 }
 
-}  // end namespace assemble
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::assemble

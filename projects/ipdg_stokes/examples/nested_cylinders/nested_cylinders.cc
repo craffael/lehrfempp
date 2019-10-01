@@ -42,7 +42,9 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
     const lf::assemble::DofHandler &dofh, double r, double R, double omega1,
     double omega2, bool modified_penalty) {
   // The volume forces are equal to zero everywhere
-  auto f = [](const Eigen::Vector2d &x) { return Eigen::Vector2d::Zero(); };
+  auto f = [](const Eigen::Vector2d & /*unused*/) {
+    return Eigen::Vector2d::Zero();
+  };
   // Drive the inner and outer cylinder with omega1 and omega2
   const double eps = 1e-10;
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
@@ -50,12 +52,16 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     if (vertices.col(0).norm() <= R + eps &&
         vertices.col(0).norm() >= R - eps &&
-        vertices.col(1).norm() <= R + eps && vertices.col(1).norm() >= R - eps)
+        vertices.col(1).norm() <= R + eps &&
+        vertices.col(1).norm() >= R - eps) {
       return omega2 * R * (vertices.col(1) - vertices.col(0)).normalized();
+    }
     if (vertices.col(0).norm() <= r + eps &&
         vertices.col(0).norm() >= r - eps &&
-        vertices.col(1).norm() <= r + eps && vertices.col(1).norm() >= r - eps)
+        vertices.col(1).norm() <= r + eps &&
+        vertices.col(1).norm() >= r - eps) {
       return omega1 * r * (vertices.col(0) - vertices.col(1)).normalized();
+    }
     return Eigen::Vector2d::Zero();
   };
   const auto dirichlet =
@@ -78,8 +84,9 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
   // Enforce the no-flow boundary conditions
   auto selector = [&](lf::base::size_type idx) -> std::pair<bool, double> {
     const auto &entity = dofh.Entity(idx);
-    if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity))
+    if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
       return {true, 0};
+    }
     return {false, 0};
   };
   lf::assemble::FixFlaggedSolutionComponents(selector, A, rhs);
@@ -108,7 +115,9 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
     const lf::assemble::DofHandler &dofh, double r, double R, double omega1,
     double omega2, bool modified_penalty) {
   // The volume forces are equal to zero everywhere
-  auto f = [](const Eigen::Vector2d &x) { return Eigen::Vector2d::Zero(); };
+  auto f = [](const Eigen::Vector2d & /*unused*/) {
+    return Eigen::Vector2d::Zero();
+  };
   // Drive the inner and outer cylinder with omega1 and omega2
   const double eps = 1e-10;
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
@@ -116,12 +125,16 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     if (vertices.col(0).norm() <= R + eps &&
         vertices.col(0).norm() >= R - eps &&
-        vertices.col(1).norm() <= R + eps && vertices.col(1).norm() >= R - eps)
+        vertices.col(1).norm() <= R + eps &&
+        vertices.col(1).norm() >= R - eps) {
       return omega2 * R * (vertices.col(1) - vertices.col(0)).normalized();
+    }
     if (vertices.col(0).norm() <= r + eps &&
         vertices.col(0).norm() >= r - eps &&
-        vertices.col(1).norm() <= r + eps && vertices.col(1).norm() >= r - eps)
+        vertices.col(1).norm() <= r + eps &&
+        vertices.col(1).norm() >= r - eps) {
       return omega1 * r * (vertices.col(0) - vertices.col(1)).normalized();
+    }
     return Eigen::Vector2d::Zero();
   };
   const auto dirichlet =
@@ -151,12 +164,14 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
     const auto &entity = dofh.Entity(dof);
     const auto geom = entity.Geometry();
     if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
-      if (geom->Global(entity.RefEl().NodeCoords()).norm() > R - eps)
+      if (geom->Global(entity.RefEl().NodeCoords()).norm() > R - eps) {
         dofmap[dof] = M_outer;
-      else
+      } else {
         dofmap[dof] = M_inner;
-    } else
+      }
+    } else {
       dofmap[dof] = idx++;
+    }
   }
   // Apply this mapping to the triplets of the matrix
   std::for_each(A.triplets().begin(), A.triplets().end(),
@@ -166,8 +181,9 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
                 });
   // Apply the mapping to the right hand side vector
   Eigen::VectorXd rhs_mapped = Eigen::VectorXd::Zero(idx);
-  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof)
+  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof) {
     rhs_mapped[dofmap[dof]] += rhs[dof];
+  }
 
   // Set the potential on the outer boundary to zero
   auto selector = [&](lf::base::size_type idx) -> std::pair<bool, double> {
@@ -185,8 +201,9 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   // Apply the inverse mapping to recovr the basis function coefficients for the
   // original basis functions
   Eigen::VectorXd sol = Eigen::VectorXd::Zero(dofh.NoDofs());
-  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof)
+  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof) {
     sol[dof] = sol_mapped[dofmap[dof]];
+  }
 
   return sol;
 }
@@ -253,9 +270,9 @@ int main(int argc, char *argv[]) {
   if (strcmp(argv[1], "builder") == 0) {
     // Build a sequence of meshes
     for (int i = 0; i < 8; ++i) {
-      const unsigned nx = 4u << i;
+      const unsigned nx = 4U << i;
       const double dx = 2 * M_PI * (r + R) / 2 / nx;
-      const unsigned ny = std::max(static_cast<unsigned>((R - r) / dx), 1u);
+      const unsigned ny = std::max(static_cast<unsigned>((R - r) / dx), 1U);
 
       // Build the mesh
       std::shared_ptr<lf::mesh::MeshFactory> factory =
@@ -308,7 +325,7 @@ int main(int argc, char *argv[]) {
   };
 
   // Solve the problem on each mesh and compute the error
-  for (const auto mesh : meshes) {
+  for (const auto &mesh : meshes) {
     lf::assemble::UniformFEDofHandler dofh(
         mesh,
         {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
@@ -374,22 +391,22 @@ int main(int argc, char *argv[]) {
             const Eigen::Vector2d &x) -> Eigen::Vector2d {
       return velocity_nonzero_modified(cell) - analytic_velocity(x);
     };
-    auto diff_gradient_zero = [&](const lf::mesh::Entity &cell,
+    auto diff_gradient_zero = [&](const lf::mesh::Entity & /*unused*/,
                                   const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };
     auto diff_gradient_zero_modified =
-        [&](const lf::mesh::Entity &cell,
+        [&](const lf::mesh::Entity & /*unused*/,
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };
     auto diff_gradient_nonzero =
-        [&](const lf::mesh::Entity &cell,
+        [&](const lf::mesh::Entity & /*unused*/,
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };
     auto diff_gradient_nonzero_modified =
-        [&](const lf::mesh::Entity &cell,
+        [&](const lf::mesh::Entity & /*unused*/,
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -analytic_gradient(x);
     };

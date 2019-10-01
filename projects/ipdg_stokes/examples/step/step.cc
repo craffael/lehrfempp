@@ -66,7 +66,7 @@ Eigen::VectorXd solveStep(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
                           const lf::assemble::DofHandler &dofh, double flowrate,
                           bool modified_penalty) {
   // No volume forces are present
-  auto f = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
+  auto f = [](const Eigen::Vector2d & /*unused*/) -> Eigen::Vector2d {
     return Eigen::Vector2d::Zero();
   };
   // Enforce a Poiseuille in- and outflow and no-slip boundary conditions at the
@@ -153,7 +153,7 @@ int main() {
             mesh, {{lf::base::RefEl::kPoint(), 1},
                    {lf::base::RefEl::kSegment(), 1}}));
     // No volume forces are present
-    auto f = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
+    auto f = [](const Eigen::Vector2d & /*unused*/) -> Eigen::Vector2d {
       return Eigen::Vector2d::Zero();
     };
     // Enforce a Poiseuille in- and outflow and no-slip boundary conditions at
@@ -222,23 +222,18 @@ int main() {
         projects::ipdg_stokes::post_processing::extractVelocity(
             solutions[lvl].mesh, *(solutions[lvl].dofh),
             solutions[lvl].solution_modified);
-    velocity[lvl] = [v](const lf::mesh::Entity &entity,
-                        const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return v(entity);
-    };
-    gradient[lvl] = [](const lf::mesh::Entity &entity,
-                       const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return Eigen::Matrix2d::Zero();
-    };
-    velocity_modified[lvl] = [v_modified](
-                                 const lf::mesh::Entity &entity,
-                                 const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return v_modified(entity);
-    };
-    gradient_modified[lvl] = [](const lf::mesh::Entity &entity,
-                                const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return Eigen::Matrix2d::Zero();
-    };
+    velocity[lvl] = [v](const lf::mesh::Entity &entity, const Eigen::Vector2d &
+                        /*unused*/) -> Eigen::Vector2d { return v(entity); };
+    gradient[lvl] =
+        [](const lf::mesh::Entity & /*unused*/, const Eigen::Vector2d &
+           /*unused*/) -> Eigen::Matrix2d { return Eigen::Matrix2d::Zero(); };
+    velocity_modified[lvl] =
+        [v_modified](
+            const lf::mesh::Entity &entity, const Eigen::Vector2d &
+            /*unused*/) -> Eigen::Vector2d { return v_modified(entity); };
+    gradient_modified[lvl] =
+        [](const lf::mesh::Entity & /*unused*/, const Eigen::Vector2d &
+           /*unused*/) -> Eigen::Matrix2d { return Eigen::Matrix2d::Zero(); };
   }
   auto fine_velocity =
       projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy,

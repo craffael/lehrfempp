@@ -1,17 +1,18 @@
 #include "minimal_mesh_builder.h"
 
-namespace projects::ipdg_stokes {
+#include <array>
 
-namespace mesh {
+namespace projects::ipdg_stokes::mesh {
 
 std::shared_ptr<lf::mesh::Mesh> MinimalMeshBuilder::Build() {
   Eigen::Matrix<double, 2, 5> vertices;
   vertices << 0, 1, 0, -1, 0, 0, 0, 1, 0, -1;
-  lf::base::size_type idx[5];
+  std::array<lf::base::size_type, 5> idx;
 
   // Add the vertices
-  for (int i = 0; i < vertices.cols(); ++i)
+  for (Eigen::Index i = 0; i < vertices.cols(); ++i) {
     idx[i] = mesh_factory_->AddPoint(vertices.col(i));
+  }
 
   // Add the triangles
   auto add_triangle = [&](unsigned v1, unsigned v2, unsigned v3) {
@@ -32,6 +33,4 @@ std::shared_ptr<lf::mesh::Mesh> MinimalMeshBuilder::Build() {
   return mesh_factory_->Build();
 }
 
-}  // end namespace mesh
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::mesh

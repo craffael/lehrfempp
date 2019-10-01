@@ -1,5 +1,3 @@
-#define _USE_MATH_DEFINES
-
 #include "annulus_triag_mesh_builder.h"
 
 #include <lf/base/base.h>
@@ -9,9 +7,7 @@
 #include <cmath>
 #include <vector>
 
-namespace projects::ipdg_stokes {
-
-namespace mesh {
+namespace projects::ipdg_stokes::mesh {
 
 std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   const lf::base::size_type nx = no_of_x_cells_;
@@ -33,10 +29,12 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   // Add all vertices to the mesh
   std::vector<lf::base::size_type> v_idx(vertex_count);
   lf::base::size_type node_count = 0;
-  for (lf::base::size_type r_idx = 0; r_idx < ny + 1; ++r_idx)
-    for (lf::base::size_type phi_idx = 0; phi_idx < nx; ++phi_idx)
+  for (lf::base::size_type r_idx = 0; r_idx < ny + 1; ++r_idx) {
+    for (lf::base::size_type phi_idx = 0; phi_idx < nx; ++phi_idx) {
       v_idx[node_count++] =
           mesh_factory_->AddPoint(node_position(r_idx, phi_idx));
+    }
+  }
 
   // Construct the triangles
   const lf::base::RefEl ref_el = lf::base::RefEl::kTria();
@@ -71,6 +69,4 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   return mesh_factory_->Build();
 }
 
-}  // end namespace mesh
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::mesh

@@ -15,9 +15,7 @@
 #include "solution_to_mesh_data_set.h"
 #include "utils.h"
 
-namespace projects::ipdg_stokes {
-
-namespace assemble {
+namespace projects::ipdg_stokes::assemble {
 
 std::tuple<lf::assemble::COOMatrix<double>, Eigen::VectorXd>
 buildSystemMatrixNoFlow(
@@ -99,6 +97,4 @@ buildSystemMatrixInOutFlow(
   return {A, rhs, offset_function};
 }
 
-}  // end namespace assemble
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::assemble

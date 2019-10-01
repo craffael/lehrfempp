@@ -11,9 +11,7 @@
 
 #include <utils.h>
 
-namespace projects::ipdg_stokes {
-
-namespace post_processing {
+namespace projects::ipdg_stokes::post_processing {
 
 double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
               const std::function<Eigen::Vector2d(const lf::mesh::Entity &,
@@ -29,8 +27,9 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
         (geom->IntegrationElement(quadrule.Points()).array() *
          quadrule.Weights().array())
             .matrix();
-    for (lf::base::size_type i = 0; i < quadrule.NumPoints(); ++i)
+    for (lf::base::size_type i = 0; i < quadrule.NumPoints(); ++i) {
       norm2 += weights[i] * f(entity, points.col(i)).squaredNorm();
+    }
   }
   return std::sqrt(norm2);
 }
@@ -52,8 +51,9 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
         (geom->IntegrationElement(quadrule_triangle.Points()).array() *
          quadrule_triangle.Weights().array())
             .matrix();
-    for (lf::base::size_type i = 0; i < quadrule_triangle.NumPoints(); ++i)
+    for (lf::base::size_type i = 0; i < quadrule_triangle.NumPoints(); ++i) {
       norm2 += weights[i] * f_grad(entity, points.col(i)).squaredNorm();
+    }
   }
   // Compute the DG norm on the edges
   const lf::quad::QuadRule quadrule_segment =
@@ -76,16 +76,17 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
              quadrule_segment.Weights().array())
                 .matrix() /
             lf::geometry::Volume(*geom);
-        for (lf::base::size_type p = 0; p < quadrule_segment.NumPoints(); ++p)
+        for (lf::base::size_type p = 0; p < quadrule_segment.NumPoints(); ++p) {
           jumps[mesh->Index(edge)] += weights[p] * f(entity, points.col(p)) *
                                       normals.col(i).transpose();
+        }
       }
     }
   }
-  for (const auto &jump : jumps) norm2 += jump.squaredNorm();
+  for (const auto &jump : jumps) {
+    norm2 += jump.squaredNorm();
+  }
   return std::sqrt(norm2);
 }
 
-}  // end namespace post_processing
-
-}  // namespace projects::ipdg_stokes
+}  // namespace projects::ipdg_stokes::post_processing

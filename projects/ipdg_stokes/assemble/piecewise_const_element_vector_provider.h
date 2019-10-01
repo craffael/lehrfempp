@@ -46,8 +46,8 @@ class PiecewiseConstElementVectorProvider {
    */
   PiecewiseConstElementVectorProvider(
       double sigma,
-      const std::function<Eigen::Vector2d(const Eigen::Vector2d &)> &f,
-      const lf::quad::QuadRule &quadrule,
+      const std::function<Eigen::Vector2d(const Eigen::Vector2d &)> f,
+      const lf::quad::QuadRule quadrule,
       const lf::mesh::utils::MeshDataSet<bool> &boundary,
       const lf::mesh::utils::MeshDataSet<Eigen::Vector2d> &dirichlet_data);
 

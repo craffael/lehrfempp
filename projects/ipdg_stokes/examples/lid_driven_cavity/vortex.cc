@@ -35,7 +35,7 @@ Eigen::VectorXd solveLidDrivenCavity(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const lf::assemble::DofHandler &dofh, bool modified = false) {
   // No volume forces are present in this experiment
-  auto f = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
+  auto f = [](const Eigen::Vector2d & /*unused*/) -> Eigen::Vector2d {
     return Eigen::Vector2d::Zero();
   };
   // The top lid is driven with velocity 1
@@ -46,8 +46,9 @@ Eigen::VectorXd solveLidDrivenCavity(
     Eigen::Vector2d v;
     v << 1. / 100, 0;
     if (vertices(1, 0) <= 100 + eps && vertices(1, 0) >= 100 - eps &&
-        vertices(1, 1) <= 100 + eps && vertices(1, 1) >= 100 - eps)
+        vertices(1, 1) <= 100 + eps && vertices(1, 1) >= 100 - eps) {
       return v;
+    }
     return Eigen::Vector2d::Zero();
   };
 

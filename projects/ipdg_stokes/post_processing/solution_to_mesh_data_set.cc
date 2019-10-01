@@ -3,16 +3,15 @@
 
 #include <lf/uscalfe/lagr_fe.h>
 
-namespace projects::ipdg_stokes {
-
-namespace post_processing {
+namespace projects::ipdg_stokes::post_processing {
 
 lf::mesh::utils::CodimMeshDataSet<double> extractBasisFunctionCoefficients(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const lf::assemble::DofHandler &dofh, const Eigen::VectorXd &solution) {
   lf::mesh::utils::CodimMeshDataSet<double> coefficients(mesh, 2);
-  for (const auto &node : mesh->Entities(2))
+  for (const auto &node : mesh->Entities(2)) {
     coefficients(node) = solution[dofh.GlobalDofIndices(node)[0]];
+  }
   return coefficients;
 }
 
@@ -40,6 +39,4 @@ lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> extractVelocity(
   return velocity;
 }
 
-}  // end namespace post_processing
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::post_processing

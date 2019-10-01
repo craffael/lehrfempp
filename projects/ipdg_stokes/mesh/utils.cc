@@ -2,9 +2,7 @@
 
 #include <lf/geometry/geometry.h>
 
-namespace projects::ipdg_stokes {
-
-namespace mesh {
+namespace projects::ipdg_stokes::mesh {
 
 Eigen::Matrix<double, 2, 3> computeOutwardNormals(
     const lf::mesh::Entity &entity) {
@@ -14,7 +12,7 @@ Eigen::Matrix<double, 2, 3> computeOutwardNormals(
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
   // Use the vertex coordinates to compute the local normals on the edges
   Eigen::Matrix<double, 2, 3> normals(vertices.rows(), vertices.cols());
-  for (int vert = 0; vert < vertices.cols() - 1; ++vert) {
+  for (long vert = 0; vert < vertices.cols() - 1; ++vert) {
     normals(0, vert) = vertices(1, vert + 1) - vertices(1, vert + 0);
     normals(1, vert) = vertices(0, vert + 0) - vertices(0, vert + 1);
   }
@@ -43,6 +41,4 @@ Eigen::Matrix<double, 2, 3> computeTangentials(const lf::mesh::Entity &entity) {
   return tang;
 }
 
-}  // end namespace mesh
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::mesh

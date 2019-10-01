@@ -7,19 +7,17 @@
 
 #include <utils.h>
 
-namespace projects::ipdg_stokes {
-
-namespace assemble {
+namespace projects::ipdg_stokes::assemble {
 
 PiecewiseConstElementVectorProvider::PiecewiseConstElementVectorProvider(
     double sigma,
-    const std::function<Eigen::Vector2d(const Eigen::Vector2d &)> &f,
-    const lf::quad::QuadRule &quadrule,
+    const std::function<Eigen::Vector2d(const Eigen::Vector2d &)> f,
+    const lf::quad::QuadRule quadrule,
     const lf::mesh::utils::MeshDataSet<bool> &boundary,
     const lf::mesh::utils::MeshDataSet<Eigen::Vector2d> &dirichlet_data)
     : sigma_(sigma),
-      f_(f),
-      quadrule_(quadrule),
+      f_(std::move(f)),
+      quadrule_(std::move(quadrule)),
       boundary_(boundary),
       dirichlet_data_(dirichlet_data) {}
 
@@ -67,6 +65,4 @@ Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
   return element_vector;
 }
 
-}  // end namespace assemble
-
-}  // end namespace projects::ipdg_stokes
+}  // end namespace projects::ipdg_stokes::assemble

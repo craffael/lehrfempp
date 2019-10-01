@@ -142,7 +142,8 @@ int main() {
       return computeF(n, x);
     };
     // The velocity on the boundary is zero everywhere
-    auto dirichlet_funct = [](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
+    auto dirichlet_funct = [](const lf::mesh::Entity &
+                              /*unused*/) -> Eigen::Vector2d {
       return Eigen::Vector2d::Zero();
     };
     const auto [A, rhs] =
@@ -209,11 +210,11 @@ int main() {
       return velocity_modified(entity) - computeU(n, x);
     };
     // The error in the gradient of the velocity
-    auto diff_g = [&](const lf::mesh::Entity &entity,
+    auto diff_g = [&](const lf::mesh::Entity & /*unused*/,
                       const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -computeUGrad(n, x);
     };
-    auto diff_g_modified = [&](const lf::mesh::Entity &entity,
+    auto diff_g_modified = [&](const lf::mesh::Entity & /*unused*/,
                                const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -computeUGrad(n, x);
     };
@@ -247,12 +248,12 @@ int main() {
       return factor_modified * velocity_modified(entity) - computeU(n, x);
     };
     // The error in the gradient of the corrected velocty
-    auto diff_g_fac = [&](const lf::mesh::Entity &entity,
+    auto diff_g_fac = [&](const lf::mesh::Entity & /*unused*/,
                           const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -computeUGrad(n, x);
     };
     auto diff_g_fac_modified =
-        [&](const lf::mesh::Entity &entity,
+        [&](const lf::mesh::Entity & /*unused*/,
             const Eigen::Vector2d &x) -> Eigen::Matrix2d {
       return -computeUGrad(n, x);
     };
