@@ -1,6 +1,7 @@
 #include "gmsh_reader.h"
 
 #include <lf/geometry/geometry.h>
+#include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_string.hpp>
 #include "eigen_fusion_adapter.h"
@@ -350,35 +351,37 @@ std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename) {
   // Parse header to determine if we are dealing with ASCII format or binary
   // format + little or big endian:
   /////////////////////////////////////////////////////////////////////////////
-  std::string version;
-  bool is_binary;
-  int size_t_size;
-  int one;
   auto iter = storage.cbegin();
   auto end = storage.cend();
 
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
 
+  // version, is_binary, sizeof(size_t), 1 (as int)
+  std::tuple<std::string, bool, int, int> header;
+  qi::rule<decltype(iter), std::string()> version_parser;
+
+  version_parser %= +(ascii::alnum | ascii::punct);
+  qi::rule<decltype(iter), decltype(header)(), ascii::space_type> header_parser;
+  header_parser %= qi::lit("$MeshFormat") >>
+                   (qi::hold[(version_parser >> qi::lit('0') >>
+                              qi::attr(false) >> qi::int_ >> qi::attr(1))] |
+                    (version_parser >> qi::lit('1') >> qi::attr(true) >>
+                     qi::int_ >> qi::little_dword)) >>
+                   qi::lit("$EndMeshFormat");
+
   bool succesful;
-  succesful = qi::phrase_parse(
-      iter, end,
-      qi::lit("$MeshFormat") >>
-          ((qi::lexeme[+(ascii::alnum | ascii::punct)] >> qi::lit('0') >>
-            qi::attr(false) >> qi::int_ >> qi::attr(1)) |
-           (qi::lexeme[+(ascii::alnum | ascii::punct)] >> qi::lit('1') >>
-            qi::attr(true) >> qi::int_ >> qi::little_dword)) >>
-          "$EndMeshFormat",
-      ascii::space, version, is_binary, size_t_size, one);
+  succesful = qi::phrase_parse(iter, end, header_parser, ascii::space, header);
 
   LF_VERIFY_MSG(succesful, "Could not read header of file " << filename);
 
-  if (version == "4.1") {
-    return ReadGmshFileV4(iter, end, version, is_binary, size_t_size, one,
-                          filename);
+  if (std::get<0>(header) == "4.1") {
+    return ReadGmshFileV4(iter, end, std::get<0>(header), std::get<1>(header),
+                          std::get<2>(header), std::get<3>(header), filename);
   } else {
     LF_VERIFY_MSG(false, "GmshFiles with Version "
-                             << version << " are not yet supported.");
+                             << std::get<0>(header)
+                             << " are not yet supported.");
   }
 }
 

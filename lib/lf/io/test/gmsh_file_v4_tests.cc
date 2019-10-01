@@ -296,12 +296,216 @@ void checkPieceOfCake(const GMshFileV4& file) {
   EXPECT_EQ(file.ghost_elements[1].ghost_partition_tags, std::vector<int>{1});
 }
 
-TEST(lf_io_gmsh_file_v4, readPieceOfCake) {
-  auto filename = test_utils::getMeshPath("piece_of_cake.msh");
+void checkTwoElementHybrid(GMshFileV4 file) {
+  // Header
+  EXPECT_EQ(file.version_number, "4.1");
+  EXPECT_FALSE(file.is_binary);
+  EXPECT_EQ(file.size_t_size, sizeof(std::size_t));
+
+  // Physical names:
+  EXPECT_EQ(file.physical_names.size(), 6);
+  EXPECT_EQ(file.physical_names[0].dimension, 0);
+  EXPECT_EQ(file.physical_names[0].physical_tag, 1);
+  EXPECT_EQ(file.physical_names[0].name, "physicalEntity1");
+  EXPECT_EQ(file.physical_names[1].dimension, 0);
+  EXPECT_EQ(file.physical_names[1].physical_tag, 2);
+  EXPECT_EQ(file.physical_names[1].name, "physicalEntity2");
+  EXPECT_EQ(file.physical_names[2].dimension, 1);
+  EXPECT_EQ(file.physical_names[2].physical_tag, 4);
+  EXPECT_EQ(file.physical_names[2].name, "diagonal");
+  EXPECT_EQ(file.physical_names[3].dimension, 2);
+  EXPECT_EQ(file.physical_names[3].physical_tag, 1);
+  EXPECT_EQ(file.physical_names[3].name, "physicalEntity1");
+  EXPECT_EQ(file.physical_names[4].dimension, 2);
+  EXPECT_EQ(file.physical_names[4].physical_tag, 3);
+  EXPECT_EQ(file.physical_names[4].name, "physicalEntity3");
+  EXPECT_EQ(file.physical_names[5].dimension, 2);
+  EXPECT_EQ(file.physical_names[5].physical_tag, 5);
+  EXPECT_EQ(file.physical_names[5].name, "square");
+
+  // Entities:
+  auto& points = std::get<0>(file.entities);
+  EXPECT_EQ(points.size(), 5);
+  EXPECT_EQ(points[0].tag, 1);
+  EXPECT_EQ(points[0].coord, Eigen::Vector3d(0, 0, 0));
+  EXPECT_EQ(points[0].physical_tags, (std::vector<int>{1, 2}));
+  EXPECT_EQ(points[1].tag, 2);
+  EXPECT_EQ(points[1].coord, Eigen::Vector3d(1, 0, 0));
+  EXPECT_TRUE(points[1].physical_tags.empty());
+  EXPECT_EQ(points[2].tag, 3);
+  EXPECT_EQ(points[2].coord, Eigen::Vector3d(2, 0, 0));
+  EXPECT_TRUE(points[2].physical_tags.empty());
+  EXPECT_EQ(points[3].tag, 4);
+  EXPECT_EQ(points[3].coord, Eigen::Vector3d(0, 1, 0));
+  EXPECT_TRUE(points[3].physical_tags.empty());
+  EXPECT_EQ(points[4].tag, 5);
+  EXPECT_EQ(points[4].coord, Eigen::Vector3d(1, 1, 0));
+  EXPECT_TRUE(points[4].physical_tags.empty());
+
+  auto& curves = std::get<1>(file.entities);
+  EXPECT_EQ(curves.size(), 6);
+  EXPECT_EQ(curves[0].tag, 1);
+  EXPECT_TRUE(curves[0].min_coord.isApprox(
+      Eigen::Vector3d{-9.999999994736442e-008, -1e-007, -1e-007}));
+  EXPECT_TRUE(
+      curves[0].max_coord.isApprox(Eigen::Vector3d(1.0000001, 1e-007, 1e-007)));
+  EXPECT_TRUE(curves[0].physical_tags.empty());
+  EXPECT_EQ(curves[0].bounding_entities, (std::vector<int>{1, -2}));
+  EXPECT_EQ(curves[1].tag, 2);
+  EXPECT_TRUE(curves[1].min_coord.isApprox(
+      Eigen::Vector3d{0.9999999000000001, -1e-007, -1e-007}));
+  EXPECT_TRUE(
+      curves[1].max_coord.isApprox(Eigen::Vector3d(2.0000001, 1e-007, 1e-007)));
+  EXPECT_TRUE(curves[1].physical_tags.empty());
+  EXPECT_EQ(curves[1].bounding_entities, (std::vector<int>{2, -3}));
+  EXPECT_EQ(curves[2].tag, 3);
+  EXPECT_TRUE(curves[2].min_coord.isApprox(
+      Eigen::Vector3d{-1e-007, -9.999999994736442e-008, -1e-007}));
+  EXPECT_TRUE(
+      curves[2].max_coord.isApprox(Eigen::Vector3d(1e-007, 1.0000001, 1e-007)));
+  EXPECT_TRUE(curves[2].physical_tags.empty());
+  EXPECT_EQ(curves[2].bounding_entities, (std::vector<int>{1, -4}));
+  EXPECT_EQ(curves[3].tag, 4);
+  EXPECT_TRUE(curves[3].min_coord.isApprox(
+      Eigen::Vector3d{0.9999999000000001, -9.999999994736442e-008, -1e-007}));
+  EXPECT_TRUE(curves[3].max_coord.isApprox(
+      Eigen::Vector3d(1.0000001, 1.0000001, 1e-007)));
+  EXPECT_TRUE(curves[3].physical_tags.empty());
+  EXPECT_EQ(curves[3].bounding_entities, (std::vector<int>{2, -5}));
+  EXPECT_EQ(curves[4].tag, 5);
+  EXPECT_TRUE(curves[4].min_coord.isApprox(
+      Eigen::Vector3d{-9.999999994736442e-008, 0.9999999000000001, -1e-007}));
+  EXPECT_TRUE(curves[4].max_coord.isApprox(
+      Eigen::Vector3d(1.0000001, 1.0000001, 1e-007)));
+  EXPECT_TRUE(curves[4].physical_tags.empty());
+  EXPECT_EQ(curves[4].bounding_entities, (std::vector<int>{4, -5}));
+  EXPECT_EQ(curves[5].tag, 6);
+  EXPECT_TRUE(curves[5].min_coord.isApprox(
+      Eigen::Vector3d{0.9999999000000001, -9.999999994736442e-008, -1e-007}));
+  EXPECT_TRUE(curves[5].max_coord.isApprox(
+      Eigen::Vector3d(2.0000001, 1.0000001, 1e-007)));
+  EXPECT_EQ(curves[5].physical_tags, std::vector<int>{4});
+  EXPECT_EQ(curves[5].bounding_entities, (std::vector<int>{3, -5}));
+
+  auto& surfaces = std::get<2>(file.entities);
+  EXPECT_EQ(surfaces.size(), 2);
+  EXPECT_EQ(surfaces[0].tag, 1);
+  EXPECT_TRUE(surfaces[0].min_coord.isApprox(Eigen::Vector3d(
+      -9.999999994736442e-008, -9.999999994736442e-008, -1e-007)));
+  EXPECT_TRUE(surfaces[0].max_coord.isApprox(
+      Eigen::Vector3d(1.0000001, 1.0000001, 1e-007)));
+  EXPECT_EQ(surfaces[0].physical_tags, std::vector<int>{5});
+  EXPECT_EQ(surfaces[0].bounding_entities, (std::vector<int>{3, 5, -4, -1}));
+  EXPECT_EQ(surfaces[1].tag, 2);
+  EXPECT_TRUE(surfaces[1].min_coord.isApprox(
+      Eigen::Vector3d(0.9999999000000001, -9.999999994736442e-008, -1e-007)));
+  EXPECT_TRUE(surfaces[1].max_coord.isApprox(
+      Eigen::Vector3d(2.0000001, 1.0000001, 1e-007)));
+  EXPECT_EQ(surfaces[1].physical_tags, (std::vector<int>{1, 3}));
+  EXPECT_EQ(surfaces[1].bounding_entities, (std::vector<int>{4, -6, -2}));
+  EXPECT_TRUE(std::get<3>(file.entities).empty());
+
+  // partitioned entities
+  EXPECT_EQ(file.partitioned_entities.num_partitions, 0);
+  EXPECT_TRUE(file.partitioned_entities.ghost_entities.empty());
+  EXPECT_TRUE(
+      std::get<0>(file.partitioned_entities.partitioned_entities).empty());
+  EXPECT_TRUE(
+      std::get<1>(file.partitioned_entities.partitioned_entities).empty());
+  EXPECT_TRUE(
+      std::get<2>(file.partitioned_entities.partitioned_entities).empty());
+  EXPECT_TRUE(
+      std::get<3>(file.partitioned_entities.partitioned_entities).empty());
+
+  // nodes
+  using vnode_t = std::vector<std::pair<std::size_t, Eigen::Vector3d>>;
+  EXPECT_EQ(file.nodes.num_nodes, 5);
+  EXPECT_EQ(file.nodes.min_node_tag, 1);
+  EXPECT_EQ(file.nodes.max_node_tag, 5);
+  EXPECT_EQ(file.nodes.node_blocks[0].entity_dim, 0);
+  EXPECT_EQ(file.nodes.node_blocks[0].entity_tag, 1);
+  EXPECT_FALSE(file.nodes.node_blocks[0].parametric);
+  EXPECT_EQ(file.nodes.node_blocks[0].nodes,
+            (vnode_t{{1, Eigen::Vector3d(0, 0, 0)}}));
+  EXPECT_EQ(file.nodes.node_blocks[1].entity_dim, 0);
+  EXPECT_EQ(file.nodes.node_blocks[1].entity_tag, 2);
+  EXPECT_FALSE(file.nodes.node_blocks[1].parametric);
+  EXPECT_EQ(file.nodes.node_blocks[1].nodes,
+            (vnode_t{{2, Eigen::Vector3d(1, 0, 0)}}));
+  EXPECT_EQ(file.nodes.node_blocks[2].entity_dim, 0);
+  EXPECT_EQ(file.nodes.node_blocks[2].entity_tag, 3);
+  EXPECT_FALSE(file.nodes.node_blocks[2].parametric);
+  EXPECT_EQ(file.nodes.node_blocks[2].nodes,
+            (vnode_t{{3, Eigen::Vector3d(2, 0, 0)}}));
+  EXPECT_EQ(file.nodes.node_blocks[3].entity_dim, 0);
+  EXPECT_EQ(file.nodes.node_blocks[3].entity_tag, 4);
+  EXPECT_FALSE(file.nodes.node_blocks[3].parametric);
+  EXPECT_EQ(file.nodes.node_blocks[3].nodes,
+            (vnode_t{{4, Eigen::Vector3d(0, 1, 0)}}));
+  EXPECT_EQ(file.nodes.node_blocks[4].entity_dim, 0);
+  EXPECT_EQ(file.nodes.node_blocks[4].entity_tag, 5);
+  EXPECT_FALSE(file.nodes.node_blocks[4].parametric);
+  EXPECT_EQ(file.nodes.node_blocks[4].nodes,
+            (vnode_t{{5, Eigen::Vector3d(1, 1, 0)}}));
+  EXPECT_EQ(file.nodes.node_blocks[5].entity_dim, 1);
+  EXPECT_EQ(file.nodes.node_blocks[5].entity_tag, 6);
+  EXPECT_FALSE(file.nodes.node_blocks[5].parametric);
+  EXPECT_TRUE(file.nodes.node_blocks[5].nodes.empty());
+  EXPECT_EQ(file.nodes.node_blocks[6].entity_dim, 2);
+  EXPECT_EQ(file.nodes.node_blocks[6].entity_tag, 1);
+  EXPECT_FALSE(file.nodes.node_blocks[6].parametric);
+  EXPECT_TRUE(file.nodes.node_blocks[6].nodes.empty());
+  EXPECT_EQ(file.nodes.node_blocks[7].entity_dim, 2);
+  EXPECT_EQ(file.nodes.node_blocks[7].entity_tag, 2);
+  EXPECT_FALSE(file.nodes.node_blocks[7].parametric);
+  EXPECT_TRUE(file.nodes.node_blocks[7].nodes.empty());
+
+  // elements
+  using element_t =
+      std::vector<std::tuple<std::size_t, std::vector<std::size_t>>>;
+  EXPECT_EQ(file.elements.num_elements, 4);
+  EXPECT_EQ(file.elements.min_element_tag, 1);
+  EXPECT_EQ(file.elements.max_element_tag, 4);
+  EXPECT_EQ(file.elements.element_blocks.size(), 4);
+  EXPECT_EQ(file.elements.element_blocks[0].dimension, 0);
+  EXPECT_EQ(file.elements.element_blocks[0].entity_tag, 1);
+  EXPECT_EQ(file.elements.element_blocks[0].element_type,
+            GMshFileV4::ElementType::POINT);
+  EXPECT_EQ(file.elements.element_blocks[0].elements, (element_t{{1, {1}}}));
+  EXPECT_EQ(file.elements.element_blocks[1].dimension, 1);
+  EXPECT_EQ(file.elements.element_blocks[1].entity_tag, 6);
+  EXPECT_EQ(file.elements.element_blocks[1].element_type,
+            GMshFileV4::ElementType::EDGE2);
+  EXPECT_EQ(file.elements.element_blocks[1].elements, (element_t{{2, {3, 5}}}));
+  EXPECT_EQ(file.elements.element_blocks[2].dimension, 2);
+  EXPECT_EQ(file.elements.element_blocks[2].entity_tag, 1);
+  EXPECT_EQ(file.elements.element_blocks[2].element_type,
+            GMshFileV4::ElementType::QUAD4);
+  EXPECT_EQ(file.elements.element_blocks[2].elements,
+            (element_t{{3, {1, 4, 5, 2}}}));
+  EXPECT_EQ(file.elements.element_blocks[3].dimension, 2);
+  EXPECT_EQ(file.elements.element_blocks[3].entity_tag, 2);
+  EXPECT_EQ(file.elements.element_blocks[3].element_type,
+            GMshFileV4::ElementType::TRIA3);
+  EXPECT_EQ(file.elements.element_blocks[3].elements,
+            (element_t{{4, {3, 5, 2}}}));
+}
+
+// TEST(lf_io_gmsh_file_v4, readPieceOfCake) {
+//  auto filename = test_utils::getMeshPath("piece_of_cake.msh");
+//  auto mshfile = ReadGmshFile(filename);
+//  EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
+//  auto filev4 = std::get<GMshFileV4>(mshfile);
+//  checkPieceOfCake(filev4);
+//}
+
+TEST(lf_io_gmsh_file_v4, readTwoElementHybrid) {
+  auto filename =
+      test_utils::getMeshPath("two_element_hybrid_2d_v4_binary.msh");
   auto mshfile = ReadGmshFile(filename);
   EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
   auto filev4 = std::get<GMshFileV4>(mshfile);
-  checkPieceOfCake(filev4);
+  checkTwoElementHybrid(filev4);
 }
 
 }  // namespace lf::io::test
