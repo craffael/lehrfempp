@@ -47,8 +47,8 @@ jobs:
     os: linux
     compiler: gcc
     env:
-    - compiler=g++-7
-    - build_type='debug'
+    - COMPILER=g++-7
+    - BUILD_TYPE='Debug'
     addons:
       apt:
         update: true
@@ -61,8 +61,8 @@ jobs:
     os: linux
     compiler: gcc
     env:
-    - compiler=g++-7
-    - build_type='release'
+    - COMPILER=g++-7
+    - BUILD_TYPE='Release'
     addons:
       apt:
         update: true
@@ -75,8 +75,8 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - compiler='clang++-5.0'
-    - build_type='debug'
+    - COMPILER='clang++-5.0'
+    - BUILD_TYPE='Debug'
     addons:
       apt:
         sources:
@@ -90,8 +90,8 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - compiler='clang++-5.0'
-    - build_type='release'
+    - COMPILER='clang++-5.0'
+    - BUILD_TYPE='Release'
     addons:
       apt:
         sources:
@@ -105,13 +105,13 @@ jobs:
     os: osx
     osx_image: xcode10.1
     compiler: clang
-    env: compiler='clang++' build_type='debug'
+    env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
     osx_image: xcode10.1
     compiler: clang
-    env: compiler='clang++' build_type='release'
+    env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
   - stage: doxygen
     if: branch = master AND type IN (push)
