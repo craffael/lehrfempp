@@ -16,7 +16,7 @@
 namespace projects::ipdg_stokes::assemble {
 
 PiecewiseBoundaryNormalJumpAssembler::PiecewiseBoundaryNormalJumpAssembler(
-    const std::shared_ptr<const lf::mesh::Mesh> mesh,
+    std::shared_ptr<const lf::mesh::Mesh> mesh,
     const lf::mesh::utils::MeshDataSet<bool> &boundary)
     : mesh_(std::move(mesh)), boundary_(boundary) {}
 
@@ -130,7 +130,8 @@ Eigen::VectorXd createOffsetFunction(
   }
   // Solve for the basis function coefficients of the offset function ordered
   // with the boundary dof handler
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(Js);
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(Js);
   const Eigen::VectorXd offset_function_local =
       solver.solve(rhs).head(boundary_node_dofh.NoDofs());
   // Compute the full offset function including the jump terms

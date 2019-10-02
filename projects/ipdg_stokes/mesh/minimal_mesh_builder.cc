@@ -7,7 +7,7 @@ namespace projects::ipdg_stokes::mesh {
 std::shared_ptr<lf::mesh::Mesh> MinimalMeshBuilder::Build() {
   Eigen::Matrix<double, 2, 5> vertices;
   vertices << 0, 1, 0, -1, 0, 0, 0, 1, 0, -1;
-  std::array<lf::base::size_type, 5> idx;
+  std::array<lf::base::size_type, 5> idx{};
 
   // Add the vertices
   for (Eigen::Index i = 0; i < vertices.cols(); ++i) {

@@ -106,7 +106,8 @@ Eigen::VectorXd solveStep(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
       projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
           mesh, dofh, offset_function));
   auto As = A.makeSparse();
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(As);
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(As);
   return solver.solve(rhs) + offset_function;
 }
 
@@ -185,7 +186,8 @@ int main() {
             lf::quad::make_TriaQR_MidpointRule(), false);
     sol.A = A.makeSparse();
     sol.rhs = rhs;
-    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(sol.A);
+    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+    solver.compute(sol.A);
     sol.solution = solver.solve(rhs) + offset_function;
     const auto [A_modified, rhs_modified, offset_function_modified] =
         projects::ipdg_stokes::assemble::buildSystemMatrixInOutFlow(

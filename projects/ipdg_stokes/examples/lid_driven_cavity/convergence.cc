@@ -110,7 +110,8 @@ int main() {
             lf::quad::make_TriaQR_MidpointRule(), false);
     sol.A = A.makeSparse();
     sol.rhs = rhs;
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(sol.A);
+    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+    solver.compute(sol.A);
     sol.solution = solver.solve(rhs);
     const auto [A_modified, rhs_modified] =
         projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(

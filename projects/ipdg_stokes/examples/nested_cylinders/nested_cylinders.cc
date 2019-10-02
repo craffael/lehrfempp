@@ -93,7 +93,8 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
 
   // Solve the LSE using sparse LU
   Eigen::SparseMatrix<double> As = A.makeSparse();
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(As);
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(As);
   return solver.solve(rhs);
 }
 
@@ -193,9 +194,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
 
   // Solve the LSE using sparse LU
   Eigen::SparseMatrix<double> As_mapped = A.makeSparse().block(0, 0, idx, idx);
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(As_mapped);
-  // Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>>
-  // solver(As);
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  solver.compute(As_mapped);
   const Eigen::VectorXd sol_mapped = solver.solve(rhs_mapped);
 
   // Apply the inverse mapping to recovr the basis function coefficients for the

@@ -145,7 +145,8 @@ int main(int argc, char *argv[]) {
             lf::quad::make_TriaQR_MidpointRule(), false);
     sol.A = A.makeSparse();
     sol.rhs = rhs;
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver(sol.A);
+    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+    solver.compute(sol.A);
     sol.solution = solver.solve(rhs) + offset_function;
     const auto [A_modified, rhs_modified, offset_function_modified] =
         projects::ipdg_stokes::assemble::buildSystemMatrixInOutFlow(

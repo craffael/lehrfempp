@@ -35,7 +35,7 @@ class PiecewiseBoundaryNormalJumpAssembler {
    * @param boundary A MeshDataSet marking the boundary entities
    */
   PiecewiseBoundaryNormalJumpAssembler(
-      const std::shared_ptr<const lf::mesh::Mesh> mesh,
+      std::shared_ptr<const lf::mesh::Mesh> mesh,
       const lf::mesh::utils::MeshDataSet<bool> &boundary);
 
   /**
