@@ -412,16 +412,29 @@ using entities_t = std::tuple<std::vector<lf::io::GMshFileV4::PointEntity>,
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
     lf::io::GMshFileV4, MshFileV4Adapted,
     (std::vector<lf::io::GMshFileV4::PhysicalName>, physical_names)
-    /*(entities_t, entities)
+    (entities_t, entities)
     (lf::io::GMshFileV4::PartitionedEntities, partitioned_entities)
     (lf::io::GMshFileV4::Nodes, nodes)
     (lf::io::GMshFileV4::Elements, elements)
     (std::vector<lf::io::GMshFileV4::PeriodicLink>, periodic_links)
-    (std::vector<lf::io::GMshFileV4::GhostElement>, ghost_elements)*/
+    (std::vector<lf::io::GMshFileV4::GhostElement>, ghost_elements)
 )
 // clang-format on
 
 namespace boost::spirit::traits {
+
+namespace /*anonymous*/ {
+template <class T>
+constexpr bool has_value_type(long) {
+  return false;
+}
+
+template <class T, typename = typename T::value_type>
+constexpr bool has_value_type(int) {
+  return true;
+}
+
+}  // namespace
 
 template <class Enum, class RawValue>
 struct assign_to_attribute_from_value<
@@ -429,7 +442,13 @@ struct assign_to_attribute_from_value<
     typename std::enable_if_t<std::is_enum_v<Enum> &&
                               !std::is_same_v<Enum, RawValue>>> {
   static void call(RawValue const& raw, Enum& cat) {
-    cat = static_cast<Enum>(raw);
+    if constexpr (has_value_type<RawValue>(0)) {
+      // specialization for endian::endian
+      typename RawValue::value_type value = raw;
+      cat = static_cast<Enum>(value);
+    } else {
+      cat = static_cast<Enum>(raw);
+    }
   }
 };
 
@@ -453,287 +472,11 @@ struct GmshElementType : qi::symbols<char, unsigned> {
 // NOLINTNEXTLINE
 BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
 
-// template <class ITERATOR>
-// struct MshV4GrammarText
-//    : qi::grammar<ITERATOR, boost::fusion::adapted::MshFileV4Adapted(),
-//                  ascii::space_type> {
-//  MshV4GrammarText() : MshV4GrammarText::base_type(entry_, "Msh File") {
-//    using phoenix::at_c;
-//    using phoenix::push_back;
-//    using phoenix::reserve;
-//    using phoenix::val;
-//    using qi::_val;
-//    using qi::attr;
-//    using qi::char_;
-//    using qi::double_;
-//    using qi::eps;
-//    using qi::int_;
-//    using qi::lexeme;
-//    using qi::lit;
-//    using qi::omit;
-//    using qi::repeat;
-//    using qi::labels::_1;
-//    using qi::labels::_2;
-//    using qi::labels::_3;
-//    using qi::labels::_4;
-//    using qi::labels::_a;
-//    using qi::labels::_b;
-//    using qi::labels::_c;
-//    using qi::labels::_d;
-//
-//    auto size_t_ = qi::ulong_long;
-//
-//    // General Parsers:
-//    quoted_string_ %= lexeme['"' >> +(char_ - '"') >> '"'];
-//    quoted_string_.name("string");
-//    vec3_ %= double_ > double_ > double_;
-//    int_vec_ %= omit[size_t_[reserve(_val, _1), _a = _1]] > repeat(_a)[int_];
-//    start_comment_ %= !lit("$PhysicalNames") >> !lit("$Entities") >>
-//                      !lit("$PartitionedEntities") >> !lit("$Nodes") >>
-//                      !lit("$Elements") >> !lit("$Periodic") >>
-//                      !lit("$GhostElements") >>
-//                      (lit('$') >> (+(char_ - qi::eol)));
-//    start_comment_.name("Start of Comment");
-//    comment_ %= start_comment_[_a = qi::_1] > *(char_ - '$') >> "$End" >>
-//                qi::string(_a);
-//    comment_.name("comment");
-//    qi::on_error<qi::fail>(comment_, error_handler_(_1, _2, _3, _4));
-//
-//    // Physical names
-//    physical_name_ %= int_ > int_ > quoted_string_;
-//    physical_name_.name("Physical Name");
-//    qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
-//    physical_name_vector_ %= "$PhysicalNames" >
-//                             omit[size_t_[reserve(_val, _1), _a = _1]] >
-//                             repeat(_a)[physical_name_] > "$EndPhysicalNames";
-//    physical_name_vector_.name("$PhyiscalNames");
-//    /*qi::on_error<qi::fail>(physical_name_vector_,
-//                           error_handler_(_1, _2, _3, _4));*/
-//
-//    // entities:
-//    point_entity_ %= int_ > vec3_ > int_vec_;
-//    point_entity_.name("Point entity");
-//
-//    entity_ %= int_ > vec3_ > vec3_ > int_vec_ > int_vec_;
-//    entity_.name("entity");
-//
-//    entities_ %= "$Entities" >
-//                 omit[size_t_[reserve(phoenix::at_c<0>(_val), _1), _a = _1]] >
-//                 omit[size_t_[reserve(phoenix::at_c<1>(_val), _1), _b = _1]] >
-//                 omit[size_t_[reserve(phoenix::at_c<2>(_val), _1), _c = _1]] >
-//                 omit[size_t_[reserve(phoenix::at_c<3>(_val), _1), _d = _1]] >
-//                 repeat(_a)[point_entity_] > repeat(_b)[entity_] >
-//                 repeat(_c)[entity_] > repeat(_d)[entity_] > "$EndEntities";
-//    entities_.name("$Entities");
-//    qi::on_error<qi::fail>(entities_, error_handler_(_1, _2, _3, _4));
-//
-//    // PartitionedEntities
-//    ghost_entities_ %=
-//        omit[size_t_[reserve(_val, _1), _a = _1]] > repeat(_a)[int_ > int_];
-//    ghost_entities_.name("ghost_entities");
-//    partitioned_point_entity_ %=
-//        int_ > int_ > int_ > int_vec_ > vec3_ > int_vec_;
-//    partitioned_point_entity_.name("partitioned_point_entity");
-//
-//    partitioned_entity_ %=
-//        int_ > int_ > int_ > int_vec_ > vec3_ > vec3_ > int_vec_ > int_vec_;
-//    partitioned_entity_.name("partitioned_entity");
-//
-//    partitioned_entities2_ %=
-//        omit[size_t_[reserve(at_c<0>(_val), _1), _a = _1]] >
-//        omit[size_t_[reserve(at_c<1>(_val), _1), _b = _1]] >
-//        omit[size_t_[reserve(at_c<2>(_val), _1), _c = _1]] >
-//        omit[size_t_[reserve(at_c<3>(_val), _1), _d = _1]] >
-//        repeat(_a)[partitioned_point_entity_] >
-//        repeat(_b)[partitioned_entity_] > repeat(_c)[partitioned_entity_] >
-//        repeat(_d)[partitioned_entity_];
-//    partitioned_entities2_.name("partitioned_entities2");
-//
-//    partitioned_entities_ %= "$PartitionedEntities" > size_t_ >
-//                             ghost_entities_ > partitioned_entities2_ >
-//                             "$EndPartitionedEntities";
-//    partitioned_entities_.name("partitioned_entities");
-//
-//    // nodes:
-//    node_block_ %=
-//        int_ > int_ > int_ >
-//        omit[size_t_[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
-//        omit[repeat(_a)[size_t_[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
-//        eps[_b = 0] >
-//        omit[repeat(_a)[vec3_[at_c<1>(at_c<3>(_val)[_b++]) = _1]]];
-//    node_block_.name("node_block");
-//
-//    nodes_ %= "$Nodes" > omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] >
-//              size_t_ > size_t_ > size_t_ > repeat(_a)[node_block_] >
-//              "$EndNodes";
-//    nodes_.name("nodes");
-//
-//    // elements:
-//    element_block_ %=
-//        int_ > int_ > int_ >
-//        omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] >
-//        repeat(_a)[size_t_ > repeat(numNodesAdapted(at_c<2>(_val)))[size_t_]];
-//    element_block_.name("element_block");
-//
-//    elements_ %= "$Elements" >
-//                 omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] > size_t_
-//                 > size_t_ > size_t_ > repeat(_a)[element_block_] >
-//                 "$EndElements";
-//    elements_.name("elements");
-//
-//    // periodic link
-//    matrix4d_ %= double_ > double_ > double_ > double_ > double_ > double_ >
-//                 double_ > double_ > double_ > double_ > double_ > double_ >
-//                 double_ > double_ > double_ > double_;
-//    matrix4d_.name("matrix4d");
-//
-//    periodic_link_ %= int_ > int_ > int_ > ('0' | ("16" > matrix4d_)) >
-//                      omit[size_t_[reserve(at_c<4>(_val), _1), _a = _1]] >
-//                      repeat(_a)[size_t_ > size_t_];
-//    periodic_link_.name("periodic_link");
-//
-//    periodic_links_ %= "$Periodic" > omit[size_t_[reserve(_val, _1), _a = _1]]
-//    >
-//                       repeat(_a)[periodic_link_] > "$EndPeriodic";
-//    periodic_links_.name("periodic_links");
-//
-//    // ghost elements:
-//    ghost_element_ %= size_t_ > int_ >
-//                      omit[size_t_[reserve(at_c<2>(_val), _1), _a = _1]] >
-//                      repeat(_a)[int_];
-//    ghost_element_.name("ghost_element");
-//
-//    ghost_elements_ %= "$GhostElements" >
-//                       omit[size_t_[reserve(_val, _1), _a = _1]] >
-//                       repeat(_a)[ghost_element_] > "$EndGhostElements";
-//    ghost_elements_.name("ghost_elements");
-//
-//    // The whole file
-//    entry_ %= *comment_ >> -(physical_name_vector_ >> *comment_) >> entities_
-//    >>
-//              *comment_ >> -(partitioned_entities_ >> *comment_) >> nodes_ >>
-//              *comment_ >> elements_ >> *comment_ >>
-//              -(periodic_links_ >> *comment_) >>
-//              -(ghost_elements_ >> *comment_);
-//    entry_.name("entry");
-//
-//    qi::on_error<qi::fail>(entry_, error_handler_(_1, _2, _3, _4));
-//  }
-//
-//  qi::rule<ITERATOR, std::string(), ascii::space_type> quoted_string_;
-//  qi::rule<ITERATOR, std::string()> start_comment_;
-//  qi::rule<ITERATOR, qi::locals<std::string>, ascii::space_type> comment_;
-//  qi::rule<ITERATOR, Eigen::Vector3d(), ascii::space_type> vec3_;
-//  qi::rule<ITERATOR, std::vector<int>, qi::locals<std::size_t>,
-//           ascii::space_type>
-//      int_vec_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PhysicalName(), ascii::space_type>
-//      physical_name_;
-//  qi::rule<ITERATOR, std::vector<GMshFileV4::PhysicalName>(),
-//           qi::locals<std::size_t>, ascii::space_type>
-//      physical_name_vector_;
-//
-//  qi::rule<ITERATOR, boost::fusion::adapted::MshFileV4Adapted(),
-//           ascii::space_type>
-//      entry_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PointEntity(), ascii::space_type>
-//      point_entity_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::Entity(), ascii::space_type> entity_;
-//
-//  qi::rule<
-//      ITERATOR,
-//      std::tuple<
-//          std::vector<GMshFileV4::PointEntity>,
-//          std::vector<GMshFileV4::Entity>, std::vector<GMshFileV4::Entity>,
-//          std::vector<GMshFileV4::Entity>>(),
-//      qi::locals<std::size_t, std::size_t, std::size_t, std::size_t>,
-//      ascii::space_type>
-//      entities_;
-//
-//  qi::rule<ITERATOR, std::vector<GMshFileV4::GhostEntity>(),
-//           qi::locals<std::size_t>, ascii::space_type>
-//      ghost_entities_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PartitionedPointEntity(), ascii::space_type>
-//      partitioned_point_entity_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PartitionedEntity(), ascii::space_type>
-//      partitioned_entity_;
-//
-//  qi::rule<ITERATOR,
-//           std::tuple<std::vector<GMshFileV4::PartitionedPointEntity>,
-//                      std::vector<GMshFileV4::PartitionedEntity>,
-//                      std::vector<GMshFileV4::PartitionedEntity>,
-//                      std::vector<GMshFileV4::PartitionedEntity>>(),
-//           qi::locals<std::size_t, std::size_t, std::size_t, std::size_t>,
-//           ascii::space_type>
-//      partitioned_entities2_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PartitionedEntities(), ascii::space_type>
-//      partitioned_entities_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::NodeBlock(),
-//           qi::locals<std::size_t, std::size_t>, ascii::space_type>
-//      node_block_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::Nodes(), qi::locals<std::size_t>,
-//           ascii::space_type>
-//      nodes_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::ElementBlock(), qi::locals<std::size_t>,
-//           ascii::space_type>
-//      element_block_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::Elements(), qi::locals<std::size_t>,
-//           ascii::space_type>
-//      elements_;
-//
-//  qi::rule<ITERATOR, Eigen::Matrix4d, ascii::space_type> matrix4d_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::PeriodicLink(), qi::locals<std::size_t>,
-//           ascii::space_type>
-//      periodic_link_;
-//
-//  qi::rule<ITERATOR, std::vector<GMshFileV4::PeriodicLink>(),
-//           qi::locals<std::size_t>, ascii::space_type>
-//      periodic_links_;
-//
-//  qi::rule<ITERATOR, GMshFileV4::GhostElement(), qi::locals<std::size_t>,
-//           ascii::space_type>
-//      ghost_element_;
-//
-//  qi::rule<ITERATOR, std::vector<GMshFileV4::GhostElement>(),
-//           qi::locals<std::size_t>, ascii::space_type>
-//      ghost_elements_;
-//
-//  struct ErrorHandler {
-//    template <class, class, class, class>
-//    struct result {
-//      using type = void;
-//    };
-//
-//    template <class FIRST, class LAST, class ERROR_POS, class WHAT>
-//    void operator()(FIRST first, LAST last, ERROR_POS /*errorPos*/,
-//                    WHAT what) const {
-//      std::string input(first, last);
-//      if (input.length() > 40) {
-//        input = input.substr(0, 40);
-//      }
-//      std::cout << "Error in MshFileV4! Expecting " << what << " here: \""
-//                << input << "\"" << std::endl;
-//    }
-//  };
-//  phoenix::function<ErrorHandler> error_handler_;
-//};
-
 template <class ITERATOR>
-struct MshV4GrammarBinary
+struct MshV4GrammarText
     : qi::grammar<ITERATOR, boost::fusion::adapted::MshFileV4Adapted(),
                   ascii::space_type> {
-  MshV4GrammarBinary() : MshV4GrammarBinary::base_type(entry_, "Msh File") {
+  MshV4GrammarText() : MshV4GrammarText::base_type(entry_, "Msh File") {
     using phoenix::at_c;
     using phoenix::push_back;
     using phoenix::reserve;
@@ -783,6 +526,8 @@ struct MshV4GrammarBinary
                              omit[size_t_[reserve(_val, _1), _a = _1]] >
                              repeat(_a)[physical_name_] > "$EndPhysicalNames";
     physical_name_vector_.name("$PhyiscalNames");
+    /*qi::on_error<qi::fail>(physical_name_vector_,
+                           error_handler_(_1, _2, _3, _4));*/
 
     // entities:
     point_entity_ %= int_ > vec3_ > int_vec_;
@@ -882,22 +627,23 @@ struct MshV4GrammarBinary
     ghost_elements_.name("ghost_elements");
 
     // The whole file
-    /*entry_ %= *comment_ >> -(physical_name_vector_ >> *comment_) >> entities_
-       >> *comment_ >> -(partitioned_entities_ >> *comment_) >> nodes_ >>
+    entry_ %= *comment_ >> -(physical_name_vector_ >> *comment_) >> entities_ >>
+              *comment_ >> -(partitioned_entities_ >> *comment_) >> nodes_ >>
               *comment_ >> elements_ >> *comment_ >>
               -(periodic_links_ >> *comment_) >>
-              -(ghost_elements_ >> *comment_);*/
-    entry_ %= *comment_ >> -(physical_name_vector_ >> *comment_);
+              -(ghost_elements_ >> *comment_);
     entry_.name("entry");
 
     qi::on_error<qi::fail>(entry_, error_handler_(_1, _2, _3, _4));
   }
 
   qi::rule<ITERATOR, std::string(), ascii::space_type> quoted_string_;
-  qi::rule<ITERATOR, std::string(), ascii::space_type> start_comment_;
+  qi::rule<ITERATOR, std::string()> start_comment_;
   qi::rule<ITERATOR, qi::locals<std::string>, ascii::space_type> comment_;
-  qi::rule<ITERATOR, Eigen::Vector3d()> vec3_;
-  qi::rule<ITERATOR, std::vector<int>, qi::locals<std::size_t>> int_vec_;
+  qi::rule<ITERATOR, Eigen::Vector3d(), ascii::space_type> vec3_;
+  qi::rule<ITERATOR, std::vector<int>, qi::locals<std::size_t>,
+           ascii::space_type>
+      int_vec_;
 
   qi::rule<ITERATOR, GMshFileV4::PhysicalName(), ascii::space_type>
       physical_name_;
@@ -999,6 +745,278 @@ struct MshV4GrammarBinary
   phoenix::function<ErrorHandler> error_handler_;
 };
 
+template <class ITERATOR>
+struct MshV4GrammarBinary
+    : qi::grammar<ITERATOR, boost::fusion::adapted::MshFileV4Adapted(),
+                  ascii::space_type> {
+  /**
+   * @brief Construct a new binary grammar
+   * @tparam DWORD type of dword
+   * @tparam QWORD type of qword
+   * @tparam DOBULE type of double_
+   * @param dword The spirit terminal that represents a double word (32bit),
+   * either little_dword or big_dword
+   * @param qword the binary spirit terminal that represents a qword (64),
+   * either little_qword or big_qword
+   * @param bin_double The binary spirit terminal that represents a double (64
+   * bits), is either a little_bin_double or big_bin_double
+   */
+  template <class DWORD, class QWORD, class DOUBLE>
+  explicit MshV4GrammarBinary(const DWORD& dword, const QWORD& qword,
+                              const DOUBLE& bin_double)
+      : MshV4GrammarBinary::base_type(entry_, "Msh File") {
+    using phoenix::at_c;
+    using phoenix::push_back;
+    using phoenix::reserve;
+    using phoenix::val;
+    using qi::_val;
+    using qi::attr;
+    using qi::char_;
+    using qi::eps;
+    using qi::int_;
+    using qi::lexeme;
+    using qi::lit;
+    using qi::omit;
+    using qi::repeat;
+    using qi::labels::_1;
+    using qi::labels::_2;
+    using qi::labels::_3;
+    using qi::labels::_4;
+    using qi::labels::_a;
+    using qi::labels::_b;
+    using qi::labels::_c;
+    using qi::labels::_d;
+
+    auto size_t_ = qi::ulong_long;
+
+    // General Parsers:
+    quoted_string_ %= lexeme['"' >> +(char_ - '"') >> '"'];
+    quoted_string_.name("string");
+    vec3_ %= bin_double > bin_double > bin_double;
+    vec3_.name("vec3");
+    int_vec_ %= omit[qword[reserve(_val, _1), _a = _1]] > repeat(_a)[dword];
+    int_vec_.name("int_vec");
+    start_comment_ %= !lit("$PhysicalNames") >> !lit("$Entities") >>
+                      !lit("$PartitionedEntities") >> !lit("$Nodes") >>
+                      !lit("$Elements") >> !lit("$Periodic") >>
+                      !lit("$GhostElements") >>
+                      (lit('$') >> (+(char_ - qi::eol)));
+    start_comment_.name("Start of Comment");
+    comment_ %= start_comment_[_a = qi::_1] > *(char_ - '$') >> "$End" >>
+                qi::string(_a);
+    comment_.name("comment");
+    qi::on_error<qi::fail>(comment_, error_handler_(_1, _2, _3, _4));
+
+    // Physical names
+    physical_name_ %= int_ > int_ > quoted_string_;
+    physical_name_.name("Physical Name");
+    qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
+    physical_name_vector_ %= "$PhysicalNames" >
+                             omit[size_t_[reserve(_val, _1), _a = _1]] >
+                             repeat(_a)[physical_name_] > "$EndPhysicalNames";
+    physical_name_vector_.name("$PhysicalNames");
+
+    // entities:
+    point_entity_ %= dword > vec3_ > int_vec_;
+    point_entity_.name("Point entity");
+
+    entity_ %= dword > vec3_ > vec3_ > int_vec_ > int_vec_;
+    entity_.name("entity");
+
+    entities_ %= "$Entities\n" >
+                 omit[qword[reserve(phoenix::at_c<0>(_val), _1), _a = _1]] >
+                 omit[qword[reserve(phoenix::at_c<1>(_val), _1), _b = _1]] >
+                 omit[qword[reserve(phoenix::at_c<2>(_val), _1), _c = _1]] >
+                 omit[qword[reserve(phoenix::at_c<3>(_val), _1), _d = _1]] >
+                 repeat(_a)[point_entity_] > repeat(_b)[entity_] >
+                 repeat(_c)[entity_] > repeat(_d)[entity_] > "\n$EndEntities";
+    entities_.name("$Entities");
+
+    // PartitionedEntities
+    ghost_entities_ %=
+        omit[qword[reserve(_val, _1), _a = _1]] > repeat(_a)[dword > dword];
+    ghost_entities_.name("ghost_entities");
+    partitioned_point_entity_ %=
+        dword > dword > dword > int_vec_ > vec3_ > int_vec_;
+    partitioned_point_entity_.name("partitioned_point_entity");
+
+    partitioned_entity_ %=
+        dword > dword > dword > int_vec_ > vec3_ > vec3_ > int_vec_ > int_vec_;
+    partitioned_entity_.name("partitioned_entity");
+
+    partitioned_entities2_ %= omit[qword[reserve(at_c<0>(_val), _1), _a = _1]] >
+                              omit[qword[reserve(at_c<1>(_val), _1), _b = _1]] >
+                              omit[qword[reserve(at_c<2>(_val), _1), _c = _1]] >
+                              omit[qword[reserve(at_c<3>(_val), _1), _d = _1]] >
+                              repeat(_a)[partitioned_point_entity_] >
+                              repeat(_b)[partitioned_entity_] >
+                              repeat(_c)[partitioned_entity_] >
+                              repeat(_d)[partitioned_entity_];
+    partitioned_entities2_.name("partitioned_entities2");
+
+    partitioned_entities_ %= "$PartitionedEntities\n" > qword >
+                             ghost_entities_ > partitioned_entities2_ >
+                             "\n$EndPartitionedEntities";
+    partitioned_entities_.name("partitioned_entities");
+
+    // nodes:
+    node_block_ %=
+        dword > dword > dword >
+        omit[qword[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
+        omit[repeat(_a)[qword[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
+        eps[_b = 0] >
+        omit[repeat(_a)[vec3_[at_c<1>(at_c<3>(_val)[_b++]) = _1]]];
+    node_block_.name("node_block");
+
+    nodes_ %= "$Nodes\n" > omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] >
+              qword > qword > qword > repeat(_a)[node_block_] > "\n$EndNodes";
+    nodes_.name("nodes");
+
+    // elements:
+    element_block_ %=
+        dword > dword > dword >
+        omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] >
+        repeat(_a)[qword > repeat(numNodesAdapted(at_c<2>(_val)))[qword]];
+    element_block_.name("element_block");
+
+    elements_ %= "$Elements\n" >
+                 omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] > qword >
+                 qword > qword > repeat(_a)[element_block_] > "\n$EndElements";
+    elements_.name("elements");
+
+    // periodic link
+    matrix4d_ %= bin_double > bin_double > bin_double > bin_double >
+                 bin_double > bin_double > bin_double > bin_double >
+                 bin_double > bin_double > bin_double > bin_double >
+                 bin_double > bin_double > bin_double > bin_double;
+    matrix4d_.name("matrix4d");
+
+    periodic_link_ %= dword > dword > dword >
+                      (qword(0) | (qword(16) > matrix4d_)) >
+                      omit[qword[reserve(at_c<4>(_val), _1), _a = _1]] >
+                      repeat(_a)[qword > qword];
+    periodic_link_.name("periodic_link");
+
+    periodic_links_ %= "$Periodic\n" > omit[qword[reserve(_val, _1), _a = _1]] >
+                       repeat(_a)[periodic_link_] > "\n$EndPeriodic";
+    periodic_links_.name("periodic_links");
+
+    // ghost elements:
+    ghost_element_ %= qword > dword >
+                      omit[qword[reserve(at_c<2>(_val), _1), _a = _1]] >
+                      repeat(_a)[dword];
+    ghost_element_.name("ghost_element");
+
+    ghost_elements_ %= "$GhostElements\n" >
+                       omit[qword[reserve(_val, _1), _a = _1]] >
+                       repeat(_a)[ghost_element_] > "\n$EndGhostElements";
+    ghost_elements_.name("ghost_elements");
+
+    // The whole file
+    entry_ %= *comment_ >> -(physical_name_vector_ >> *comment_) >> entities_ >>
+              *comment_ >> -(partitioned_entities_ >> *comment_) >> nodes_ >>
+              *comment_ >> elements_ >> *comment_ >>
+              -(periodic_links_ >> *comment_) >>
+              -(ghost_elements_ >> *comment_);
+    entry_.name("entry");
+
+    qi::on_error<qi::fail>(entry_, error_handler_(_1, _2, _3, _4));
+  }
+
+  qi::rule<ITERATOR, std::string(), ascii::space_type> quoted_string_;
+  qi::rule<ITERATOR, std::string(), ascii::space_type> start_comment_;
+  qi::rule<ITERATOR, qi::locals<std::string>, ascii::space_type> comment_;
+  qi::rule<ITERATOR, Eigen::Vector3d()> vec3_;
+  qi::rule<ITERATOR, std::vector<int>, qi::locals<std::size_t>> int_vec_;
+
+  qi::rule<ITERATOR, GMshFileV4::PhysicalName(), ascii::space_type>
+      physical_name_;
+  qi::rule<ITERATOR, std::vector<GMshFileV4::PhysicalName>(),
+           qi::locals<std::size_t>, ascii::space_type>
+      physical_name_vector_;
+
+  qi::rule<ITERATOR, boost::fusion::adapted::MshFileV4Adapted(),
+           ascii::space_type>
+      entry_;
+
+  qi::rule<ITERATOR, GMshFileV4::PointEntity()> point_entity_;
+
+  qi::rule<ITERATOR, GMshFileV4::Entity()> entity_;
+
+  qi::rule<
+      ITERATOR,
+      std::tuple<
+          std::vector<GMshFileV4::PointEntity>, std::vector<GMshFileV4::Entity>,
+          std::vector<GMshFileV4::Entity>, std::vector<GMshFileV4::Entity>>(),
+      qi::locals<std::size_t, std::size_t, std::size_t, std::size_t>>
+      entities_;
+
+  qi::rule<ITERATOR, std::vector<GMshFileV4::GhostEntity>(),
+           qi::locals<std::size_t>>
+      ghost_entities_;
+
+  qi::rule<ITERATOR, GMshFileV4::PartitionedPointEntity()>
+      partitioned_point_entity_;
+
+  qi::rule<ITERATOR, GMshFileV4::PartitionedEntity()> partitioned_entity_;
+
+  qi::rule<ITERATOR,
+           std::tuple<std::vector<GMshFileV4::PartitionedPointEntity>,
+                      std::vector<GMshFileV4::PartitionedEntity>,
+                      std::vector<GMshFileV4::PartitionedEntity>,
+                      std::vector<GMshFileV4::PartitionedEntity>>(),
+           qi::locals<std::size_t, std::size_t, std::size_t, std::size_t>>
+      partitioned_entities2_;
+
+  qi::rule<ITERATOR, GMshFileV4::PartitionedEntities()> partitioned_entities_;
+
+  qi::rule<ITERATOR, GMshFileV4::NodeBlock(),
+           qi::locals<std::size_t, std::size_t>>
+      node_block_;
+
+  qi::rule<ITERATOR, GMshFileV4::Nodes(), qi::locals<std::size_t>> nodes_;
+
+  qi::rule<ITERATOR, GMshFileV4::ElementBlock(), qi::locals<std::size_t>>
+      element_block_;
+
+  qi::rule<ITERATOR, GMshFileV4::Elements(), qi::locals<std::size_t>> elements_;
+
+  qi::rule<ITERATOR, Eigen::Matrix4d> matrix4d_;
+
+  qi::rule<ITERATOR, GMshFileV4::PeriodicLink(), qi::locals<std::size_t>>
+      periodic_link_;
+
+  qi::rule<ITERATOR, std::vector<GMshFileV4::PeriodicLink>(),
+           qi::locals<std::size_t>>
+      periodic_links_;
+
+  qi::rule<ITERATOR, GMshFileV4::GhostElement(), qi::locals<std::size_t>>
+      ghost_element_;
+
+  qi::rule<ITERATOR, std::vector<GMshFileV4::GhostElement>(),
+           qi::locals<std::size_t>>
+      ghost_elements_;
+
+  struct ErrorHandler {
+    template <class, class, class, class>
+    struct result {
+      using type = void;
+    };
+
+    template <class FIRST, class LAST, class ERROR_POS, class WHAT>
+    void operator()(FIRST first, LAST last, ERROR_POS /*errorPos*/,
+                    WHAT what) const {
+      std::string input(first, last);
+      if (input.length() > 40) {
+        input = input.substr(0, 40);
+      }
+      std::cout << "Error in MshFileV4! Expecting " << what << " here: \""
+                << input << "\"" << std::endl;
+    }
+  };
+  phoenix::function<ErrorHandler> error_handler_;
+};
+
 }  // namespace
 
 GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
@@ -1017,11 +1035,15 @@ GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
   bool succesful = false;
   if (!is_binary) {
     // Text file
-    // MshV4GrammarText<std::string::const_iterator> grammar;
-    // bool r = qi::phrase_parse(begin, end, grammar, ascii::space, result);
-    LF_VERIFY_MSG(false, "currently not supported");
+    MshV4GrammarText<std::string::const_iterator> grammar;
+    succesful = qi::phrase_parse(begin, end, grammar, ascii::space, result);
+  } else if (one == 1) {
+    MshV4GrammarBinary<std::string::const_iterator> grammar(
+        qi::little_dword, qi::little_qword, qi::little_bin_double);
+    succesful = qi::phrase_parse(begin, end, grammar, ascii::space, result);
   } else {
-    MshV4GrammarBinary<std::string::const_iterator> grammar;
+    MshV4GrammarBinary<std::string::const_iterator> grammar(
+        qi::big_dword, qi::big_qword, qi::big_bin_double);
     succesful = qi::phrase_parse(begin, end, grammar, ascii::space, result);
   }
 

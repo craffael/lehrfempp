@@ -14,7 +14,6 @@ namespace lf::io::test {
 
 void checkPieceOfCake(const GMshFileV4& file) {
   EXPECT_EQ(file.version_number, "4.1");
-  EXPECT_FALSE(file.is_binary);
   EXPECT_EQ(sizeof(std::size_t), file.size_t_size);
   EXPECT_EQ(file.physical_names.size(), 2);
   EXPECT_EQ(file.physical_names[0].dimension, 0);
@@ -133,7 +132,11 @@ void checkPieceOfCake(const GMshFileV4& file) {
   EXPECT_TRUE(pse[0].max_coord.isApprox(
       Eigen::Vector3d(0.7071067811865475, 0.9238795325112867, 0)));
   EXPECT_EQ(pse[0].physical_tags, std::vector<int>{3});
-  EXPECT_EQ(pse[0].bounding_entities, (std::vector<int>{5, 4, -8}));
+  // we have to use is_permutation because binary format permutes them
+  // differently than text format
+  EXPECT_TRUE(std::is_permutation(pse[0].bounding_entities.begin(),
+                                  pse[0].bounding_entities.end(),
+                                  (std::vector<int>{5, 4, -8}).begin()));
   EXPECT_EQ(pse[1].tag, 3);
   EXPECT_EQ(pse[1].parent_dim, 2);
   EXPECT_EQ(pse[1].parent_tag, 1);
@@ -142,7 +145,11 @@ void checkPieceOfCake(const GMshFileV4& file) {
   EXPECT_TRUE(
       pse[1].max_coord.isApprox(Eigen::Vector3d(0.3826834323650894, 1, 0)));
   EXPECT_EQ(pse[1].physical_tags, std::vector<int>{3});
-  EXPECT_EQ(pse[1].bounding_entities, (std::vector<int>{6, 7, 8}));
+  // we have to use is_permutation because binary format permutes them
+  // differently than text format
+  EXPECT_TRUE(std::is_permutation(pse[1].bounding_entities.begin(),
+                                  pse[1].bounding_entities.end(),
+                                  (std::vector<int>{6, 7, 8}).begin()));
 
   // nodes
   EXPECT_EQ(file.nodes.num_nodes, 4);
@@ -288,18 +295,26 @@ void checkPieceOfCake(const GMshFileV4& file) {
 
   // ghost elements:
   EXPECT_EQ(file.ghost_elements.size(), 2);
-  EXPECT_EQ(file.ghost_elements[0].element_tag, 5);
-  EXPECT_EQ(file.ghost_elements[0].partition_tag, 1);
-  EXPECT_EQ(file.ghost_elements[0].ghost_partition_tags, std::vector<int>{2});
-  EXPECT_EQ(file.ghost_elements[1].element_tag, 4);
-  EXPECT_EQ(file.ghost_elements[1].partition_tag, 2);
-  EXPECT_EQ(file.ghost_elements[1].ghost_partition_tags, std::vector<int>{1});
+  if (file.ghost_elements[0].element_tag == 5) {
+    EXPECT_EQ(file.ghost_elements[0].element_tag, 5);
+    EXPECT_EQ(file.ghost_elements[0].partition_tag, 1);
+    EXPECT_EQ(file.ghost_elements[0].ghost_partition_tags, std::vector<int>{2});
+    EXPECT_EQ(file.ghost_elements[1].element_tag, 4);
+    EXPECT_EQ(file.ghost_elements[1].partition_tag, 2);
+    EXPECT_EQ(file.ghost_elements[1].ghost_partition_tags, std::vector<int>{1});
+  } else {
+    EXPECT_EQ(file.ghost_elements[1].element_tag, 5);
+    EXPECT_EQ(file.ghost_elements[1].partition_tag, 1);
+    EXPECT_EQ(file.ghost_elements[1].ghost_partition_tags, std::vector<int>{2});
+    EXPECT_EQ(file.ghost_elements[0].element_tag, 4);
+    EXPECT_EQ(file.ghost_elements[0].partition_tag, 2);
+    EXPECT_EQ(file.ghost_elements[0].ghost_partition_tags, std::vector<int>{1});
+  }
 }
 
 void checkTwoElementHybrid(GMshFileV4 file) {
   // Header
   EXPECT_EQ(file.version_number, "4.1");
-  EXPECT_FALSE(file.is_binary);
   EXPECT_EQ(file.size_t_size, sizeof(std::size_t));
 
   // Physical names:
@@ -491,20 +506,40 @@ void checkTwoElementHybrid(GMshFileV4 file) {
             (element_t{{4, {3, 5, 2}}}));
 }
 
-// TEST(lf_io_gmsh_file_v4, readPieceOfCake) {
-//  auto filename = test_utils::getMeshPath("piece_of_cake.msh");
-//  auto mshfile = ReadGmshFile(filename);
-//  EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
-//  auto filev4 = std::get<GMshFileV4>(mshfile);
-//  checkPieceOfCake(filev4);
-//}
+TEST(lf_io_gmsh_file_v4, readPieceOfCake) {
+  auto filename = test_utils::getMeshPath("piece_of_cake.msh");
+  auto mshfile = ReadGmshFile(filename);
+  EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
+  auto filev4 = std::get<GMshFileV4>(mshfile);
+  EXPECT_FALSE(filev4.is_binary);
+  checkPieceOfCake(filev4);
+}
 
-TEST(lf_io_gmsh_file_v4, readTwoElementHybrid) {
+TEST(lf_io_gmsh_file_v4, readPieceOfCakeBinary) {
+  auto filename = test_utils::getMeshPath("piece_of_cake_binary.msh");
+  auto mshfile = ReadGmshFile(filename);
+  EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
+  auto filev4 = std::get<GMshFileV4>(mshfile);
+  EXPECT_TRUE(filev4.is_binary);
+  checkPieceOfCake(filev4);
+}
+
+TEST(lf_io_gmsh_file_v4, readTwoElementHybrid2d) {
+  auto filename = test_utils::getMeshPath("two_element_hybrid_2d_v4.msh");
+  auto mshfile = ReadGmshFile(filename);
+  EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
+  auto filev4 = std::get<GMshFileV4>(mshfile);
+  EXPECT_FALSE(filev4.is_binary);
+  checkTwoElementHybrid(filev4);
+}
+
+TEST(lf_io_gmsh_file_v4, readTwoElementHybrid2dBinary) {
   auto filename =
       test_utils::getMeshPath("two_element_hybrid_2d_v4_binary.msh");
   auto mshfile = ReadGmshFile(filename);
   EXPECT_TRUE(std::holds_alternative<GMshFileV4>(mshfile));
   auto filev4 = std::get<GMshFileV4>(mshfile);
+  EXPECT_TRUE(filev4.is_binary);
   checkTwoElementHybrid(filev4);
 }
 

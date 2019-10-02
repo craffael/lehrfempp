@@ -336,7 +336,7 @@ std::vector<size_type> GmshReader::PhysicalEntityNr(
 std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename) {
   // Open file and copy it into memory:
   /////////////////////////////////////////////////////////////////////////////
-  std::ifstream in(filename, std::ios_base::in);
+  std::ifstream in(filename, std::ios_base::in | std::ios_base::binary);
   if (!in) {
     std::string error("Could not open file ");
     error += filename;
