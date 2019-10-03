@@ -60,7 +60,7 @@ Eigen::VectorXd solveLidDrivenCavity(
   Eigen::SparseMatrix<double> As = A.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   solver.compute(As);
-  const Eigen::VectorXd sol = solver.solve(rhs);
+  Eigen::VectorXd sol = solver.solve(rhs);
   return sol;
 }
 

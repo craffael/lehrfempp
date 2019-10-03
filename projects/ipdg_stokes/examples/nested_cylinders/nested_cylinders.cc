@@ -269,7 +269,7 @@ int main(int argc, char *argv[]) {
   }
   if (strcmp(argv[1], "builder") == 0) {
     // Build a sequence of meshes
-    for (int i = 0; i < 8; ++i) {
+    for (unsigned i = 0U; i < 8U; ++i) {
       const unsigned nx = 4U << i;
       const double dx = 2 * M_PI * (r + R) / 2 / nx;
       const unsigned ny = std::max(static_cast<unsigned>((R - r) / dx), 1U);
