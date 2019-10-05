@@ -5,14 +5,14 @@ target_link_libraries(${PROJECT_NAME}.main PUBLIC Eigen3::Eigen lf.base lf.mesh 
 target_compile_features(${PROJECT_NAME}.main PUBLIC cxx_std_17)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output_builder.dat
-		   DEPENDS $<TARGET_FILE:${PROJECT_NAME}.main>
-		   COMMAND ./${PROJECT_NAME}.main builder > output_builder.dat
+		   DEPENDS ${PROJECT_NAME}.main
+		   COMMAND $<TARGET_FILE:${PROJECT_NAME}.main> builder > output_builder.dat
 		   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output_files.dat
-		   DEPENDS $<TARGET_FILE:${PROJECT_NAME}.main>
-		   COMMAND ./${PROJECT_NAME}.main files > output_files.dat
+		   DEPENDS ${PROJECT_NAME}.main
+		   COMMAND $<TARGET_FILE:${PROJECT_NAME}.main> files > output_files.dat
 		   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 

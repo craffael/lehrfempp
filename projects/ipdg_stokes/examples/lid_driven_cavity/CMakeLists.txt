@@ -9,8 +9,8 @@ target_link_libraries(${PROJECT_NAME}.vortex PUBLIC Eigen3::Eigen lf.base lf.mes
 target_compile_features(${PROJECT_NAME}.vortex PUBLIC cxx_std_17)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output.dat
-		   DEPENDS $<TARGET_FILE:${PROJECT_NAME}.convergence>
-		   COMMAND ./${PROJECT_NAME}.convergence > output.dat
+		   DEPENDS ${PROJECT_NAME}.convergence
+		   COMMAND $<TARGET_FILE:${PROJECT_NAME}.convergence> > output.dat
 		   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
