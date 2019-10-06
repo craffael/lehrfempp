@@ -186,7 +186,7 @@ int main() {
             lf::quad::make_TriaQR_MidpointRule(), false);
     sol.A = A.makeSparse();
     sol.rhs = rhs;
-    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(sol.A);
     sol.solution = solver.solve(rhs) + offset_function;
     const auto [A_modified, rhs_modified, offset_function_modified] =
@@ -194,7 +194,7 @@ int main() {
             sol.mesh, *(sol.dofh), f, dirichlet_funct, 1,
             lf::quad::make_TriaQR_MidpointRule(), true);
     sol.A_modified = A_modified.makeSparse();
-    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver_modified(
+    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
         sol.A_modified);
     sol.solution_modified =
         solver_modified.solve(rhs_modified) + offset_function_modified;

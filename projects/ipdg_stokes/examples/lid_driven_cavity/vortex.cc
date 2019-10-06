@@ -58,10 +58,9 @@ Eigen::VectorXd solveLidDrivenCavity(
           mesh, dofh, f, dirichlet_funct, 1,
           lf::quad::make_TriaQR_MidpointRule(), modified);
   Eigen::SparseMatrix<double> As = A.makeSparse();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(As);
-  Eigen::VectorXd sol = solver.solve(rhs).eval();
-  return sol;
+  return solver.solve(rhs);
 }
 
 /**
