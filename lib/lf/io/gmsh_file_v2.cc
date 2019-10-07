@@ -605,45 +605,18 @@ const std::vector<GMshFileV2::ElementType> GMshFileV2::AllElementTypes{
     ElementType::EDGE6,     ElementType::TET20,     ElementType::TET35,
     ElementType::TET56,     ElementType::HEX64,     ElementType::HEX125};
 
-GMshFileV2 readGmshFileV2(const std::string& filename) {
-  // Open file and copy into memory:hydi::io::MshFile
-  //////////////////////////////////////////////////////////////////////////
-  std::ifstream in(filename, std::ios_base::in);
-  if (!in) {
-    std::string error("Could not open file ");
-    error += filename;
-    throw base::LfException(error);
-  }
-  std::string storage;
-  in.unsetf(std::ios::skipws);  // No white space skipping
-  std::copy(std::istream_iterator<char>(in), std::istream_iterator<char>(),
-            std::back_inserter(storage));
+GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
+                          std::string::const_iterator end, std::string version,
+                          bool is_binary, int size_t_size, int one,
+                          std::string filename) {
+  LF_VERIFY_MSG(version == "2.2",
+                "Version " << version << " not supported by readGmshFileV2");
+  LF_ASSERT_MSG(size_t_size == 8, "Size of std::size_t must be 8.");
 
-  // Parse header to determine if we are dealing with ASCII format or binary
-  // format + little or big endian:
-  //////////////////////////////////////////////////////////////////////////
   GMshFileV2 result;
-  std::string::const_iterator iter = storage.begin();
-  std::string::const_iterator end = storage.end();
-  using iterator_t = std::string::const_iterator;
-
-  int one;
-  bool successful;
-  successful = qi::phrase_parse(
-      iter, end,
-      qi::lit("$MeshFormat") >>
-          qi::double_[phoenix::ref(result.VersionNumber) = qi::_1] >>
-          ((qi::lit('0')[phoenix::ref(result.IsBinary) = false] >>
-            qi::int_[phoenix::ref(result.DoubleSize) = qi::_1]) |
-           (qi::lit('1')[phoenix::ref(result.IsBinary) = true] >>
-            qi::int_[phoenix::ref(result.DoubleSize) = qi::_1] >>
-            qi::little_dword[phoenix::ref(one) = qi::_1])) >>
-          "$EndMeshFormat",
-      ascii::space);
-  LF_VERIFY_MSG(successful, "Could not read header of file " << filename);
-  LF_VERIFY_MSG(result.VersionNumber == 2.2,
-                "This GMSH Reader supports only version 2.2 of the mesh file.");
-  LF_ASSERT_MSG(result.DoubleSize == 8, "Size of double must be 8.");
+  result.IsBinary = is_binary;
+  result.VersionNumber = version;
+  result.DoubleSize = size_t_size;
 
   // Parse the rest of the document
   //////////////////////////////////////////////////////////////////////////
@@ -655,6 +628,7 @@ GMshFileV2 readGmshFileV2(const std::string& filename) {
   // can only use parsers without skippers!
   // http://boost-spirit.com/home/2010/02/24/parsing-skippers-and-skipping-parsers/
   // (see comment section)
+  using iterator_t = std::string::const_iterator;
   qi::rule<iterator_t, Eigen::Vector3d> vec3;
   qi::rule<iterator_t, std::pair<size_type, Eigen::Vector3d>()> node;
   qi::rule<iterator_t, GMshFileV2::Element(), qi::locals<int>> elementText;
@@ -677,7 +651,7 @@ GMshFileV2 readGmshFileV2(const std::string& filename) {
   using qi::labels::_r3;
   using qi::labels::_val;
 
-  if (!result.IsBinary) {
+  if (!is_binary) {
     // Text file
     vec3 = qi::double_ >> ' ' >> qi::double_ >> ' ' >> qi::double_;
     node = qi::uint_ >> ' ' >> vec3 >> qi::eol;
@@ -691,7 +665,7 @@ GMshFileV2 readGmshFileV2(const std::string& filename) {
                     qi::omit[qi::uint_[phoenix::reserve(qi::_val, qi::_1),
                                        qi::_a = qi::_1]] > qi::eol >
                     qi::repeat(qi::_a)[elementText] > "$EndElements";
-  } else if (result.IsBinary && one == 1) {
+  } else if (is_binary && one == 1) {
     // Binary File Little Endian
     // std::cout << "little endian" << std::endl;
     vec3 %=
@@ -752,14 +726,14 @@ GMshFileV2 readGmshFileV2(const std::string& filename) {
 
   // Finally parse everything:
   MshGrammarText<iterator_t> mshGrammar(node, elementGroup);
-  bool r = qi::phrase_parse(iter, end, mshGrammar, ascii::space, result);
+  bool r = qi::phrase_parse(begin, end, mshGrammar, ascii::space, result);
 
   // if (r && iter == end) std::cout << "Parsing succeeded" << std::endl;
   // else if (r) std::cout << "Parsing partially succeeded" << std::endl;
   // std::cout << result << std::endl;
 
   LF_VERIFY_MSG(r, "Could not parse file " << filename);
-  LF_VERIFY_MSG(iter == end, "Could not parse all of file " << filename);
+  LF_VERIFY_MSG(begin == end, "Could not parse all of file " << filename);
 
   return result;
 }

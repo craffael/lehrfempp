@@ -362,7 +362,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
   // mi2gi = mesh_index_2_gmsh_index
   // mi2gi[c][i] contains the index of the gmsh entity block that contains
   // the mesh entity with codim = c and mesh index i.
-  std::vector<std::vector<std::vector<size_type>>> mi2gi(dim_mesh + 1);
+  std::vector<std::vector<std::vector<std::size_t>>> mi2gi(dim_mesh + 1);
 
   {
     // count the number of entities for each codimension and reserve space:
@@ -531,7 +531,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
         }
 
         mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
-        mi2gi[codim].emplace_back(std::vector{ebi});
+        mi2gi[codim].push_back(std::vector<std::size_t>{ebi});
       }
     }
   }

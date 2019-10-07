@@ -18,7 +18,7 @@ namespace lf::io {
 struct GMshFileV2 {
   using size_type = mesh::Mesh::size_type;
   /// The version of GMSH of the msh file, equals usually 2.2
-  double VersionNumber = 0;
+  std::string VersionNumber;
   /// Is it a binary file?
   bool IsBinary = false;
   /// how many bytes is a double?
@@ -259,7 +259,10 @@ base::RefEl RefElOf(GMshFileV2::ElementType et);
  * \note We support the MshFile format 2.2 in binary or text form.
  * \note This routine is mainly used by the GmshReader class.
  */
-GMshFileV2 readGmshFileV2(const std::string& path);
+GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
+                          std::string::const_iterator end, std::string version,
+                          bool is_binary, int size_t_size, int one,
+                          std::string filename);
 
 }  // namespace lf::io
 

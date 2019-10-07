@@ -376,7 +376,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         std::vector<lf::io::GMshFileV4::NodeBlock>, node_blocks));
 
 // To prevent comma in preprocessor invocation
-using elementMapping_t = std::tuple<std::size_t, std::vector<std::size_t>>;
+using elementMapping_t = std::pair<std::size_t, std::vector<std::size_t>>;
 
 BOOST_FUSION_ADAPT_STRUCT(lf::io::GMshFileV4::ElementBlock,
                           (int, dimension)(int, entity_tag)(
