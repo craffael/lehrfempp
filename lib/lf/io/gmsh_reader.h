@@ -98,6 +98,10 @@ class GmshReader {
    * PhysicalEntityName2Nr())
    * @param  number   The number of the physical entity (as obtained from
    * PhysicalEntityName2Nr() )
+   * @param codim     Specify additionally the codimension of the physical
+   * entity. If not specified and there is exactly one physical entity with the
+   * given number, that entity is returned. If there are multiple entities with
+   * the same number and `codim=-1`, an error is thrown.
    * @return The name of the physical entity with number `number`
    * @sa PhysicalEntityNr2Name
    */

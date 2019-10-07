@@ -2,8 +2,8 @@
 include(GoogleTest)
 
 set(sources
-  #gmsh_file_v4_tests.cc
-  #gmsh_reader_tests.cc
+  gmsh_file_v4_tests.cc
+  gmsh_reader_tests.cc
   vtk_writer_tests.cc
 )
 

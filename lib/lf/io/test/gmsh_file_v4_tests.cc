@@ -477,7 +477,7 @@ void checkTwoElementHybrid(GMshFileV4 file) {
 
   // elements
   using element_t =
-      std::vector<std::tuple<std::size_t, std::vector<std::size_t>>>;
+      std::vector<std::pair<std::size_t, std::vector<std::size_t>>>;
   EXPECT_EQ(file.elements.num_elements, 4);
   EXPECT_EQ(file.elements.min_element_tag, 1);
   EXPECT_EQ(file.elements.max_element_tag, 4);

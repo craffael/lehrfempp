@@ -426,7 +426,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       LF_ASSERT_MSG(gi2i.size() > n.first - min_node_tag,
                     "error: node_tag is higher than max_node_tag");
 
-      gi2i[n.first] = std::make_pair(j, k);
+      gi2i[n.first - min_node_tag] = std::make_pair(j, k);
 
       if (!is_main_node[n.first - min_node_tag]) {
         continue;
@@ -469,7 +469,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       if (ref_el == base::RefEl::kPoint()) {
         // special case, this entity is a point (which has already been
         // inserted)
-        auto mesh_index = gi2mi[end_element.second[0]];
+        auto mesh_index = gi2mi[end_element.second[0] - min_node_tag];
         if (mi2gi[dim_mesh].size() <= mesh_index) {
           mi2gi[dim_mesh].resize(mesh_index + 1);
         }
@@ -479,7 +479,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
         auto num_nodes = end_element.second.size();
         Eigen::MatrixXd node_coords(dim_world, num_nodes);
         for (std::size_t i = 0; i < num_nodes; ++i) {
-          auto& gi2i_e = gi2i[end_element.second[i]];
+          auto& gi2i_e = gi2i[end_element.second[i] - min_node_tag];
           auto node_coord = msh_file.nodes.node_blocks[gi2i_e.first]
                                 .nodes[gi2i_e.second]
                                 .second;
@@ -527,7 +527,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
         }
         std::vector<size_type> main_nodes(ref_el.NumNodes());
         for (dim_t i = 0; i < ref_el.NumNodes(); ++i) {
-          main_nodes[i] = gi2mi[end_element.second[i]];
+          main_nodes[i] = gi2mi[end_element.second[i] - min_node_tag];
         }
 
         mesh_factory_->AddEntity(ref_el, main_nodes, std::move(geom));
