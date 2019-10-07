@@ -76,7 +76,7 @@ int main() {
   meshpath = meshpath.parent_path() / "mesh.msh";
   std::unique_ptr<lf::mesh::MeshFactory> factory =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::io::GmshReader reader(std::move(factory), meshpath.c_str());
+  lf::io::GmshReader reader(std::move(factory), meshpath.string());
   auto mesh = reader.mesh();
 
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
