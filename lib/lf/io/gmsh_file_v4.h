@@ -411,7 +411,7 @@ struct GMshFileV4 {
      * - `std::get<1>(elements[i])` lists the node tags that make up this
      * element.
      */
-    std::vector<std::tuple<std::size_t, std::vector<std::size_t>>> elements;
+    std::vector<std::pair<std::size_t, std::vector<std::size_t>>> elements;
   };
 
   struct Elements {
@@ -496,6 +496,21 @@ struct GMshFileV4 {
    */
   std::vector<GhostElement> ghost_elements;
 };
+
+/**
+ * @brief Get the Reference Element type of a GmshElement
+ * @param et The GmshFile element type
+ */
+base::RefEl RefElOf(GMshFileV4::ElementType et);
+
+/// Dimension of the GmshElement type
+int DimOf(GMshFileV4::ElementType et);
+
+/// Number of nodes that this element type has
+int NumNodes(GMshFileV4::ElementType et);
+
+/// Output the element type onto a stream:
+std::ostream& operator<<(std::ostream& stream, GMshFileV4::ElementType et);
 
 /**
  * @brief Read a GmshFile with format 4 and return it as an in-memory struct

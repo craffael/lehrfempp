@@ -66,6 +66,7 @@ class GmshReader {
  public:
   using size_type = mesh::Mesh::size_type;
   using dim_t = base::RefEl::dim_t;
+  using GmshFileVariant = std::variant<GMshFileV2, GMshFileV4>;
 
   /**
    * @brief Get the mesh that was read by this reader.
@@ -143,7 +144,7 @@ class GmshReader {
    * @sa MshFile
    */
   GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
-             const GMshFileV2& msh_file);
+             const GmshFileVariant& msh_file);
 
   /**
    * @brief Create a new GmshReader by reading from the specified file.
@@ -165,7 +166,7 @@ class GmshReader {
 
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
 
-  /// The PhysicalEntityNr of every node (0 if not set):
+  /// The PhysicalEntityNr of every entity (0 if not set):
   std::shared_ptr<mesh::utils::AllCodimMeshDataSet<std::vector<size_type>>>
       physical_nrs_;
 
@@ -174,6 +175,9 @@ class GmshReader {
 
   /// Map from physicalEntity nr -> name, codim
   std::multimap<size_type, std::pair<std::string, dim_t>> nr_2_name_;
+
+  void InitGmshFile(const GMshFileV2& msh_file);
+  void InitGmshFile(const GMshFileV4& msh_file);
 };
 
 std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename);
