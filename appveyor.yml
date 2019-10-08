@@ -4,8 +4,11 @@ version: "{build}"
 cache:
   - C:\.hunter
 
+environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
+
 os:
-  - Visual Studio 2017
+  - Visual Studio 2019
 
 init:
   - git config --global core.autocrlf input
@@ -27,7 +30,7 @@ configuration:
 
 #Cmake will autodetect the compiler, but we set the arch
 before_build:
-  - cmake -H. -BBuild -A%PLATFORM%
+  - cmake -H. -BBuild -A%PLATFORM% -D HUNTER_CONFIGURATION_TYPES=%CONFIGURATION%
 
 # build with MSBuild
 build:
@@ -37,4 +40,4 @@ build:
 
 test_script:
   - cd Build
-  - ctest -V -j 2 -C %CONFIGURATION%
+  - ctest -v -j 2 -c %CONFIGURATION%
