@@ -67,7 +67,7 @@ struct GMshFileV4 {
   struct PointEntity {
     /// A unique number that identifies this entity (there may be another entity
     /// with the same number but other dimension).
-    int tag;
+    int tag = -1;
     /// the coordinates of the point
     Eigen::Vector3d coord;
     /// The physical tags to which this entity belongs.
@@ -88,7 +88,7 @@ struct GMshFileV4 {
   struct Entity {
     /// unique number that identifies this entity (entities of different
     /// dimensions can have the same number!)
-    int tag;
+    int tag = -1;
     /**
      * @brief `min_coord` and `max_coord` define a bounding box within which the
      * entity lies.
@@ -145,19 +145,19 @@ struct GMshFileV4 {
     /**
      * @brief unique number that identifies this partitioned point.
      */
-    int tag;
+    int tag = -1;
 
     /**
      * @brief The dimension of the parent entity to which this partitioned node
      * belongs
      */
-    int parent_dim;
+    int parent_dim = -1;
 
     /**
      * @brief The tag of the parent entity to which this partitioned entity
      * belongs
      */
-    int parent_tag;
+    int parent_tag = -1;
 
     /**
      * @brief to which partitions does this entity belong?
@@ -182,19 +182,19 @@ struct GMshFileV4 {
     /**
      * @brief unique number that identifies this partitioned entity.
      */
-    int tag;
+    int tag = -1;
 
     /**
      * @brief The dimension of the parent entity to which this partitioned
      * entity belongs
      */
-    int parent_dim;
+    int parent_dim = -1;
 
     /**
      * @brief The tag of the parent entity to which this partitioned entity
      * belongs
      */
-    int parent_tag;
+    int parent_tag = -1;
 
     /**
      * @brief to which partitions does this entity belong?
@@ -268,18 +268,18 @@ struct GMshFileV4 {
      * @brief Dimension of the (partitioned) entity to which the nodes in this
      * block belong
      */
-    int entity_dim;
+    int entity_dim = -1;
 
     /**
      * @brief The tag of the (partitioned) entity to which the nodes in this
      * block belong
      */
-    int entity_tag;
+    int entity_tag = -1;
 
     /**
      * @brief Are the nodes in this block parametric?
      */
-    bool parametric;
+    bool parametric = false;
 
     /**
      * @brief a list of nodes in this block
@@ -295,13 +295,13 @@ struct GMshFileV4 {
 
   struct Nodes {
     /// Total number of nodes in the mesh
-    int num_nodes;
+    std::size_t num_nodes = -1;
 
     /// Smallest node tag that exists
-    std::size_t min_node_tag;
+    std::size_t min_node_tag = 0;
 
     /// biggest node tag that exists
-    std::size_t max_node_tag;
+    std::size_t max_node_tag = 0;
 
     /**
      * @brief The nodes that make up this mesh organized in blocks.
@@ -392,17 +392,17 @@ struct GMshFileV4 {
    */
   struct ElementBlock {
     /// Dimension of the elements in this block
-    int dimension;
+    int dimension = -1;
 
     /**
      * @brief Tag of the entity to which elements in this block belong. If the
      * mesh is not partitioned, this references a `entities.tag`. Otherwise it
      * references a partitioned entity `partitioned_entities.tag`.
      */
-    int entity_tag;
+    int entity_tag = -1;
 
     /// @brief type of the elements in this block
-    ElementType element_type;
+    ElementType element_type = ElementType::EDGE2;
 
     /**
      * @brief The elements in this block
@@ -416,13 +416,13 @@ struct GMshFileV4 {
 
   struct Elements {
     /// Total number of elements in the mesh
-    std::size_t num_elements;
+    std::size_t num_elements = 0;
 
     /// minimum element tag
-    std::size_t min_element_tag;
+    std::size_t min_element_tag = 0;
 
     /// maximum element tag
-    std::size_t max_element_tag;
+    std::size_t max_element_tag = 0;
 
     /**
      * @brief A list of all Elements (Points,Lines,Surfaces or Volumes) present
@@ -481,10 +481,10 @@ struct GMshFileV4 {
 
   struct GhostElement {
     /// @brief uniquely identifies a mesh element (@sa element_blocks)
-    std::size_t element_tag;
+    std::size_t element_tag = 0;
 
     /// @brief defines the partition to which this element belongs (mainly)
-    int partition_tag;
+    int partition_tag = -1;
 
     /// @brief references a ghost_entities by tag, if this mesh element is a
     /// ghost entity for that mesh partition.

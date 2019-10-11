@@ -370,10 +370,12 @@ BOOST_FUSION_ADAPT_STRUCT(lf::io::GMshFileV4::NodeBlock,
                           (int, entity_dim)(int, entity_tag)(bool, parametric)(
                               std::vector<nodeMapping_t>, nodes));
 
-BOOST_FUSION_ADAPT_STRUCT(
-    lf::io::GMshFileV4::Nodes,
-    (int, num_nodes)(std::size_t, min_node_tag)(std::size_t, max_node_tag)(
-        std::vector<lf::io::GMshFileV4::NodeBlock>, node_blocks));
+BOOST_FUSION_ADAPT_STRUCT(lf::io::GMshFileV4::Nodes,
+                          (std::size_t, num_nodes)(std::size_t,
+                                                   min_node_tag)(std::size_t,
+                                                                 max_node_tag)(
+                              std::vector<lf::io::GMshFileV4::NodeBlock>,
+                              node_blocks));
 
 // To prevent comma in preprocessor invocation
 using elementMapping_t = std::pair<std::size_t, std::vector<std::size_t>>;
@@ -409,6 +411,7 @@ using entities_t = std::tuple<std::vector<lf::io::GMshFileV4::PointEntity>,
                               std::vector<lf::io::GMshFileV4::Entity>>;
 
 // clang-format off
+// NOLINTNEXTLINE
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
     lf::io::GMshFileV4, MshFileV4Adapted,
     (std::vector<lf::io::GMshFileV4::PhysicalName>, physical_names)
@@ -424,13 +427,15 @@ BOOST_FUSION_ADAPT_STRUCT_NAMED(
 namespace boost::spirit::traits {
 
 namespace /*anonymous*/ {
+/// Template meta programming to determine if a class has a typedef called
+/// value_type
 template <class T>
-constexpr bool has_value_type(long) {
+constexpr bool has_value_type(long /*unused*/) {
   return false;
 }
 
 template <class T, typename = typename T::value_type>
-constexpr bool has_value_type(int) {
+constexpr bool has_value_type(int /*unused*/) {
   return true;
 }
 
@@ -442,11 +447,11 @@ struct assign_to_attribute_from_value<
     typename std::enable_if_t<std::is_enum_v<Enum> &&
                               !std::is_same_v<Enum, RawValue>>> {
   static void call(RawValue const& raw, Enum& cat) {
-    if constexpr (has_value_type<RawValue>(0)) {
+    if constexpr (has_value_type<RawValue>(0)) {  // NOLINT
       // specialization for endian::endian
       typename RawValue::value_type value = raw;
       cat = static_cast<Enum>(value);
-    } else {
+    } else {  // NOLINT
       cat = static_cast<Enum>(raw);
     }
   }
@@ -505,7 +510,7 @@ struct MshV4GrammarText
     // General Parsers:
     quoted_string_ %= lexeme['"' >> +(char_ - '"') >> '"'];
     quoted_string_.name("string");
-    vec3_ %= double_ > double_ > double_;
+    vec3_ %= double_ > double_ > double_;  // NOLINT(misc-redundant-expression)
     int_vec_ %= omit[size_t_[reserve(_val, _1), _a = _1]] > repeat(_a)[int_];
     start_comment_ %= !lit("$PhysicalNames") >> !lit("$Entities") >>
                       !lit("$PartitionedEntities") >> !lit("$Nodes") >>
@@ -519,6 +524,7 @@ struct MshV4GrammarText
     qi::on_error<qi::fail>(comment_, error_handler_(_1, _2, _3, _4));
 
     // Physical names
+    // NOLINTNEXTLINE(misc-redundant-expression)
     physical_name_ %= int_ > int_ > quoted_string_;
     physical_name_.name("Physical Name");
     qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
@@ -548,14 +554,16 @@ struct MshV4GrammarText
 
     // PartitionedEntities
     ghost_entities_ %=
-        omit[size_t_[reserve(_val, _1), _a = _1]] > repeat(_a)[int_ > int_];
+        omit[size_t_[reserve(_val, _1), _a = _1]] >
+        repeat(_a)[int_ > int_];  // NOLINT(misc-redundant-expression)
     ghost_entities_.name("ghost_entities");
     partitioned_point_entity_ %=
-        int_ > int_ > int_ > int_vec_ > vec3_ > int_vec_;
+        int_ > int_ > int_ > int_vec_ > vec3_ > int_vec_;  // NOLINT
     partitioned_point_entity_.name("partitioned_point_entity");
 
-    partitioned_entity_ %=
-        int_ > int_ > int_ > int_vec_ > vec3_ > vec3_ > int_vec_ > int_vec_;
+    // NOLINTNEXTLINE
+    partitioned_entity_ %= int_ > int_ > int_ > int_vec_ > vec3_ > vec3_ >
+                           int_vec_ > int_vec_;  // NOLINT
     partitioned_entity_.name("partitioned_entity");
 
     partitioned_entities2_ %=
@@ -575,7 +583,7 @@ struct MshV4GrammarText
 
     // nodes:
     node_block_ %=
-        int_ > int_ > int_ >
+        int_ > int_ > int_ >  // NOLINT
         omit[size_t_[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
         omit[repeat(_a)[size_t_[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
         eps[_b = 0] >
@@ -589,7 +597,7 @@ struct MshV4GrammarText
 
     // elements:
     element_block_ %=
-        int_ > int_ > int_ >
+        int_ > int_ > int_ >  // NOLINT
         omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] >
         repeat(_a)[size_t_ > repeat(numNodesAdapted(at_c<2>(_val)))[size_t_]];
     element_block_.name("element_block");
@@ -601,11 +609,13 @@ struct MshV4GrammarText
     elements_.name("elements");
 
     // periodic link
+    // NOLINTNEXTLINE
     matrix4d_ %= double_ > double_ > double_ > double_ > double_ > double_ >
                  double_ > double_ > double_ > double_ > double_ > double_ >
                  double_ > double_ > double_ > double_;
     matrix4d_.name("matrix4d");
 
+    // NOLINTNEXTLINE
     periodic_link_ %= int_ > int_ > int_ > ('0' | ("16" > matrix4d_)) >
                       omit[size_t_[reserve(at_c<4>(_val), _1), _a = _1]] >
                       repeat(_a)[size_t_ > size_t_];
@@ -792,7 +802,7 @@ struct MshV4GrammarBinary
     // General Parsers:
     quoted_string_ %= lexeme['"' >> +(char_ - '"') >> '"'];
     quoted_string_.name("string");
-    vec3_ %= bin_double > bin_double > bin_double;
+    vec3_ %= bin_double > bin_double > bin_double;  // NOLINT
     vec3_.name("vec3");
     int_vec_ %= omit[qword[reserve(_val, _1), _a = _1]] > repeat(_a)[dword];
     int_vec_.name("int_vec");
@@ -808,7 +818,7 @@ struct MshV4GrammarBinary
     qi::on_error<qi::fail>(comment_, error_handler_(_1, _2, _3, _4));
 
     // Physical names
-    physical_name_ %= int_ > int_ > quoted_string_;
+    physical_name_ %= int_ > int_ > quoted_string_;  // NOLINT
     physical_name_.name("Physical Name");
     qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
     physical_name_vector_ %= "$PhysicalNames" >
@@ -833,15 +843,16 @@ struct MshV4GrammarBinary
     entities_.name("$Entities");
 
     // PartitionedEntities
-    ghost_entities_ %=
-        omit[qword[reserve(_val, _1), _a = _1]] > repeat(_a)[dword > dword];
+    ghost_entities_ %= omit[qword[reserve(_val, _1), _a = _1]] >
+                       repeat(_a)[dword > dword];  // NOLINT
     ghost_entities_.name("ghost_entities");
     partitioned_point_entity_ %=
-        dword > dword > dword > int_vec_ > vec3_ > int_vec_;
+        dword > dword > dword > int_vec_ > vec3_ > int_vec_;  // NOLINT
     partitioned_point_entity_.name("partitioned_point_entity");
 
-    partitioned_entity_ %=
-        dword > dword > dword > int_vec_ > vec3_ > vec3_ > int_vec_ > int_vec_;
+    // NOLINTNEXTLINE
+    partitioned_entity_ %= dword > dword > dword > int_vec_ > vec3_ > vec3_ >
+                           int_vec_ > int_vec_;  // NOLINT
     partitioned_entity_.name("partitioned_entity");
 
     partitioned_entities2_ %= omit[qword[reserve(at_c<0>(_val), _1), _a = _1]] >
@@ -861,7 +872,7 @@ struct MshV4GrammarBinary
 
     // nodes:
     node_block_ %=
-        dword > dword > dword >
+        dword > dword > dword >  // NOLINT
         omit[qword[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
         omit[repeat(_a)[qword[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
         eps[_b = 0] >
@@ -874,7 +885,7 @@ struct MshV4GrammarBinary
 
     // elements:
     element_block_ %=
-        dword > dword > dword >
+        dword > dword > dword >  // NOLINT
         omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] >
         repeat(_a)[qword > repeat(numNodesAdapted(at_c<2>(_val)))[qword]];
     element_block_.name("element_block");
@@ -885,16 +896,18 @@ struct MshV4GrammarBinary
     elements_.name("elements");
 
     // periodic link
+    // NOLINTNEXTLINE
     matrix4d_ %= bin_double > bin_double > bin_double > bin_double >
                  bin_double > bin_double > bin_double > bin_double >
                  bin_double > bin_double > bin_double > bin_double >
                  bin_double > bin_double > bin_double > bin_double;
     matrix4d_.name("matrix4d");
 
+    // NOLINTNEXTLINE
     periodic_link_ %= dword > dword > dword >
                       (qword(0) | (qword(16) > matrix4d_)) >
                       omit[qword[reserve(at_c<4>(_val), _1), _a = _1]] >
-                      repeat(_a)[qword > qword];
+                      repeat(_a)[qword > qword];  // NOLINT
     periodic_link_.name("periodic_link");
 
     periodic_links_ %= "$Periodic\n" > omit[qword[reserve(_val, _1), _a = _1]] >
@@ -1020,9 +1033,10 @@ struct MshV4GrammarBinary
 }  // namespace
 
 GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
-                          std::string::const_iterator end, std::string version,
-                          bool is_binary, int size_t_size, int one,
-                          std::string filename) {
+                          std::string::const_iterator end,
+                          const std::string& version, bool is_binary,
+                          int size_t_size, int one,
+                          const std::string& filename) {
   LF_VERIFY_MSG(version == "4.1", "Only version 4.1 is supported so far");
   LF_VERIFY_MSG(size_t_size == sizeof(std::size_t),
                 "size of size_t must be " << sizeof(std::size_t));

@@ -606,9 +606,10 @@ const std::vector<GMshFileV2::ElementType> GMshFileV2::AllElementTypes{
     ElementType::TET56,     ElementType::HEX64,     ElementType::HEX125};
 
 GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
-                          std::string::const_iterator end, std::string version,
-                          bool is_binary, int size_t_size, int one,
-                          std::string filename) {
+                          std::string::const_iterator end,
+                          const std::string& version, bool is_binary,
+                          int size_t_size, int one,
+                          const std::string& filename) {
   LF_VERIFY_MSG(version == "2.2",
                 "Version " << version << " not supported by readGmshFileV2");
   LF_ASSERT_MSG(size_t_size == 8, "Size of std::size_t must be 8.");

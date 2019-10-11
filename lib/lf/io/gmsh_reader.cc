@@ -672,14 +672,13 @@ std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename) {
   if (std::get<0>(header) == "4.1") {
     return ReadGmshFileV4(iter, end, std::get<0>(header), std::get<1>(header),
                           std::get<2>(header), std::get<3>(header), filename);
-  } else if (std::get<0>(header) == "2.2") {
+  }
+  if (std::get<0>(header) == "2.2") {
     return readGmshFileV2(iter, end, std::get<0>(header), std::get<1>(header),
                           std::get<2>(header), std::get<3>(header), filename);
-  } else {
-    LF_VERIFY_MSG(false, "GmshFiles with Version "
-                             << std::get<0>(header)
-                             << " are not yet supported.");
   }
+  LF_VERIFY_MSG(false, "GmshFiles with Version " << std::get<0>(header)
+                                                 << " are not yet supported.");
 }
 
 }  // namespace lf::io
