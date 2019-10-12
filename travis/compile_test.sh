@@ -20,7 +20,7 @@ cd ${TRAVIS_BUILD_DIR}
 export CXX=${COMPILER}
 $CXX --version
 
-cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -Wdev
+cmake -H. -BBuild -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=-g0 -Wdev
 cd Build
 make -j2
 

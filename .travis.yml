@@ -75,15 +75,15 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-6.0'
+    - COMPILER='clang++-5.0'
     - BUILD_TYPE='Debug'
     addons:
       apt:
         sources:
-        - llvm-toolchain-xenial-6.0
+        - llvm-toolchain-xenial-5.0
         - ubuntu-toolchain-r-test
         packages:
-        - clang-6.0
+        - clang-5.0
         - g++-7
     script: "./travis/compile_test.sh"
   # - stage: compile_test
