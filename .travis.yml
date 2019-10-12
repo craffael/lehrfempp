@@ -47,15 +47,16 @@ jobs:
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-8
+    - COMPILER=g++-7
     - BUILD_TYPE='Debug'
+    - NUM_PROC=1
     addons:
       apt:
         update: true
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-8
+        - g++-7
     script: "./travis/compile_test.sh"
   # - stage: compile_test
     # os: linux
