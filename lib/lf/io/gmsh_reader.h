@@ -32,7 +32,8 @@ namespace lf::io {
  *
  * In order to import the `*.msh` file successfully make sure that:
  * - Save the mesh in Gmsh's proprietary `*.msh` file format
- *   (`Version 2 ASCII` or `Version 2 Binary`)
+ *   (`Version 2 ASCII`, `Version 2 Binary`, `Version 4 ASCII` or `Version 4
+ *   Binary`)
  * - If you have specified physical entities in Gmsh and you want to export
  *   them, make sure you don't tick `Save all (ignore physical groups)` and
  *   make sure that every surface (2d) / volume (3d) belongs to at least one

@@ -260,9 +260,10 @@ base::RefEl RefElOf(GMshFileV2::ElementType et);
  * \note This routine is mainly used by the GmshReader class.
  */
 GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
-                          std::string::const_iterator end, std::string version,
-                          bool is_binary, int size_t_size, int one,
-                          std::string filename);
+                          std::string::const_iterator end,
+                          const std::string& version, bool is_binary,
+                          int size_t_size, int one,
+                          const std::string& filename);
 
 }  // namespace lf::io
 

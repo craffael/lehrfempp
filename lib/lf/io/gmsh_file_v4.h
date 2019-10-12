@@ -526,9 +526,10 @@ std::ostream& operator<<(std::ostream& stream, GMshFileV4::ElementType et);
  * diagnostics)
  */
 GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
-                          std::string::const_iterator end, std::string version,
-                          bool is_binary, int size_t_size, int one,
-                          std::string filename);
+                          std::string::const_iterator end,
+                          const std::string& version, bool is_binary,
+                          int size_t_size, int one,
+                          const std::string& filename);
 
 }  // namespace lf::io
 
