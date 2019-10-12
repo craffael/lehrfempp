@@ -9,14 +9,14 @@ dir=$(pwd)
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
 if [ ! -d "doxygen-1.8.14" ]; then
-  wget -O - http://doxygen.nl/files/doxygen-1.8.14.src.tar.gz | tar xz
-  cd doxygen-1.8.14
+  wget -O - https://github.com/doxygen/doxygen/archive/Release_1_8_14.tar.gz | tar xz
+  cd doxygen-Release_1_8_14
   mkdir build
   cd build
   cmake -Duse_libclang=ON  ..
   make -j2
 fi
-export PATH=${DEPS_DIR}/doxygen-1.8.14/build/bin:$PATH
+export PATH=${DEPS_DIR}/doxygen-Release_1_8_14/build/bin:$PATH
 doxygen --version
 
 #Change back to where we left off.
