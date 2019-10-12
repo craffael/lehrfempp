@@ -48,7 +48,7 @@ jobs:
     compiler: gcc
     env:
     - COMPILER=g++-7
-    - BUILD_TYPE='debug'
+    - BUILD_TYPE='Debug'
     addons:
       apt:
         update: true
