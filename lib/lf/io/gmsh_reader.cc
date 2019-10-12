@@ -23,7 +23,17 @@ bool GmshReader::IsPhysicalEntity(const mesh::Entity& e,
 GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
                        const GmshFileVariant& msh_file)
     : mesh_factory_(std::move(factory)) {
+#ifndef __APPLE__
   std::visit([this](const auto& mf) { InitGmshFile(mf); }, msh_file);
+#else
+  // TODO(craffael): Remove the following workaround once apple supports
+  // std::visit
+  if (msh_file.index() == 0) {
+    InitGmshFile(std::get<0>(msh_file));
+  } else {
+    InitGmshFile(std::get<1>(msh_file));
+  }
+#endif
 }
 
 GmshReader::GmshReader(std::unique_ptr<mesh::MeshFactory> factory,
