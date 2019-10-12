@@ -47,8 +47,8 @@ jobs:
     # os: linux
     # compiler: gcc
     # env:
-    # - COMPILER=g++-7
-    # - BUILD_TYPE='Debug'
+    # - compiler=g++-7
+    # - build_type='debug'
     # addons:
       # apt:
         # update: true
@@ -71,21 +71,21 @@ jobs:
         # packages:
         # - g++-7
     # script: "./travis/compile_test.sh"
-  # - stage: compile_test
-    # os: linux
-    # compiler: clang
-    # env:
-    # - COMPILER='clang++-5.0'
-    # - BUILD_TYPE='Debug'
-    # addons:
-      # apt:
-        # sources:
-        # - llvm-toolchain-xenial-5.0
-        # - ubuntu-toolchain-r-test
-        # packages:
-        # - clang-5.0
-        # - g++-7
-    # script: "./travis/compile_test.sh"
+  - stage: compile_test
+    os: linux
+    compiler: clang
+    env:
+    - COMPILER='clang++-6.0'
+    - BUILD_TYPE='Debug'
+    addons:
+      apt:
+        sources:
+        - llvm-toolchain-xenial-6.0
+        - ubuntu-toolchain-r-test
+        packages:
+        - clang-6.0
+        - g++-7
+    script: "./travis/compile_test.sh"
   # - stage: compile_test
     # os: linux
     # compiler: clang
@@ -101,12 +101,12 @@ jobs:
         # - clang-5.0
         # - g++-7
     # script: "./travis/compile_test.sh"
-  - stage: compile_test
-    os: osx
-    osx_image: xcode10.2
-    compiler: clang
-    env: COMPILER='clang++' BUILD_TYPE='Debug'
-    script: "./travis/compile_test.sh"
+  # - stage: compile_test
+    # os: osx
+    # osx_image: xcode10.2
+    # compiler: clang
+    # env: COMPILER='clang++' BUILD_TYPE='Debug'
+    # script: "./travis/compile_test.sh"
   # - stage: compile_test
     # os: osx
     # osx_image: xcode10.1
