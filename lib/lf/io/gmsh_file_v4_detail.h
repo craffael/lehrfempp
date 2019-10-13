@@ -146,22 +146,12 @@ BOOST_FUSION_ADAPT_STRUCT_NAMED(
 )
 // clang-format on
 
+namespace lf::io {
+// NOLINTNEXTLINE
+BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
+}  // namespace lf::io
+
 namespace boost::spirit::traits {
-
-namespace /*anonymous*/ {
-/// Template meta programming to determine if a class has a typedef called
-/// value_type
-template <class T>
-constexpr bool has_value_type(long /*unused*/) {
-  return false;
-}
-
-template <class T, typename = typename T::value_type>
-constexpr bool has_value_type(int /*unused*/) {
-  return true;
-}
-
-}  // namespace
 
 template <class Enum, class RawValue>
 struct assign_to_attribute_from_value<
@@ -169,7 +159,7 @@ struct assign_to_attribute_from_value<
     typename std::enable_if_t<std::is_enum_v<Enum> &&
                               !std::is_same_v<Enum, RawValue>>> {
   static void call(RawValue const& raw, Enum& cat) {
-    if constexpr (has_value_type<RawValue>(0)) {  // NOLINT
+    if constexpr (detail::has_value_type<RawValue>::value) {  // NOLINT
       // specialization for endian::endian
       typename RawValue::value_type value = raw;
       cat = static_cast<Enum>(value);
@@ -180,25 +170,4 @@ struct assign_to_attribute_from_value<
 };
 
 }  // namespace boost::spirit::traits
-
-namespace lf::io {
-namespace /* anonymous */ {
-namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
-namespace phoenix = boost::phoenix;
-
-// A lookup table for boost spirit that can parse an element type
-struct GmshElementType : qi::symbols<char, unsigned> {
-  GmshElementType() {
-    for (auto& et : GMshFileV4::AllElementTypes) {
-      add(std::to_string(static_cast<int>(et)), static_cast<int>(et));
-    }
-  }
-};
-
-// NOLINTNEXTLINE
-BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
-
-}  // namespace
-}  // namespace lf::io
 #endif  // __c3071f8127a44f7e8cb57f0b1dd3335a

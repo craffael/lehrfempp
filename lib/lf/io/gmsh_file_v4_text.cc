@@ -13,6 +13,9 @@
 namespace lf::io {
 
 namespace /*anonymous*/ {
+namespace qi = boost::spirit::qi;
+namespace ascii = boost::spirit::ascii;
+namespace phoenix = boost::phoenix;
 
 template <class ITERATOR>
 struct MshV4GrammarText
@@ -296,10 +299,10 @@ struct MshV4GrammarText
 
 namespace detail {
 bool ParseGmshFileV4Text(std::string::const_iterator begin,
-                         std::string::const_iterator end, GMshFileV4& result) {
+                         std::string::const_iterator end, GMshFileV4* result) {
   // Text file
   MshV4GrammarText<std::string::const_iterator> grammar;
-  return qi::phrase_parse(begin, end, grammar, ascii::space, result);
+  return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
 }
 
 }  // namespace detail

@@ -295,11 +295,11 @@ namespace detail {
 
 // defined in gmsh_file_v4_text.cc
 bool ParseGmshFileV4Text(std::string::const_iterator begin,
-                         std::string::const_iterator end, GMshFileV4& result);
+                         std::string::const_iterator end, GMshFileV4* result);
 
 bool ParseGmshFileV4Binary(std::string::const_iterator begin,
                            std::string::const_iterator end, int one,
-                           GMshFileV4& result);
+                           GMshFileV4* result);
 
 }  // namespace detail
 
@@ -319,9 +319,9 @@ GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
 
   bool succesful = false;
   if (!is_binary) {
-    succesful = detail::ParseGmshFileV4Text(begin, end, result);
+    succesful = detail::ParseGmshFileV4Text(begin, end, &result);
   } else {
-    succesful = detail::ParseGmshFileV4Binary(begin, end, one, result);
+    succesful = detail::ParseGmshFileV4Binary(begin, end, one, &result);
   }
 
   LF_VERIFY_MSG(succesful, "Could not parse file " << filename);

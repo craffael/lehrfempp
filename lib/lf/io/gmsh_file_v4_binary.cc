@@ -13,6 +13,9 @@
 namespace lf::io {
 
 namespace /* anonymous */ {
+namespace qi = boost::spirit::qi;
+namespace ascii = boost::spirit::ascii;
+namespace phoenix = boost::phoenix;
 
 template <class ITERATOR>
 struct MshV4GrammarBinary
@@ -294,15 +297,15 @@ struct MshV4GrammarBinary
 namespace detail {
 bool ParseGmshFileV4Binary(std::string::const_iterator begin,
                            std::string::const_iterator end, int one,
-                           GMshFileV4& result) {
+                           GMshFileV4* result) {
   if (one == 1) {
     MshV4GrammarBinary<std::string::const_iterator> grammar(
         qi::little_dword, qi::little_qword, qi::little_bin_double);
-    return qi::phrase_parse(begin, end, grammar, ascii::space, result);
+    return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
   } else {
     MshV4GrammarBinary<std::string::const_iterator> grammar(
         qi::big_dword, qi::big_qword, qi::big_bin_double);
-    return qi::phrase_parse(begin, end, grammar, ascii::space, result);
+    return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
   }
 }
 }  // namespace detail
