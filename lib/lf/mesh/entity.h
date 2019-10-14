@@ -50,25 +50,28 @@ class Entity {
    * @brief Return all sub entities of this entity that have the given
    *        codimension (w.r.t. this entity!)
    * @param rel_codim The _relative co-dimension_ w.r.t. this entity
-   * @return a range containing all subentities of the specified
-             _relative co-dimension_
+   * @return A [span](https://en.cppreference.com/w/cpp/container/span) of
+   pointers to the sub-entities with the specified _relative co-dimension_
 
    * @note For a mesh covering a manifold of dimension 2, we have the following
-   cases
-     - For a cell (co-dimension 0 entity), the cell itself is a subentity
-       of relative co-dimension 0, the edges have relative co-dimension 1, and
-   the vertices relative co-dimension 2: in this case the usual co-dimension
-   agrees with the relative co-dimension.
-     - For an edge (co-dimension 1 entity), the edge itself is the only
-   sub-entity with relative co-dimension 0, and the endpoints are the
-   sub-entitities of relative co-dimension 1.
+   * cases
+   * - For a cell (co-dimension 0 entity), the cell itself is a subentity
+   *   of relative co-dimension 0, the edges have relative co-dimension 1, and
+   *   the vertices relative co-dimension 2: in this case the usual co-dimension
+   *   agrees with the relative co-dimension.
+   * - For an edge (co-dimension 1 entity), the edge itself is the only
+   *   sub-entity with relative co-dimension 0, and the endpoints are the
+   *   sub-entitities of relative co-dimension 1.
+   *
+   * @note The lifetime of the returned span equals the lifetime of the Parent
+   * Entity.
    */
   [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
 
   /**
-   * @brief return array of relative orientations of sub-entities
-   *        of the next hight co-dimension.
+   * @brief return [span](https://en.cppreference.com/w/cpp/container/span) of
+   * relative orientations of sub-entities of the next higher co-dimension.
    */
   [[nodiscard]] virtual nonstd::span<const Orientation> RelativeOrientations()
       const = 0;
