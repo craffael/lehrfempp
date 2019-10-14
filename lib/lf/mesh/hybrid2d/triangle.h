@@ -83,10 +83,9 @@ class Triangle : public mesh::Entity {
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        edge_ori_.begin(), edge_ori_.end());
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    return edge_ori_;
   }
 
   /** @name Standard methods of an Entity object

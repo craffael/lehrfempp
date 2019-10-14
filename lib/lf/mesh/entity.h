@@ -70,8 +70,8 @@ class Entity {
    * @brief return array of relative orientations of sub-entities
    *        of the next hight co-dimension.
    */
-  [[nodiscard]] virtual base::RandomAccessRange<const Orientation>
-  RelativeOrientations() const = 0;
+  [[nodiscard]] virtual nonstd::span<const Orientation> RelativeOrientations()
+      const = 0;
 
   /**
    * @brief Describes the geometry of this entity.

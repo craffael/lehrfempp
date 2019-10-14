@@ -54,8 +54,7 @@ TEST(lf_hybrid2d, lf_orientation) {
     // Array of edges
     auto edges = cell->SubEntities(1);
     // Array of orientations
-    lf::base::RandomAccessRange<const lf::mesh::Orientation> oris(
-        cell->RelativeOrientations());
+    auto oris = cell->RelativeOrientations();
     for (int ed_idx = 0; ed_idx < cell->RefEl().NumSubEntities(1); ed_idx++) {
       std::cout << ", edge " << mesh_p->Index(*edges[ed_idx])
                 << ": or = " << to_char(oris[ed_idx]) << ' ';

@@ -21,7 +21,8 @@ Triangle::Triangle(size_type index,
       geometry_(std::move(geometry)),
       nodes_({corner0, corner1, corner2}),
       edges_({edge0, edge1, edge2}),
-      edge_ori_() {
+      edge_ori_(),
+      this_(this) {
   LF_VERIFY_MSG(corner0 != nullptr, "Invalid pointer to corner 0");
   LF_VERIFY_MSG(corner1 != nullptr, "Invalid pointer to corner 1");
   LF_VERIFY_MSG(corner2 != nullptr, "Invalid pointer to corner 2");
@@ -73,8 +74,6 @@ Triangle::Triangle(size_type index,
                                 ? lf::mesh::Orientation::positive
                                 : lf::mesh::Orientation::negative;
   }
-
-  this_ = this;
 }
 
 // Acessing sub-entities

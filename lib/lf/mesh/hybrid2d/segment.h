@@ -58,7 +58,8 @@ class Segment : public mesh::Entity {
                    const Point* endpoint0, const Point* endpoint1)
       : index_(index),
         geometry_(std::move(geometry)),
-        nodes_({endpoint0, endpoint1}) {
+        nodes_({endpoint0, endpoint1}),
+        this_(this) {
     LF_VERIFY_MSG((endpoint0 != nullptr) && (endpoint1 != nullptr),
                   "Invalid pointer to endnode of edge");
     if (geometry_) {
@@ -67,7 +68,6 @@ class Segment : public mesh::Entity {
       LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kSegment(),
                     "Segment geometry must fit a segment");
     }
-    this_ = this;
   }
 
   /** @brief an edge is an entity of co-dimension 1 */
@@ -87,10 +87,9 @@ class Segment : public mesh::Entity {
    * This method just returns {+,-}, because points always have the intrinsic
    * orientation + and the orientation of an edge is defined through the
    * ordering of its vertices. */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        endpoint_ori_.begin(), endpoint_ori_.end());
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    return endpoint_ori_;
   }
 
   /** @brief access to index of an entity */

@@ -537,8 +537,7 @@ class DynamicFEDofHandler : public DofHandler {
 
       // Collect indices of interior shape functions of edges
       // Internal ordering will depend on the orientation of the edge
-      lf::base::RandomAccessRange<const lf::mesh::Orientation>
-          edge_orientations(cell->RelativeOrientations());
+      auto edge_orientations = cell->RelativeOrientations();
       auto edges = cell->SubEntities(1);
       // Loop over edges
       for (int ed_sub_idx = 0; ed_sub_idx < cell->RefEl().NumSubEntities(1);
