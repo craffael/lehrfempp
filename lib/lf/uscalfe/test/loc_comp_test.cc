@@ -44,10 +44,10 @@ TEST(lf_uscalfe, mass_mat_test) {
       elmat_builder(fe_space, alpha, gamma, quad_rules);
 
   // Traverse the cells of the mesh and compute element matrices
-  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
     const typename ReactionDiffusionElementMatrixProvider<
         double, decltype(alpha), decltype(gamma)>::ElemMat M{
-        elmat_builder.Eval(cell)};
+        elmat_builder.Eval(*cell)};
     // Vectors with all 1 components
     Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
     Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
@@ -56,8 +56,8 @@ TEST(lf_uscalfe, mass_mat_test) {
     // This operations supresses the contribution of the second-order term
     // the value amounts to the integral of gamma over the cell.
     // In this case this is just the volume.
-    EXPECT_NEAR(volint, lf::geometry::Volume(*(cell.Geometry())), 1.0E-10)
-        << " mismatch for cell " << cell;
+    EXPECT_NEAR(volint, lf::geometry::Volume(*(cell->Geometry())), 1.0E-10)
+        << " mismatch for cell " << *cell;
   }
 }
 
@@ -106,23 +106,23 @@ TEST(lf_uscalfe, cross_val) {
       fe_space, f);
 
   // Traverse the cells of the mesh and compute element matrices
-  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
     const typename ReactionDiffusionElementMatrixProvider<
         double, decltype(alpha), decltype(gamma)>::ElemMat M_qr{
-        elmat_builder_qr.Eval(cell)};
+        elmat_builder_qr.Eval(*cell)};
 
     const typename ReactionDiffusionElementMatrixProvider<
         double, decltype(alpha), decltype(gamma)>::ElemMat M_no{
-        elmat_builder_noqr.Eval(cell)};
+        elmat_builder_noqr.Eval(*cell)};
 
     EXPECT_NEAR((M_qr - M_no).norm(), 0.0, 1.0E-10)
         << "M_qr = " << M_qr << " M_no = " << M_no;
 
     const typename ScalarLoadElementVectorProvider<double, decltype(f)>::ElemVec
-        phi_qr{elvec_builder_qr.Eval(cell)};
+        phi_qr{elvec_builder_qr.Eval(*cell)};
 
     const typename ScalarLoadElementVectorProvider<double, decltype(f)>::ElemVec
-        phi_no{elvec_builder_noqr.Eval(cell)};
+        phi_no{elvec_builder_noqr.Eval(*cell)};
 
     EXPECT_NEAR((phi_qr - phi_no).norm(), 0.0, 1.0E-10)
         << "phi_qr = " << phi_qr << " phi_no = " << phi_no;

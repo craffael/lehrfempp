@@ -239,11 +239,11 @@ int main(int /*argc*/, const char** /*argv*/) {
     auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
     // Traverse the edges of the mesh and check their boundary flags and the
     // type of boundary condition
-    for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
-      if (bd_flags(edge)) {
-        if (edge_sel_dir(edge)) {
+    for (const lf::mesh::Entity* edge : mesh.Entities(1)) {
+      if (bd_flags(*edge)) {
+        if (edge_sel_dir(*edge)) {
           no_Dirichlet_edges++;
-        } else if (edge_sel_imp(edge)) {
+        } else if (edge_sel_imp(*edge)) {
           no_impedance_edges++;
         } else {
           no_Neumann_edges++;

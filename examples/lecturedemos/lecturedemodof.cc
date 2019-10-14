@@ -22,23 +22,23 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
   // Output information about dofs for entities of all co-dimensions
   for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
     // Visit all entities of a codimension codim
-    for (const lf::mesh::Entity &e : mesh->Entities(codim)) {
+    for (const lf::mesh::Entity* e : mesh->Entities(codim)) {
       // Fetch unique index of current entity supplied by mesh object
-      const lf::base::glb_idx_t e_idx = mesh->Index(e);
+      const lf::base::glb_idx_t e_idx = mesh->Index(*e);
       // Number of shape functions covering current entity
-      const lf::assemble::size_type no_dofs(dofh.NoLocalDofs(e));
+      const lf::assemble::size_type no_dofs(dofh.NoLocalDofs(*e));
       // Obtain global indices of those shape functions ...
       nonstd::span<const lf::assemble::gdof_idx_t> dofarray{
-          dofh.GlobalDofIndices(e)};
+          dofh.GlobalDofIndices(*e)};
       // and print them
-      std::cout << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
+      std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
       for (int loc_dof_idx = 0; loc_dof_idx < no_dofs; ++loc_dof_idx) {
         std::cout << dofarray[loc_dof_idx] << ' ';
       }
       std::cout << ']';
       // Also output indices of interior shape functions
       nonstd::span<const lf::assemble::gdof_idx_t>
-	intdofarray{dofh.InteriorGlobalDofIndices(e)};
+	intdofarray{dofh.InteriorGlobalDofIndices(*e)};
       std::cout << " int = [";
       for (lf::assemble::gdof_idx_t int_dof : intdofarray) {
         std::cout << int_dof << ' ';

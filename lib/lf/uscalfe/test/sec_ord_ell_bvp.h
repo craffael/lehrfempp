@@ -160,11 +160,11 @@ SecOrdEllBVPLagrFELinSys(
   size_type no_Neumann_edges = 0;
   size_type no_impedance_edges = 0;
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
-  for (const lf::mesh::Entity& edge : mesh.Entities(1)) {
-    if (bd_flags(edge)) {
-      if (bvp_p->EssentialConditionsOnEdge(edge)) {
+  for (const lf::mesh::Entity* edge : mesh.Entities(1)) {
+    if (bd_flags(*edge)) {
+      if (bvp_p->EssentialConditionsOnEdge(*edge)) {
         no_Dirichlet_edges++;
-      } else if (bvp_p->IsImpedanceEdge(edge)) {
+      } else if (bvp_p->IsImpedanceEdge(*edge)) {
         no_impedance_edges++;
       } else {
         no_Neumann_edges++;

@@ -28,19 +28,19 @@ TEST(test_mesh_utils, count_test) {
   EXPECT_EQ(mesh_p->NumEntities(2), 10) << "Test mesh: 10 nodes expected!";
 
   auto cells_at_edges{countNoSuperEntities(mesh_p, 1, 1)};
-  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
-    std::cout << cells_at_edges(edge) << " cells @ " << edge << ' '
-              << mesh_p->Index(edge) << std::endl;
+  for (const lf::mesh::Entity* edge : mesh_p->Entities(1)) {
+    std::cout << cells_at_edges(*edge) << " cells @ " << *edge << ' '
+              << mesh_p->Index(*edge) << std::endl;
   }
   auto edges_at_vertices{countNoSuperEntities(mesh_p, 2, 1)};
-  for (const lf::mesh::Entity &node : mesh_p->Entities(2)) {
-    std::cout << edges_at_vertices(node) << " edges @ " << node << ' '
-              << mesh_p->Index(node) << std::endl;
+  for (const lf::mesh::Entity* node : mesh_p->Entities(2)) {
+    std::cout << edges_at_vertices(*node) << " edges @ " << *node << ' '
+              << mesh_p->Index(*node) << std::endl;
   }
   auto cells_at_nodes{countNoSuperEntities(mesh_p, 2, 2)};
-  for (const lf::mesh::Entity &node : mesh_p->Entities(2)) {
-    std::cout << cells_at_nodes(node) << " cells @ " << node << ' '
-              << mesh_p->Index(node) << std::endl;
+  for (const lf::mesh::Entity* node : mesh_p->Entities(2)) {
+    std::cout << cells_at_nodes(*node) << " cells @ " << *node << ' '
+              << mesh_p->Index(*node) << std::endl;
   }
 }
 
@@ -50,14 +50,14 @@ TEST(test_mesh_utils, bd_flag_test) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto bd_flags{flagEntitiesOnBoundary(mesh_p)};
-  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
-    std::cout << edge << ' ' << mesh_p->Index(edge)
-              << (bd_flags(edge) ? (" ON BOUNDARY") : (" INTERIOR"))
+  for (const lf::mesh::Entity* edge : mesh_p->Entities(1)) {
+    std::cout << *edge << ' ' << mesh_p->Index(*edge)
+              << (bd_flags(*edge) ? (" ON BOUNDARY") : (" INTERIOR"))
               << std::endl;
   }
-  for (const lf::mesh::Entity &node : mesh_p->Entities(2)) {
-    std::cout << node << ' ' << mesh_p->Index(node)
-              << (bd_flags(node) ? (" ON BOUNDARY") : (" INTERIOR"))
+  for (const lf::mesh::Entity* node : mesh_p->Entities(2)) {
+    std::cout << *node << ' ' << mesh_p->Index(*node)
+              << (bd_flags(*node) ? (" ON BOUNDARY") : (" INTERIOR"))
               << std::endl;
   }
 }

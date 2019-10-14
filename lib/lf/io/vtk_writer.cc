@@ -603,18 +603,18 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   // insert main nodes:
   vtk_file_.unstructured_grid.points.resize(numNodes);
   Eigen::Matrix<double, 0, 1> zero;
-  for (auto& p : mesh_->Entities(dim_mesh)) {
-    auto index = mesh_->Index(p);
+  for (auto p : mesh_->Entities(dim_mesh)) {
+    auto index = mesh_->Index(*p);
     Eigen::Vector3f coord;
     if (dim_world == 1) {
-      coord(0) = p.Geometry()->Global(zero)(0);
+      coord(0) = p->Geometry()->Global(zero)(0);
       coord(1) = 0.F;
       coord(2) = 0.F;
     } else if (dim_world == 2) {
-      coord.topRows<2>() = p.Geometry()->Global(zero).cast<float>();
+      coord.topRows<2>() = p->Geometry()->Global(zero).cast<float>();
       coord(2) = 0.F;
     } else {
-      coord = p.Geometry()->Global(zero).cast<float>();
+      coord = p->Geometry()->Global(zero).cast<float>();
     }
 
     vtk_file_.unstructured_grid.points[index] = std::move(coord);
@@ -625,8 +625,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     auto index_offset = mesh_->NumEntities(dim_mesh);
     for (char cd = static_cast<char>(dim_mesh - 1);
          cd >= static_cast<char>(codim); --cd) {
-      for (auto& e : mesh_->Entities(cd)) {
-        auto ref_el = e.RefEl();
+      for (auto e : mesh_->Entities(cd)) {
+        auto ref_el = e->RefEl();
         if (ref_el == base::RefEl::kTria() && order < 3) {
           continue;
         }
@@ -635,20 +635,20 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
         if (dim_world == 1) {
           coords.row(0) =
-              e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
+              e->Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
           coords.row(1).setZero();
           coords.row(2).setZero();
         } else if (dim_world == 2) {
           coords.topRows(2) =
-              e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
+              e->Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
           coords.row(2).setZero();
         } else {
-          coords = e.Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
+          coords = e->Geometry()->Global(aux_nodes_[ref_el.Id()]).cast<float>();
         }
         for (Eigen::Index i = 0; i < coords.cols(); ++i) {
           vtk_file_.unstructured_grid.points[index_offset + i] = coords.col(i);
         }
-        aux_node_offset_[cd](e) = index_offset;
+        aux_node_offset_[cd](*e) = index_offset;
         index_offset += coords.cols();
       }
     }
@@ -669,14 +669,14 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   vtk_file_.unstructured_grid.cells.resize(mesh_->NumEntities(codim));
   vtk_file_.unstructured_grid.cell_types.resize(mesh_->NumEntities(codim));
   auto points_per_segment = NumAuxNodes(base::RefEl::kSegment(), order);
-  for (auto& e : mesh_->Entities(codim)) {
-    auto index = mesh_->Index(e);
-    auto ref_el = e.RefEl();
+  for (auto e : mesh_->Entities(codim)) {
+    auto index = mesh_->Index(*e);
+    auto ref_el = e->RefEl();
     auto& node_indices = vtk_file_.unstructured_grid.cells[index];
     node_indices.reserve(num_nodes[ref_el.Id()]);
 
     // node indices that make up this cell:
-    for (auto& p : e.SubEntities(dim_mesh - codim)) {
+    for (auto& p : e->SubEntities(dim_mesh - codim)) {
       node_indices.push_back(mesh_->Index(p));
     }
 
@@ -695,11 +695,11 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     };
     switch (ref_el) {
       case base::RefEl::kSegment():
-        addSegmentNodes(e, false);
+        addSegmentNodes(*e, false);
         break;
       case base::RefEl::kTria(): {
-        auto iterator = e.SubEntities(1).begin();
-        auto o_iterator = e.RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(*iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -713,8 +713,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         break;
       }
       case base::RefEl::kQuad(): {
-        auto iterator = e.SubEntities(1).begin();
-        auto o_iterator = e.RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(*iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -737,8 +737,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
     // indices in the interior of the cell:
     if (dim_mesh - codim > 1) {
-      auto offset = aux_node_offset_[0](e);
-      for (unsigned i = 0; i < NumAuxNodes(e.RefEl(), order); ++i) {
+      auto offset = aux_node_offset_[0](*e);
+      for (unsigned i = 0; i < NumAuxNodes(e->RefEl(), order); ++i) {
         node_indices.push_back(offset + i);
       }
     }
@@ -957,11 +957,11 @@ void VtkWriter::WriteScalarPointData(const std::string& name,
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));
   data.name = name;
-  for (auto& p : mesh_->Entities(mesh_->DimMesh())) {
-    if (mds.DefinedOn(p)) {
-      data.data[mesh_->Index(p)] = mds(p);
+  for (auto p : mesh_->Entities(mesh_->DimMesh())) {
+    if (mds.DefinedOn(*p)) {
+      data.data[mesh_->Index(*p)] = mds(*p);
     } else {
-      data.data[mesh_->Index(p)] = undefined_value;
+      data.data[mesh_->Index(*p)] = undefined_value;
     }
   }
   vtk_file_.point_data.push_back(std::move(data));
@@ -982,11 +982,11 @@ void VtkWriter::WriteVectorPointData(
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
-  for (auto& p : mesh_->Entities(mesh_->DimMesh())) {
-    if (mds.DefinedOn(p)) {
-      PadWithZeros<ROWS, T>(data.data[mesh_->Index(p)], mds(p));
+  for (auto p : mesh_->Entities(mesh_->DimMesh())) {
+    if (mds.DefinedOn(*p)) {
+      PadWithZeros<ROWS, T>(data.data[mesh_->Index(*p)], mds(*p));
     } else {
-      data.data[mesh_->Index(p)] = undefined_value_padded;
+      data.data[mesh_->Index(*p)] = undefined_value_padded;
     }
   }
   vtk_file_.point_data.push_back(std::move(data));
@@ -1000,11 +1000,11 @@ void VtkWriter::WriteScalarCellData(const std::string& name,
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->NumEntities(codim_));
   data.name = name;
-  for (auto& e : mesh_->Entities(codim_)) {
-    if (mds.DefinedOn(e)) {
-      data.data[mesh_->Index(e)] = mds(e);
+  for (auto e : mesh_->Entities(codim_)) {
+    if (mds.DefinedOn(*e)) {
+      data.data[mesh_->Index(*e)] = mds(*e);
     } else {
-      data.data[mesh_->Index(e)] = undefined_value;
+      data.data[mesh_->Index(*e)] = undefined_value;
     }
   }
   vtk_file_.cell_data.push_back(std::move(data));
@@ -1022,11 +1022,11 @@ void VtkWriter::WriteVectorCellData(
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
-  for (auto& p : mesh_->Entities(codim_)) {
-    if (mds.DefinedOn(p)) {
-      PadWithZeros<ROWS, T>(data.data[mesh_->Index(p)], mds(p));
+  for (auto p : mesh_->Entities(codim_)) {
+    if (mds.DefinedOn(*p)) {
+      PadWithZeros<ROWS, T>(data.data[mesh_->Index(*p)], mds(*p));
     } else {
-      data.data[mesh_->Index(p)] = undefined_value_padded;
+      data.data[mesh_->Index(*p)] = undefined_value_padded;
     }
   }
   vtk_file_.cell_data.push_back(std::move(data));

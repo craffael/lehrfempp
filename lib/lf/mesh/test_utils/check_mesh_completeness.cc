@@ -21,12 +21,12 @@ bool checkMeshCompleteness(const Mesh& mesh) {
     //           << " entities" << std::endl;
 
     // Traverse all entities of a given co-dimension
-    for (const Entity& e : mesh.Entities(co_dim)) {
+    for (const Entity* e : mesh.Entities(co_dim)) {
       // Diagnostic output
       // std::cout << "Entity(" << mesh.Index(e) << "): " << std::flush;
 
       // Fetch subentities of co-dimension 1
-      base::RandomAccessRange<const Entity> sub_ent_range(e.SubEntities(1));
+      base::RandomAccessRange<const Entity> sub_ent_range(e->SubEntities(1));
       for (const Entity& sub_ent : sub_ent_range) {
         // Diagnostic output
         // std::cout << mesh.Index(sub_ent) << " " << std::flush;
@@ -85,24 +85,25 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
   for (int co_dim = dim_mesh; co_dim > 0; co_dim--) {
     base::dim_t codim_pt = dim_mesh - co_dim;  // co-dim of vertices
     // Loop over entities of the specified co-dimension
-    for (const Entity& e : mesh.Entities(co_dim)) {
-      const lf::base::RefEl e_refel = e.RefEl();
+    for (const Entity* e : mesh.Entities(co_dim)) {
+      const lf::base::RefEl e_refel = e->RefEl();
       const Eigen::MatrixXd& ref_el_corners(e_refel.NodeCoords());
-      const Eigen::MatrixXd vertex_coords(e.Geometry()->Global(ref_el_corners));
+      const Eigen::MatrixXd vertex_coords(
+          e->Geometry()->Global(ref_el_corners));
       const double approx_area =
-          (e.Geometry()->IntegrationElement(ref_el_corners))[0];
+          (e->Geometry()->IntegrationElement(ref_el_corners))[0];
       // Visit all nodes
-      base::RandomAccessRange<const Entity> sub_ents(e.SubEntities(codim_pt));
+      base::RandomAccessRange<const Entity> sub_ents(e->SubEntities(codim_pt));
       for (base::sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
         const Eigen::VectorXd node_coords(
             sub_ents[j].Geometry()->Global(pt_ref_coord));
         // Check agreement of coordinates up to roundoff
         if ((vertex_coords.col(j) - node_coords).squaredNorm() >
             1.0E-8 * approx_area) {
-          ret_vals.emplace_back(e_refel, mesh.Index(e));
+          ret_vals.emplace_back(e_refel, mesh.Index(*e));
           if (watertight_mesh_ctrl > 0) {
             std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-                      << mesh.Index(e) << "): position  mismatch" << std::endl;
+                      << mesh.Index(*e) << "): position  mismatch" << std::endl;
           }
         }  // end geometry test
       }    // end loop over nodes

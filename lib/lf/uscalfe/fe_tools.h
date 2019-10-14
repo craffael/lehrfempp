@@ -113,12 +113,12 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
   using MfType = MeshFunctionReturnType<MF>;
 
   auto entities = mesh.Entities(codim);
-  auto result = internal::LocalIntegral(*entities.begin(), qr_selector, mf);
-  for (auto i = ++entities.begin(); i != entities.end(); ++i) {
-    if (!ep(*i)) {
+  auto result = internal::LocalIntegral(**entities.begin(), qr_selector, mf);
+  for (auto i = entities.begin() + 1; i != entities.end(); ++i) {
+    if (!ep(**i)) {
       continue;
     }
-    result = result + internal::LocalIntegral(*i, qr_selector, mf);
+    result = result + internal::LocalIntegral(**i, qr_selector, mf);
   }
   return result;
 }
@@ -219,12 +219,12 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
   glob_dofvec.setZero();
 
   // Loop over all cells
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
-    if (!pred(cell)) {
+  for (const lf::mesh::Entity *cell : mesh.Entities(0)) {
+    if (!pred(*cell)) {
       continue;
     }
     // Topological type of the cell
-    const lf::base::RefEl ref_el{cell.RefEl()};
+    const lf::base::RefEl ref_el{cell->RefEl()};
 
     // TODO(ralfh) uncommend when ctrl_prj is well-defined.
     // SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
@@ -240,7 +240,7 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
     const Eigen::MatrixXd ref_nodes(ref_shape_fns->EvaluationNodes());
 
     // Collect values of function to be projected in a row vector
-    auto uvalvec = u(cell, ref_nodes);
+    auto uvalvec = u(*cell, ref_nodes);
 
     // Compute the resulting local degrees of freedom
     auto dofvec(ref_shape_fns->NodalValuesToDofs(
@@ -250,13 +250,13 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
     // Set the corresponing global degrees of freedom
     // Note: "Setting", not "adding to"
     // Number of local shape functions
-    const size_type num_loc_dofs = dofh.NoLocalDofs(cell);
+    const size_type num_loc_dofs = dofh.NoLocalDofs(*cell);
     LF_ASSERT_MSG(
         dofvec.size() == num_loc_dofs,
         "Size mismatch: " << dofvec.size() << " <-> " << num_loc_dofs);
     // Fetch global numbers of local shape functions
     nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
-        dofh.GlobalDofIndices(cell));
+        dofh.GlobalDofIndices(*cell));
     // Insert dof values into the global coefficient vector
     for (int j = 0; j < num_loc_dofs; ++j) {
       glob_dofvec[ldof_gidx[j]] = dofvec[j];
@@ -335,13 +335,13 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
 
   // *** II: Local computations ****
   // Visit all edges of the mesh (codim-1 entities)
-  for (const lf::mesh::Entity &edge : mesh.Entities(1)) {
+  for (const lf::mesh::Entity *edge : mesh.Entities(1)) {
     // Check whether the current edge carries dofs to be imposed by the
     // function g. The decision relies on the predicate `esscondflag`
-    if (esscondflag(edge)) {
+    if (esscondflag(*edge)) {
       // Evaluate mesh function at several points specified by their
       // reference coordinates.
-      auto g_vals = g(edge, ref_eval_pts);
+      auto g_vals = g(*edge, ref_eval_pts);
 
       // Compute degrees of freedom from function values in evaluation
       // points
@@ -351,11 +351,11 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
       LF_ASSERT_MSG(dof_vals.size() == num_rsf,
                     "Mismatch " << dof_vals.size() << " <-> " << num_rsf);
       LF_ASSERT_MSG(
-          dofh.NoLocalDofs(edge) == num_rsf,
-          "Mismatch " << dofh.NoLocalDofs(edge) << " <-> " << num_rsf);
+          dofh.NoLocalDofs(*edge) == num_rsf,
+          "Mismatch " << dofh.NoLocalDofs(*edge) << " <-> " << num_rsf);
       // Fetch indices of global shape functions associated with current
       // edge
-      auto gdof_indices{dofh.GlobalDofIndices(edge)};
+      auto gdof_indices{dofh.GlobalDofIndices(*edge)};
       int k = 0;
       // Set flags and values; setting, no accumulation here!
       for (const lf::assemble::gdof_idx_t gdof_idx : gdof_indices) {
@@ -409,21 +409,21 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
 
   double sum = 0.0;
   /// loop over cells ( = codim-0 entities)
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
-    if (pred(cell)) {
+  for (const lf::mesh::Entity *cell : mesh.Entities(0)) {
+    if (pred(*cell)) {
       // Number of local shape functions
-      const size_type num_loc_dofs = dofh.NoLocalDofs(cell);
+      const size_type num_loc_dofs = dofh.NoLocalDofs(*cell);
       // Allocate a temporary vector of appropriate size
       dofvector_t loc_coeffs(num_loc_dofs);
       // Fetch global numbers of local shape functions
       nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
-          dofh.GlobalDofIndices(cell));
+          dofh.GlobalDofIndices(*cell));
       // Copy degrees of freedom into temporory vector
       for (int j = 0; j < num_loc_dofs; ++j) {
         loc_coeffs[j] = uh[ldof_gidx[j]];
       }
       // Sum local contribution
-      sum += loc_comp(cell, loc_coeffs);
+      sum += loc_comp(*cell, loc_coeffs);
     }  // end if (isACtive())
   }
   return sum;

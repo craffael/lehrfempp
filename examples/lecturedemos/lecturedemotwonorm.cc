@@ -71,19 +71,19 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
   // Summation variable for square of L2-norm
   double l2n_square{0.0};
   // Loop over the cells
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+  for (const lf::mesh::Entity *cell : mesh.Entities(0)) {
     // Obtain cell type
-    const lf::base::RefEl ref_el{cell.RefEl()};
+    const lf::base::RefEl ref_el{cell->RefEl()};
     // Only lowest-order Lagrangian FE are supported
-    LF_ASSERT_MSG(dofh.NoLocalDofs(cell) == ref_el.NumNodes(),
+    LF_ASSERT_MSG(dofh.NoLocalDofs(*cell) == ref_el.NumNodes(),
                   "No nodes must be equal to number of local shape functions");
     // Obtain shape of cell
-    const lf::geometry::Geometry *geo_p{cell.Geometry()};
+    const lf::geometry::Geometry *geo_p{cell->Geometry()};
     // Query volume of the cell
     const double area = lf::geometry::Volume(*geo_p);
     // Obtain global indices of global shape functions covering the cell
     nonstd::span<const lf::assemble::gdof_idx_t> idx{
-        dofh.GlobalDofIndices(cell)};
+        dofh.GlobalDofIndices(*cell)};
     switch (ref_el) {
       case lf::base::RefEl::kTria(): {
         // Edge-midpoint based local quadrature, exact for quadratic

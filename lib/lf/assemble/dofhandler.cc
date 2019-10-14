@@ -33,16 +33,16 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
     if (DofHandler::output_ctrl_ % 2 == 0) {
       for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
         // Visit all entities of a specific codimension
-        for (const lf::mesh::Entity &e : mesh->Entities(codim)) {
+        for (const lf::mesh::Entity *e : mesh->Entities(codim)) {
           // Fetch unique index of current entity supplied by mesh object
-          const lf::base::glb_idx_t e_idx = mesh->Index(e);
+          const lf::base::glb_idx_t e_idx = mesh->Index(*e);
           // Number of shape functions covering current entity
-          const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(e));
+          const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(*e));
           // Obtain global indices of those shape functions ...
           nonstd::span<const gdof_idx_t> doflist(
-              dof_handler.GlobalDofIndices(e));
+              dof_handler.GlobalDofIndices(*e));
           // and print them
-          o << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
+          o << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
           for (const lf::assemble::gdof_idx_t &dof : doflist) {
             o << dof << ' ';
           }
@@ -50,7 +50,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
           if (DofHandler::output_ctrl_ % 5 == 0) {
             // Also output indices of interior shape functions
             nonstd::span<const gdof_idx_t> intdoflist(
-                dof_handler.InteriorGlobalDofIndices(e));
+                dof_handler.InteriorGlobalDofIndices(*e));
             o << " int = [";
             for (lf::assemble::gdof_idx_t int_dof : intdoflist) {
               o << int_dof << ' ';

@@ -27,9 +27,9 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
 
   const lf::base::dim_t super_codim = codim_sub - codim_super;
   // Run through all super entities
-  for (const lf::mesh::Entity& e : mesh_p->Entities(super_codim)) {
+  for (const lf::mesh::Entity* e : mesh_p->Entities(super_codim)) {
     // Traverse all sub-entities of a specific relative co-dimension
-    for (const lf::mesh::Entity& subent : e.SubEntities(codim_super)) {
+    for (const lf::mesh::Entity& subent : e->SubEntities(codim_super)) {
       // Write access to an entry in the data set
       sup_ent_cnt(subent) += 1;
     }
@@ -49,11 +49,11 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
   // relative codimension with respect to faces (entities of co-dimension 1)
   const lf::base::dim_t rel_codim = codim - 1;
   // Run through  faces and flag sub-entities
-  for (const lf::mesh::Entity& edge : mesh_p->Entities(1)) {
-    if (no_adjacent_cells(edge) == 1) {
+  for (const lf::mesh::Entity* edge : mesh_p->Entities(1)) {
+    if (no_adjacent_cells(*edge) == 1) {
       // Boundary face detected!
       // Traverse all sub-entities of a specific relative co-dimension
-      for (const lf::mesh::Entity& subent : edge.SubEntities(rel_codim)) {
+      for (const lf::mesh::Entity& subent : edge->SubEntities(rel_codim)) {
         bd_flags(subent) = true;
       }
     }
@@ -70,13 +70,13 @@ AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
   AllCodimMeshDataSet<bool> bd_flags{mesh_p, false};
 
   // Run through faces (entities of co-dimension 1) and flag sub-entities
-  for (const lf::mesh::Entity& edge : mesh_p->Entities(1)) {
-    if (no_adjacent_cells(edge) == 1) {
+  for (const lf::mesh::Entity* edge : mesh_p->Entities(1)) {
+    if (no_adjacent_cells(*edge) == 1) {
       // Boundary face detected!
       // Traverse all sub-entities of all co-dimensions
       const lf::base::dim_t dim_mesh = mesh_p->DimMesh();
       for (lf::base::dim_t rel_codim = 0; rel_codim < dim_mesh; rel_codim++) {
-        for (const lf::mesh::Entity& subent : edge.SubEntities(rel_codim)) {
+        for (const lf::mesh::Entity& subent : edge->SubEntities(rel_codim)) {
           bd_flags(subent) = true;
         }
       }

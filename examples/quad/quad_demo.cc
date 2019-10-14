@@ -27,16 +27,16 @@ double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree,
   Eigen::MatrixXd points(1, 1);
   Eigen::VectorXd weights(1);
 
-  for (auto& e : mesh.Entities(0)) {
-    if (e.RefEl() == lf::base::RefEl::kTria()) {
+  for (auto e : mesh.Entities(0)) {
+    if (e->RefEl() == lf::base::RefEl::kTria()) {
       points = qr_tria.Points();
       weights = qr_tria.Weights();
     } else {
       points = qr_quad.Points();
       weights = qr_quad.Weights();
     }
-    auto mapped_points = e.Geometry()->Global(points);
-    auto integration_elements = e.Geometry()->IntegrationElement(points);
+    auto mapped_points = e->Geometry()->Global(points);
+    auto integration_elements = e->Geometry()->IntegrationElement(points);
     for (Eigen::Index j = 0; j < points.cols(); ++j) {
       result += f(mapped_points.col(j)) * weights(j) * integration_elements(j);
     }

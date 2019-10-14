@@ -22,7 +22,7 @@ void foo() {
 
   // Get all codim=0 entities that belong to the "air" physical entity:
   for (auto& e : reader.mesh()->Entities(0)) {
-    if (reader.IsPhysicalEntity(e, air_nr)) {
+    if (reader.IsPhysicalEntity(*e, air_nr)) {
       // This entity belongs to the "air" physical entity.
     }
   }

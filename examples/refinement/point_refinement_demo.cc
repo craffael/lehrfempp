@@ -42,16 +42,16 @@ CodimMeshDataSet_t MarkMesh(
       lf::mesh::utils::make_CodimMeshDataSet<bool>(mesh_ptr, 1, false);
 
   // loop through all cells to check if it contains the point
-  for (const lf::mesh::Entity &cell : mesh_ptr->Entities(0)) {
-    const lf::geometry::Geometry *geom_ptr = cell.Geometry();
-    lf::base::RefEl ref_el = cell.RefEl();
+  for (const lf::mesh::Entity *cell : mesh_ptr->Entities(0)) {
+    const lf::geometry::Geometry *geom_ptr = cell->Geometry();
+    lf::base::RefEl ref_el = cell->RefEl();
     const Eigen::MatrixXd &ref_el_coords(ref_el.NodeCoords());
     const Eigen::MatrixXd vtx_coords(geom_ptr->Global(ref_el_coords));
 
     // mark all edges if the point lies inside the cell
     if (ref_el == lf::base::RefEl::kTria()) {
       if (PointInTriangle(vtx_coords, point)) {
-        for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
+        for (const lf::mesh::Entity &edge : cell->SubEntities(1)) {
           marked->operator()(edge) = true;
         }
       }
@@ -62,7 +62,7 @@ CodimMeshDataSet_t MarkMesh(
       tria2 << vtx_coords.col(0), vtx_coords.col(2), vtx_coords.col(3);
 
       if (PointInTriangle(tria1, point) || PointInTriangle(tria2, point)) {
-        for (const lf::mesh::Entity &edge : cell.SubEntities(1)) {
+        for (const lf::mesh::Entity &edge : cell->SubEntities(1)) {
           marked->operator()(edge) = true;
         }
       }
