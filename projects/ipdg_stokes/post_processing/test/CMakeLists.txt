@@ -1,6 +1,6 @@
 include(GoogleTest)
 
-set(sources norms_tests.cc)
+set(sources norms_tests.cc mesh_function_velocity_tests.cc)
 
 add_executable(projects.ipdg_stokes.post_processing.test ${sources})
 target_link_libraries(projects.ipdg_stokes.post_processing.test PUBLIC

@@ -10,8 +10,7 @@
 namespace projects::ipdg_stokes::assemble {
 
 PiecewiseConstElementVectorProvider::PiecewiseConstElementVectorProvider(
-    double sigma,
-    std::function<Eigen::Vector2d(const Eigen::Vector2d &)> f,
+    double sigma, std::function<Eigen::Vector2d(const Eigen::Vector2d &)> f,
     lf::quad::QuadRule quadrule,
     const lf::mesh::utils::MeshDataSet<bool> &boundary,
     const lf::mesh::utils::MeshDataSet<Eigen::Vector2d> &dirichlet_data)

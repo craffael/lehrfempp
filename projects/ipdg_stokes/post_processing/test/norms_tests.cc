@@ -6,7 +6,7 @@
 #include <lf/mesh/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 
-TEST(projects_ipdg_stokes_post_processing, l2_constant) {
+TEST(projects_ipdg_stokes_post_processing, norm_l2_constant) {
   // Build a mesh on $[0,1] \times [0,1]$
   std::shared_ptr<lf::mesh::MeshFactory> factory =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -29,7 +29,7 @@ TEST(projects_ipdg_stokes_post_processing, l2_constant) {
   ASSERT_NEAR(L2_one, std::sqrt(2), 1e-10);
 }
 
-TEST(projects_ipdg_stokes_post_processing, dg_constant) {
+TEST(projects_ipdg_stokes_post_processing, norm_dg_constant) {
   // Build a mesh on $[0,1] \times [0,1]$
   std::shared_ptr<lf::mesh::MeshFactory> factory =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -60,7 +60,7 @@ TEST(projects_ipdg_stokes_post_processing, dg_constant) {
   ASSERT_NEAR(DG_one, 0, 1e-10);
 }
 
-TEST(projects_ipdg_stokes_post_processing, dg_jump) {
+TEST(projects_ipdg_stokes_post_processing, norm_dg_jump) {
   // Build a mesh on $[0,1] \times [0,1]$
   const size_t nx = 10;
   const size_t ny = 10;
