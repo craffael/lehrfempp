@@ -119,8 +119,8 @@ class Quadrilateral : public mesh::Entity {
   std::array<const Point*, 4> nodes_{};           // nodes = corners of quad
   std::array<const Segment*, 4> edges_{};         // edges of quad
   std::array<lf::mesh::Orientation, 4>
-      edge_ori_{};  // orientation of edges (set in constructor)
-  Entity* this_;    // needed for SubEntity()
+      edge_ori_{};          // orientation of edges (set in constructor)
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

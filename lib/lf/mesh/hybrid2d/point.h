@@ -101,7 +101,7 @@ class Point : public mesh::Entity {
   std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
   static constexpr std::array<lf::mesh::Orientation, 1> dummy_or_{
       lf::mesh::Orientation::positive};
-  Entity* this_;  // needed for SubEntity()
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

@@ -111,8 +111,8 @@ class Triangle : public mesh::Entity {
   std::array<const Point*, 3> nodes_{};           // nodes = corners of cell
   std::array<const Segment*, 3> edges_{};         // edges of the cells
   std::array<lf::mesh::Orientation, 3>
-      edge_ori_{};  // orientation of edges (set in constructor)
-  Entity* this_;    // needed for SubEntity()
+      edge_ori_{};          // orientation of edges (set in constructor)
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

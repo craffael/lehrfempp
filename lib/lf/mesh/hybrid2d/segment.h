@@ -116,7 +116,7 @@ class Segment : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 2> nodes_{};           // nodes connected by edge
-  Entity* this_;                                  // needed for SubEntity()
+  Entity* this_ = nullptr;                        // needed for SubEntity()
   static constexpr std::array<lf::mesh::Orientation, 2> endpoint_ori_{
       lf::mesh::Orientation::negative,
       lf::mesh::Orientation::positive};  // orientation of endpoints
