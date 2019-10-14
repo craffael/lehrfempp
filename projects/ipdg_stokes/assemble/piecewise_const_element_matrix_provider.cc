@@ -31,8 +31,8 @@ Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
           .transpose();
   const Eigen::MatrixXd J_inv_trans =
       geom->JacobianInverseGramian(Eigen::VectorXd::Zero(2));
-  const Eigen::MatrixXd grads = J_inv_trans * ref_grads;
-  Eigen::MatrixXd basis_funct(2, 3);
+  const Eigen::Matrix<double, 2, 3> grads = J_inv_trans * ref_grads;
+  Eigen::Matrix<double, 2, 3> basis_funct;
   basis_funct << grads.row(1), -grads.row(0);
   // Fill the element matrix
   Eigen::MatrixXd elem_mat = Eigen::MatrixXd::Zero(6, 6);
