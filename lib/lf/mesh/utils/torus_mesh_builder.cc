@@ -86,7 +86,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   for (size_type i = 0; i < nx; ++i) {
     for (size_type j = 0; j < ny; ++j, quad_cnt++) {
       // gather vertex indices of given cell wrapping around edges of rectangle
-      lf::base::ForwardRange<const size_type> vertex_index_list{
+      std::vector<size_type> vertex_index_list{
           v_idx[VertexIndex(i, j)], v_idx[VertexIndex((i + 1) % nx, j)],
           v_idx[VertexIndex((i + 1) % nx, (j + 1) % ny)],
           v_idx[VertexIndex(i, (j + 1) % ny)]};

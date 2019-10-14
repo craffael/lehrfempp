@@ -27,13 +27,15 @@ int main() {
   // add an element
   Eigen::MatrixXd node_coord(2, 4);
   node_coord << 0, 1, 1, 0, 0, 0, 1, 1;
-  test.AddEntity(lf::base::RefEl::kQuad(), {0, 1, 2, 3},
+  test.AddEntity(lf::base::RefEl::kQuad(),
+                 std::array<lf::base::size_type, 4>{0, 1, 2, 3},
                  std::make_unique<lf::geometry::QuadO1>(std::move(node_coord)));
 
   // explicitly add the right edge:
   node_coord = Eigen::MatrixXd(2, 2);
   node_coord << 1, 1, 0, 1;
-  test.AddEntity(lf::base::RefEl::kSegment(), {1, 2},
+  test.AddEntity(lf::base::RefEl::kSegment(),
+                 std::array<lf::base::size_type, 2>{1, 2},
                  std::make_unique<lf::geometry::SegmentO1>(node_coord));
 
   // build the mesh and retrieve a pointer

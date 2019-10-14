@@ -96,14 +96,15 @@ TEST(lf_hybrid2d, EdgeNumbering) {
   Eigen::MatrixXd node_coord(2, 4);
   node_coord << 0, 1, 1, 0, 0, 0, 1, 1;
   EXPECT_EQ(0, mf.AddEntity(
-                   base::RefEl::kQuad(), {0, 1, 2, 3},
+                   base::RefEl::kQuad(), std::array<size_type, 4>{{0, 1, 2, 3}},
                    std::make_unique<geometry::QuadO1>(std::move(node_coord))));
 
   // explicitly add the right edge:
   node_coord = Eigen::MatrixXd(2, 2);
   node_coord << 1, 1, 0, 1;
-  EXPECT_EQ(0, mf.AddEntity(base::RefEl::kSegment(), {1, 2},
-                            std::make_unique<geometry::SegmentO1>(node_coord)));
+  EXPECT_EQ(
+      0, mf.AddEntity(base::RefEl::kSegment(), std::array<size_type, 2>{{1, 2}},
+                      std::make_unique<geometry::SegmentO1>(node_coord)));
 
   // build the mesh
   auto mesh = mf.Build();
@@ -165,7 +166,7 @@ TEST(lf_hybrid2d, IncompleteMeshes) {
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
   factory->AddEntity(
-      base::RefEl::kTria(), {0, 1, 2},
+      base::RefEl::kTria(), std::array<size_type, 3>{{0, 1, 2}},
       std::make_unique<geometry::TriaO1>(
           (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
 
@@ -178,7 +179,7 @@ TEST(lf_hybrid2d, IncompleteMeshes) {
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
   factory->AddEntity(
-      base::RefEl::kTria(), {0, 1, 2},
+      base::RefEl::kTria(), std::array<size_type, 3>{{0, 1, 2}},
       std::make_unique<geometry::TriaO1>(
           (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
   EXPECT_NO_FATAL_FAILURE(factory->Build());
@@ -190,10 +191,10 @@ TEST(lf_hybrid2d, IncompleteMeshes) {
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(0, 1)));
   factory->AddPoint(std::make_unique<geometry::Point>(Eigen::Vector2d(1, 1)));
   factory->AddEntity(
-      base::RefEl::kTria(), {0, 1, 2},
+      base::RefEl::kTria(), std::array<size_type, 3>{{0, 1, 2}},
       std::make_unique<geometry::TriaO1>(
           (Eigen::MatrixXd(2, 3) << 0, 1, 0, 0, 0, 1).finished()));
-  factory->AddEntity(base::RefEl::kSegment(), {2, 3},
+  factory->AddEntity(base::RefEl::kSegment(), std::array<size_type, 2>{{2, 3}},
                      std::make_unique<geometry::SegmentO1>(
                          (Eigen::Matrix2d() << 0, 1, 1, 1).finished()));
   EXPECT_DEATH(factory->Build(), "Mesh is incomplete");

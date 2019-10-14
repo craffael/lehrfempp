@@ -77,14 +77,17 @@ int main(int argc, char** argv) {
   mesh_factory.AddPoint(Eigen::Vector2d{0, 1});
   Eigen::MatrixXd node_coords(2, 3);
   node_coords << 0, 0.5, 0.5, 0, 0, 1;
-  mesh_factory.AddEntity(lf::base::RefEl::kTria(), {0, 1, 4},
+  mesh_factory.AddEntity(lf::base::RefEl::kTria(),
+                         std::vector<lf::base::size_type>{0, 1, 4},
                          std::make_unique<lf::geometry::TriaO1>(node_coords));
   node_coords << 0, 0.5, 0, 0, 1, 1;
-  mesh_factory.AddEntity(lf::base::RefEl::kTria(), {0, 4, 5},
+  mesh_factory.AddEntity(lf::base::RefEl::kTria(),
+                         std::vector<lf::base::size_type>{0, 4, 5},
                          std::make_unique<lf::geometry::TriaO1>(node_coords));
   node_coords = Eigen::MatrixXd(2, 4);
   node_coords << 0.5, 1, 1, 0.5, 0, 0, 1, 1;
-  mesh_factory.AddEntity(lf::base::RefEl::kQuad(), {1, 2, 3, 4},
+  mesh_factory.AddEntity(lf::base::RefEl::kQuad(),
+                         std::vector<lf::base::size_type>{1, 2, 3, 4},
                          std::make_unique<lf::geometry::QuadO1>(node_coords));
 
   auto base_mesh = mesh_factory.Build();

@@ -83,14 +83,12 @@ void lecturedemodof() {
   // First cell: the unit square
   quad_coord << 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0;
   mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kQuad(),
-      lf::base::ForwardRange<const size_type>({0, 1, 3, 2}),
+      lf::base::RefEl::kQuad(), std::vector<size_type>({0, 1, 3, 2}),
       std::make_unique<lf::geometry::Parallelogram>(quad_coord));
   // Second cell: an affine triangle
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({1, 3, 4}),
-      std::unique_ptr<lf::geometry::Geometry>(nullptr));
+  mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
+                              std::vector<size_type>({1, 3, 4}),
+                              std::unique_ptr<lf::geometry::Geometry>(nullptr));
   // Ready to build the mesh data structure
   std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
 

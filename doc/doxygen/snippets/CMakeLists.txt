@@ -3,7 +3,6 @@
 set(sources
   fe_tools.cc
   fe_space_lagrange_o1.cc
-  forward_iterator.cc
   gmsh_reader.cc
   lambda_mesh_data_set.cc
   mesh_function_binary.cc

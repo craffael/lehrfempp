@@ -3,9 +3,6 @@ include(GoogleTest)
 
 set(sources
   eigen_tools_tests.cc
-  forward_iterator_tests.cc
-  forward_range_tests.cc
-  random_access_iterator_tests.cc
   ref_el_tests.cc
 )
 

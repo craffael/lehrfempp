@@ -163,14 +163,12 @@ int main(int /*argc*/, const char** /*argv*/) {
   }
 
   // Initialize triangles
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({3, 1, 4}),
-      std::unique_ptr<lf::geometry::Geometry>(nullptr));
-  mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kTria(),
-      lf::base::ForwardRange<const size_type>({7, 6, 2}),
-      std::unique_ptr<lf::geometry::Geometry>(nullptr));
+  mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
+                              std::vector<size_type>({3, 1, 4}),
+                              std::unique_ptr<lf::geometry::Geometry>(nullptr));
+  mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
+                              std::vector<size_type>({7, 6, 2}),
+                              std::unique_ptr<lf::geometry::Geometry>(nullptr));
 
   // Create general quadrilateral
   std::array<size_type, 4> quad_nodes{5, 4, 7, 6};
@@ -180,8 +178,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     quad_coord(1, n_pt) = node_coord[quad_nodes[n_pt]][1];
   }
   mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kQuad(),
-      lf::base::ForwardRange<const size_type>({5, 4, 7, 6}),
+      lf::base::RefEl::kQuad(), std::vector<size_type>({5, 4, 7, 6}),
       std::make_unique<lf::geometry::QuadO1>(quad_coord));
 
   // Create parallelogram
@@ -191,8 +188,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     quad_coord(1, n_pt) = node_coord[parg_nodes[n_pt]][1];
   }
   mesh_factory_ptr->AddEntity(
-      lf::base::RefEl::kQuad(),
-      lf::base::ForwardRange<const size_type>({0, 3, 4, 5}),
+      lf::base::RefEl::kQuad(), std::vector<size_type>({0, 3, 4, 5}),
       std::make_unique<lf::geometry::Parallelogram>(quad_coord));
 
   // Get a pointer to the coarsest mesh

@@ -430,11 +430,11 @@ void MeshHierarchy::PerformRefinement() {
                                         << "," << ed_p1_fine_idx << "] "
                                         << std::endl;)
 
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge->RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {ed_p0_fine_idx, ed_p1_fine_idx}),
-              std::move(ed_copy[0])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {ed_p0_fine_idx, ed_p1_fine_idx}},
+                                       std::move(ed_copy[0])));
           break;
         }  // end rp_copy
         case rp_split: {
@@ -466,16 +466,16 @@ void MeshHierarchy::PerformRefinement() {
                                         << midpoint_fine_idx << ","
                                         << ed_p1_fine_idx << "] " << std::endl;)
 
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge->RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {ed_p0_fine_idx, midpoint_fine_idx}),
-              std::move(edge_child_geo_ptrs[0])));
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge->RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {midpoint_fine_idx, ed_p1_fine_idx}),
-              std::move(edge_child_geo_ptrs[1])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {ed_p0_fine_idx, midpoint_fine_idx}},
+                                       std::move(edge_child_geo_ptrs[0])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {midpoint_fine_idx, ed_p1_fine_idx}},
+                                       std::move(edge_child_geo_ptrs[1])));
           break;
         }  // end rp_split
         default: {
@@ -1211,7 +1211,8 @@ void MeshHierarchy::PerformRefinement() {
                                   << cen[1] << "]" << std::endl;)
 
           const glb_idx_t new_edge_index = mesh_factory_->AddEntity(
-              lf::base::RefEl::kSegment(), {cen[0], cen[1]},
+              lf::base::RefEl::kSegment(),
+              std::array<base::glb_idx_t, 2>{{cen[0], cen[1]}},
               std::move(cell_edge_geo_ptrs[k]));
           cell_ci.child_edge_idx.push_back(new_edge_index);
         }  // end loop over new edges
@@ -1237,7 +1238,8 @@ void MeshHierarchy::PerformRefinement() {
                           << ccn[1] << "," << ccn[2] << "]" << std::endl;)
 
             new_cell_index = mesh_factory_->AddEntity(
-                lf::base::RefEl::kTria(), {ccn[0], ccn[1], ccn[2]},
+                lf::base::RefEl::kTria(),
+                std::array<base::glb_idx_t, 3>{ccn[0], ccn[1], ccn[2]},
                 std::move(childcell_geo_ptrs[k]));
           } else if (ccn.size() == 4) {
             // New cell is a quadrilateral
@@ -1249,9 +1251,11 @@ void MeshHierarchy::PerformRefinement() {
                                     << "," << ccn[1] << "," << ccn[2] << ","
                                     << ccn[3] << "]" << std::endl;)
 
-            new_cell_index = mesh_factory_->AddEntity(
-                lf::base::RefEl::kQuad(), {ccn[0], ccn[1], ccn[2], ccn[3]},
-                std::move(childcell_geo_ptrs[k]));
+            new_cell_index =
+                mesh_factory_->AddEntity(lf::base::RefEl::kQuad(),
+                                         std::array<base::glb_idx_t, 4>{
+                                             {ccn[0], ccn[1], ccn[2], ccn[3]}},
+                                         std::move(childcell_geo_ptrs[k]));
           } else {
             LF_VERIFY_MSG(false,
                           "Child cells must be either triangles or quads");
