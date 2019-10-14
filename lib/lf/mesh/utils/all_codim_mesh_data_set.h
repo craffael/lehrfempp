@@ -99,17 +99,6 @@ class AllCodimMeshDataSet : public MeshDataSet<T> {
   dim_t dim_mesh_;
   std::shared_ptr<const lf::mesh::Mesh> mesh_;
   std::vector<std::vector<T>> data_;
-
-  // Friends
-  template <class S>
-  friend std::shared_ptr<AllCodimMeshDataSet<S>>
-  make_AllCodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const lf::mesh::Mesh> mesh);
-
-  template <class S, class>
-  friend std::shared_ptr<AllCodimMeshDataSet<S>>
-  make_AllCodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const lf::mesh::Mesh> mesh, S init_value);
 };
 
 /**

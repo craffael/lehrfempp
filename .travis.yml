@@ -103,13 +103,13 @@ jobs:
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode10.1
+    osx_image: xcode10.2
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode10.1
+    osx_image: xcode10.2
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
