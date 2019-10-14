@@ -17,7 +17,7 @@ namespace projects::ipdg_stokes {
 namespace post_processing {
 
 /**
- * @breif Compute the @f$L^2@f$-norm of a vector valued function over a mesh
+ * @brief Compute the @f$L^2@f$-norm of a vector valued function over a mesh
  * @param mesh A shared pointer to the mesh over which the function is defined
  * @param f The function to take the norm from
  * @param quadrule_order The order of the quadrature rule to use to integrate
