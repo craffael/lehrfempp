@@ -60,15 +60,16 @@ class Point : public mesh::Entity {
                   "Geometry must be that of a point");
     LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kPoint(),
                   "Geometry must fit point");
+    this_ = this;
   }
 
   [[nodiscard]] unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
-    return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
+    return {&this_, 1};
   }
 
   /** Must not be called: No sub-entities for a point */
@@ -102,6 +103,7 @@ class Point : public mesh::Entity {
   std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
   static constexpr std::array<lf::mesh::Orientation, 1> dummy_or_{
       lf::mesh::Orientation::positive};
+  Entity* this_;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

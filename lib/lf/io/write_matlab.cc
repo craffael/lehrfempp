@@ -67,7 +67,7 @@ void writeMatlab(const lf::mesh::Mesh& mesh, std::string filename) {
       // Access endpoints = sub-entities of relative co-dimension 1
       const auto sub_ent = edge->SubEntities(1);
       file << "EDS(" << edge_index + 1 << ",:) = ["
-           << mesh.Index(sub_ent[0]) + 1 << ", " << mesh.Index(sub_ent[1]) + 1
+           << mesh.Index(*sub_ent[0]) + 1 << ", " << mesh.Index(*sub_ent[1]) + 1
            << "];" << std::endl;
       ed_cnt++;
     }
@@ -85,19 +85,19 @@ void writeMatlab(const lf::mesh::Mesh& mesh, std::string filename) {
       switch (ref_el) {
         case lf::base::RefEl::kTria(): {
           file << "TRI(" << triag_cnt + 1 << ",:) = ["
-               << mesh.Index(sub_ent[0]) + 1 << ", "
-               << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << ", " << cell_index << " ];"
+               << mesh.Index(*sub_ent[0]) + 1 << ", "
+               << mesh.Index(*sub_ent[1]) + 1 << ", "
+               << mesh.Index(*sub_ent[2]) + 1 << ", " << cell_index << " ];"
                << std::endl;
           triag_cnt++;
           break;
         }
         case lf::base::RefEl::kQuad(): {
           file << "QUAD(" << quad_cnt + 1 << ",:) = ["
-               << mesh.Index(sub_ent[0]) + 1 << ", "
-               << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << ", "
-               << mesh.Index(sub_ent[3]) + 1 << ", " << cell_index << " ];"
+               << mesh.Index(*sub_ent[0]) + 1 << ", "
+               << mesh.Index(*sub_ent[1]) + 1 << ", "
+               << mesh.Index(*sub_ent[2]) + 1 << ", "
+               << mesh.Index(*sub_ent[3]) + 1 << ", " << cell_index << " ];"
                << std::endl;
           quad_cnt++;
           break;

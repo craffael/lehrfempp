@@ -81,16 +81,16 @@ int main() {
   // mark the eyes
   for (auto e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_eyes)) {
-      for (auto& node : e->SubEntities(2)) {
-        mds->operator()(node) = 2;
+      for (auto node : e->SubEntities(2)) {
+        mds->operator()(*node) = 2;
       }
     }
   }
   // mark the mouth
   for (auto e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_mouth)) {
-      for (auto& node : e->SubEntities(1)) {
-        mds->operator()(node) = 1;
+      for (auto node : e->SubEntities(1)) {
+        mds->operator()(*node) = 1;
       }
     }
   }

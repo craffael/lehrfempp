@@ -46,8 +46,8 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
           case lf::base::RefEl::kSegment(): {
             file << codim << ',' << obj_idx << ',';
             // to access points of segment use SubEntities(1)
-            for (const auto &sub : obj->SubEntities(codim)) {
-              file << mesh.Index(sub) << ',';
+            for (const auto *sub : obj->SubEntities(codim)) {
+              file << mesh.Index(*sub) << ',';
             }
             file << std::endl;
 
@@ -57,8 +57,8 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
           case lf::base::RefEl::kQuad(): {
             file << codim << ',' << obj_idx << ',';
             // to access points of cell use SubEntities(1)
-            for (const auto &sub : obj->SubEntities(codim + 1)) {
-              file << mesh.Index(sub) << ',';
+            for (const auto *sub : obj->SubEntities(codim + 1)) {
+              file << mesh.Index(*sub) << ',';
             }
             file << std::endl;
 

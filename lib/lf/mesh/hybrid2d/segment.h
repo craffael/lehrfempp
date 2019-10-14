@@ -67,6 +67,7 @@ class Segment : public mesh::Entity {
       LF_VERIFY_MSG(geometry_->RefEl() == base::RefEl::kSegment(),
                     "Segment geometry must fit a segment");
     }
+    this_ = this;
   }
 
   /** @brief an edge is an entity of co-dimension 1 */
@@ -78,7 +79,7 @@ class Segment : public mesh::Entity {
      - for rel_codim == 1: return 2-range covering endnodes
      - for rel_codim == 0: return the Segment entity itself
    */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of endpoints
@@ -116,6 +117,7 @@ class Segment : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 2> nodes_{};           // nodes connected by edge
+  Entity* this_;                                  // needed for SubEntity()
   static constexpr std::array<lf::mesh::Orientation, 2> endpoint_ori_{
       lf::mesh::Orientation::negative,
       lf::mesh::Orientation::positive};  // orientation of endpoints

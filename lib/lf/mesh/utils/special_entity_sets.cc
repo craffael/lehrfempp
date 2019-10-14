@@ -29,9 +29,9 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
   // Run through all super entities
   for (const lf::mesh::Entity* e : mesh_p->Entities(super_codim)) {
     // Traverse all sub-entities of a specific relative co-dimension
-    for (const lf::mesh::Entity& subent : e->SubEntities(codim_super)) {
+    for (const lf::mesh::Entity* subent : e->SubEntities(codim_super)) {
       // Write access to an entry in the data set
-      sup_ent_cnt(subent) += 1;
+      sup_ent_cnt(*subent) += 1;
     }
   }
   return sup_ent_cnt;
@@ -53,8 +53,8 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
     if (no_adjacent_cells(*edge) == 1) {
       // Boundary face detected!
       // Traverse all sub-entities of a specific relative co-dimension
-      for (const lf::mesh::Entity& subent : edge->SubEntities(rel_codim)) {
-        bd_flags(subent) = true;
+      for (const lf::mesh::Entity* subent : edge->SubEntities(rel_codim)) {
+        bd_flags(*subent) = true;
       }
     }
   }
@@ -76,8 +76,8 @@ AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
       // Traverse all sub-entities of all co-dimensions
       const lf::base::dim_t dim_mesh = mesh_p->DimMesh();
       for (lf::base::dim_t rel_codim = 0; rel_codim < dim_mesh; rel_codim++) {
-        for (const lf::mesh::Entity& subent : edge->SubEntities(rel_codim)) {
-          bd_flags(subent) = true;
+        for (const lf::mesh::Entity* subent : edge->SubEntities(rel_codim)) {
+          bd_flags(*subent) = true;
         }
       }
     }

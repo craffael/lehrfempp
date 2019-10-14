@@ -24,8 +24,8 @@ TEST(lf_refinement, FatherChildRelations) {
       base_mesh->Entities(0).begin(), base_mesh->Entities(0).end(),
       [](const auto e) { return e->RefEl() == base::RefEl::kTria(); });
 
-  for (auto &edge : (*triangle)->SubEntities(1)) {
-    (*marks)(edge) = true;
+  for (auto edge : (*triangle)->SubEntities(1)) {
+    (*marks)(*edge) = true;
   }
 
   mh.MarkEdges([&](auto &mesh, auto &e) { return (*marks)(e); });

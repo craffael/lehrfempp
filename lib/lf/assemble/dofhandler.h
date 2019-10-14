@@ -487,8 +487,8 @@ class DynamicFEDofHandler : public DofHandler {
 
       // Obtain indices for basis functions sitting at endpoints
       // Endpoints are mesh entities with co-dimension = 2
-      for (const lf::mesh::Entity &endpoint : edge->SubEntities(1)) {
-        const glb_idx_t ep_idx(mesh_p_->Index(endpoint));
+      for (const lf::mesh::Entity *endpoint : edge->SubEntities(1)) {
+        const glb_idx_t ep_idx(mesh_p_->Index(*endpoint));
         glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
         size_type no_int_dofs_ep = no_int_dofs_[2][ep_idx];
         // Copy indices of shape functions from nodes to edge
@@ -524,8 +524,8 @@ class DynamicFEDofHandler : public DofHandler {
       no_int_dofs_[0][cell_idx] = no_int_dof_cell;
 
       // Obtain indices for basis functions in vertices
-      for (const lf::mesh::Entity &vertex : cell->SubEntities(2)) {
-        const glb_idx_t vt_idx(mesh_p_->Index(vertex));
+      for (const lf::mesh::Entity *vertex : cell->SubEntities(2)) {
+        const glb_idx_t vt_idx(mesh_p_->Index(*vertex));
         glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
         size_type no_int_dofs_vt = no_int_dofs_[2][vt_idx];
         // Copy indices of shape functions from nodes to cell
@@ -539,12 +539,11 @@ class DynamicFEDofHandler : public DofHandler {
       // Internal ordering will depend on the orientation of the edge
       lf::base::RandomAccessRange<const lf::mesh::Orientation>
           edge_orientations(cell->RelativeOrientations());
-      lf::base::RandomAccessRange<const lf::mesh::Entity> edges(
-          cell->SubEntities(1));
+      auto edges = cell->SubEntities(1);
       // Loop over edges
       for (int ed_sub_idx = 0; ed_sub_idx < cell->RefEl().NumSubEntities(1);
            ed_sub_idx++) {
-        const glb_idx_t edge_idx = mesh_p_->Index(edges[ed_sub_idx]);
+        const glb_idx_t edge_idx = mesh_p_->Index(*edges[ed_sub_idx]);
         const size_type no_int_dof_edge = no_int_dofs_[1][edge_idx];
         const glb_idx_t edge_int_dof_offset =
             offsets_[1][edge_idx + 1] - no_int_dof_edge;

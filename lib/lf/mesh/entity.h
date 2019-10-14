@@ -63,7 +63,7 @@ class Entity {
    sub-entity with relative co-dimension 0, and the endpoints are the
    sub-entitities of relative co-dimension 1.
    */
-  [[nodiscard]] virtual base::RandomAccessRange<const Entity> SubEntities(
+  [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
 
   /**

@@ -71,10 +71,10 @@ void scanTopology(const lf::mesh::Mesh &mesh, dim_t codim) {
       auto sub_ent_range = ent->SubEntities(sub_codim);
       size_type sub_cnt = 0;  // Counter for sub-entities
       // Loop over sub-entities, whose types and indices will be output
-      for (const lf::mesh::Entity &subent : sub_ent_range) { // \Label[line]{st:1}
+      for (const lf::mesh::Entity* subent : sub_ent_range) { // \Label[line]{st:1}
         std::cout << "\t rel. codim " << +sub_codim << " sub-ent "
-		  << sub_cnt << ": " << subent << ", idx = "
-		  << mesh.Index(subent) << std::endl;
+		  << sub_cnt << ": " << *subent << ", idx = "
+		  << mesh.Index(*subent) << std::endl;
         sub_cnt++;
       }}}}
 /* SAM_LISTING_END_2 */

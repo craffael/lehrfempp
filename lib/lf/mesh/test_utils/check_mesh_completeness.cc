@@ -26,12 +26,12 @@ bool checkMeshCompleteness(const Mesh& mesh) {
       // std::cout << "Entity(" << mesh.Index(e) << "): " << std::flush;
 
       // Fetch subentities of co-dimension 1
-      base::RandomAccessRange<const Entity> sub_ent_range(e->SubEntities(1));
-      for (const Entity& sub_ent : sub_ent_range) {
+      auto sub_ent_range = e->SubEntities(1);
+      for (const Entity* sub_ent : sub_ent_range) {
         // Diagnostic output
         // std::cout << mesh.Index(sub_ent) << " " << std::flush;
         // Obtain index of the sub-entity to address counter
-        entity_link_cnt[mesh.Index(sub_ent)]++;
+        entity_link_cnt[mesh.Index(*sub_ent)]++;
       }
       // For diagnostic output
       // std::cout << std::endl;
@@ -93,10 +93,10 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
       const double approx_area =
           (e->Geometry()->IntegrationElement(ref_el_corners))[0];
       // Visit all nodes
-      base::RandomAccessRange<const Entity> sub_ents(e->SubEntities(codim_pt));
+      auto sub_ents = e->SubEntities(codim_pt);
       for (base::sub_idx_t j = 0; j < e_refel.NumNodes(); ++j) {
         const Eigen::VectorXd node_coords(
-            sub_ents[j].Geometry()->Global(pt_ref_coord));
+            sub_ents[j]->Geometry()->Global(pt_ref_coord));
         // Check agreement of coordinates up to roundoff
         if ((vertex_coords.col(j) - node_coords).squaredNorm() >
             1.0E-8 * approx_area) {

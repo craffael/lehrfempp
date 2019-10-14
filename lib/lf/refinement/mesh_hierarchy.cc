@@ -165,15 +165,14 @@ void MeshHierarchy::RefineMarked() {
       // Local indices of edges marked as split
       std::array<sub_idx_t, 4> split_edge_idx{};
       // Array of references to edge sub-entities of current cell
-      base::RandomAccessRange<const lf::mesh::Entity> sub_edges(
-          cell->SubEntities(1));
+      auto sub_edges = cell->SubEntities(1);
       const size_type num_edges = cell->RefEl().NumSubEntities(1);
       LF_VERIFY_MSG(num_edges <= 4, "Too many edges = " << num_edges);
       // Obtain information about current splitting pattern of
       // the edges of the cell
       size_type split_edge_cnt = 0;
       for (int k = 0; k < num_edges; k++) {
-        const glb_idx_t edge_index = finest_mesh.Index(sub_edges[k]);
+        const glb_idx_t edge_index = finest_mesh.Index(*sub_edges[k]);
         cell_edge_indices[k] = edge_index;
         edge_split[k] =
             (finest_edge_ci[edge_index].ref_pat_ == RefPat::rp_split);
@@ -400,11 +399,11 @@ void MeshHierarchy::PerformRefinement() {
       lf::base::glb_idx_t edge_index = parent_mesh.Index(*edge);
 
       // Get indices of endpoints in parent mesh
-      auto ed_nodes(edge->SubEntities(1));
+      auto ed_nodes = edge->SubEntities(1);
       const lf::base::glb_idx_t ed_p0_coarse_idx =
-          parent_mesh.Index(ed_nodes[0]);
+          parent_mesh.Index(*ed_nodes[0]);
       const lf::base::glb_idx_t ed_p1_coarse_idx =
-          parent_mesh.Index(ed_nodes[1]);
+          parent_mesh.Index(*ed_nodes[1]);
 
       // Obtain indices of the nodes at the same position in the fine mesh
       const lf::base::glb_idx_t ed_p0_fine_idx =
@@ -531,10 +530,9 @@ void MeshHierarchy::PerformRefinement() {
       std::array<std::vector<lf::base::glb_idx_t>, 3> cell_subent_idx;
       cell_subent_idx[0].push_back(cell_index);
       for (int codim = 1; codim <= 2; codim++) {
-        base::RandomAccessRange<const mesh::Entity> subentities(
-            cell->SubEntities(codim));
-        for (const mesh::Entity &sub_ent : subentities) {
-          cell_subent_idx[codim].push_back(parent_mesh.Index(sub_ent));
+        auto subentities = cell->SubEntities(codim);
+        for (const mesh::Entity *sub_ent : subentities) {
+          cell_subent_idx[codim].push_back(parent_mesh.Index(*sub_ent));
         }
         LF_VERIFY_MSG(
             cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
@@ -1687,7 +1685,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
   LF_VERIFY_MSG(T.Codim() == 0, "Entity must be a call");
   // Obtain iterator over the edges
   const size_type num_edges = T.RefEl().NumSubEntities(1);
-  base::RandomAccessRange<const lf::mesh::Entity> sub_edges(T.SubEntities(1));
+  auto sub_edges = T.SubEntities(1);
   double max_len = 0.0;
   sub_idx_t idx_longest_edge = 0;
   Eigen::MatrixXd mp_refc(1, 1);
@@ -1695,7 +1693,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
   for (int k = 0; k < num_edges; k++) {
     // Approximate length by "1-point quadrature"
     const double approx_length =
-        (sub_edges[k].Geometry()->IntegrationElement(mp_refc))[0];
+        (sub_edges[k]->Geometry()->IntegrationElement(mp_refc))[0];
     if (max_len < approx_length) {
       idx_longest_edge = k;
       max_len = approx_length;

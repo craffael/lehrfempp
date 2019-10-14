@@ -51,8 +51,8 @@ CodimMeshDataSet_t MarkMesh(
     // mark all edges if the point lies inside the cell
     if (ref_el == lf::base::RefEl::kTria()) {
       if (PointInTriangle(vtx_coords, point)) {
-        for (const lf::mesh::Entity &edge : cell->SubEntities(1)) {
-          marked->operator()(edge) = true;
+        for (const lf::mesh::Entity *edge : cell->SubEntities(1)) {
+          marked->operator()(*edge) = true;
         }
       }
     } else if (ref_el == lf::base::RefEl::kQuad()) {
@@ -62,8 +62,8 @@ CodimMeshDataSet_t MarkMesh(
       tria2 << vtx_coords.col(0), vtx_coords.col(2), vtx_coords.col(3);
 
       if (PointInTriangle(tria1, point) || PointInTriangle(tria2, point)) {
-        for (const lf::mesh::Entity &edge : cell->SubEntities(1)) {
-          marked->operator()(edge) = true;
+        for (const lf::mesh::Entity *edge : cell->SubEntities(1)) {
+          marked->operator()(*edge) = true;
         }
       }
     } else {

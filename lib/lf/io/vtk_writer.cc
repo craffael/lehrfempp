@@ -676,8 +676,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     node_indices.reserve(num_nodes[ref_el.Id()]);
 
     // node indices that make up this cell:
-    for (auto& p : e->SubEntities(dim_mesh - codim)) {
-      node_indices.push_back(mesh_->Index(p));
+    for (auto p : e->SubEntities(dim_mesh - codim)) {
+      node_indices.push_back(mesh_->Index(*p));
     }
 
     // node indices of segments of this cell:
@@ -700,34 +700,34 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
       case base::RefEl::kTria(): {
         auto iterator = e->SubEntities(1).begin();
         auto o_iterator = e->RelativeOrientations().begin();
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         break;
       }
       case base::RefEl::kQuad(): {
         auto iterator = e->SubEntities(1).begin();
         auto o_iterator = e->RelativeOrientations().begin();
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
         ++o_iterator;
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::positive);
         ++iterator;
         ++o_iterator;
-        addSegmentNodes(*iterator,
+        addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::positive);
         break;
       }
