@@ -1,6 +1,5 @@
 # Add a custom target to generate all the plots from the numerical experiments
 add_custom_target(projects.ipdg_stokes.plots)
-set_target_properties(projects.ipdg_stokes.plots PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 # Define _USE_MATH_DEFINES so that MSVC is happy
 add_definitions(-D_USE_MATH_DEFINES)

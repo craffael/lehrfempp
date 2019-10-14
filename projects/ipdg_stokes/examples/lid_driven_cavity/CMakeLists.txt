@@ -19,6 +19,5 @@ add_custom_target(${PROJECT_NAME}.plot
 		  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/output.dat ${CMAKE_CURRENT_SOURCE_DIR}/plot.gnu
 		  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-set_target_properties(${PROJECT_NAME}.plot PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 add_dependencies(projects.ipdg_stokes.plots ${PROJECT_NAME}.plot)
