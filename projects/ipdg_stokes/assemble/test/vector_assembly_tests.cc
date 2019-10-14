@@ -63,8 +63,3 @@ TEST(projects_ipdg_stokes_assembly, piecewise_const_vector_assembler_test) {
       EXPECT_DOUBLE_EQ(rhs[i], rhs_anal[i]) << "mismatch in entry " << i;
   }
 }
-
-int main(int argc, char *argv[]) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

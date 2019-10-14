@@ -72,8 +72,3 @@ TEST(projects_ipdg_stokes_mesh, triangle_clockwise) {
           << normals.col(j).transpose() << "] != ["
           << normals_ref.col(j).transpose() << "]";
 }
-
-int main(int argc, char *argv[]) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

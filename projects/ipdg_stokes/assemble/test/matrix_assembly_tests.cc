@@ -214,8 +214,3 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
     }
   }
 }
-
-int main(int argc, char *argv[]) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

@@ -84,8 +84,3 @@ TEST(projects_ipdg_stokes_post_processing, dg_jump) {
       });
   ASSERT_NEAR(norm, std::sqrt(2 * nx), 1e-10);
 }
-
-int main(int argc, char *argv[]) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
