@@ -1,8 +1,6 @@
 
 set(sources annulus_triag_mesh_builder.h
 	    annulus_triag_mesh_builder.cc
-	    minimal_mesh_builder.h
-	    minimal_mesh_builder.cc
 	    utils.h
 	    utils.cc
 )
