@@ -75,7 +75,7 @@ class StructuredMeshBuilder {
  protected:
   // TODO(craffael): find a better way than implementation inheritance.
   /** mesh factory object that has to be supplied to the MeshBuilder */
-  std::unique_ptr<mesh::MeshFactory> mesh_factory_;
+  std::unique_ptr<mesh::MeshFactory> mesh_factory_;  // NOLINT
   /** corners of rectangle defining the domain */
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;  // NOLINT
   /** Mesh resolution parameters */

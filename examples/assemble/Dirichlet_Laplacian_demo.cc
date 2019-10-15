@@ -222,7 +222,9 @@ double L2ErrorLinearFEDirichletLaplacian(
                               << mat.makeDense() << std::endl);
 
   // Initialize sparse matrix
-  Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
+  // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
+  LF_VERIFY_MSG(!mat.triplets().empty() > 0, "blabla");
+  Eigen::SparseMatrix<double> stiffness_matrix = {mat.makeSparse()};
   // Solve linear system
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(stiffness_matrix);
@@ -260,12 +262,12 @@ double L2ErrorLinearFEDirichletLaplacian(
  */
 template <typename SOLFUNCTOR, typename RHSFUNCTOR>
 std::vector<double> SolveDirLaplSeqMesh(
-    std::shared_ptr<lf::mesh::Mesh> coarse_mesh_p, unsigned int reflevels,
-    SOLFUNCTOR &&u, RHSFUNCTOR &&f) {
+    const std::shared_ptr<lf::mesh::Mesh> &coarse_mesh_p,
+    unsigned int reflevels, SOLFUNCTOR &&u, RHSFUNCTOR &&f) {
   // Prepare for creating a hierarchy of meshes
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(std::move(coarse_mesh_p),
+  lf::refinement::MeshHierarchy multi_mesh(coarse_mesh_p,
                                            std::move(mesh_factory_ptr));
 
   // Perform several steps of regular refinement of the given mesh
