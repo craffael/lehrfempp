@@ -35,40 +35,40 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
       tests;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Ones(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[0] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << -1, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 1;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[1] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << -1, -1;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[2] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 1, 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     *lf::mesh::utils::make_CodimMeshDataSet<Eigen::Vector2d>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[3] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, -1;
