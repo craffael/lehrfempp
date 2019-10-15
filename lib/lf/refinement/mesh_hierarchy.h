@@ -395,7 +395,7 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
  * Invokes the method MeshHierarhy::RefineRegular() for refinement.
  */
 std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
-    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    const std::shared_ptr<lf::mesh::Mesh> &mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat = RefPat::rp_regular);
 
 /**
