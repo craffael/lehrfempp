@@ -4,8 +4,11 @@ version: "{build}"
 cache:
   - C:\.hunter
 
+environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: false
+
 os:
-  - Visual Studio 2017
+  - Visual Studio 2019
 
 init:
   - git config --global core.autocrlf input
@@ -27,14 +30,15 @@ configuration:
 
 #Cmake will autodetect the compiler, but we set the arch
 before_build:
-  - cmake -H. -BBuild -A%PLATFORM%
+  - cmake -H. -BBuild -A%PLATFORM% -D HUNTER_CONFIGURATION_TYPES=%CONFIGURATION%
 
 # build with MSBuild
 build:
-  project: Build\LehrFEMpp.sln        # path to Visual Studio solution or project
+  project: Build\ALL_BUILD.vcxproj       # path to Visual Studio solution or project
+  #project: Build\ZERO_CHECK.vcxproj
   parallel: true                        # enable MSBuild parallel builds
   verbosity: normal                     # MSBuild verbosity level {quiet|minimal|normal|detailed}
 
 test_script:
   - cd Build
-  - ctest -V -j 2 -C %CONFIGURATION%
+  - ctest -v -j 2 -c %CONFIGURATION%

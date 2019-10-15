@@ -15,9 +15,9 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   const size_type ny = no_of_y_cells_;
   // Total number of entities in the mesh
   // Each triangle is split into two squares
-  const int no_of_cells = nx * ny;  // no of rectangles
-  const int no_of_edges = (nx + 1) * ny + nx * (ny + 1);
-  const int no_of_vertices = (nx + 1) * (ny + 1);
+  const unsigned no_of_cells = nx * ny;  // no of rectangles
+  const unsigned no_of_edges = (nx + 1) * ny + nx * (ny + 1);
+  const unsigned no_of_vertices = (nx + 1) * (ny + 1);
   // No mesh to build
   if (no_of_cells == 0) {
     return nullptr;

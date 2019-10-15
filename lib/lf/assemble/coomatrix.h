@@ -56,9 +56,9 @@ class COOMatrix {
   ~COOMatrix() = default;
 
   /** @brief return number of rows */
-  Index rows() const { return rows_; }
+  [[nodiscard]] Index rows() const { return rows_; }
   /** @brief return number of column */
-  Index cols() const { return cols_; }
+  [[nodiscard]] Index cols() const { return cols_; }
   /**
    * @brief Add a value to the specified entry
    * @param i row index
@@ -110,8 +110,8 @@ class COOMatrix {
    * Use of this method is deprecated. Use setZero(pred) and AddToEntry()
    * instead.
    */
-  TripletVec &triplets() { return triplets_; }
-  const TripletVec &triplets() const { return triplets_; }
+  [[nodiscard]] TripletVec &triplets() { return triplets_; }
+  [[nodiscard]] const TripletVec &triplets() const { return triplets_; }
 
   /**
    * @brief Computes the product of a (scaled) vector with the matrix in COO
@@ -127,8 +127,8 @@ class COOMatrix {
    * of the vector and `operator []` for read access to vector entries.
    */
   template <typename VECTOR>
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> MatVecMult(SCALAR alpha,
-                                                      const VECTOR &vec) const;
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> MatVecMult(
+      SCALAR alpha, const VECTOR &vec) const;
 
   /**
    * @brief In-situ computes the product of a vector with the matrix in COO
@@ -158,9 +158,13 @@ class COOMatrix {
    * @note This method can be called multiple times and it does not modify the
    * data stored in this COOMatrix.
    */
-  Eigen::SparseMatrix<Scalar> makeSparse() const {
-    Eigen::SparseMatrix<Scalar> result(rows_, cols_);
-    result.setFromTriplets(triplets_.begin(), triplets_.end());
+  [[nodiscard]] Eigen::SparseMatrix<Scalar> makeSparse() const {
+    Eigen::SparseMatrix<Scalar> result;
+    LF_VERIFY_MSG(
+        rows_ > 0 && cols_ > 0,
+        "matrix has zero rows or columns, this is probably an error.");
+    result.resize(rows_, cols_);
+    result.setFromTriplets(triplets_.cbegin(), triplets_.cend());
     return result;
   }
   /**
@@ -169,7 +173,8 @@ class COOMatrix {
    *
    * This method is mainly meant for debugging
    */
-  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> makeDense() const {
+  [[nodiscard]] Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>
+  makeDense() const {
     Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> mat(rows_, cols_);
     mat.setZero();
     for (const Triplet &trp : triplets_) {

@@ -251,8 +251,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 // Second version of writeTikZ using default selector
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                TikzOutputCtrl output_ctrl) {
-  return writeTikZ(mesh, filename,
-                   [](const lf::mesh::Entity &) { return true; }, output_ctrl);
+  return writeTikZ(mesh, filename, base::PredicateTrue{}, output_ctrl);
 }
 
 }  // namespace lf::io

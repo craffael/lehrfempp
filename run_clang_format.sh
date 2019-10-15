@@ -22,9 +22,12 @@ fi
 if [ -x "$(command -v clang-format-7)" ]; then
   ct=$(command -v clang-format-7)
 fi
+if [ -x "$(command -v clang-format-8)" ]; then
+  ct=$(command -v clang-format-8)
+fi
 
 if [ -z "$ct" ]; then
-  echo "clang-format, clang-format-6.0 or clang-format-5.0 not found in path"
+  echo "clang-format, clang-format-8, clang-format-7, clang-format-6.0 or clang-format-5.0 not found in path"
 fi
 
 $(dirname $0)/travis/run-clang-format.py -r --clang-format-executable $ct --color always $(dirname $0)/lib

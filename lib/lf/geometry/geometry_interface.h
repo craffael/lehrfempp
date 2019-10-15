@@ -22,17 +22,17 @@ class Geometry {
   /**
    * @brief Dimension of the domain of this mapping.
    */
-  virtual dim_t DimLocal() const = 0;
+  [[nodiscard]] virtual dim_t DimLocal() const = 0;
 
   /**
    * @brief Dimension of the image of this mapping.
    */
-  virtual dim_t DimGlobal() const = 0;
+  [[nodiscard]] virtual dim_t DimGlobal() const = 0;
 
   /**
    * @brief The Reference element that defines the domain of this mapping.
    */
-  virtual base::RefEl RefEl() const = 0;
+  [[nodiscard]] virtual base::RefEl RefEl() const = 0;
 
   /**
    * @brief Map a number of points in local coordinates into the global
@@ -51,7 +51,8 @@ class Geometry {
    * these coordinate vectors are passed as the columns of a dynamic matrix type
    * as supplied by Eigen.
    */
-  virtual Eigen::MatrixXd Global(const Eigen::MatrixXd& local) const = 0;
+  [[nodiscard]] virtual Eigen::MatrixXd Global(
+      const Eigen::MatrixXd& local) const = 0;
 
   /**
    * @brief Evaluate the jacobian of the mapping simultaneously at `numPoints`
@@ -69,7 +70,8 @@ class Geometry {
    * `block()' method of `Eigen::MatrixXd` to extract the individual Jacobians
    * from the returned matrix.
    */
-  virtual Eigen::MatrixXd Jacobian(const Eigen::MatrixXd& local) const = 0;
+  [[nodiscard]] virtual Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const = 0;
 
   /**
    * @brief Evaluate the Jacobian * Inverse Gramian (\f$ J (J^T J)^{-1}\f$)
@@ -95,7 +97,7 @@ class Geometry {
    * JacobianInverseGramian(local).block(0,i*D,D,D)
    * ~~~
    */
-  virtual Eigen::MatrixXd JacobianInverseGramian(
+  [[nodiscard]] virtual Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const = 0;
 
   /**
@@ -113,7 +115,7 @@ class Geometry {
    * by \f[ g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
    * \f]
    */
-  virtual Eigen::VectorXd IntegrationElement(
+  [[nodiscard]] virtual Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const = 0;
 
   /**
@@ -136,7 +138,8 @@ class Geometry {
    * Then the geometry element returned by this method describes exactly the
    * mapping \f$ \mathbf{\Phi} \circ \mathbf{\xi} \f$
    */
-  virtual std::unique_ptr<Geometry> SubGeometry(dim_t codim, dim_t i) const = 0;
+  [[nodiscard]] virtual std::unique_ptr<Geometry> SubGeometry(
+      dim_t codim, dim_t i) const = 0;
 
   /**
    * @brief Generate geometry objects for child entities created in
@@ -159,7 +162,7 @@ class Geometry {
    * @sa class lf::geometry::RefinementPattern
    *
    */
-  virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+  [[nodiscard]] virtual std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const = 0;
 
   /**
@@ -175,7 +178,7 @@ class Geometry {
    *
    * @note The Jacobian/Gramian for an affine element are _constant_.
    */
-  virtual bool isAffine() const { return true; }
+  [[nodiscard]] virtual bool isAffine() const { return true; }
 
   /**
    * @brief Virtual destructor

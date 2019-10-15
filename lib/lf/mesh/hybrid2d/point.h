@@ -62,32 +62,36 @@ class Point : public mesh::Entity {
                   "Geometry must fit point");
   }
 
-  unsigned Codim() const override { return 2; }
+  [[nodiscard]] unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
-  base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
       unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
     return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
   }
 
   /** Must not be called: No sub-entities for a point */
-  base::RandomAccessRange<const lf::mesh::Orientation> RelativeOrientations()
-      const override {
+  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
+  RelativeOrientations() const override {
     LF_ASSERT_MSG(false, "A point has not sub-entities");
     return base::RandomAccessRange<const lf::mesh::Orientation>(
         dummy_or_.begin(), dummy_or_.end());
   }
 
   /** @brief return _pointer_ to associated geometry object */
-  geometry::Geometry* Geometry() const override { return geometry_.get(); }
+  [[nodiscard]] geometry::Geometry* Geometry() const override {
+    return geometry_.get();
+  }
 
   /** @brief access to index of an entity */
-  size_type index() const { return index_; }
+  [[nodiscard]] size_type index() const { return index_; }
 
-  base::RefEl RefEl() const override { return base::RefEl::kPoint(); }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kPoint();
+  }
 
-  bool operator==(const mesh::Entity& rhs) const override {
+  [[nodiscard]] bool operator==(const mesh::Entity& rhs) const override {
     return this == &rhs;
   }
 

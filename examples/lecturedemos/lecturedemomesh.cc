@@ -36,7 +36,8 @@ int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
 // clang-format off
 /* SAM_LISTING_BEGIN_3 */
 std::pair<size_type, size_type> countCellTypes(const lf::mesh::Mesh &mesh) {
-  size_type tria_cnt = 0, quad_cnt = 0;  // Counters
+  size_type tria_cnt = 0;
+  size_type quad_cnt = 0;  // Counters
   // Loop over all cells (= co-dimension-0 entities) of the mesh
   for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
     // Fetch type information

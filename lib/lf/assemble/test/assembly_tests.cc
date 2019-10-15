@@ -31,7 +31,7 @@ namespace lf::assemble::test {
 class TestAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 4, 4>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   TestAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -53,7 +53,7 @@ TestAssembler::ElemMat TestAssembler::Eval(const lf::mesh::Entity &cell) {
 class TestVectorAssembler {
  public:
   using elem_vec_t = Eigen::Matrix<double, 4, 1>;
-  using ElemVec = elem_vec_t &;
+  using ElemVec = const elem_vec_t &;
 
   TestVectorAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -83,7 +83,7 @@ void output_dofs_test(const lf::mesh::Mesh &mesh,
     for (const lf::mesh::Entity &e : mesh.Entities(codim)) {
       const lf::base::glb_idx_t e_idx = mesh.Index(e);
       const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(e));
-      lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
+      nonstd::span<const lf::assemble::gdof_idx_t> doflist(
           dof_handler.GlobalDofIndices(e));
       std::cout << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
       for (const lf::assemble::gdof_idx_t &dof : doflist) {
@@ -105,7 +105,7 @@ void output_entities_dofs(const lf::mesh::Mesh &mesh,
     const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
     std::cout << "dof " << dof_idx << " -> " << e << " " << mesh.Index(e)
               << std::endl;
-    lf::base::RandomAccessRange<const lf::assemble::gdof_idx_t> doflist(
+    nonstd::span<const lf::assemble::gdof_idx_t> doflist(
         dof_handler.GlobalDofIndices(e));
     bool dof_found = false;
     for (const lf::assemble::gdof_idx_t &dof : doflist) {
@@ -171,7 +171,9 @@ TEST(lf_assembly, dynamic_dof_index_test) {
       case lf::base::RefEl::kQuad(): {
         return 4;
       }
-      default: { LF_ASSERT_MSG(false, "Illegal entity type"); }
+      default: {
+        LF_ASSERT_MSG(false, "Illegal entity type");
+      }
     }
   };
   lf::assemble::DynamicFEDofHandler dof_handler(mesh_p, dof_layout);
@@ -290,7 +292,7 @@ TEST(lf_assembly, dynamic_dof_test) {
 class EdgeDofAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 8, 8>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   EdgeDofAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity &) { return true; }
@@ -460,7 +462,7 @@ TEST(lf_assembly, edge_dof_dynamic) {
 class BoundaryAssembler {
  public:
   using elem_mat_t = Eigen::Matrix<double, 2, 2>;
-  using ElemMat = elem_mat_t &;
+  using ElemMat = const elem_mat_t &;
 
   BoundaryAssembler(std::shared_ptr<lf::mesh::Mesh> mesh_p);
   bool isActive(const lf::mesh::Entity &);
@@ -577,7 +579,7 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
       // Size, aka number of rows and columns, of element matrix
       const lf::assemble::size_type elmat_dim = dofh.NoLocalDofs(entity);
       // Global indices of local shape functions
-      lf::base::RandomAccessRange<const gdof_idx_t> global_idx(
+      nonstd::span<const lf::assemble::gdof_idx_t> global_idx(
           dofh.GlobalDofIndices(entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
@@ -606,20 +608,19 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
  */
 class MVMultAssembler {
  public:
-  using elem_mat_t = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
-                                   Eigen::RowMajor, 4, 4>;
+  using ElemMat = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
+                                Eigen::RowMajor, 4, 4>;
 
   MVMultAssembler(const lf::mesh::Mesh &mesh) : mesh_(mesh) {}
   bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  elem_mat_t &Eval(const lf::mesh::Entity &cell);
+  ElemMat &Eval(const lf::mesh::Entity &cell);
 
  private:
   const lf::mesh::Mesh &mesh_;
-  elem_mat_t mat_;
+  ElemMat mat_;
 };
 
-MVMultAssembler::elem_mat_t &MVMultAssembler::Eval(
-    const lf::mesh::Entity &cell) {
+MVMultAssembler::ElemMat &MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
   const lf::base::glb_idx_t cell_idx = mesh_.Index(cell);
   const lf::base::RefEl ref_el = cell.RefEl();
   switch (ref_el) {

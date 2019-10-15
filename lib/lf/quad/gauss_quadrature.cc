@@ -22,17 +22,19 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 
   static const scalar_t kPi = boost::math::constants::pi<scalar_t>();
 
-  Eigen::VectorXd points(num_points), weights(num_points);
+  Eigen::VectorXd points(num_points);
+  Eigen::VectorXd weights(num_points);
 
   // the roots are symmetric in the interval, so we only have to find half of
   // them
   unsigned int m = (num_points + 1) / 2;
 
   // approximation for the roots:
-  for (int i = 0; i < m; ++i) {
+  for (unsigned int i = 0; i < m; ++i) {
     // initial guess for the i-th root:
     scalar_t z = cos(kPi * (i + 0.75) / (num_points + 0.5));
-    scalar_t z1, pp;
+    scalar_t z1;
+    scalar_t pp;
 
     // start of newton
     do {
@@ -41,7 +43,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
       scalar_t p2 = 0.0;
       scalar_t p3;
 
-      for (int j = 0; j < num_points; ++j) {
+      for (unsigned int j = 0; j < num_points; ++j) {
         p3 = p2;
         p2 = p1;
         p1 = ((2.0 * j + 1.) * z * p2 - j * p3) / (j + 1.);
@@ -62,7 +64,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
     weights(num_points - 1 - i) = weights(i);
   }
 
-  return {points, weights};
+  return {std::move(points), std::move(weights)};
 }
 
 std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
@@ -78,8 +80,22 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
 
   int MAX_IT = 10;
 
-  scalar_t alfbet, an, bn, r1, r2, r3;
-  scalar_t a, b, c, p1, p2, p3, pp, temp, z, z1;
+  scalar_t alfbet;
+  scalar_t an;
+  scalar_t bn;
+  scalar_t r1;
+  scalar_t r2;
+  scalar_t r3;
+  scalar_t a;
+  scalar_t b;
+  scalar_t c;
+  scalar_t p1;
+  scalar_t p2;
+  scalar_t p3;
+  scalar_t pp;
+  scalar_t temp;
+  scalar_t z;
+  scalar_t z1;
 
   std::vector<scalar_t> points(num_points);
   Eigen::VectorXd weights(num_points);

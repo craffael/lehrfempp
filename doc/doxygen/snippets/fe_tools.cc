@@ -102,7 +102,7 @@ void InitEssentialConditionFromFunction() {
   // 4) Modify the system of equations such that the boundary values are
   // enforced
   Eigen::VectorXd rhs(fe_space->LocGlobMap().NoDofs());
-  assemble::fix_flagged_solution_components(
+  assemble::FixFlaggedSolutionComponents(
       [&](unsigned int idx) { return boundary_cond[idx]; }, lhs, rhs);
 
   // 5) solve the problem:

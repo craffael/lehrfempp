@@ -123,7 +123,35 @@ Hunter allows you to select the [LehrFEM++ version](https://github.com/craffael/
 If you don't specify a version explicitly, the most recent version which is available with your current `HunterGate` command, is used.
 
 
- 
+### Use a cutting edge version of LehrFEM++
+Hunter also allows you to manually use any commit from the [LehrFEM++ github repository](https://github.com/craffael/lehrfempp).
+This can be useful if you want to use a version of LehrFEM++ that has not yet been officially released via hunter.
+We show here how you can use the commit with hash [41fe4560d5f56612059c3f919ec1a83093116984](https://github.com/craffael/lehrfempp/commit/41fe4560d5f56612059c3f919ec1a83093116984) in your own project.
+
+1) Determine the SHA1 hash of the commit:
+```
+wget https://github.com/craffael/lehrfempp/archive/41fe4560d5f56612059c3f919ec1a83093116984.tar.gz
+openssl sha1 41fe4560d5f56612059c3f919ec1a83093116984.tar.gz
+```
+
+2) create the file `cmake/Hunter/config.cmake` in your own project and fill it with the following content (see [here](https://docs.hunter.sh/en/latest/reference/user-modules/hunter_config.html) for more information), adapt it accordingly if you want to use another commit:
+```
+hunter_config(lehrfempp
+  URL "https://github.com/craffael/lehrfempp/archive/41fe4560d5f56612059c3f919ec1a83093116984.tar.gz"
+  SHA1 "096b893adecebe22b57fe5677e7edb0887b2cecc"
+)
+```
+3) modify the HunterGate command in your top-level `CMakeLists.txt` so that it includes the local config file:
+```
+HunterGate(
+    URL ...
+    SHA1 ...
+    LOCAL # use cmake/Hunter/config.cmake
+)
+```
+
+4) build your project as before. Note that the commit that the build can fail depending on whether the commit you have selected built LehrFEM++ correctly.
+
  
  
 

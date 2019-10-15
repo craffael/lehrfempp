@@ -35,12 +35,13 @@ class LambdaMeshDataSet
   using base_t = MeshDataSet<T>;
 
  public:
-  const T operator()(const Entity& e) const override {
+  // NOLINTNEXTLINE(readability-const-return-type)
+  [[nodiscard]] const T operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return value_lambda_(e);
   }
 
-  bool DefinedOn(const Entity& e) const override {
+  [[nodiscard]] bool DefinedOn(const Entity& e) const override {
     return defined_on_lambda_(e);
   }
 

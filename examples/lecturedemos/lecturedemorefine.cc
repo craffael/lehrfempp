@@ -25,7 +25,7 @@ void regrefMeshSequence(std::shared_ptr<lf::mesh::Mesh> mesh_p, int refsteps) {
   size_type L = multi_mesh.NumLevels();
 
   // Retrieve meshes on all levels
-  for (int level = 0; level < L; ++level) {
+  for (size_type level = 0; level < L; ++level) {
     std::shared_ptr<const lf::mesh::Mesh> lev_mesh_p =
         multi_mesh.getMesh(level);
     // Reference to current mesh

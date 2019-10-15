@@ -44,7 +44,7 @@ class Entity {
    * @brief The codimension of this entity w.r.t. the Mesh.dimMesh()
    * of the owning mesh manager.
    */
-  virtual unsigned Codim() const = 0;
+  [[nodiscard]] virtual unsigned Codim() const = 0;
 
   /**
    * @brief Return all sub entities of this entity that have the given
@@ -63,15 +63,15 @@ class Entity {
    sub-entity with relative co-dimension 0, and the endpoints are the
    sub-entitities of relative co-dimension 1.
    */
-  virtual base::RandomAccessRange<const Entity> SubEntities(
+  [[nodiscard]] virtual base::RandomAccessRange<const Entity> SubEntities(
       unsigned rel_codim) const = 0;
 
   /**
    * @brief return array of relative orientations of sub-entities
    *        of the next hight co-dimension.
    */
-  virtual base::RandomAccessRange<const Orientation> RelativeOrientations()
-      const = 0;
+  [[nodiscard]] virtual base::RandomAccessRange<const Orientation>
+  RelativeOrientations() const = 0;
 
   /**
    * @brief Describes the geometry of this entity.
@@ -87,13 +87,13 @@ class Entity {
    * indicate missing geometric information.
    *
    */
-  virtual geometry::Geometry* Geometry() const = 0;
+  [[nodiscard]] virtual geometry::Geometry* Geometry() const = 0;
 
   /**
    * @brief Describes the reference element type of this entity.
    * @return An object of type base::RefEl.
    */
-  virtual base::RefEl RefEl() const = 0;
+  [[nodiscard]] virtual base::RefEl RefEl() const = 0;
 
   /**
    * @brief Check if two entities are the same
@@ -102,13 +102,15 @@ class Entity {
    * @note The behavior of this method is undefined if the rhs entity belongs
            to a different Mesh.
    */
-  virtual bool operator==(const Entity& rhs) const = 0;
+  [[nodiscard]] virtual bool operator==(const Entity& rhs) const = 0;
 
   /**
    * @brief Check if two entities are different.
    * @sa Entity::operator==
    */
-  bool operator!=(const Entity& rhs) const { return !operator==(rhs); }
+  [[nodiscard]] bool operator!=(const Entity& rhs) const {
+    return !operator==(rhs);
+  }
 
   /**
    * @brief Virtual Destructor.

@@ -1506,6 +1506,9 @@ void MeshHierarchy::PerformRefinement() {
                   child_ref_edges[cell_index] = 0;
                   break;
                 }
+                default:
+                  LF_VERIFY_MSG(false,
+                                "invalid value for fine_cell_child_number");
               }
               break;
             }
@@ -1528,6 +1531,9 @@ void MeshHierarchy::PerformRefinement() {
                   child_ref_edges[cell_index] = 0;
                   break;
                 }
+                default:
+                  LF_VERIFY_MSG(false,
+                                "invalid  value for fine_cell_child_number");
               }
               break;
             }
@@ -1641,6 +1647,8 @@ void MeshHierarchy::PerformRefinement() {
                   }
                   break;
                 }
+                default:
+                  LF_VERIFY_MSG(false, "invalid parent_ref_edge_idx")
               }  // end switch parent ref_edge_idx
               break;
             }
@@ -1698,7 +1706,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
 
 std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
   o << "MeshHierarchy, " << NumLevels() << " levels: " << std::endl;
-  for (int level = 0; level < NumLevels(); ++level) {
+  for (unsigned level = 0; level < NumLevels(); ++level) {
     const lf::mesh::Mesh &mesh{*getMesh(level)};
     o << "l=" << level << ": ";
     if ((ctrl_ & kout_meshinfo) != 0) {
@@ -1731,7 +1739,7 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
   std::shared_ptr<MeshHierarchy> multi_mesh_p = std::make_shared<MeshHierarchy>(
       std::move(mesh_p), std::move(mesh_factory_ptr));
   // Perform the desired number of steps of uniform refinement
-  for (int refstep = 0; refstep < ref_lev; ++refstep) {
+  for (unsigned refstep = 0; refstep < ref_lev; ++refstep) {
     // Conduct regular refinement of all cells of the currently finest mesh.
     // This adds another mesh to the sequence of meshes.
     multi_mesh_p->RefineRegular(ref_pat);

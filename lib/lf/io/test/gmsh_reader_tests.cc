@@ -20,6 +20,8 @@ namespace lf::io::test {
 using size_type = mesh::Mesh::size_type;
 
 void checkTwoElementMesh(const GmshReader& reader) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
   auto mesh = reader.mesh();
   EXPECT_EQ(mesh->NumEntities(0), 2);
   EXPECT_EQ(mesh->NumEntities(1), 6);
@@ -133,6 +135,7 @@ void checkTwoElementMesh(const GmshReader& reader) {
   }
   mesh::test_utils::checkEntityIndexing(*reader.mesh());
   mesh::test_utils::checkMeshCompleteness(*reader.mesh());
+#pragma GCC diagnostic pop
 }
 
 TEST(lf_io, readTwoElementMesh) {
@@ -147,9 +150,28 @@ TEST(lf_io, readTwoElementMesh) {
       GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
                  test_utils::getMeshPath("two_element_hybrid_2d.msh")));
 
+  checkTwoElementMesh(
+      GmshReader(std::make_unique<mesh::hybrid2d::MeshFactory>(2),
+                 test_utils::getMeshPath("two_element_hybrid_2d_v4.msh")));
+
+  checkTwoElementMesh(GmshReader(
+      std::make_unique<mesh::hybrid2d::MeshFactory>(2),
+      test_utils::getMeshPath("two_element_hybrid_2d_v4_binary.msh")));
+
   // Make sure, that we can read a second order mesh:
   auto reader =
       test_utils::getGmshReader("two_element_hybrid_2d_second_order.msh", 2);
+  checkTwoElementMesh(reader);
+  for (auto& e : reader.mesh()->Entities(0)) {
+    if (e.RefEl() == base::RefEl::kTria()) {
+      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e.Geometry()));
+    } else {
+      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e.Geometry()));
+    }
+  }
+
+  reader =
+      test_utils::getGmshReader("two_element_hybrid_2d_second_order_v4.msh", 2);
   checkTwoElementMesh(reader);
   for (auto& e : reader.mesh()->Entities(0)) {
     if (e.RefEl() == base::RefEl::kTria()) {
@@ -188,13 +210,94 @@ TEST(lf_io, secondOrderMesh) {
   // with first order triangles:
   auto reader = test_utils::getGmshReader("circle_first_order.msh", 2);
   EXPECT_GT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.3);
+  reader = test_utils::getGmshReader("circle_first_order_v4.msh", 2);
+  EXPECT_GT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.3);
 
   // with triangles
   reader = test_utils::getGmshReader("circle_second_order.msh", 2);
+  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.0032);
+  reader = test_utils::getGmshReader("circle_second_order_v4.msh", 2);
   EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.0032);
 
   // with quadrilaterals:
   reader = test_utils::getGmshReader("circle_second_order_quad.msh", 2);
   EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
+  reader = test_utils::getGmshReader("circle_second_order_quad_v4.msh", 2);
+  EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
+}
+
+void checkPieceOfCake(const GmshReader& reader) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+  auto& mesh = *reader.mesh();
+
+  // Total number of entities:
+  EXPECT_EQ(mesh.DimMesh(), 2);
+  EXPECT_EQ(mesh.DimWorld(), 2);
+  EXPECT_EQ(mesh.NumEntities(0), 2);
+  EXPECT_EQ(mesh.NumEntities(1), 5);
+  EXPECT_EQ(mesh.NumEntities(2), 4);
+
+  // check physical entites:
+  auto entities2 = mesh.Entities(2);
+  auto origin = std::find_if(entities2.begin(), entities2.end(), [](auto& e) {
+    return e.Geometry()->Global(Eigen::MatrixXd(0, 1)).squaredNorm() < 1e-10;
+  });
+  EXPECT_NE(origin, entities2.end());
+  EXPECT_EQ(reader.PhysicalEntityNr(*origin), std::vector<unsigned>{1});
+  EXPECT_TRUE(reader.IsPhysicalEntity(*origin, 1));
+
+  // get the two curves:
+  for (auto& e : mesh.Entities(1)) {
+    auto nodes = e.Geometry()->Global(base::RefEl::kSegment().NodeCoords());
+    if (std::abs(nodes.col(0).norm() - 1) < 1e-6 &&
+        std::abs(nodes.col(1).norm() - 1) < 1e-6) {
+      EXPECT_EQ(reader.PhysicalEntityNr(e), std::vector<unsigned>{2});
+      EXPECT_TRUE(reader.IsPhysicalEntity(e, 2));
+    } else {
+      EXPECT_FALSE(reader.IsPhysicalEntity(e, 2));
+    }
+  }
+
+  // make sure the two triangles belong to the physical entity 3:
+  for (auto& e : mesh.Entities(0)) {
+    EXPECT_EQ(reader.PhysicalEntityNr(e), std::vector<unsigned>{3});
+    EXPECT_TRUE(reader.IsPhysicalEntity(e, 3));
+  }
+
+  // mapping to names:
+  EXPECT_EQ(reader.PhysicalEntityName2Nr("origin"), 1);
+  EXPECT_EQ(reader.PhysicalEntityName2Nr("arc"), 2);
+  EXPECT_EQ(reader.PhysicalEntityNr2Name(1), "origin");
+  EXPECT_EQ(reader.PhysicalEntityNr2Name(1, 2), "origin");
+  EXPECT_EQ(reader.PhysicalEntityNr2Name(2), "arc");
+  EXPECT_EQ(reader.PhysicalEntityNr2Name(2, 1), "arc");
+  EXPECT_THROW(reader.PhysicalEntityNr2Name(3), base::LfException);
+  EXPECT_THROW(reader.PhysicalEntityNr2Name(3, 1), base::LfException);
+
+  // physical entities themselves:
+  EXPECT_TRUE(reader.PhysicalEntities(0).empty());
+  EXPECT_EQ(reader.PhysicalEntities(1).size(), 1);
+  EXPECT_EQ(reader.PhysicalEntities(1)[0].first, 2);
+  EXPECT_EQ(reader.PhysicalEntities(1)[0].second, "arc");
+  EXPECT_EQ(reader.PhysicalEntities(2).size(), 1);
+  EXPECT_EQ(reader.PhysicalEntities(2)[0].first, 1);
+  EXPECT_EQ(reader.PhysicalEntities(2)[0].second, "origin");
+
+  for (auto& e : mesh.Entities(0)) {
+    mesh::test_utils::checkGeometryOrientation(e);
+    mesh::test_utils::checkLocalTopology(e);
+    mesh::test_utils::checkRelCodim(e);
+  }
+  mesh::test_utils::checkEntityIndexing(*reader.mesh());
+  mesh::test_utils::checkMeshCompleteness(*reader.mesh());
+
+#pragma GCC diagnostic pop
+}
+
+TEST(lf_io, pieceOfCake) {
+  // make sure when can load a partitioned mesh (with periodic links)
+  auto reader = test_utils::getGmshReader("piece_of_cake.msh", 2);
+  checkPieceOfCake(reader);
 }
 }  // namespace lf::io::test

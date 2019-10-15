@@ -83,9 +83,7 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief type of returned element matrix
    */
-  using elem_mat_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
-  /** @brief Return type for @ref Eval() method */
-  using ElemMat = const elem_mat_t;
+  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
@@ -163,8 +161,7 @@ class ReactionDiffusionElementMatrixProvider {
   virtual ~ReactionDiffusionElementMatrixProvider() = default;
 
  private:
-  /** @defgroup coefficient functors
-   * @brief functors providing coefficient functions
+  /** @name functors providing coefficient functions
    * @{ */
   /** Diffusion coefficient */
   DIFF_COEFF alpha_;
@@ -255,7 +252,7 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 // is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 typename lf::uscalfe::ReactionDiffusionElementMatrixProvider<
-    SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat const
+    SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat
 ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
   // Topological type of the cell
@@ -300,11 +297,11 @@ ReactionDiffusionElementMatrixProvider<
   auto gammaval = gamma_(cell, pfe.Qr().Points());
 
   // Element matrix
-  elem_mat_t mat(pfe.NumRefShapeFunctions(), pfe.NumRefShapeFunctions());
+  ElemMat mat(pfe.NumRefShapeFunctions(), pfe.NumRefShapeFunctions());
   mat.setZero();
 
   // Loop over quadrature points
-  for (int k = 0; k < pfe.Qr().NumPoints(); ++k) {
+  for (base::size_type k = 0; k < pfe.Qr().NumPoints(); ++k) {
     const double w = pfe.Qr().Weights()[k] * determinants[k];
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
@@ -342,12 +339,10 @@ template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
   using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
-  using elem_mat_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
-  using ElemMat = const elem_mat_t;
+  using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
-  /** @defgroup
-      @brief standard constructors
-     * @{ */
+  /** @name standard constructors
+   * @{ */
   MassEdgeMatrixProvider(const MassEdgeMatrixProvider &) = delete;
   MassEdgeMatrixProvider(MassEdgeMatrixProvider &&) noexcept = default;
   MassEdgeMatrixProvider &operator=(const MassEdgeMatrixProvider &) = delete;
@@ -459,7 +454,7 @@ unsigned int MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 // developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class COEFF, class EDGESELECTOR>
-typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat const
+typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat
 MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
@@ -478,14 +473,14 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
                             << fe_precomp_.Qr().NumPoints());
 
   // Element matrix
-  elem_mat_t mat(fe_precomp_.NumRefShapeFunctions(),
-                 fe_precomp_.NumRefShapeFunctions());
+  ElemMat mat(fe_precomp_.NumRefShapeFunctions(),
+              fe_precomp_.NumRefShapeFunctions());
   mat.setZero();
 
   auto gammaval = gamma_(edge, fe_precomp_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < determinants.size(); ++k) {
+  for (long k = 0; k < determinants.size(); ++k) {
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
     const auto w =
@@ -504,7 +499,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * elements; volume contributions only
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
- * @tparam FUNCTOR \ref mesh_function "MeshFunction" which defines the source
+ * @tparam MESH_FUNCTION \ref mesh_function "MeshFunction" which defines the
+ source
  * function \f$ f \f$
  *
  * The underlying local linear form is
@@ -519,16 +515,14 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  */
-template <typename SCALAR, typename FUNCTOR>
+template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
-  static_assert(isMeshFunction<FUNCTOR>);
+  static_assert(isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = const elem_vec_t;
+  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
 
-  /** @defgroup stdc
-   * @brief standard constructors
+  /** @name standard constructors
    *@{*/
   ScalarLoadElementVectorProvider(const ScalarLoadElementVectorProvider &) =
       delete;
@@ -549,7 +543,8 @@ class ScalarLoadElementVectorProvider {
    * degree of the finite element space.
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      MESH_FUNCTION f);
   /** @brief Constructor, performs precomputations based on user-supplied
    * quadrature rules.
    *
@@ -559,8 +554,8 @@ class ScalarLoadElementVectorProvider {
    *
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
-      quad_rule_collection_t qr_collection);
+      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      MESH_FUNCTION f, quad_rule_collection_t qr_collection);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -576,7 +571,7 @@ class ScalarLoadElementVectorProvider {
 
  private:
   /** @brief An object providing the source function */
-  FUNCTOR f_;
+  MESH_FUNCTION f_;
 
   std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
 
@@ -594,6 +589,12 @@ class ScalarLoadElementVectorProvider {
 
 template <typename SCALAR, typename FUNCTOR>
 unsigned int ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ctrl_ = 0;
+
+// Deduction guide
+template <class PTR, class MESH_FUNCTION>
+ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
+    ->ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
+                                      MESH_FUNCTION>;
 
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
@@ -648,12 +649,12 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename FUNCTOR>
-typename ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ElemVec const
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
+template <typename SCALAR, typename MESH_FUNCTION>
+typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) {
   // Type for source function
-  using source_fn_t = MeshFunctionReturnType<FUNCTOR>;
+  using source_fn_t = MeshFunctionReturnType<MESH_FUNCTION>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Obtain precomputed information about values of local shape functions
@@ -684,13 +685,13 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
                     std::cout << "LOCVEC(" << ref_el << "): Metric factors :\n "
                               << determinants.transpose() << std::endl);
   // Element vector
-  elem_vec_t vec(pfe.NumRefShapeFunctions());
+  ElemVec vec(pfe.NumRefShapeFunctions());
   vec.setZero();
 
   auto fval = f_(cell, pfe.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < determinants.size(); ++k) {
+  for (long k = 0; k < determinants.size(); ++k) {
     SWITCHEDSTATEMENT(
         ctrl_, kout_loop,
         std::cout << "LOCVEC: [" << pfe.Qr().Points().transpose() << "] -> ["
@@ -737,11 +738,9 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using elem_vec_t = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
-  using ElemVec = const elem_vec_t;
+  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
 
-  /** @defgroup stdc
-   * @brief standard constructors
+  /** @name standard constructors
    *@{*/
   ScalarLoadEdgeVectorProvider(const ScalarLoadEdgeVectorProvider &) = delete;
   ScalarLoadEdgeVectorProvider(ScalarLoadEdgeVectorProvider &&) noexcept =
@@ -841,8 +840,7 @@ unsigned int
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
-typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR,
-                                      EDGESELECTOR>::ElemVec const
+typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
   // Topological type of the cell
@@ -867,13 +865,13 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
       "Mismatch " << determinants.size() << " <-> " << pfe_.Qr().NumPoints());
 
   // Element vector
-  elem_vec_t vec(pfe_.NumRefShapeFunctions());
+  ElemVec vec(pfe_.NumRefShapeFunctions());
   vec.setZero();
 
   auto g_vals = g_(edge, pfe_.Qr().Points());
 
   // Loop over quadrature points
-  for (int k = 0; k < pfe_.Qr().NumPoints(); ++k) {
+  for (base::size_type k = 0; k < pfe_.Qr().NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
     const auto w = (pfe_.Qr().Weights()[k] * determinants[k]) * g_vals[k];
     vec += pfe_.PrecompReferenceShapeFunctions().col(k) * w;

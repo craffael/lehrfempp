@@ -113,10 +113,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       const size_type nrows_loc = dof_handler_test.NoLocalDofs(entity);
       const size_type ncols_loc = dof_handler_trial.NoLocalDofs(entity);
       // row indices of for contributions of cells
-      lf::base::RandomAccessRange<const gdof_idx_t> row_idx(
+      nonstd::span<const gdof_idx_t> row_idx(
           dof_handler_test.GlobalDofIndices(entity));
       // Column indices of for contributions of cells
-      lf::base::RandomAccessRange<const gdof_idx_t> col_idx(
+      nonstd::span<const gdof_idx_t> col_idx(
           dof_handler_trial.GlobalDofIndices(entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
@@ -143,14 +143,14 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lmdim,
                         std::cout << "ASM: " << nrows_loc << " x " << ncols_loc
                                   << " element matrix" << std::endl);
-      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_locmat,
-                        for (int i = 0; i < nrows_loc; i++) {
-                          std::cout << "[ ";
-                          for (int j = 0; j < ncols_loc; j++) {
-                            std::cout << elem_mat(i, j) << ' ';
-                          }
-                          std::cout << "]" << std::endl;
-                        });
+      SWITCHEDSTATEMENT(
+          ass_mat_dbg_ctrl, amd_locmat, for (int i = 0; i < nrows_loc; i++) {
+            std::cout << "[ ";
+            for (int j = 0; j < ncols_loc; j++) {
+              std::cout << elem_mat(i, j) << ' ';
+            }
+            std::cout << "]" << std::endl;
+          });
       // Assembly double loop
       for (int i = 0; i < nrows_loc; i++) {
         for (int j = 0; j < ncols_loc; j++) {
@@ -259,7 +259,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       // Length of element vector
       const size_type veclen = dof_handler.NoLocalDofs(entity);
       // global dof indices for contribution of the entity
-      lf::base::RandomAccessRange<const gdof_idx_t> dof_idx(
+      nonstd::span<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(entity));
       // Request local vector from entity_vector_provider object. In the case
       // CODIM = 0, when `entity` is a cell, this is the element vector

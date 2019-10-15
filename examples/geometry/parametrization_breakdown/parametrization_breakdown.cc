@@ -68,7 +68,7 @@ void storeParametrizationEvals(const std::string& base_file_path,
   const Eigen::MatrixXd& jacobians = geom.Jacobian(points);
   Eigen::VectorXd determinants(points.cols());
 
-  for (int point_idx = 0; point_idx < points.cols(); ++point_idx) {
+  for (Eigen::Index point_idx = 0; point_idx < points.cols(); ++point_idx) {
     determinants(point_idx) = jacobians
                                   .block(0, point_idx * geom.DimLocal(),
                                          geom.DimGlobal(), geom.DimLocal())
@@ -145,7 +145,7 @@ int main() {
 
     // store vertex/midpoint coordinates, random point evaluations and
     // corresponding jacobian determinants for every child geometry object
-    for (int child_idx = 0; child_idx < children.size(); ++child_idx) {
+    for (std::size_t child_idx = 0; child_idx < children.size(); ++child_idx) {
       storeSecondOrderCoords(results_dir + geom_element.first + "_child_" +
                                  std::to_string(child_idx) + "_coords.csv",
                              *children[child_idx]);

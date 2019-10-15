@@ -193,14 +193,16 @@ class RefEl {
    * - 2 for a RefEl::kTria()
    * - 2 for a RefEl::kQuad()
    */
-  constexpr dim_t Dimension() const { return internal::DimensionImpl(type_); }
+  [[nodiscard]] constexpr dim_t Dimension() const {
+    return internal::DimensionImpl(type_);
+  }
 
   /**
    * @brief The number of nodes of this reference element.
    *
    * @remark This is a shortcut for calling `NumSubEntities(Dimension())`
    */
-  constexpr size_type NumNodes() const {
+  [[nodiscard]] constexpr size_type NumNodes() const {
     switch (type_) {
       case RefElType::kPoint:
         return 1;
@@ -228,7 +230,7 @@ class RefEl {
    *
    * @snippet ref_el.cc nodeCoordStatic
    */
-  const Eigen::MatrixXd& NodeCoords() const {
+  [[nodiscard]] const Eigen::MatrixXd& NodeCoords() const {
     switch (type_) {
       case RefElType::kPoint:
         return ncoords_point_dynamic_;
@@ -295,7 +297,7 @@ class RefEl {
    * - a Triangle has three subEntities of `codim=2` (all Points), therefore
    *   `RefEl::kTria().NumSubEntities(2) == 3`
    */
-  constexpr size_type NumSubEntities(dim_t sub_codim) const {
+  [[nodiscard]] constexpr size_type NumSubEntities(dim_t sub_codim) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(),
                             "sub_codim > Dimension()");
@@ -338,7 +340,8 @@ class RefEl {
    * @see NumSubEntities() const to get the number of sub entities of a given
    *      codimension
    */
-  constexpr RefEl SubType(dim_t sub_codim, dim_t sub_index) const {
+  [[nodiscard]] constexpr RefEl SubType(dim_t sub_codim,
+                                        dim_t sub_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim is negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(),
                             "sub_codim > Dimension()");
@@ -398,10 +401,9 @@ class RefEl {
    * - Similarly, for `sub_rel_index=1`:
    *   `SubSubEntity2SubEntity(1,1,1,1) == 2`
    */
-  constexpr sub_idx_t SubSubEntity2SubEntity(dim_t sub_codim,
-                                             sub_idx_t sub_index,
-                                             dim_t sub_rel_codim,
-                                             sub_idx_t sub_rel_index) const {
+  [[nodiscard]] constexpr sub_idx_t SubSubEntity2SubEntity(
+      dim_t sub_codim, sub_idx_t sub_index, dim_t sub_rel_codim,
+      sub_idx_t sub_rel_index) const {
     LF_ASSERT_MSG_CONSTEXPR(sub_codim >= 0, "sub_codim negative");
     LF_ASSERT_MSG_CONSTEXPR(sub_codim <= Dimension(), "sub_codim > Dimension");
     LF_ASSERT_MSG_CONSTEXPR(sub_index >= 0, "sub_index negative");
@@ -445,7 +447,7 @@ class RefEl {
    * This string is supposed to described  the _topological type_ of the entity:
    * NODE, EDGE (2 nodes), TRIA (3-node triangle), QUAD (4-node quadrilateral)
    */
-  std::string ToString() const {
+  [[nodiscard]] std::string ToString() const {
     switch (type_) {
       case RefElType::kPoint:
         return "NODE";
@@ -468,7 +470,7 @@ class RefEl {
    * @snippet ref_el.cc convert_to_enum
    */
   // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-  constexpr operator RefElType() const { return type_; }
+  [[nodiscard]] constexpr operator RefElType() const { return type_; }
 
   /**
    * @brief Return a unique id for this reference element.
@@ -481,7 +483,9 @@ class RefEl {
    * @snippet ref_el.cc id
    */
   // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-  constexpr unsigned int Id() const { return static_cast<unsigned int>(type_); }
+  [[nodiscard]] constexpr unsigned int Id() const {
+    return static_cast<unsigned int>(type_);
+  }
 
   ~RefEl() = default;
 

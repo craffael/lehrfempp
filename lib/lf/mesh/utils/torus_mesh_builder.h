@@ -39,13 +39,13 @@ class TorusMeshBuilder : public StructuredMeshBuilder {
   /**
    * @brief actual construction of the mesh
    */
-  std::shared_ptr<mesh::Mesh> Build() override;
+  [[nodiscard]] std::shared_ptr<mesh::Mesh> Build() override;
 
  private:
   /**
    * @brief vertex index from grid position
    */
-  size_type VertexIndex(size_type i, size_type j) const {
+  [[nodiscard]] size_type VertexIndex(size_type i, size_type j) const {
     return i + j * no_of_x_cells_;
   }
 

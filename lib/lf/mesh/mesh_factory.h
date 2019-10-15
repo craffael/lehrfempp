@@ -34,12 +34,12 @@ class MeshFactory {
   /**
    * @brief Return the Mesh::DimWorld() of the mesh that will be returned.
    */
-  virtual dim_t DimWorld() const = 0;
+  [[nodiscard]] virtual dim_t DimWorld() const = 0;
 
   /**
    * @brief Return the Mesh::DimMesh() of the mesh that will be returned.
    */
-  virtual dim_t DimMesh() const = 0;
+  [[nodiscard]] virtual dim_t DimMesh() const = 0;
 
   /**
    * @brief Add a point to the mesh.
@@ -48,6 +48,7 @@ class MeshFactory {
    *         The first call to this method will return 0, the second call 1,
    *         ...
    */
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddPoint(coord_t coord) = 0;
 
   /**
@@ -57,6 +58,7 @@ class MeshFactory {
    *         The first call to this method will return 0, the second call 1,
    *         ...
    */
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddPoint(
       std::unique_ptr<geometry::Geometry>&& geometry) = 0;
 
@@ -102,6 +104,7 @@ class MeshFactory {
    * @note The node indices passed with the parameter `nodes` must be added
    *       with AddPoint() before calling this method.
    */
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddEntity(
       base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
       std::unique_ptr<geometry::Geometry>&& geometry) = 0;
@@ -114,7 +117,7 @@ class MeshFactory {
    *       a mesh has been built successfully. I.e. the mesh factory can
    *       be used to construct another mesh after calling `Build()`.
    */
-  virtual std::shared_ptr<Mesh> Build() = 0;
+  [[nodiscard]] virtual std::shared_ptr<Mesh> Build() = 0;
 
   /// @brief Virtual destructor.
   virtual ~MeshFactory() = default;

@@ -27,9 +27,9 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   const size_type ny = no_of_y_cells_;
 
   // opposite edges and vertices are identical and only counted once
-  const int no_of_cells = nx * ny;
-  const int no_of_edges = 2 * nx * ny;
-  const int no_of_vertices = nx * ny;
+  const unsigned no_of_cells = nx * ny;
+  const unsigned no_of_edges = 2 * nx * ny;
+  const unsigned no_of_vertices = nx * ny;
 
   if (no_of_cells == 0) {
     return nullptr;

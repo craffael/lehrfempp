@@ -45,8 +45,7 @@ namespace lf::uscalfe {
  */
 class LinearFELaplaceElementMatrix {
  public:
-  using elem_mat_t = Eigen::Matrix<double, 4, 4>;
-  using ElemMat = const elem_mat_t;
+  using ElemMat = Eigen::Matrix<double, 4, 4>;
 
   /**
    * @brief Idle constructor
@@ -55,7 +54,7 @@ class LinearFELaplaceElementMatrix {
   /**
    * @brief All cells are considered active in the default implementation
    */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
+  [[nodiscard]] virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
     return true;
   }
   /**
@@ -66,7 +65,7 @@ class LinearFELaplaceElementMatrix {
    * @return a 4x4 matrix, containing the element matrix. The bottom row/column
    *         is not used in the case of a triangle.
    */
-  ElemMat Eval(const lf::mesh::Entity &cell) const;
+  [[nodiscard]] ElemMat Eval(const lf::mesh::Entity &cell) const;
 
  private:
   /// quadrature points on reference quadrilateral
@@ -122,13 +121,12 @@ class LinearFELaplaceElementMatrix {
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {
  public:
-  using elem_vec_t = Eigen::Matrix<SCALAR, 4, 1>;
-  using ElemVec = const elem_vec_t;
+  using ElemVec = Eigen::Matrix<SCALAR, 4, 1>;
 
   /** @brief Constructor storing the right hand side function */
   explicit LinearFELocalLoadVector(FUNCTOR f) : f_(f) {}
   /** @brief Default implement: all cells are active */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
+  [[nodiscard]] virtual bool isActive(const lf::mesh::Entity & /*cell*/) const {
     return true;
   }
   /**
@@ -140,7 +138,7 @@ class LinearFELocalLoadVector {
    * approximation of the volume of a cell just using the integration element at
    * the barycenter.
    */
-  ElemVec Eval(const lf::mesh::Entity &cell) const;
+  [[nodiscard]] ElemVec Eval(const lf::mesh::Entity &cell) const;
 
  private:
   /** `f_(x)` where `x` is a 2D vector provides the evaluation of the source
@@ -163,7 +161,7 @@ unsigned int LinearFELocalLoadVector<SCALAR, FUNCTOR>::dbg_ctrl = 0;
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename FUNCTOR>
-typename LinearFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec const
+typename LinearFELocalLoadVector<SCALAR, FUNCTOR>::ElemVec
 LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
     const lf::mesh::Entity &cell) const {
   // Topological type of the cell
@@ -210,7 +208,7 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
   const double area = lf::geometry::Volume(*geo_ptr);
 
   // Vector for returning element vector
-  elem_vec_t elem_vec = elem_vec_t::Zero();
+  ElemVec elem_vec = ElemVec::Zero();
   // Run over the midpoints of edges and fetch values of the source function
   // there
   auto fvals = f_(cell, ref_mp);

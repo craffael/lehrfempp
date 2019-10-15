@@ -141,6 +141,8 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
         child_geo_uptrs.push_back(std::make_unique<Point>(child_geo));
         break;
       }
+      default:
+        LF_VERIFY_MSG(false, "codim out of bounds.");
     }  // end switch codim
   }    // end loop over the children
   return (child_geo_uptrs);

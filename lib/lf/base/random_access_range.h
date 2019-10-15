@@ -21,8 +21,8 @@ class RandomAccessRange {
   RandomAccessRange(RandomAccessIterator<T> begin, RandomAccessIterator<T> end)
       : begin_(std::move(begin)), end_(std::move(end)) {}
 
-  RandomAccessIterator<T> begin() const { return begin_; }
-  RandomAccessIterator<T> end() const { return end_; }
+  [[nodiscard]] RandomAccessIterator<T> begin() const { return begin_; }
+  [[nodiscard]] RandomAccessIterator<T> end() const { return end_; }
 
   T& operator[](size_t i) const { return begin_[i]; }
 

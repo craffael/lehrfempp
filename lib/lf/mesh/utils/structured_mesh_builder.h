@@ -30,7 +30,7 @@ class StructuredMeshBuilder {
   }
 
   /**
-   * @defgroup tpinit Initialization methods
+   * @name Initialization methods
    * @{
    */
   template <typename VECTOR>
@@ -73,12 +73,13 @@ class StructuredMeshBuilder {
   virtual std::shared_ptr<mesh::Mesh> Build() = 0;
 
  protected:
+  // TODO(craffael): find a better way than implementation inheritance.
   /** mesh factory object that has to be supplied to the MeshBuilder */
   std::unique_ptr<mesh::MeshFactory> mesh_factory_;
   /** corners of rectangle defining the domain */
-  Eigen::Vector2d bottom_left_corner_, top_right_corner_;
+  Eigen::Vector2d bottom_left_corner_, top_right_corner_;  // NOLINT
   /** Mesh resolution parameters */
-  size_type no_of_x_cells_{0}, no_of_y_cells_{0};
+  size_type no_of_x_cells_{0}, no_of_y_cells_{0};  // NOLINT
 };  // end class definition StructuredMeshBuilder
 
 }  // namespace lf::mesh::hybrid2d
