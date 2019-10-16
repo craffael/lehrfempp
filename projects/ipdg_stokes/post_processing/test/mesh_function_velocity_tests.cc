@@ -75,7 +75,9 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 1, 0;
 
   // Run through all coefficient vectors
-  for (const auto& [coeffs, v_exact] : tests) {
+  for (const auto& test : tests) {
+    const auto& coeffs = std::get<0>(test);
+    const auto& v_exact = std::get<1>(test);
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity v_func(
         fe_space, coeffs);
     for (const auto& entity : fe_space->Mesh()->Entities(0)) {
