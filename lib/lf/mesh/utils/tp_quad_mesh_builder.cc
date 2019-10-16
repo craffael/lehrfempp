@@ -64,7 +64,7 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   for (size_type i = 0; i < nx; ++i) {
     for (size_type j = 0; j < ny; ++j, quad_cnt++) {
       // Indices of vertices of quadrilateral (i,j)
-      lf::base::ForwardRange<const size_type> vertex_index_list{
+      std::vector<size_type> vertex_index_list{
           v_idx[VertexIndex(i, j)], v_idx[VertexIndex(i + 1, j)],
           v_idx[VertexIndex(i + 1, j + 1)], v_idx[VertexIndex(i, j + 1)]};
       // Construct geometry of rectangle

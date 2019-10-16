@@ -861,19 +861,19 @@ void VtkWriter::WritePointData(const std::string& name,
       data.name = name;
 
       // evaluate at nodes:
-      for (auto& n : mesh_->Entities(dim_mesh)) {
-        data.data[mesh_->Index(n)] = mesh_function(n, origin)[0];
+      for (auto n : mesh_->Entities(dim_mesh)) {
+        data.data[mesh_->Index(*n)] = mesh_function(*n, origin)[0];
       }
 
       for (int codim = static_cast<int>(dim_mesh - 1);
            codim >= static_cast<char>(codim_); --codim) {
-        for (auto& e : mesh_->Entities(codim)) {
-          auto ref_el = e.RefEl();
+        for (auto e : mesh_->Entities(codim)) {
+          auto ref_el = e->RefEl();
           if (order_ < 3 && ref_el == base::RefEl::kTria()) {
             continue;
           }
-          auto values = mesh_function(e, aux_nodes_[ref_el.Id()]);
-          auto offset = aux_node_offset_[codim](e);
+          auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
+          auto offset = aux_node_offset_[codim](*e);
           for (int i = 0; i < values.size(); ++i) {
             data.data[offset + i] = values[i];
           }
@@ -898,20 +898,20 @@ void VtkWriter::WritePointData(const std::string& name,
       data.name = name;
 
       // evaluate at nodes:
-      for (auto& n : mesh_->Entities(dim_mesh)) {
-        PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[mesh_->Index(n)],
-                                                   mesh_function(n, origin)[0]);
+      for (auto n : mesh_->Entities(dim_mesh)) {
+        PadWithZeros<T::RowsAtCompileTime, Scalar>(
+            data.data[mesh_->Index(*n)], mesh_function(*n, origin)[0]);
       }
 
       for (int codim = static_cast<int>(dim_mesh - 1);
            codim >= static_cast<char>(codim_); --codim) {
-        for (auto& e : mesh_->Entities(codim)) {
-          auto ref_el = e.RefEl();
+        for (auto e : mesh_->Entities(codim)) {
+          auto ref_el = e->RefEl();
           if (order_ < 3 && ref_el == base::RefEl::kTria()) {
             continue;
           }
-          auto values = mesh_function(e, aux_nodes_[ref_el.Id()]);
-          auto offset = aux_node_offset_[codim](e);
+          auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
+          auto offset = aux_node_offset_[codim](*e);
           for (int i = 0; i < values.size(); ++i) {
             PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[offset + i],
                                                        values[i]);

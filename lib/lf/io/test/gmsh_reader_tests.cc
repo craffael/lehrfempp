@@ -29,14 +29,14 @@ void checkTwoElementMesh(const GmshReader& reader) {
 
   // codim=2 checks:
   auto entities2 = mesh->Entities(2);
-  auto origin = std::find_if(entities2.begin(), entities2.end(), [](auto& e) {
-    return e.Geometry()->Global(Eigen::MatrixXd(0, 1)).squaredNorm() < 1e-10;
+  auto origin = std::find_if(entities2.begin(), entities2.end(), [](auto e) {
+    return e->Geometry()->Global(Eigen::MatrixXd(0, 1)).squaredNorm() < 1e-10;
   });
   EXPECT_NE(origin, entities2.end());
 
-  EXPECT_EQ(reader.PhysicalEntityNr(*origin).size(), 2);
-  EXPECT_EQ(reader.PhysicalEntityNr(*origin)[0], 1);
-  EXPECT_EQ(reader.PhysicalEntityNr(*origin)[1], 2);
+  EXPECT_EQ(reader.PhysicalEntityNr(**origin).size(), 2);
+  EXPECT_EQ(reader.PhysicalEntityNr(**origin)[0], 1);
+  EXPECT_EQ(reader.PhysicalEntityNr(**origin)[1], 2);
 
   EXPECT_EQ(reader.PhysicalEntityNr2Name(1, 2), "physicalEntity1");
   EXPECT_THROW(reader.PhysicalEntityNr2Name(1), base::LfException);
@@ -60,54 +60,54 @@ void checkTwoElementMesh(const GmshReader& reader) {
   EXPECT_NE(std::find(pe2.begin(), pe2.end(), pe_t{2, "physicalEntity2"}),
             pe2.end());
 
-  for (auto& e : entities2) {
+  for (auto e : entities2) {
     if (e == *origin) {
       continue;
     }
-    EXPECT_EQ(reader.PhysicalEntityNr(e).size(), 0);
+    EXPECT_EQ(reader.PhysicalEntityNr(*e).size(), 0);
   }
 
   // codim = 1 checks
   auto entities1 = mesh->Entities(1);
   auto diagonal_edge =
-      std::find_if(entities1.begin(), entities1.end(), [](auto& e) {
-        return e.Geometry()
+      std::find_if(entities1.begin(), entities1.end(), [](auto e) {
+        return e->Geometry()
                    ->Jacobian((Eigen::MatrixXd(1, 1) << 0).finished())
                    .norm() > 1.1;
       });
   EXPECT_NE(diagonal_edge, entities1.end());
   auto diagonal_nr = reader.PhysicalEntityName2Nr("diagonal");
   EXPECT_EQ(reader.PhysicalEntityNr2Name(diagonal_nr), "diagonal");
-  EXPECT_EQ(reader.PhysicalEntityNr(*diagonal_edge).size(), 1);
-  EXPECT_EQ(reader.PhysicalEntityNr(*diagonal_edge)[0], diagonal_nr);
+  EXPECT_EQ(reader.PhysicalEntityNr(**diagonal_edge).size(), 1);
+  EXPECT_EQ(reader.PhysicalEntityNr(**diagonal_edge)[0], diagonal_nr);
 
   auto pe1 = reader.PhysicalEntities(1);
   EXPECT_EQ(pe1.size(), 1);
   EXPECT_EQ(pe1[0].first, 4);
   EXPECT_EQ(pe1[0].second, "diagonal");
 
-  for (auto& e : entities1) {
+  for (auto e : entities1) {
     if (e == *diagonal_edge) {
       continue;
     }
-    EXPECT_EQ(reader.PhysicalEntityNr(e).size(), 0);
+    EXPECT_EQ(reader.PhysicalEntityNr(*e).size(), 0);
   }
 
   // codim = 0 checks
   auto entities0 = mesh->Entities(0);
-  auto square = std::find_if(entities0.begin(), entities0.end(), [](auto& e) {
-    return e.RefEl() == base::RefEl::kQuad();
+  auto square = std::find_if(entities0.begin(), entities0.end(), [](auto e) {
+    return e->RefEl() == base::RefEl::kQuad();
   });
   EXPECT_NE(square, entities0.end());
   auto triangle = std::find_if(entities0.begin(), entities0.end(), [](auto& e) {
-    return e.RefEl() == base::RefEl::kTria();
+    return e->RefEl() == base::RefEl::kTria();
   });
   EXPECT_NE(triangle, entities0.end());
 
   auto square_nr = reader.PhysicalEntityName2Nr("square");
   EXPECT_EQ(reader.PhysicalEntityNr2Name(square_nr), "square");
-  EXPECT_EQ(reader.PhysicalEntityNr(*square).size(), 1);
-  EXPECT_EQ(reader.PhysicalEntityNr(*square)[0], square_nr);
+  EXPECT_EQ(reader.PhysicalEntityNr(**square).size(), 1);
+  EXPECT_EQ(reader.PhysicalEntityNr(**square)[0], square_nr);
 
   EXPECT_EQ(reader.PhysicalEntityName2Nr("physicalEntity1", 0), 1);
   EXPECT_EQ(reader.PhysicalEntityName2Nr("physicalEntity3"), 3);
@@ -116,9 +116,9 @@ void checkTwoElementMesh(const GmshReader& reader) {
   EXPECT_EQ(reader.PhysicalEntityNr2Name(3, 0), "physicalEntity3");
   EXPECT_THROW(reader.PhysicalEntityNr2Name(3, 1), base::LfException);
 
-  EXPECT_EQ(reader.PhysicalEntityNr(*triangle).size(), 2);
-  EXPECT_EQ(reader.PhysicalEntityNr(*triangle)[0], 1);
-  EXPECT_EQ(reader.PhysicalEntityNr(*triangle)[1], 3);
+  EXPECT_EQ(reader.PhysicalEntityNr(**triangle).size(), 2);
+  EXPECT_EQ(reader.PhysicalEntityNr(**triangle)[0], 1);
+  EXPECT_EQ(reader.PhysicalEntityNr(**triangle)[1], 3);
 
   auto pe0 = reader.PhysicalEntities(0);
   EXPECT_EQ(pe0.size(), 3);
@@ -128,10 +128,10 @@ void checkTwoElementMesh(const GmshReader& reader) {
             pe0.end());
   EXPECT_NE(std::find(pe0.begin(), pe0.end(), pe_t{5, "square"}), pe0.end());
 
-  for (auto& e : entities0) {
-    mesh::test_utils::checkGeometryOrientation(e);
-    mesh::test_utils::checkLocalTopology(e);
-    mesh::test_utils::checkRelCodim(e);
+  for (auto e : entities0) {
+    mesh::test_utils::checkGeometryOrientation(*e);
+    mesh::test_utils::checkLocalTopology(*e);
+    mesh::test_utils::checkRelCodim(*e);
   }
   mesh::test_utils::checkEntityIndexing(*reader.mesh());
   mesh::test_utils::checkMeshCompleteness(*reader.mesh());
@@ -162,22 +162,22 @@ TEST(lf_io, readTwoElementMesh) {
   auto reader =
       test_utils::getGmshReader("two_element_hybrid_2d_second_order.msh", 2);
   checkTwoElementMesh(reader);
-  for (auto& e : reader.mesh()->Entities(0)) {
-    if (e.RefEl() == base::RefEl::kTria()) {
-      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e.Geometry()));
+  for (auto e : reader.mesh()->Entities(0)) {
+    if (e->RefEl() == base::RefEl::kTria()) {
+      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e->Geometry()));
     } else {
-      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e.Geometry()));
+      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e->Geometry()));
     }
   }
 
   reader =
       test_utils::getGmshReader("two_element_hybrid_2d_second_order_v4.msh", 2);
   checkTwoElementMesh(reader);
-  for (auto& e : reader.mesh()->Entities(0)) {
-    if (e.RefEl() == base::RefEl::kTria()) {
-      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e.Geometry()));
+  for (auto e : reader.mesh()->Entities(0)) {
+    if (e->RefEl() == base::RefEl::kTria()) {
+      EXPECT_TRUE(dynamic_cast<const geometry::TriaO2*>(e->Geometry()));
     } else {
-      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e.Geometry()));
+      EXPECT_TRUE(dynamic_cast<const geometry::QuadO2*>(e->Geometry()));
     }
   }
 }
@@ -199,9 +199,9 @@ TEST(lf_io, secondOrderMesh) {
       quad::make_QuadRule(base::RefEl::kQuad(), 10);
   auto computeVolume = [&](const mesh::Mesh& m) {
     double result = 0;
-    for (auto& e : m.Entities(0)) {
-      auto& qr = quad_rules[e.RefEl().Id()];
-      auto ie = e.Geometry()->IntegrationElement(qr.Points());
+    for (auto e : m.Entities(0)) {
+      auto& qr = quad_rules[e->RefEl().Id()];
+      auto ie = e->Geometry()->IntegrationElement(qr.Points());
       result += ie.cwiseProduct(qr.Weights()).sum();
     }
     return result;
@@ -240,29 +240,29 @@ void checkPieceOfCake(const GmshReader& reader) {
 
   // check physical entites:
   auto entities2 = mesh.Entities(2);
-  auto origin = std::find_if(entities2.begin(), entities2.end(), [](auto& e) {
-    return e.Geometry()->Global(Eigen::MatrixXd(0, 1)).squaredNorm() < 1e-10;
+  auto origin = std::find_if(entities2.begin(), entities2.end(), [](auto e) {
+    return e->Geometry()->Global(Eigen::MatrixXd(0, 1)).squaredNorm() < 1e-10;
   });
   EXPECT_NE(origin, entities2.end());
-  EXPECT_EQ(reader.PhysicalEntityNr(*origin), std::vector<unsigned>{1});
-  EXPECT_TRUE(reader.IsPhysicalEntity(*origin, 1));
+  EXPECT_EQ(reader.PhysicalEntityNr(**origin), std::vector<unsigned>{1});
+  EXPECT_TRUE(reader.IsPhysicalEntity(**origin, 1));
 
   // get the two curves:
-  for (auto& e : mesh.Entities(1)) {
-    auto nodes = e.Geometry()->Global(base::RefEl::kSegment().NodeCoords());
+  for (auto e : mesh.Entities(1)) {
+    auto nodes = e->Geometry()->Global(base::RefEl::kSegment().NodeCoords());
     if (std::abs(nodes.col(0).norm() - 1) < 1e-6 &&
         std::abs(nodes.col(1).norm() - 1) < 1e-6) {
-      EXPECT_EQ(reader.PhysicalEntityNr(e), std::vector<unsigned>{2});
-      EXPECT_TRUE(reader.IsPhysicalEntity(e, 2));
+      EXPECT_EQ(reader.PhysicalEntityNr(*e), std::vector<unsigned>{2});
+      EXPECT_TRUE(reader.IsPhysicalEntity(*e, 2));
     } else {
-      EXPECT_FALSE(reader.IsPhysicalEntity(e, 2));
+      EXPECT_FALSE(reader.IsPhysicalEntity(*e, 2));
     }
   }
 
   // make sure the two triangles belong to the physical entity 3:
-  for (auto& e : mesh.Entities(0)) {
-    EXPECT_EQ(reader.PhysicalEntityNr(e), std::vector<unsigned>{3});
-    EXPECT_TRUE(reader.IsPhysicalEntity(e, 3));
+  for (auto e : mesh.Entities(0)) {
+    EXPECT_EQ(reader.PhysicalEntityNr(*e), std::vector<unsigned>{3});
+    EXPECT_TRUE(reader.IsPhysicalEntity(*e, 3));
   }
 
   // mapping to names:
@@ -284,10 +284,10 @@ void checkPieceOfCake(const GmshReader& reader) {
   EXPECT_EQ(reader.PhysicalEntities(2)[0].first, 1);
   EXPECT_EQ(reader.PhysicalEntities(2)[0].second, "origin");
 
-  for (auto& e : mesh.Entities(0)) {
-    mesh::test_utils::checkGeometryOrientation(e);
-    mesh::test_utils::checkLocalTopology(e);
-    mesh::test_utils::checkRelCodim(e);
+  for (auto e : mesh.Entities(0)) {
+    mesh::test_utils::checkGeometryOrientation(*e);
+    mesh::test_utils::checkLocalTopology(*e);
+    mesh::test_utils::checkRelCodim(*e);
   }
   mesh::test_utils::checkEntityIndexing(*reader.mesh());
   mesh::test_utils::checkMeshCompleteness(*reader.mesh());

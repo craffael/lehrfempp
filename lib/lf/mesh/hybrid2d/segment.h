@@ -58,7 +58,8 @@ class Segment : public mesh::Entity {
                    const Point* endpoint0, const Point* endpoint1)
       : index_(index),
         geometry_(std::move(geometry)),
-        nodes_({endpoint0, endpoint1}) {
+        nodes_({endpoint0, endpoint1}),
+        this_(this) {
     LF_VERIFY_MSG((endpoint0 != nullptr) && (endpoint1 != nullptr),
                   "Invalid pointer to endnode of edge");
     if (geometry_) {
@@ -78,7 +79,7 @@ class Segment : public mesh::Entity {
      - for rel_codim == 1: return 2-range covering endnodes
      - for rel_codim == 0: return the Segment entity itself
    */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of endpoints
@@ -86,10 +87,9 @@ class Segment : public mesh::Entity {
    * This method just returns {+,-}, because points always have the intrinsic
    * orientation + and the orientation of an edge is defined through the
    * ordering of its vertices. */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        endpoint_ori_.begin(), endpoint_ori_.end());
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    return endpoint_ori_;
   }
 
   /** @brief access to index of an entity */
@@ -116,6 +116,7 @@ class Segment : public mesh::Entity {
   size_type index_ = -1;  // zero-based index of this entity.
   std::unique_ptr<geometry::Geometry> geometry_;  // shape information
   std::array<const Point*, 2> nodes_{};           // nodes connected by edge
+  Entity* this_ = nullptr;                        // needed for SubEntity()
   static constexpr std::array<lf::mesh::Orientation, 2> endpoint_ori_{
       lf::mesh::Orientation::negative,
       lf::mesh::Orientation::positive};  // orientation of endpoints

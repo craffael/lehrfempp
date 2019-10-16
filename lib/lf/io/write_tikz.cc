@@ -72,12 +72,12 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   // Loop through codimensions
   for (int co_dim = 0; co_dim <= dim_mesh; co_dim++) {
     // Loop through all types of entities
-    for (const mesh::Entity &obj : mesh.Entities(co_dim)) {
-      if (selector(obj)) {  // IF SELECTOR -------
-        size_type obj_idx = mesh.Index(obj);
-        lf::base::RefEl obj_refel = obj.RefEl();
+    for (const mesh::Entity *obj : mesh.Entities(co_dim)) {
+      if (selector(*obj)) {  // IF SELECTOR -------
+        size_type obj_idx = mesh.Index(*obj);
+        lf::base::RefEl obj_refel = obj->RefEl();
         int num_nodes_obj = obj_refel.NumNodes();
-        const geometry::Geometry *obj_geo_ptr = obj.Geometry();
+        const geometry::Geometry *obj_geo_ptr = obj->Geometry();
         const Eigen::MatrixXd &obj_corners(obj_refel.NodeCoords());
         const Eigen::MatrixXd vertices = obj_geo_ptr->Global(obj_corners);
         const Eigen::MatrixXd center =

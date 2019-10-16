@@ -2,17 +2,12 @@ set(sources
   base.h
   comm.h
   comm.cc
-  dereference_lambda_random_access_iterator.h
   eigen_tools.h
-  forward_iterator.h
-  forward_range.h
   invalid_type_exception.h
   lf_assert.cc
   lf_assert.h
   lf_exception.h
   predicate_true.h
-  random_access_iterator.h
-  random_access_range.h
   ref_el.cc
   ref_el.h
   span.h

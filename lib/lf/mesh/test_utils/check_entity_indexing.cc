@@ -14,9 +14,9 @@ void checkEntityIndexing(const Mesh& mesh) {
     // counting array for occurrences of an index
     std::vector<int> idx_use(no_of_entities, 0);
     // Traverse all entities of a given co-dimension
-    for (const Entity& e : mesh.Entities(co_dim)) {
+    for (const Entity* e : mesh.Entities(co_dim)) {
       // Fetch index of current entity
-      const lf::base::glb_idx_t current_idx = mesh.Index(e);
+      const lf::base::glb_idx_t current_idx = mesh.Index(*e);
       // Check whether index is in range and, if so, count it
       EXPECT_LT(current_idx, no_of_entities)
           << "Index " << current_idx << " out of range";

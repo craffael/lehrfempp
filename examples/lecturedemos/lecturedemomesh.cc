@@ -23,9 +23,9 @@ int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
             << mesh.NumEntities(codim) << " exist" << std::endl;
   size_type cnt = 0;
   // Typical loop for running through all entities of a specific co-dimension
-  for (const lf::mesh::Entity &entity : mesh.Entities(codim)) {
+  for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
     // Print entity information including its \samemp{unique} index
-    std::cout << cnt << ": Entity #" << mesh.Index(entity) << ": " << entity
+    std::cout << cnt << ": Entity #" << mesh.Index(*entity) << ": " << *entity
               << std::endl;
     cnt++;
   }
@@ -39,9 +39,9 @@ std::pair<size_type, size_type> countCellTypes(const lf::mesh::Mesh &mesh) {
   size_type tria_cnt = 0;
   size_type quad_cnt = 0;  // Counters
   // Loop over all cells (= co-dimension-0 entities) of the mesh
-  for (const lf::mesh::Entity &cell : mesh.Entities(0)) {
+  for (const lf::mesh::Entity* cell : mesh.Entities(0)) {
     // Fetch type information
-    lf::base::RefEl ref_el{cell.RefEl()};
+    lf::base::RefEl ref_el{cell->RefEl()};
     // Test, if current cell is of a particular type
     switch (ref_el) {
       case lf::base::RefEl::kTria(): { tria_cnt++; break; }
@@ -58,23 +58,23 @@ void scanTopology(const lf::mesh::Mesh &mesh, dim_t codim) {
   LF_ASSERT_MSG((codim <= mesh.DimMesh()),
 		"codim " << +codim << " too large");
   // loop over all entities of the specified codimension
-  for (const lf::mesh::Entity &ent : mesh.Entities(codim)) {
+  for (const lf::mesh::Entity* ent : mesh.Entities(codim)) {
     // Fetch topology type (TRIA or QUAD so far)
-    const lf::base::RefEl ref_el{ent.RefEl()};
+    const lf::base::RefEl ref_el{ent->RefEl()};
     // Print topological type and global index of the ent
-    const glb_idx_t ent_idx = mesh.Index(ent);
+    const glb_idx_t ent_idx = mesh.Index(*ent);
     std::cout << ref_el << ": idx = " << ent_idx << std::endl;
     // Inspect sub-entities of any co-dimension
     for (dim_t sub_codim = 1; sub_codim <= mesh.DimMesh() - codim;
          ++sub_codim) {
       // Obtain iterator over sub-entities
-      auto sub_ent_range = ent.SubEntities(sub_codim);
+      auto sub_ent_range = ent->SubEntities(sub_codim);
       size_type sub_cnt = 0;  // Counter for sub-entities
       // Loop over sub-entities, whose types and indices will be output
-      for (const lf::mesh::Entity &subent : sub_ent_range) { // \Label[line]{st:1}
+      for (const lf::mesh::Entity* subent : sub_ent_range) { // \Label[line]{st:1}
         std::cout << "\t rel. codim " << +sub_codim << " sub-ent "
-		  << sub_cnt << ": " << subent << ", idx = "
-		  << mesh.Index(subent) << std::endl;
+		  << sub_cnt << ": " << *subent << ", idx = "
+		  << mesh.Index(*subent) << std::endl;
         sub_cnt++;
       }}}}
 /* SAM_LISTING_END_2 */
@@ -85,18 +85,18 @@ void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim) {
   LF_ASSERT_MSG((codim <= mesh.DimMesh()),
 		"codim " << +codim << " too large");
   // loop over all entities of the specified codimension
-  for (const lf::mesh::Entity &ent : mesh.Entities(codim)) {
+  for (const lf::mesh::Entity* ent : mesh.Entities(codim)) {
     // Number of nodes = number of corner points
-    const size_type num_nodes = ent.RefEl().NumNodes();
+    const size_type num_nodes = ent->RefEl().NumNodes();
     // Obtain pointer to geometry object associated with entity
-    const lf::geometry::Geometry *geo_ptr = ent.Geometry();
+    const lf::geometry::Geometry *geo_ptr = ent->Geometry();
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry!");
     // Fetch coordinates of corner points in packed format \cref{par:coords}
     Eigen::MatrixXd corners = lf::geometry::Corners(*geo_ptr);
     LF_ASSERT_MSG(corners.rows() == geo_ptr->DimGlobal(),
                   "dimension mismatch for coordinate vectors");
     LF_ASSERT_MSG(corners.cols() == num_nodes, "#corners mismath");
-    std::cout << ent.RefEl() << "(" << mesh.Index(ent) << ") pts: ";
+    std::cout << ent->RefEl() << "(" << mesh.Index(*ent) << ") pts: ";
     for (int l = 0; l < num_nodes; ++l) {
       std::cout << l << " =[" << corners.col(l).transpose() << "], ";
     }

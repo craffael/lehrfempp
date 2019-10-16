@@ -301,8 +301,8 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
       mesh::utils::make_AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
 
   for (dim_t c = 0; c <= dim_mesh; ++c) {
-    for (auto& e : mesh_->Entities(c)) {
-      auto mi = mesh_->Index(e);
+    for (auto e : mesh_->Entities(c)) {
+      auto mi = mesh_->Index(*e);
       if (c == dim_mesh && mi >= mi2gi[dim_mesh].size()) {
         // this point did not appear as a gmsh element in the file -> don't
         // assign any physical entity nr.
@@ -314,7 +314,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
           temp.push_back(msh_file.Elements[gmsh_index].PhysicalEntityNr);
         }
 
-        physical_nrs_->operator()(e) = std::move(temp);
+        physical_nrs_->operator()(*e) = std::move(temp);
       }
     }
   }
@@ -588,8 +588,8 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       mesh::utils::make_AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
 
   for (dim_t c = 0; c <= dim_mesh; ++c) {
-    for (auto& e : mesh_->Entities(c)) {
-      auto mi = mesh_->Index(e);
+    for (auto e : mesh_->Entities(c)) {
+      auto mi = mesh_->Index(*e);
       if (c == dim_mesh && mi >= mi2gi[dim_mesh].size()) {
         // this point did not appear as a gmsh element in the file -> don't
         // assign any physical entity nr.
@@ -604,7 +604,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
                       std::end(physical_tags));
         }
 
-        physical_nrs_->operator()(e) = std::move(temp);
+        physical_nrs_->operator()(*e) = std::move(temp);
       }
     }
   }

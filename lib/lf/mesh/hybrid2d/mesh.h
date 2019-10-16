@@ -36,7 +36,7 @@ class Mesh : public mesh::Mesh {
   [[nodiscard]] unsigned DimMesh() const override { return 2; }
   [[nodiscard]] unsigned DimWorld() const override { return dim_world_; }
 
-  [[nodiscard]] base::ForwardRange<const mesh::Entity> Entities(
+  [[nodiscard]] nonstd::span<const Entity* const> Entities(
       unsigned codim) const override;
   [[nodiscard]] size_type NumEntities(unsigned codim) const override;
   [[nodiscard]] size_type NumEntities(

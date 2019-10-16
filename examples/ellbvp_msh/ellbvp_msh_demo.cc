@@ -40,8 +40,8 @@ int main() {
   // Count the number of edges with von Neumann boundary condition
   auto physical_entity_nr_neu = reader.PhysicalEntityName2Nr("neu");
   int num_neumann = 0;
-  for (auto& e : mesh->Entities(1)) {
-    if (reader.IsPhysicalEntity(e, physical_entity_nr_neu)) {
+  for (auto e : mesh->Entities(1)) {
+    if (reader.IsPhysicalEntity(*e, physical_entity_nr_neu)) {
       ++num_neumann;
     }
   }
@@ -51,8 +51,8 @@ int main() {
   // Count the number of edges with Dirichlet boundary condition
   auto physical_entity_nr_dir = reader.PhysicalEntityName2Nr("dir");
   int num_dirichlet = 0;
-  for (auto& e : mesh->Entities(1)) {
-    if (reader.IsPhysicalEntity(e, physical_entity_nr_dir)) {
+  for (auto e : mesh->Entities(1)) {
+    if (reader.IsPhysicalEntity(*e, physical_entity_nr_dir)) {
       ++num_dirichlet;
     }
   }

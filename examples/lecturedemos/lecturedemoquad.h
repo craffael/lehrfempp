@@ -44,23 +44,22 @@ namespace lecturedemo {
 //clang-format off
 /* SAM_LISTING_BEGIN_1 */
 template <typename FUNCTOR>
-auto localQuadFunction(const lf::mesh::Mesh &mesh,
-                       std::map<lf::base::RefEl, lf::quad::QuadRule> quadrules,
-                       FUNCTOR &&f, dim_t codim,
-                       std::function<bool(const lf::mesh::Entity &)> pred =
-                           [](const lf::mesh::Entity & /*entity*/) -> bool {
-                         return true;
-                       }) {
+auto localQuadFunction(
+    const lf::mesh::Mesh &mesh,
+    std::map<lf::base::RefEl, lf::quad::QuadRule> quadrules, FUNCTOR &&f,
+    dim_t codim,
+    std::function<bool(const lf::mesh::Entity &)> pred =
+        [](const lf::mesh::Entity & /*entity*/) -> bool { return true; }) {
   LF_ASSERT_MSG(mesh.DimMesh() >= codim, "Illegal codim = " << codim);
   // Variable for summing the result
   using value_t = std::invoke_result_t<FUNCTOR, Eigen::VectorXd>;
   value_t sum_var{};
   // Loop over entities of co-dimension codim
-  for (const lf::mesh::Entity &entity : mesh.Entities(codim)) {
+  for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
     // Obtain geometry information for entity
-    const lf::geometry::Geometry &geo{*entity.Geometry()};
+    const lf::geometry::Geometry &geo{*entity->Geometry()};
     // obtain quadrature rule suitable for entity type
-    auto tmp = quadrules.find(entity.RefEl());
+    auto tmp = quadrules.find(entity->RefEl());
     if (tmp != quadrules.end()) {
       // A quadrature rule has been found
       const lf::quad::QuadRule &qr{tmp->second};
@@ -79,7 +78,7 @@ auto localQuadFunction(const lf::mesh::Mesh &mesh,
         sum_var += w_ref[l] * f(zeta.col(l)) * gram_dets[l];
       }
     } else {
-      LF_VERIFY_MSG(false, "Missing quadrature rule for " << entity.RefEl());
+      LF_VERIFY_MSG(false, "Missing quadrature rule for " << entity->RefEl());
     }
   }
   return sum_var;
