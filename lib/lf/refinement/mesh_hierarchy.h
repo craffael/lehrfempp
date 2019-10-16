@@ -375,9 +375,9 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
                 "Length  mismatch for edge flag array");
 
   // Run through the edges = entities of co-dimension 1
-  for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
-    glb_idx_t edge_index = finest_mesh.Index(edge);
-    (edge_marked_.back())[edge_index] = marker(finest_mesh, edge);
+  for (const mesh::Entity *edge : finest_mesh.Entities(1)) {
+    glb_idx_t edge_index = finest_mesh.Index(*edge);
+    (edge_marked_.back())[edge_index] = marker(finest_mesh, *edge);
   }
 }  // end MeshHierarchy::MarkEdges
 

@@ -37,10 +37,10 @@ MeshHierarchy::MeshHierarchy(const std::shared_ptr<mesh::Mesh> &base_mesh,
   {
     // Refinement edge has to be set for edges
     refinement_edges_.emplace_back(base_mesh->NumEntities(0), idx_nil);
-    for (const mesh::Entity &cell : base_mesh->Entities(0)) {
-      lf::base::glb_idx_t cell_index = base_mesh->Index(cell);
-      if (cell.RefEl() == lf::base::RefEl::kTria()) {
-        (refinement_edges_.back())[cell_index] = LongestEdge(cell);
+    for (const mesh::Entity *cell : base_mesh->Entities(0)) {
+      lf::base::glb_idx_t cell_index = base_mesh->Index(*cell);
+      if (cell->RefEl() == lf::base::RefEl::kTria()) {
+        (refinement_edges_.back())[cell_index] = LongestEdge(*cell);
       }
     }  // end loop over cells
 
@@ -84,21 +84,21 @@ void MeshHierarchy::RefineRegular(RefPat ref_pat) {
                 "length mismatch CellChildInfo vector");
 
   // Flag all points as to be copied
-  for (const mesh::Entity &point : finest_mesh.Entities(2)) {
-    const lf::base::glb_idx_t point_index = finest_mesh.Index(point);
+  for (const mesh::Entity *point : finest_mesh.Entities(2)) {
+    const lf::base::glb_idx_t point_index = finest_mesh.Index(*point);
     PointChildInfo &pt_child_info(finest_point_ci[point_index]);
     // Set the information about a point's children except the child pointer
     pt_child_info.ref_pat = RefPat::rp_copy;
   }
   // Flag all edges as to be split
-  for (const mesh::Entity &edge : finest_mesh.Entities(1)) {
-    const lf::base::glb_idx_t edge_index = finest_mesh.Index(edge);
+  for (const mesh::Entity *edge : finest_mesh.Entities(1)) {
+    const lf::base::glb_idx_t edge_index = finest_mesh.Index(*edge);
     EdgeChildInfo &ed_child_info(finest_edge_ci[edge_index]);
     ed_child_info.ref_pat_ = RefPat::rp_split;
   }
   // All cells are to be refined regularly
-  for (const mesh::Entity &cell : finest_mesh.Entities(0)) {
-    const lf::base::glb_idx_t cell_index = finest_mesh.Index(cell);
+  for (const mesh::Entity *cell : finest_mesh.Entities(0)) {
+    const lf::base::glb_idx_t cell_index = finest_mesh.Index(*cell);
     CellChildInfo &cell_child_info(finest_cell_ci[cell_index]);
     cell_child_info.ref_pat_ = ref_pat;
   }
@@ -122,18 +122,18 @@ void MeshHierarchy::RefineMarked() {
                 "length mismatch CellChildInfo vector");
 
   // Flag all points as to be copied
-  for (const mesh::Entity &point : finest_mesh.Entities(2)) {
-    const glb_idx_t point_index = finest_mesh.Index(point);
+  for (const mesh::Entity *point : finest_mesh.Entities(2)) {
+    const glb_idx_t point_index = finest_mesh.Index(*point);
     PointChildInfo &pt_child_info(finest_point_ci[point_index]);
     // Set the information about a points children except the child pointer
     pt_child_info.ref_pat = RefPat::rp_copy;
   }
 
   // Set the split refinement patterrn for all marked edges
-  for (const lf::mesh::Entity &edge : finest_mesh.Entities(1)) {
-    LF_VERIFY_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
+  for (const lf::mesh::Entity *edge : finest_mesh.Entities(1)) {
+    LF_VERIFY_MSG(edge->RefEl() == lf::base::RefEl::kSegment(),
                   "Wrong type for an edge");
-    const glb_idx_t edge_index = finest_mesh.Index(edge);
+    const glb_idx_t edge_index = finest_mesh.Index(*edge);
     EdgeChildInfo &ed_ci(finest_edge_ci[edge_index]);
     LF_VERIFY_MSG(ed_ci.ref_pat_ == RefPat::rp_nil,
                   "Edge " << edge_index << " already refined!");
@@ -153,8 +153,8 @@ void MeshHierarchy::RefineMarked() {
   do {
     refinement_complete = true;
     // Visit all cells and update their refinement patterns
-    for (const lf::mesh::Entity &cell : finest_mesh.Entities(0)) {
-      const glb_idx_t cell_index = finest_mesh.Index(cell);
+    for (const lf::mesh::Entity *cell : finest_mesh.Entities(0)) {
+      const glb_idx_t cell_index = finest_mesh.Index(*cell);
       CellChildInfo &cell_child_info(finest_cell_ci[cell_index]);
 
       // Global indices of edges
@@ -165,15 +165,14 @@ void MeshHierarchy::RefineMarked() {
       // Local indices of edges marked as split
       std::array<sub_idx_t, 4> split_edge_idx{};
       // Array of references to edge sub-entities of current cell
-      base::RandomAccessRange<const lf::mesh::Entity> sub_edges(
-          cell.SubEntities(1));
-      const size_type num_edges = cell.RefEl().NumSubEntities(1);
+      auto sub_edges = cell->SubEntities(1);
+      const size_type num_edges = cell->RefEl().NumSubEntities(1);
       LF_VERIFY_MSG(num_edges <= 4, "Too many edges = " << num_edges);
       // Obtain information about current splitting pattern of
       // the edges of the cell
       size_type split_edge_cnt = 0;
       for (int k = 0; k < num_edges; k++) {
-        const glb_idx_t edge_index = finest_mesh.Index(sub_edges[k]);
+        const glb_idx_t edge_index = finest_mesh.Index(*sub_edges[k]);
         cell_edge_indices[k] = edge_index;
         edge_split[k] =
             (finest_edge_ci[edge_index].ref_pat_ == RefPat::rp_split);
@@ -182,7 +181,7 @@ void MeshHierarchy::RefineMarked() {
           split_edge_cnt++;
         }
       }
-      switch (cell.RefEl()) {
+      switch (cell->RefEl()) {
         case lf::base::RefEl::kTria(): {
           // Case of a triangular cell: In this case bisection refinement
           // is performed starting with the refinement edge.
@@ -368,13 +367,13 @@ void MeshHierarchy::PerformRefinement() {
     size_type new_node_cnt = 0;
     const Hybrid2DRefinementPattern rp_copy_node(lf::base::RefEl::kPoint(),
                                                  RefPat::rp_copy);
-    for (const mesh::Entity &node : parent_mesh.Entities(2)) {
+    for (const mesh::Entity *node : parent_mesh.Entities(2)) {
       // Obtain index of node in coarse mesh
-      const lf::base::glb_idx_t node_index = parent_mesh.Index(node);
+      const lf::base::glb_idx_t node_index = parent_mesh.Index(*node);
       LF_VERIFY_MSG(node_index < pt_child_info.size(),
                     "Node index " << node_index << " out of range");
       // Find position of node in physical coordinates
-      const lf::geometry::Geometry &pt_geo(*node.Geometry());
+      const lf::geometry::Geometry &pt_geo(*node->Geometry());
       if (pt_child_info[node_index].ref_pat != RefPat::rp_nil) {
         // Generate a node for the fine mesh at the same position
         std::vector<std::unique_ptr<geometry::Geometry>> pt_child_geo_ptrs(
@@ -395,16 +394,16 @@ void MeshHierarchy::PerformRefinement() {
     // Supplement the refinement information for edges accordingly.
     std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
     size_type new_edge_cnt = 0;
-    for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
+    for (const mesh::Entity *edge : parent_mesh.Entities(1)) {
       // Fetch global index of edge
-      lf::base::glb_idx_t edge_index = parent_mesh.Index(edge);
+      lf::base::glb_idx_t edge_index = parent_mesh.Index(*edge);
 
       // Get indices of endpoints in parent mesh
-      auto ed_nodes(edge.SubEntities(1));
+      auto ed_nodes = edge->SubEntities(1);
       const lf::base::glb_idx_t ed_p0_coarse_idx =
-          parent_mesh.Index(ed_nodes[0]);
+          parent_mesh.Index(*ed_nodes[0]);
       const lf::base::glb_idx_t ed_p1_coarse_idx =
-          parent_mesh.Index(ed_nodes[1]);
+          parent_mesh.Index(*ed_nodes[1]);
 
       // Obtain indices of the nodes at the same position in the fine mesh
       const lf::base::glb_idx_t ed_p0_fine_idx =
@@ -414,14 +413,14 @@ void MeshHierarchy::PerformRefinement() {
       // Prepare request of geometry after refinement
       EdgeChildInfo &edge_ci(ed_child_info[edge_index]);
       const RefPat edge_refpat(edge_ci.ref_pat_);
-      Hybrid2DRefinementPattern rp(edge.RefEl(), edge_refpat);
+      Hybrid2DRefinementPattern rp(edge->RefEl(), edge_refpat);
 
       // Distinguish between different local refinement patterns
       switch (edge_refpat) {
         case RefPat::rp_copy: {
           // Edge has to be duplicated
           std::vector<std::unique_ptr<lf::geometry::Geometry>> ed_copy(
-              edge.Geometry()->ChildGeometry(rp, 0));
+              edge->Geometry()->ChildGeometry(rp, 0));
           LF_VERIFY_MSG(ed_copy.size() == 1,
                         "Copy may create only a single child!");
           // Register the new edge
@@ -431,11 +430,11 @@ void MeshHierarchy::PerformRefinement() {
                                         << "," << ed_p1_fine_idx << "] "
                                         << std::endl;)
 
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge.RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {ed_p0_fine_idx, ed_p1_fine_idx}),
-              std::move(ed_copy[0])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {ed_p0_fine_idx, ed_p1_fine_idx}},
+                                       std::move(ed_copy[0])));
           break;
         }  // end rp_copy
         case rp_split: {
@@ -443,7 +442,7 @@ void MeshHierarchy::PerformRefinement() {
           // midpoint position. First obtain geometry information about new node
           // (sub-entity with relative co-dimension 1)
           std::vector<std::unique_ptr<geometry::Geometry>> edge_nodes_geo_ptrs(
-              edge.Geometry()->ChildGeometry(rp, 1));
+              edge->Geometry()->ChildGeometry(rp, 1));
           LF_VERIFY_MSG(edge_nodes_geo_ptrs.size() == 1,
                         "Split edge with " << edge_nodes_geo_ptrs.size()
                                            << " child nodes!");
@@ -453,7 +452,7 @@ void MeshHierarchy::PerformRefinement() {
           edge_ci.child_point_idx.push_back(midpoint_fine_idx);
           // Next get the geometry objects for the two child edges (co-dim == 0)
           std::vector<std::unique_ptr<geometry::Geometry>> edge_child_geo_ptrs(
-              edge.Geometry()->ChildGeometry(rp, 0));
+              edge->Geometry()->ChildGeometry(rp, 0));
           LF_VERIFY_MSG(
               edge_child_geo_ptrs.size() == 2,
               "Split edge with " << edge_child_geo_ptrs.size() << " parts!");
@@ -467,16 +466,16 @@ void MeshHierarchy::PerformRefinement() {
                                         << midpoint_fine_idx << ","
                                         << ed_p1_fine_idx << "] " << std::endl;)
 
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge.RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {ed_p0_fine_idx, midpoint_fine_idx}),
-              std::move(edge_child_geo_ptrs[0])));
-          edge_ci.child_edge_idx.push_back(mesh_factory_->AddEntity(
-              edge.RefEl(),
-              lf::base::ForwardRange<const lf::base::glb_idx_t>(
-                  {midpoint_fine_idx, ed_p1_fine_idx}),
-              std::move(edge_child_geo_ptrs[1])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {ed_p0_fine_idx, midpoint_fine_idx}},
+                                       std::move(edge_child_geo_ptrs[0])));
+          edge_ci.child_edge_idx.push_back(
+              mesh_factory_->AddEntity(edge->RefEl(),
+                                       std::array<lf::base::glb_idx_t, 2>{
+                                           {midpoint_fine_idx, ed_p1_fine_idx}},
+                                       std::move(edge_child_geo_ptrs[1])));
           break;
         }  // end rp_split
         default: {
@@ -498,13 +497,13 @@ void MeshHierarchy::PerformRefinement() {
     std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
     LF_VERIFY_MSG(cell_child_info.size() == parent_mesh.NumEntities(0),
                   "Size mismatch for CellChildInfos");
-    for (const mesh::Entity &cell : parent_mesh.Entities(0)) {
+    for (const mesh::Entity *cell : parent_mesh.Entities(0)) {
       // type of cell
-      const lf::base::RefEl ref_el(cell.RefEl());
+      const lf::base::RefEl ref_el(cell->RefEl());
       const lf::base::size_type num_edges = ref_el.NumSubEntities(1);
       const lf::base::size_type num_vertices = ref_el.NumSubEntities(2);
       // fetch index of current cell
-      const lf::base::glb_idx_t cell_index(parent_mesh.Index(cell));
+      const lf::base::glb_idx_t cell_index(parent_mesh.Index(*cell));
 
       // Set up refinement object -> variable rp
       CellChildInfo &cell_ci(cell_child_info[cell_index]);
@@ -517,7 +516,7 @@ void MeshHierarchy::PerformRefinement() {
                     << ", refpat = " << static_cast<int>(cell_refpat)
                     << ", anchor = " << anchor << std::endl;)
 
-      Hybrid2DRefinementPattern rp(cell.RefEl(), cell_refpat, anchor);
+      Hybrid2DRefinementPattern rp(cell->RefEl(), cell_refpat, anchor);
 
       // Index offsets for refinement patterns requiring an ancchor edge
       std::array<sub_idx_t, 4> mod{};
@@ -531,10 +530,9 @@ void MeshHierarchy::PerformRefinement() {
       std::array<std::vector<lf::base::glb_idx_t>, 3> cell_subent_idx;
       cell_subent_idx[0].push_back(cell_index);
       for (int codim = 1; codim <= 2; codim++) {
-        base::RandomAccessRange<const mesh::Entity> subentities(
-            cell.SubEntities(codim));
-        for (const mesh::Entity &sub_ent : subentities) {
-          cell_subent_idx[codim].push_back(parent_mesh.Index(sub_ent));
+        auto subentities = cell->SubEntities(codim);
+        for (const mesh::Entity *sub_ent : subentities) {
+          cell_subent_idx[codim].push_back(parent_mesh.Index(*sub_ent));
         }
         LF_VERIFY_MSG(
             cell_subent_idx[codim].size() == ref_el.NumSubEntities(codim),
@@ -783,7 +781,7 @@ void MeshHierarchy::PerformRefinement() {
             // of the edges.
             // Create a new interior vertex
             std::vector<std::unique_ptr<geometry::Geometry>>
-                cell_center_geo_ptrs(cell.Geometry()->ChildGeometry(
+                cell_center_geo_ptrs(cell->Geometry()->ChildGeometry(
                     rp, 2));  // point: co-dim == 2
             LF_VERIFY_MSG(cell_center_geo_ptrs.size() == 1,
                           "Barycentrically refined triangle with "
@@ -1118,7 +1116,7 @@ void MeshHierarchy::PerformRefinement() {
           case RefPat::rp_regular: {
             // Create a new interior vertex
             std::vector<std::unique_ptr<geometry::Geometry>>
-                cell_center_geo_ptrs(cell.Geometry()->ChildGeometry(
+                cell_center_geo_ptrs(cell->Geometry()->ChildGeometry(
                     rp, 2));  // point: co-dim == 2
             LF_VERIFY_MSG(cell_center_geo_ptrs.size() == 1,
                           "Regularly refined quadrilateral with "
@@ -1198,7 +1196,7 @@ void MeshHierarchy::PerformRefinement() {
       // Register new edges
       {
         std::vector<std::unique_ptr<geometry::Geometry>> cell_edge_geo_ptrs(
-            cell.Geometry()->ChildGeometry(rp, 1));  // child edge: co-dim == 2
+            cell->Geometry()->ChildGeometry(rp, 1));  // child edge: co-dim == 2
         const size_type num_new_edges = child_edge_nodes.size();
         LF_VERIFY_MSG(
             num_new_edges == rp.noChildren(1),
@@ -1213,7 +1211,8 @@ void MeshHierarchy::PerformRefinement() {
                                   << cen[1] << "]" << std::endl;)
 
           const glb_idx_t new_edge_index = mesh_factory_->AddEntity(
-              lf::base::RefEl::kSegment(), {cen[0], cen[1]},
+              lf::base::RefEl::kSegment(),
+              std::array<base::glb_idx_t, 2>{{cen[0], cen[1]}},
               std::move(cell_edge_geo_ptrs[k]));
           cell_ci.child_edge_idx.push_back(new_edge_index);
         }  // end loop over new edges
@@ -1221,7 +1220,7 @@ void MeshHierarchy::PerformRefinement() {
       // Register new cells
       {
         std::vector<std::unique_ptr<geometry::Geometry>> childcell_geo_ptrs(
-            cell.Geometry()->ChildGeometry(rp, 0));  // child cell: co-dim == 0
+            cell->Geometry()->ChildGeometry(rp, 0));  // child cell: co-dim == 0
         const size_type num_new_cells = child_cell_nodes.size();
         LF_VERIFY_MSG(
             num_new_cells == rp.noChildren(0),
@@ -1239,7 +1238,8 @@ void MeshHierarchy::PerformRefinement() {
                           << ccn[1] << "," << ccn[2] << "]" << std::endl;)
 
             new_cell_index = mesh_factory_->AddEntity(
-                lf::base::RefEl::kTria(), {ccn[0], ccn[1], ccn[2]},
+                lf::base::RefEl::kTria(),
+                std::array<base::glb_idx_t, 3>{ccn[0], ccn[1], ccn[2]},
                 std::move(childcell_geo_ptrs[k]));
           } else if (ccn.size() == 4) {
             // New cell is a quadrilateral
@@ -1251,9 +1251,11 @@ void MeshHierarchy::PerformRefinement() {
                                     << "," << ccn[1] << "," << ccn[2] << ","
                                     << ccn[3] << "]" << std::endl;)
 
-            new_cell_index = mesh_factory_->AddEntity(
-                lf::base::RefEl::kQuad(), {ccn[0], ccn[1], ccn[2], ccn[3]},
-                std::move(childcell_geo_ptrs[k]));
+            new_cell_index =
+                mesh_factory_->AddEntity(lf::base::RefEl::kQuad(),
+                                         std::array<base::glb_idx_t, 4>{
+                                             {ccn[0], ccn[1], ccn[2], ccn[3]}},
+                                         std::move(childcell_geo_ptrs[k]));
           } else {
             LF_VERIFY_MSG(false,
                           "Child cells must be either triangles or quads");
@@ -1321,15 +1323,15 @@ void MeshHierarchy::PerformRefinement() {
     // Visit all nodes of the parent mesh and retrieve their children by index
     std::vector<PointChildInfo> &pt_child_info(
         point_child_infos_.at(n_levels - 2));
-    for (const mesh::Entity &node : parent_mesh.Entities(2)) {
+    for (const mesh::Entity *node : parent_mesh.Entities(2)) {
       // Obtain index of node in coarse mesh
-      const glb_idx_t node_index = parent_mesh.Index(node);
+      const glb_idx_t node_index = parent_mesh.Index(*node);
       const glb_idx_t child_index = pt_child_info[node_index].child_point_idx;
       if (child_index != idx_nil) {
         LF_VERIFY_MSG(child_index < fine_node_parent_info.size(),
                       "index " << child_index << " illegal for child vertex");
         fine_node_parent_info[child_index].child_number = 0;
-        fine_node_parent_info[child_index].parent_ptr = &node;
+        fine_node_parent_info[child_index].parent_ptr = node;
         fine_node_parent_info[child_index].parent_index = node_index;
       }
     }  // end loop over nodes
@@ -1338,9 +1340,9 @@ void MeshHierarchy::PerformRefinement() {
     // edges
     std::vector<EdgeChildInfo> &ed_child_info(
         edge_child_infos_.at(n_levels - 2));
-    for (const mesh::Entity &edge : parent_mesh.Entities(1)) {
+    for (const mesh::Entity *edge : parent_mesh.Entities(1)) {
       // Obtain index of edge in coarse mesh
-      const glb_idx_t edge_index = parent_mesh.Index(edge);
+      const glb_idx_t edge_index = parent_mesh.Index(*edge);
       const EdgeChildInfo &ci_edge(ed_child_info[edge_index]);
 
       // Visit child edges
@@ -1350,7 +1352,7 @@ void MeshHierarchy::PerformRefinement() {
         LF_VERIFY_MSG(edge_child_idx < fine_edge_parent_info.size(),
                       "index " << edge_child_idx << " illegal for child edge");
         fine_edge_parent_info[edge_child_idx].child_number = l;
-        fine_edge_parent_info[edge_child_idx].parent_ptr = &edge;
+        fine_edge_parent_info[edge_child_idx].parent_ptr = edge;
         fine_edge_parent_info[edge_child_idx].parent_index = edge_index;
       }  // end loop over child edges
 
@@ -1361,7 +1363,7 @@ void MeshHierarchy::PerformRefinement() {
         LF_VERIFY_MSG(node_child_idx < fine_node_parent_info.size(),
                       "index " << node_child_idx << " illegal for child point");
         fine_node_parent_info[node_child_idx].child_number = l;
-        fine_node_parent_info[node_child_idx].parent_ptr = &edge;
+        fine_node_parent_info[node_child_idx].parent_ptr = edge;
         fine_node_parent_info[node_child_idx].parent_index = edge_index;
       }  // end loop over child points
     }    // end loop over edges
@@ -1369,9 +1371,9 @@ void MeshHierarchy::PerformRefinement() {
     // Loop over cells
     std::vector<CellChildInfo> &cell_child_info(
         cell_child_infos_.at(n_levels - 2));
-    for (const mesh::Entity &cell : parent_mesh.Entities(0)) {
+    for (const mesh::Entity *cell : parent_mesh.Entities(0)) {
       // fetch index of current cell
-      const glb_idx_t cell_index(parent_mesh.Index(cell));
+      const glb_idx_t cell_index(parent_mesh.Index(*cell));
       // Get infformation about children
       CellChildInfo &cell_ci(cell_child_info[cell_index]);
 
@@ -1382,7 +1384,7 @@ void MeshHierarchy::PerformRefinement() {
         LF_VERIFY_MSG(child_cell_idx < fine_cell_parent_info.size(),
                       "index " << child_cell_idx << " illegal for child cell");
         fine_cell_parent_info[child_cell_idx].child_number = l;
-        fine_cell_parent_info[child_cell_idx].parent_ptr = &cell;
+        fine_cell_parent_info[child_cell_idx].parent_ptr = cell;
         fine_cell_parent_info[child_cell_idx].parent_index = cell_index;
       }
 
@@ -1393,7 +1395,7 @@ void MeshHierarchy::PerformRefinement() {
         LF_VERIFY_MSG(edge_child_idx < fine_edge_parent_info.size(),
                       "index " << edge_child_idx << " illegal for child edge");
         fine_edge_parent_info[edge_child_idx].child_number = l;
-        fine_edge_parent_info[edge_child_idx].parent_ptr = &cell;
+        fine_edge_parent_info[edge_child_idx].parent_ptr = cell;
         fine_edge_parent_info[edge_child_idx].parent_index = cell_index;
       }  // end loop over child edges
 
@@ -1404,7 +1406,7 @@ void MeshHierarchy::PerformRefinement() {
         LF_VERIFY_MSG(node_child_idx < fine_node_parent_info.size(),
                       "index " << node_child_idx << " illegal for child point");
         fine_node_parent_info[node_child_idx].child_number = l;
-        fine_node_parent_info[node_child_idx].parent_ptr = &cell;
+        fine_node_parent_info[node_child_idx].parent_ptr = cell;
         fine_node_parent_info[node_child_idx].parent_index = cell_index;
       }  // end loop over child points
     }    // end loop over cells of parent mesh
@@ -1426,11 +1428,11 @@ void MeshHierarchy::PerformRefinement() {
     CONTROLLEDSTATEMENT(output_ctrl_, 10,
                         std::cout << "Setting refinement edges" << std::endl;)
 
-    for (const mesh::Entity &fine_cell : child_mesh.Entities(0)) {
-      const glb_idx_t cell_index = child_mesh.Index(fine_cell);
+    for (const mesh::Entity *fine_cell : child_mesh.Entities(0)) {
+      const glb_idx_t cell_index = child_mesh.Index(*fine_cell);
       child_ref_edges[cell_index] = idx_nil;
       // Refinement edge relevant for triangles onyl
-      if (fine_cell.RefEl() == lf::base::RefEl::kTria()) {
+      if (fine_cell->RefEl() == lf::base::RefEl::kTria()) {
         // pointer to cell whose refinement has created the current one
         const mesh::Entity *parent_ptr =
             cell_parent_info[cell_index].parent_ptr;
@@ -1657,7 +1659,7 @@ void MeshHierarchy::PerformRefinement() {
                                   std::cout << "BARYCENTRIC" << std::flush;)
               // In the case of barycentric refinement choose the longest edge
               // as refinement edge for every child triangle
-              child_ref_edges[cell_index] = LongestEdge(fine_cell);
+              child_ref_edges[cell_index] = LongestEdge(*fine_cell);
               break;
             }
             default: {
@@ -1674,7 +1676,7 @@ void MeshHierarchy::PerformRefinement() {
         else if (parent_ptr->RefEl() == lf::base::RefEl::kQuad()) {
           // Parent is a quadrilateral:
           // refinement edge will be set to the longest edge
-          child_ref_edges[cell_index] = LongestEdge(fine_cell);
+          child_ref_edges[cell_index] = LongestEdge(*fine_cell);
         } else {
           LF_VERIFY_MSG(false, "Unknown parent cell type");
         }
@@ -1687,7 +1689,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
   LF_VERIFY_MSG(T.Codim() == 0, "Entity must be a call");
   // Obtain iterator over the edges
   const size_type num_edges = T.RefEl().NumSubEntities(1);
-  base::RandomAccessRange<const lf::mesh::Entity> sub_edges(T.SubEntities(1));
+  auto sub_edges = T.SubEntities(1);
   double max_len = 0.0;
   sub_idx_t idx_longest_edge = 0;
   Eigen::MatrixXd mp_refc(1, 1);
@@ -1695,7 +1697,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
   for (int k = 0; k < num_edges; k++) {
     // Approximate length by "1-point quadrature"
     const double approx_length =
-        (sub_edges[k].Geometry()->IntegrationElement(mp_refc))[0];
+        (sub_edges[k]->Geometry()->IntegrationElement(mp_refc))[0];
     if (max_len < approx_length) {
       idx_longest_edge = k;
       max_len = approx_length;

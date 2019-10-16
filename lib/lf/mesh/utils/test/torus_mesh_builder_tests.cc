@@ -40,17 +40,17 @@ TEST(lf_mesh_p, buildTorusMesh) {
 
   // check that every edge has two adjacent cells
   auto cells_per_edge = mesh::utils::countNoSuperEntities(mesh_p, 1, 1);
-  for (const auto &edge : mesh_p->Entities(1)) {
-    EXPECT_EQ(cells_per_edge(edge), 2) << "Edge should have 2 adjacent cells";
+  for (const auto* edge : mesh_p->Entities(1)) {
+    EXPECT_EQ(cells_per_edge(*edge), 2) << "Edge should have 2 adjacent cells";
   }
 
   // check that every vertex has four adjacent edges and cells
   auto cells_per_vertex = mesh::utils::countNoSuperEntities(mesh_p, 2, 2);
   auto edges_per_vertex = mesh::utils::countNoSuperEntities(mesh_p, 2, 1);
-  for (const auto &vertex : mesh_p->Entities(2)) {
-    EXPECT_EQ(cells_per_vertex(vertex), 4)
+  for (const auto* vertex : mesh_p->Entities(2)) {
+    EXPECT_EQ(cells_per_vertex(*vertex), 4)
         << "Vertex should have 4 adjacent cells";
-    EXPECT_EQ(edges_per_vertex(vertex), 4)
+    EXPECT_EQ(edges_per_vertex(*vertex), 4)
         << "Vertex should have 4 adjacent edges";
   }
 

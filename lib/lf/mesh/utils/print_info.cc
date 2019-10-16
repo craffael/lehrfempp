@@ -41,11 +41,11 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
         << std::endl;
 
       // Loop over entities
-      for (const Entity &e : mesh.Entities(co_dim)) {
-        size_type e_idx = mesh.Index(e);
-        dim_t e_codim = e.Codim();
-        const geometry::Geometry *e_geo_ptr = e.Geometry();
-        lf::base::RefEl e_refel = e.RefEl();
+      for (const Entity *e : mesh.Entities(co_dim)) {
+        size_type e_idx = mesh.Index(*e);
+        dim_t e_codim = e->Codim();
+        const geometry::Geometry *e_geo_ptr = e->Geometry();
+        lf::base::RefEl e_refel = e->RefEl();
 
         LF_VERIFY_MSG(e_geo_ptr,
                       co_dim << "-entity " << e_idx << ": missing geometry");
@@ -63,10 +63,9 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
           for (int l = 1; l <= dim_mesh - co_dim; l++) {
             o << "rel codim-" << l << " subent: [";
             // Fetch subentities of co-dimension l
-            base::RandomAccessRange<const Entity> sub_ent_range(
-                e.SubEntities(l));
-            for (const Entity &sub_ent : sub_ent_range) {
-              o << mesh.Index(sub_ent) << ' ';
+            auto sub_ent_range = e->SubEntities(l);
+            for (const Entity *sub_ent : sub_ent_range) {
+              o << mesh.Index(*sub_ent) << ' ';
             }
             o << "]";
           }
@@ -107,8 +106,8 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
       if (Entity::output_ctrl_ > 50) {
         int sub_ent_num = 0;
         // Loop over subentities
-        for (const Entity &sub_ent : e.SubEntities(co_dim)) {
-          lf::base::RefEl sub_ent_refel = sub_ent.RefEl();
+        for (const Entity *sub_ent : e.SubEntities(co_dim)) {
+          lf::base::RefEl sub_ent_refel = sub_ent->RefEl();
           stream << "* Subentity " << sub_ent_num << " (" << sub_ent_refel
                  << ")" << std::endl;
 

@@ -8,6 +8,7 @@
 
 #include "mesh.h"
 #include <iostream>
+#include <numeric>
 
 namespace lf::mesh::hybrid2d {
 
@@ -16,30 +17,33 @@ namespace lf::mesh::hybrid2d {
 ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
           "Diagnostics control for hybrid2d::Mesh");
 
-base::ForwardRange<const Entity> Mesh::Entities(unsigned codim) const {
+nonstd::span<const Entity *const> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");
   LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
 
-  auto l = [&](auto i) -> const mesh::Entity & { return **i; };
-  switch (codim) {
-    case 0: {
-      return {base::make_DereferenceLambdaRandomAccessIterator(
-                  entity_pointers_[0].begin(), l),
-              base::make_DereferenceLambdaRandomAccessIterator(
-                  entity_pointers_[0].end(), l)};
-    }
-    case 1:
-      return {segments_.begin(), segments_.end()};
-    case 2:
-      return {points_.begin(), points_.end()};
-    default: {
-      LF_VERIFY_MSG(false, "Something is horribly wrong, codim = " +
-                               std::to_string(codim) + " is out of bounds.");
-      return {
-          base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr)),
-          base::ForwardIterator<const Entity>(static_cast<Entity *>(nullptr))};
-    }
-  }
+  return entity_pointers_[codim];
+
+  // auto l = [&](auto i) -> const mesh::Entity & { return **i; };
+  // switch (codim) {
+  //   case 0: {
+  //     return {base::make_DereferenceLambdaRandomAccessIterator(
+  //                 entity_pointers_[0].begin(), l),
+  //             base::make_DereferenceLambdaRandomAccessIterator(
+  //                 entity_pointers_[0].end(), l)};
+  //   }
+  //   case 1:
+  //     //return {segments_.begin(), segments_.end()};
+  //   case 2:
+  //     return {points_.begin(), points_.end()};
+  //   default: {
+  //     LF_VERIFY_MSG(false, "Something is horribly wrong, codim = " +
+  //                              std::to_string(codim) + " is out of bounds.");
+  //     return {
+  //         base::ForwardIterator<const Entity>(static_cast<Entity
+  //         *>(nullptr)), base::ForwardIterator<const
+  //         Entity>(static_cast<Entity *>(nullptr))};
+  //   }
+  // }
 }
 
 Mesh::size_type Mesh::NumEntities(unsigned codim) const {
@@ -774,8 +778,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
 
   // Order the cells according to their indices!
   // First  fill the array with NIL pointers
-  entity_pointers_[0] = std::move(std::vector<const mesh::Entity *>(
-      trias_.size() + quads_.size(), nullptr));
+  entity_pointers_[0] =
+      std::vector<const mesh::Entity *>(trias_.size() + quads_.size(), nullptr);
   size_type cell_ptr_cnt = 0;
 
   // First retrieve pointers to triangular cells
@@ -807,24 +811,18 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // Next the edges and nodes
 
   entity_pointers_[1] =
-      std::move(std::vector<const mesh::Entity *>(segments_.size(), nullptr));
+      std::vector<const mesh::Entity *>(segments_.size(), nullptr);
   entity_pointers_[2] =
-      std::move(std::vector<const mesh::Entity *>(points_.size(), nullptr));
+      std::vector<const mesh::Entity *>(points_.size(), nullptr);
 
-  for (dim_t codim = 1; codim <= 2; codim++) {
-    // Loop over all entities of codimenson codim
-    for (const Entity &e : lf::mesh::hybrid2d::Mesh::Entities(codim)) {
-      const glb_idx_t entity_index = lf::mesh::hybrid2d::Mesh::Index(e);
-      LF_ASSERT_MSG(entity_index < entity_pointers_[codim].size(),
-                    "Entity(" << codim << ") index out of range");
-      // This index must be unique !
-      LF_ASSERT_MSG(
-          entity_pointers_[codim][entity_index] == nullptr,
-          "Entity(" << codim << ") index " << entity_index << " occurs twice!");
-      entity_pointers_[codim][entity_index] =
-          static_cast<const mesh::Entity *>(&e);
-    }  // loop over entities
-  }    // loop over codim's
+  // set the entity pointers (note that the entities in segments_ and points_
+  // are not ordered according to their index):
+  for (auto &p : points_) {
+    entity_pointers_[2][p.index()] = &p;
+  }
+  for (auto &s : segments_) {
+    entity_pointers_[1][s.index()] = &s;
+  }
 
 }  // end of constructor
 

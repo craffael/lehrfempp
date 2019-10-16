@@ -77,16 +77,15 @@ class Triangle : public mesh::Entity {
      - for rel_codim == 1: return 3-range covering corners
      - for rel_codim == 2: return 3-range containing the edges
    */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        edge_ori_.begin(), edge_ori_.end());
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    return edge_ori_;
   }
 
   /** @name Standard methods of an Entity object
@@ -112,7 +111,8 @@ class Triangle : public mesh::Entity {
   std::array<const Point*, 3> nodes_{};           // nodes = corners of cell
   std::array<const Segment*, 3> edges_{};         // edges of the cells
   std::array<lf::mesh::Orientation, 3>
-      edge_ori_{};  // orientation of edges (set in constructor)
+      edge_ori_{};          // orientation of edges (set in constructor)
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

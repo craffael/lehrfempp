@@ -9,7 +9,7 @@ void checkGeometryOrientation(const Entity& e) {
     base::RefEl ref_el = e.RefEl();
     Eigen::VectorXd coorda = e.Geometry()->Global(ref_el.NodeCoords().col(i));
     Eigen::VectorXd coordb =
-        e.SubEntities(ref_el.Dimension())[i].Geometry()->Global(zero);
+        e.SubEntities(ref_el.Dimension())[i]->Geometry()->Global(zero);
     for (dim_t j = 0; j < coorda.rows(); ++j) {
       EXPECT_EQ(coorda(j), coordb(j)) << "a(" << j << ") != b(" << j << ")";
     }

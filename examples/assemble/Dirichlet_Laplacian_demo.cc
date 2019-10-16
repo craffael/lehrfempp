@@ -182,15 +182,15 @@ double L2ErrorLinearFEDirichletLaplacian(
   Eigen::VectorXd dirichlet_data(loc_glob_map.NoDofs());
   const Eigen::Matrix<double, 0, 1> ref_coord{
       Eigen::Matrix<double, 0, 1>::Zero(0, 1)};
-  for (const lf::mesh::Entity &node : mesh_p->Entities(mesh_p->DimMesh())) {
-    LF_ASSERT_MSG(node.RefEl() == lf::base::RefEl::kPoint(),
+  for (const lf::mesh::Entity *node : mesh_p->Entities(mesh_p->DimMesh())) {
+    LF_ASSERT_MSG(node->RefEl() == lf::base::RefEl::kPoint(),
                   "Wrong topological type for a node");
-    const Eigen::Vector2d point = node.Geometry()->Global(ref_coord);
+    const Eigen::Vector2d point = node->Geometry()->Global(ref_coord);
     const lf::assemble::size_type num_int_dof =
-        loc_glob_map.NoInteriorDofs(node);
+        loc_glob_map.NoInteriorDofs(*node);
     LF_ASSERT_MSG(num_int_dof == 1, "Node with " << num_int_dof << " dof");
     nonstd::span<const lf::assemble::gdof_idx_t> gsf_idx(
-        loc_glob_map.InteriorGlobalDofIndices(node));
+        loc_glob_map.InteriorGlobalDofIndices(*node));
     const lf::assemble::gdof_idx_t node_dof_idx = gsf_idx[0];
     dirichlet_data[node_dof_idx] = u(point);
   }
@@ -235,18 +235,18 @@ double L2ErrorLinearFEDirichletLaplacian(
 
   // Compute the norm of nodal error cell by cell
   double nodal_err = 0.0;
-  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
     nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
-        loc_glob_map.GlobalDofIndices(cell));
-    LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
+        loc_glob_map.GlobalDofIndices(*cell));
+    LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(*cell) == cell->RefEl().NumNodes(),
                   "Inconsistent node number");
-    const lf::base::size_type num_nodes = cell.RefEl().NumNodes();
+    const lf::base::size_type num_nodes = cell->RefEl().NumNodes();
     double sum = 0.0;
     for (int k = 0; k < num_nodes; ++k) {
       sum += std::pow(
           sol_vec[cell_dof_idx[k]] - dirichlet_data[cell_dof_idx[k]], 2);
     }
-    nodal_err += lf::geometry::Volume(*cell.Geometry()) * (sum / num_nodes);
+    nodal_err += lf::geometry::Volume(*cell->Geometry()) * (sum / num_nodes);
   }
   return std::sqrt(nodal_err);
 }

@@ -81,26 +81,29 @@ class Mesh {
   /**
    * @brief All entities of a given codimension.
    * @param codim The codimension of the entities that should be returned.
-   * @return A base::ForwardRange that can be used to traverse the entities.
+   * @return A [span](https://en.cppreference.com/w/cpp/container/span) of
+   pointers to entities that enumerate all entities of the given codimension.
    *
    * @sa Entity
    *
    * Principal access method for entities distinguished only by their
-   * co-dimension Hence, all cells of a mesh are covered by the range returned
+   * co-dimension. Hence, all cells of a mesh are covered by the range returned
    * when giving co-dimension 0, regardless of their concrete shape.
    *
    * The typical loop for entity traversal looks like this, where `mesh` is a
    * variable containing a reference to a @ref Mesh object.
    * ~~~
-     for (const lf::mesh::Entity &entity : mesh.Entities(codim)) {
+     for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {
        ....
      }
    * ~~~
-   * Inside the loop body the variable `entity` contains a reference to an
-   immutable
-   * object of type @ref Entity whose co-dimension is `codim`.
+   * Inside the loop body the variable `entity` contains a pointer to an
+   * immutable object of type @ref Entity whose co-dimension is `codim`.
+   *
+   * @note The pointer remains valid for as long as the mesh data structure
+   * remains valid.
    */
-  [[nodiscard]] virtual base::ForwardRange<const Entity> Entities(
+  [[nodiscard]] virtual nonstd::span<const Entity* const> Entities(
       unsigned codim) const = 0;
 
   /**

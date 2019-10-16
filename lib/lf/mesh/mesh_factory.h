@@ -106,7 +106,7 @@ class MeshFactory {
    */
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddEntity(
-      base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
+      base::RefEl ref_el, const nonstd::span<const size_type>& nodes,
       std::unique_ptr<geometry::Geometry>&& geometry) = 0;
 
   /**

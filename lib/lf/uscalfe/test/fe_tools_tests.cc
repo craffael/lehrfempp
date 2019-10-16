@@ -81,16 +81,16 @@ TEST(feTools, NodalProjection) {
   LF_VERIFY_MSG(dofh.NoDofs() == mesh.NumEntities(2),
                 "mismatch " << dofh.NoDofs() << " <-> " << mesh.NumEntities(2));
   // Traverse nodes of the mesh
-  for (const lf::mesh::Entity& node : mesh.Entities(2)) {
+  for (const lf::mesh::Entity* node : mesh.Entities(2)) {
     // Obtain location of node
-    const lf::geometry::Geometry& node_geo{*(node.Geometry())};
+    const lf::geometry::Geometry& node_geo{*(node->Geometry())};
     const Eigen::MatrixXd p{lf::geometry::Corners(node_geo)};
     LF_VERIFY_MSG((p.cols() == 1) && (p.rows() == 2),
                   "Wrong vertex matrix size");
     // Obtain number of dof associated with current node
-    EXPECT_EQ(dofh.NoLocalDofs(node), 1)
-        << "Too many dofs for " << node << std::endl;
-    const auto dof_idx_array{dofh.GlobalDofIndices(node)};
+    EXPECT_EQ(dofh.NoLocalDofs(*node), 1)
+        << "Too many dofs for " << *node << std::endl;
+    const auto dof_idx_array{dofh.GlobalDofIndices(*node)};
     const lf::base::glb_idx_t dof_idx = dof_idx_array[0];
     const double dof_val = mu[dof_idx];
     EXPECT_FLOAT_EQ(dof_val, expfn(p.col(0)))

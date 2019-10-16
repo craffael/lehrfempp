@@ -6,7 +6,7 @@
 
 namespace lf::io {
 
-void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
+void writeMatlab(const lf::mesh::Mesh& mesh, std::string filename) {
   using size_type = std::size_t;         // unsigned integer
   using dim_t = lf::base::RefEl::dim_t;  // type for dimensions
   const Eigen::MatrixXd zero(Eigen::MatrixXd::Zero(0, 1));
@@ -43,9 +43,9 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
 
     // Write node coordinates to file
     size_type node_cnt = 0;
-    for (const mesh::Entity &node : mesh.Entities(node_codim)) {
-      const lf::base::glb_idx_t node_index = mesh.Index(node);
-      const geometry::Geometry *geo_ptr = node.Geometry();
+    for (const mesh::Entity* node : mesh.Entities(node_codim)) {
+      const lf::base::glb_idx_t node_index = mesh.Index(*node);
+      const geometry::Geometry* geo_ptr = node->Geometry();
       Eigen::MatrixXd node_coord(geo_ptr->Global(zero));
       file << "x(" << node_index + 1 << ") = " << node_coord(0, 0) << "; "
            << std::endl;
@@ -59,15 +59,15 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     const size_type no_of_edges = mesh.NumEntities(1);
     file << "EDS = zeros(" << no_of_edges << ",2);" << std::endl;
     size_type ed_cnt = 0;
-    for (const mesh::Entity &edge : mesh.Entities(1)) {
-      const lf::base::glb_idx_t edge_index = mesh.Index(edge);
-      base::RefEl ref_el = edge.RefEl();
+    for (const mesh::Entity* edge : mesh.Entities(1)) {
+      const lf::base::glb_idx_t edge_index = mesh.Index(*edge);
+      base::RefEl ref_el = edge->RefEl();
       LF_VERIFY_MSG(ref_el == lf::base::RefEl::kSegment(),
                     "Edge must be a segment");
       // Access endpoints = sub-entities of relative co-dimension 1
-      const auto sub_ent = edge.SubEntities(1);
+      const auto sub_ent = edge->SubEntities(1);
       file << "EDS(" << edge_index + 1 << ",:) = ["
-           << mesh.Index(sub_ent[0]) + 1 << ", " << mesh.Index(sub_ent[1]) + 1
+           << mesh.Index(*sub_ent[0]) + 1 << ", " << mesh.Index(*sub_ent[1]) + 1
            << "];" << std::endl;
       ed_cnt++;
     }
@@ -77,27 +77,27 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename) {
     size_type cell_cnt = 0;
     size_type triag_cnt = 0;
     size_type quad_cnt = 0;
-    for (const mesh::Entity &e : mesh.Entities(0)) {
-      lf::base::glb_idx_t cell_index = mesh.Index(e);
+    for (const mesh::Entity* e : mesh.Entities(0)) {
+      lf::base::glb_idx_t cell_index = mesh.Index(*e);
       // Access vertices =  sub-entities of relative co-dimension 2
-      const auto sub_ent = e.SubEntities(2);
-      base::RefEl ref_el = e.RefEl();
+      const auto sub_ent = e->SubEntities(2);
+      base::RefEl ref_el = e->RefEl();
       switch (ref_el) {
         case lf::base::RefEl::kTria(): {
           file << "TRI(" << triag_cnt + 1 << ",:) = ["
-               << mesh.Index(sub_ent[0]) + 1 << ", "
-               << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << ", " << cell_index << " ];"
+               << mesh.Index(*sub_ent[0]) + 1 << ", "
+               << mesh.Index(*sub_ent[1]) + 1 << ", "
+               << mesh.Index(*sub_ent[2]) + 1 << ", " << cell_index << " ];"
                << std::endl;
           triag_cnt++;
           break;
         }
         case lf::base::RefEl::kQuad(): {
           file << "QUAD(" << quad_cnt + 1 << ",:) = ["
-               << mesh.Index(sub_ent[0]) + 1 << ", "
-               << mesh.Index(sub_ent[1]) + 1 << ", "
-               << mesh.Index(sub_ent[2]) + 1 << ", "
-               << mesh.Index(sub_ent[3]) + 1 << ", " << cell_index << " ];"
+               << mesh.Index(*sub_ent[0]) + 1 << ", "
+               << mesh.Index(*sub_ent[1]) + 1 << ", "
+               << mesh.Index(*sub_ent[2]) + 1 << ", "
+               << mesh.Index(*sub_ent[3]) + 1 << ", " << cell_index << " ];"
                << std::endl;
           quad_cnt++;
           break;

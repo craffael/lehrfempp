@@ -52,7 +52,7 @@ class Point : public mesh::Entity {
    */
   explicit Point(size_type index,
                  std::unique_ptr<geometry::Geometry>&& geometry)
-      : index_(index), geometry_(std::move(geometry)) {
+      : index_(index), geometry_(std::move(geometry)), this_(this) {
     // DIAGNOSTICS
     // std::cout << "hybrid2d::Point(" << index_ << ") " << std::endl;
     LF_VERIFY_MSG(geometry_, "Point must be supplied with a geometry");
@@ -65,18 +65,17 @@ class Point : public mesh::Entity {
   [[nodiscard]] unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
-    return base::RandomAccessRange<const mesh::Entity>(this, this + 1);
+    return {&this_, 1};
   }
 
   /** Must not be called: No sub-entities for a point */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
     LF_ASSERT_MSG(false, "A point has not sub-entities");
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        dummy_or_.begin(), dummy_or_.end());
+    return nonstd::span<Orientation>();
   }
 
   /** @brief return _pointer_ to associated geometry object */
@@ -102,6 +101,7 @@ class Point : public mesh::Entity {
   std::unique_ptr<geometry::Geometry> geometry_ = nullptr;  // shape information
   static constexpr std::array<lf::mesh::Orientation, 1> dummy_or_{
       lf::mesh::Orientation::positive};
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

@@ -37,40 +37,31 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
 
       // Setting vertices of cells but not their geometry
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({0, 8, 9}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{0, 8, 9}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({3, 4, 1}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{3, 4, 1}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({4, 2, 1}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{4, 2, 1}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({4, 5, 2}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{4, 5, 2}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({5, 6, 2}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{5, 6, 2}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({3, 1, 0, 9}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{3, 1, 0, 9}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({2, 6, 7, 0}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{2, 6, 7, 0}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({0, 7, 8}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{0, 7, 8}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({0, 1, 2}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{0, 1, 2}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       break;
     }
@@ -97,64 +88,53 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       quad_coord << 0.0, 2.0, 3.0, 1.0, 0.0, 0.0, 1.0, 1.0;
       quad_coord *= scale;
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({0, 1, 10, 9}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{0, 1, 10, 9}},
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       // Second cell: a triangle
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({1, 2, 10}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{1, 2, 10}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Third cell: a quadrilateral
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({2, 8, 11, 10}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{2, 8, 11, 10}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Fourth cell: a triangle
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({11, 8, 7}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{11, 8, 7}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Fifth cell: a quadrilateral
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({5, 12, 11, 7}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{5, 12, 11, 7}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Sixth cell: A parallelogram
       quad_coord << 0, 2, 2, 0, 3, 3, 4, 4;
       quad_coord *= scale;
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({4, 12, 5, 6}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{4, 12, 5, 6}},
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       // Seventh cell: a quadrilateral
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({4, 3, 13, 12}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{4, 3, 13, 12}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Eigth cell: a quadrilateral
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({3, 0, 9, 13}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{3, 0, 9, 13}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Ninth cell: a triangle
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({9, 10, 14}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>({9, 10, 14}),
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Tenth cell: a parallelogram
       quad_coord << 2, 3, 3, 2, 2, 1, 2, 3;
       quad_coord *= scale;
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({14, 10, 11, 12}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{14, 10, 11, 12}},
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       // 11th cell: a parallelogram
       quad_coord << 1, 1, 2, 2, 2, 1, 2, 3;
       quad_coord *= scale;
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({13, 9, 14, 12}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{13, 9, 14, 12}},
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       break;
     }
@@ -168,13 +148,11 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       // First cell: the unit square
       quad_coord << 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0;
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({0, 1, 3, 2}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{0, 1, 3, 2}},
           std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       // Second cell: an affine triangle
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({1, 3, 4}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{1, 3, 4}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       break;
     }
@@ -197,64 +175,49 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
 
       // Setting vertices of triangular cells but not their geometry
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({0, 1, 3}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{0, 1, 3}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({1, 2, 4}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{1, 2, 4}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({0, 3, 6}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{0, 3, 6}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({1, 3, 4}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{1, 3, 4}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({4, 2, 5}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{4, 2, 5}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({3, 4, 7}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{3, 4, 7}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({4, 5, 7}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{4, 5, 7}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({3, 6, 8}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{3, 6, 8}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({7, 8, 3}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{7, 8, 3}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({5, 7, 9}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{5, 7, 9}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({6, 8, 10}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{6, 8, 10}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({8, 7, 11}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{8, 7, 11}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({7, 9, 12}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{7, 9, 12}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({10, 8, 11}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{10, 8, 11}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({7, 12, 11}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{7, 12, 11}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       break;
     }
@@ -311,8 +274,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       for (const auto &node : tria_nodes) {
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kTria(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2]}),
+            std::array<size_type, 3>{{node[0], node[1], node[2]}},
             std::unique_ptr<lf::geometry::Geometry>(nullptr));
       }
 
@@ -325,8 +287,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
         }
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kQuad(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2], node[3]}),
+            std::array<size_type, 4>{{node[0], node[1], node[2], node[3]}},
             std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       }
       break;
@@ -368,8 +329,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       for (const auto &node : tria_nodes) {
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kTria(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2]}),
+            std::array<size_type, 3>{{node[0], node[1], node[2]}},
             std::unique_ptr<lf::geometry::Geometry>(nullptr));
       }
 
@@ -382,8 +342,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
         }
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kQuad(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2], node[3]}),
+            std::array<size_type, 4>{{node[0], node[1], node[2], node[3]}},
             std::make_unique<lf::geometry::QuadO1>(quad_coord));
       }
 
@@ -396,8 +355,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
         }
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kQuad(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2], node[3]}),
+            std::array<size_type, 4>{{node[0], node[1], node[2], node[3]}},
             std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       }
 
@@ -421,13 +379,11 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       }
       // Register triangle
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kTria(),
-          lf::base::ForwardRange<const size_type>({1, 2, 4}),
+          lf::base::RefEl::kTria(), std::array<size_type, 3>{{1, 2, 4}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       // Register quadrilateral
       mesh_factory_ptr->AddEntity(
-          lf::base::RefEl::kQuad(),
-          lf::base::ForwardRange<const size_type>({0, 1, 4, 3}),
+          lf::base::RefEl::kQuad(), std::array<size_type, 4>{{0, 1, 4, 3}},
           std::unique_ptr<lf::geometry::Geometry>(nullptr));
       break;
     }
@@ -470,8 +426,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
       for (const auto &node : tria_nodes) {
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kTria(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2]}),
+            std::array<size_type, 3>{{node[0], node[1], node[2]}},
             std::unique_ptr<lf::geometry::Geometry>(nullptr));
       }
 
@@ -484,8 +439,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
         }
         mesh_factory_ptr->AddEntity(
             lf::base::RefEl::kQuad(),
-            lf::base::ForwardRange<const size_type>(
-                {node[0], node[1], node[2], node[3]}),
+            std::array<size_type, 4>{{node[0], node[1], node[2], node[3]}},
             std::make_unique<lf::geometry::Parallelogram>(quad_coord));
       }
       break;
