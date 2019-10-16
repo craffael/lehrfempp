@@ -31,53 +31,51 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
   // Initialize pairs of basis function coefficients together with velocities on
   // entities to test the implementation
   std::vector<std::tuple<Eigen::Matrix<double, Eigen::Dynamic, 1>,
-                         std::shared_ptr<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>>>
+                         lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>>
       tests;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Ones(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[0] = 1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << -1, 0;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 1;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << -1, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 1;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[1] = 1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << -1, -1;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << -1, -1;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[2] = 1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 1, 1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 1, 1;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
   tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     std::make_shared<lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>(
+                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
                          fe_space->Mesh(), 0));
   std::get<0>(tests.back())[3] = 1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, -1;
-  (*std::get<1>(tests.back()))(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 1, 0;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, -1;
+  std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 1, 0;
 
   // Run through all coefficient vectors
-  for (const auto& test : tests) {
-    const auto& coeffs = std::get<0>(test);
-    const auto& v_exact = *std::get<1>(test);
+  for (const auto& [coeffs, v_exact] : tests) {
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity v_func(
         fe_space, coeffs);
     for (const auto& entity : fe_space->Mesh()->Entities(0)) {
