@@ -214,19 +214,19 @@ void lecturedemoDirichlet() {
     // Compute the L2 norm of nodal error cell by cell by the 2D trapezoidal
     // rule
     double nodal_err = 0.0;
-    for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
+    for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
       nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
-          dof_handler.GlobalDofIndices(cell));
-      LF_ASSERT_MSG(dof_handler.NoLocalDofs(cell) == cell.RefEl().NumNodes(),
+          dof_handler.GlobalDofIndices(*cell));
+      LF_ASSERT_MSG(dof_handler.NoLocalDofs(*cell) == cell->RefEl().NumNodes(),
                     "Inconsistent node number");
-      const lf::base::size_type num_nodes = cell.RefEl().NumNodes();
+      const lf::base::size_type num_nodes = cell->RefEl().NumNodes();
       double sum = 0.0;
       for (int k = 0; k < num_nodes; ++k) {
         sum += std::pow(
             (sol_vec[cell_dof_idx[k]] - ess_dof_select[cell_dof_idx[k]].second),
             2);
       }
-      nodal_err += lf::geometry::Volume(*cell.Geometry()) * (sum / num_nodes);
+      nodal_err += lf::geometry::Volume(*cell->Geometry()) * (sum / num_nodes);
     }
     std::cout << "L2 error = " << std::sqrt(nodal_err) << std::endl;
   }

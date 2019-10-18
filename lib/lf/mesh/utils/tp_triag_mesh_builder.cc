@@ -72,8 +72,8 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
                   << first_endpoint_idx << " <-> " << second_endpoint_idx
                   << std::endl;
       }
-      lf::base::ForwardRange<const size_type> nodes_index_list{
-          first_endpoint_idx, second_endpoint_idx};
+      std::vector<size_type> nodes_index_list{first_endpoint_idx,
+                                              second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
       edge_geo << bottom_left_corner_[0] + i * hx,
@@ -95,8 +95,8 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
         std::cout << "vertical edge " << edge_cnt << ": " << first_endpoint_idx
                   << " <-> " << second_endpoint_idx << std::endl;
       }
-      lf::base::ForwardRange<const size_type> nodes_index_list{
-          first_endpoint_idx, second_endpoint_idx};
+      std::vector<size_type> nodes_index_list{first_endpoint_idx,
+                                              second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
       edge_geo << bottom_left_corner_[0] + i * hx,
@@ -118,8 +118,8 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
         std::cout << "diagonal edge " << edge_cnt << ": " << first_endpoint_idx
                   << " <-> " << second_endpoint_idx << std::endl;
       }
-      lf::base::ForwardRange<const size_type> nodes_index_list{
-          first_endpoint_idx, second_endpoint_idx};
+      std::vector<size_type> nodes_index_list{first_endpoint_idx,
+                                              second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
       Eigen::Matrix<double, Eigen::Dynamic, 2> edge_geo(2, 2);
       edge_geo << bottom_left_corner_[0] + i * hx,
@@ -141,7 +141,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
     for (size_type j = 0; j < ny; ++j, tria_cnt += 2) {
       // Triangle above the diagonal
       // Indices of the vertices
-      lf::base::ForwardRange<const size_type> vertex_index_list_up{
+      std::vector<size_type> vertex_index_list_up{
           v_idx[VertexIndex(i, j)], v_idx[VertexIndex(i + 1, j + 1)],
           v_idx[VertexIndex(i, j + 1)]};
       // Construct geometry
@@ -157,7 +157,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
           std::make_unique<geometry::TriaO1>(tria_geo_up));
       // Triangle below the diagonal
       // Indices of the vertices
-      lf::base::ForwardRange<const size_type> vertex_index_list_low{
+      std::vector<size_type> vertex_index_list_low{
           v_idx[VertexIndex(i, j)], v_idx[VertexIndex(i + 1, j)],
           v_idx[VertexIndex(i + 1, j + 1)]};
       // Construct geometry

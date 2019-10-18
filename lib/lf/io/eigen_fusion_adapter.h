@@ -10,6 +10,7 @@
 #ifndef __a4e6283ee2844d93bc9772c830f33b2d
 #define __a4e6283ee2844d93bc9772c830f33b2d
 
+#include <Eigen/Eigen>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/iterator.hpp>
 #include <boost/fusion/support/category_of.hpp>

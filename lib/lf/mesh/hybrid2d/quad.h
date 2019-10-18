@@ -81,16 +81,15 @@ class Quadrilateral : public mesh::Entity {
      - for rel_codim == 1: return 4-range covering corners
      - for rel_codim == 2: return 4-range containing the edges
    */
-  [[nodiscard]] base::RandomAccessRange<const mesh::Entity> SubEntities(
+  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  [[nodiscard]] base::RandomAccessRange<const lf::mesh::Orientation>
-  RelativeOrientations() const override {
-    return base::RandomAccessRange<const lf::mesh::Orientation>(
-        edge_ori_.begin(), edge_ori_.end());
+  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+      const override {
+    return edge_ori_;
   }
 
   /** @brief access to index of an entity */
@@ -120,7 +119,8 @@ class Quadrilateral : public mesh::Entity {
   std::array<const Point*, 4> nodes_{};           // nodes = corners of quad
   std::array<const Segment*, 4> edges_{};         // edges of quad
   std::array<lf::mesh::Orientation, 4>
-      edge_ori_{};  // orientation of edges (set in constructor)
+      edge_ori_{};          // orientation of edges (set in constructor)
+  Entity* this_ = nullptr;  // needed for SubEntity()
 };
 
 }  // namespace lf::mesh::hybrid2d

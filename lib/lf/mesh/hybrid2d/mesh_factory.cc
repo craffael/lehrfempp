@@ -36,7 +36,7 @@ MeshFactory::size_type MeshFactory::AddPoint(
 }
 
 MeshFactory::size_type MeshFactory::AddEntity(
-    base::RefEl ref_el, const base::ForwardRange<const size_type>& nodes,
+    base::RefEl ref_el, const nonstd::span<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
   LF_ASSERT_MSG(ref_el.Dimension() > 0,
                 "Use AddPoint() to add a node to a mesh.");

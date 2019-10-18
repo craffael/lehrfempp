@@ -80,12 +80,12 @@ void output_dofs_test(const lf::mesh::Mesh &mesh,
   for (lf::base::dim_t codim = 0; codim <= 2; codim++) {
     std::cout << "#### DOFs for entities of co-dimension " << (int)codim
               << std::endl;
-    for (const lf::mesh::Entity &e : mesh.Entities(codim)) {
-      const lf::base::glb_idx_t e_idx = mesh.Index(e);
-      const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(e));
+    for (const lf::mesh::Entity *e : mesh.Entities(codim)) {
+      const lf::base::glb_idx_t e_idx = mesh.Index(*e);
+      const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(*e));
       nonstd::span<const lf::assemble::gdof_idx_t> doflist(
-          dof_handler.GlobalDofIndices(e));
-      std::cout << e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
+          dof_handler.GlobalDofIndices(*e));
+      std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
       for (const lf::assemble::gdof_idx_t &dof : doflist) {
         EXPECT_LT(dof, N_dofs) << "Dof " << dof << " out of range!";
         std::cout << dof << ' ';
@@ -573,23 +573,23 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
   // Summation variable
   SCALAR s{};
   // Loop over entities of co-dimension codim
-  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
+  for (const mesh::Entity *entity : mesh->Entities(codim)) {
     // Some entities may be skipped
-    if (entity_matrix_provider.isActive(entity)) {
+    if (entity_matrix_provider.isActive(*entity)) {
       // Size, aka number of rows and columns, of element matrix
-      const lf::assemble::size_type elmat_dim = dofh.NoLocalDofs(entity);
+      const lf::assemble::size_type elmat_dim = dofh.NoLocalDofs(*entity);
       // Global indices of local shape functions
       nonstd::span<const lf::assemble::gdof_idx_t> global_idx(
-          dofh.GlobalDofIndices(entity));
+          dofh.GlobalDofIndices(*entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
-      const auto elem_mat{entity_matrix_provider.Eval(entity)};
+      const auto elem_mat{entity_matrix_provider.Eval(*entity)};
       LF_ASSERT_MSG(elem_mat.rows() == elmat_dim,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << elmat_dim
-                                      << ", entity " << mesh->Index(entity));
+                                      << ", entity " << mesh->Index(*entity));
       LF_ASSERT_MSG(elem_mat.cols() == elmat_dim,
                     "ncols mismatch " << elem_mat.cols() << " <-> " << elmat_dim
-                                      << ", entity " << mesh->Index(entity));
+                                      << ", entity " << mesh->Index(*entity));
       Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> locvec(elmat_dim);
       for (int l = 0; l < elmat_dim; ++l) {
         locvec[l] = vec[global_idx[l]];

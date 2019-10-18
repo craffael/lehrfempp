@@ -30,10 +30,10 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
 
     // loop through all elements of every codimension
     for (int codim = 0; codim <= dim_mesh; ++codim) {
-      for (const lf::mesh::Entity &obj : mesh.Entities(codim)) {
-        const size_t obj_idx = mesh.Index(obj);
-        const lf::base::RefEl obj_ref_el = obj.RefEl();
-        const lf::geometry::Geometry *obj_geo_ptr = obj.Geometry();
+      for (const lf::mesh::Entity *obj : mesh.Entities(codim)) {
+        const size_t obj_idx = mesh.Index(*obj);
+        const lf::base::RefEl obj_ref_el = obj->RefEl();
+        const lf::geometry::Geometry *obj_geo_ptr = obj->Geometry();
         const Eigen::MatrixXd vertices =
             obj_geo_ptr->Global(obj_ref_el.NodeCoords());
 
@@ -46,8 +46,8 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
           case lf::base::RefEl::kSegment(): {
             file << codim << ',' << obj_idx << ',';
             // to access points of segment use SubEntities(1)
-            for (const auto &sub : obj.SubEntities(codim)) {
-              file << mesh.Index(sub) << ',';
+            for (const auto *sub : obj->SubEntities(codim)) {
+              file << mesh.Index(*sub) << ',';
             }
             file << std::endl;
 
@@ -57,8 +57,8 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
           case lf::base::RefEl::kQuad(): {
             file << codim << ',' << obj_idx << ',';
             // to access points of cell use SubEntities(1)
-            for (const auto &sub : obj.SubEntities(codim + 1)) {
-              file << mesh.Index(sub) << ',';
+            for (const auto *sub : obj->SubEntities(codim + 1)) {
+              file << mesh.Index(*sub) << ',';
             }
             file << std::endl;
 

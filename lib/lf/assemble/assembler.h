@@ -103,30 +103,30 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
 
   // Central assembly loop over entities of co-dimension specified by
   // the function argument codim
-  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
+  for (const lf::mesh::Entity *entity : mesh->Entities(codim)) {
     // Some entities may be skipped
-    if (entity_matrix_provider.isActive(entity)) {
+    if (entity_matrix_provider.isActive(*entity)) {
       SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_entity,
-                        std::cout << "ASM: " << entity << '('
-                                  << mesh->Index(entity) << ')' << std::endl);
+                        std::cout << "ASM: " << *entity << '('
+                                  << mesh->Index(*entity) << ')' << std::endl);
       // Size, aka number of rows and columns, of element matrix
-      const size_type nrows_loc = dof_handler_test.NoLocalDofs(entity);
-      const size_type ncols_loc = dof_handler_trial.NoLocalDofs(entity);
+      const size_type nrows_loc = dof_handler_test.NoLocalDofs(*entity);
+      const size_type ncols_loc = dof_handler_trial.NoLocalDofs(*entity);
       // row indices of for contributions of cells
       nonstd::span<const gdof_idx_t> row_idx(
-          dof_handler_test.GlobalDofIndices(entity));
+          dof_handler_test.GlobalDofIndices(*entity));
       // Column indices of for contributions of cells
       nonstd::span<const gdof_idx_t> col_idx(
-          dof_handler_trial.GlobalDofIndices(entity));
+          dof_handler_trial.GlobalDofIndices(*entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
-      const auto elem_mat{entity_matrix_provider.Eval(entity)};
+      const auto elem_mat{entity_matrix_provider.Eval(*entity)};
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
-                                      << ", entity " << mesh->Index(entity));
+                                      << ", entity " << mesh->Index(*entity));
       LF_ASSERT_MSG(elem_mat.cols() >= ncols_loc,
                     "ncols mismatch " << elem_mat.cols() << " <-> " << nrows_loc
-                                      << ", entity " << mesh->Index(entity));
+                                      << ", entity " << mesh->Index(*entity));
       // clang-format off
       SWITCHEDSTATEMENT(
           ass_mat_dbg_ctrl, amd_gdof,
@@ -253,20 +253,20 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
 
   // Central assembly loop over entities of the co-dimension specified via
   // the template argument CODIM
-  for (const lf::mesh::Entity &entity : mesh->Entities(codim)) {
+  for (const lf::mesh::Entity *entity : mesh->Entities(codim)) {
     // Some cells may be skipped
-    if (entity_vector_provider.isActive(entity)) {
+    if (entity_vector_provider.isActive(*entity)) {
       // Length of element vector
-      const size_type veclen = dof_handler.NoLocalDofs(entity);
+      const size_type veclen = dof_handler.NoLocalDofs(*entity);
       // global dof indices for contribution of the entity
       nonstd::span<const gdof_idx_t> dof_idx(
-          dof_handler.GlobalDofIndices(entity));
+          dof_handler.GlobalDofIndices(*entity));
       // Request local vector from entity_vector_provider object. In the case
       // CODIM = 0, when `entity` is a cell, this is the element vector
-      const auto elem_vec{entity_vector_provider.Eval(entity)};
+      const auto elem_vec{entity_vector_provider.Eval(*entity)};
       LF_ASSERT_MSG(elem_vec.size() >= veclen,
                     "length mismatch " << elem_vec.size() << " <-> " << veclen
-                                       << ", entity " << mesh->Index(entity));
+                                       << ", entity " << mesh->Index(*entity));
       // Assembly (single) loop
       for (int i = 0; i < veclen; i++) {
         resultvector[dof_idx[i]] += elem_vec[i];

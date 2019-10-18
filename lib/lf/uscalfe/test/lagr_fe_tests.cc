@@ -235,17 +235,17 @@ TEST(lf_fe, lf_fe_ellbvp) {
   LinearFELaplaceElementMatrix lfe_elem_mat{};
 
   // Loop over cells and compute element matrices;
-  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
-    const lf::base::size_type n(cell.RefEl().NumNodes());
-    std::cout << "CELL " << cell << ":" << std::endl;
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+    const lf::base::size_type n(cell->RefEl().NumNodes());
+    std::cout << "CELL " << *cell << ":" << std::endl;
     std::cout << "Element matrix from LinearFELaplaceElementMatrix:"
               << std::endl;
-    LinearFELaplaceElementMatrix::ElemMat lfe_mat{lfe_elem_mat.Eval(cell)};
+    LinearFELaplaceElementMatrix::ElemMat lfe_mat{lfe_elem_mat.Eval(*cell)};
     std::cout << lfe_mat << std::endl;
     std::cout << "Element matrix from ReactionDiffusionElementMatrixProvider:"
               << std::endl;
     typename decltype(comp_elem_mat)::ElemMat quad_mat{
-        comp_elem_mat.Eval(cell)};
+        comp_elem_mat.Eval(*cell)};
     std::cout << quad_mat << std::endl;
     EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
   }
@@ -308,14 +308,14 @@ TEST(lf_fe, lf_fe_edgemass) {
           .finished());
 
   // Loop over edges and compute element matrices;
-  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
-    const lf::base::size_type n(edge.RefEl().NumNodes());
-    std::cout << "Edge " << edge << ":" << std::endl;
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    const lf::base::size_type n(edge->RefEl().NumNodes());
+    std::cout << "Edge " << *edge << ":" << std::endl;
     typename decltype(comp_elem_mat)::ElemMat quad_mat{
-        comp_elem_mat.Eval(edge)};
+        comp_elem_mat.Eval(*edge)};
     std::cout << quad_mat << std::endl;
     const double diffnorm =
-        (quad_mat - lf::geometry::Volume(*edge.Geometry()) * RefM).norm();
+        (quad_mat - lf::geometry::Volume(*edge->Geometry()) * RefM).norm();
     EXPECT_NEAR(diffnorm, 0.0, 1E-6);
   }
 }
@@ -346,17 +346,17 @@ TEST(lf_fe, lf_fe_loadvec) {
   LinearFELocalLoadVector<double, decltype(f)> lfe_elem_vec(f);
 
   // Loop over cells and compute element matrices;
-  for (const lf::mesh::Entity &cell : mesh_p->Entities(0)) {
-    const lf::base::size_type n(cell.RefEl().NumNodes());
-    std::cout << "CELL " << cell << ":" << std::endl;
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+    const lf::base::size_type n(cell->RefEl().NumNodes());
+    std::cout << "CELL " << *cell << ":" << std::endl;
     std::cout << "Element vector from LinearFELaplaceElementMatrix:"
               << std::endl;
     LinearFELocalLoadVector<double, decltype(f)>::ElemVec lfe_vec{
-        lfe_elem_vec.Eval(cell)};
+        lfe_elem_vec.Eval(*cell)};
     std::cout << "[ " << lfe_vec.transpose() << "] " << std::endl;
     std::cout << "Element vector from ScalarLoadElementVectorProvider:"
               << std::endl;
-    loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(cell)};
+    loc_comp_t::ElemVec quad_vec{comp_elem_vec.Eval(*cell)};
     std::cout << "[ " << quad_vec.transpose() << "] " << std::endl;
     EXPECT_NEAR((lfe_vec.head(n) - quad_vec).norm(), 0.0, 1E-2);
   }
@@ -381,14 +381,14 @@ TEST(lf_fe, lf_fe_edgeload) {
   Ref_vec[0] = Ref_vec[1] = 0.5;
 
   // Loop over edges and compute element vectors
-  for (const lf::mesh::Entity &edge : mesh_p->Entities(1)) {
-    const lf::base::size_type n(edge.RefEl().NumNodes());
-    std::cout << "Edge " << edge << ": [";
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    const lf::base::size_type n(edge->RefEl().NumNodes());
+    std::cout << "Edge " << *edge << ": [";
     typename decltype(comp_elem_vec)::ElemVec elem_vec{
-        comp_elem_vec.Eval(edge)};
+        comp_elem_vec.Eval(*edge)};
     std::cout << elem_vec.transpose() << " ]" << std::endl;
     const double diffnorm =
-        (elem_vec - lf::geometry::Volume(*edge.Geometry()) * Ref_vec).norm();
+        (elem_vec - lf::geometry::Volume(*edge->Geometry()) * Ref_vec).norm();
     EXPECT_NEAR(diffnorm, 0.0, 1E-6);
   }
 }

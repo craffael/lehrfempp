@@ -38,8 +38,8 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
   auto origin = Eigen::VectorXd::Zero(0);
   std::shared_ptr<lf::mesh::utils::CodimMeshDataSet<bool>> child_found =
       lf::mesh::utils::make_CodimMeshDataSet<bool>(father_mesh, 2, false);
-  for (const lf::mesh::Entity &cp : child_mesh->Entities(2)) {
-    const lf::base::glb_idx_t node_index = child_mesh->Index(cp);
+  for (const lf::mesh::Entity *cp : child_mesh->Entities(2)) {
+    const lf::base::glb_idx_t node_index = child_mesh->Index(*cp);
     // Info record on parent of current node
     const lf::refinement::ParentInfo &father_info =
         point_father_infos[node_index];
@@ -57,7 +57,7 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
       case 2: {  // father entity is a point
         EXPECT_EQ(father_info.child_number, 0)
             << "Node can only have a single child node";
-        EXPECT_TRUE(cp.Geometry()->Global(origin).isApprox(
+        EXPECT_TRUE(cp->Geometry()->Global(origin).isApprox(
             fp->Geometry()->Global(origin)))
             << "Father and child node at different locations!";
         // Check whether current node is registered with its parent
@@ -73,7 +73,7 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
         // Note: works for straight edges only
         auto a = fp->Geometry()->Global(Eigen::VectorXd::Zero(1));
         auto b = fp->Geometry()->Global(Eigen::VectorXd::Ones(1));
-        auto c = cp.Geometry()->Global(origin);
+        auto c = cp->Geometry()->Global(origin);
         double dist = std::abs((Eigen::MatrixXd(2, 2) << (b - a), (c - a))
                                    .finished()
                                    .determinant()) /
@@ -116,8 +116,8 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
 
   // Run through all edges/cells of the fine mesh
   for (lf::base::dim_t codim = 0; codim <= 1; ++codim) {
-    for (const lf::mesh::Entity &ent : child_mesh->Entities(codim)) {
-      const lf::base::glb_idx_t entity_index = child_mesh->Index(ent);
+    for (const lf::mesh::Entity *ent : child_mesh->Entities(codim)) {
+      const lf::base::glb_idx_t entity_index = child_mesh->Index(*ent);
       // Obtain info record about parent of current entity
       const lf::refinement::ParentInfo &entity_parent_info =
           (mh.ParentInfos(father_level + 1, codim)).at(entity_index);
