@@ -42,13 +42,13 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   // to get the size of the element matrix
   int boundary_node_count = 0;
   int boundary_edge_count = 0;
-  for (const auto &node : nodes) {
-    if (boundary_(node)) {
+  for (const auto node : nodes) {
+    if (boundary_(*node)) {
       ++boundary_node_count;
     }
   }
-  for (const auto &edge : edges) {
-    if (boundary_(edge)) {
+  for (const auto edge : edges) {
+    if (boundary_(*edge)) {
       ++boundary_edge_count;
     }
   }
@@ -58,10 +58,10 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   int col_idx = 0;
   for (int node_idx = 0; node_idx < 3; ++node_idx) {
     int row_idx = 0;
-    const auto &node = nodes[node_idx];
+    const auto &node = *nodes[node_idx];
     if (boundary_(node)) {
       for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
-        const auto &edge = edges[edge_idx];
+        const auto &edge = *edges[edge_idx];
         if (boundary_(edge)) {
           elem_mat(row_idx, col_idx) =
               normals.col(edge_idx).transpose() * basis_funct.col(node_idx);
@@ -116,12 +116,12 @@ Eigen::VectorXd createOffsetFunction(
   Eigen::SparseMatrix<double> Js = J.makeSparse();
   // Assemble the right hand side from the provided dirichlet data
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NoDofs() + 1);
-  for (const auto &cell : mesh->Entities(0)) {
+  for (const auto cell : mesh->Entities(0)) {
     const Eigen::Matrix<double, 2, 3> normals =
-        projects::ipdg_stokes::mesh::computeOutwardNormals(cell);
-    const auto edges = cell.SubEntities(1);
+        projects::ipdg_stokes::mesh::computeOutwardNormals(*cell);
+    const auto edges = cell->SubEntities(1);
     for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
-      const auto &edge = edges[edge_idx];
+      const auto &edge = *edges[edge_idx];
       if (boundary(edge)) {
         rhs[boundary_edge_dofh.GlobalDofIndices(edge)[0]] =
             normals.col(edge_idx).transpose() * dirichlet_data(edge);

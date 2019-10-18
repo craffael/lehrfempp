@@ -52,7 +52,7 @@ Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
   elem_mat.block(0, 3, 3, 3) = elem_mat.block(3, 0, 3, 3).transpose();
   // Lower right block
   for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
-    const auto &edge = edges[edge_idx];
+    const auto &edge = *edges[edge_idx];
     elem_mat(edge_idx + 3, edge_idx + 3) = -1 / sigma_;
     if (modified_) {
       elem_mat(edge_idx + 3, edge_idx + 3) /=

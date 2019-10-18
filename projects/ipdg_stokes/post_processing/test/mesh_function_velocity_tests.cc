@@ -34,42 +34,42 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
                          lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>>>
       tests;
 
-  tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Zero(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
-  tests.emplace_back(Eigen::VectorXd::Ones(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Ones(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
-  tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Zero(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<0>(tests.back())[0] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << -1, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 1;
 
-  tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Zero(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<0>(tests.back())[1] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, 0;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << -1, -1;
 
-  tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Zero(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<0>(tests.back())[2] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 1, 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 0, 0;
 
-  tests.emplace_back(Eigen::VectorXd::Zero(4),
-                     lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(
-                         fe_space->Mesh(), 0));
+  tests.emplace_back(
+      Eigen::VectorXd::Zero(4),
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(fe_space->Mesh(), 0));
   std::get<0>(tests.back())[3] = 1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 0))) << 0, -1;
   std::get<1>(tests.back())(*(fe_space->Mesh()->EntityByIndex(0, 1))) << 1, 0;
@@ -78,15 +78,15 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
   for (const auto& [coeffs, v_exact] : tests) {
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         v_func(fe_space, coeffs);
-    for (const auto& entity : fe_space->Mesh()->Entities(0)) {
+    for (const auto entity : fe_space->Mesh()->Entities(0)) {
       const auto v_comp =
-          v_func(entity, entity.RefEl().NodeCoords().rowwise().sum() / 3)[0];
-      EXPECT_TRUE(v_exact(entity).isApprox(v_comp))
+          v_func(*entity, entity->RefEl().NodeCoords().rowwise().sum() / 3)[0];
+      EXPECT_TRUE(v_exact(*entity).isApprox(v_comp))
           << "Mismatch in the exact and computed velocity for coefficient "
              "vector ["
           << coeffs.transpose() << "] on entity "
-          << fe_space->Mesh()->Index(entity)
-          << "\nExact : " << v_exact(entity).transpose()
+          << fe_space->Mesh()->Index(*entity)
+          << "\nExact : " << v_exact(*entity).transpose()
           << "\nApprox: " << v_comp.transpose();
     }
   }

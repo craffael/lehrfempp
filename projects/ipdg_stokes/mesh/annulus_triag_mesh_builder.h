@@ -16,8 +16,9 @@ namespace mesh {
 /**
  * @brief A mesh builder for disks with a hole in the middle
  *
- * The diameter of the hole is controlled by the y-value passed to `setBottomLeftCorner(x, y)`
- * while the diameter of the disk is controlled by the y-value passed to `setTopRightCorner(x, y)`.
+ * The diameter of the hole is controlled by the y-value passed to
+ * `setBottomLeftCorner(x, y)` while the diameter of the disk is controlled by
+ * the y-value passed to `setTopRightCorner(x, y)`.
  */
 class AnnulusTriagMeshBuilder
     : public lf::mesh::hybrid2d::StructuredMeshBuilder {

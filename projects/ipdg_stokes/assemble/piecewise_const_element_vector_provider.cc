@@ -54,7 +54,7 @@ Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
   const auto edges = entity.SubEntities(1);
   const auto orientations = entity.RelativeOrientations();
   for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
-    const auto &edge = edges[edge_idx];
+    const auto &edge = *edges[edge_idx];
     if (boundary_(edge)) {
       Eigen::Vector2d t;
       t << -normals(1, edge_idx), normals(0, edge_idx);

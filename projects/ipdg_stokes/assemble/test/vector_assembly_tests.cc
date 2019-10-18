@@ -6,7 +6,7 @@
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/base/base.h>
-#include <lf/base/forward_range.h>
+#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
@@ -15,19 +15,20 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 
+#include <array>
+
 TEST(projects_ipdg_stokes_assembly, piecewise_const_vector_assembler_test) {
   // Build a mesh containing only the reference triangle
   const auto trig = lf::base::RefEl::kTria();
   const auto vertices = trig.NodeCoords();
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
-  const lf::base::ForwardRange<const lf::mesh::MeshFactory::size_type> nodes(
-      {0, 1, 2});
+  const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
   lf::mesh::hybrid2d::MeshFactory factory(2);
   factory.AddPoint(vertices.col(0));
   factory.AddPoint(vertices.col(1));
   factory.AddPoint(vertices.col(2));
-  factory.AddEntity(trig, nodes, std::move(geom));
+  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
 

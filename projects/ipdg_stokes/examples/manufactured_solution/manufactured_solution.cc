@@ -224,16 +224,16 @@ int main() {
     double factor_denominator = 0;
     double factor_numerator_modified = 0;
     double factor_denominator_modified = 0;
-    for (const auto &cell : solutions[lvl].mesh->Entities(0)) {
-      const double u = analyticU(cell).norm();
-      const double v = velocity(cell).norm();
-      const double v_modified = velocity_modified(cell).norm();
-      factor_numerator += lf::geometry::Volume(*(cell.Geometry())) * u * v;
-      factor_denominator += lf::geometry::Volume(*(cell.Geometry())) * v * v;
+    for (const auto cell : solutions[lvl].mesh->Entities(0)) {
+      const double u = analyticU(*cell).norm();
+      const double v = velocity(*cell).norm();
+      const double v_modified = velocity_modified(*cell).norm();
+      factor_numerator += lf::geometry::Volume(*(cell->Geometry())) * u * v;
+      factor_denominator += lf::geometry::Volume(*(cell->Geometry())) * v * v;
       factor_numerator_modified +=
-          lf::geometry::Volume(*(cell.Geometry())) * u * v_modified;
+          lf::geometry::Volume(*(cell->Geometry())) * u * v_modified;
       factor_denominator_modified +=
-          lf::geometry::Volume(*(cell.Geometry())) * v_modified * v_modified;
+          lf::geometry::Volume(*(cell->Geometry())) * v_modified * v_modified;
     }
     const double factor = factor_numerator / factor_denominator;
     const double factor_modified =

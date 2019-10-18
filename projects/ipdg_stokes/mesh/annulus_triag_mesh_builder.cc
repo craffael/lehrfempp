@@ -1,9 +1,10 @@
 #include "annulus_triag_mesh_builder.h"
 
 #include <lf/base/base.h>
-#include <lf/base/forward_range.h>
+#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 
+#include <array>
 #include <cmath>
 #include <vector>
 
@@ -45,10 +46,8 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
       const lf::base::size_type v3 =
           v_idx[nx * (r_idx + 1) + ((phi_idx + 1) % nx)];
       const lf::base::size_type v4 = v_idx[nx * r_idx + ((phi_idx + 1) % nx)];
-      const lf::base::ForwardRange<const lf::base::size_type> trig1(
-          {v1, v2, v4});
-      const lf::base::ForwardRange<const lf::base::size_type> trig2(
-          {v2, v3, v4});
+      const std::array<lf::base::size_type, 3> trig1 = {v1, v2, v4};
+      const std::array<lf::base::size_type, 3> trig2 = {v2, v3, v4};
       Eigen::Matrix<double, 2, 3> verts1;
       Eigen::Matrix<double, 2, 3> verts2;
       verts1 << node_position(r_idx, phi_idx),
@@ -61,8 +60,10 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
           std::make_unique<lf::geometry::TriaO1>(verts1);
       std::unique_ptr<lf::geometry::Geometry> geom2 =
           std::make_unique<lf::geometry::TriaO1>(verts2);
-      mesh_factory_->AddEntity(ref_el, trig1, std::move(geom1));
-      mesh_factory_->AddEntity(ref_el, trig2, std::move(geom2));
+      mesh_factory_->AddEntity(ref_el, nonstd::span(trig1.data(), 3),
+                               std::move(geom1));
+      mesh_factory_->AddEntity(ref_el, nonstd::span(trig2.data(), 3),
+                               std::move(geom2));
     }
   }
 

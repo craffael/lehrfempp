@@ -19,8 +19,8 @@ namespace mesh {
  * computed
  * @returns A matrix containing the outward pointing normals in its columns
  *
- * The n-th column of the matrix returned corresponds to the outward pointing normal
- * on the n-th edge of the given triangle.
+ * The n-th column of the matrix returned corresponds to the outward pointing
+ * normal on the n-th edge of the given triangle.
  */
 Eigen::Matrix<double, 2, 3> computeOutwardNormals(
     const lf::mesh::Entity &entity);

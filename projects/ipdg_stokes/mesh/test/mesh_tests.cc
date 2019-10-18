@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <lf/base/base.h>
-#include <lf/base/forward_range.h>
+#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/entity.h>
@@ -10,6 +10,8 @@
 
 #include <utils.h>
 
+#include <array>
+
 std::shared_ptr<lf::mesh::Mesh> buildTriangle(
     const Eigen::Matrix<double, 2, 3> &vertices) {
   lf::mesh::hybrid2d::MeshFactory factory(2);
@@ -17,11 +19,10 @@ std::shared_ptr<lf::mesh::Mesh> buildTriangle(
   v_idx[0] = factory.AddPoint(vertices.col(0));
   v_idx[1] = factory.AddPoint(vertices.col(1));
   v_idx[2] = factory.AddPoint(vertices.col(2));
-  const lf::base::ForwardRange<const lf::base::size_type> indices(
-      {v_idx[0], v_idx[1], v_idx[2]});
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
-  factory.AddEntity(lf::base::RefEl::kTria(), indices, std::move(geom));
+  factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(v_idx, 3),
+                    std::move(geom));
   return factory.Build();
 }
 

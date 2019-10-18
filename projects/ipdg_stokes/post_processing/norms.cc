@@ -20,15 +20,15 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   const lf::quad::QuadRule quadrule =
       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quadrule_order);
   double norm2 = 0;
-  for (const auto &entity : mesh->Entities(0)) {
-    const auto geom = entity.Geometry();
+  for (const auto entity : mesh->Entities(0)) {
+    const auto geom = entity->Geometry();
     const Eigen::MatrixXd points = geom->Global(quadrule.Points());
     const Eigen::VectorXd weights =
         (geom->IntegrationElement(quadrule.Points()).array() *
          quadrule.Weights().array())
             .matrix();
     for (lf::base::size_type i = 0; i < quadrule.NumPoints(); ++i) {
-      norm2 += weights[i] * f(entity, points.col(i)).squaredNorm();
+      norm2 += weights[i] * f(*entity, points.col(i)).squaredNorm();
     }
   }
   return std::sqrt(norm2);
@@ -44,15 +44,15 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   // Compute the DG norm on the elements
   const lf::quad::QuadRule quadrule_triangle =
       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quadrule_order);
-  for (const auto &entity : mesh->Entities(0)) {
-    const auto geom = entity.Geometry();
+  for (const auto entity : mesh->Entities(0)) {
+    const auto geom = entity->Geometry();
     const Eigen::MatrixXd points = geom->Global(quadrule_triangle.Points());
     const Eigen::VectorXd weights =
         (geom->IntegrationElement(quadrule_triangle.Points()).array() *
          quadrule_triangle.Weights().array())
             .matrix();
     for (lf::base::size_type i = 0; i < quadrule_triangle.NumPoints(); ++i) {
-      norm2 += weights[i] * f_grad(entity, points.col(i)).squaredNorm();
+      norm2 += weights[i] * f_grad(*entity, points.col(i)).squaredNorm();
     }
   }
   // Compute the DG norm on the edges
@@ -62,12 +62,12 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
                                      Eigen::Matrix2d::Zero());
   // We have to manually set the jump at the edges of the mesh to zero
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
-  for (const auto &entity : mesh->Entities(0)) {
-    const auto edges = entity.SubEntities(1);
+  for (const auto entity : mesh->Entities(0)) {
+    const auto edges = entity->SubEntities(1);
     const auto normals =
-        projects::ipdg_stokes::mesh::computeOutwardNormals(entity);
+        projects::ipdg_stokes::mesh::computeOutwardNormals(*entity);
     for (int i = 0; i < 3; ++i) {
-      const auto &edge = edges[i];
+      const auto &edge = *edges[i];
       if (!boundary(edge)) {
         const auto geom = edge.Geometry();
         const Eigen::MatrixXd points = geom->Global(quadrule_segment.Points());
@@ -77,7 +77,7 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
                 .matrix() /
             lf::geometry::Volume(*geom);
         for (lf::base::size_type p = 0; p < quadrule_segment.NumPoints(); ++p) {
-          jumps[mesh->Index(edge)] += weights[p] * f(entity, points.col(p)) *
+          jumps[mesh->Index(edge)] += weights[p] * f(*entity, points.col(p)) *
                                       normals.col(i).transpose();
         }
       }

@@ -6,13 +6,14 @@
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/base/base.h>
-#include <lf/base/forward_range.h>
+#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 
+#include <array>
 #include <cmath>
 
 TEST(projects_ipdg_stokes_assembly, piecewise_const_matrix_assembler_test) {
@@ -21,13 +22,12 @@ TEST(projects_ipdg_stokes_assembly, piecewise_const_matrix_assembler_test) {
   const auto vertices = trig.NodeCoords();
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
-  const lf::base::ForwardRange<const lf::mesh::MeshFactory::size_type> nodes(
-      {0, 1, 2});
+  const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
   lf::mesh::hybrid2d::MeshFactory factory(2);
   factory.AddPoint(vertices.col(0));
   factory.AddPoint(vertices.col(1));
   factory.AddPoint(vertices.col(2));
-  factory.AddEntity(trig, nodes, std::move(geom));
+  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
@@ -74,12 +74,13 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
     v_idx[i] = factory.AddPoint(vertices.col(i));
   // Add the edges
   auto add_edge = [&](unsigned v1, unsigned v2) {
-    lf::base::ForwardRange<const lf::base::size_type> indices({v1, v2});
+    const std::array<lf::base::size_type, 2> indices = {v1, v2};
     Eigen::Matrix<double, 2, 2> verts;
     verts << vertices.col(v1), vertices.col(v2);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kSegment(), indices, std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kSegment(),
+                      nonstd::span(indices.data(), 2), std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);
@@ -88,12 +89,13 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
   add_edge(2, 3);
   // Add the elements
   auto add_triangle = [&](unsigned v1, unsigned v2, unsigned v3) {
-    lf::base::ForwardRange<const lf::base::size_type> indices({v1, v2, v3});
+    const std::array<lf::base::size_type, 3> indices = {v1, v2, v3};
     Eigen::Matrix<double, 2, 3> verts;
     verts << vertices.col(v1), vertices.col(v2), vertices.col(v3);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::TriaO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kTria(), indices, std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(indices.data(), 3),
+                      std::move(geom));
   };
   add_triangle(0, 1, 3);
   add_triangle(2, 3, 1);
@@ -150,12 +152,13 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
     v_idx[i] = factory.AddPoint(vertices.col(i));
   // Add the edges
   auto add_edge = [&](unsigned v1, unsigned v2) {
-    lf::base::ForwardRange<const lf::base::size_type> indices({v1, v2});
+    const std::array<lf::base::size_type, 2> indices = {v1, v2};
     Eigen::Matrix<double, 2, 2> verts;
     verts << vertices.col(v1), vertices.col(v2);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kSegment(), indices, std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kSegment(),
+                      nonstd::span(indices.data(), 2), std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);
@@ -164,12 +167,13 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
   add_edge(2, 3);
   // Add the elements
   auto add_triangle = [&](unsigned v1, unsigned v2, unsigned v3) {
-    lf::base::ForwardRange<const lf::base::size_type> indices({v1, v2, v3});
+    const std::array<lf::base::size_type, 3> indices = {v1, v2, v3};
     Eigen::Matrix<double, 2, 3> verts;
     verts << vertices.col(v1), vertices.col(v2), vertices.col(v3);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::TriaO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kTria(), indices, std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(indices.data(), 3),
+                      std::move(geom));
   };
   add_triangle(0, 1, 3);
   add_triangle(2, 1, 3);
