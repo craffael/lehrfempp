@@ -76,8 +76,8 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
 
   // Run through all coefficient vectors
   for (const auto& [coeffs, v_exact] : tests) {
-    projects::ipdg_stokes::post_processing::MeshFunctionVelocity v_func(
-        fe_space, coeffs);
+    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+        v_func(fe_space, coeffs);
     for (const auto& entity : fe_space->Mesh()->Entities(0)) {
       const auto v_comp =
           v_func(entity, entity.RefEl().NodeCoords().rowwise().sum() / 3)[0];
