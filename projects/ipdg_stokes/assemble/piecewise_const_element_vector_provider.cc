@@ -52,7 +52,6 @@ Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
   // Iterate over all edges of the current entity and set the boundary
   // conditions where necessary
   const auto edges = entity.SubEntities(1);
-  const auto orientations = entity.RelativeOrientations();
   for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
     const auto &edge = *edges[edge_idx];
     if (boundary_(edge)) {

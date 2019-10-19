@@ -39,7 +39,6 @@ Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
   // Upper left block
   elem_mat.block(0, 0, 3, 3).setZero();
   // Lower left and upper right blocks
-  const auto orientations = entity.RelativeOrientations();
   const auto edges = entity.SubEntities(1);
   for (int basis_func_idx = 0; basis_func_idx < 3; ++basis_func_idx) {
     for (int edge_idx = 0; edge_idx < 3; ++edge_idx) {
