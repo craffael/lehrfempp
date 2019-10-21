@@ -81,6 +81,9 @@ extern unsigned int ass_mat_dbg_ctrl;
  * `entity_matrix_provider` may have a size larger than that suggested by the
  * number of local shape functions. In this case only its upper left block is
  * accessed.
+ *
+ * #### Example Usage
+ * @snippet assembler.cc matrix_usage
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
@@ -203,6 +206,7 @@ TMPMATRIX AssembleMatrixLocally(
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider,
  * TMPMATRIX &matrix)
+ *
  */
 
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
@@ -236,6 +240,9 @@ TMPMATRIX AssembleMatrixLocally(
  * @note Contributions of element vectors are added to the entries of the
  *       `resultvector` argument. This means that `resultvector` has to be
  *       initialized before calling this function!
+ *
+ * ### Example Usage
+ * @snippet assembler.cc vector_usage
  */
 template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
