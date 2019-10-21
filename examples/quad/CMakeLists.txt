@@ -15,6 +15,8 @@ target_link_libraries(examples.quad.quad_demo
   lf.quad
   )
   
+add_custom_target(examples.quad.quad_demo_run COMMAND examples.quad.quad_demo)
+add_dependencies(examples_run examples.quad.quad_demo_run)
     
 
   
