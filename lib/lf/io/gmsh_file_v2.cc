@@ -396,6 +396,7 @@ BOOST_FUSION_ADAPT_STRUCT_NAMED(
         std::vector<lf::io::GMshFileV2::Element>,
         Elements)(std::vector<lf::io::GMshFileV2::PeriodicEntity>, Periodic));
 
+/// \cond
 namespace boost::spirit::traits {
 /*template<>
 struct transform_attribute<hydi::io::MshFile::ElementType, int, qi::domain> {
@@ -417,6 +418,7 @@ struct assign_to_attribute_from_value<
 };
 
 }  // namespace boost::spirit::traits
+/// \endcond
 
 namespace lf::io {
 namespace /*Anonymous*/ {

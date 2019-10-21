@@ -1,0 +1,37 @@
+
+/**
+@defgroup entity_matrix_provider EntityMatrixProvider
+
+@brief Provides the local element matrix for a mesh entity.
+
+## Description
+
+An EntityMatrixProvider is an object that provides a local element matrix for a given mesh entity.
+EntityMatrixProvider's are mostly used together with `lf::assemble::AssembleMatrixLocally` to assemble a sparse system matrix. 
+
+## Requirements
+
+The type `EMP` satisfies the Concept `EntityMatrixProvider` if given
+- `emp` an object of type `EMP`
+- `e` is a lf::mesh::Entity object
+- `SCALAR` is an Eigen supported scalar datatype (e.g. `double`)
+- `ROWS` is the number of rows of the local element matrix or `Eigen::Dynamic`
+- `COLS` is the number of columns of the local element matrix or `Eigen::Dynamic`
+
+the following expressions are valid:
+
+<table>
+<tr> <th>expression  <th>return type     <th>semantics
+<tr> <td> `emp.isActive(e)`         <td> `bool`                                  <td> Defines whether the entity `e` is taken into account by the assembly routine.
+<tr> <td> `emp.Eval(e)`             <td> `Eigen::Matrix<SCALAR, ROWS, COLS>`     <td> Returns the local element matrix for mesh entity `e`. Is only called if `emp.isActive(e)==true`.
+</table>
+
+## Usage scenarios
+The concept of a EntityMatrixProvider is widely used in the `lf::assemble` and `lf::uscalfe` modules:
+- The function `lf::assemble::AssembleMatrixLocally()` accepts an `EntityMatrixProvider` which in turn defines how the (sparse) system matrix is assembled.
+
+
+## See also
+- The concept \ref entity_vector_provider
+
+*/

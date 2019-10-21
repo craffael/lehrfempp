@@ -52,7 +52,7 @@ extern unsigned int ass_mat_dbg_ctrl;
  *
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
- * matrices
+ * matrices, must model the concept \ref entity_matrix_provider
  * @param codim co-dimension of mesh entities which should be traversed
  *              in the course of assembly
  * @param dof_handler_trial a dof handler object for column space @see
@@ -75,15 +75,7 @@ extern unsigned int ass_mat_dbg_ctrl;
  * + provide a constructor taking two matrix dimension arguments
  * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
  * A model type is COOMatrix.
- * - ENTITY_MATRIX_PROVIDER is a type capable of local assembly of element
- * matrices. It must
- * + have an `Eval()` method returning the element matrix for a cell
- * + supply an `isActive()` method for selecting cells to be taken into account
- * in assembly
- * - The return type of `Eval()` must be a dense matrix type modelled after
- *   Eigen::Matrix. It must provide:
- * + methods `rows()` and `cols()` telling the number of rows and columns
- * + access to entries via `operator (int,int) const`
+ * - ENTITY_MATRIX_PROVIDER is a \ref entity_matrix_provider
  *
  * @note The element matrix returned by the `Eval()` method of
  * `entity_matrix_provider` may have a size larger than that suggested by the
@@ -169,6 +161,9 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
 
 /**
  * @brief Entity-wise local assembly of a matrix from local matrices
+ * @tparam TMPMATRIX a type fitting the concept of COOMatrix
+ * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
+ * matrices, must model the concept \ref entity_matrix_provider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -195,6 +190,9 @@ TMPMATRIX AssembleMatrixLocally(
 
 /**
  * @brief Entity-wise local assembly of a matrix from local matrices
+ * @tparam TMPMATRIX a type fitting the concept of COOMatrix
+ * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
+ * matrices, must model the concept \ref entity_matrix_provider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -221,7 +219,7 @@ TMPMATRIX AssembleMatrixLocally(
  *
  * @tparam VECTOR a generic vector type with component access through []
  * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
- * vectors
+ * vectors, models concept \ref entity_vector_provider
  * @param codim co-dimension of entities over which assembly should be carried
  * out
  * @param dof_handler object providing local-to-global dof index mapping, see
@@ -234,11 +232,6 @@ TMPMATRIX AssembleMatrixLocally(
  *
  * - VECTOR must provide a `size()` method telling its length and
  *   read/write access through the `[]` operator.
- * - ENTITY_VECTOR_PROVIDER must
- * + offer an `Eval()` method that returns an element vector.
- * + supply an `isActive()` method for selecting cells to be taken into account
- * in assembly
- * + provide a type `ElemVec` suitable for holding an element vector
  *
  * @note Contributions of element vectors are added to the entries of the
  *       `resultvector` argument. This means that `resultvector` has to be
@@ -278,6 +271,9 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
 /**
  * @brief entity-local assembly of (right-hand-side) vectors from element
  * vectors
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
+ * vectors, models concept \ref entity_vector_provider
  * @return assembled vector as an object of a type specified by the
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
