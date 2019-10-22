@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
 
   // Generate  MATLAB functions that provide a description of all
   // levels of the mesh hierarchy
-  std::string basename = lf::base::ci::Get<std::string>("basename");
+  auto basename = lf::base::ci::Get<std::string>("basename");
   lf::refinement::WriteMatlab(multi_mesh, basename);
 
   return 0;
