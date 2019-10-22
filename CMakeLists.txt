@@ -65,6 +65,9 @@ set(config_install_dir "lib/cmake/lehrfempp")
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)
 if(LF_BUILD_EXAMPLES)
+  # Add custom target which will run all examples
+  add_custom_target(examples_run)
+  
   add_subdirectory(examples)
   add_subdirectory(experiments)
 endif()

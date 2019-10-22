@@ -14,7 +14,8 @@ target_link_libraries(examples.io.vtk_gmsh_demo
   lf.io
   )
   
-    
+add_custom_target(examples.io.vtk_gmsh_demo_run COMMAND examples.io.vtk_gmsh_demo)
+add_dependencies(examples_run examples.io.vtk_gmsh_demo_run)
 
   
 
