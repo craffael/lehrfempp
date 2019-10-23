@@ -22,9 +22,9 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   hybrid2d::TPQuadMeshBuilder::output_ctrl_ = 100;
   // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
-  std::shared_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<hybrid2d::MeshFactory>(2);
-  hybrid2d::TPQuadMeshBuilder builder(mesh_factory_ptr);
+  std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<hybrid2d::MeshFactory>(2);
+  hybrid2d::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})

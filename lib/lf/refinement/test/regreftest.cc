@@ -21,9 +21,9 @@ TEST(RegRefTest, RegRef) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   std::cout << "RegRefTEST: Regular refinement" << std::endl;
   multi_mesh.RefineRegular();
@@ -76,9 +76,9 @@ TEST(RegRefTest, BarycentricRef) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
 
@@ -123,9 +123,9 @@ TEST(RegRefTest, AllMarkedRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   // Mark all edges
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)> marker =
@@ -181,9 +181,9 @@ TEST(LocRefTest, LocalRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   // Mark edges whose center lies inside a square
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -281,9 +281,9 @@ TEST(LocRefTest, MultipleRefinement) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   // Mark edges whose midpoints are located in a certain region
   std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
@@ -379,9 +379,9 @@ void test_hybrid_2d_meshes(int selector) {
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   // Several steps of refinement
   refine_for_testing(multi_mesh);
@@ -459,9 +459,9 @@ TEST(LocRefTest, AffMeshRef) {
   // Output mesh information
   std::cout << *mesh_p << std::endl;
   // Build mesh hierarchy
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_p, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_p, std::move(mesh_factory_ptr));
 
   // Several step of refinement
   refine_for_testing(multi_mesh);

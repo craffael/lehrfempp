@@ -25,7 +25,8 @@ namespace lecturedemo {
  * and outputs the numbers of various entities on different levels.
  * Does not serve any other purpose.
  */
-void regrefMeshSequence(std::shared_ptr<lf::mesh::Mesh> mesh_p, int refsteps);
+void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
+                        int refsteps);
 
 /** @brief Demonstration of regular refinement: driver function
  */

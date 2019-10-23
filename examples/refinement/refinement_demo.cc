@@ -68,9 +68,10 @@ int main(int argc, char **argv) {
   std::cout << "########################################" << std::endl;
   std::cout << "Initialization of data structure for mesh hierarchy"
             << std::endl;
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_ptr,
+                                           std::move(mesh_factory_ptr));
 
   // lambda functions for (local) marking
   // First, a global marker
