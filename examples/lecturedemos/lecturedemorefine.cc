@@ -13,10 +13,10 @@ using size_type = lf::base::size_type;
 
 // Creation of mesh hierarchy by regular refinement
 /* SAM_LISTING_BEGIN_1 */
-void regrefMeshSequence(std::shared_ptr<lf::mesh::Mesh> mesh_p, int refsteps) {
+void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
+                        int refsteps) {
   std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
-      lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(std::move(mesh_p),
-                                                              refsteps);
+      lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p, refsteps);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
 
   // Ouput summary information about hierarchy of nested meshes

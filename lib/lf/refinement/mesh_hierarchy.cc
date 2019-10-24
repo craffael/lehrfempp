@@ -27,8 +27,8 @@ ADDOPTION(MeshHierarchy::ctrl_, MeshHierarchy_ctrl,
           "Output control for MeshHierarchy");
 
 // Implementation of MeshHierarchy
-MeshHierarchy::MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,  // NOLINT
-                             std::shared_ptr<mesh::MeshFactory> mesh_factory)
+MeshHierarchy::MeshHierarchy(const std::shared_ptr<mesh::Mesh> &base_mesh,
+                             std::unique_ptr<mesh::MeshFactory> mesh_factory)
     : mesh_factory_(std::move(mesh_factory)) {
   LF_VERIFY_MSG(base_mesh, "No valid mesh supplied");
   LF_VERIFY_MSG(base_mesh->DimMesh() == 2, "Implemented only for 2D meshes");
@@ -1730,16 +1730,16 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
 // Utility function for generating a hierarchy of meshes
 /* SAM_LISTING_BEGIN_1 */
 std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
-    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    const std::shared_ptr<lf::mesh::Mesh> &mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat) {
   LF_ASSERT_MSG(mesh_p != nullptr, "No valid mesh supplied!");
   // Set up the builder object for mesh entities, here suitable for a 2D hybrid
   // mesh comprising triangles and quadrilaterals
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   // Create a mesh hierarchy with a single level
   std::shared_ptr<MeshHierarchy> multi_mesh_p =
-      std::make_shared<MeshHierarchy>(std::move(mesh_p), mesh_factory_ptr);
+      std::make_shared<MeshHierarchy>(mesh_p, std::move(mesh_factory_ptr));
   // Perform the desired number of steps of uniform refinement
   for (unsigned refstep = 0; refstep < ref_lev; ++refstep) {
     // Conduct regular refinement of all cells of the currently finest mesh.
