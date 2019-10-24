@@ -1034,7 +1034,7 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     // Evaluate basis functions using the tensor product structure
     for (int i = 0; i < 9; ++i) {
       result.row(i) = (segment_x0_eval.row(ksegment_to_quad_mapping_(i, 0)) *
-                       segment_x0_eval.row(ksegment_to_quad_mapping_(i, 1)))
+                       segment_x1_eval.row(ksegment_to_quad_mapping_(i, 1)))
                           .matrix();
     }
     return result;

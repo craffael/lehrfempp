@@ -55,6 +55,7 @@ TEST(lf_fe_linear, scal_fe_coeff_node) {
   // Test of consistency of nodal interpolation
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
+
   FeLagrangeO1Tria<double> tlfe{};
   std::cout << tlfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
@@ -68,7 +69,7 @@ TEST(lf_fe_linear, scal_fe_coeff_node) {
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
 }
 
-TEST(lf_fe_quadratic, scal_fe_coeff_node){
+TEST(lf_fe_quadratic, scal_fe_coeff_node) {
   // Test of consistency of nodal interpolation
   std::cout << ">>> Quadratic FE: test of consistency of nodal interpolation"
             << std::endl;
@@ -127,13 +128,35 @@ TEST(lf_fe_linear, scal_fe_val_node) {
             << std::endl;
   FeLagrangeO1Tria<double> tlfe{};
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
+  std::cout << tlfe << std::endl;
+
   FeLagrangeO1Quad<double> qlfe{};
+  std::cout << qlfe << std::endl;
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
+
   FeLagrangeO1Segment<double> slfe{};
+  std::cout << slfe << std::endl;
   EXPECT_TRUE(scalarFEInterpTest(tlfe));
 }
 
-TEST(lf_fe, lf_fe_linfe) {
+TEST(lf_fe_quadratic, scal_fe_val_node) {
+  std::cout << ">>> Quadratic FE: test of consistency of nodal interpolation"
+            << std::endl;
+
+  FeLagrangeO2Tria<double> tfe{};
+  std::cout << tfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(tfe));
+
+  FeLagrangeO2Quad<double> qfe{};
+  std::cout << qfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(qfe));
+
+  FeLagrangeO2Segment<double> sfe{};
+  std::cout << sfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(sfe));
+}
+
+TEST(lf_fe_linear, lf_fe_linfe) {
   // Three points in the reference element
   Eigen::MatrixXd refcoords{
       (Eigen::MatrixXd(2, 3) << 0.3, 0.1, 0.7, 0.2, 0.5, 0.1).finished()};
@@ -204,7 +227,34 @@ TEST(lf_fe, lf_fe_linfe) {
   }
 }
 
-TEST(lf_fe, lf_fe_segment) {
+TEST(lf_fe_quadratic, lf_fe_quadrfe) {
+  // triangular finite element:
+  {
+    FeLagrangeO2Tria<double> tfe{};
+    EXPECT_EQ(tfe.NumRefShapeFunctions(), 6);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(0, 0), 0);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(1, 0), 1);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(2, 0), 1);
+
+    // cardinal basis property
+    EXPECT_TRUE(tfe.EvalReferenceShapeFunctions(tfe.EvaluationNodes())
+                    .isApprox(Eigen::MatrixXd::Identity(6, 6)));
+  }
+
+  // quadrilateral finite element:
+  {
+    FeLagrangeO2Quad<double> qfe{};
+    EXPECT_EQ(qfe.NumRefShapeFunctions(), 9);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(0, 0), 1);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(1, 0), 1);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(2, 0), 1);
+
+    EXPECT_TRUE(qfe.EvalReferenceShapeFunctions(qfe.EvaluationNodes())
+                    .isApprox(Eigen::MatrixXd::Identity(9, 9)));
+  }
+}
+
+TEST(lf_fe_linear, lf_fe_segment) {
   // Three points in unit interval
   Eigen::MatrixXd refcoords{
       (Eigen::MatrixXd(1, 3) << 0.3, 0.1, 0.7).finished()};
@@ -233,7 +283,17 @@ TEST(lf_fe, lf_fe_segment) {
       slfe.EvaluationNodes().isApprox(base::RefEl::kSegment().NodeCoords()));
 }
 
-TEST(lf_fe, lf_fe_ellbvp) {
+TEST(lf_fe_quadratic, lf_fe_segment) {
+  FeLagrangeO2Segment<double> sfe{};
+  EXPECT_EQ(sfe.NumRefShapeFunctions(), 3);
+  EXPECT_EQ(sfe.NumRefShapeFunctions(0, 0), 1);
+  EXPECT_EQ(sfe.NumRefShapeFunctions(1, 0), 1);
+
+  EXPECT_TRUE(sfe.EvalReferenceShapeFunctions(sfe.EvaluationNodes())
+                  .isApprox(Eigen::MatrixXd::Identity(3, 3)));
+}
+
+TEST(lf_fe_linear, lf_fe_ellbvp) {
   std::cout << "### TEST: Computation of element matrices" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
@@ -273,7 +333,7 @@ TEST(lf_fe, lf_fe_ellbvp) {
 
 // Test that the ReactionDiffusionElementMatrixProvider works as expected
 // for tensor valued coefficients.
-TEST(lf_fe, ReactionDiffusionEMPTensor) {
+TEST(lf_fe_linear, ReactionDiffusionEMPTensor) {
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
@@ -286,7 +346,18 @@ TEST(lf_fe, ReactionDiffusionEMPTensor) {
   });
   auto gamma =
       MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
-  ReactionDiffusionElementMatrixProvider emp{fe_space, alpha, gamma};
+
+  // specify quad rule ( default of degree 2 is not enough for a quadratic
+  // gamma)
+  quad_rule_collection_t quad_rules{
+      {lf::base::RefEl::kTria(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
+      {lf::base::RefEl::kQuad(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
+
+  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
+                                         decltype(gamma)>
+      emp{fe_space, alpha, gamma, quad_rules};
 
   assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
                                      fe_space->LocGlobMap().NoDofs());
@@ -300,12 +371,10 @@ TEST(lf_fe, ReactionDiffusionEMPTensor) {
   auto b_vec = NodalProjection<double>(*fe_space, b);
 
   auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
-  EXPECT_NEAR(
-      product(0, 0), 7911. / 8.,
-      5);  // values do not agree very well because quadrature order is too low
+  EXPECT_NEAR(product(0, 0), 7911. / 8., 1.0E-2);
 }
 
-TEST(lf_fe, lf_fe_edgemass) {
+TEST(lf_fe_linear, lf_fe_edgemass) {
   std::cout << "### TEST: Computation of local edge" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
@@ -340,12 +409,11 @@ TEST(lf_fe, lf_fe_edgemass) {
   }
 }
 
-TEST(lf_fe, lf_fe_loadvec) {
+TEST(lf_fe_linear, lf_fe_loadvec) {
   std::cout << "### TEST: Computation of element vectors" << std::endl;
   // Building the test mesh: a purely triangular mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
-  // Set up finite elements
   // Set up finite elements
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
@@ -382,7 +450,7 @@ TEST(lf_fe, lf_fe_loadvec) {
   }
 }
 
-TEST(lf_fe, lf_fe_edgeload) {
+TEST(lf_fe_linear, lf_fe_edgeload) {
   std::cout << "### TEST: Computation of local edge load vector" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
@@ -410,6 +478,191 @@ TEST(lf_fe, lf_fe_edgeload) {
     const double diffnorm =
         (elem_vec - lf::geometry::Volume(*edge->Geometry()) * Ref_vec).norm();
     EXPECT_NEAR(diffnorm, 0.0, 1E-6);
+  }
+}
+
+TEST(lf_fe_quadratic, mass_mat_test) {
+  std::cout << " >>> Quadratic FE: Test of computation of element matrices "
+            << std::endl;
+
+  // build test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // set up finite elements
+  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
+  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
+  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+      mesh_p, rfs_tria, rfs_quad);
+
+  // coefficients:
+  auto alpha =
+      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+  auto gamma =
+      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+
+  // specify quad rule
+  quad_rule_collection_t quad_rules{
+      {lf::base::RefEl::kTria(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
+      {lf::base::RefEl::kQuad(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
+
+  // set up object for local computations
+  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
+                                         decltype(gamma)>
+      provider(fe_space, alpha, gamma, quad_rules);
+
+  // loop over cells and compute element matrices:
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+    auto M = provider.Eval(*cell);
+
+    Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
+    Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
+    const double vol = one_vec_r.dot(M * one_vec_c);
+
+    EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
+        << "missmatch for cell " << cell << std::endl;
+  }
+}
+
+TEST(lf_fe_quadratic, ReactionDiffusionEMPTensor) {
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // set up finite elements
+  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
+  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
+  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+      mesh_p, rfs_tria, rfs_quad);
+
+  // Set up objects taking care of local computations
+  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
+  });
+  auto gamma =
+      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+
+  // specify quad rule ( default of degree 2 is not enough for a quadratic
+  // gamma)
+  quad_rule_collection_t quad_rules{
+      {lf::base::RefEl::kTria(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
+      {lf::base::RefEl::kQuad(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
+
+  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
+                                         decltype(gamma)>
+      emp{fe_space, alpha, gamma, quad_rules};
+
+  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
+                                     fe_space->LocGlobMap().NoDofs());
+  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
+                        matrix);
+
+  // project two linear functions onto the fespace:
+  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  auto a_vec = NodalProjection<double>(*fe_space, a);
+  auto b_vec = NodalProjection<double>(*fe_space, b);
+
+  auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
+  EXPECT_NEAR(product(0, 0), 7911. / 8., 1E-2);
+}
+
+TEST(lf_fe_quadratic, lf_fe_edgemass) {
+  std::cout << " >>> Quadratic FE: Test of computation of local edge matrices "
+            << std::endl;
+
+  // build test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // set up finite elements
+  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
+  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
+  auto rfs_segment = std::make_shared<FeLagrangeO2Segment<double>>();
+  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+      mesh_p, rfs_tria, rfs_quad, rfs_segment);
+
+  // coefficientt
+  auto gamma =
+      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+
+  // Set up objects taking care of local computations
+  auto g = MeshFunctionConstant(1.0);
+  MassEdgeMatrixProvider provider{fe_space, g};
+
+  // Loop over edges and compute element vectors
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    auto M = provider.Eval(*edge);
+
+    Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
+    Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
+
+    const double length = one_vec_r.dot(M * one_vec_c);
+    EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
+        << "missmatch for edge " << edge << std::endl;
+  }
+}
+
+TEST(lf_fe_quadratic, lf_fe_loadvec) {
+  std::cout << " >>> Quadratic FE: Test of computation of element load vectors "
+            << std::endl;
+
+  // build test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // set up finite elements
+  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
+  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
+  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+      mesh_p, rfs_tria, rfs_quad);
+
+  // coefficient:
+  auto f =
+      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return (1.0); });
+
+  // set up object for local computations
+  ScalarLoadElementVectorProvider<double, decltype(f)> provider(fe_space, f);
+
+  // loop over cells and compute element vectors:
+  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+    auto v = provider.Eval(*cell);
+
+    Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
+
+    const double vol = one_vec.dot(v);
+    EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
+        << "missmatch for cell " << cell << std::endl;
+  }
+}
+
+TEST(lf_fe_quadratic, lf_fe_edgeload) {
+  std::cout << " >>> Quadratic FE: Test of computation of local edge vectors "
+            << std::endl;
+
+  // build test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // set up finite elements
+  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
+  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
+  auto rfs_segment = std::make_shared<FeLagrangeO2Segment<double>>();
+  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
+      mesh_p, rfs_tria, rfs_quad, rfs_segment);
+
+  // Set up objects taking care of local computations
+  auto g = MeshFunctionConstant(1.0);
+  ScalarLoadEdgeVectorProvider provider{fe_space, g};
+
+  // Loop over edges and compute element vectors
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    auto v = provider.Eval(*edge);
+
+    Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
+
+    const double length = one_vec.dot(v);
+    EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
+        << "missmatch for edge " << edge << std::endl;
   }
 }
 
