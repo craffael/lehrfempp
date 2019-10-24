@@ -51,19 +51,39 @@ bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   return true;
 }
 
-TEST(lf_fe, scal_fe_coeff_node) {
+TEST(lf_fe_linear, scal_fe_coeff_node) {
   // Test of consistency of nodal interpolation
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
   FeLagrangeO1Tria<double> tlfe{};
   std::cout << tlfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+
   FeLagrangeO1Quad<double> qlfe{};
   std::cout << qlfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+
   FeLagrangeO1Segment<double> slfe{};
   std::cout << slfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(tlfe));
+}
+
+TEST(lf_fe_quadratic, scal_fe_coeff_node){
+  // Test of consistency of nodal interpolation
+  std::cout << ">>> Quadratic FE: test of consistency of nodal interpolation"
+            << std::endl;
+
+  FeLagrangeO2Tria<double> tfe{};
+  std::cout << tfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(tfe));
+
+  FeLagrangeO2Quad<double> qfe{};
+  std::cout << qfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(qfe));
+
+  FeLagrangeO2Segment<double> sfe{};
+  std::cout << sfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(sfe));
 }
 
 template <typename SCALAR>
@@ -101,7 +121,7 @@ bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   return true;
 }
 
-TEST(lf_fe, scal_fe_val_node) {
+TEST(lf_fe_linear, scal_fe_val_node) {
   // Test of exactness of nodal reconstruction
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;

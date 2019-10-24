@@ -874,7 +874,7 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
   [[nodiscard]] unsigned Degree() const override { return 2; }
 
   /** @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions() */
-  size_type NumRefShapeFunctions() const override { return 3; }
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 3; }
 
   /** @brief One shape function attached to each node and one interior shape
    * function.
