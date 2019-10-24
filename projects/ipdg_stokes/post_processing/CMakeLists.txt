@@ -4,6 +4,8 @@ set(sources solution_to_mesh_data_set.h
 	    norms.h
 	    norms.cc
 	    mesh_hierarchy_function.h
+	    mesh_function_velocity.h
+	    mesh_function_interpolation.h
 )
 
 add_library(projects.ipdg_stokes.post_processing ${sources})
