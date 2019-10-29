@@ -15,7 +15,7 @@ set(sources
 
 lf_add_library(lf.geometry.test_utils ${sources})
 target_link_libraries(lf.geometry.test_utils PUBLIC
-  GTest::main
+  GTest::gtest_main
   lf.base
   lf.geometry
   lf.quad
