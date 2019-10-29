@@ -82,7 +82,7 @@ int main() {
   {
     // Initialize builder object
     lf::mesh::hybrid2d::TPTriagMeshBuilder builder(
-        std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
+        std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
     // Set mesh parameters following the Builder pattern
     // Domain is the unit square, two cells in every direction
     builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})

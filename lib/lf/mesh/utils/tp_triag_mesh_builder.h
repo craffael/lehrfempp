@@ -28,7 +28,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
    * @brief Constructor: set factory object to be used by the builder
    *
    */
-  explicit TPTriagMeshBuilder(std::shared_ptr<mesh::MeshFactory> mesh_factory)
+  explicit TPTriagMeshBuilder(std::unique_ptr<mesh::MeshFactory> mesh_factory)
       : StructuredMeshBuilder(std::move(mesh_factory)) {
     LF_ASSERT_MSG(
         mesh_factory_->DimWorld() == 2,

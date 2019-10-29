@@ -20,7 +20,7 @@ namespace lf::mesh::test {
 TEST(lf_mesh, buildStructuredMesh) {
   // Construct a structured mesh with 8 triangles
   hybrid2d::TPTriagMeshBuilder builder(
-      std::make_shared<hybrid2d::MeshFactory>(2));
+      std::make_unique<hybrid2d::MeshFactory>(2));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
@@ -46,9 +46,9 @@ TEST(lf_mesh, buildStructuredMesh) {
 // Note the use of the namespace hybrid2d
 TEST(lf_mesh_p, buildStructuredMesh_p) {
   // Construct a structured mesh with 8 triangles
-  std::shared_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<hybrid2d::MeshFactory>(2);
-  hybrid2d::TPTriagMeshBuilder builder(mesh_factory_ptr);
+  std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<hybrid2d::MeshFactory>(2);
+  hybrid2d::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})

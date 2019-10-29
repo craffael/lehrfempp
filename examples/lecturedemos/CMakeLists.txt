@@ -26,6 +26,9 @@ target_link_libraries(examples.lecturedemo
   lf.assemble
   )
   
+add_custom_target(examples.lecturedemo_run COMMAND examples.lecturedemo)
+add_dependencies(examples_run examples.lecturedemo_run)
+  
     
 
   

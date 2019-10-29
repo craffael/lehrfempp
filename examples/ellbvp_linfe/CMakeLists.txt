@@ -16,6 +16,7 @@ target_link_libraries(examples.ellbvp_linfe.ellbvp_linfe_demo
   lf.uscalfe
   )
 
-target_compile_features(examples.ellbvp_linfe.ellbvp_linfe_demo PUBLIC cxx_std_17)
+add_custom_target(examples.ellbvp_linfe.ellbvp_linfe_demo_run COMMAND examples.ellbvp_linfe.ellbvp_linfe_demo)
+add_dependencies(examples_run examples.ellbvp_linfe.ellbvp_linfe_demo_run)
 
 

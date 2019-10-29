@@ -101,8 +101,8 @@ class MeshHierarchy {
    * created by refinement.
    * - Unmarks all edges, see RefineMarked().
    */
-  MeshHierarchy(std::shared_ptr<mesh::Mesh> base_mesh,
-                std::shared_ptr<mesh::MeshFactory> mesh_factory);
+  MeshHierarchy(const std::shared_ptr<mesh::Mesh> &base_mesh,
+                std::unique_ptr<mesh::MeshFactory> mesh_factory);
   MeshHierarchy(const MeshHierarchy &) = delete;
   MeshHierarchy &operator=(const MeshHierarchy &) = delete;
   MeshHierarchy(MeshHierarchy &&) = delete;
@@ -395,7 +395,7 @@ void MeshHierarchy::MarkEdges(Marker &&marker) {
  * Invokes the method MeshHierarhy::RefineRegular() for refinement.
  */
 std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
-    std::shared_ptr<lf::mesh::Mesh> mesh_p, lf::base::size_type ref_lev,
+    const std::shared_ptr<lf::mesh::Mesh> &mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat = RefPat::rp_regular);
 
 /**
