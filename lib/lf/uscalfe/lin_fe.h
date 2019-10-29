@@ -27,6 +27,7 @@
 
 namespace lf::uscalfe {
 /**
+ * @ingroup entity_matrix_provider
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Computing the element matrix for the (negative) Laplacian
  *         and linear finite elements.
@@ -97,11 +98,12 @@ class LinearFELaplaceElementMatrix {
 };
 
 /**
+ * @ingroup entity_vector_provider
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Class for computation of local load vector for linear finite
  * elements.
  *
- * @tparam FUNCTOR object compatible with a `MeshFunction` type. This means
+ * @tparam FUNCTOR object compatible with a \ref mesh_function type. This means
  *         that is must supply an evaluation operator of signature
  * ~~~
  * std::function<auto(const lf::mesh::Entity &cell,const Eigen::MatrixXd &)>

@@ -1,47 +1,37 @@
+
 /**
 @defgroup entity_matrix_provider EntityMatrixProvider
 
+@brief Provides the local element matrix for a mesh entity.
+
 ## Description
 
-An EntityMatrixProvider is an object that produces a matrix for a given mesh entity.
-EntityMatrixProviders are mostly used together with `lf::assemble::AssembleMatrixLocally` to assemble a sparse system matrix. 
-
-Conceptually, a mesh function assigns to every point on the mesh an object of type `R` (e.g. `double` or an `Eigen::Matrix2d`).
-
-For efficiency reasons, a mesh function is normally evaluated at a number of points at once.
-Hence a mesh function must overload the bracket operator as follows:
-```
-std::vector<R> operator()(const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const
-```
-Here 
-- `e` is a \ref lf::mesh::Entity "mesh entity"
-- `local` is a matrix of size `(e.RefEl().Dimension()) x NumPoints` and lists the local coordinates of the evaluation points (with respect to the reference element `e.RefEl()`).
-- `R` is more or less arbitrary type such as a `double` or a `Eigen::Matrix2d`
-
-The return type of `operator()` is a `std::vector<R>` with `NumPoints` length.
+An EntityMatrixProvider is an object that provides a local element matrix for a given mesh entity.
+EntityMatrixProvider's are mostly used together with `lf::assemble::AssembleMatrixLocally` to assemble a sparse system matrix. 
 
 ## Requirements
 
-The type `MF` satisfies `MeshFunction` if
-
-Given
-- `R`, the type of objects returned by the mesh function
-- `e`, a mesh entity of type `lf::mesh::Entity`,
-- `local`, a set of local coordinates of type `Eigen::MatrixXd`
-- `a`, `b` objects of type `MF`
+The type `EMP` satisfies the Concept `EntityMatrixProvider` if given
+- `emp` an object of type `EMP`
+- `e` is a lf::mesh::Entity object
+- `SCALAR` is an Eigen supported scalar datatype (e.g. `double`)
+- `ROWS` is the number of rows of the local element matrix or `Eigen::Dynamic`
+- `COLS` is the number of columns of the local element matrix or `Eigen::Dynamic`
 
 the following expressions are valid:
 
 <table>
 <tr> <th>expression  <th>return type     <th>semantics
-<tr> <td> `MF(a)`             <td> `MF`     <td> Creates a copy of `a`
-<tr> <td> `MF(std::move(a))` <td> `MF`      <td> "steals" `a` to create a new MeshFunction
-<tr> <td> `a(e, local)` <td> `std::vector<T>` <td>Evaluates mesh function at points `local`
+<tr> <td> `emp.isActive(e)`         <td> `bool`                                  <td> Defines whether the entity `e` is taken into account by the assembly routine.
+<tr> <td> `emp.Eval(e)`             <td> `Eigen::Matrix<SCALAR, ROWS, COLS>`     <td> Returns the local element matrix for mesh entity `e`. Is only called if `emp.isActive(e)==true`.
 </table>
 
 ## Usage scenarios
-The concept of a MeshFunction is used widely in the `lf::fe` module:
-- Assembler classes such as lf::uscalfe::ScalarFEEdgeLocalLoadVector or lf::uscalfe::LagrangeFEEllBVPElementMatrix accept MeshFunctions that describe coefficients or source functions.
+The concept of a EntityMatrixProvider is widely used in the `lf::assemble` and `lf::uscalfe` modules:
+- The function `lf::assemble::AssembleMatrixLocally()` accepts an `EntityMatrixProvider` which in turn defines how the (sparse) system matrix is assembled.
 
+
+## See also
+- The concept \ref entity_vector_provider
 
 */
