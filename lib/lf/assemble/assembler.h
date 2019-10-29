@@ -110,8 +110,8 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                         std::cout << "ASM: " << *entity << '('
                                   << mesh->Index(*entity) << ')' << std::endl);
       // Size, aka number of rows and columns, of element matrix
-      const size_type nrows_loc = dof_handler_test.NoLocalDofs(*entity);
-      const size_type ncols_loc = dof_handler_trial.NoLocalDofs(*entity);
+      const size_type nrows_loc = dof_handler_test.NumLocalDofs(*entity);
+      const size_type ncols_loc = dof_handler_trial.NumLocalDofs(*entity);
       // row indices of for contributions of cells
       nonstd::span<const gdof_idx_t> row_idx(
           dof_handler_test.GlobalDofIndices(*entity));
@@ -185,7 +185,7 @@ TMPMATRIX AssembleMatrixLocally(
     dim_t codim, const DofHandler &dof_handler_trial,
     const DofHandler &dof_handler_test,
     ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
-  TMPMATRIX matrix{dof_handler_test.NoDofs(), dof_handler_trial.NoDofs()};
+  TMPMATRIX matrix{dof_handler_test.NumDofs(), dof_handler_trial.NumDofs()};
   matrix.setZero();
   AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
       codim, dof_handler_trial, dof_handler_test, entity_matrix_provider,
@@ -257,7 +257,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
     // Some cells may be skipped
     if (entity_vector_provider.isActive(*entity)) {
       // Length of element vector
-      const size_type veclen = dof_handler.NoLocalDofs(*entity);
+      const size_type veclen = dof_handler.NumLocalDofs(*entity);
       // global dof indices for contribution of the entity
       nonstd::span<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(*entity));
@@ -295,7 +295,7 @@ template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                              ENTITY_VECTOR_PROVIDER &entity_vector_provider) {
   // Allocated vector holding r.h.s. vector to be assembled
-  VECTOR resultvector{dof_handler.NoDofs()};
+  VECTOR resultvector{dof_handler.NumDofs()};
   // Initialize to zero: assembly of new vector
   resultvector.setZero();
   // Perform actual assembly

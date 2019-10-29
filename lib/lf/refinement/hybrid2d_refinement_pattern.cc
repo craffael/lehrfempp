@@ -86,7 +86,7 @@ std::ostream &operator<<(std::ostream &o, const RefPat &refpat) {
 
 // Implementation for RefinemeentPattern
 
-lf::base::size_type Hybrid2DRefinementPattern::noChildren(
+lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
     lf::base::dim_t codim) const {
   LF_VERIFY_MSG(codim <= ref_el_.Dimension(),
                 "Illegal codim = " << codim << " for " << ref_el_.ToString());

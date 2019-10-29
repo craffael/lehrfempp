@@ -23,8 +23,8 @@ ADDOPTION(TorusMeshBuilder::output_ctrl_, torus_ctrl,
 std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   using coord_t = Eigen::Vector3d;
 
-  const size_type nx = no_of_x_cells_;
-  const size_type ny = no_of_y_cells_;
+  const size_type nx = num_of_x_cells_;
+  const size_type ny = num_of_y_cells_;
 
   // opposite edges and vertices are identical and only counted once
   const unsigned no_of_cells = nx * ny;

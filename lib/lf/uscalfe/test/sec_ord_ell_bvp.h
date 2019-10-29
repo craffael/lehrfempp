@@ -179,7 +179,7 @@ SecOrdEllBVPLagrFELinSys(
                               << " impedance edges" << std::endl);
 
   // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  const lf::assemble::size_type N_dofs(dofh.NumDofs());
   // Matrix in triplet format holding Galerkin matrix, zero initially.
   lf::assemble::COOMatrix<SCALAR> A(N_dofs, N_dofs);
 

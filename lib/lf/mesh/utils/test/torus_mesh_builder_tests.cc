@@ -27,8 +27,8 @@ TEST(lf_mesh_p, buildTorusMesh) {
   // Set mesh parameters following the Builder pattern
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 4})
-      .setNoXCells(3)
-      .setNoYCells(5);
+      .setNumXCells(3)
+      .setNumYCells(5);
   auto mesh_p = builder.Build();
 
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
@@ -39,14 +39,14 @@ TEST(lf_mesh_p, buildTorusMesh) {
   EXPECT_EQ(mesh_p->NumEntities(2), 15) << "Mesh should have 15 vertices";
 
   // check that every edge has two adjacent cells
-  auto cells_per_edge = mesh::utils::countNoSuperEntities(mesh_p, 1, 1);
+  auto cells_per_edge = mesh::utils::CountNumSuperEntities(mesh_p, 1, 1);
   for (const auto* edge : mesh_p->Entities(1)) {
     EXPECT_EQ(cells_per_edge(*edge), 2) << "Edge should have 2 adjacent cells";
   }
 
   // check that every vertex has four adjacent edges and cells
-  auto cells_per_vertex = mesh::utils::countNoSuperEntities(mesh_p, 2, 2);
-  auto edges_per_vertex = mesh::utils::countNoSuperEntities(mesh_p, 2, 1);
+  auto cells_per_vertex = mesh::utils::CountNumSuperEntities(mesh_p, 2, 2);
+  auto edges_per_vertex = mesh::utils::CountNumSuperEntities(mesh_p, 2, 1);
   for (const auto* vertex : mesh_p->Entities(2)) {
     EXPECT_EQ(cells_per_vertex(*vertex), 4)
         << "Vertex should have 4 adjacent cells";

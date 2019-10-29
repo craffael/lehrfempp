@@ -59,8 +59,8 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   // Number of child entities
   const int no_children = child_polygons.size();
   LF_VERIFY_MSG(
-      no_children == ref_pat.noChildren(codim),
-      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+      no_children == ref_pat.NumChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));
   // For each child create a geometry object and a unique pointer to it.
   for (int l = 0; l < no_children; l++) {
     // codim == 0:A single child must be described by an interval, that is
