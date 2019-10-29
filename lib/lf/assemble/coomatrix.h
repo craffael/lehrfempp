@@ -36,6 +36,15 @@ namespace lf::assemble {
  *
  * `SCALAR` must be a type that can serve as a scalar type
  * for Eigen::Matrix.
+ *
+ * @warning Objects of this type are no matrix objects in the sense of Eigen.
+ * This means you cannot use them instead of an Eigen matrix type, but you have
+ * to convert them into a sparse Eigen matrix before by calling @ref
+ * COOMatrix::makeSparse().
+ *
+ * #### sample usage:
+ * @snippet coomatrix.cpp usage
+ *
  */
 template <typename SCALAR>
 class COOMatrix {
@@ -212,6 +221,7 @@ class COOMatrix {
   TripletVec triplets_;   /**< COO format data */
 };
 
+// Implementation of output operator
 template <typename SCALARTYPE>
 std::ostream &operator<<(std::ostream &o, const COOMatrix<SCALARTYPE> &mat) {
   mat.PrintInfo();

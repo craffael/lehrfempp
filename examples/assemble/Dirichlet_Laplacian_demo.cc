@@ -223,7 +223,7 @@ double L2ErrorLinearFEDirichletLaplacian(
 
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
-  LF_VERIFY_MSG(!mat.triplets().empty() > 0, "blabla");
+  LF_VERIFY_MSG(!mat.triplets().empty() > 0, "Empty stiffness matrix!");
   Eigen::SparseMatrix<double> stiffness_matrix = {mat.makeSparse()};
   // Solve linear system
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
