@@ -236,9 +236,6 @@ class UniformFEDofHandler : public DofHandler {
                       dof_map_t dofmap);
   /**@}*/
 
-  /**
-   * @copydoc DofHandler::GetNoDofs()
-   */
   [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
