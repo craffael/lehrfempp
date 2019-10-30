@@ -1198,9 +1198,9 @@ void MeshHierarchy::PerformRefinement() {
         std::vector<std::unique_ptr<geometry::Geometry>> cell_edge_geo_ptrs(
             cell->Geometry()->ChildGeometry(rp, 1));  // child edge: co-dim == 2
         const size_type num_new_edges = child_edge_nodes.size();
-        LF_VERIFY_MSG(
-            num_new_edges == rp.NumChildren(1),
-            "num_new_edges = " << num_new_edges << " <-> " << rp.NumChildren(1));
+        LF_VERIFY_MSG(num_new_edges == rp.NumChildren(1),
+                      "num_new_edges = " << num_new_edges << " <-> "
+                                         << rp.NumChildren(1));
         for (int k = 0; k < num_new_edges; k++) {
           const std::array<glb_idx_t, 2> &cen(child_edge_nodes[k]);
           CONTROLLEDSTATEMENT(output_ctrl_, 50,
@@ -1222,9 +1222,9 @@ void MeshHierarchy::PerformRefinement() {
         std::vector<std::unique_ptr<geometry::Geometry>> childcell_geo_ptrs(
             cell->Geometry()->ChildGeometry(rp, 0));  // child cell: co-dim == 0
         const size_type num_new_cells = child_cell_nodes.size();
-        LF_VERIFY_MSG(
-            num_new_cells == rp.NumChildren(0),
-            "num_new_cells = " << num_new_cells << " <-> " << rp.NumChildren(0));
+        LF_VERIFY_MSG(num_new_cells == rp.NumChildren(0),
+                      "num_new_cells = " << num_new_cells << " <-> "
+                                         << rp.NumChildren(0));
         for (int k = 0; k < num_new_cells; k++) {
           const std::vector<glb_idx_t> &ccn(child_cell_nodes[k]);
           glb_idx_t new_cell_index;
