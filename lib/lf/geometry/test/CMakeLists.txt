@@ -9,7 +9,7 @@ set(sources
 
 add_executable(lf.geometry.test ${sources})
 target_link_libraries(lf.geometry.test
-  PUBLIC Eigen3::Eigen Boost::boost GTest::main
+  PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main
   lf.base
   lf.geometry
   lf.geometry.test_utils
