@@ -24,6 +24,7 @@
 // read tuples of double values into fixed size eigen matrices (see
 // gmsh_reader.cpp for example usage)
 
+/// \cond
 namespace Eigen {
 template <class MATRIX>
 struct FusionMatrixTag;
@@ -212,5 +213,5 @@ struct is_view_impl<Eigen::FusionMatrixTag<MATRIX>> {
   struct apply : boost::mpl::false_ {};
 };
 }  // namespace boost::fusion::extension
-
+/// \endcond
 #endif  // __a4e6283ee2844d93bc9772c830f33b2d

@@ -526,14 +526,14 @@ class span;
 
 // Tag to select span constructor taking a container (prevent ms-gsl warning
 // C26426):
-
+/// \cond
 struct with_container_t {
   span_constexpr with_container_t() span_noexcept = default;
 };
 const span_constexpr with_container_t with_container;
-
+/// \endcond
 // C++11 emulation:
-
+/// \cond
 namespace std11 {
 
 #if span_HAVE(REMOVE_CONST)
@@ -594,9 +594,9 @@ struct is_same<T, T> : true_type {};
 #endif
 
 }  // namespace std11
-
+/// \endcond
 // C++17 emulation:
-
+/// \cond
 namespace std17 {
 
 template <bool v>
@@ -656,7 +656,7 @@ using nonstd::byte;
 #endif
 
 }  // namespace std17
-
+/// \endcond
 // Implementation details:
 
 namespace detail {

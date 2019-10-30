@@ -1,0 +1,33 @@
+
+/**
+@defgroup entity_vector_provider EntityVectorProvider
+
+@brief Provides the local element vector for a mesh entity.
+
+## Description
+
+An EntityVectorProvider is an object that provides a local element vector for a given mesh entity.
+EntityVectorProvider's are mostly used together with `lf::assemble::AssembleVectorLocally` to assemble a vector. 
+
+## Requirements
+
+The type `EVP` satisfies the Concept `EntityVectorProvider` if given
+- `evp` an object of type `EVP`
+- `e` is a lf::mesh::Entity object
+- `SCALAR` is an Eigen supported scalar datatype (e.g. `double`)
+- `ROWS` is the number of rows of the local element vector or `Eigen::Dynamic`
+
+the following expressions are valid:
+
+<table>
+<tr> <th>expression  <th>return type     <th>semantics
+<tr> <td> `evp.isActive(e)`         <td> `bool`                                  <td> Defines whether the entity `e` is taken into account by the assembly routine.
+<tr> <td> `evp.Eval(e)`             <td> `Eigen::Matrix<SCALAR, ROWS, 1>`     <td> Returns the local element vector for mesh entity `e`. Is only called if `evp.isActive(e)==true`.
+</table>
+
+## Usage scenarios
+The concept of a EntityVectorProvider is widely used in the `lf::assemble` and `lf::uscalfe` modules:
+- The function `lf::assemble::AssembleVectorLocally()` accepts an `EntityVectorProvider` which in turn defines the global vector is assembled.
+
+
+*/

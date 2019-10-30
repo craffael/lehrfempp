@@ -19,7 +19,7 @@
 
 namespace lf::assemble {
 /**
- * @brief A temporaery data structure for matrix in COO format.
+ * @brief A temporary data structure for matrix in COO format.
  *
  * @tparam SCALAR basic scalar type for the matrix
  *

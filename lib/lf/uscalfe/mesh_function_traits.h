@@ -68,11 +68,11 @@ constexpr bool isMeshFunction =
 
 /**
  * @brief Determine the type of objects returned by a MeshFunction
- * @tparam T The type of the mesh function.
+ * @tparam R The type of the mesh function (as defined in \ref mesh_function).
  */
-template <class T>
+template <class R>
 using MeshFunctionReturnType =
-    internal::VectorElement_t<internal::MeshFunctionReturnType_t<T>>;
+    internal::VectorElement_t<internal::MeshFunctionReturnType_t<R>>;
 
 }  // namespace lf::uscalfe
 
