@@ -1,28 +1,15 @@
 
 
 add_executable(projects.dpg.convergence_studies.convergence_study1
-	       convergence_study1.cc
-	       ../product_dofhandler.cc
-               ../dpg_tools.cc)
+	       convergence_study1.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study2
-	       convergence_study2.cc
-	       ../product_dofhandler.cc
-               ../dpg_tools.cc)
-
+	       convergence_study2.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study3
-	       convergence_study3.cc
-	       ../product_dofhandler.cc
-               ../dpg_tools.cc)
-
+	       convergence_study3.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study4
-	       convergence_study4.cc
-	       ../product_dofhandler.cc
-               ../dpg_tools.cc)
-
+	       convergence_study4.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study5
-	       convergence_study5.cc
-	       ../product_dofhandler.cc
-               ../dpg_tools.cc)
+	       convergence_study5.cc)
 
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study1
@@ -36,6 +23,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study1
   lf.assemble
   lf.io
   lf.uscalfe
+  projects.dpg
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study2
@@ -49,6 +37,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study2
   lf.assemble
   lf.io
   lf.uscalfe
+  projects.dpg
   )
 target_link_libraries(projects.dpg.convergence_studies.convergence_study3
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
@@ -61,6 +50,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study3
   lf.assemble
   lf.io
   lf.uscalfe
+  projects.dpg
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study4
@@ -74,6 +64,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study4
   lf.assemble
   lf.io
   lf.uscalfe
+  projects.dpg
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study5
@@ -87,6 +78,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study5
   lf.assemble
   lf.io
   lf.uscalfe
+  projects.dpg
   )
 
 
