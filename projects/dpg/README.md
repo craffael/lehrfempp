@@ -1,0 +1,1 @@
+This folder contains the code developed for the bachelor thesis "Discontinuous Petrov-Galerkin Methods for the Convection-Diffusion Problem" by Philippe Peter under the supervision of Prof. Dr. Ralf Hiptmair. In particular, the primal and ultraweak DPG method for the 2D convection-diffusion problem were implemented for hybrid meshes.  

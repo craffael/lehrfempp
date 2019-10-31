@@ -1,0 +1,97 @@
+
+
+add_executable(projects.dpg.convergence_studies.convergence_study1
+	       convergence_study1.cc
+	       ../product_dofhandler.cc
+               ../dpg_tools.cc)
+add_executable(projects.dpg.convergence_studies.convergence_study2
+	       convergence_study2.cc
+	       ../product_dofhandler.cc
+               ../dpg_tools.cc)
+
+add_executable(projects.dpg.convergence_studies.convergence_study3
+	       convergence_study3.cc
+	       ../product_dofhandler.cc
+               ../dpg_tools.cc)
+
+add_executable(projects.dpg.convergence_studies.convergence_study4
+	       convergence_study4.cc
+	       ../product_dofhandler.cc
+               ../dpg_tools.cc)
+
+add_executable(projects.dpg.convergence_studies.convergence_study5
+	       convergence_study5.cc
+	       ../product_dofhandler.cc
+               ../dpg_tools.cc)
+
+
+target_link_libraries(projects.dpg.convergence_studies.convergence_study1
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.quad
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+
+target_link_libraries(projects.dpg.convergence_studies.convergence_study2
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.quad
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+target_link_libraries(projects.dpg.convergence_studies.convergence_study3
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.quad
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+
+target_link_libraries(projects.dpg.convergence_studies.convergence_study4
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.quad
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+
+target_link_libraries(projects.dpg.convergence_studies.convergence_study5
+  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.quad
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+
+
+target_compile_features(projects.dpg.convergence_studies.convergence_study1 PUBLIC cxx_std_17)
+target_compile_features(projects.dpg.convergence_studies.convergence_study2 PUBLIC cxx_std_17)
+target_compile_features(projects.dpg.convergence_studies.convergence_study3 PUBLIC cxx_std_17)
+target_compile_features(projects.dpg.convergence_studies.convergence_study4 PUBLIC cxx_std_17)
+target_compile_features(projects.dpg.convergence_studies.convergence_study5 PUBLIC cxx_std_17)
