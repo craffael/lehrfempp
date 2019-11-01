@@ -295,7 +295,7 @@ class UniformFEDofHandler : public DofHandler {
    *
    * @sa LocalStaticDOFs2D::TotalNoLocDofs()
    */
-  void initTotalNumDofs();
+  void InitTotalNumDofs();
 
   // Access method to numbers and values of indices of shape functions
   [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
