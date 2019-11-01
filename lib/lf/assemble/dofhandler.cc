@@ -114,13 +114,13 @@ UniformFEDofHandler::UniformFEDofHandler(
   // no shape functions are attached to those entities
 
   // Initialize total number of shape functions covering an entity.
-  initTotalNumDofs();
+  InitTotalNumDofs();
 
   // Initializatin of dof index arrays
   initIndexArrays();
 }
 
-void UniformFEDofHandler::initTotalNumDofs() {
+void UniformFEDofHandler::InitTotalNumDofs() {
   num_dofs_[kNodeOrd] = num_loc_dof_point_;
   num_dofs_[kEdgeOrd] = 2 * num_loc_dof_point_ + num_loc_dof_segment_;
   num_dofs_tria_ =
