@@ -51,12 +51,12 @@ class StructuredMeshBuilder {
     top_right_corner_ << x0, x1;
     return *this;
   }
-  StructuredMeshBuilder &setNoXCells(size_type nxc) {
-    no_of_x_cells_ = nxc;
+  StructuredMeshBuilder &setNumXCells(size_type nxc) {
+    num_of_x_cells_ = nxc;
     return *this;
   }
-  StructuredMeshBuilder &setNoYCells(size_type nyc) {
-    no_of_y_cells_ = nyc;
+  StructuredMeshBuilder &setNumYCells(size_type nyc) {
+    num_of_y_cells_ = nyc;
     return *this;
   }
   /** @} */
@@ -79,7 +79,7 @@ class StructuredMeshBuilder {
   /** corners of rectangle defining the domain */
   Eigen::Vector2d bottom_left_corner_, top_right_corner_;  // NOLINT
   /** Mesh resolution parameters */
-  size_type no_of_x_cells_{0}, no_of_y_cells_{0};  // NOLINT
+  size_type num_of_x_cells_{0}, num_of_y_cells_{0};  // NOLINT
 };  // end class definition StructuredMeshBuilder
 
 }  // namespace lf::mesh::hybrid2d

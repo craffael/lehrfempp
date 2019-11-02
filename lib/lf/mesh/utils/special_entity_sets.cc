@@ -15,7 +15,7 @@
 #include "special_entity_sets.h"
 
 namespace lf::mesh::utils {
-CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
+CodimMeshDataSet<lf::base::size_type> CountNumSuperEntities(
     const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super) {
   LF_VERIFY_MSG((mesh_p->DimMesh() >= codim_sub),
@@ -43,7 +43,7 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
                 "Illegal codim = " << codim);
   // count cells adjacent to entities of co-dimension 1
   CodimMeshDataSet<lf::base::size_type> no_adjacent_cells{
-      countNoSuperEntities(mesh_p, 1, 1)};
+      CountNumSuperEntities(mesh_p, 1, 1)};
   // flag array
   CodimMeshDataSet<bool> bd_flags{mesh_p, codim, false};
   // relative codimension with respect to faces (entities of co-dimension 1)
@@ -65,7 +65,7 @@ AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(
     const std::shared_ptr<const Mesh>& mesh_p) {
   // count cells adjacent to entities of co-dimension 1
   CodimMeshDataSet<lf::base::size_type> no_adjacent_cells{
-      countNoSuperEntities(mesh_p, 1, 1)};
+      CountNumSuperEntities(mesh_p, 1, 1)};
   // flag array
   AllCodimMeshDataSet<bool> bd_flags{mesh_p, false};
 

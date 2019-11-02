@@ -215,7 +215,7 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
   const lf::assemble::DofHandler &dofh{fe_space.LocGlobMap()};
 
   // Vector for returning expansion coefficients
-  dof_vec_t glob_dofvec(dofh.NoDofs());
+  dof_vec_t glob_dofvec(dofh.NumDofs());
   glob_dofvec.setZero();
 
   // Loop over all cells
@@ -250,7 +250,7 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
     // Set the corresponing global degrees of freedom
     // Note: "Setting", not "adding to"
     // Number of local shape functions
-    const size_type num_loc_dofs = dofh.NoLocalDofs(*cell);
+    const size_type num_loc_dofs = dofh.NumLocalDofs(*cell);
     LF_ASSERT_MSG(
         dofvec.size() == num_loc_dofs,
         "Size mismatch: " << dofvec.size() << " <-> " << num_loc_dofs);
@@ -329,7 +329,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
   const lf::mesh::Mesh &mesh{*dofh.Mesh()};
 
   // Vector for returning flags and fixed values for dofs
-  const size_type num_coeffs = dofh.NoDofs();
+  const size_type num_coeffs = dofh.NumDofs();
   std::vector<std::pair<bool, SCALAR>> flag_val_vec(num_coeffs,
                                                     {false, SCALAR{}});
 
@@ -351,8 +351,8 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
       LF_ASSERT_MSG(dof_vals.size() == num_rsf,
                     "Mismatch " << dof_vals.size() << " <-> " << num_rsf);
       LF_ASSERT_MSG(
-          dofh.NoLocalDofs(*edge) == num_rsf,
-          "Mismatch " << dofh.NoLocalDofs(*edge) << " <-> " << num_rsf);
+          dofh.NumLocalDofs(*edge) == num_rsf,
+          "Mismatch " << dofh.NumLocalDofs(*edge) << " <-> " << num_rsf);
       // Fetch indices of global shape functions associated with current
       // edge
       auto gdof_indices{dofh.GlobalDofIndices(*edge)};
@@ -405,14 +405,14 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
   const lf::mesh::Mesh &mesh{*dofh.Mesh()};
 
   // Check whether sufficiently large vector uh
-  LF_ASSERT_MSG(uh.size() >= dofh.NoDofs(), "uh vector too short!");
+  LF_ASSERT_MSG(uh.size() >= dofh.NumDofs(), "uh vector too short!");
 
   double sum = 0.0;
   /// loop over cells ( = codim-0 entities)
   for (const lf::mesh::Entity *cell : mesh.Entities(0)) {
     if (pred(*cell)) {
       // Number of local shape functions
-      const size_type num_loc_dofs = dofh.NoLocalDofs(*cell);
+      const size_type num_loc_dofs = dofh.NumLocalDofs(*cell);
       // Allocate a temporary vector of appropriate size
       dofvector_t loc_coeffs(num_loc_dofs);
       // Fetch global numbers of local shape functions

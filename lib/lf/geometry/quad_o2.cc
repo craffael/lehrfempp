@@ -191,8 +191,8 @@ std::vector<std::unique_ptr<Geometry>> QuadO2::ChildGeometry(
 
   const int noChildren = childPolygons.size();
   LF_VERIFY_MSG(
-      noChildren == ref_pat.noChildren(codim),
-      "noChildren " << noChildren << " <-> " << ref_pat.noChildren(codim));
+      noChildren == ref_pat.NumChildren(codim),
+      "NumChildren " << noChildren << " <-> " << ref_pat.NumChildren(codim));
 
   // create a geometry object for each child
   for (size_t child = 0; child < noChildren; ++child) {
