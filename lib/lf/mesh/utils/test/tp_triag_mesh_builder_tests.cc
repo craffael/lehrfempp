@@ -25,8 +25,8 @@ TEST(lf_mesh, buildStructuredMesh) {
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-      .setNoXCells(2)
-      .setNoYCells(2);
+      .setNumXCells(2)
+      .setNumYCells(2);
   auto mesh_p = builder.Build();
 
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";
@@ -53,8 +53,8 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-      .setNoXCells(2)
-      .setNoYCells(2);
+      .setNumXCells(2)
+      .setNumYCells(2);
   auto mesh_p = builder.Build();
 
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";

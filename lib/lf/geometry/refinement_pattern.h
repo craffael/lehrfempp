@@ -58,7 +58,7 @@ class RefinementPattern {
    * @brief provide number of child entities of a given co-dimension
    * to be created by refinement
    */
-  [[nodiscard]] virtual lf::base::size_type noChildren(
+  [[nodiscard]] virtual lf::base::size_type NumChildren(
       lf::base::dim_t codim) const = 0;
   /**
    * @brief provide lattice reference coordinates of vertices of child polygons
@@ -86,7 +86,7 @@ class RefinementPattern {
    * entity, and P stands for the number of vertices of a particular child
    * entity.
    * The length of the returned vector must agree with the value returned
-   * by `noChildren()`
+   * by `NumChildren()`
    * The integer entries of the matrices must be non-negative and the
    * column sums must be <= the lattice constant.
    */

@@ -192,8 +192,8 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   const int no_children = child_polygons.size();
   // Check consistency of data
   LF_ASSERT_MSG(
-      no_children == ref_pat.noChildren(codim),
-      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+      no_children == ref_pat.NumChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));
 
   // Variable for returning (unique pointers to) child geometries
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
@@ -361,8 +361,8 @@ std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
   const int no_children = child_polygons.size();
   // Check consistency of data
   LF_ASSERT_MSG(
-      no_children == ref_pat.noChildren(codim),
-      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+      no_children == ref_pat.NumChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));
 
   // Variable for returning (unique pointers to) child geometries
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};

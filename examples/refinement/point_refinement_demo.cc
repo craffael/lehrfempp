@@ -112,8 +112,8 @@ int main(int argc, char **argv) {
   lf::mesh::hybrid2d::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0});
   builder.setTopRightCorner(Eigen::Vector2d{1, 1});
-  builder.setNoXCells(1);
-  builder.setNoYCells(1);
+  builder.setNumXCells(1);
+  builder.setNumYCells(1);
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
 
   // output mesh information

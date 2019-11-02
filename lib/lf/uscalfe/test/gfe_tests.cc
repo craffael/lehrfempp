@@ -59,7 +59,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
   // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  const lf::assemble::size_type N_dofs(dofh.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix (mass matrix)
@@ -74,7 +74,7 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
 
   // Alternative:
   // Random coefficient vector of FE function
-  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
+  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NumDofs())};
 
   double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
 
@@ -105,7 +105,7 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   auto &dofh = fe_space->LocGlobMap();
 
   // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  const lf::assemble::size_type N_dofs(dofh.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
@@ -121,7 +121,7 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
 
   // Alternative:
   // Random coefficient vector of FE function
-  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NoDofs())};
+  Eigen::VectorXd coeffvec{Eigen::VectorXd::Random(dofh.NumDofs())};
 
   const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
 
@@ -172,7 +172,7 @@ TEST(lf_gfe, lf_gfe_lintp) {
 
   // Local-to-global index mapped
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
-  EXPECT_EQ(coeffvec.size(), dofh.NoDofs())
+  EXPECT_EQ(coeffvec.size(), dofh.NumDofs())
       << "Coefficient vector length mismatch";
 
   // Check agreement of nodal values

@@ -90,8 +90,8 @@ void InitEssentialConditionFromFunction() {
       base::PredicateTrue{}, mf_boundary);
 
   // 3) Assemble the stiffness matrix:
-  assemble::COOMatrix<double> lhs(fe_space->LocGlobMap().NoDofs(),
-                                  fe_space->LocGlobMap().NoDofs());
+  assemble::COOMatrix<double> lhs(fe_space->LocGlobMap().NumDofs(),
+                                  fe_space->LocGlobMap().NumDofs());
   auto mf_one = MeshFunctionConstant(1.);
   auto mf_zero = MeshFunctionConstant(0.);
   auto matrix_provider =
@@ -101,7 +101,7 @@ void InitEssentialConditionFromFunction() {
 
   // 4) Modify the system of equations such that the boundary values are
   // enforced
-  Eigen::VectorXd rhs(fe_space->LocGlobMap().NoDofs());
+  Eigen::VectorXd rhs(fe_space->LocGlobMap().NumDofs());
   assemble::FixFlaggedSolutionComponents(
       [&](unsigned int idx) { return boundary_cond[idx]; }, lhs, rhs);
 

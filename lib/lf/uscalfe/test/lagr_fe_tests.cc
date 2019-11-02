@@ -268,8 +268,8 @@ TEST(lf_fe, ReactionDiffusionEMPTensor) {
       MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
   ReactionDiffusionElementMatrixProvider emp{fe_space, alpha, gamma};
 
-  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
-                                     fe_space->LocGlobMap().NoDofs());
+  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NumDofs(),
+                                     fe_space->LocGlobMap().NumDofs());
   AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
                         matrix);
 

@@ -43,7 +43,7 @@ namespace lf::mesh::utils {
  *
  * @note codim_super is _relative_ to codim_sub with flipped sign!
  */
-CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
+CodimMeshDataSet<lf::base::size_type> CountNumSuperEntities(
     const std::shared_ptr<const Mesh>& mesh_p, lf::base::dim_t codim_sub,
     lf::base::dim_t codim_super);
 
@@ -61,7 +61,7 @@ CodimMeshDataSet<lf::base::size_type> countNoSuperEntities(
  * The boundary of a mesh is the set of all entities that are either entities
  * of co-dimension 1 located on the boundary or sub-entities of those.
  *
- * The implementation of this  function relies on @ref countNoSuperEntities().
+ * The implementation of this  function relies on @ref CountNumSuperEntities().
  *
  * The following example code shows how to create a flag array for marking the
  * boundary edges of a 2D mesh:

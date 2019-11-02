@@ -108,8 +108,8 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   // Number of child segments
   const int no_children = child_polygons.size();
   LF_VERIFY_MSG(
-      no_children == ref_pat.noChildren(codim),
-      "no_children = " << no_children << " <-> " << ref_pat.noChildren(codim));
+      no_children == ref_pat.NumChildren(codim),
+      "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));
   // return variable
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   // For each child triangle create a geometry object and a unique pointer to
