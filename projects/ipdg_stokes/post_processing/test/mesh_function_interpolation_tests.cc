@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <mesh_function_interpolation.h>
+#include <mesh_function_velocity.h>
 
 #include <lf/mesh/hybrid2d/mesh.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
@@ -26,6 +27,20 @@ static std::shared_ptr<const lf::refinement::MeshHierarchy> buildMeshes(
     meshes->RefineRegular();
   }
   return meshes;
+}
+
+TEST(projects_ipdg_stokes_post_processing,
+     mesh_function_interpolation_concept) {
+  using mf_inner =
+      projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                   double>;
+  using mf = projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<
+      mf_inner>;
+  ASSERT_TRUE(std::is_copy_constructible_v<mf>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf>);
+  constexpr bool b = lf::uscalfe::internal::IsMeshFunctionCallable<mf, void>(0);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(lf::uscalfe::isMeshFunction<mf>);
 }
 
 TEST(projects_ipdg_stokes_post_processing, mesh_function_interpolation) {

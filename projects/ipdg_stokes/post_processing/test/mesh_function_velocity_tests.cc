@@ -24,6 +24,17 @@ initFESpace() {
   return std::make_shared<const lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 }
 
+TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity_concept) {
+  using mf =
+      projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                   double>;
+  ASSERT_TRUE(std::is_copy_constructible_v<mf>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf>);
+  constexpr bool b = lf::uscalfe::internal::IsMeshFunctionCallable<mf, void>(0);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(lf::uscalfe::isMeshFunction<mf>);
+}
+
 TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {
   // Create a suitable finite element space
   const auto fe_space = initFESpace();

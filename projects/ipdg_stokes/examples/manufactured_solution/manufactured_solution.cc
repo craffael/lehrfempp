@@ -20,6 +20,7 @@
 #include <lf/refinement/refinement.h>
 
 #include <build_system_matrix.h>
+#include <mesh_function_velocity.h>
 #include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
@@ -90,7 +91,7 @@ Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
+static std::string concat(Args&&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -131,14 +132,14 @@ int main() {
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
     lf::io::GmshReader reader(std::move(factory), meshpath.string());
     auto mesh = reader.mesh();
-    auto &sol = solutions[lvl];
+    auto& sol = solutions[lvl];
     sol.mesh = mesh;
     sol.dofh = std::shared_ptr<const lf::assemble::DofHandler>(
         new lf::assemble::UniformFEDofHandler(
             mesh, {{lf::base::RefEl::kPoint(), 1},
                    {lf::base::RefEl::kSegment(), 1}}));
     // Use the volume forces returned by computeF
-    auto f = [n](const Eigen::Vector2d &x) -> Eigen::Vector2d {
+    auto f = [n](const Eigen::Vector2d& x) -> Eigen::Vector2d {
       return computeF(n, x);
     };
     // The velocity on the boundary is zero everywhere
@@ -168,112 +169,137 @@ int main() {
   }
 
   // Perform post processing on the data
-  auto analyticU = *lf::mesh::utils::make_LambdaMeshDataSet(
-      [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
-        const Eigen::Vector2d center = entity.Geometry()
-                                           ->Global(entity.RefEl().NodeCoords())
-                                           .rowwise()
-                                           .sum() /
-                                       entity.RefEl().NumNodes();
-        return computeU(n, center);
+  const auto analyticU = lf::uscalfe::MeshFunctionGlobal(
+      [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
+        return computeU(n, x);
       });
-  auto analyticF = *lf::mesh::utils::make_LambdaMeshDataSet(
-      [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
-        const Eigen::Vector2d center = entity.Geometry()
-                                           ->Global(entity.RefEl().NodeCoords())
-                                           .rowwise()
-                                           .sum() /
-                                       entity.RefEl().NumNodes();
-        return computeF(n, center);
+  const auto analyticF = lf::uscalfe::MeshFunctionGlobal(
+      [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
+        return computeF(n, x);
       });
   for (lf::base::size_type lvl = 0; lvl < mesh_count; ++lvl) {
-    const auto velocity =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            solutions[lvl].mesh, *(solutions[lvl].dofh),
-            solutions[lvl].solution);
-    const auto velocity_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            solutions[lvl].mesh, *(solutions[lvl].dofh),
-            solutions[lvl].solution_modified);
+    const auto fe_space =
+        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
+            solutions[lvl].mesh);
+    const auto velocity_exact = lf::uscalfe::MeshFunctionGlobal(
+        [n](const Eigen::Vector2d& x) { return computeU(n, x); });
+    const auto grad_exact = lf::uscalfe::MeshFunctionGlobal(
+        [n](const Eigen::Vector2d& x) -> Eigen::Matrix2d {
+          return computeUGrad(n, x);
+        });
+    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+        velocity(fe_space, solutions[lvl].solution);
+    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+        velocity_modified(fe_space, solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));
-    writer.WriteCellData("analyticU", analyticU);
-    writer.WriteCellData("analyticF", analyticF);
-    writer.WriteCellData("U", velocity);
-    writer.WriteCellData("U_modified", velocity_modified);
+    writer.WriteCellData("analyticU",
+                         *lf::mesh::utils::make_LambdaMeshDataSet(
+                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
+                               return analyticU(
+                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
+                             }));
+    writer.WriteCellData("analyticF",
+                         *lf::mesh::utils::make_LambdaMeshDataSet(
+                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
+                               return analyticF(
+                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
+                             }));
+    writer.WriteCellData(
+        "U", *lf::mesh::utils::make_LambdaMeshDataSet(
+                 [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
+                   return velocity(e, Eigen::Vector2d::Constant(1. / 3))[0];
+                 }));
+    writer.WriteCellData("U_modified",
+                         *lf::mesh::utils::make_LambdaMeshDataSet(
+                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
+                               return velocity_modified(
+                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
+                             }));
     // The error in the velocity
-    auto diff_v = [&](const lf::mesh::Entity &entity,
-                      const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity(entity) - computeU(n, x);
-    };
-    auto diff_v_modified = [&](const lf::mesh::Entity &entity,
-                               const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity_modified(entity) - computeU(n, x);
-    };
+    const auto diff_v = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity, velocity_exact);
+    const auto diff_v_modified = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_modified,
+        velocity_exact);
     // The error in the gradient of the velocity
-    auto diff_g = [&](const lf::mesh::Entity & /*unused*/,
-                      const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -computeUGrad(n, x);
-    };
-    auto diff_g_modified = [&](const lf::mesh::Entity & /*unused*/,
-                               const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -computeUGrad(n, x);
-    };
+    const auto diff_grad = -grad_exact;
+    const auto diff_grad_modified = -grad_exact;
     // Approximately compute the factor the numerical solution is off by
-    double factor_numerator = 0;
-    double factor_denominator = 0;
-    double factor_numerator_modified = 0;
-    double factor_denominator_modified = 0;
-    for (const auto cell : solutions[lvl].mesh->Entities(0)) {
-      const double u = analyticU(*cell).norm();
-      const double v = velocity(*cell).norm();
-      const double v_modified = velocity_modified(*cell).norm();
-      factor_numerator += lf::geometry::Volume(*(cell->Geometry())) * u * v;
-      factor_denominator += lf::geometry::Volume(*(cell->Geometry())) * v * v;
-      factor_numerator_modified +=
-          lf::geometry::Volume(*(cell->Geometry())) * u * v_modified;
-      factor_denominator_modified +=
-          lf::geometry::Volume(*(cell->Geometry())) * v_modified * v_modified;
-    }
-    const double factor = factor_numerator / factor_denominator;
+    const auto operator_dot = [](const auto& a, const auto& b, int) {
+      std::vector<double> result;
+      for (int i = 0; i < a.size(); ++i) {
+        result.push_back(a[i].dot(b[i]));
+      }
+      return result;
+    };
+    const auto operator_multiplication = [](const auto& a, const auto& b, int) {
+      std::vector<Eigen::Vector2d> result;
+      for (size_t i = 0; i < a.size(); ++i) {
+        result.push_back(a[i] * b[i]);
+      }
+      return result;
+    };
+    const auto qr_provider = [](const lf::mesh::Entity& e) {
+      return lf::quad::make_QuadRule(e.RefEl(), 0);
+    };
+    const double factor = lf::uscalfe::IntegrateMeshFunction(
+                              *(solutions[lvl].mesh),
+                              lf::uscalfe::MeshFunctionBinary(
+                                  operator_dot, velocity, velocity_exact),
+                              qr_provider) /
+                          lf::uscalfe::IntegrateMeshFunction(
+                              *(solutions[lvl].mesh),
+                              lf::uscalfe::squaredNorm(velocity), qr_provider);
     const double factor_modified =
-        factor_numerator_modified / factor_denominator_modified;
+        lf::uscalfe::IntegrateMeshFunction(
+            *(solutions[lvl].mesh),
+            lf::uscalfe::MeshFunctionBinary(operator_dot, velocity_modified,
+                                            velocity_exact),
+            qr_provider) /
+        lf::uscalfe::IntegrateMeshFunction(
+            *(solutions[lvl].mesh), lf::uscalfe::squaredNorm(velocity_modified),
+            qr_provider);
+    std::cout << factor << std::endl;
     // The error in the corrected velocity
-    auto diff_v_fac = [&](const lf::mesh::Entity &entity,
-                          const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return factor * velocity(entity) - computeU(n, x);
-    };
-    auto diff_v_fac_modified =
-        [&](const lf::mesh::Entity &entity,
-            const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return factor_modified * velocity_modified(entity) - computeU(n, x);
-    };
+    const auto velocity_scaled = lf::uscalfe::MeshFunctionBinary(
+        operator_multiplication,
+        lf::uscalfe::MeshFunctionGlobal(
+            [factor](const Eigen::Vector2d& x) { return factor; }),
+        velocity);
+    const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionBinary(
+        operator_multiplication,
+        lf::uscalfe::MeshFunctionGlobal(
+            [factor_modified](const Eigen::Vector2d& x) {
+              return factor_modified;
+            }),
+        velocity_modified);
+    const auto diff_v_fac = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled,
+        velocity_exact);
+    const auto diff_v_fac_modified = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled_modified,
+        velocity_exact);
     // The error in the gradient of the corrected velocty
-    auto diff_g_fac = [&](const lf::mesh::Entity & /*unused*/,
-                          const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -computeUGrad(n, x);
-    };
-    auto diff_g_fac_modified =
-        [&](const lf::mesh::Entity & /*unused*/,
-            const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -computeUGrad(n, x);
-    };
+    const auto diff_g_fac = diff_grad;
+    const auto diff_g_fac_modified = diff_grad_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[lvl].mesh, diff_v, 10);
+        solutions[lvl].mesh, diff_v, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[lvl].mesh, diff_v, diff_g, 10);
+        solutions[lvl].mesh, diff_v, diff_grad, qr_provider);
     const double L2f = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[lvl].mesh, diff_v_fac, 10);
+        solutions[lvl].mesh, diff_v_fac, qr_provider);
     const double DGf = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[lvl].mesh, diff_v_fac, diff_g_fac, 10);
+        solutions[lvl].mesh, diff_v_fac, diff_g_fac, qr_provider);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[lvl].mesh, diff_v_modified, 10);
+        solutions[lvl].mesh, diff_v_modified, qr_provider);
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[lvl].mesh, diff_v_modified, diff_g_modified, 10);
+        solutions[lvl].mesh, diff_v_modified, diff_grad_modified, qr_provider);
     const double L2f_modified = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[lvl].mesh, diff_v_fac_modified, 10);
+        solutions[lvl].mesh, diff_v_fac_modified, qr_provider);
     const double DGf_modified = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[lvl].mesh, diff_v_fac_modified, diff_g_fac_modified, 10);
+        solutions[lvl].mesh, diff_v_fac_modified, diff_g_fac_modified,
+        qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
               << ' ' << DG << ' ' << L2f << ' ' << DGf << ' ' << L2_modified
               << ' ' << DG_modified << ' ' << L2f_modified << ' '

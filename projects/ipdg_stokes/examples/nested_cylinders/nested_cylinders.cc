@@ -20,6 +20,8 @@
 
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
+#include <mesh_function_interpolation.h>
+#include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
@@ -329,6 +331,8 @@ int main(int argc, char *argv[]) {
     lf::assemble::UniformFEDofHandler dofh(
         mesh,
         {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
+    const auto fe_space =
+        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
     const Eigen::VectorXd solution_zero =
         solveNestedCylindersZeroBC(mesh, dofh, r, R, omega1, omega2, false);
     const Eigen::VectorXd solution_nonzero =
@@ -337,28 +341,56 @@ int main(int argc, char *argv[]) {
         solveNestedCylindersZeroBC(mesh, dofh, r, R, omega1, omega2, true);
     const Eigen::VectorXd solution_nonzero_modified =
         solveNestedCylindersNonzeroBC(mesh, dofh, r, R, omega1, omega2, true);
+    // Create mesh functions for the analytic and numerical solutions
+    const auto velocity_exact =
+        lf::uscalfe::MeshFunctionGlobal(analytic_velocity);
+    const auto grad_exact = lf::uscalfe::MeshFunctionGlobal(analytic_gradient);
     const auto velocity_zero =
-        projects::ipdg_stokes::post_processing::extractVelocity(mesh, dofh,
-                                                                solution_zero);
+        projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>(
+            fe_space, solution_zero);
     const auto velocity_nonzero =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            mesh, dofh, solution_nonzero);
+        projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>(
+            fe_space, solution_nonzero);
     const auto velocity_zero_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            mesh, dofh, solution_zero_modified);
+        projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>(
+            fe_space, solution_zero_modified);
     const auto velocity_nonzero_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            mesh, dofh, solution_nonzero_modified);
+        projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>(
+            fe_space, solution_nonzero_modified);
     // Store the solution
     lf::io::VtkWriter writer_zero(
         mesh, concat("result_zero_", dofh.NoDofs(), ".vtk"));
     lf::io::VtkWriter writer_nonzero(
         mesh, concat("result_nonzero_", dofh.NoDofs(), ".vtk"));
-    writer_zero.WriteCellData("velocity", velocity_zero);
-    writer_zero.WriteCellData("velocity_modified", velocity_zero_modified);
-    writer_nonzero.WriteCellData("velocity", velocity_nonzero);
-    writer_nonzero.WriteCellData("velocity_modified",
-                                 velocity_nonzero_modified);
+    writer_zero.WriteCellData(
+        "velocity", *lf::mesh::utils::make_LambdaMeshDataSet(
+                        [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
+                          return velocity_zero(
+                              e, Eigen::Vector2d::Constant(1. / 3))[0];
+                        }));
+    writer_zero.WriteCellData(
+        "velocity_modified",
+        *lf::mesh::utils::make_LambdaMeshDataSet(
+            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
+              return velocity_zero_modified(
+                  e, Eigen::Vector2d::Constant(1. / 3))[0];
+            }));
+    writer_nonzero.WriteCellData(
+        "velocity", *lf::mesh::utils::make_LambdaMeshDataSet(
+                        [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
+                          return velocity_nonzero(
+                              e, Eigen::Vector2d::Constant(1. / 3))[0];
+                        }));
+    writer_nonzero.WriteCellData(
+        "velocity_modified", *lf::mesh::utils::make_LambdaMeshDataSet(
+                                 [&](const lf::mesh::Entity &e) {
+                                   return velocity_nonzero_modified(
+                                       e, Eigen::Vector2d::Constant(1. / 3))[0];
+                                 }));
     auto analytic = [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
       const Eigen::Vector2d center = entity.Geometry()
                                          ->Global(entity.RefEl().NodeCoords())
@@ -372,65 +404,48 @@ int main(int argc, char *argv[]) {
     writer_nonzero.WriteCellData(
         "analytic", *lf::mesh::utils::make_LambdaMeshDataSet(analytic));
     // Compute the difference between the numerical and the analytical solution
-    auto diff_velocity_zero = [&](const lf::mesh::Entity &cell,
-                                  const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity_zero(cell) - analytic_velocity(x);
-    };
-    auto diff_velocity_zero_modified =
-        [&](const lf::mesh::Entity &cell,
-            const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity_zero_modified(cell) - analytic_velocity(x);
-    };
-    auto diff_velocity_nonzero =
-        [&](const lf::mesh::Entity &cell,
-            const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity_nonzero(cell) - analytic_velocity(x);
-    };
-    auto diff_velocity_nonzero_modified =
-        [&](const lf::mesh::Entity &cell,
-            const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return velocity_nonzero_modified(cell) - analytic_velocity(x);
-    };
-    auto diff_gradient_zero = [&](const lf::mesh::Entity & /*unused*/,
-                                  const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -analytic_gradient(x);
-    };
-    auto diff_gradient_zero_modified =
-        [&](const lf::mesh::Entity & /*unused*/,
-            const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -analytic_gradient(x);
-    };
-    auto diff_gradient_nonzero =
-        [&](const lf::mesh::Entity & /*unused*/,
-            const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -analytic_gradient(x);
-    };
-    auto diff_gradient_nonzero_modified =
-        [&](const lf::mesh::Entity & /*unused*/,
-            const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return -analytic_gradient(x);
+    auto diff_velocity_zero = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_zero,
+        velocity_exact);
+    auto diff_velocity_zero_modified = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_zero_modified,
+        velocity_exact);
+    auto diff_velocity_nonzero = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_nonzero,
+        velocity_exact);
+    auto diff_velocity_nonzero_modified = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_nonzero_modified,
+        velocity_exact);
+    auto diff_gradient_zero = -grad_exact;
+    auto diff_gradient_zero_modified = -grad_exact;
+    auto diff_gradient_nonzero = -grad_exact;
+    auto diff_gradient_nonzero_modified = -grad_exact;
+    const auto qr_provider = [](const lf::mesh::Entity &e) {
+      return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
     const double L2_zero = projects::ipdg_stokes::post_processing::L2norm(
-        mesh, diff_velocity_zero, 10);
+        mesh, diff_velocity_zero, qr_provider);
     const double L2_nonzero = projects::ipdg_stokes::post_processing::L2norm(
-        mesh, diff_velocity_nonzero, 10);
+        mesh, diff_velocity_nonzero, qr_provider);
+    ;
     const double DG_zero = projects::ipdg_stokes::post_processing::DGnorm(
-        mesh, diff_velocity_zero, diff_gradient_zero, 10);
+        mesh, diff_velocity_zero, diff_gradient_zero, qr_provider);
     const double DG_nonzero = projects::ipdg_stokes::post_processing::DGnorm(
-        mesh, diff_velocity_nonzero, diff_gradient_nonzero, 10);
+        mesh, diff_velocity_nonzero, diff_gradient_nonzero, qr_provider);
     const double L2_zero_modified =
         projects::ipdg_stokes::post_processing::L2norm(
-            mesh, diff_velocity_zero_modified, 10);
+            mesh, diff_velocity_zero_modified, qr_provider);
     const double L2_nonzero_modified =
         projects::ipdg_stokes::post_processing::L2norm(
-            mesh, diff_velocity_nonzero_modified, 10);
+            mesh, diff_velocity_nonzero_modified, qr_provider);
     const double DG_zero_modified =
         projects::ipdg_stokes::post_processing::DGnorm(
-            mesh, diff_velocity_zero_modified, diff_gradient_zero_modified, 10);
+            mesh, diff_velocity_zero_modified, diff_gradient_zero_modified,
+            qr_provider);
     const double DG_nonzero_modified =
         projects::ipdg_stokes::post_processing::DGnorm(
             mesh, diff_velocity_nonzero_modified,
-            diff_gradient_nonzero_modified, 10);
+            diff_gradient_nonzero_modified, qr_provider);
     std::cout << mesh->NumEntities(2) << ' ' << L2_zero << ' ' << DG_zero << ' '
               << L2_nonzero << ' ' << DG_nonzero << ' ' << L2_zero_modified
               << ' ' << DG_zero_modified << ' ' << L2_nonzero_modified << ' '

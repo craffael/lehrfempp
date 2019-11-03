@@ -37,7 +37,7 @@ class MeshFunctionVelocity {
       : grad_(fe_space, dof_vector) {}
 
   auto operator()(const lf::mesh::Entity& entity,
-                  const Eigen::MatrixXd& local) {
+                  const Eigen::MatrixXd& local) const {
     // Compute the curl by rotating the gradient
     auto gradients = grad_(entity, local);
     Eigen::Matrix2d rot;

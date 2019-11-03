@@ -19,8 +19,11 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+#include <lf/uscalfe/uscalfe.h>
 
 #include <build_system_matrix.h>
+#include <mesh_function_interpolation.h>
+#include <mesh_function_velocity.h>
 #include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
@@ -200,99 +203,68 @@ int main() {
         solver_modified.solve(rhs_modified) + offset_function_modified;
   }
 
-  // Bring the solutions on the meshes to the finest mesh
-  std::map<lf::base::size_type,
-           std::function<Eigen::Vector2d(const lf::mesh::Entity &,
-                                         const Eigen::Vector2d &)>>
-      velocity;
-  std::map<lf::base::size_type,
-           std::function<Eigen::Matrix2d(const lf::mesh::Entity &,
-                                         const Eigen::Vector2d &)>>
-      gradient;
-  std::map<lf::base::size_type,
-           std::function<Eigen::Vector2d(const lf::mesh::Entity &,
-                                         const Eigen::Vector2d &)>>
-      velocity_modified;
-  std::map<lf::base::size_type,
-           std::function<Eigen::Matrix2d(const lf::mesh::Entity &,
-                                         const Eigen::Vector2d &)>>
-      gradient_modified;
-  for (lf::base::size_type lvl = 0; lvl < refinement_level + 1; ++lvl) {
-    const auto v = projects::ipdg_stokes::post_processing::extractVelocity(
-        solutions[lvl].mesh, *(solutions[lvl].dofh), solutions[lvl].solution);
-    const auto v_modified =
-        projects::ipdg_stokes::post_processing::extractVelocity(
-            solutions[lvl].mesh, *(solutions[lvl].dofh),
-            solutions[lvl].solution_modified);
-    velocity[lvl] = [v](const lf::mesh::Entity &entity, const Eigen::Vector2d &
-                        /*unused*/) -> Eigen::Vector2d { return v(entity); };
-    gradient[lvl] =
-        [](const lf::mesh::Entity & /*unused*/, const Eigen::Vector2d &
-           /*unused*/) -> Eigen::Matrix2d { return Eigen::Matrix2d::Zero(); };
-    velocity_modified[lvl] =
-        [v_modified](
-            const lf::mesh::Entity &entity, const Eigen::Vector2d &
-            /*unused*/) -> Eigen::Vector2d { return v_modified(entity); };
-    gradient_modified[lvl] =
-        [](const lf::mesh::Entity & /*unused*/, const Eigen::Vector2d &
-           /*unused*/) -> Eigen::Matrix2d { return Eigen::Matrix2d::Zero(); };
-  }
-  auto fine_velocity =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy,
-                                                                velocity);
-  auto fine_gradient =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(*mesh_hierarchy,
-                                                                gradient);
-  auto fine_velocity_modified =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(
-          *mesh_hierarchy, velocity_modified);
-  auto fine_gradient_modified =
-      projects::ipdg_stokes::post_processing::bringToFinestMesh(
-          *mesh_hierarchy, gradient_modified);
-
   // Perform post processing on the data
+  const auto fe_space_fine =
+      std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
+          solutions.back().mesh);
+  projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+      velocity_exact(fe_space_fine, solutions.back().solution);
+  projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+      velocity_exact_modified(fe_space_fine,
+                              solutions.back().solution_modified);
   lf::io::VtkWriter writer(solutions.back().mesh, "result.vtk");
   for (lf::base::size_type lvl = 0; lvl < refinement_level; ++lvl) {
+    const auto fe_space_lvl =
+        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
+            solutions[lvl].mesh);
+    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+        velocity_lvl(fe_space_lvl, solutions[lvl].solution);
+    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+        velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
+    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<decltype(
+        velocity_lvl)>
+        velocity_fine(velocity_lvl, *mesh_hierarchy, lvl,
+                      mesh_hierarchy->NumLevels() - 1);
+    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<decltype(
+        velocity_lvl_modified)>
+        velocity_fine_modified(velocity_lvl_modified, *mesh_hierarchy, lvl,
+                               mesh_hierarchy->NumLevels() - 1);
     writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
                          *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity &e) {
-                               return fine_velocity[lvl](
-                                   e, Eigen::Vector2d::Zero());
+                             [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
+                               return velocity_fine(
+                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
                              }));
     writer.WriteCellData(
         concat("v_modified", solutions[lvl].mesh->NumEntities(2)),
         *lf::mesh::utils::make_LambdaMeshDataSet(
-            [&](const lf::mesh::Entity &e) {
-              return fine_velocity_modified[lvl](e, Eigen::Vector2d::Zero());
+            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
+              return velocity_fine_modified(
+                  e, Eigen::Vector2d::Constant(1. / 3))[0];
             }));
-    auto diff_v = [&](const lf::mesh::Entity &entity,
-                      const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return fine_velocity[lvl](entity, x) -
-             fine_velocity[refinement_level](entity, x);
+    const auto qr_provider = [](const lf::mesh::Entity &e) {
+      return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
-    auto diff_v_modified = [&](const lf::mesh::Entity &entity,
-                               const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      return fine_velocity_modified[lvl](entity, x) -
-             fine_velocity_modified[refinement_level](entity, x);
-    };
-    auto diff_g = [&](const lf::mesh::Entity &entity,
-                      const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return fine_gradient[lvl](entity, x) -
-             fine_gradient[refinement_level](entity, x);
-    };
-    auto diff_g_modified = [&](const lf::mesh::Entity &entity,
-                               const Eigen::Vector2d &x) -> Eigen::Matrix2d {
-      return fine_gradient_modified[lvl](entity, x) -
-             fine_gradient_modified[refinement_level](entity, x);
-    };
+    const auto diff = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine,
+        velocity_exact);
+    const auto diff_modified = lf::uscalfe::MeshFunctionBinary(
+        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine_modified,
+        velocity_exact_modified);
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[refinement_level].mesh, diff_v, 0);
+        solutions.back().mesh, diff, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[refinement_level].mesh, diff_v, diff_g, 0);
+        solutions.back().mesh, diff,
+        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+            Eigen::Matrix2d::Zero()),
+        qr_provider);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(
-        solutions[refinement_level].mesh, diff_v_modified, 0);
+        solutions.back().mesh, diff_modified, qr_provider);
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
-        solutions[refinement_level].mesh, diff_v_modified, diff_g_modified, 0);
+        solutions.back().mesh, diff_modified,
+        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+            Eigen::Matrix2d::Zero()),
+        qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
               << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified
               << std::endl;

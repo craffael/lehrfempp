@@ -2,7 +2,6 @@
 set(sources solution_to_mesh_data_set.h
 	    solution_to_mesh_data_set.cc
 	    norms.h
-	    norms.cc
 	    mesh_hierarchy_function.h
 	    mesh_function_velocity.h
 	    mesh_function_interpolation.h

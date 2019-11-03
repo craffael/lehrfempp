@@ -48,7 +48,7 @@ class MeshFunctionInterpolation {
   }
 
   decltype(auto) operator()(const lf::mesh::Entity &entity,
-                            const Eigen::MatrixXd &local) {
+                            const Eigen::MatrixXd &local) const {
     // Get the element in the coarser mesh which is the parent of entity
     const lf::mesh::Entity *parent = parents_[mesh_to_->Index(entity)];
     // Map the evaluation points from local coordinates in entity to local
