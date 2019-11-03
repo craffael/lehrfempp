@@ -25,11 +25,11 @@ class AnnulusTriagMeshBuilder
  public:
   /**
    * @brief Constructor
-   * @param mesh_factory A shared pointer to a mesh factory object used for the
+   * @param mesh_factory A unique pointer to a mesh factory object used for the
    * assembly of the mesh
    */
   explicit AnnulusTriagMeshBuilder(
-      std::shared_ptr<lf::mesh::MeshFactory> mesh_factory)
+      std::unique_ptr<lf::mesh::MeshFactory> mesh_factory)
       : lf::mesh::hybrid2d::StructuredMeshBuilder(std::move(mesh_factory)) {
     // Nothing to do here
   }

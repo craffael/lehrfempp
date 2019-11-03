@@ -14,15 +14,15 @@
 static std::shared_ptr<const lf::refinement::MeshHierarchy> buildMeshes(
     lf::base::size_type levels) {
   // Build a very simple triangular mesh
-  auto factory = std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::mesh::hybrid2d::TPTriagMeshBuilder builder(std::move(factory));
   builder.setBottomLeftCorner(0, 0);
   builder.setTopRightCorner(1, 1);
-  builder.setNoXCells(1);
-  builder.setNoYCells(1);
+  builder.setNumXCells(1);
+  builder.setNumYCells(1);
   const auto mesh = builder.Build();
   auto meshes = std::make_shared<lf::refinement::MeshHierarchy>(
-      mesh, std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
+      mesh, std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
   for (lf::base::size_type lvl = 0; lvl < levels; ++lvl) {
     meshes->RefineRegular();
   }

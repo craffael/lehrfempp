@@ -31,13 +31,13 @@ buildSystemMatrixNoFlow(
   const auto dirichlet =
       *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_data);
   // Assemble the system matrix
-  lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const auto elem_mat_builder =
       projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(
           sigma, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_builder, A);
   // Assemble the right hand side
-  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
+  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   const auto elem_vec_builder =
       projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider(
           sigma, f, quadrule, boundary, dirichlet);
@@ -68,13 +68,13 @@ buildSystemMatrixInOutFlow(
   const auto dirichlet =
       *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_data);
   // Assemble the system matrix
-  lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const auto elem_mat_builder =
       projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider(
           sigma, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_builder, A);
   // Assemble the right hand side
-  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
+  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   const auto elem_vec_builder =
       projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider(
           sigma, f, quadrule, boundary, dirichlet);
@@ -85,7 +85,7 @@ buildSystemMatrixInOutFlow(
       mesh, boundary, dofh, dirichlet_data, A.makeSparse());
 
   // Apply offset function technique to the LSE
-  rhs -= A.makeSparse().block(0, 0, dofh.NoDofs(), mesh->NumEntities(2)) *
+  rhs -= A.makeSparse().block(0, 0, dofh.NumDofs(), mesh->NumEntities(2)) *
          offset_function.head(mesh->NumEntities(2));
   auto selector = [&](lf::base::size_type idx) -> std::pair<bool, double> {
     const auto &e = dofh.Entity(idx);

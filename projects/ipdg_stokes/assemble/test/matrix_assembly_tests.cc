@@ -108,7 +108,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
   const double sigma = 10;
   projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
       elem_mat_provider(sigma, boundary);
-  lf::assemble::COOMatrix<double> A_coo(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A_coo(dofh.NumDofs(), dofh.NumDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A_coo);
   const Eigen::MatrixXd A = A_coo.makeDense().unaryExpr(
       [](double x) { return (std::fabs(x) < 1e-100 ? 0. : x); });
@@ -186,7 +186,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
   const double sigma = 10;
   projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
       elem_mat_provider(sigma, boundary);
-  lf::assemble::COOMatrix<double> A_coo(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A_coo(dofh.NumDofs(), dofh.NumDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A_coo);
   const Eigen::MatrixXd A = A_coo.makeDense().unaryExpr(
       [](double x) { return (std::fabs(x) <= 1e-100 ? 0. : x); });

@@ -74,12 +74,12 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Assemble the Matrix
-  lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
       elem_mat_provider(100, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A);
   // Assemble the right hand side
-  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
+  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider
       elem_vec_provider(100, f, lf::quad::make_TriaQR_MidpointRule(), boundary,
                         dirichlet);
@@ -148,12 +148,12 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Assemble the Matrix
-  lf::assemble::COOMatrix<double> A(dofh.NoDofs(), dofh.NoDofs());
+  lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const projects::ipdg_stokes::assemble::PiecewiseConstElementMatrixProvider
       elem_mat_provider(100, boundary, modified_penalty);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elem_mat_provider, A);
   // Assemble the right hand side
-  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NoDofs());
+  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   const projects::ipdg_stokes::assemble::PiecewiseConstElementVectorProvider
       elem_vec_provider(100, f, lf::quad::make_TriaQR_MidpointRule(), boundary,
                         dirichlet);
@@ -163,9 +163,9 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   const lf::base::size_type M_outer = 0;
   const lf::base::size_type M_inner = 1;
   // Create a mapping of DOF indices to remove the afterwards unused DOFs
-  std::vector<lf::base::size_type> dofmap(dofh.NoDofs());
+  std::vector<lf::base::size_type> dofmap(dofh.NumDofs());
   lf::base::size_type idx = 2;
-  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof) {
+  for (lf::base::size_type dof = 0; dof < dofh.NumDofs(); ++dof) {
     const auto &entity = dofh.Entity(dof);
     const auto geom = entity.Geometry();
     if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
@@ -186,7 +186,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
                 });
   // Apply the mapping to the right hand side vector
   Eigen::VectorXd rhs_mapped = Eigen::VectorXd::Zero(idx);
-  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof) {
+  for (lf::base::size_type dof = 0; dof < dofh.NumDofs(); ++dof) {
     rhs_mapped[dofmap[dof]] += rhs[dof];
   }
 
@@ -204,8 +204,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
 
   // Apply the inverse mapping to recovr the basis function coefficients for the
   // original basis functions
-  Eigen::VectorXd sol = Eigen::VectorXd::Zero(dofh.NoDofs());
-  for (lf::base::size_type dof = 0; dof < dofh.NoDofs(); ++dof) {
+  Eigen::VectorXd sol = Eigen::VectorXd::Zero(dofh.NumDofs());
+  for (lf::base::size_type dof = 0; dof < dofh.NumDofs(); ++dof) {
     sol[dof] = sol_mapped[dofmap[dof]];
   }
 
@@ -247,9 +247,9 @@ int main(int argc, char *argv[]) {
   // Parse the command line options
   std::string mesh_selection;
   boost::program_options::options_description desc{"Options"};
-  desc.add_options()
-    ("help,h", "Help Screen")
-    ("type", boost::program_options::value<std::string>(&mesh_selection), "Type of mesh to use. Either 'builder', 'files' or 'irregular'");
+  desc.add_options()("help,h", "Help Screen")(
+      "type", boost::program_options::value<std::string>(&mesh_selection),
+      "Type of mesh to use. Either 'builder', 'files' or 'irregular'");
   boost::program_options::positional_options_description pos_desc;
   pos_desc.add("type", 1);
   boost::program_options::command_line_parser parser{argc, argv};
@@ -259,7 +259,7 @@ int main(int argc, char *argv[]) {
   boost::program_options::store(po, vm);
   boost::program_options::notify(vm);
   if (vm.count("help")) {
-      std::cout << desc << std::endl;
+    std::cout << desc << std::endl;
   }
 
   std::vector<std::shared_ptr<lf::mesh::Mesh>> meshes;
@@ -275,8 +275,7 @@ int main(int argc, char *argv[]) {
       lf::io::GmshReader reader(std::move(factory), meshfile.string());
       meshes.push_back(reader.mesh());
     }
-  }
-  else if (mesh_selection == "builder") {
+  } else if (mesh_selection == "builder") {
     // Build a sequence of meshes
     for (unsigned i = 0U; i < 8U; ++i) {
       const unsigned nx = 4U << i;
@@ -284,17 +283,17 @@ int main(int argc, char *argv[]) {
       const unsigned ny = std::max(static_cast<unsigned>((R - r) / dx), 1U);
 
       // Build the mesh
-      std::shared_ptr<lf::mesh::MeshFactory> factory =
-          std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-      projects::ipdg_stokes::mesh::AnnulusTriagMeshBuilder builder(factory);
+      std::unique_ptr<lf::mesh::MeshFactory> factory =
+          std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+      projects::ipdg_stokes::mesh::AnnulusTriagMeshBuilder builder(
+          std::move(factory));
       builder.setBottomLeftCorner(0, r);
       builder.setTopRightCorner(1, R);
-      builder.setNoXCells(nx);
-      builder.setNoYCells(ny);
+      builder.setNumXCells(nx);
+      builder.setNumYCells(ny);
       meshes.push_back(builder.Build());
     }
-  }
-  else if (mesh_selection == "irregular") {
+  } else if (mesh_selection == "irregular") {
     boost::filesystem::path meshpath = __FILE__;
     const auto mesh_irregular_path =
         meshpath.parent_path() / "annulus_irregular.msh";
@@ -311,10 +310,9 @@ int main(int argc, char *argv[]) {
         mesh_irregular_inverted_path.string());
     meshes.push_back(reader_irregular.mesh());
     meshes.push_back(reader_irregular_inverted.mesh());
-  }
-  else {
-      std::cout << desc << std::endl;
-      exit(1);
+  } else {
+    std::cout << desc << std::endl;
+    exit(1);
   }
 
   // Compute the analytic solution of the problem
@@ -374,9 +372,9 @@ int main(int argc, char *argv[]) {
             fe_space, solution_nonzero_modified);
     // Store the solution
     lf::io::VtkWriter writer_zero(
-        mesh, concat("result_zero_", dofh.NoDofs(), ".vtk"));
+        mesh, concat("result_zero_", dofh.NumDofs(), ".vtk"));
     lf::io::VtkWriter writer_nonzero(
-        mesh, concat("result_nonzero_", dofh.NoDofs(), ".vtk"));
+        mesh, concat("result_nonzero_", dofh.NumDofs(), ".vtk"));
     writer_zero.WriteCellData(
         "velocity", *lf::mesh::utils::make_LambdaMeshDataSet(
                         [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {

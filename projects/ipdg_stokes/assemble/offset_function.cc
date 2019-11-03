@@ -100,22 +100,22 @@ Eigen::VectorXd createOffsetFunction(
       });
   // Assemble a matrix mapping the basis function coefficients on the boundary
   // nodes to the normal jumps over the boundary edges
-  lf::assemble::COOMatrix<double> J(boundary_edge_dofh.NoDofs() + 1,
-                                    boundary_node_dofh.NoDofs() + 1);
+  lf::assemble::COOMatrix<double> J(boundary_edge_dofh.NumDofs() + 1,
+                                    boundary_node_dofh.NumDofs() + 1);
   PiecewiseBoundaryNormalJumpAssembler element_matrix_provider(mesh, boundary);
   lf::assemble::AssembleMatrixLocally(0, boundary_node_dofh, boundary_edge_dofh,
                                       element_matrix_provider, J);
   // Add the lagrange multiplier needed such that the average over all
   // coefficients is zero
-  for (lf::base::size_type i = 0; i < boundary_node_dofh.NoDofs(); ++i) {
-    J.AddToEntry(boundary_edge_dofh.NoDofs(), i, 1);
+  for (lf::base::size_type i = 0; i < boundary_node_dofh.NumDofs(); ++i) {
+    J.AddToEntry(boundary_edge_dofh.NumDofs(), i, 1);
   }
-  for (lf::base::size_type i = 0; i < boundary_edge_dofh.NoDofs(); ++i) {
-    J.AddToEntry(i, boundary_node_dofh.NoDofs(), 1);
+  for (lf::base::size_type i = 0; i < boundary_edge_dofh.NumDofs(); ++i) {
+    J.AddToEntry(i, boundary_node_dofh.NumDofs(), 1);
   }
   Eigen::SparseMatrix<double> Js = J.makeSparse();
   // Assemble the right hand side from the provided dirichlet data
-  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NoDofs() + 1);
+  Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NumDofs() + 1);
   for (const auto cell : mesh->Entities(0)) {
     const Eigen::Matrix<double, 2, 3> normals =
         projects::ipdg_stokes::mesh::computeOutwardNormals(*cell);
@@ -133,11 +133,11 @@ Eigen::VectorXd createOffsetFunction(
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(Js);
   const Eigen::VectorXd offset_function_local =
-      solver.solve(rhs).head(boundary_node_dofh.NoDofs());
+      solver.solve(rhs).head(boundary_node_dofh.NumDofs());
   // Compute the full offset function including the jump terms
-  Eigen::VectorXd offset_function = Eigen::VectorXd::Zero(dofh.NoDofs());
+  Eigen::VectorXd offset_function = Eigen::VectorXd::Zero(dofh.NumDofs());
   for (lf::assemble::size_type node_idx = 0;
-       node_idx < boundary_node_dofh.NoDofs(); ++node_idx) {
+       node_idx < boundary_node_dofh.NumDofs(); ++node_idx) {
     const auto &node = boundary_node_dofh.Entity(node_idx);
     offset_function[dofh.GlobalDofIndices(node)[0]] =
         offset_function_local[node_idx];

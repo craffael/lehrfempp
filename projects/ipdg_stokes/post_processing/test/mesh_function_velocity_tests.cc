@@ -14,12 +14,12 @@
 static std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>>
 initFESpace() {
   // Build a very simple triangular mesh
-  auto factory = std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+  auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::mesh::hybrid2d::TPTriagMeshBuilder builder(std::move(factory));
   builder.setBottomLeftCorner(0, 0);
   builder.setTopRightCorner(1, 1);
-  builder.setNoXCells(1);
-  builder.setNoYCells(1);
+  builder.setNumXCells(1);
+  builder.setNumYCells(1);
   const auto mesh = builder.Build();
   return std::make_shared<const lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 }

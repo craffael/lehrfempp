@@ -65,13 +65,13 @@ int main() {
   const unsigned refinement_level = 7;
 
   // Build the mesh
-  std::shared_ptr<lf::mesh::MeshFactory> factory =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(factory);
+  std::unique_ptr<lf::mesh::MeshFactory> factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(std::move(factory));
   builder.setBottomLeftCorner(0, 0);
   builder.setTopRightCorner(1, 1);
-  builder.setNoXCells(2);
-  builder.setNoYCells(2);
+  builder.setNumXCells(2);
+  builder.setNumYCells(2);
   auto mesh0 = builder.Build();
 
   // Generate a mesh hierarchy by regular refinement

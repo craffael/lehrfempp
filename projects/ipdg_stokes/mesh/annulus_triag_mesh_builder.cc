@@ -11,8 +11,8 @@
 namespace projects::ipdg_stokes::mesh {
 
 std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
-  const lf::base::size_type nx = no_of_x_cells_;
-  const lf::base::size_type ny = no_of_y_cells_;
+  const lf::base::size_type nx = num_of_x_cells_;
+  const lf::base::size_type ny = num_of_y_cells_;
   const lf::base::size_type vertex_count = nx * (ny + 1);
   const double r = bottom_left_corner_[1];
   const double R = top_right_corner_[1];

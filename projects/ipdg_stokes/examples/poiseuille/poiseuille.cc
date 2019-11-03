@@ -88,17 +88,17 @@ int main(int argc, char *argv[]) {
   }
 
   // Read the mesh from the gmsh file
-  std::shared_ptr<lf::mesh::MeshFactory> factory =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(factory);
+  std::unique_ptr<lf::mesh::MeshFactory> factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(std::move(factory));
   builder.setBottomLeftCorner(0, 0);
   builder.setTopRightCorner(2, 2 * h);
   if (strcmp(argv[1], "irregular") == 0) {
-    builder.setNoXCells(std::max(2, 2 * static_cast<int>(1.0 / h) / 10));
+    builder.setNumXCells(std::max(2, 2 * static_cast<int>(1.0 / h) / 10));
   } else {
-    builder.setNoXCells(2 * static_cast<int>(1.0 / h));
+    builder.setNumXCells(2 * static_cast<int>(1.0 / h));
   }
-  builder.setNoYCells(2);
+  builder.setNumYCells(2);
   auto mesh0 = builder.Build();
 
   // Generate a mesh hierarchy by regular refinement
