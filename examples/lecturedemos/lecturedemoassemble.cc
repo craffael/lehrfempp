@@ -79,7 +79,7 @@ void lecturedemoassemble() {
   // clang-format off
   /* SAM_LISTING_BEGIN_3 */
   // Query dimension of the finite element space, equal to the number of nodes
-  size_type N_dofs(dof_handler.NoDofs());
+  size_type N_dofs(dof_handler.NumDofs());
   // Matrix in \samemp{triplet format} holding temporary Galerkin matrix 
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
 
@@ -157,7 +157,7 @@ void lecturedemoDirichlet() {
   lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
   // Query dimension of the finite element space, equal to the number of nodes
-  size_type N_dofs(dof_handler.NoDofs());
+  size_type N_dofs(dof_handler.NumDofs());
   // Matrix in \samemp{triplet format} holding temporary Galerkin matrix
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
   // Initialize objects for local computation of element matrices for $\cob{-\Delta}$
@@ -217,7 +217,7 @@ void lecturedemoDirichlet() {
     for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
       nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
           dof_handler.GlobalDofIndices(*cell));
-      LF_ASSERT_MSG(dof_handler.NoLocalDofs(*cell) == cell->RefEl().NumNodes(),
+      LF_ASSERT_MSG(dof_handler.NumLocalDofs(*cell) == cell->RefEl().NumNodes(),
                     "Inconsistent node number");
       const lf::base::size_type num_nodes = cell->RefEl().NumNodes();
       double sum = 0.0;

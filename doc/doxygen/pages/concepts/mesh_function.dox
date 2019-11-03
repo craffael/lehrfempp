@@ -1,9 +1,9 @@
 /**
 @defgroup mesh_function MeshFunction
 
-## Description
+@brief A MeshFunction is a function object that can be evaluated at any point on the mesh.
 
-A mesh function is a function object that can be evaluated at any point on the mesh.
+## Description
 
 Conceptually, a mesh function assigns to every point on the mesh an object of type `R` (e.g. `double` or an `Eigen::Matrix2d`).
 
@@ -21,7 +21,7 @@ The return type of `operator()` is a `std::vector<R>` with `NumPoints` length.
 
 ## Requirements
 
-The type `MF` satisfies `MeshFunction` if
+The type `MF` satisfies the concept `MeshFunction` if
 
 Given
 - `R`, the type of objects returned by the mesh function
@@ -39,8 +39,10 @@ the following expressions are valid:
 </table>
 
 ## Usage scenarios
-The concept of a MeshFunction is used widely in the `lf::fe` module:
-- Assembler classes such as lf::uscalfe::ScalarFEEdgeLocalLoadVector or lf::uscalfe::LagrangeFEEllBVPElementMatrix accept MeshFunctions that describe coefficients or source functions.
+The concept of a MeshFunction is used widely in the `lf::uscalfe` module:
+- Assembler classes such as lf::uscalfe::ScalarLoadEdgeVectorProvider or lf::uscalfe::ReactionDiffusionElementMatrixProvider accept MeshFunctions that describe coefficients or source functions.
 
-
+## See also
+- lf::uscalfe::isMeshFunction<> to determine if a type fulfills the mesh function concept at compile time.
+- lf::uscalfe::MeshFunctionReturnType<> to retrieve the type `R` of a mesh function.
 */

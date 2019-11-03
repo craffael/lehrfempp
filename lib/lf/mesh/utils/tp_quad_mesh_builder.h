@@ -21,7 +21,7 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
    * @brief Constructor: set factory object to be used by the builder
    *
    */
-  explicit TPQuadMeshBuilder(std::shared_ptr<mesh::MeshFactory> mesh_factory)
+  explicit TPQuadMeshBuilder(std::unique_ptr<mesh::MeshFactory> mesh_factory)
       : StructuredMeshBuilder(std::move(mesh_factory)) {
     LF_ASSERT_MSG(
         mesh_factory_->DimWorld() == 2,
@@ -39,7 +39,7 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
    * @brief vertex index from grid position
    */
   [[nodiscard]] size_type VertexIndex(size_type i, size_type j) const {
-    return (i + j * (no_of_x_cells_ + 1));
+    return (i + j * (num_of_x_cells_ + 1));
   }
 
  public:

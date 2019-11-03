@@ -324,7 +324,7 @@ std::vector<SCALAR> EnergiesOfInterpolants(
 
     // II: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
-    const lf::assemble::size_type N_dofs(dofh.NoDofs());
+    const lf::assemble::size_type N_dofs(dofh.NumDofs());
     // Matrix in triplet format holding Galerkin matrix, zero initially.
     assemble::COOMatrix<double> A(N_dofs, N_dofs);
     // Actual assembly
@@ -423,7 +423,7 @@ std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
 
     // III: Assemble finite element Galerkin matrix
     // Dimension of finite element space`
-    const lf::assemble::size_type N_dofs(dofh.NoDofs());
+    const lf::assemble::size_type N_dofs(dofh.NumDofs());
     // Matrix in triplet format holding Galerkin matrix, zero initially.
     lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
     // Actual assembly
@@ -504,7 +504,7 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`
-    const lf::assemble::size_type N_dofs(dofh.NoDofs());
+    const lf::assemble::size_type N_dofs(dofh.NumDofs());
     Eigen::VectorXd phi = Eigen::VectorXd::Zero(N_dofs);
     // Actual assembly
     LagrFEVolumeRightHandSideVector(fe_space, f, phi);
@@ -593,7 +593,7 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
 
     // II: Assemble finite element right-hand-side vector
     // Dimension of finite element space`
-    const lf::assemble::size_type N_dofs(dofh.NoDofs());
+    const lf::assemble::size_type N_dofs(dofh.NumDofs());
     Eigen::VectorXd phi = Eigen::VectorXd::Zero(N_dofs);
     // Actual assembly
     LagrFEBoundaryRightHandSideVector(fe_space, f, bd_edge_sel, phi);

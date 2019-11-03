@@ -11,8 +11,8 @@ ADDOPTION(TPTriagMeshBuilder::output_ctrl_, tpquad_ctrl,
 
 std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
-  const size_type nx = no_of_x_cells_;
-  const size_type ny = no_of_y_cells_;
+  const size_type nx = num_of_x_cells_;
+  const size_type ny = num_of_y_cells_;
   // Total number of entities in the mesh
   // Each square is split into two triangles
   const unsigned no_of_cells = 2 * nx * ny;

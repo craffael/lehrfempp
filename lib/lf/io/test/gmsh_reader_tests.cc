@@ -300,4 +300,14 @@ TEST(lf_io, pieceOfCake) {
   auto reader = test_utils::getGmshReader("piece_of_cake.msh", 2);
   checkPieceOfCake(reader);
 }
+
+TEST(lf_io, curvedSquareTests) {
+  // make sure we can read the curved_square meshes:
+  auto reader =
+      test_utils::getGmshReader("curved_square_quads_2nd_order.msh", 2);
+
+  reader = test_utils::getGmshReader("curved_square_trias_2nd_order.msh", 2);
+  reader = test_utils::getGmshReader("curved_square_quads_2nd_order_v4.msh", 2);
+  reader = test_utils::getGmshReader("curved_square_trias_2nd_order_v4.msh", 2);
+}
 }  // namespace lf::io::test

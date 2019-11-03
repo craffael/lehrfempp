@@ -78,8 +78,9 @@ TEST(feTools, NodalProjection) {
   // Fourth stage: validation
   const lf::mesh::Mesh& mesh{*(fe_space_p->Mesh())};
   const lf::assemble::DofHandler& dofh{fe_space_p->LocGlobMap()};
-  LF_VERIFY_MSG(dofh.NoDofs() == mesh.NumEntities(2),
-                "mismatch " << dofh.NoDofs() << " <-> " << mesh.NumEntities(2));
+  LF_VERIFY_MSG(
+      dofh.NumDofs() == mesh.NumEntities(2),
+      "mismatch " << dofh.NumDofs() << " <-> " << mesh.NumEntities(2));
   // Traverse nodes of the mesh
   for (const lf::mesh::Entity* node : mesh.Entities(2)) {
     // Obtain location of node
@@ -88,7 +89,7 @@ TEST(feTools, NodalProjection) {
     LF_VERIFY_MSG((p.cols() == 1) && (p.rows() == 2),
                   "Wrong vertex matrix size");
     // Obtain number of dof associated with current node
-    EXPECT_EQ(dofh.NoLocalDofs(*node), 1)
+    EXPECT_EQ(dofh.NumLocalDofs(*node), 1)
         << "Too many dofs for " << *node << std::endl;
     const auto dof_idx_array{dofh.GlobalDofIndices(*node)};
     const lf::base::glb_idx_t dof_idx = dof_idx_array[0];

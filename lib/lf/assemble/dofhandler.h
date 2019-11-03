@@ -40,7 +40,7 @@ namespace lf::assemble {
  *
  * Note that every global shape (dof) function belongs to a unique mesh entity.
  * Ordering them means assigning a unique (vector component) index starting from
- * zero until `NoDofs-1`.
+ * zero until `NumDofs-1`.
  * -# Dofs belonging to entities of a larger co-dimension are arranged before
  *    dofs associated with entities of a smaller co-dimension:
  *
@@ -106,7 +106,7 @@ class DofHandler {
   /**
    * @brief total number of dof's handled by the object
    */
-  [[nodiscard]] virtual size_type NoDofs() const = 0;
+  [[nodiscard]] virtual size_type NumDofs() const = 0;
 
   /**
    * @brief tells the number of degrees of freedom _subordinate_/_belonging_ to
@@ -118,7 +118,7 @@ class DofHandler {
    * GlobalDofIndices().
    * @sa GlobalDofIndices()
    */
-  [[nodiscard]] virtual size_type NoLocalDofs(
+  [[nodiscard]] virtual size_type NumLocalDofs(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -131,7 +131,7 @@ class DofHandler {
    * built by InteriorGlobalDofIndices().
    * @sa InteriorGlobalDofIndices()
    */
-  [[nodiscard]] virtual size_type NoInteriorDofs(
+  [[nodiscard]] virtual size_type NumInteriorDofs(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -149,7 +149,7 @@ class DofHandler {
    * sub-entitites_.
    *
    * The size of the returned range must agree with the value returned
-   * by NoLocalDofs() when supplied with the same arguments.
+   * by NumLocalDofs() when supplied with the same arguments.
    */
   [[nodiscard]] virtual nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
@@ -236,23 +236,20 @@ class UniformFEDofHandler : public DofHandler {
                       dof_map_t dofmap);
   /**@}*/
 
-  /**
-   * @copydoc DofHandler::GetNoDofs()
-   */
-  [[nodiscard]] size_type NoDofs() const override { return num_dof_; }
+  [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
    * @copydoc DofHandler::GetNoLocalDofs()
    * @sa GlobalDofIndices()
    */
-  [[nodiscard]] size_type NoLocalDofs(
+  [[nodiscard]] size_type NumLocalDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GetNoInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
-  [[nodiscard]] size_type NoInteriorDofs(
+  [[nodiscard]] size_type NumInteriorDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -292,13 +289,13 @@ class UniformFEDofHandler : public DofHandler {
   void initIndexArrays();
   /** @brief compute number of shape functions covering an entity type
    *
-   * This method assumes that the variables  no_loc_dof_point_,
-   * no_loc_dof_segment_, no_loc_dof_tria_, no_loc_dof_quad_
+   * This method assumes that the variables  num_loc_dof_point_,
+   * num_loc_dof_segment_, num_loc_dof_tria_, num_loc_dof_quad_
    * have already been set.
    *
    * @sa LocalStaticDOFs2D::TotalNoLocDofs()
    */
-  void initTotalNoDofs();
+  void InitTotalNumDofs();
 
   // Access method to numbers and values of indices of shape functions
   [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
@@ -307,9 +304,9 @@ class UniformFEDofHandler : public DofHandler {
   [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
-  [[nodiscard]] size_type GetNoLocalDofs(lf::base::RefEl ref_el_type,
-                                         glb_idx_t /*unused*/) const {
-    return NoCoveredDofs(ref_el_type);
+  [[nodiscard]] size_type GetNumLocalDofs(lf::base::RefEl ref_el_type,
+                                          glb_idx_t /*unused*/) const {
+    return NumCoveredDofs(ref_el_type);
   }
 
   /** co-dimensions of different geometric entities in a 2D mesh */
@@ -320,15 +317,15 @@ class UniformFEDofHandler : public DofHandler {
   /**@}*/
 
   /** Number of covered dofs for an entity type */
-  [[nodiscard]] size_type NoCoveredDofs(lf::base::RefEl ref_el_type) const {
+  [[nodiscard]] size_type NumCoveredDofs(lf::base::RefEl ref_el_type) const {
     size_type no_covered_dofs;
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {
-        no_covered_dofs = no_dofs_[kNodeOrd];
+        no_covered_dofs = num_dofs_[kNodeOrd];
         break;
       }
       case lf::base::RefEl::kSegment(): {
-        no_covered_dofs = no_dofs_[kEdgeOrd];
+        no_covered_dofs = num_dofs_[kEdgeOrd];
         break;
       }
       case lf::base::RefEl::kTria(): {
@@ -348,23 +345,23 @@ class UniformFEDofHandler : public DofHandler {
   }
 
   /** Number of interior shape functions for an entity type */
-  [[nodiscard]] size_type NoInteriorDofs(lf::base::RefEl ref_el_type) const {
+  [[nodiscard]] size_type NumInteriorDofs(lf::base::RefEl ref_el_type) const {
     size_type no_loc_dofs;
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {
-        no_loc_dofs = no_loc_dof_point_;
+        no_loc_dofs = num_loc_dof_point_;
         break;
       }
       case lf::base::RefEl::kSegment(): {
-        no_loc_dofs = no_loc_dof_segment_;
+        no_loc_dofs = num_loc_dof_segment_;
         break;
       }
       case lf::base::RefEl::kTria(): {
-        no_loc_dofs = no_loc_dof_tria_;
+        no_loc_dofs = num_loc_dof_tria_;
         break;
       }
       case lf::base::RefEl::kQuad(): {
-        no_loc_dofs = no_loc_dof_quad_;
+        no_loc_dofs = num_loc_dof_quad_;
         break;
       }
       default: {
@@ -385,17 +382,17 @@ class UniformFEDofHandler : public DofHandler {
       topological type */
   std::array<std::vector<gdof_idx_t>, 3> dofs_;
   /** Number of dofs covering entities of a particular type */
-  std::array<size_type, 3> no_dofs_;
+  std::array<size_type, 3> num_dofs_;
   /** (Maximum) number of shape functions covering entities
    * of a particular co-dimension  */
   size_type num_dofs_tria_{0}, num_dofs_quad_{0};
   /** Numbers of local _interior_ shape functions associated with different
    * types of entities */
   /**@{*/
-  size_type no_loc_dof_point_{0};
-  size_type no_loc_dof_segment_{0};
-  size_type no_loc_dof_tria_{0};
-  size_type no_loc_dof_quad_{0};
+  size_type num_loc_dof_point_{0};
+  size_type num_loc_dof_segment_{0};
+  size_type num_loc_dof_tria_{0};
+  size_type num_loc_dof_quad_{0};
   /**@}*/
 };
 
@@ -430,8 +427,8 @@ class DynamicFEDofHandler : public DofHandler {
    * Note that this gives the number of so-called interior local shape functions
    * belonging to an entity and not the number of local shape functions whose
    * supports will include the entity. Also refer to the documentation of
-   * DynamicFEDofHandler::NoLocalDofs() and
-   * DynamicFEDofHandler::NoInteriorDofs().
+   * DynamicFEDofHandler::NumLocalDofs() and
+   * DynamicFEDofHandler::NumInteriorDofs().
    */
   template <typename LOCALDOFINFO>
   DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
@@ -445,7 +442,7 @@ class DynamicFEDofHandler : public DofHandler {
     // Step I: Set indices for shape functions on nodes
     // Run through node indices (entities of co-dimension 2)
     const size_type no_nodes = mesh_p_->NumEntities(2);
-    no_int_dofs_[2].resize(no_nodes, 0);
+    num_int_dofs_[2].resize(no_nodes, 0);
     offsets_[2].resize(no_nodes + 1, 0);
     // Traverse nodes (co-dimension-2 entities) based on indices
     for (glb_idx_t node_idx = 0; node_idx < no_nodes; node_idx++) {
@@ -457,7 +454,7 @@ class DynamicFEDofHandler : public DofHandler {
       offsets_[2][node_idx] = node_dof_offset;
       // Request number of local shape functions associated with the node
       size_type no_int_dof_node = locdof(*node_p);
-      no_int_dofs_[2][node_idx] = no_int_dof_node;
+      num_int_dofs_[2][node_idx] = no_int_dof_node;
 
       // Store dof indices in array
       for (unsigned j = 0; j < no_int_dof_node; j++) {
@@ -472,7 +469,7 @@ class DynamicFEDofHandler : public DofHandler {
     // Step II: Set indices for shape functions on edges (co-dimension = 1)
     const size_type no_edges = mesh_p_->NumEntities(1);
     // Set length of edge-related index vectors
-    no_int_dofs_[1].resize(no_edges, 0);
+    num_int_dofs_[1].resize(no_edges, 0);
     offsets_[1].resize(no_edges + 1, 0);
     // points to the position of the current dof index
     size_type edge_dof_offset = 0;
@@ -483,14 +480,14 @@ class DynamicFEDofHandler : public DofHandler {
       // Offset for indices of edge dof in index vector
       offsets_[1][edge_idx] = edge_dof_offset;
       size_type no_int_dof_edge = locdof(*edge);
-      no_int_dofs_[1][edge_idx] = no_int_dof_edge;
+      num_int_dofs_[1][edge_idx] = no_int_dof_edge;
 
       // Obtain indices for basis functions sitting at endpoints
       // Endpoints are mesh entities with co-dimension = 2
       for (const lf::mesh::Entity *endpoint : edge->SubEntities(1)) {
         const glb_idx_t ep_idx(mesh_p_->Index(*endpoint));
         glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
-        size_type no_int_dofs_ep = no_int_dofs_[2][ep_idx];
+        size_type no_int_dofs_ep = num_int_dofs_[2][ep_idx];
         // Copy indices of shape functions from nodes to edge
         for (unsigned j = 0; j < no_int_dofs_ep; j++) {
           dofs_[1].push_back(dofs_[2][ep_dof_offset + j]);
@@ -511,7 +508,7 @@ class DynamicFEDofHandler : public DofHandler {
     // Step III: Set indices for shape functions on cells (co-dimension = 0)
     const size_type no_cells = mesh_p_->NumEntities(0);
     // Set length of cell-related index vectors
-    no_int_dofs_[0].resize(no_cells, 0);
+    num_int_dofs_[0].resize(no_cells, 0);
     offsets_[0].resize(no_cells + 1, 0);
     // points to the position of the current dof index
     size_type cell_dof_offset = 0;
@@ -521,13 +518,13 @@ class DynamicFEDofHandler : public DofHandler {
       // Offset for indices of cell dof in index vector
       offsets_[0][cell_idx] = cell_dof_offset;
       size_type no_int_dof_cell = locdof(*cell);
-      no_int_dofs_[0][cell_idx] = no_int_dof_cell;
+      num_int_dofs_[0][cell_idx] = no_int_dof_cell;
 
       // Obtain indices for basis functions in vertices
       for (const lf::mesh::Entity *vertex : cell->SubEntities(2)) {
         const glb_idx_t vt_idx(mesh_p_->Index(*vertex));
         glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
-        size_type no_int_dofs_vt = no_int_dofs_[2][vt_idx];
+        size_type no_int_dofs_vt = num_int_dofs_[2][vt_idx];
         // Copy indices of shape functions from nodes to cell
         for (unsigned j = 0; j < no_int_dofs_vt; j++) {
           dofs_[0].push_back(dofs_[2][vt_dof_offset + j]);
@@ -543,7 +540,7 @@ class DynamicFEDofHandler : public DofHandler {
       for (int ed_sub_idx = 0; ed_sub_idx < cell->RefEl().NumSubEntities(1);
            ed_sub_idx++) {
         const glb_idx_t edge_idx = mesh_p_->Index(*edges[ed_sub_idx]);
-        const size_type no_int_dof_edge = no_int_dofs_[1][edge_idx];
+        const size_type no_int_dof_edge = num_int_dofs_[1][edge_idx];
         const glb_idx_t edge_int_dof_offset =
             offsets_[1][edge_idx + 1] - no_int_dof_edge;
 
@@ -586,20 +583,20 @@ class DynamicFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GetNoDofs()
    */
-  [[nodiscard]] size_type NoDofs() const override { return num_dof_; }
+  [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
    * @copydoc DofHandler::GetNoInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
-  [[nodiscard]] size_type NoInteriorDofs(
+  [[nodiscard]] size_type NumInteriorDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::GetNoLocalDofs()
    * @sa GlobalDofIndices()
    */
-  [[nodiscard]] size_type NoLocalDofs(
+  [[nodiscard]] size_type NumLocalDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -650,7 +647,7 @@ class DynamicFEDofHandler : public DofHandler {
    */
   /**@{*/
   /** Vector of number of interior dofs for entities */
-  std::array<std::vector<size_type>, 3> no_int_dofs_;
+  std::array<std::vector<size_type>, 3> num_int_dofs_;
   /** Offsets of dof index arrays in `dofs_` vectors */
   std::array<std::vector<size_type>, 3> offsets_;
   /** Vectors of global indices of dofs belonging to entities of different

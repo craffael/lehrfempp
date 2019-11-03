@@ -41,13 +41,13 @@ int main(int argc, char** argv) {
 
   // Construct a triangular tensor product mesh with 2*Nx*Ny cells
   lf::mesh::hybrid2d::TPTriagMeshBuilder builder(
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2));
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-      .setNoXCells(Nx)
-      .setNoYCells(Ny);
+      .setNumXCells(Nx)
+      .setNumYCells(Ny);
   auto mesh_p = builder.Build();
 
   // Some consistency checks.

@@ -52,7 +52,7 @@ extern unsigned int ass_mat_dbg_ctrl;
  *
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
- * matrices
+ * matrices, must model the concept \ref entity_matrix_provider
  * @param codim co-dimension of mesh entities which should be traversed
  *              in the course of assembly
  * @param dof_handler_trial a dof handler object for column space @see
@@ -75,20 +75,15 @@ extern unsigned int ass_mat_dbg_ctrl;
  * + provide a constructor taking two matrix dimension arguments
  * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
  * A model type is COOMatrix.
- * - ENTITY_MATRIX_PROVIDER is a type capable of local assembly of element
- * matrices. It must
- * + have an `Eval()` method returning the element matrix for a cell
- * + supply an `isActive()` method for selecting cells to be taken into account
- * in assembly
- * - The return type of `Eval()` must be a dense matrix type modelled after
- *   Eigen::Matrix. It must provide:
- * + methods `rows()` and `cols()` telling the number of rows and columns
- * + access to entries via `operator (int,int) const`
+ * - ENTITY_MATRIX_PROVIDER is a \ref entity_matrix_provider
  *
  * @note The element matrix returned by the `Eval()` method of
  * `entity_matrix_provider` may have a size larger than that suggested by the
  * number of local shape functions. In this case only its upper left block is
  * accessed.
+ *
+ * #### Example Usage
+ * @snippet assembler.cc matrix_usage
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
@@ -110,8 +105,8 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                         std::cout << "ASM: " << *entity << '('
                                   << mesh->Index(*entity) << ')' << std::endl);
       // Size, aka number of rows and columns, of element matrix
-      const size_type nrows_loc = dof_handler_test.NoLocalDofs(*entity);
-      const size_type ncols_loc = dof_handler_trial.NoLocalDofs(*entity);
+      const size_type nrows_loc = dof_handler_test.NumLocalDofs(*entity);
+      const size_type ncols_loc = dof_handler_trial.NumLocalDofs(*entity);
       // row indices of for contributions of cells
       nonstd::span<const gdof_idx_t> row_idx(
           dof_handler_test.GlobalDofIndices(*entity));
@@ -169,6 +164,9 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
 
 /**
  * @brief Entity-wise local assembly of a matrix from local matrices
+ * @tparam TMPMATRIX a type fitting the concept of COOMatrix
+ * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
+ * matrices, must model the concept \ref entity_matrix_provider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -185,7 +183,7 @@ TMPMATRIX AssembleMatrixLocally(
     dim_t codim, const DofHandler &dof_handler_trial,
     const DofHandler &dof_handler_test,
     ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {
-  TMPMATRIX matrix{dof_handler_test.NoDofs(), dof_handler_trial.NoDofs()};
+  TMPMATRIX matrix{dof_handler_test.NumDofs(), dof_handler_trial.NumDofs()};
   matrix.setZero();
   AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
       codim, dof_handler_trial, dof_handler_test, entity_matrix_provider,
@@ -195,6 +193,9 @@ TMPMATRIX AssembleMatrixLocally(
 
 /**
  * @brief Entity-wise local assembly of a matrix from local matrices
+ * @tparam TMPMATRIX a type fitting the concept of COOMatrix
+ * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
+ * matrices, must model the concept \ref entity_matrix_provider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -205,6 +206,7 @@ TMPMATRIX AssembleMatrixLocally(
  * @sa  AssembleMatrixLocally(const DofHandler &dof_handler_trial,const
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider,
  * TMPMATRIX &matrix)
+ *
  */
 
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
@@ -221,7 +223,7 @@ TMPMATRIX AssembleMatrixLocally(
  *
  * @tparam VECTOR a generic vector type with component access through []
  * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
- * vectors
+ * vectors, models concept \ref entity_vector_provider
  * @param codim co-dimension of entities over which assembly should be carried
  * out
  * @param dof_handler object providing local-to-global dof index mapping, see
@@ -234,15 +236,13 @@ TMPMATRIX AssembleMatrixLocally(
  *
  * - VECTOR must provide a `size()` method telling its length and
  *   read/write access through the `[]` operator.
- * - ENTITY_VECTOR_PROVIDER must
- * + offer an `Eval()` method that returns an element vector.
- * + supply an `isActive()` method for selecting cells to be taken into account
- * in assembly
- * + provide a type `ElemVec` suitable for holding an element vector
  *
  * @note Contributions of element vectors are added to the entries of the
  *       `resultvector` argument. This means that `resultvector` has to be
  *       initialized before calling this function!
+ *
+ * ### Example Usage
+ * @snippet assembler.cc vector_usage
  */
 template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
@@ -257,7 +257,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
     // Some cells may be skipped
     if (entity_vector_provider.isActive(*entity)) {
       // Length of element vector
-      const size_type veclen = dof_handler.NoLocalDofs(*entity);
+      const size_type veclen = dof_handler.NumLocalDofs(*entity);
       // global dof indices for contribution of the entity
       nonstd::span<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(*entity));
@@ -278,6 +278,9 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
 /**
  * @brief entity-local assembly of (right-hand-side) vectors from element
  * vectors
+ * @tparam VECTOR a generic vector type with component access through []
+ * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
+ * vectors, models concept \ref entity_vector_provider
  * @return assembled vector as an object of a type specified by the
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,
@@ -295,7 +298,7 @@ template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
 VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                              ENTITY_VECTOR_PROVIDER &entity_vector_provider) {
   // Allocated vector holding r.h.s. vector to be assembled
-  VECTOR resultvector{dof_handler.NoDofs()};
+  VECTOR resultvector{dof_handler.NumDofs()};
   // Initialize to zero: assembly of new vector
   resultvector.setZero();
   // Perform actual assembly

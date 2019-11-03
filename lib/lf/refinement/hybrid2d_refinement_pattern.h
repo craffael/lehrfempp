@@ -98,7 +98,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    *
    * For a point: 0 (`rp_nil`), 1(`rp_copy`)
    */
-  [[nodiscard]] lf::base::size_type noChildren(
+  [[nodiscard]] lf::base::size_type NumChildren(
       lf::base::dim_t codim) const override;
   /**
    * @copydoc lf::geometry::RefinementPattern::ChildPolygons()

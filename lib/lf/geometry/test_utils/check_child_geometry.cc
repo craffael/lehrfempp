@@ -23,7 +23,7 @@ void checkChildGeometry(
     auto children = geom.ChildGeometry(ref_pat, codim);
     auto child_polygons = ref_pat.ChildPolygons(codim);
 
-    EXPECT_EQ(children.size(), ref_pat.noChildren(codim));
+    EXPECT_EQ(children.size(), ref_pat.NumChildren(codim));
 
     for (int i = 0; i < children.size(); ++i) {
       auto &child = children[i];

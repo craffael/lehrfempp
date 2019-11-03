@@ -226,12 +226,17 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
 
     begin = end;
     if (ref_el == base::RefEl::kPoint()) {
-      // special case, this entity is a point (which has already been inserted)
       auto mesh_index = gi2mi[end_element.NodeNumbers[0]];
-      if (mi2gi[dim_mesh].size() <= mesh_index) {
-        mi2gi[dim_mesh].resize(mesh_index + 1);
+      // check that this node is a main node (auxilliary nodes are not inserted
+      // into the mesh!):
+      if (mesh_index != std::numeric_limits<unsigned int>::max()) {
+        // special case, this entity is a point (which has already been
+        // inserted)
+        if (mi2gi[dim_mesh].size() <= mesh_index) {
+          mi2gi[dim_mesh].resize(mesh_index + 1);
+        }
+        mi2gi[dim_mesh][mesh_index].push_back(end);
       }
-      mi2gi[dim_mesh][mesh_index].push_back(end);
     } else {
       // gmsh element is not a point -> insert entity:
       auto num_nodes = end_element.NodeNumbers.size();
@@ -467,13 +472,18 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
 
       begin = end;
       if (ref_el == base::RefEl::kPoint()) {
-        // special case, this entity is a point (which has already been
-        // inserted)
+        // check that this node is a main node (auxiliary nodes are not
+        // inserted into the mesh!):
+
         auto mesh_index = gi2mi[end_element.second[0] - min_node_tag];
-        if (mi2gi[dim_mesh].size() <= mesh_index) {
-          mi2gi[dim_mesh].resize(mesh_index + 1);
+        if (mesh_index != std::numeric_limits<unsigned int>::max()) {
+          // special case, this entity is a point (which has already been
+          // inserted)
+          if (mi2gi[dim_mesh].size() <= mesh_index) {
+            mi2gi[dim_mesh].resize(mesh_index + 1);
+          }
+          mi2gi[dim_mesh][mesh_index].emplace_back(ebi);
         }
-        mi2gi[dim_mesh][mesh_index].emplace_back(ebi);
       } else {
         // gmsh element is not a point -> insert entity:
         auto num_nodes = end_element.second.size();

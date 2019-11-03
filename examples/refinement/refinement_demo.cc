@@ -37,6 +37,10 @@ int main(int argc, char **argv) {
   lf::base::ci::Add("help,h", "Display help");
   lf::base::ci::Add<int>(
       "refselector", "Selector for refinement method (0 [default] to 3)", 0);
+  lf::base::ci::Add<int>("refsteps", "Number of refinementsteps", 3);
+  lf::base::ci::Add<std::string>("basename",
+                                 "Matlab basename for the output files", "out");
+
   // Set control variables from command line or file "setup.vars"
   if (!lf::base::ci::ParseFile("setup.vars")) {
     std::cout << "No file `setup.vars` specifying control variables\n";
@@ -48,6 +52,7 @@ int main(int argc, char **argv) {
   }
   // get the value for refselector
   auto refselector = lf::base::ci::Get<int>("refselector");
+  auto refsteps = lf::base::ci::Get<int>("refsteps");
 
   // Generate hybrid test mesh and obtain a pointer to it
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr =
@@ -63,9 +68,10 @@ int main(int argc, char **argv) {
   std::cout << "########################################" << std::endl;
   std::cout << "Initialization of data structure for mesh hierarchy"
             << std::endl;
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
-      std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::refinement::MeshHierarchy multi_mesh(mesh_ptr, mesh_factory_ptr);
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy multi_mesh(mesh_ptr,
+                                           std::move(mesh_factory_ptr));
 
   // lambda functions for (local) marking
   // First, a global marker
@@ -84,11 +90,10 @@ int main(int argc, char **argv) {
 
   // Main refinement loop
   std::cout << "########################################" << std::endl;
-  std::size_t Nrefs;
-  std::cout << "No of refinement steps: ";
-  std::cin >> Nrefs;
+
+  std::cout << "No of refinement steps: " << refsteps;
   std::cout << "Entering main refinement loop" << std::endl;
-  for (std::size_t refstep = 0; refstep < Nrefs; refstep++) {
+  for (std::size_t refstep = 0; refstep < refsteps; refstep++) {
     std::cout << "#### Refinement step " << refstep + 1 << std::endl;
     // Depending on the value of the control variable do different types
     // of refinement
@@ -149,9 +154,7 @@ int main(int argc, char **argv) {
 
   // Generate  MATLAB functions that provide a description of all
   // levels of the mesh hierarchy
-  std::string basename;
-  std::cout << "Basename for MATLAB output: ";
-  std::cin >> basename;
+  auto basename = lf::base::ci::Get<std::string>("basename");
   lf::refinement::WriteMatlab(multi_mesh, basename);
 
   return 0;

@@ -345,7 +345,7 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes) {
-  o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NoDofs()
+  o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
     << std::endl;
   if (UniformScalarFESpace<SCALAR>::ctrl_ &
       UniformScalarFESpace<SCALAR>::kout_mesh) {

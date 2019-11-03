@@ -67,7 +67,7 @@ int main() {
   const lf::assemble::DofHandler& dofh{fe_space->LocGlobMap()};
 
   // Dimension of finite element space`
-  const size_type N_dofs(dofh.NoDofs());
+  const size_type N_dofs(dofh.NumDofs());
 
   // identity mesh function for very simple problem
   lf::uscalfe::MeshFunctionConstant mf_identity(1.0);

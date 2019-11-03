@@ -3,8 +3,8 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.155.tar.gz"
-    SHA1 "6421d63cc4fd78b8622e863c6b1dcabce98e1216"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.225.tar.gz"
+    SHA1 "4b018ec7b673817475c1fb9f0bd4dfb7c5e7f343"
     LOCAL # use cmake/Hunter/config.cmake
 )
 
@@ -65,6 +65,9 @@ set(config_install_dir "lib/cmake/lehrfempp")
 add_subdirectory(lib)
 add_subdirectory(doc/doxygen)
 if(LF_BUILD_EXAMPLES)
+  # Add custom target which will run all examples
+  add_custom_target(examples_run)
+  
   add_subdirectory(examples)
   add_subdirectory(experiments)
   add_subdirectory(projects)
