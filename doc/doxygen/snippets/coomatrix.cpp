@@ -22,7 +22,7 @@ void snippetfoo() {
   // Initialize ENTITYMATRIXPROVIDER object for local computations
   lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
   // Dimension of finite element space
-  const lf::assemble::size_type N_dofs(loc_glob_map.NoDofs());
+  const lf::assemble::size_type N_dofs(loc_glob_map.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
   // Building the Galerkin matrix (trial space = test space)

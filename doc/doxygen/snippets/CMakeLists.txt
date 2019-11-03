@@ -11,6 +11,7 @@ set(sources
   ref_el.cc
   vtk_writer.cc
   coomatrix.cpp
+  meshhierarchy.cc
 )
 
 add_library(docsnippets ${sources})
