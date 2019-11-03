@@ -18,6 +18,8 @@
 #include <lf/mesh/utils/lambda_mesh_data_set.h>
 #include <lf/quad/quad.h>
 
+#include <boost/program_options.hpp>
+
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
 #include <mesh_function_interpolation.h>
@@ -242,21 +244,26 @@ int main(int argc, char *argv[]) {
   const double omega1 = 0;
   const double omega2 = 1;
 
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << "[builder,files,irregular]"
-              << std::endl;
-    std::cerr << "\tbuilder  : Builds the meshes with a AnnulusTriagMeshBuilder"
-              << std::endl;
-    std::cerr << "\tfiles    : Reads the meshes from the files annulus??.msh"
-              << std::endl;
-    std::cerr << "\tirregular: Solves the PDE on a single mesh with a sudden "
-                 "change in resolution"
-              << std::endl;
-    exit(1);
+  // Parse the command line options
+  std::string mesh_selection;
+  boost::program_options::options_description desc{"Options"};
+  desc.add_options()
+    ("help,h", "Help Screen")
+    ("type", boost::program_options::value<std::string>(&mesh_selection), "Type of mesh to use. Either 'builder', 'files' or 'irregular'");
+  boost::program_options::positional_options_description pos_desc;
+  pos_desc.add("type", 1);
+  boost::program_options::command_line_parser parser{argc, argv};
+  parser.options(desc).positional(pos_desc).allow_unregistered();
+  boost::program_options::parsed_options po = parser.run();
+  boost::program_options::variables_map vm;
+  boost::program_options::store(po, vm);
+  boost::program_options::notify(vm);
+  if (vm.count("help")) {
+      std::cout << desc << std::endl;
   }
 
   std::vector<std::shared_ptr<lf::mesh::Mesh>> meshes;
-  if (strcmp(argv[1], "files") == 0) {
+  if (mesh_selection == "files") {
     // Read the mesh from the gmsh file
     boost::filesystem::path meshpath = __FILE__;
     meshpath = meshpath.parent_path();
@@ -269,7 +276,7 @@ int main(int argc, char *argv[]) {
       meshes.push_back(reader.mesh());
     }
   }
-  if (strcmp(argv[1], "builder") == 0) {
+  else if (mesh_selection == "builder") {
     // Build a sequence of meshes
     for (unsigned i = 0U; i < 8U; ++i) {
       const unsigned nx = 4U << i;
@@ -287,7 +294,7 @@ int main(int argc, char *argv[]) {
       meshes.push_back(builder.Build());
     }
   }
-  if (strcmp(argv[1], "irregular") == 0) {
+  else if (mesh_selection == "irregular") {
     boost::filesystem::path meshpath = __FILE__;
     const auto mesh_irregular_path =
         meshpath.parent_path() / "annulus_irregular.msh";
@@ -304,6 +311,10 @@ int main(int argc, char *argv[]) {
         mesh_irregular_inverted_path.string());
     meshes.push_back(reader_irregular.mesh());
     meshes.push_back(reader_irregular_inverted.mesh());
+  }
+  else {
+      std::cout << desc << std::endl;
+      exit(1);
   }
 
   // Compute the analytic solution of the problem
