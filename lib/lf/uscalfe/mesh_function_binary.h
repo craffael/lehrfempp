@@ -221,7 +221,7 @@ struct OperatorSubtraction {
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
       result.reserve(u.size());
-      for (int i = 0; i < u.size(); ++i) {
+      for (std::size_t i = 0; i < u.size(); ++i) {
         LF_ASSERT_MSG(
             u[i].rows() == v[i].rows(),
             "mismatch in #rows of matrices subtracted from each other.");
