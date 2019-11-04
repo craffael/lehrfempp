@@ -14,15 +14,20 @@
 namespace lf::geometry {
 
 /**
- * @brief Abstract interface class for encoding topological local refinement
+ * @brief **Abstract interface class** for encoding topological local refinement
  *
  * This class defines a local topological refinement pattern by convex
  * polygons on an _integer lattice_ covering the reference element.
+ * The main method is @ref lf::geometry::RefinementPattern::ChildPolygons().
  *
  * The rationale for using an integer lattice is the possibility of exact
  * arithmetic. It also emphasizes the hybrid character of refinement in
  * between topological and geometric operations.
  *
+ * Example: fundamental lattice with constant 6 (default setting) for a
+ * triangle: every lattice point has integerf coordinates \f$(i,j)\f$, \f$0\leq
+ * i,j \leq 6\f$, \f$i+j\leq 6\f$.
+ * @image html trialattice.png width=500px
  */
 class RefinementPattern {
  protected:
@@ -32,14 +37,21 @@ class RefinementPattern {
   RefinementPattern& operator=(RefinementPattern&&) = default;
 
  public:
+  /** @brief Constructor setting reference element = topological type of entity
+   *
+   * @param ref_el topological reference element
+   *
+   * The lattice constant is set to 6.
+   */
   explicit RefinementPattern(lf::base::RefEl ref_el)
       : ref_el_(std::move(ref_el)), lattice_const_(6) {}
 
   /** @brief Constructor fixing reference element and refinement resolution
    *
    * @param ref_el topological reference element
+   * @param lattic_const lattice constant, see class documentation for description
+   * The lattice constant must be a multiple of 6.
    */
-
   RefinementPattern(lf::base::RefEl ref_el, lf::base::size_type lattice_const)
       : ref_el_(std::move(ref_el)), lattice_const_(lattice_const) {
     // Lattice constant N should be a multiple of six in order to be able to
@@ -50,7 +62,10 @@ class RefinementPattern {
                   "Lattice constant should be multiple of 6");
   }
 
+  /** @brief Returns topological type of entity for which the current object is
+   * set up */
   [[nodiscard]] lf::base::RefEl RefEl() const { return ref_el_; }
+  /** @brief Provides information about lattice constant used */
   [[nodiscard]] lf::base::size_type LatticeConst() const {
     return lattice_const_;
   }
@@ -70,7 +85,7 @@ class RefinementPattern {
    *
    * The shaoe of the children of relative co-dimension 0 of a cell is
    * defined through a convex lattice polygon in the reference element.
-   * The children on co-dimension 1 are _interior_ edges. Their shape
+   * The children of co-dimension 1 are _interior_ edges. Their shape
    * is described by lattice segments. Children of relative co-dimension 2
    * are _interior_ points. Their position is given by a single lattice point.
    *
