@@ -49,8 +49,8 @@ class RefinementPattern {
   /** @brief Constructor fixing reference element and refinement resolution
    *
    * @param ref_el topological reference element
-   * @param lattic_const lattice constant, see class documentation for description
-   * The lattice constant must be a multiple of 6.
+   * @param lattic_const lattice constant, see class documentation for
+   * description The lattice constant must be a multiple of 6.
    */
   RefinementPattern(lf::base::RefEl ref_el, lf::base::size_type lattice_const)
       : ref_el_(std::move(ref_el)), lattice_const_(lattice_const) {
