@@ -226,14 +226,15 @@ int main() {
     const auto diff_grad = -grad_exact;
     const auto diff_grad_modified = -grad_exact;
     // Approximately compute the factor the numerical solution is off by
-    const auto operator_dot = [](const auto& a, const auto& b, int) {
+    const auto operator_dot = [](const auto& a, const auto& b, int /*unused*/) {
       std::vector<double> result;
-      for (int i = 0; i < a.size(); ++i) {
+      result.reserve(a.size());
+      for (size_t i = 0; i < a.size(); ++i) {
         result.push_back(a[i].dot(b[i]));
       }
       return result;
     };
-    const auto operator_multiplication = [](const auto& a, const auto& b, int) {
+    const auto operator_multiplication = [](const auto& a, const auto& b, int /*unused*/) {
       std::vector<Eigen::Vector2d> result;
       for (size_t i = 0; i < a.size(); ++i) {
         result.push_back(a[i] * b[i]);
@@ -264,16 +265,12 @@ int main() {
     // The error in the corrected velocity
     const auto velocity_scaled = lf::uscalfe::MeshFunctionBinary(
         operator_multiplication,
-        lf::uscalfe::MeshFunctionGlobal(
-            [factor](const Eigen::Vector2d& x) { return factor; }),
-        velocity);
+        lf::uscalfe::MeshFunctionConstant<double>(factor),
+	velocity);
     const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionBinary(
         operator_multiplication,
-        lf::uscalfe::MeshFunctionGlobal(
-            [factor_modified](const Eigen::Vector2d& x) {
-              return factor_modified;
-            }),
-        velocity_modified);
+        lf::uscalfe::MeshFunctionConstant(factor_modified),
+	velocity_modified);
     const auto diff_v_fac = lf::uscalfe::MeshFunctionBinary(
         lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled,
         velocity_exact);
@@ -281,8 +278,8 @@ int main() {
         lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled_modified,
         velocity_exact);
     // The error in the gradient of the corrected velocty
-    const auto diff_g_fac = diff_grad;
-    const auto diff_g_fac_modified = diff_grad_modified;
+    const auto &diff_g_fac = diff_grad;
+    const auto &diff_g_fac_modified = diff_grad_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
         solutions[lvl].mesh, diff_v, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(

@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
   boost::program_options::variables_map vm;
   boost::program_options::store(po, vm);
   boost::program_options::notify(vm);
-  if (vm.count("help")) {
+  if (vm.count("help") != 0u) {
     std::cout << desc << std::endl;
   }
 

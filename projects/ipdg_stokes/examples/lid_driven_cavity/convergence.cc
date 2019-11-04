@@ -165,7 +165,7 @@ int main() {
                   e, Eigen::Vector2d::Constant(1. / 3))[0];
             }));
     // We need to implement our own binary mesh function for  multiplication
-    const auto operator_multiplication = [](const auto &a, const auto &b, int) {
+    const auto operator_multiplication = [](const auto &a, const auto &b, int /*unused*/) {
       std::vector<Eigen::Vector2d> result;
       for (size_t i = 0; i < a.size(); ++i) {
         result.push_back(a[i] * b[i]);
