@@ -29,6 +29,8 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
+using lf::uscalfe::operator-;
+
 /**
  * @brief Solve the nested cylinders problem with zero potential at the boundary
  * @param mesh A shared pointer to the mesh on which to solve the PDE
@@ -413,18 +415,10 @@ int main(int argc, char *argv[]) {
     writer_nonzero.WriteCellData(
         "analytic", *lf::mesh::utils::make_LambdaMeshDataSet(analytic));
     // Compute the difference between the numerical and the analytical solution
-    auto diff_velocity_zero = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_zero,
-        velocity_exact);
-    auto diff_velocity_zero_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_zero_modified,
-        velocity_exact);
-    auto diff_velocity_nonzero = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_nonzero,
-        velocity_exact);
-    auto diff_velocity_nonzero_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_nonzero_modified,
-        velocity_exact);
+    auto diff_velocity_zero = velocity_zero - velocity_exact;
+    auto diff_velocity_zero_modified = velocity_zero_modified - velocity_exact;
+    auto diff_velocity_nonzero = velocity_nonzero - velocity_exact;
+    auto diff_velocity_nonzero_modified = velocity_nonzero_modified - velocity_exact;
     auto diff_gradient_zero = -grad_exact;
     auto diff_gradient_zero_modified = -grad_exact;
     auto diff_gradient_nonzero = -grad_exact;

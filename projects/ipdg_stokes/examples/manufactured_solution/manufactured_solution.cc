@@ -27,6 +27,8 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
+using lf::uscalfe::operator-;
+
 /**
  * @brief Compute the analytic flow velocity
  * @param n Number of rings around the origin
@@ -217,11 +219,8 @@ int main() {
                                    e, Eigen::Vector2d::Constant(1. / 3))[0];
                              }));
     // The error in the velocity
-    const auto diff_v = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity, velocity_exact);
-    const auto diff_v_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_modified,
-        velocity_exact);
+    const auto diff_v = velocity - velocity_exact;
+    const auto diff_v_modified = velocity_modified - velocity_exact;
     // The error in the gradient of the velocity
     const auto diff_grad = -grad_exact;
     const auto diff_grad_modified = -grad_exact;
@@ -271,12 +270,8 @@ int main() {
         operator_multiplication,
         lf::uscalfe::MeshFunctionConstant(factor_modified),
 	velocity_modified);
-    const auto diff_v_fac = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled,
-        velocity_exact);
-    const auto diff_v_fac_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_scaled_modified,
-        velocity_exact);
+    const auto diff_v_fac = velocity_scaled - velocity_exact;
+    const auto diff_v_fac_modified = velocity_scaled_modified - velocity_exact;
     // The error in the gradient of the corrected velocty
     const auto &diff_g_fac = diff_grad;
     const auto &diff_g_fac_modified = diff_grad_modified;

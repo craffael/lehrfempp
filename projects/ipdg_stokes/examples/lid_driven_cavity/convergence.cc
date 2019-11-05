@@ -27,6 +27,8 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
+using lf::uscalfe::operator-;
+
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
  * @param args A variadic pack of objects implementing
@@ -179,14 +181,10 @@ int main() {
         lf::uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d &x) {
           return x[1] >= 0.9 ? (1 - std::cos(M_PI / 0.1 * (1 - x[1]))) / 2 : 1.;
         });
-    const auto diff = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine,
-        velocity_exact);
+    const auto diff = velocity_fine - velocity_exact;
     const auto diff_weighted =
         lf::uscalfe::MeshFunctionBinary(operator_multiplication, weight, diff);
-    const auto diff_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine_modified,
-        velocity_exact_modified);
+    const auto diff_modified = velocity_fine_modified - velocity_exact_modified;
     const auto diff_weighted_modified = lf::uscalfe::MeshFunctionBinary(
         operator_multiplication, weight, diff_modified);
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(

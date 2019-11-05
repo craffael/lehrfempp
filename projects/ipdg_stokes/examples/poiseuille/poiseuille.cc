@@ -29,6 +29,8 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
+using lf::uscalfe::operator-;
+
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
  * @param args A variadic pack of objects implementing
@@ -217,11 +219,8 @@ int main(int argc, char *argv[]) {
       writer.WriteCellData("analytic", v);
     }
     // Compute the error in the velocity
-    auto diff_v = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity, velocity_exact);
-    auto diff_v_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_modified,
-        velocity_exact);
+    auto diff_v = velocity - velocity_exact;
+    auto diff_v_modified = velocity_modified - velocity_exact;
     // Compute the error in the gradient of the velocity
     auto diff_g = -gradient_exact;
     auto diff_g_modified = -gradient_exact;

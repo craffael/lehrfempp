@@ -30,6 +30,8 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
+using lf::uscalfe::operator-;
+
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
  * @param args A variadic pack of objects implementing
@@ -245,12 +247,8 @@ int main() {
     const auto qr_provider = [](const lf::mesh::Entity &e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
-    const auto diff = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine,
-        velocity_exact);
-    const auto diff_modified = lf::uscalfe::MeshFunctionBinary(
-        lf::uscalfe::internal::OperatorSubtraction{}, velocity_fine_modified,
-        velocity_exact_modified);
+    const auto diff = velocity_fine - velocity_exact;
+    const auto diff_modified = velocity_fine_modified - velocity_exact_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
         solutions.back().mesh, diff, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(
