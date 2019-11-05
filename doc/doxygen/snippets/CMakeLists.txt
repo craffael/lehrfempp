@@ -12,6 +12,7 @@ set(sources
   vtk_writer.cc
   coomatrix.cpp
   meshhierarchy.cc
+  meshuse.cc
 )
 
 add_library(docsnippets ${sources})
