@@ -25,6 +25,8 @@ namespace lf::mesh {
  * which have to provide a consecutive numbering of entities of a specific
  * co-dimension starting from zero.
  *
+ * #### Mesh object variables
+ *
  * Mesh objects are usually accessed through [C++ *shared
  pointers*](https://en.cppreference.com/book/intro/smart_pointers); declare and
  initialize variable for a mesh as follows (second line optional)
@@ -45,6 +47,8 @@ namespace lf::mesh {
  * plunged into an undefined state. Shared pointers ensure that a mesh object is
  * destroyed only after every object holding a pointer to it has been destroyed.
  *
+ * #### Creating a mesh object
+ *
  * The standard ways to create a @ref Mesh object are:
  * -# Direct generation via the @ref mesh::MeshFactory::Build() method.
  *    (This method is mainly used internally by LehrFEM++)
@@ -52,6 +56,14 @@ namespace lf::mesh {
  lf::mesh::test_utils::GenerateHybrid2DTestMesh().
  * -# Reading a mesh from file, see @ref lf::io::GmshReader.
  * -# Refining an existing mesh, see @ref lf::refinement::MeshHierarchy.
+ *
+ * #### Use case
+ *
+ * The following function demonstrates the use of all pertinent methods of
+ * the class @ref Entity. In particular is shows how to loop over all entities
+ * of a mesh.
+ * @snippet meshuse.cc usage
+ *
  */
 class Mesh {
  protected:
