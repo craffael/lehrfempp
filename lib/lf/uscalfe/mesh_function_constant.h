@@ -29,7 +29,7 @@ class MeshFunctionConstant {
    * value.
    * @param value The value that the MeshFunction should have globally.
    */
-  explicit MeshFunctionConstant(R value) : value_(value) {}
+  explicit MeshFunctionConstant(R value) : value_(std::move(value)) {}
 
   /**
    * @brief the key evaluation operator to be supplied by all MeshFunctions
