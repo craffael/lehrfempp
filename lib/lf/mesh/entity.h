@@ -21,15 +21,17 @@ enum class Orientation : int { positive = 1, negative = -1 };
 int to_sign(Orientation o);
 char to_char(Orientation o);
 
-/** @brief Representation of a topological entity in a cellular complex
+/** @brief **Interface class** representing of a topological entity in a
+ * cellular complex
  *
  * Example: a 2D hybrid mesh consists of cells (entities of co-dimension 0),
  * edges (entities of co-dimension 1), and nodes (entities of co-dimension 2).
  * The set of these entities endowed with _incidence relations_ defines the
  * topology of the mesh.
  *
- * The core purpose of this class is to provide methods for accessing incidence
- * relations.
+ * The core purpose of this class is to provide interface definitions for
+ * accessing incidence relations and geometry information. This interface
+ * applies  to all (topological) types of entities.
  */
 class Entity {
  protected:
@@ -65,6 +67,9 @@ class Entity {
    *
    * @note The lifetime of the returned span equals the lifetime of the Parent
    * Entity.
+   *
+   * #### Demonstration of usage
+   * @snippet entityuse.cc usage
    */
   [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
@@ -94,7 +99,7 @@ class Entity {
 
   /**
    * @brief Describes the reference element type of this entity.
-   * @return An object of type base::RefEl.
+   * @return An object of type @ref lf::base::RefEl.
    */
   [[nodiscard]] virtual base::RefEl RefEl() const = 0;
 
@@ -123,7 +128,6 @@ class Entity {
   // Add global output control
   /** @brief Diagnostics control variable */
   static unsigned int output_ctrl_;
-
 };  // class entity
 
 /**
