@@ -302,15 +302,15 @@ class FeLagrangeO3Segment final
  * This is a specialization of lf::uscalfe::ScalarReferenceFiniteElement.
  * Refer to its documentation
  *
- * The shape functions are computed via a tensor product construction:
- * The shape function associated with interpolation node \f$ p =(x_j,y_l)\f$ is
- * computed as
+* The shape functions are computed by a tensor product construction:
+ * The shape function associated with the interpolation node \f$ \mathbf{p}
+ * =(x_j,y_l)\f$ is computed as
  *
- *  \f[ b^p(x_1,x_2)=b^j(x_1)*b^l(x_2) \f]
+ *  \f[ \hat{b}^{\mathbf{p}}(x_1,x_2)=\hat{b}^j(x_1)*\hat{b}^l(x_2) \f]
  *
- * Where \f$ b^j\f$ and \f$ b^l \f$ are the cubic Lagrangian shape functions
- * on the reference line segment associated to the points \f$ x_j \f$ and \f$
- * y_l \f$.
+ * Where \f$ \hat{b}^j\f$ and \f$ \hat{b}^l \f$ are the cubic Lagrangian
+ * shape functions on the reference line segment associated to the interpolation
+ * nodes \f$ x_j \f$ and \f$ y_l \f$.
  *
  *
  * The first four shape functions are associated with the vertices,
@@ -373,16 +373,16 @@ class FeLagrangeO3Quad final
         16, refcoords.cols());
 
     // evaluate "marginal" shape functions (b^j and b^l)
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x0_eval =
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
         (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x1_eval =
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
         (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
 
     // Evaluate basis functions using the tensor product structure of the basis
     // functions
     for (int i = 0; i < 16; ++i) {
-      result.row(i) = (marginal_x0_eval.row(marginal_to_shape_mapping_(i, 0)) *
-                       marginal_x1_eval.row(marginal_to_shape_mapping_(i, 1)))
+      result.row(i) = (segment_x0_eval.row(ksegment_to_quad_mapping_(i, 0)) *
+                       segment_x1_eval.row(ksegment_to_quad_mapping_(i, 1)))
                           .matrix();
     }
 
@@ -404,30 +404,30 @@ class FeLagrangeO3Quad final
                Eigen::AutoAlign>
         temp(&result(0, 0), 32, refcoords.cols());
 
-    // evaluate "marginal" shape functions (b^j and b^l)
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x0_eval =
+    // evaluate "segment" shape functions (b^j and b^l)
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
         (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x1_eval =
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
         (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
 
-    // evaluate derivatives of "marginal" shape functions (b^j and
+    // evaluate derivatives of "segment" shape functions (b^j and
     // b^l)
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x0_grad =
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_grad =
         (rsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(0)))
             .array();
-    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> marginal_x1_grad =
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_grad =
         (rsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(1)))
             .array();
 
     // evaluate gradients using the product rule and
     // the tensor product structure of the basis functions.
     for (int i = 0; i < 16; ++i) {
-      temp.row(i) = (marginal_x0_grad.row(marginal_to_shape_mapping_(i, 0)) *
-                     marginal_x1_eval.row(marginal_to_shape_mapping_(i, 1)))
+      temp.row(i) = (segment_x0_grad.row(ksegment_to_quad_mapping_(i, 0)) *
+                     segment_x1_eval.row(ksegment_to_quad_mapping_(i, 1)))
                         .matrix();
       temp.row(i + 16) =
-          (marginal_x1_grad.row(marginal_to_shape_mapping_(i, 1)) *
-           marginal_x0_eval.row(marginal_to_shape_mapping_(i, 0)))
+          (segment_x1_grad.row(ksegment_to_quad_mapping_(i, 1)) *
+           segment_x0_eval.row(ksegment_to_quad_mapping_(i, 0)))
               .matrix();
     }
 
@@ -467,34 +467,34 @@ class FeLagrangeO3Quad final
  private:
   /** description of the marginal shape functions on the reference line segment
    * \f$  [0,1] \f$  */
-  const static FeLagrangeO3Segment<SCALAR> rsf_segment_;
+  const static FeLagrangeO3Segment<SCALAR> krsf_segment_;
 
   /**
-   * The shape functions are computed via a tensor product construction:
-   * The shape function associated with interpolation node \f$ p =(x_j,y_l)\f$
-   * is computed as
+   * The shape functions are computed by a tensor product construction:
+   * The shape function associated with the interpolation node \f$ \mathbf{p}
+   * =(x_j,y_l)\f$ is computed as
    *
-   *  \f[ b^p(x_1,x_2)=b^j(x_1)*b^l(x_2) \f]
+   *  \f[ \hat{b}^{\mathbf{p}}(x_1,x_2)=\hat{b}^j(x_1)*\hat{b}^l(x_2) \f]
    *
-   * Where \f$ b^j\f$ and \f$ b^l \f$ are the cubic Lagrangian shape
-   * functions on the reference line segment associated to the points \f$ x_j
-   * \f$ and \f$ y_l \f$.
+   * Where \f$ \hat{b}^j\f$ and \f$ \hat{b}^l \f$ are the cubic Lagrangian
+   * shape functions on the reference line segment associated to the
+   * interpolation nodes \f$ x_j \f$ and \f$ y_l \f$.
    *
    * This matrix of size NumRefShapeFunctions x 2 contains in each row
-   * the indices of the "marginal" shape functions, that define
-   * the correspoding reference shape function via the above formula.
-   * if p was the k-th interpolation node, the k-th entries would contain the
-   * indices j and l.
+   * the indices of the "segment" shape functions, that define
+   * the  reference shape function via the above formula.
+   * if \f$p\f$ was the \f$k\f$-th interpolation node, the \f$k\f$-th row would
+   * contain the indices \f$j\f$ and \f$l\f$.
    */
-  const static Eigen::MatrixXi marginal_to_shape_mapping_;
+  const static Eigen::MatrixXi ksegment_to_quad_mapping_;
 };
 
 template <typename SCALAR>
-const FeLagrangeO3Segment<SCALAR> FeLagrangeO3Quad<SCALAR>::rsf_segment_ =
+const FeLagrangeO3Segment<SCALAR> FeLagrangeO3Quad<SCALAR>::krsf_segment_ =
     FeLagrangeO3Segment<SCALAR>();
 
 template <typename SCALAR>
-const Eigen::MatrixXi FeLagrangeO3Quad<SCALAR>::marginal_to_shape_mapping_ =
+const Eigen::MatrixXi FeLagrangeO3Quad<SCALAR>::ksegment_to_quad_mapping_ =
     // clang-format off
   (Eigen::MatrixXi(16,2) << 0, 0,
                             1, 0,
