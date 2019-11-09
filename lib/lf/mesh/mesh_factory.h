@@ -100,9 +100,8 @@ class MeshFactory {
    * this geometry object as a reference. Hence the node ordering of the
    * created entity object agrees with the ordering of `nodes`.
    *
-   *
-   * @note The node indices passed with the parameter `nodes` must be added
-   *       with AddPoint() before calling this method.
+   * @note The node indices passed with the parameter `nodes` must have been
+   * obtained with AddPoint() before calling this method.
    */
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddEntity(

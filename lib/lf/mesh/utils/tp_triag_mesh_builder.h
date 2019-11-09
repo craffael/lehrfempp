@@ -46,7 +46,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
    * @brief vertex index from grid position
    */
   [[nodiscard]] size_type VertexIndex(size_type i, size_type j) const {
-    return (i + j * (no_of_x_cells_ + 1));
+    return (i + j * (num_of_x_cells_ + 1));
   }
 
  public:

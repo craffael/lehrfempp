@@ -16,7 +16,7 @@ void matrix() {
   uscalfe::LinearFELaplaceElementMatrix entity_matrix_provider;
 
   // setup a COOMatrix into which the global matrix will be assembled:
-  assemble::COOMatrix<double> lhs(dofh.NoDofs(), dofh.NoDofs());
+  assemble::COOMatrix<double> lhs(dofh.NumDofs(), dofh.NumDofs());
 
   // assemble the global Laplace matrix (iterate over all entities with
   // codim=2):
@@ -44,7 +44,7 @@ void vector() {
       mesh, {{base::RefEl::kTria(), 1}, {base::RefEl::kQuad(), 1}});
 
   // initialize the output vector:
-  Eigen::VectorXd x(dofh.NoDofs());
+  Eigen::VectorXd x(dofh.NumDofs());
 
   // assemble the global vector over entities with codim=0:
   AssembleVectorLocally(0, dofh, entity_vector_provider, x);

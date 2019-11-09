@@ -176,7 +176,7 @@ TEST(LocRefTest, LocalRefinement) {
   std::cout << "TEST: Marked edges in the unit square" << std::endl;
 
   // Generate test mesh
-  auto mesh_p =
+  std::shared_ptr<lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
   lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
@@ -198,7 +198,7 @@ TEST(LocRefTest, LocalRefinement) {
   std::cout << "#### Marking edges" << std::endl;
   multi_mesh.MarkEdges(marker);
 
-  // Refine uniformly
+  // Refine locally
   std::cout << "#### Refining mesh locally" << std::endl;
   multi_mesh.RefineMarked();
 

@@ -46,10 +46,10 @@ Eigen::Matrix3d LinFEMassMatrixProvider::Eval(const lf::mesh::Entity &tria) {
 double l2normByMassMatrix(const lf::assemble::DofHandler &dofh,
                           const Eigen::VectorXd &uvec) {
   // Dimension of finite element space`
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
+  const lf::assemble::size_type N_dofs(dofh.NumDofs());
   LF_ASSERT_MSG(
       N_dofs == uvec.size(),
-      "Size mismatch: NoDofs = " << N_dofs << " <-> size = " << uvec.size());
+      "Size mismatch: NumDofs = " << N_dofs << " <-> size = " << uvec.size());
   // Obtain Galerkin mass matrix by local cell-oriented assembly
   LinFEMassMatrixProvider M_loc{};  // ENTITY_MATRIX_PROVIDER
   lf::assemble::COOMatrix<double> M_coo{
@@ -63,8 +63,8 @@ double l2normByMassMatrix(const lf::assemble::DofHandler &dofh,
 
 double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
                           const Eigen::VectorXd &uvec) {
-  LF_ASSERT_MSG(dofh.NoDofs() == uvec.size(),
-                "Size mismatch: NoDofs = " << dofh.NoDofs()
+  LF_ASSERT_MSG(dofh.NumDofs() == uvec.size(),
+                "Size mismatch: NumDofs = " << dofh.NumDofs()
                                            << " <-> size = " << uvec.size());
   // Obtain reference to current mesh
   const lf::mesh::Mesh &mesh{*dofh.Mesh()};
@@ -75,7 +75,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
     // Obtain cell type
     const lf::base::RefEl ref_el{cell->RefEl()};
     // Only lowest-order Lagrangian FE are supported
-    LF_ASSERT_MSG(dofh.NoLocalDofs(*cell) == ref_el.NumNodes(),
+    LF_ASSERT_MSG(dofh.NumLocalDofs(*cell) == ref_el.NumNodes(),
                   "No nodes must be equal to number of local shape functions");
     // Obtain shape of cell
     const lf::geometry::Geometry *geo_p{cell->Geometry()};
@@ -138,7 +138,7 @@ void lecturedemotwonorm() {
   // std::cout << "DofHandler" << std::endl << dofh << std::endl;
 
   // Dimension of  the finite element space
-  size_type n_dofs{dofh.NoDofs()};
+  size_type n_dofs{dofh.NumDofs()};
 
   // Build finite element coefficient vector by interpolating
   // a known linear (!) function. The L2-norm of linear functions

@@ -76,13 +76,13 @@ void output_dofs_test(const lf::mesh::Mesh &mesh,
                       const lf::assemble::DofHandler &dof_handler) {
   EXPECT_EQ(mesh.DimMesh(), 2) << "Only for 2D meshes";
 
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
   for (lf::base::dim_t codim = 0; codim <= 2; codim++) {
     std::cout << "#### DOFs for entities of co-dimension " << (int)codim
               << std::endl;
     for (const lf::mesh::Entity *e : mesh.Entities(codim)) {
       const lf::base::glb_idx_t e_idx = mesh.Index(*e);
-      const lf::assemble::size_type no_dofs(dof_handler.NoLocalDofs(*e));
+      const lf::assemble::size_type no_dofs(dof_handler.NumLocalDofs(*e));
       nonstd::span<const lf::assemble::gdof_idx_t> doflist(
           dof_handler.GlobalDofIndices(*e));
       std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -99,7 +99,7 @@ void output_entities_dofs(const lf::mesh::Mesh &mesh,
                           const lf::assemble::DofHandler &dof_handler) {
   EXPECT_EQ(mesh.DimMesh(), 2) << "Only for 2D meshes";
 
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
   std::cout << "#### Entities associated with DOFs" << std::endl;
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
     const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
@@ -185,7 +185,7 @@ TEST(lf_assembly, dynamic_dof_index_test) {
 // Auxiliary function for testing
 void linfe_mat_assembly(const lf::mesh::Mesh &mesh,
                         const lf::assemble::DofHandler &dof_handler) {
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
 
   std::cout << N_dofs << " degrees of freedom built" << std::endl;
   EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
@@ -324,7 +324,7 @@ void edge_dof_assembly_test(const lf::mesh::Mesh &mesh,
   output_dofs_test(mesh, dof_handler);
   output_entities_dofs(mesh, dof_handler);
 
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
 
   std::cout << N_dofs << " degrees of freedom built" << std::endl;
   EXPECT_EQ(N_dofs, 36) << "Dubious numbers of dofs";
@@ -476,7 +476,7 @@ class BoundaryAssembler {
 
 BoundaryAssembler::BoundaryAssembler(std::shared_ptr<lf::mesh::Mesh> mesh_p)
     : mesh_p_(std::move(mesh_p)),
-      cells_at_edges_(lf::mesh::utils::countNoSuperEntities(mesh_p_, 1, 1)) {}
+      cells_at_edges_(lf::mesh::utils::CountNumSuperEntities(mesh_p_, 1, 1)) {}
 
 bool BoundaryAssembler::isActive(const lf::mesh::Entity &edge) {
   LF_VERIFY_MSG(edge.Codim() == 1, "Argument must be edge");
@@ -496,7 +496,7 @@ BoundaryAssembler::ElemMat BoundaryAssembler::Eval(
 // Auxiliary function for testing
 void linfe_boundary_assembly(std::shared_ptr<lf::mesh::Mesh> mesh_p,
                              const lf::assemble::DofHandler &dof_handler) {
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
 
   std::cout << N_dofs << " degrees of freedom in linear FE space" << std::endl;
   EXPECT_EQ(N_dofs, 10) << "Dubious numbers of dofs";
@@ -566,8 +566,8 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
                      const lf::assemble::DofHandler &dofh,
                      ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
                      Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> &vec) {
-  LF_ASSERT_MSG(dofh.NoDofs() == vec.size(),
-                "NoDof mismatch " << dofh.NoDofs() << " <-> " << vec.size());
+  LF_ASSERT_MSG(dofh.NumDofs() == vec.size(),
+                "NoDof mismatch " << dofh.NumDofs() << " <-> " << vec.size());
   // Pointer to underlying mesh
   auto mesh = dofh.Mesh();
   // Summation variable
@@ -577,7 +577,7 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
     // Some entities may be skipped
     if (entity_matrix_provider.isActive(*entity)) {
       // Size, aka number of rows and columns, of element matrix
-      const lf::assemble::size_type elmat_dim = dofh.NoLocalDofs(*entity);
+      const lf::assemble::size_type elmat_dim = dofh.NumLocalDofs(*entity);
       // Global indices of local shape functions
       nonstd::span<const lf::assemble::gdof_idx_t> global_idx(
           dofh.GlobalDofIndices(*entity));
@@ -646,7 +646,7 @@ MVMultAssembler::ElemMat &MVMultAssembler::Eval(const lf::mesh::Entity &cell) {
 // with vector from left and right
 double test_vec_lr_mult(const lf::mesh::Mesh &mesh,
                         const lf::assemble::DofHandler &dof_handler) {
-  const lf::assemble::size_type N_dofs(dof_handler.NoDofs());
+  const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
   std::cout << N_dofs << " degrees of freedom" << std::endl;
   // A random vector
   Eigen::VectorXd vec = Eigen::VectorXd::Random(N_dofs);

@@ -18,6 +18,9 @@ namespace lf::refinement {
  * This information is used by methods of the class `MeshHierarchy` to
  * organize uniform and adaptive refinement.
  *
+ * For a point there can be only two refinement states: non-refined (rp_nil) of
+ * refined (rp_copy).
+ *
  */
 struct PointChildInfo {
   explicit PointChildInfo() = default;
@@ -35,8 +38,12 @@ struct PointChildInfo {
  * organize uniform and adaptive refinement.
  *
  * The key pieces of information are
- * - the topological refinement type (rp_copy or rp_split)
- * - indices of all _interior_ child entities (edges or points)
+ * - the topological refinement type (rp_copy or rp_split beside rp_nil in the
+ *   case of non refinement)
+ * - indices of all _interior_ child entities (edges or points). Their numbering
+ *   advaces from enpoint #0 to endpoint #1.
+ *
+ * @sa MeshHierarchy::PerformRefinement()
  */
 struct EdgeChildInfo {
   explicit EdgeChildInfo() = default;
@@ -58,6 +65,8 @@ struct EdgeChildInfo {
  * - the topological refinement type along with the anchor index used
  *   in the case of a cell, which completely defines the geometric refinement.
  * - indices of all _interior_ child entities
+ *
+ * @sa MeshHierarchy::PerformRefinement()
  */
 struct CellChildInfo {
   explicit CellChildInfo() = default;
@@ -83,6 +92,19 @@ struct ParentInfo {
 
 /**
  * @brief A hierarchy of nested 2D hybrid meshes created by refinement
+ *
+ * This is the fundamental class for managing sequences of meshes that have been
+ * created by successive local or global refinement of an initial coarsest mesh.
+ * Objects of this class store comprehensive information about the relationship
+ * of the meshes in the sequence: parent-child relationships of mesh cells and
+ * local refinement patterns.
+ *
+ * #### sample usage
+ * @snippet meshhierarchy.cc usage
+ *
+ * In the context of studying convergence of finite elemment method objects of
+ * type MeshHierarchy can be employed to hold sequencies of uniformly refine
+ * meshes, see @ref MeshHierarchy::RefineRegular().
  */
 class MeshHierarchy {
  public:
@@ -308,18 +330,18 @@ class MeshHierarchy {
    * have been initialized consistently for the finest mesh. According to this
    * information, refinement is carried out using the object pointed to by
    * mesh_factory_ to created new entities by calling
-   * lf::mesh::MeshFactory::Build().
+   * @ref lf::mesh::MeshFactory::Build().
    *
    * The vectors  `point_child_infos_`, `edge_child_infos_` and
    * `cell_child_infos_` will be augmented with information about the indices of
    * the child entities contained  in the newly created finest mesh.
    *
-   * This method relies on lf::geometry::Geometry::ChildGeometry() to obtain
-   * information about the shape fo child entities in the form of
+   * This method relies on @ref lf::geometry::Geometry::ChildGeometry() to
+   * obtain information about the shape of child entities in the form of
    * lf::geometry::Geometry objects.
    *
    * The method also initializes the data vectors in `_parent_infos_` for
-   * the newly created now finest mesh.
+   * the newly created finest mesh.
    *
    */
   void PerformRefinement();
@@ -328,7 +350,7 @@ class MeshHierarchy {
   /** @brief the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;
   /** @brief The mesh factory to be used to creating a new mesh */
-  std::shared_ptr<mesh::MeshFactory> mesh_factory_;
+  std::unique_ptr<mesh::MeshFactory> mesh_factory_;
   /** @brief information about children of nodes for each level */
   std::vector<std::vector<PointChildInfo>> point_child_infos_;
   /** @brief information about children of edges for each level */

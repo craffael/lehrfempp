@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
   lf::mesh::hybrid2d::TorusMeshBuilder builder(std::move(mesh_factory_ptr));
   builder.setBottomLeftCorner(Eigen::Vector2d{0., 0.});
   builder.setTopRightCorner(Eigen::Vector2d{top_right_corner_coords.data()});
-  builder.setNoXCells(num_x_cells);
-  builder.setNoYCells(num_y_cells);
+  builder.setNumXCells(num_x_cells);
+  builder.setNumYCells(num_y_cells);
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
 
   // output mesh information

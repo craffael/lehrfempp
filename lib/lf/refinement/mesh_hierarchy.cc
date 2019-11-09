@@ -154,7 +154,9 @@ void MeshHierarchy::RefineMarked() {
     refinement_complete = true;
     // Visit all cells and update their refinement patterns
     for (const lf::mesh::Entity *cell : finest_mesh.Entities(0)) {
+      // Obtain unique index of current cell
       const glb_idx_t cell_index = finest_mesh.Index(*cell);
+      // Detailed description of refinement status
       CellChildInfo &cell_child_info(finest_cell_ci[cell_index]);
 
       // Global indices of edges
@@ -165,11 +167,12 @@ void MeshHierarchy::RefineMarked() {
       // Local indices of edges marked as split
       std::array<sub_idx_t, 4> split_edge_idx{};
       // Array of references to edge sub-entities of current cell
-      auto sub_edges = cell->SubEntities(1);
+      nonstd::span<const lf::mesh::Entity *const> sub_edges =
+          cell->SubEntities(1);
       const size_type num_edges = cell->RefEl().NumSubEntities(1);
       LF_VERIFY_MSG(num_edges <= 4, "Too many edges = " << num_edges);
       // Obtain information about current splitting pattern of
-      // the edges of the cell
+      // the edges of the cell. Count edges that will be split.
       size_type split_edge_cnt = 0;
       for (int k = 0; k < num_edges; k++) {
         const glb_idx_t edge_index = finest_mesh.Index(*sub_edges[k]);
@@ -359,10 +362,11 @@ void MeshHierarchy::PerformRefinement() {
 
   // Retrieve the finest mesh in the hierarchy = parent mesh
   const mesh::Mesh &parent_mesh(*meshes_.back());
-  // First run through the vertices, create child vertices and register
-  // them with the mesh factory
-  // Store child indices in an auxiliary array
   {
+    // ======================================================================
+    // First run through the vertices, create child vertices and register
+    // them with the mesh factory
+    // Store child indices in an auxiliary array
     std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
     size_type new_node_cnt = 0;
     const Hybrid2DRefinementPattern rp_copy_node(lf::base::RefEl::kPoint(),
@@ -380,6 +384,7 @@ void MeshHierarchy::PerformRefinement() {
             pt_geo.ChildGeometry(rp_copy_node, 0));
         LF_VERIFY_MSG(pt_child_geo_ptrs.size() == 1,
                       "A point can only have one chile");
+        // Store index of child node
         pt_child_info[node_index].child_point_idx =
             mesh_factory_->AddPoint(std::move(pt_child_geo_ptrs[0]));
         new_node_cnt++;
@@ -388,7 +393,9 @@ void MeshHierarchy::PerformRefinement() {
     CONTROLLEDSTATEMENT(
         output_ctrl_, 10,
         std::cout << new_node_cnt << " new nodes added" << std::endl;)
+    // ======================================================================
 
+    // ======================================================================
     // Now traverse the edges. Depending on the refinement pattern,
     // either copy them or split them.
     // Supplement the refinement information for edges accordingly.
@@ -429,7 +436,7 @@ void MeshHierarchy::PerformRefinement() {
                                         << " new edge [" << ed_p0_fine_idx
                                         << "," << ed_p1_fine_idx << "] "
                                         << std::endl;)
-
+          // Store index of copy of edge on finer mesh
           edge_ci.child_edge_idx.push_back(
               mesh_factory_->AddEntity(edge->RefEl(),
                                        std::array<lf::base::glb_idx_t, 2>{
@@ -459,13 +466,14 @@ void MeshHierarchy::PerformRefinement() {
           // Register the two new edges
           // CAREFUL: Assignment of endpoints has to match implementation in
           // refinement.cc
+          // First child edge adjacent to endpoint #0, second child edge
+          // adjacent to endpoint #1
           CONTROLLEDSTATEMENT(output_ctrl_, 50,
                               std::cout << "Split Edge " << edge_index
                                         << " new edges [" << ed_p0_fine_idx
                                         << "," << midpoint_fine_idx << "], ["
                                         << midpoint_fine_idx << ","
                                         << ed_p1_fine_idx << "] " << std::endl;)
-
           edge_ci.child_edge_idx.push_back(
               mesh_factory_->AddEntity(edge->RefEl(),
                                        std::array<lf::base::glb_idx_t, 2>{
@@ -491,7 +499,9 @@ void MeshHierarchy::PerformRefinement() {
     CONTROLLEDSTATEMENT(
         output_ctrl_, 50,
         std::cout << new_edge_cnt << " edges added " << std::endl;)
+    // ======================================================================
 
+    // ======================================================================
     // Visit all cells, examine their refinement patterns, retrieve indices of
     // their sub-entities, and those of the children.
     std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
@@ -623,7 +633,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -631,7 +640,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -652,7 +660,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -660,7 +667,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -668,7 +674,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -694,7 +699,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -702,7 +706,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -710,7 +713,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -735,7 +737,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -743,7 +744,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -751,7 +751,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -759,7 +758,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -798,7 +796,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[1];
             tria_ccn_tmp[1] = edge_midpoint_idx[0];
@@ -806,7 +803,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[1];
             tria_ccn_tmp[1] = edge_midpoint_idx[1];
@@ -814,7 +810,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[2];
             tria_ccn_tmp[1] = edge_midpoint_idx[1];
@@ -822,7 +817,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[2];
             tria_ccn_tmp[1] = edge_midpoint_idx[2];
@@ -830,7 +824,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[0];
             tria_ccn_tmp[1] = edge_midpoint_idx[2];
@@ -838,7 +831,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = vertex_child_idx[0];
@@ -875,7 +867,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[1];
             tria_ccn_tmp[1] = edge_midpoint_idx[0];
@@ -883,7 +874,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[2];
             tria_ccn_tmp[1] = edge_midpoint_idx[2];
@@ -891,7 +881,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = edge_midpoint_idx[0];
             tria_ccn_tmp[1] = edge_midpoint_idx[1];
@@ -899,7 +888,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // Child edges (interior edges)
             cen_tmp[0] = edge_midpoint_idx[0];
@@ -949,7 +937,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
             tria_ccn_tmp[1] = vertex_child_idx[mod[0]];
@@ -957,7 +944,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
             tria_ccn_tmp[1] = vertex_child_idx[mod[1]];
@@ -965,7 +951,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -990,7 +975,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
@@ -998,7 +982,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[2]];
             tria_ccn_tmp[1] = vertex_child_idx[mod[3]];
@@ -1006,7 +989,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
@@ -1014,7 +996,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = vertex_child_idx[mod[3]];
@@ -1043,7 +1024,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             quad_ccn_tmp[0] = vertex_child_idx[mod[1]];
             quad_ccn_tmp[1] = vertex_child_idx[mod[2]];
@@ -1052,7 +1032,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[0]];
@@ -1072,7 +1051,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[0]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -1080,7 +1058,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = vertex_child_idx[mod[1]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[0]];
@@ -1088,7 +1065,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             tria_ccn_tmp[0] = edge_midpoint_idx[mod[0]];
             tria_ccn_tmp[1] = edge_midpoint_idx[mod[1]];
@@ -1096,7 +1072,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(tria_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(tria_ccn_tmp);
-            ;
 
             // edges
             cen_tmp[0] = edge_midpoint_idx[mod[3]];
@@ -1135,7 +1110,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             quad_ccn_tmp[0] = vertex_child_idx[1];
             quad_ccn_tmp[1] = edge_midpoint_idx[1];
@@ -1144,7 +1118,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             quad_ccn_tmp[0] = vertex_child_idx[2];
             quad_ccn_tmp[1] = edge_midpoint_idx[1];
@@ -1153,7 +1126,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             quad_ccn_tmp[0] = vertex_child_idx[3];
             quad_ccn_tmp[1] = edge_midpoint_idx[2];
@@ -1162,7 +1134,6 @@ void MeshHierarchy::PerformRefinement() {
             LF_ASSERT_MSG(checkValidIndex(quad_ccn_tmp),
                           "refpat = " << (int)cell_refpat << ": illegal index");
             child_cell_nodes.push_back(quad_ccn_tmp);
-            ;
 
             // set node indices of the four new interior edges
             cen_tmp[0] = edge_midpoint_idx[0];
@@ -1196,11 +1167,11 @@ void MeshHierarchy::PerformRefinement() {
       // Register new edges
       {
         std::vector<std::unique_ptr<geometry::Geometry>> cell_edge_geo_ptrs(
-            cell->Geometry()->ChildGeometry(rp, 1));  // child edge: co-dim == 2
+            cell->Geometry()->ChildGeometry(rp, 1));  // child edge: co-dim == 1
         const size_type num_new_edges = child_edge_nodes.size();
-        LF_VERIFY_MSG(
-            num_new_edges == rp.noChildren(1),
-            "num_new_edges = " << num_new_edges << " <-> " << rp.noChildren(1));
+        LF_VERIFY_MSG(num_new_edges == rp.NumChildren(1),
+                      "num_new_edges = " << num_new_edges << " <-> "
+                                         << rp.NumChildren(1));
         for (int k = 0; k < num_new_edges; k++) {
           const std::array<glb_idx_t, 2> &cen(child_edge_nodes[k]);
           CONTROLLEDSTATEMENT(output_ctrl_, 50,
@@ -1222,9 +1193,9 @@ void MeshHierarchy::PerformRefinement() {
         std::vector<std::unique_ptr<geometry::Geometry>> childcell_geo_ptrs(
             cell->Geometry()->ChildGeometry(rp, 0));  // child cell: co-dim == 0
         const size_type num_new_cells = child_cell_nodes.size();
-        LF_VERIFY_MSG(
-            num_new_cells == rp.noChildren(0),
-            "num_new_cells = " << num_new_cells << " <-> " << rp.noChildren(0));
+        LF_VERIFY_MSG(num_new_cells == rp.NumChildren(0),
+                      "num_new_cells = " << num_new_cells << " <-> "
+                                         << rp.NumChildren(0));
         for (int k = 0; k < num_new_cells; k++) {
           const std::vector<glb_idx_t> &ccn(child_cell_nodes[k]);
           glb_idx_t new_cell_index;
