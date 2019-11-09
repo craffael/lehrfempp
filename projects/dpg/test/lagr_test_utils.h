@@ -8,7 +8,7 @@
  */
 
 #ifndef PROJECTS_DPG_TEST_LAGR_TEST_UTILS
-#define PRJOECTS_DPG_TEST_LAGR_TEST_UTILS
+#define PROJECTS_DPG_TEST_LAGR_TEST_UTILS
 
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>

@@ -898,7 +898,7 @@ FluxElementMatrixProvider<SCALAR, DIFF_COEFF>::FluxElementMatrixProvider(
       lf::base::RefEl::kSegment(), trial_component_);
   LF_ASSERT_MSG(fe_trial != nullptr, "Missing description of flux space");
   LF_ASSERT_MSG(fe_trial->NumRefShapeFunctions(1) == 0,
-                "shape functions associated with endpoints not supported.")
+                "shape functions associated with endpoints not supported.");
   for (auto ref_el : {lf::base::RefEl::kTria(), lf::base::RefEl::kQuad()}) {
     // obtain description of the local shape functions in the test space.
     auto fe_test = fe_space_test->ShapeFunctionLayout(ref_el, test_component_);

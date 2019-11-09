@@ -353,6 +353,7 @@ class FeLagrangeO3Quad final
       default:
         LF_ASSERT_MSG(false, "Illegal codim" << codim);
     }
+    return 0;
   }
   /**  One shape function is attached to each node and two to each edge of
    * the quadrilateral. Four interior shape function.

@@ -149,6 +149,7 @@ size_type ProductUniformFEDofHandler::Component(glb_idx_t dofnum) const {
     }
   }
   LF_ASSERT_MSG(false, "invalid dof number ");
+  return 0;
 }
 
 }  // namespace projects::dpg

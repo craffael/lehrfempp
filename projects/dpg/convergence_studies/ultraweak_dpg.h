@@ -252,7 +252,8 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     // extract u component:
     auto& dofh = fe_space_trial->LocGlobMap();
     auto fe_space_u = fe_space_trial->ComponentFESpace(u);
-    Eigen::VectorXd sol_vec_u = sol_vec.segment(dofh.Offset(u), dofh.NumDofs(u));
+    Eigen::VectorXd sol_vec_u =
+        sol_vec.segment(dofh.Offset(u), dofh.NumDofs(u));
 
     // Extract sigma_x component:
     auto fe_space_sigma_x = fe_space_trial->ComponentFESpace(sigma_x);
