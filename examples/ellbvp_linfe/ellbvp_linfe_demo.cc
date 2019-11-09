@@ -247,7 +247,7 @@ int main(int /*argc*/, const char** /*argv*/) {
       }
     }
     // Dimension of finite element space`
-    const size_type N_dofs(dofh.NoDofs());
+    const size_type N_dofs(dofh.NumDofs());
 
     // Verbose output
     std::cout << "Computations on level " << level

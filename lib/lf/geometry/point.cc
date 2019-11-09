@@ -33,8 +33,8 @@ std::vector<std::unique_ptr<Geometry>> Point::ChildGeometry(
   std::vector<std::unique_ptr<Geometry>> child_geo_uptrs{};
   LF_VERIFY_MSG(ref_pattern.RefEl() == lf::base::RefEl::kPoint(),
                 "ref_patern.RefEl() = " << ref_pattern.RefEl().ToString());
-  LF_VERIFY_MSG(ref_pattern.noChildren(0) == 1,
-                "ref_pattern.noChildren() = " << ref_pattern.noChildren(0));
+  LF_VERIFY_MSG(ref_pattern.NumChildren(0) == 1,
+                "ref_pattern.NumChildren() = " << ref_pattern.NumChildren(0));
   // The only way to "refine" a point is to copy it
   child_geo_uptrs.push_back(std::make_unique<Point>(coord_));
   return child_geo_uptrs;

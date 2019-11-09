@@ -18,7 +18,8 @@ using lf::base::sub_idx_t;
 const unsigned int idx_nil = lf::base::kIdxNil;
 
 /**
- * @brief (possibly incomplete) list of refinement patterns
+ * @brief (possibly incomplete) list of refinement patterns for
+ * triangles/quadrilaterals
  *
  * _Non-symmetric_ refinement patterns have to be complemented by a subentity
  * index of an edge,  here called the **anchor** of the refinement.
@@ -27,7 +28,8 @@ const unsigned int idx_nil = lf::base::kIdxNil;
  * refinement.
  *
  * A refinement pattern has to be passed as first argument to the member
- * function ChildGeometry of a geometry object.
+ * function @ref lf::geometry::ChildGeometry() of a @ref lf::geometry::Geometry
+ * object.
  *
  */
 enum RefPat : int {
@@ -94,11 +96,11 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
   }
 
   /**
-   * @copydoc lf::geometry::RefinementPattern::noChildren()
+   * @copydoc lf::geometry::RefinementPattern::NumChildren()
    *
    * For a point: 0 (`rp_nil`), 1(`rp_copy`)
    */
-  [[nodiscard]] lf::base::size_type noChildren(
+  [[nodiscard]] lf::base::size_type NumChildren(
       lf::base::dim_t codim) const override;
   /**
    * @copydoc lf::geometry::RefinementPattern::ChildPolygons()

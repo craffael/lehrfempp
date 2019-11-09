@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/craffael/lehrfempp.svg?branch=master)](https://travis-ci.org/craffael/lehrfempp/branches)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/craffael/lehrfempp/branch/master)](https://ci.appveyor.com/project/craffael/lehrfempp/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/wfr8sb13ivp3595w/branch/master?svg=true)](https://ci.appveyor.com/project/craffael/lehrfempp/branch/master)
 
 # LehrFEM++
 Simplistic Finite Element Framework for research and eduction optimzed for clarity and

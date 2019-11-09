@@ -17,8 +17,8 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
   // Obtain pointer to the underlying mesh
   auto mesh = dofh.Mesh();
   // Number of degrees of freedom managed by the DofHandler object
-  const lf::assemble::size_type N_dofs(dofh.NoDofs());
-  std::cout << "DofHandler(" << dofh.NoDofs() << " dofs):" << std::endl;
+  const lf::assemble::size_type N_dofs(dofh.NumDofs());
+  std::cout << "DofHandler(" << dofh.NumDofs() << " dofs):" << std::endl;
   // Output information about dofs for entities of all co-dimensions
   for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
     // Visit all entities of a codimension codim
@@ -26,7 +26,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       // Fetch unique index of current entity supplied by mesh object
       const lf::base::glb_idx_t e_idx = mesh->Index(*e);
       // Number of shape functions covering current entity
-      const lf::assemble::size_type no_dofs(dofh.NoLocalDofs(*e));
+      const lf::assemble::size_type no_dofs(dofh.NumLocalDofs(*e));
       // Obtain global indices of those shape functions ...
       nonstd::span<const lf::assemble::gdof_idx_t> dofarray{
           dofh.GlobalDofIndices(*e)};

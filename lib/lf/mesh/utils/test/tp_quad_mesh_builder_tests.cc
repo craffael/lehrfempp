@@ -29,8 +29,8 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-      .setNoXCells(3)
-      .setNoYCells(2);
+      .setNumXCells(3)
+      .setNumYCells(2);
   auto mesh_p = builder.Build();
 
   EXPECT_TRUE(mesh_p) << "Oops! no mesh!";

@@ -27,17 +27,17 @@ TEST(test_mesh_utils, count_test) {
   EXPECT_EQ(mesh_p->NumEntities(1), 18) << "Test mesh: 18 edges expected!";
   EXPECT_EQ(mesh_p->NumEntities(2), 10) << "Test mesh: 10 nodes expected!";
 
-  auto cells_at_edges{countNoSuperEntities(mesh_p, 1, 1)};
+  auto cells_at_edges{CountNumSuperEntities(mesh_p, 1, 1)};
   for (const lf::mesh::Entity* edge : mesh_p->Entities(1)) {
     std::cout << cells_at_edges(*edge) << " cells @ " << *edge << ' '
               << mesh_p->Index(*edge) << std::endl;
   }
-  auto edges_at_vertices{countNoSuperEntities(mesh_p, 2, 1)};
+  auto edges_at_vertices{CountNumSuperEntities(mesh_p, 2, 1)};
   for (const lf::mesh::Entity* node : mesh_p->Entities(2)) {
     std::cout << edges_at_vertices(*node) << " edges @ " << *node << ' '
               << mesh_p->Index(*node) << std::endl;
   }
-  auto cells_at_nodes{countNoSuperEntities(mesh_p, 2, 2)};
+  auto cells_at_nodes{CountNumSuperEntities(mesh_p, 2, 2)};
   for (const lf::mesh::Entity* node : mesh_p->Entities(2)) {
     std::cout << cells_at_nodes(*node) << " cells @ " << *node << ' '
               << mesh_p->Index(*node) << std::endl;

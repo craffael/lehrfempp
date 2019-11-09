@@ -40,7 +40,7 @@ void mfPointUsage() {
   auto fes = std::make_shared<uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
   // A Mesh function representing the first shape function of fes
-  Eigen::VectorXd x(fes->LocGlobMap().NoDofs());
+  Eigen::VectorXd x(fes->LocGlobMap().NumDofs());
   x[0] = 1.0;
   auto mfShapeFun = uscalfe::MeshFunctionFE(fes, x);
 
@@ -73,7 +73,7 @@ void mfCellUsage() {
   auto fes = std::make_shared<uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
   // A Mesh function representing the gradient of the first shape function
-  Eigen::VectorXd x(fes->LocGlobMap().NoDofs());
+  Eigen::VectorXd x(fes->LocGlobMap().NumDofs());
   x[0] = 1.0;
   auto mfShapeFun = uscalfe::MeshFunctionGradFE(fes, x);
 

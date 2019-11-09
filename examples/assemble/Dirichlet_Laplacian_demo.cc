@@ -47,7 +47,7 @@ const unsigned int dbg_trp = 128;
  * otherwise to `false`.
  */
 std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
-  const lf::base::size_type N{dofh.NoDofs()};
+  const lf::base::size_type N{dofh.NumDofs()};
   // Flag all entities on the boundary
   auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(dofh.Mesh())};
   // Run through all global shape functions and check whether
@@ -160,7 +160,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   SWITCHEDSTATEMENT(dbg_ctrl, dbg_dofh,
                     std::cout << loc_glob_map << std::endl;);
   // Dimension of finite element space
-  const lf::assemble::size_type N_dofs(loc_glob_map.NoDofs());
+  const lf::assemble::size_type N_dofs(loc_glob_map.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
   // Building the Galerkin matrix (trial space = test space)
@@ -179,7 +179,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   auto rhsvec = lf::assemble::AssembleVectorLocally<Eigen::VectorXd>(
       0, loc_glob_map, loc_vec_sample);
   // Sample Dirichlet date from the exact solution
-  Eigen::VectorXd dirichlet_data(loc_glob_map.NoDofs());
+  Eigen::VectorXd dirichlet_data(loc_glob_map.NumDofs());
   const Eigen::Matrix<double, 0, 1> ref_coord{
       Eigen::Matrix<double, 0, 1>::Zero(0, 1)};
   for (const lf::mesh::Entity *node : mesh_p->Entities(mesh_p->DimMesh())) {
@@ -187,7 +187,7 @@ double L2ErrorLinearFEDirichletLaplacian(
                   "Wrong topological type for a node");
     const Eigen::Vector2d point = node->Geometry()->Global(ref_coord);
     const lf::assemble::size_type num_int_dof =
-        loc_glob_map.NoInteriorDofs(*node);
+        loc_glob_map.NumInteriorDofs(*node);
     LF_ASSERT_MSG(num_int_dof == 1, "Node with " << num_int_dof << " dof");
     nonstd::span<const lf::assemble::gdof_idx_t> gsf_idx(
         loc_glob_map.InteriorGlobalDofIndices(*node));
@@ -223,7 +223,7 @@ double L2ErrorLinearFEDirichletLaplacian(
 
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
-  LF_VERIFY_MSG(!mat.triplets().empty() > 0, "blabla");
+  LF_VERIFY_MSG(!mat.triplets().empty() > 0, "Empty stiffness matrix!");
   Eigen::SparseMatrix<double> stiffness_matrix = {mat.makeSparse()};
   // Solve linear system
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
@@ -238,7 +238,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
     nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
         loc_glob_map.GlobalDofIndices(*cell));
-    LF_ASSERT_MSG(loc_glob_map.NoLocalDofs(*cell) == cell->RefEl().NumNodes(),
+    LF_ASSERT_MSG(loc_glob_map.NumLocalDofs(*cell) == cell->RefEl().NumNodes(),
                   "Inconsistent node number");
     const lf::base::size_type num_nodes = cell->RefEl().NumNodes();
     double sum = 0.0;

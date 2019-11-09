@@ -46,8 +46,8 @@ int main(int argc, char** argv) {
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
       .setTopRightCorner(Eigen::Vector2d{1, 1})
-      .setNoXCells(Nx)
-      .setNoYCells(Ny);
+      .setNumXCells(Nx)
+      .setNumYCells(Ny);
   auto mesh_p = builder.Build();
 
   // Some consistency checks.
