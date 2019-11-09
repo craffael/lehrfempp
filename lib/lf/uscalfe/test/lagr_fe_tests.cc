@@ -554,8 +554,8 @@ TEST(lf_fe_quadratic, ReactionDiffusionEMPTensor) {
                                          decltype(gamma)>
       emp{fe_space, alpha, gamma, quad_rules};
 
-  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NoDofs(),
-                                     fe_space->LocGlobMap().NoDofs());
+  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NumDofs(),
+                                     fe_space->LocGlobMap().NumDofs());
   AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
                         matrix);
 
