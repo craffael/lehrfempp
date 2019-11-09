@@ -60,27 +60,25 @@ TEST(product_dof_handler, consistency_test) {
                                               {lf::base::RefEl::kQuad(), 4}}});
 
     std::cout << "constructed first dof handler" << std::endl;
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(point), 1);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(edge), 2);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(tria), 3);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(quad), 4);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(point), 1);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(edge), 2);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(tria), 3);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(quad), 4);
 
-    EXPECT_EQ(dof_handler1.NoLocalDofs(point), 1)
-        << "should be 1, is " << dof_handler1.NoLocalDofs(point);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(edge), 4)
-        << "should be 1, is " << dof_handler1.NoLocalDofs(edge);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(tria), 12);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(quad), 16);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(point), 1);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(edge), 4);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(tria), 12);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(quad), 16);
 
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(point, 0), 1);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(edge, 0), 2);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(tria, 0), 3);
-    EXPECT_EQ(dof_handler1.NoInteriorDofs(quad, 0), 4);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(point, 0), 1);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(edge, 0), 2);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(tria, 0), 3);
+    EXPECT_EQ(dof_handler1.NumInteriorDofs(quad, 0), 4);
 
-    EXPECT_EQ(dof_handler1.NoLocalDofs(point, 0), 1);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(edge, 0), 4);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(tria, 0), 12);
-    EXPECT_EQ(dof_handler1.NoLocalDofs(quad, 0), 16);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(point, 0), 1);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(edge, 0), 4);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(tria, 0), 12);
+    EXPECT_EQ(dof_handler1.NumLocalDofs(quad, 0), 16);
   }
 
   // two components:
@@ -98,37 +96,37 @@ TEST(product_dof_handler, consistency_test) {
     std::cout << "constructed second dof handler" << std::endl;
 
     // check number of dofs for complete fe space:
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(point), 1);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(edge), 2);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(tria), 3);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(quad), 4);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(point), 1);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(edge), 2);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(tria), 3);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(quad), 4);
 
-    EXPECT_EQ(dof_handler2.NoLocalDofs(point), 1);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(edge), 4);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(tria), 12);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(quad), 16);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(point), 1);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(edge), 4);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(tria), 12);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(quad), 16);
 
     // check number of dofs for first component:
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(point, 0), 1);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(edge, 0), 1);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(tria, 0), 2);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(quad, 0), 2);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(point, 0), 1);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(edge, 0), 1);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(tria, 0), 2);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(quad, 0), 2);
 
-    EXPECT_EQ(dof_handler2.NoLocalDofs(point, 0), 1);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(edge, 0), 3);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(tria, 0), 8);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(quad, 0), 10);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(point, 0), 1);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(edge, 0), 3);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(tria, 0), 8);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(quad, 0), 10);
 
     // check number of dofs for second component:
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(point, 1), 0);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(edge, 1), 1);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(tria, 1), 1);
-    EXPECT_EQ(dof_handler2.NoInteriorDofs(quad, 1), 2);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(point, 1), 0);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(edge, 1), 1);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(tria, 1), 1);
+    EXPECT_EQ(dof_handler2.NumInteriorDofs(quad, 1), 2);
 
-    EXPECT_EQ(dof_handler2.NoLocalDofs(point, 1), 0);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(edge, 1), 1);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(tria, 1), 4);
-    EXPECT_EQ(dof_handler2.NoLocalDofs(quad, 1), 6);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(point, 1), 0);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(edge, 1), 1);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(tria, 1), 4);
+    EXPECT_EQ(dof_handler2.NumLocalDofs(quad, 1), 6);
   }
 }
 
@@ -251,8 +249,8 @@ TEST(product_dof_handler, two_component_fe_space) {
   stiffness_factory.AddReactionElementMatrixProvider(u, u, gamma);
   auto provider = stiffness_factory.Build();
 
-  lf::assemble::COOMatrix<double> mat(fe_space->LocGlobMap().NoDofs(),
-                                      fe_space->LocGlobMap().NoDofs());
+  lf::assemble::COOMatrix<double> mat(fe_space->LocGlobMap().NumDofs(),
+                                      fe_space->LocGlobMap().NumDofs());
   mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
       0, fe_space->LocGlobMap(), *provider);
 

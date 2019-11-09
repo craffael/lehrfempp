@@ -27,23 +27,4 @@ using sub_idx_t = lf::uscalfe::sub_idx_t;
 
 }  // namespace projects::dpg
 
-// shape functions
-//#include "discontinuous_fe_constant.h"
-//#include "lagr_fe_quadratic.h"
-//#include "lagr_fe_cubic.h"
-
-// shape function decorators
-//#include "discontinuous_scalar_reference_finite_element.h"
-//#include "trace_scalar_reference_finite_element.h"
-
-// DPG local quanties
-//#include "dpg_element_matrix_provider.h"
-//#include "dpg_element_vector_provider.h"
-
-// Sub element matrix providers
-//#include "loc_comp_dpg.h"
-
-// product spaces
-//#include "product_dofhandler.h"
-
 #endif  // PROJECTS_DPG_DPG_H

@@ -157,7 +157,7 @@ ConvectionDiffusionDPGLinSys(
   const ProductUniformFEDofHandler& dofh{fe_space->LocGlobMap()};
 
   // assemble the full galerkin matrix
-  const size_type N_dofs(dofh.NoDofs());
+  const size_type N_dofs(dofh.NumDofs());
   lf::assemble::COOMatrix<SCALAR> A(N_dofs, N_dofs);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, *element_matrix_provider,
                                       A);

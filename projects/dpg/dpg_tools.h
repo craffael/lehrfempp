@@ -296,16 +296,16 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionsFromFunctions(
   size_type trace_offset = dofh.Offset(trace_component);
   size_type flux_offset = dofh.Offset(flux_component);
 
-  std::vector<std::pair<bool, SCALAR>> EssentialConditions(dofh.NoDofs(),
+  std::vector<std::pair<bool, SCALAR>> EssentialConditions(dofh.NumDofs(),
                                                            {false, SCALAR{}});
 
   // flag dofs on product space corresponding to fixed trace dofs
-  for (size_type dof = 0; dof < trace_dofh.NoDofs(); dof++) {
+  for (size_type dof = 0; dof < trace_dofh.NumDofs(); dof++) {
     EssentialConditions[trace_offset + dof] = componentTraceConditions[dof];
   }
 
   // flag dofs on product space corresponding to fixed flux dofs
-  for (size_type dof = 0; dof < flux_dofh.NoDofs(); dof++) {
+  for (size_type dof = 0; dof < flux_dofh.NumDofs(); dof++) {
     EssentialConditions[flux_offset + dof] = componentFluxConditions[dof];
   }
 
@@ -349,9 +349,9 @@ lf::mesh::utils::CodimMeshDataSet<SCALAR> ElementErrorEstimators(
 
     // retrive local solution
     Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> local_solution(
-        trial_dofh.NoLocalDofs(*cell));
+        trial_dofh.NumLocalDofs(*cell));
     auto global_dofs = trial_dofh.GlobalDofIndices(*cell);
-    for (size_type i = 0; i < trial_dofh.NoLocalDofs(*cell); ++i) {
+    for (size_type i = 0; i < trial_dofh.NumLocalDofs(*cell); ++i) {
       local_solution(i) = sol_vec(global_dofs[i]);
     }
 

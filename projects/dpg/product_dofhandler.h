@@ -84,7 +84,7 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
                              std::vector<dof_map_t> dofmaps);
 
   /** @copydoc lf::assemble::DofHandler::NoDofs() */
-  [[nodiscard]] size_type NoDofs() const override;
+  [[nodiscard]] size_type NumDofs() const override;
 
   /**
    * @brief tells the total number of dofs handled, that belong to a
@@ -92,11 +92,9 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    * @param component index identifying a component of the product
    * space.
    */
-  [[nodiscard]] size_type NoDofs(size_type component) const;
+  [[nodiscard]] size_type NumDofs(size_type component) const;
 
-  /** @copydoc lf::assemble::DofHandler::NoLocalDofs() */
-
-  [[nodiscard]] size_type NoLocalDofs(
+  [[nodiscard]] size_type NumLocalDofs(
       const lf::mesh::Entity& entity) const override;
 
   /**
@@ -107,11 +105,10 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    * @param component  index identifying the component of the product
    * space.
    */
-  [[nodiscard]] size_type NoLocalDofs(const lf::mesh::Entity& entity,
-                                      size_type component) const;
+  [[nodiscard]] size_type NumLocalDofs(const lf::mesh::Entity& entity,
+                                       size_type component) const;
 
-  /** @copydoc lf::assemble::DofHandler::NoInteriorDofs() */
-  [[nodiscard]] size_type NoInteriorDofs(
+  [[nodiscard]] size_type NumInteriorDofs(
       const lf::mesh::Entity& entity) const override;
 
   /**
@@ -122,18 +119,15 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    * @param component index identifying the component of the product
    * space.
    */
-  [[nodiscard]] size_type NoInteriorDofs(const lf::mesh::Entity& entity,
-                                         size_type component) const;
+  [[nodiscard]] size_type NumInteriorDofs(const lf::mesh::Entity& entity,
+                                          size_type component) const;
 
-  /** @copydoc lf::assemble::DofHandler::GlobalDofIndices() */
   [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity& entity) const override;
 
-  /** @copydoc lf::assemble::DofHandler::InteriorGlobalDofIndices */
   [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity& entity) const override;
 
-  /** @copydoc lf::assemble::DofHandler::Entity() */
   [[nodiscard]] const lf::mesh::Entity& Entity(
       gdof_idx_t dofnum) const override;
 
@@ -147,7 +141,6 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    */
   [[nodiscard]] size_type Component(glb_idx_t dofnum) const;
 
-  /** @copydoc lf::assemble::DofHandler::Mesh() */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override;
 
   /**
@@ -158,7 +151,7 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    *
    * Returns a dofhandler object that manages the global shape functions
    * belonging to a given component. This object then numbers the shape
-   * functions of this component from 0 to NoDofs(component)-1.
+   * functions of this component from 0 to NumDofs(component)-1.
    *
    * @note The resulting object no longer
    * has any information about the product space from which it was created.
@@ -195,7 +188,7 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
   /**
    * @brief returns the number of components of the product space.
    */
-  [[nodiscard]] size_type NoComponents() const { return num_components_; }
+  [[nodiscard]] size_type NumComponents() const { return num_components_; }
 
   /**
    * @brief Returns the first/smallest index of a global shape function
@@ -210,7 +203,7 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
    *
    * @note The global shape functions associated with this component will have
    * global indices in the range \f$  \{ \f$ Offset(component), \f$\dots\f$ ,
-   * Offset(component) + NoDofs(component)\f$ \} \f$
+   * Offset(component) + NumDofs(component)\f$ \} \f$
    */
   [[nodiscard]] size_type Offset(size_type component) const {
     return offsets_[component];

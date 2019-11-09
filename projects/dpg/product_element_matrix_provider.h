@@ -138,7 +138,7 @@ ProductElementMatrixProvider<SCALAR>::Eval(const lf::mesh::Entity& cell) {
   const ProductUniformFEDofHandler& dof_h_test{fe_space_test_->LocGlobMap()};
 
   // initialize the element matrix:
-  elem_mat_t mat(dof_h_test.NoLocalDofs(cell), dof_h_trial.NoLocalDofs(cell));
+  elem_mat_t mat(dof_h_test.NumLocalDofs(cell), dof_h_trial.NumLocalDofs(cell));
   mat.setZero();
 
   // build the element matrix from the "building block" sub element matrizes

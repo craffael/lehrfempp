@@ -129,7 +129,7 @@ ProductElementVectorProvider<SCALAR>::Eval(const lf::mesh::Entity& cell) {
   const ProductUniformFEDofHandler& dof_h{fe_space_test_->LocGlobMap()};
 
   // initialize the element vector
-  elem_vec_t vec(dof_h.NoLocalDofs(cell));
+  elem_vec_t vec(dof_h.NumLocalDofs(cell));
   vec.setZero();
 
   // build the building block from the "building block" subproviders

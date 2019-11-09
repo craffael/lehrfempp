@@ -76,8 +76,8 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
           std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
-          .setNoXCells(2)
-          .setNoYCells(2);
+          .setNumXCells(2)
+          .setNumYCells(2);
       top_mesh = builder.Build();
       break;
     }
@@ -87,8 +87,8 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
           std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
-          .setNoXCells(2)
-          .setNoYCells(2);
+          .setNumXCells(2)
+          .setNumYCells(2);
       top_mesh = builder.Build();
       break;
     }
@@ -252,17 +252,17 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     // extract u component:
     auto& dofh = fe_space_trial->LocGlobMap();
     auto fe_space_u = fe_space_trial->ComponentFESpace(u);
-    Eigen::VectorXd sol_vec_u = sol_vec.segment(dofh.Offset(u), dofh.NoDofs(u));
+    Eigen::VectorXd sol_vec_u = sol_vec.segment(dofh.Offset(u), dofh.NumDofs(u));
 
     // Extract sigma_x component:
     auto fe_space_sigma_x = fe_space_trial->ComponentFESpace(sigma_x);
     Eigen::VectorXd sol_vec_sigma_x =
-        sol_vec.segment(dofh.Offset(sigma_x), dofh.NoDofs(sigma_x));
+        sol_vec.segment(dofh.Offset(sigma_x), dofh.NumDofs(sigma_x));
 
     // Extract sigma_y component:
     auto fe_space_sigma_y = fe_space_trial->ComponentFESpace(sigma_y);
     Eigen::VectorXd sol_vec_sigma_y =
-        sol_vec.segment(dofh.Offset(sigma_y), dofh.NoDofs(sigma_y));
+        sol_vec.segment(dofh.Offset(sigma_y), dofh.NumDofs(sigma_y));
 
     // wrap finite element solution and exact solution into a mesh function:
     auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
@@ -302,12 +302,12 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
         ElementErrorEstimators(fe_space_trial->LocGlobMap(), stiffness_provider,
                                gramian_provider, rhs_provider, sol_vec);
     double posteriorError = EvalPosteriorError(mesh_p, local_errors);
-    std::cout << "Level " << l << "(" << dofh.NoDofs()
+    std::cout << "Level " << l << "(" << dofh.NumDofs()
               << ") , L2 Error u: " << L2err_u
               << ", L2 error sigma: " << L2err_sigma << "(x:" << L2err_sigma_x
               << ", y: " << L2err_sigma_y << ")"
               << ", posterior error: " << posteriorError << std::endl;
-    errnorms.emplace_back(dofh.NoDofs(), L2err_u, L2err_sigma, posteriorError);
+    errnorms.emplace_back(dofh.NumDofs(), L2err_u, L2err_sigma, posteriorError);
   }
   return errnorms;
 }

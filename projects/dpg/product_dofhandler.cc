@@ -23,7 +23,7 @@ ProductUniformFEDofHandler::ProductUniformFEDofHandler(
         std::make_shared<lf::assemble::UniformFEDofHandler>(mesh_p_,
                                                             dofmaps[component]);
     offsets_[component] = offset;
-    offset += component_dof_handlers_[component]->NoDofs();
+    offset += component_dof_handlers_[component]->NumDofs();
   }
   // offsets_[num_components_] =  NoDofs()
   offsets_[num_components_] = offset;
@@ -64,15 +64,15 @@ void ProductUniformFEDofHandler::initIndexArrays() {
   }
 }
 
-size_type ProductUniformFEDofHandler::NoDofs() const {
+size_type ProductUniformFEDofHandler::NumDofs() const {
   return offsets_[num_components_];
 }
 
-size_type ProductUniformFEDofHandler::NoDofs(size_type component) const {
-  return component_dof_handlers_[component]->NoDofs();
+size_type ProductUniformFEDofHandler::NumDofs(size_type component) const {
+  return component_dof_handlers_[component]->NumDofs();
 }
 
-size_type ProductUniformFEDofHandler::NoLocalDofs(
+size_type ProductUniformFEDofHandler::NumLocalDofs(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
   const glb_idx_t entity_idx = mesh_p_->Index(entity);
@@ -80,12 +80,12 @@ size_type ProductUniformFEDofHandler::NoLocalDofs(
   return num_dofs;
 }
 
-size_type ProductUniformFEDofHandler::NoLocalDofs(
+size_type ProductUniformFEDofHandler::NumLocalDofs(
     const lf::mesh::Entity& entity, size_type component) const {
-  return component_dof_handlers_[component]->NoLocalDofs(entity);
+  return component_dof_handlers_[component]->NumLocalDofs(entity);
 }
 
-size_type ProductUniformFEDofHandler::NoInteriorDofs(
+size_type ProductUniformFEDofHandler::NumInteriorDofs(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
   const glb_idx_t entity_idx = mesh_p_->Index(entity);
@@ -93,9 +93,9 @@ size_type ProductUniformFEDofHandler::NoInteriorDofs(
   return num_dofs;
 }
 
-size_type ProductUniformFEDofHandler::NoInteriorDofs(
+size_type ProductUniformFEDofHandler::NumInteriorDofs(
     const lf::mesh::Entity& entity, size_type component) const {
-  return component_dof_handlers_[component]->NoInteriorDofs(entity);
+  return component_dof_handlers_[component]->NumInteriorDofs(entity);
 }
 
 nonstd::span<const gdof_idx_t> ProductUniformFEDofHandler::GlobalDofIndices(
@@ -135,13 +135,13 @@ ldof_idx_t ProductUniformFEDofHandler::LocalStartIndex(
     const lf::mesh::Entity& entity, size_type component) const {
   size_type local_offset = 0;
   for (size_type comp = 0; comp < component; comp++) {
-    local_offset += NoLocalDofs(entity, comp);
+    local_offset += NumLocalDofs(entity, comp);
   }
   return local_offset;
 }
 
 size_type ProductUniformFEDofHandler::Component(glb_idx_t dofnum) const {
-  LF_ASSERT_MSG(dofnum < NoDofs(), "invalid global index (out of bounds)");
+  LF_ASSERT_MSG(dofnum < NumDofs(), "invalid global index (out of bounds)");
   // iterate through compont offsets:
   for (size_type component = 0; component < num_components_; component++) {
     if (offsets_[component + 1] > dofnum) {

@@ -76,8 +76,8 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
           std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
-          .setNoXCells(2)
-          .setNoYCells(2);
+          .setNumXCells(2)
+          .setNumYCells(2);
       top_mesh = builder.Build();
       break;
     }
@@ -87,8 +87,8 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
           std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
-          .setNoXCells(2)
-          .setNoYCells(2);
+          .setNumXCells(2)
+          .setNumYCells(2);
       top_mesh = builder.Build();
       break;
     }
@@ -187,7 +187,7 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
     // extract u component:
     auto& dofh = fe_space_trial->LocGlobMap();
     auto fe_space_u = fe_space_trial->ComponentFESpace(u);
-    Eigen::VectorXd sol_vec_u = sol_vec.head(dofh.NoDofs(u));
+    Eigen::VectorXd sol_vec_u = sol_vec.head(dofh.NumDofs(u));
 
     // wrap finite element solution and exact solution into a mesh function:
     auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
@@ -207,10 +207,10 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
         ElementErrorEstimators(fe_space_trial->LocGlobMap(), stiffness_provider,
                                gramian_provider, rhs_provider, sol_vec);
     double posteriorError = EvalPosteriorError(mesh_p, local_errors);
-    std::cout << "Level " << l << " ( " << dofh.NoDofs() << ")"
+    std::cout << "Level " << l << " ( " << dofh.NumDofs() << ")"
               << ", H1 error: " << H1_err << ", post:" << posteriorError
               << std::endl;
-    errnorms.emplace_back(dofh.NoDofs(), H1_err, posteriorError);
+    errnorms.emplace_back(dofh.NumDofs(), H1_err, posteriorError);
   }
   return errnorms;
 }

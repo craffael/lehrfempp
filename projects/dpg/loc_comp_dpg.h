@@ -114,12 +114,10 @@ class DiffusionElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
    */
   ElemMat Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementMatrixProvider::TrialComponent() */
   [[nodiscard]] size_type TrialComponent() const override {
     return trial_component_;
   }
 
-  /** @copydoc SubElementMatrixProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }
@@ -348,12 +346,10 @@ class ReactionElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
    */
   ElemMat Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementMatrixProvider::TrialComponent() */
   [[nodiscard]] size_type TrialComponent() const override {
     return trial_component_;
   }
 
-  /** @copydoc SubElementMatrixProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }
@@ -582,12 +578,10 @@ class ConvectionElementMatrixProvider
    */
   ElemMat Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementMatrixProvider::TrialComponent() */
   [[nodiscard]] size_type TrialComponent() const override {
     return trial_component_;
   }
 
-  /** @copydoc SubElementMatrixProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }
@@ -840,12 +834,10 @@ class FluxElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
    */
   ElemMat Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementMatrixProvider::TrialComponent() */
   [[nodiscard]] size_type TrialComponent() const override {
     return trial_component_;
   }
 
-  /** @copydoc SubElementMatrixProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }
@@ -1101,12 +1093,10 @@ class TraceElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
    */
   ElemMat Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementMatrixProvider::TrialComponent() */
   [[nodiscard]] size_type TrialComponent() const override {
     return trial_component_;
   }
 
-  /** @copydoc SubElementMatrixProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }
@@ -1371,7 +1361,6 @@ class LoadElementVectorProvider : public SubElementVectorProvider<SCALAR> {
    */
   ElemVec Eval(const lf::mesh::Entity& cell) override;
 
-  /** @copydoc SubElementVectorProvider::TestComponent() */
   [[nodiscard]] size_type TestComponent() const override {
     return test_component_;
   }

@@ -29,6 +29,8 @@ namespace projects::dpg {
  * The first three shape functions are associated with vertices,
  * the next six with the  edges of the triangle. The last shape function is an
  * interior shape function.
+ *
+ * @see lf::uscalfe::ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO3Tria final
@@ -47,9 +49,6 @@ class FeLagrangeO3Tria final
 
   [[nodiscard]] unsigned Degree() const override { return 3; }
 
-  /**
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
-   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 10; }
 
   /**
@@ -73,9 +72,6 @@ class FeLagrangeO3Tria final
     return (codim == 1) ? 2 : 1;
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -85,13 +81,13 @@ class FeLagrangeO3Tria final
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         10, refcoords.cols());
 
-    const Eigen::ArrayXd x0 = refcoords.row(0).array();
-    const Eigen::ArrayXd x1 = refcoords.row(1).array();
+    auto x0 = refcoords.row(0).array();
+    auto x1 = refcoords.row(1).array();
 
     // evaluation of the barycentric coordinate functions:
-    const Eigen::ArrayXd lambda0 = 1 - x0 - x1;
-    const Eigen::ArrayXd& lambda1 = x0;
-    const Eigen::ArrayXd& lambda2 = x1;
+    auto lambda0 = 1 - x0 - x1;
+    auto lambda1 = x0;
+    auto lambda2 = x1;
 
     result.row(0) = 4.5 * lambda0 * (lambda0 - 1 / 3.0) * (lambda0 - 2 / 3.0);
     result.row(1) = 4.5 * lambda1 * (lambda1 - 1 / 3.0) * (lambda1 - 2 / 3.0);
@@ -109,9 +105,6 @@ class FeLagrangeO3Tria final
     return result;
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -127,13 +120,13 @@ class FeLagrangeO3Tria final
                Eigen::AutoAlign>
         temp(&result(0, 0), 20, n_pts);
 
-    const Eigen::ArrayXd x0 = refcoords.row(0).array();
-    const Eigen::ArrayXd x1 = refcoords.row(1).array();
+    auto x0 = refcoords.row(0).array();
+    auto x1 = refcoords.row(1).array();
 
     // evaulate barycentric coordinate functions:
-    const Eigen::ArrayXd l0 = 1 - x0 - x1;
-    const Eigen::ArrayXd& l1 = x0;
-    const Eigen::ArrayXd& l2 = x1;
+    auto l0 = 1 - x0 - x1;
+    auto l1 = x0;
+    auto l2 = x1;
 
     // vertices
     temp.row(0) = -4.5 * ((l0 - 1 / 3.0) * (l0 - 2 / 3.0) +
@@ -168,8 +161,6 @@ class FeLagrangeO3Tria final
     return result;
   }
 
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes()
-   */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(2, 10);
     Eigen::MatrixXd vertices(2, 3);
@@ -206,6 +197,8 @@ class FeLagrangeO3Tria final
  *
  * The first two shape functins are associated with vertices of the segment.
  * The last two shape functions are interior shape function
+ *
+ * @see lf::uscalfe::ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO3Segment final
@@ -224,9 +217,6 @@ class FeLagrangeO3Segment final
 
   [[nodiscard]] unsigned Degree() const override { return 3; }
 
-  /**
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
-   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 4; }
 
   /**  One shape function attached to each node. There are two interior
@@ -246,9 +236,6 @@ class FeLagrangeO3Segment final
     return (codim == 0) ? 2 : 1;
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
@@ -258,7 +245,7 @@ class FeLagrangeO3Segment final
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         4, refcoords.cols());
 
-    Eigen::ArrayXd x = refcoords.row(0).array();
+    auto x = refcoords.row(0).array();
 
     // vertices
     result.row(0) = 4.5 * (1.0 - x) * (1.0 / 3.0 - x) * (2.0 / 3.0 - x);
@@ -271,9 +258,6 @@ class FeLagrangeO3Segment final
     return result;
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -284,7 +268,7 @@ class FeLagrangeO3Segment final
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         4, refcoords.cols());
 
-    Eigen::ArrayXd x = refcoords.row(0).array();
+    auto x = refcoords.row(0).array();
 
     // vertex
     result.row(0) = -13.5 * x * x + 18.0 * x - 5.5;
@@ -296,9 +280,6 @@ class FeLagrangeO3Segment final
     return result;
   }
 
-  /**
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes()
-   */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(1, 4);
     nodes << 0.0, 1.0, 1.0 / 3.0, 2.0 / 3.0;
@@ -336,6 +317,8 @@ class FeLagrangeO3Segment final
  * the next eight shape functions are associated
  * with edges of the quadrilateral. The last four shape functions are interior
  * shape function.
+ *
+ * @see lf::uscalfe::ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO3Quad final
@@ -354,8 +337,6 @@ class FeLagrangeO3Quad final
 
   [[nodiscard]] unsigned Degree() const override { return 3; }
 
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteelement::NumRefShapeFunctions()
-   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 16; }
 
   /**   One shape function is attached to each node and two to each edge
@@ -381,9 +362,6 @@ class FeLagrangeO3Quad final
     return NumRefShapeFunctions(codim);
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -410,9 +388,6 @@ class FeLagrangeO3Quad final
     return result;
   }
 
-  // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
-  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -458,7 +433,6 @@ class FeLagrangeO3Quad final
     return result;
   }
 
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes() */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(2, 16);
 
