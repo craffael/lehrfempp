@@ -7,7 +7,7 @@ set(sources
 )
 
 add_executable(lf.mesh.hybrid2d.test ${sources})
-target_link_libraries(lf.mesh.hybrid2d.test PUBLIC Eigen3::Eigen Boost::boost GTest::main
+target_link_libraries(lf.mesh.hybrid2d.test PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main
   lf.io
   lf.mesh.hybrid2d
   lf.mesh.test_utils
@@ -21,7 +21,7 @@ gtest_discover_tests(lf.mesh.hybrid2d.test)
 # )
 
 # add_executable(lf.mesh.orientation.test ${orisources})
-# target_link_libraries(lf.mesh.orientation.test PUBLIC Eigen3::Eigen Boost::boost GTest::main
+# target_link_libraries(lf.mesh.orientation.test PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main
 #   lf.mesh.hybrid2d
 #   lf.mesh.test_utils
 #   lf.mesh.utils)

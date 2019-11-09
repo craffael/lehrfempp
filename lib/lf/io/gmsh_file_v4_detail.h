@@ -151,6 +151,7 @@ namespace lf::io {
 BOOST_PHOENIX_ADAPT_FUNCTION(int, numNodesAdapted, NumNodes, 1);
 }  // namespace lf::io
 
+/// \cond
 namespace boost::spirit::traits {
 
 template <class Enum, class RawValue>
@@ -170,4 +171,5 @@ struct assign_to_attribute_from_value<
 };
 
 }  // namespace boost::spirit::traits
+/// \endcond
 #endif  // __c3071f8127a44f7e8cb57f0b1dd3335a

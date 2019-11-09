@@ -8,5 +8,5 @@ set(sources
 )
 
 add_executable(lf.quad.test ${sources})
-target_link_libraries(lf.quad.test PUBLIC Eigen3::Eigen Boost::boost GTest::main lf.base lf.quad)
+target_link_libraries(lf.quad.test PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main lf.base lf.quad)
 gtest_discover_tests(lf.quad.test)

@@ -1,6 +1,7 @@
 # Here we want to compile all snippets to make sure that they stay up-to-date, even when the code is refactored.
 
 set(sources
+  assembler.cc
   fe_tools.cc
   fe_space_lagrange_o1.cc
   gmsh_reader.cc

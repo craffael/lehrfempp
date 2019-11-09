@@ -11,7 +11,7 @@ set(sources
 
 add_executable(lf.refinement.test ${sources})
 target_link_libraries(lf.refinement.test
-  PUBLIC Eigen3::Eigen Boost::boost GTest::main
+  PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main
   lf.refinement
   lf.mesh.hybrid2d
   lf.mesh.test_utils
@@ -30,7 +30,7 @@ set(rrt_sources
 
 add_executable(lf.refinement.rrt_test ${rrt_sources})
 target_link_libraries(lf.refinement.rrt_test
-  PUBLIC Eigen3::Eigen Boost::boost GTest::main
+  PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main
   lf.refinement
   lf.mesh.hybrid2d
   lf.mesh.test_utils
