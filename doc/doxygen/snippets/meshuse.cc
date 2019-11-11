@@ -45,6 +45,7 @@ bool checkEntityIndexing(const lf::mesh::Mesh& mesh) {
       if (idx_use[idx_cnt] != 1) return false;
     }
   }  // end for
+  return true;
 }  // end checkEntityIndexing()
    //! [usage]
 }  // namespace lf::mesh

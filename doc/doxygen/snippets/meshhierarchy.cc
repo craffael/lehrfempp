@@ -23,9 +23,10 @@ void snippetmh(void) {
   // Perform a first step of regular refinement: adds a mesh
   multi_mesh.RefineRegular();
   // For demonstration purposes: Mark edges whose center lies inside a square
-  std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
-      marker =
-          [](const lf::mesh::Mesh &mesh, const lf::mesh::Entity &edge) -> bool {
+  // type: std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity
+  // &edge)>, but 'auto' faster.
+  auto marker = [](const lf::mesh::Mesh &mesh,
+                   const lf::mesh::Entity &edge) -> bool {
     Eigen::MatrixXd ref_c = (Eigen::MatrixXd(1, 1) << 0.5).finished();
     Eigen::VectorXd c(edge.Geometry()->Global(ref_c));
     return ((c[0] > 1.0) && (c[0] < 2.0) && (c[1] > 1.0) && (c[1] < 2.0));
