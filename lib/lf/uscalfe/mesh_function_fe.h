@@ -76,6 +76,25 @@ class MeshFunctionFE {
     return result;
   }
 
+  /**
+   * @brief Convenience method to retrieve the underlying mesh
+   * @returns The mesh on which this mesh function is defined.
+   */
+  [[nodiscard]] std::shared_ptr<const mesh::Mesh> getMesh() const {
+    return fe_space_->Mesh();
+  }
+
+  /**
+   * @brief Convenience method to retrieve the finite element space in which the
+   * mesh function lives
+   * @returns shared_ptr to UniformScalarFESpace in which the mesh function
+   * lives.
+   */
+  [[nodiscard]] std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>>
+  getFESpace() const {
+    return fe_space_;
+  }
+
  private:
   std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
