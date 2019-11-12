@@ -2,7 +2,7 @@
 #define LF_INTERGRIDFE_H
 
 /**
- * @file 
+ * @file
  * @brief Transfer of a MeshFunctionFE or MeshFunctionGradFE
  * between levels of a MeshHierarchy
  * @author Tobias Rohner
@@ -10,14 +10,11 @@
  * @copyright MIT License
  */
 
-
 #include "mesh_function_transfer.h"
-
 
 /**
  * @brief Operations between meshes of a MeshHierarchy
  */
-namespace lf::intergridfe { }
+namespace lf::intergridfe {}
 
-
-#endif // LF_INTERGRIDFE_H
+#endif  // LF_INTERGRIDFE_H
