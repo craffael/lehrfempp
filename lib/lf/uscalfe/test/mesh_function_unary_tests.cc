@@ -92,4 +92,21 @@ TEST(meshFunctionUnary, squaredNorm) {
   }));
 }
 
+TEST(meshFunctionUnary, transpose) {
+  auto reader = io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
+  auto mesh = reader.mesh();
+
+  auto mfVectorT = MeshFunctionGlobal(
+      [](auto x) -> Eigen::Matrix<double, 1, 2> { return x.transpose(); });
+  checkMeshFunctionEqual(*mesh, transpose(mfVector), mfVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfVector_dynamic), mfVectorT);
+
+  auto mfRowVectorT = MeshFunctionGlobal(
+      [](auto x) -> Eigen::Vector2d { return Eigen::Vector2d(x[1], -x[0]); });
+  checkMeshFunctionEqual(*mesh, transpose(mfRowVector), mfRowVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfRowVector_dynamic), mfRowVectorT);
+
+  checkMeshFunctionEqual(*mesh, transpose(mfMatrix), mfMatrix);
+}
+
 }  // namespace lf::uscalfe::test
