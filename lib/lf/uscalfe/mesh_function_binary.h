@@ -406,6 +406,7 @@ auto operator-(const A& a, const B& b) {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
+ * @relatesalso lf::uscalfe::MeshFunctionBinary
  * @brief Multiply two \ref mesh_function "mesh functions" with each other.
  * @tparam A The type of the lhs \ref mesh_function
  * @tparam B The type of the rhs \ref mesh_function
