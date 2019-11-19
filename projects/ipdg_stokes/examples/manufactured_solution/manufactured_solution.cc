@@ -196,29 +196,10 @@ int main() {
         velocity_modified(fe_space, solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));
-    writer.WriteCellData("analyticU",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return analyticU(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
-    writer.WriteCellData("analyticF",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return analyticF(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
-    writer.WriteCellData(
-        "U", *lf::mesh::utils::make_LambdaMeshDataSet(
-                 [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                   return velocity(e, Eigen::Vector2d::Constant(1. / 3))[0];
-                 }));
-    writer.WriteCellData("U_modified",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return velocity_modified(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
+    writer.WriteCellData("analyticU", analyticU);
+    writer.WriteCellData("analyticF", analyticF);
+    writer.WriteCellData("U", velocity);
+    writer.WriteCellData("U_modified", velocity_modified);
     // The error in the velocity
     const auto diff_v = velocity - velocity_exact;
     const auto diff_v_modified = velocity_modified - velocity_exact;

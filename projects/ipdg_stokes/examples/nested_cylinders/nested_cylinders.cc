@@ -377,43 +377,12 @@ int main(int argc, char *argv[]) {
         mesh, concat("result_zero_", dofh.NumDofs(), ".vtk"));
     lf::io::VtkWriter writer_nonzero(
         mesh, concat("result_nonzero_", dofh.NumDofs(), ".vtk"));
-    writer_zero.WriteCellData(
-        "velocity", *lf::mesh::utils::make_LambdaMeshDataSet(
-                        [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-                          return velocity_zero(
-                              e, Eigen::Vector2d::Constant(1. / 3))[0];
-                        }));
-    writer_zero.WriteCellData(
-        "velocity_modified",
-        *lf::mesh::utils::make_LambdaMeshDataSet(
-            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-              return velocity_zero_modified(
-                  e, Eigen::Vector2d::Constant(1. / 3))[0];
-            }));
-    writer_nonzero.WriteCellData(
-        "velocity", *lf::mesh::utils::make_LambdaMeshDataSet(
-                        [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-                          return velocity_nonzero(
-                              e, Eigen::Vector2d::Constant(1. / 3))[0];
-                        }));
-    writer_nonzero.WriteCellData(
-        "velocity_modified", *lf::mesh::utils::make_LambdaMeshDataSet(
-                                 [&](const lf::mesh::Entity &e) {
-                                   return velocity_nonzero_modified(
-                                       e, Eigen::Vector2d::Constant(1. / 3))[0];
-                                 }));
-    auto analytic = [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
-      const Eigen::Vector2d center = entity.Geometry()
-                                         ->Global(entity.RefEl().NodeCoords())
-                                         .rowwise()
-                                         .sum() /
-                                     entity.RefEl().NumNodes();
-      return analytic_velocity(center);
-    };
-    writer_zero.WriteCellData(
-        "analytic", *lf::mesh::utils::make_LambdaMeshDataSet(analytic));
-    writer_nonzero.WriteCellData(
-        "analytic", *lf::mesh::utils::make_LambdaMeshDataSet(analytic));
+    writer_zero.WriteCellData("velocity", velocity_zero);
+    writer_zero.WriteCellData("velocity_modified", velocity_zero_modified);
+    writer_nonzero.WriteCellData("velocity", velocity_nonzero);
+    writer_nonzero.WriteCellData("velocity_modified", velocity_nonzero_modified);
+    writer_zero.WriteCellData("analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
+    writer_nonzero.WriteCellData("analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
     // Compute the difference between the numerical and the analytical solution
     auto diff_velocity_zero = velocity_zero - velocity_exact;
     auto diff_velocity_zero_modified = velocity_zero_modified - velocity_exact;
