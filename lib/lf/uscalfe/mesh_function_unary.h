@@ -135,6 +135,20 @@ struct UnaryOpSquaredNorm {
     return result;
   }
 };
+
+struct UnaryOpTranspose {
+  // transpose the eigen matrix
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    std::vector<Eigen::Matrix<S, C, R>> result(u.size());
+    for (std::size_t i = 0; i < u.size(); ++i) {
+      result[i] = u[i].transpose();
+    }
+    return result;
+  }
+};
+
 }  // namespace internal
 
 /**
@@ -166,6 +180,14 @@ auto operator-(const A& a) {
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto squaredNorm(const A& a) {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);
+}
+
+template <class A, class = std::enable_if_t<isMeshFunction<A>>>
+auto transpose(const A& a) {
+  static_assert(
+      base::is_eigen_matrix<MeshFunctionReturnType<A>>,
+      "transpose() only supported for Eigen::Matrix valued mesh functions");
+  return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
 }
 
 }  // namespace lf::uscalfe

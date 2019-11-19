@@ -10,6 +10,9 @@ set(sources
   mesh_utils.cc
   ref_el.cc
   vtk_writer.cc
+  coomatrix.cpp
+  meshhierarchy.cc
+  meshuse.cc
 )
 
 add_library(docsnippets ${sources})

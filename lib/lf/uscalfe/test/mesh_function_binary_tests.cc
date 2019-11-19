@@ -23,6 +23,7 @@ class X {
 
   X operator+(const X& rhs) const { return X(x_ + rhs.x_); }
   X operator-(const X& rhs) const { return X(x_ - rhs.x_); }
+  X operator*(const X& rhs) const { return X(x_ * rhs.x_); };
   bool operator==(const X& rhs) const { return x_ == rhs.x_; }
 
  private:
@@ -104,6 +105,57 @@ TEST(meshFunctionBinary, Subtraction) {
 
   auto xSub = mfXA - mfXB;
   checkMeshFunctionEqual(*mesh, xSub, MeshFunctionConstant(X(-1)));
+}
+
+TEST(meshFunctionBinary, Multiplication) {
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  auto mult = mfA * mfB;
+  checkMeshFunctionEqual(*mesh, mult, MeshFunctionGlobal([](auto x) {
+    return (x[0] * x[0] + x[1]) * (x[0] + x[1]);
+  }));
+
+  // mfA * mfVectorA
+  auto mfVecMult = MeshFunctionGlobal([](auto x) {
+    return Eigen::Vector2d(x[0] * (x[0] * x[0] + x[1]),
+                           x[1] * (x[0] * x[0] + x[1]));
+  });
+  checkMeshFunctionEqual(*mesh, mfA * mfVectorA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfVectorA * mfA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfA * mfVectorA_dynamic, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic * mfA, mfVecMult);
+
+  // transpose(mfVectorA)*mfVectorB
+  auto mfVecMult2 = MeshFunctionGlobal([](auto x) {
+    return (Eigen::Matrix<double, 1, 1>() << x[0] * x[0] + 2 * x[1] * x[0])
+        .finished();
+  });
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA) * mfVectorB, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA_dynamic) * mfVectorB,
+                         mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA) * mfVectorB_dynamic,
+                         mfVecMult2);
+  checkMeshFunctionEqual(
+      *mesh, transpose(mfVectorA_dynamic) * mfVectorB_dynamic, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB) * mfVectorA, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB_dynamic) * mfVectorA,
+                         mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB) * mfVectorA_dynamic,
+                         mfVecMult2);
+  checkMeshFunctionEqual(
+      *mesh, transpose(mfVectorB_dynamic) * mfVectorA_dynamic, mfVecMult2);
+
+  // mfMatrixA * mfVectorA
+  auto mfMatrixA_mfVectorA = MeshFunctionGlobal([](auto x) {
+    return Eigen::Vector2d(x[0] * x[0] * x[0] + x[0] * x[1] * x[1],
+                           x[0] * x[0] * x[1] + x[1] * x[1] * x[1]);
+  });
+  checkMeshFunctionEqual(*mesh, mfMatrixA * mfVectorA, mfMatrixA_mfVectorA);
+  checkMeshFunctionEqual(*mesh, mfMatrixA * mfVectorA_dynamic,
+                         mfMatrixA_mfVectorA);
+
+  auto xSub = mfXA * mfXB;
+  checkMeshFunctionEqual(*mesh, mfXA * mfXB, MeshFunctionConstant(X(2)));
 }
 
 }  // namespace lf::uscalfe::test
