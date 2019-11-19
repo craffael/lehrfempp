@@ -98,6 +98,10 @@ class MeshFunctionInterpolation {
   }
 };
 
+
+template<typename INNER_MF>
+MeshFunctionInterpolation(const INNER_MF&, const lf::refinement::MeshHierarchy&, lf::base::size_type, lf::base::size_type) -> MeshFunctionInterpolation<INNER_MF>;
+
 }  // end namespace post_processing
 
 }  // end namespace projects::ipdg_stokes

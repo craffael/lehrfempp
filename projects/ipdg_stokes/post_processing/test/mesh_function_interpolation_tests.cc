@@ -67,8 +67,7 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_interpolation) {
     // Construct a interpolated mesh function for each refinement hierarchy
     // and compare it with the one on the coarsest mesh
     for (lf::base::size_type lvl = 1; lvl < meshes->NumLevels(); ++lvl) {
-      projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<
-          lf::uscalfe::MeshFunctionFE<double, double>>
+      projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
           mf_int(mf_inner, *meshes, 0, lvl);
       const auto mesh = meshes->getMesh(lvl);
       const auto mesh0 = meshes->getMesh(0);

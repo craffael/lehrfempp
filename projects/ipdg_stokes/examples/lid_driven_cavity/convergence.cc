@@ -145,12 +145,10 @@ int main() {
         velocity_lvl(fe_space_lvl, solutions[lvl].solution);
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
-    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<decltype(
-        velocity_lvl)>
+    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
         velocity_fine(velocity_lvl, *mesh_hierarchy, lvl,
                       mesh_hierarchy->NumLevels() - 1);
-    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation<decltype(
-        velocity_lvl_modified)>
+    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
         velocity_fine_modified(velocity_lvl_modified, *mesh_hierarchy, lvl,
                                mesh_hierarchy->NumLevels() - 1);
     writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),

@@ -75,7 +75,7 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-6.0'
+    - COMPILER='clang++-5.0'
     - BUILD_TYPE='Debug'
     addons:
       apt:
