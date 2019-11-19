@@ -152,8 +152,11 @@ int main() {
     projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
         velocity_fine_modified(velocity_lvl_modified, *mesh_hierarchy, lvl,
                                mesh_hierarchy->NumLevels() - 1);
-    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)), velocity_fine);
-    writer.WriteCellData(concat("v_modified", solutions[lvl].mesh->NumEntities(2)), velocity_fine_modified);
+    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
+                         velocity_fine);
+    writer.WriteCellData(
+        concat("v_modified", solutions[lvl].mesh->NumEntities(2)),
+        velocity_fine_modified);
     // We need to implement our own binary mesh function for  multiplication
     const auto qr_provider = [](const lf::mesh::Entity &e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);

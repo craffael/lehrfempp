@@ -213,7 +213,7 @@ int main() {
     const double factor = lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
                               lf::uscalfe::transpose(velocity) * velocity_exact,
-                              qr_provider)(0,0) /
+                              qr_provider)(0, 0) /
                           lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
                               lf::uscalfe::squaredNorm(velocity), qr_provider);
@@ -221,19 +221,21 @@ int main() {
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh),
             lf::uscalfe::transpose(velocity_modified) * velocity_exact,
-            qr_provider)(0,0) /
+            qr_provider)(0, 0) /
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh), lf::uscalfe::squaredNorm(velocity_modified),
             qr_provider);
     std::cout << factor << std::endl;
     // The error in the corrected velocity
-    const auto velocity_scaled = lf::uscalfe::MeshFunctionConstant<double>(factor) * velocity;
-    const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionConstant(factor_modified) * velocity_modified;
+    const auto velocity_scaled =
+        lf::uscalfe::MeshFunctionConstant<double>(factor) * velocity;
+    const auto velocity_scaled_modified =
+        lf::uscalfe::MeshFunctionConstant(factor_modified) * velocity_modified;
     const auto diff_v_fac = velocity_scaled - velocity_exact;
     const auto diff_v_fac_modified = velocity_scaled_modified - velocity_exact;
     // The error in the gradient of the corrected velocty
-    const auto &diff_g_fac = diff_grad;
-    const auto &diff_g_fac_modified = diff_grad_modified;
+    const auto& diff_g_fac = diff_grad;
+    const auto& diff_g_fac_modified = diff_grad_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
         solutions[lvl].mesh, diff_v, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(

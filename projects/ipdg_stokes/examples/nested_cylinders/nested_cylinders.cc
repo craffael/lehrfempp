@@ -380,14 +380,18 @@ int main(int argc, char *argv[]) {
     writer_zero.WriteCellData("velocity", velocity_zero);
     writer_zero.WriteCellData("velocity_modified", velocity_zero_modified);
     writer_nonzero.WriteCellData("velocity", velocity_nonzero);
-    writer_nonzero.WriteCellData("velocity_modified", velocity_nonzero_modified);
-    writer_zero.WriteCellData("analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
-    writer_nonzero.WriteCellData("analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
+    writer_nonzero.WriteCellData("velocity_modified",
+                                 velocity_nonzero_modified);
+    writer_zero.WriteCellData(
+        "analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
+    writer_nonzero.WriteCellData(
+        "analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
     // Compute the difference between the numerical and the analytical solution
     auto diff_velocity_zero = velocity_zero - velocity_exact;
     auto diff_velocity_zero_modified = velocity_zero_modified - velocity_exact;
     auto diff_velocity_nonzero = velocity_nonzero - velocity_exact;
-    auto diff_velocity_nonzero_modified = velocity_nonzero_modified - velocity_exact;
+    auto diff_velocity_nonzero_modified =
+        velocity_nonzero_modified - velocity_exact;
     auto diff_gradient_zero = -grad_exact;
     auto diff_gradient_zero_modified = -grad_exact;
     auto diff_gradient_nonzero = -grad_exact;

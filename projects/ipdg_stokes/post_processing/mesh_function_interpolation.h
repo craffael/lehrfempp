@@ -42,7 +42,9 @@ class MeshFunctionInterpolation {
         mesh_to_(meshes.getMesh(to)) {
     // Initialize a map from entities in the fine mesh to entities in the coarse
     // mesh
-    LF_ASSERT_MSG(from <= to, "MeshFunctionInterpolation can only interpolate from a coarse mesh to a fine mesh");
+    LF_ASSERT_MSG(from <= to,
+                  "MeshFunctionInterpolation can only interpolate from a "
+                  "coarse mesh to a fine mesh");
     for (const auto cell : mesh_to_->Entities(0)) {
       parents_[mesh_to_->Index(*cell)] = parent(cell, meshes, from, to);
     }
@@ -99,9 +101,11 @@ class MeshFunctionInterpolation {
   }
 };
 
-
-template<typename INNER_MF>
-MeshFunctionInterpolation(const INNER_MF&, const lf::refinement::MeshHierarchy&, lf::base::size_type, lf::base::size_type) -> MeshFunctionInterpolation<INNER_MF>;
+template <typename INNER_MF>
+MeshFunctionInterpolation(const INNER_MF &,
+                          const lf::refinement::MeshHierarchy &,
+                          lf::base::size_type, lf::base::size_type)
+    ->MeshFunctionInterpolation<INNER_MF>;
 
 }  // end namespace post_processing
 
