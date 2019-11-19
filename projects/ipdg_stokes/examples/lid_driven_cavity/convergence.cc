@@ -28,6 +28,7 @@
 #include <solution_to_mesh_data_set.h>
 
 using lf::uscalfe::operator-;
+using lf::uscalfe::operator*;
 
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
@@ -151,27 +152,9 @@ int main() {
     projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
         velocity_fine_modified(velocity_lvl_modified, *mesh_hierarchy, lvl,
                                mesh_hierarchy->NumLevels() - 1);
-    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-                               return velocity_fine(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
-    writer.WriteCellData(
-        concat("v_modified", solutions[lvl].mesh->NumEntities(2)),
-        *lf::mesh::utils::make_LambdaMeshDataSet(
-            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-              return velocity_fine_modified(
-                  e, Eigen::Vector2d::Constant(1. / 3))[0];
-            }));
+    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)), velocity_fine);
+    writer.WriteCellData(concat("v_modified", solutions[lvl].mesh->NumEntities(2)), velocity_fine_modified);
     // We need to implement our own binary mesh function for  multiplication
-    const auto operator_multiplication = [](const auto &a, const auto &b, int /*unused*/) {
-      std::vector<Eigen::Vector2d> result;
-      for (size_t i = 0; i < a.size(); ++i) {
-        result.push_back(a[i] * b[i]);
-      }
-      return result;
-    };
     const auto qr_provider = [](const lf::mesh::Entity &e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
@@ -180,11 +163,9 @@ int main() {
           return x[1] >= 0.9 ? (1 - std::cos(M_PI / 0.1 * (1 - x[1]))) / 2 : 1.;
         });
     const auto diff = velocity_fine - velocity_exact;
-    const auto diff_weighted =
-        lf::uscalfe::MeshFunctionBinary(operator_multiplication, weight, diff);
+    const auto diff_weighted = weight * diff;
     const auto diff_modified = velocity_fine_modified - velocity_exact_modified;
-    const auto diff_weighted_modified = lf::uscalfe::MeshFunctionBinary(
-        operator_multiplication, weight, diff_modified);
+    const auto diff_weighted_modified = weight * diff_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
         solutions.back().mesh, diff, qr_provider);
     const double L2w = projects::ipdg_stokes::post_processing::L2norm(

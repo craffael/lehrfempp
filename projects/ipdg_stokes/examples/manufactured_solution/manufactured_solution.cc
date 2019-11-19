@@ -28,6 +28,7 @@
 #include <solution_to_mesh_data_set.h>
 
 using lf::uscalfe::operator-;
+using lf::uscalfe::operator*;
 
 /**
  * @brief Compute the analytic flow velocity
@@ -225,51 +226,28 @@ int main() {
     const auto diff_grad = -grad_exact;
     const auto diff_grad_modified = -grad_exact;
     // Approximately compute the factor the numerical solution is off by
-    const auto operator_dot = [](const auto& a, const auto& b, int /*unused*/) {
-      std::vector<double> result;
-      result.reserve(a.size());
-      for (size_t i = 0; i < a.size(); ++i) {
-        result.push_back(a[i].dot(b[i]));
-      }
-      return result;
-    };
-    const auto operator_multiplication = [](const auto& a, const auto& b, int /*unused*/) {
-      std::vector<Eigen::Vector2d> result;
-      for (size_t i = 0; i < a.size(); ++i) {
-        result.push_back(a[i] * b[i]);
-      }
-      return result;
-    };
     const auto qr_provider = [](const lf::mesh::Entity& e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
     const double factor = lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
-                              lf::uscalfe::MeshFunctionBinary(
-                                  operator_dot, velocity, velocity_exact),
-                              qr_provider) /
+                              lf::uscalfe::transpose(velocity) * velocity_exact,
+                              qr_provider)(0,0) /
                           lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
                               lf::uscalfe::squaredNorm(velocity), qr_provider);
     const double factor_modified =
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh),
-            lf::uscalfe::MeshFunctionBinary(operator_dot, velocity_modified,
-                                            velocity_exact),
-            qr_provider) /
+            lf::uscalfe::transpose(velocity_modified) * velocity_exact,
+            qr_provider)(0,0) /
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh), lf::uscalfe::squaredNorm(velocity_modified),
             qr_provider);
     std::cout << factor << std::endl;
     // The error in the corrected velocity
-    const auto velocity_scaled = lf::uscalfe::MeshFunctionBinary(
-        operator_multiplication,
-        lf::uscalfe::MeshFunctionConstant<double>(factor),
-	velocity);
-    const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionBinary(
-        operator_multiplication,
-        lf::uscalfe::MeshFunctionConstant(factor_modified),
-	velocity_modified);
+    const auto velocity_scaled = lf::uscalfe::MeshFunctionConstant<double>(factor) * velocity;
+    const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionConstant(factor_modified) * velocity_modified;
     const auto diff_v_fac = velocity_scaled - velocity_exact;
     const auto diff_v_fac_modified = velocity_scaled_modified - velocity_exact;
     // The error in the gradient of the corrected velocty
