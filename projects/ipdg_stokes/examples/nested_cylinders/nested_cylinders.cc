@@ -289,10 +289,10 @@ int main(int argc, char *argv[]) {
           std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
       projects::ipdg_stokes::mesh::AnnulusTriagMeshBuilder builder(
           std::move(factory));
-      builder.setBottomLeftCorner(0, r);
-      builder.setTopRightCorner(1, R);
-      builder.setNumXCells(nx);
-      builder.setNumYCells(ny);
+      builder.setInnerRadius(r);
+      builder.setOuterRadius(R);
+      builder.setNumAngularCells(nx);
+      builder.setNumRadialCells(ny);
       meshes.push_back(builder.Build());
     }
   } else if (mesh_selection == "irregular") {
