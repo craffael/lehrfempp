@@ -21,8 +21,7 @@ std::shared_ptr<lf::mesh::Mesh> buildTriangle(
   v_idx[2] = factory.AddPoint(vertices.col(2));
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
-  factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(v_idx, 3),
-                    std::move(geom));
+  factory.AddEntity(lf::base::RefEl::kTria(), v_idx, std::move(geom));
   return factory.Build();
 }
 

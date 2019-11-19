@@ -53,7 +53,7 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF &f,
  * @param f_grad The gradient of the function to take the norm from
  * @param qr_selector A function giving the quadrature rule to use for a given
  * element
- * @returns The @f$H^1@f$-norm of the function over the mesh
+ * @returns The DG-norm of the function over the mesh
  *
  * This functoin computes the following formula
  * @f[
