@@ -1,8 +1,6 @@
 #ifndef LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 #define LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 
-
-
 #include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
@@ -43,6 +41,4 @@ class FeSpaceLagrangeO2 : public UniformScalarFESpace<SCALAR> {
 
 }  // namespace lf::uscalfe
 
-
-
-#endif // LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
+#endif  // LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
