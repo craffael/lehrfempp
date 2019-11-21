@@ -32,12 +32,12 @@ transferCoarseFineFE(
   const auto& child_info = mh.CellChildInfos(mesh_index);
   // Iterate over all coarse cells and lift the coefficients
   const auto mesh_fine = fes_fine.Mesh();
-  const auto dofh_fine = fes_fine.LocGlobMap();
+  const auto& dofh_fine = fes_fine.LocGlobMap();
   const lf::uscalfe::FeSpaceLagrangeO1<SCALAR_FE_FINE> fes_lagr_o1_fine(
       mesh_fine);  // Used for coordinate transformations
   Eigen::Matrix<SCALAR_FE_FINE, Eigen::Dynamic, 1> coeffs_fine(
       dofh_fine.NumDofs());
-  const auto cells = mf.getMesh().Entities(0);
+  const auto cells = mf.getMesh()->Entities(0);
   for (size_t cell_idx = 0; cell_idx < cells.size(); ++cell_idx) {
     const auto& cell = *cells[cell_idx];
     // Reconstruct the refinement pattern
@@ -49,22 +49,22 @@ transferCoarseFineFE(
     for (lf::base::size_type child_idx = 0; child_idx < cp_cells.size();
          ++child_idx) {
       const auto& child_cell = *(mesh_fine->EntityByIndex(
-          child_info[cell_idx].child_cell_idx[child_idx]));
+          0, child_info[cell_idx].child_cell_idx[child_idx]));
       const auto scalar_ref_fel =
           fes_fine.ShapeFunctionLayout(child_cell.RefEl());
-      const auto sfl_o1 = fes_lagr_o1_fine.ShapeFunctionLayout(child_cell);
+      const auto sfl_o1 = fes_lagr_o1_fine.ShapeFunctionLayout(child_cell.RefEl());
       const auto eval_nodes =
-          (cp_cells[child_idx] *
-           sfl_o1.EvalReferenceShapeFunctions(sfl_o1.EvaluationNodes()) /
+          (cp_cells[child_idx].cast<SCALAR_FE_FINE>() *
+           sfl_o1->EvalReferenceShapeFunctions(sfl_o1->EvaluationNodes()) /
            refpat.LatticeConst())
               .eval();
       const auto eval_node_values = mf(cell, eval_nodes);
       // Convert the vector output of the mesh function to a eigen matrix again
       using mf_t = lf::uscalfe::MeshFunctionFE<SCALAR_FE_COARSE, SCALAR_COEFF>;
       using mf_ret_t = lf::uscalfe::MeshFunctionReturnType<mf_t>;
-      const Eigen::Map<Eigen::Matrix<mf_ret_t, 1, Eigen::Dynamic>> nodal_values(
+      const Eigen::Map<const Eigen::Matrix<mf_ret_t, 1, Eigen::Dynamic>> nodal_values(
           eval_node_values.data(), eval_node_values.size());
-      const auto dofs = scalar_ref_fel.NodalValuesToDofs(
+      const auto dofs = scalar_ref_fel->NodalValuesToDofs(
           nodal_values.template cast<SCALAR_FE_FINE>());
       const auto glob_dof_idxs = dofh_fine.GlobalDofIndices(child_cell);
       for (lf::base::size_type dof_idx = 0; dof_idx < dofs.size(); ++dof_idx) {
