@@ -55,7 +55,7 @@ transferCoarseFineFE(
       const auto sfl_o1 = fes_lagr_o1_fine.ShapeFunctionLayout(child_cell.RefEl());
       const auto eval_nodes =
           (cp_cells[child_idx].cast<SCALAR_FE_FINE>() *
-           sfl_o1->EvalReferenceShapeFunctions(sfl_o1->EvaluationNodes()) /
+           sfl_o1->EvalReferenceShapeFunctions(scalar_ref_fel->EvaluationNodes()) /
            refpat.LatticeConst())
               .eval();
       const auto eval_node_values = mf(cell, eval_nodes);
