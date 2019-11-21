@@ -7,6 +7,15 @@
 
 namespace lf::intergridfe {
 
+/**
+ * @brief Lift a MeshFunctionFE to a finer mesh inside a MeshHierarchy
+ * @tparam SCALAR_FE_COARSE The scalar of the FESpace on the coarse mesh
+ * @tparam SCALAR_FE_FINE The scalar of the FESpace on the fine mesh
+ * @tparam SCALAR_COEFF The type of the basis function coefficients
+ * @param mh The MeshHierarchy on which to lift the MeshFunction
+ * @param fes_fine The FESpace on the fine mesh
+ * @param mf The MeshFunctionFE to lift to a finer mesh
+ */
 template <typename SCALAR_FE_COARSE, typename SCALAR_FE_FINE,
           typename SCALAR_COEFF>
 [[nodiscard]] Eigen::Matrix<SCALAR_FE_FINE, Eigen::Dynamic, 1>
