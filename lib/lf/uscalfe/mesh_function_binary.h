@@ -38,6 +38,11 @@ namespace lf::uscalfe {
  * @note Usually there is no need to use MeshFunctionBinary directly. There are
  * a number of operator overloads which use MeshFunctionBinary internally.
  *
+ * @note The last `int` argument of `operator()` can be used to prefer certain
+ * overloads over others, e.g. `operator()(const std::vector<U>& u, const
+ * std::vector<V>& int)` takes higher precedence than `operator()(const
+ * std::vector<U>& u, const std::vector<V>& long)`
+ *
  */
 template <class OP, class A, class B>
 class MeshFunctionBinary {
@@ -65,9 +70,35 @@ class MeshFunctionBinary {
   B b_;
 };
 
+/**
+ * @brief Contains `OP` types (as used by MeshFunctionBinary) which are used by
+ * the respective operator overloads (e.g. `operator+(...)`) to combine two mesh
+ * functions.
+ */
 namespace internal {
+
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise addition of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorAddition {
-  // addition of scalar types:
+  /**
+   * @brief Addition of two scalar types (`std::is_arithmetic_v<...> == true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Matrix<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
+   * us to use the Eigen optimized `operator+`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
@@ -84,7 +115,9 @@ struct OperatorAddition {
     return result;
   }
 
-  // Addition of static sized eigen matrices
+  /**
+   * @brief Addition of two `Eigen::Matrix` types.
+   */
   template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
@@ -127,7 +160,7 @@ struct OperatorAddition {
       }
       return result;
     } else {  // NOLINT
-      // subtract two dynamic sized matrices from each other:
+      // add two dynamic sized matrices:
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
       result.reserve(u.size());
@@ -144,7 +177,9 @@ struct OperatorAddition {
     }
   }
 
-  // addition of arbitrary types supporting + operator:
+  /**
+   * @brief addition of arbitrary types supporting  `operator+`:
+   */
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
                   long /*unused*/) const {
@@ -156,8 +191,29 @@ struct OperatorAddition {
   }
 };
 
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise subtraction of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorSubtraction {
-  // subtraction of scalar types:
+  /**
+   * @brief Subtraction of two scalar types (`std::is_arithmetic_v<...> ==
+   * true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Matrix<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
+   * us to use the Eigen optimized `operator-`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
@@ -174,7 +230,9 @@ struct OperatorSubtraction {
     return result;
   }
 
-  // subtraction of fixed size eigen matrices
+  /**
+   * @brief Addition of two `Eigen::Matrix` types.
+   */
   template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
@@ -234,7 +292,9 @@ struct OperatorSubtraction {
     }
   }
 
-  // subtraction of arbitrary types supporting - operator:
+  /**
+   *@brief subtraction of arbitrary types supporting - operator:
+   */
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
                   long /*unused*/) const {
@@ -247,8 +307,29 @@ struct OperatorSubtraction {
   }
 };
 
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise product of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorMultiplication {
-  // Multiplication of scalar types:
+  /**
+   * @brief Multiplication of two scalar types (`std::is_arithmetic_v<...> ==
+   * true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Array<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Array` which in turn allows
+   * us to use the Eigen optimized `operator*`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
