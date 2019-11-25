@@ -150,12 +150,10 @@ struct OperatorAddition {
       std::vector<Eigen::Matrix<scalar_t, fixedRows, fixedCols>> result(
           u.size());
       for (int i = 0; i < u.size(); ++i) {
-        LF_ASSERT_MSG(
-            u[i].rows() == v[i].rows(),
-            "mismatch in #rows of matrices subtracted from each other.");
-        LF_ASSERT_MSG(
-            u[i].cols() == v[i].cols(),
-            "mismatch in #cols of matrices subtracted from each other.");
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of matrices added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of matrices added to each other.");
         result[i] = u[i] + v[i];
       }
       return result;
@@ -165,12 +163,68 @@ struct OperatorAddition {
           result;
       result.reserve(u.size());
       for (int i = 0; i < u.size(); ++i) {
-        LF_ASSERT_MSG(
-            u[i].rows() == v[i].rows(),
-            "mismatch in #rows of matrices subtracted from each other.");
-        LF_ASSERT_MSG(
-            u[i].cols() == v[i].cols(),
-            "mismatch in #cols of matrices subtracted from each other.");
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of matrices added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of matrices added to each other.");
+        result.emplace_back(u[i] + v[i]);
+      }
+      return result;
+    }
+  }
+
+  /**
+   * @brief Addition of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) + S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // add two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot add arrays with different #rows.");
+      static_assert(C1 == C2, "cannot add arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um + vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of arrays added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of arrays added to each other.");
+        result[i] = u[i] + v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // add two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of arrays added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of arrays added to each other.");
         result.emplace_back(u[i] + v[i]);
       }
       return result;
@@ -231,7 +285,7 @@ struct OperatorSubtraction {
   }
 
   /**
-   * @brief Addition of two `Eigen::Matrix` types.
+   * @brief Subtraction of two `Eigen::Matrix` types.
    */
   template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
             int R2, int C2, int O2, int MR2, int MC2>
@@ -242,8 +296,8 @@ struct OperatorSubtraction {
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
                   R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // subtract two static size eigen matrices from each other
-      static_assert(R1 == R2, "cannot add matrices with different #rows.");
-      static_assert(C1 == C2, "cannot add matrices with different #cols.");
+      static_assert(R1 == R2, "cannot subtract matrices with different #rows.");
+      static_assert(C1 == C2, "cannot subtract matrices with different #cols.");
 
       Eigen::Map<const Eigen::Matrix<S1, 1, Eigen::Dynamic>> um(
           &u[0](0, 0), 1, u.size() * R1 * C1);
@@ -286,6 +340,68 @@ struct OperatorSubtraction {
         LF_ASSERT_MSG(
             u[i].cols() == v[i].cols(),
             "mismatch in #cols of matrices subtracted from each other.");
+        result.emplace_back(u[i] - v[i]);
+      }
+      return result;
+    }
+  }
+
+  /**
+   * @brief Subtraction of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) - S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // subtract two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot subtract arrays with different #rows.");
+      static_assert(C1 == C2, "cannot subtract arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um - vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays subtracted from each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays subtracted from each other.");
+        result[i] = u[i] - v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // subtract two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays subtracted from each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays subtracted from each other.");
         result.emplace_back(u[i] - v[i]);
       }
       return result;
@@ -377,6 +493,68 @@ struct OperatorMultiplication {
     }
   }
 
+  /**
+   * @brief Multiplication of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) * S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // multiply two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot multiply arrays with different #rows.");
+      static_assert(C1 == C2, "cannot multiply arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um * vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays multiplied with each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays multiplied with each other.");
+        result[i] = u[i] * v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // multiply two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays multiplied with each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays multiplied with each other.");
+        result.emplace_back(u[i] * v[i]);
+      }
+      return result;
+    }
+  }
+
   // multiplication of a scalar with matrix
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
             class = std::enable_if_t<std::is_arithmetic_v<U>>>
@@ -412,6 +590,41 @@ struct OperatorMultiplication {
     return operator()(u, v, 0);
   }
 
+  // multiplication of a scalar with array
+  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
+            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+  auto operator()(const std::vector<U>& u,
+                  const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(u[0] * v[0](0, 0));
+    std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {
+      // result is a static sized array:
+      Eigen::Map<const Eigen::Array<S1, R1 * C1, Eigen::Dynamic>> vm(
+          v[0].data(), R1 * C1, v.size());
+      Eigen::Map<Eigen::Array<scalar_t, R1 * C1, Eigen::Dynamic>> rm(
+          result[0].data(), R1 * C1, v.size());
+      Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                              u.size());
+
+      rm = vm * um.template replicate<R1 * C1, 1>();
+    } else {
+      // result is not static sized:
+      for (std::size_t i = 0; i < u.size(); ++i) {
+        result[i] = u[i] * v[i];
+      }
+    }
+    return result;
+  }
+
+  // multiplication of array with scalar (other way around)
+  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
+            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
+                  const std::vector<U>& u, int /*unused*/) const {
+    return operator()(u, v, 0);
+  }
+
   // multiplication of arbitrary types supporting operator*:
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
@@ -440,7 +653,7 @@ struct OperatorMultiplication {
  *
  * @note the two \ref mesh_function "mesh functions" `a` and `b` should produce
  * the same type of values, e.g. both should be scalar valued or both
- * matrix/vector valued.
+ * matrix/vector/array valued.
  *
  * @note If you want to apply this operator overload to \ref mesh_function "mesh
  * functions" which do not reside in the `lf::uscalfe` namespace, it will not be
