@@ -6,11 +6,20 @@ if(DOXYGEN_FOUND)
   SET(DOXYGEN_INPUT Doxyfile.in)
   SET(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
   SET(DOXYGEN_STRIP_FROM_INC_PATH ${CMAKE_CURRENT_LIST_DIR}/../../lib)
-  OPTION(DOXYGEN_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile" OFF)
-  if(DOXYGEN_EXTRACT_PRIVATE)
-    set(DOXYGEN_EXTRACT_PRIVATE_ YES)
+  
+  OPTION(LF_DOX_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile. Set this to On in order to also generate doxygen documentation of private members." OFF)
+  OPTION(LF_DOX_INCLUDE_PROJECTS "Set this to true to include all the projects in the ./projects folder in the doxygen documentation." OFF)
+  
+  if(LF_DOX_EXTRACT_PRIVATE)
+    set(LF_DOX_EXTRACT_PRIVATE_ YES)
   else()
-    set(DOXYGEN_EXTRACT_PRIVATE_ NO)
+    set(LF_DOX_EXTRACT_PRIVATE_ NO)
+  endif()
+  
+  if(LF_DOX_INCLUDE_PROJECTS)
+    set(LF_DOX_INCLUDE_PROJECTS_ "@CMAKE_CURRENT_SOURCE_DIR@/../../projects")
+  else()
+    set(LF_DOX_INCLUDE_PROJECTS_ "")
   endif()
   
   # request to configure the file
