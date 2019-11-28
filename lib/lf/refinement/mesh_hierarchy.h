@@ -79,6 +79,9 @@ struct CellChildInfo {
 
 /**
  * @brief Information about possible parent entities
+ *
+ * Also contains "relative geometry information" with respect to the
+ * reference coordinate system of the parent entity.
  */
 struct ParentInfo {
   explicit ParentInfo() = default;
@@ -88,6 +91,9 @@ struct ParentInfo {
   glb_idx_t parent_index{
       idx_nil}; /**< index of parent entity w.r.t. coarse mesh */
   sub_idx_t child_number{idx_nil}; /**< local index in the parent entity */
+  /** geometry object describing shape in parent entity in relative coordinates
+   */
+  std::unique_ptr<const lf::geometry::Geometry> rel_ref_geo_{nullptr};
 };
 
 /**
@@ -303,6 +309,25 @@ class MeshHierarchy {
    *       is still in use somewhere else in the code.
    */
   void Coarsen();
+  /**
+   * @brief shape of child entity in parent's reference coordinates
+   *
+   * @param level level of the fine mesh in the mesh hierarchy
+   * @param e reference to entity object of the fine mesh
+   * @return pointer to geometry description of entity of fine mesh with respect
+   * to reference coordinate system of its parent entity.
+   *
+   * We consider the shape of the reference entity of the parent entity of e as
+   * a triangulated domain. The entities of that triangulation correspond to the
+   * reference shapes of the child entities on the fine mesh. This method
+   * returns the shape of an entity of that triangulation.
+   *
+   * TODO: give an example for a complex refinement pattern of a quadrilateral.
+   * insert an image.
+   *
+   */
+  const lf::geometry::Geometry *GeometryInParent(
+      size_type level, const lf::mesh::Entity &e) const;
   /**
    * @brief Output of information about the mesh hierarchy.
    *
