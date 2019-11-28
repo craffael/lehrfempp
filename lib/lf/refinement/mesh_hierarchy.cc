@@ -1682,6 +1682,7 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
 
 const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
     size_type level, const lf::mesh::Entity &e) const {
+  LF_ASSERT_MSG(level > 0, "level must be that of a child mesh!");
   // Obtain reference to fine mesh
   const lf::mesh::Mesh &mesh{*getMesh(level)};
   // Get index of entity in fine mesh
@@ -1691,6 +1692,8 @@ const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
   // Fetch ParentInfo structure for entity e
   const ParentInfo &e_parent_info{parent_infos[idx_e]};
   // Just return the information contained in the relevant ParentInfo structure
+  LF_VERIFY_MSG(e_parent_info.rel_ref_geo_ != nullptr,
+                "No valid parent information for " << e);
   return e_parent_info.rel_ref_geo_.get();
 }
 

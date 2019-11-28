@@ -326,7 +326,7 @@ class MeshHierarchy {
    * insert an image.
    *
    */
-  const lf::geometry::Geometry *GeometryInParent(
+  [[nodiscard]] const lf::geometry::Geometry *GeometryInParent(
       size_type level, const lf::mesh::Entity &e) const;
   /**
    * @brief Output of information about the mesh hierarchy.
