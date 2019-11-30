@@ -370,6 +370,8 @@ std::ostream& operator<<(std::ostream& o,
  \;. \f]
  * The basis function \f$\widehat{b}^i\f$ is associated with vertex \f$i\f$
  * of the triangle.
+ *
+ * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
@@ -411,7 +413,6 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     return (codim == 2) ? 1 : 0;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -425,7 +426,6 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -460,15 +460,18 @@ class FeLagrangeO1Tria final : public ScalarReferenceFiniteElement<SCALAR> {
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on the quadrilateral reference element
  *
+ * This is a specialization of ScalarReferenceFiniteElement.
+ * Refer to its documentation.
+ *
  * The reference shape functions are
  * @f[
        \hat{b}^1(x_1,x_2) = (1-x_1)(1-x_2)\;,\quad
-       \hat{b}^1(x_1,x_2) = x_1)(1-x_2)\;,\quad
-       \hat{b}^1(x_1,x_2) = x_1\cdot x_2\;,\quad
-       \hat{b}^1(x_1,x_2) = (1-x_1)x_2\;.
+       \hat{b}^2(x_1,x_2) = x_1(1-x_2)\;,\quad
+       \hat{b}^3(x_1,x_2) = x_1\cdot x_2\;,\quad
+       \hat{b}^4(x_1,x_2) = (1-x_1)x_2\;.
  * @f]
- * This is a specialization of ScalarReferenceFiniteElement.
- * Refer to its documentation.
+ *
+ * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
@@ -507,7 +510,6 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     return (codim == 2) ? 1 : 0;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
@@ -529,7 +531,6 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -578,6 +579,8 @@ class FeLagrangeO1Quad final : public ScalarReferenceFiniteElement<SCALAR> {
    \f]
  * The basis function \f$\widehat{b}^i\f$ is associated with vertex \f$i\f$
  * of the edge.
+ *
+ *  @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
 class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
@@ -617,7 +620,6 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
     return (codim == 1) ? 1 : 0;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
@@ -632,7 +634,6 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
-  /** @copydoc ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -648,14 +649,14 @@ class FeLagrangeO1Segment final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
-  /** @brief Evalutation nodes are just the vertices of the triangle
+  /** @brief Evalutation nodes are just the vertices of the segment
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
-  /** @brief Three evaluation nodes
+  /** @brief Two evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
@@ -709,6 +710,450 @@ class FeLagrangePoint : public ScalarReferenceFiniteElement<SCALAR> {
  private:
   unsigned degree_;
 };
+
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Quadratic Lagrangian finite element on a triangular reference element
+ *
+ * This is a specialization of ScalarReferenceFiniteElement.
+ * Refer to its documentation.
+ *
+ * The reference shape functions are combinations of the barycentric coordinate
+ * functions on the reference triangle.
+ *
+ * The first three shape functions are associated to the vertices,
+ * the other three shape functions to the edges of the triangle. There are
+ * no interior shape functions.
+ *
+ * @see ScalarReferenceFiniteElement
+ */
+template <typename SCALAR>
+class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
+  FeLagrangeO2Tria(const FeLagrangeO2Tria&) = default;
+  FeLagrangeO2Tria(FeLagrangeO2Tria&&) noexcept = default;
+  FeLagrangeO2Tria& operator=(const FeLagrangeO2Tria&) = default;
+  FeLagrangeO2Tria& operator=(FeLagrangeO2Tria&&) noexcept = default;
+  FeLagrangeO2Tria() = default;
+  ~FeLagrangeO2Tria() override = default;
+
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kTria();
+  }
+
+  [[nodiscard]] unsigned Degree() const override { return 2; }
+
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 6; }
+
+  /**  @brief One shape function attached to each node
+   * and one to each edge of the triangle. There are no interior
+   * shape functions.
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
+    LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
+    return (codim == 0) ? 0 : 1;
+  }
+
+  /**  @brief One shape function attached to each node
+   * and one to each edge of the triangle. There are no interior
+   * shape functions.
+   * @copydoc
+   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
+    LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
+    return (codim == 0) ? 0 : 1;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 2,
+                  "Reference coordinates must be 2-vectors");
+
+    const size_type n_pts(refcoords.cols());
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(6, n_pts);
+
+    auto x0 = refcoords.row(0).array();
+    auto x1 = refcoords.row(1).array();
+
+    result.row(0) = (2.0 * (1 - x0 - x1) * (0.5 - x0 - x1)).matrix();
+    result.row(1) = (2.0 * x0 * (x0 - 0.5)).matrix();
+    result.row(2) = (2.0 * x1 * (x1 - 0.5)).matrix();
+    result.row(3) = (4.0 * (1 - x0 - x1) * x0).matrix();
+    result.row(4) = (4.0 * x0 * x1).matrix();
+    result.row(5) = (4.0 * (1 - x0 - x1) * x1).matrix();
+
+    return result;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 2,
+                  "Reference coordinates must be 2-vectors");
+
+    const size_type n_pts(refcoords.cols());
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(6, 2 * n_pts);
+
+    // reshape into a 12xn_pts matrix.
+    Eigen::Map<Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
+               Eigen::AutoAlign>
+        temp(&result(0, 0), 12, n_pts);
+
+    auto x0 = refcoords.row(0).array();
+    auto x1 = refcoords.row(1).array();
+
+    // d/dx_0
+    temp.row(0) = -3.0 + 4.0 * x0 + 4.0 * x1;
+    temp.row(1) = 4.0 * x0 - 1.0;
+    temp.row(2) = 0.0;
+    temp.row(3) = 4 - 0 - 8.0 * x0 - 4.0 * x1;
+    temp.row(4) = 4.0 * x1;
+    temp.row(5) = -4.0 * x1;
+
+    // d/dx_1
+    temp.row(6) = -3.0 + 4.0 * x0 + 4.0 * x1;
+    temp.row(7) = 0.0;
+    temp.row(8) = 4.0 * x1 - 1.0;
+    temp.row(9) = -4 * x0;
+    temp.row(10) = 4.0 * x0;
+    temp.row(11) = 4.0 - 8.0 * x1 - 4.0 * x0;
+
+    return result;
+  }
+
+  /** @brief Evaluation nodes are the vertices of the triangle and
+   * the midpoints of the edges.
+   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   */
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
+    // clang-format off
+    Eigen::Matrix<double, 2,6> nodes;
+    nodes << 0.0, 1.0, 0.0, 0.5, 0.5, 0.0,
+             0.0, 0.0, 1.0, 0.0, 0.5, 0.5;
+    // clang-format on
+    return nodes;
+  }
+
+  /** @brief Six evaluation nodes
+   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   */
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return NumRefShapeFunctions();
+  }
+};
+
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Quadratic Lagrangian finite element on a line segment
+ *
+ * This is a specialization of ScalarReferenceFiniteElement.
+ * Refer to its documentation.
+ *
+ * The first two shape functions are associated with the vertices of the
+ * segment. The last one is an interior shape function.
+ *
+ * @see ScalarReferenceFiniteElement
+ */
+template <typename SCALAR>
+class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
+  FeLagrangeO2Segment(const FeLagrangeO2Segment&) = default;
+  FeLagrangeO2Segment(FeLagrangeO2Segment&&) noexcept = default;
+  FeLagrangeO2Segment& operator=(const FeLagrangeO2Segment&) = default;
+  FeLagrangeO2Segment& operator=(FeLagrangeO2Segment&&) noexcept = default;
+  FeLagrangeO2Segment() = default;
+  ~FeLagrangeO2Segment() override = default;
+
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
+
+  [[nodiscard]] unsigned Degree() const override { return 2; }
+
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 3; }
+
+  /** @brief One shape function attached to each node and one interior shape
+   * function.
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
+    LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
+    return 1;
+  }
+
+  /** @brief One shape function attached to each node and one interior shape
+   * function.
+   * @copydoc
+   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
+    LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
+    return 1;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 1,
+                  "Reference coordinates must be 1-vectors");
+    const size_type n_pts(refcoords.cols());
+
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(3, n_pts);
+
+    auto x = refcoords.row(0).array();
+
+    // endpoints
+    result.row(0) = 2.0 * (1.0 - x) * (0.5 - x);
+    result.row(1) = 2.0 * x * (x - 0.5);
+
+    // midpoint
+    result.row(2) = 4.0 * (1.0 - x) * x;
+
+    return result;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 1,
+                  "Reference coordinates must be 1-vectors");
+    const size_type n_pts(refcoords.cols());
+
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
+        3, refcoords.cols());
+
+    auto x = refcoords.row(0).array();
+    // endpoints
+    result.row(0) = (4.0 * x - 3.0).matrix();
+    result.row(1) = (4.0 * x - 1.0).matrix();
+
+    // midpoint:
+    result.row(2) = (4.0 - 8.0 * x).matrix();
+    return result;
+  }
+
+  /** @brief Evaluation nodes are the endpoints of the segment and its midpoint
+   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   */
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
+    Eigen::Matrix<double, 1, 3> nodes;
+    nodes << 0.0, 1.0, 0.5;
+    return nodes;
+  }
+
+  /** @brief Three evaluation nodes
+   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   */
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return NumRefShapeFunctions();
+  }
+};
+
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Quadratic Lagrangian finite element on a quadrilateral reference
+ * element.
+ *
+ * This is a specialization of ScalarReferenceFiniteElement.
+ * Refer to its documentation.
+ *
+ * The shape functions are computed by a tensor product construction:
+ * The shape function associated with the interpolation node \f$ \mathbf{p}
+ * =(x_j,y_l)\f$ is computed as
+ *
+ *  \f[ \hat{b}^{\mathbf{p}}(x_1,x_2)=\hat{b}^j(x_1)*\hat{b}^l(x_2) \f]
+ *
+ * Where \f$ \hat{b}^j\f$ and \f$ \hat{b}^l \f$ are the quadratic Lagrangian
+ * shape functions on the reference line segment associated to the interpolation
+ * nodes \f$ x_j \f$ and \f$ y_l \f$.
+ *
+ * The first four shape functions are associated with the vertices,
+ * the next four with the edges of the quadrilateral. The last shape function is
+ * an interior shape function.
+ *
+ * @see ScalarReferenceFiniteElement
+ */
+template <typename SCALAR>
+class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
+  FeLagrangeO2Quad(const FeLagrangeO2Quad&) = default;
+  FeLagrangeO2Quad(FeLagrangeO2Quad&&) noexcept = default;
+  FeLagrangeO2Quad& operator=(const FeLagrangeO2Quad&) = default;
+  FeLagrangeO2Quad& operator=(FeLagrangeO2Quad&&) noexcept = default;
+  FeLagrangeO2Quad() = default;
+  ~FeLagrangeO2Quad() override = default;
+
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kQuad();
+  }
+
+  [[nodiscard]] unsigned Degree() const override { return 2; }
+
+  [[nodiscard]] size_type NumRefShapeFunctions() const override { return 9; }
+
+  /** @brief One shape function is attached to each node and edge of
+   * the quadrilateral. One interior shape function.
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
+    LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
+    return 1;
+  }
+
+  /** @brief One shape function is attached to each node
+   * and each edge of the quadrilateral. One interior shape function.
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,
+   * sub_idx_t)
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t /*subidx*/) const override {
+    LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
+    return 1;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 2,
+                  "Reference coordinates must be 2-vectors");
+
+    const size_type n_pts(refcoords.cols());
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(9, n_pts);
+
+    // evaluate "segment" shape functions (b^j and b^l)
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
+
+    // Evaluate basis functions using the tensor product structure
+    for (int i = 0; i < 9; ++i) {
+      result.row(i) = (segment_x0_eval.row(ksegment_to_quad_mapping_(i, 0)) *
+                       segment_x1_eval.row(ksegment_to_quad_mapping_(i, 1)))
+                          .matrix();
+    }
+    return result;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 2,
+                  "Reference coordinates must be 2-vectors");
+
+    const size_type n_pts(refcoords.cols());
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(9, 2 * n_pts);
+
+    // reshape into a 18xn_pts matrix.
+    Eigen::Map<Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
+               Eigen::AutoAlign>
+        temp(&result(0, 0), 18, n_pts);
+
+    // evaluate "segment" shape functions (b^j and b^l)
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
+
+    // evaluate derivatives of "segment" shape functions (b^j and
+    // b^l)
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_grad =
+        (krsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(0)))
+            .array();
+    Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_grad =
+        (krsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(1)))
+            .array();
+
+    // evaluate gradients  using the product rule and
+    // the tensor product structure of the basis functions.
+    for (int i = 0; i < 9; ++i) {
+      // d/dx
+      temp.row(i) = (segment_x0_grad.row(ksegment_to_quad_mapping_(i, 0)) *
+                     segment_x1_eval.row(ksegment_to_quad_mapping_(i, 1)))
+                        .matrix();
+      // d/dy
+      temp.row(i + 9) = (segment_x1_grad.row(ksegment_to_quad_mapping_(i, 1)) *
+                         segment_x0_eval.row(ksegment_to_quad_mapping_(i, 0)))
+                            .matrix();
+    }
+    return result;
+  }
+
+  /** @brief Evaluation nodes are the vertices,
+   * the midpoints of the edges and the center of the  quadrilateral.
+   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   */
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
+    Eigen::Matrix<double, 2, 9> nodes;
+
+    Eigen::Matrix<double, 2, 4> vertices;
+    Eigen::Matrix<double, 2, 4> midpoints;
+    Eigen::Matrix<double, 2, 1> center;
+
+    // clang-format off
+    vertices << 0.0, 1.0, 1.0, 0.0,
+                0.0, 0.0, 1.0, 1.0;
+    midpoints << 0.5, 1.0, 0.5, 0.0,
+                 0.0, 0.5, 1.0, 0.5;
+    center << 0.5,
+              0.5;
+    // clang-format on
+    nodes << vertices, midpoints, center;
+    return nodes;
+  }
+
+  /** @brief Nine evaluation nodes
+   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   */
+  [[nodiscard]] size_type NumEvaluationNodes() const override {
+    return NumRefShapeFunctions();
+  }
+
+ private:
+  /** description of the shape functions on the reference line segment
+   * \f$ [0,1] \f$  that are used in the tensor product construction of the
+   * shape functions*/
+  const static FeLagrangeO2Segment<SCALAR> krsf_segment_;
+
+  /**
+   * The shape functions are computed by a tensor product construction:
+   * The shape function associated with the interpolation node \f$ \mathbf{p}
+   * =(x_j,y_l)\f$ is computed as
+   *
+   *  \f[ \hat{b}^{\mathbf{p}}(x_1,x_2)=\hat{b}^j(x_1)*\hat{b}^l(x_2) \f]
+   *
+   * Where \f$ \hat{b}^j\f$ and \f$ \hat{b}^l \f$ are the quadratic Lagrangian
+   * shape functions on the reference line segment associated to the
+   * interpolation nodes \f$ x_j \f$ and \f$ y_l \f$.
+   *
+   * This matrix of size NumRefShapeFunctions x 2 contains in each row
+   * the indices of the "segment" shape functions, that define
+   * the  reference shape function via the above formula.
+   * if \f$p\f$ was the \f$k\f$-th interpolation node, the \f$k\f$-th row would
+   * contain the indices \f$j\f$ and \f$l\f$.
+   */
+  const static Eigen::MatrixXi ksegment_to_quad_mapping_;
+};
+
+template <typename SCALAR>
+const FeLagrangeO2Segment<SCALAR> FeLagrangeO2Quad<SCALAR>::krsf_segment_ =
+    FeLagrangeO2Segment<SCALAR>();
+
+template <typename SCALAR>
+const Eigen::MatrixXi FeLagrangeO2Quad<SCALAR>::ksegment_to_quad_mapping_ =
+    // clang-format off
+  (Eigen::MatrixXi(9, 2) <<  0, 0,
+                             1, 0,
+                             1, 1,
+                             0, 1,
+                             2, 0,
+                             1, 2,
+                             2, 1,
+                             0, 2,
+                             2, 2).finished();
+// clang-format on
 
 }  // namespace lf::uscalfe
 

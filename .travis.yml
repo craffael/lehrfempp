@@ -1,5 +1,4 @@
 language: cpp
-sudo: true
 dist: xenial
 env:
   global:
@@ -134,8 +133,14 @@ jobs:
       . ./travis/install_doxygen.sh
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
-      cmake -H. -BBuild
+      cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON
       cd Build
+      make doxygen
+      cd html
+      mkdir with_projects
+      mv !(with_projects) with_projects
+      cd ..
+      cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
       make doxygen
     deploy:
       provider: pages

@@ -56,6 +56,26 @@ class MeshFunctionGradFE {
     }
   }
 
+  /**
+   * @brief Convenience method to retrieve the underlying mesh
+   * @returns The mesh on which this mesh function is defined.
+   */
+  [[nodiscard]] std::shared_ptr<const mesh::Mesh> getMesh() const {
+    return fe_space_->Mesh();
+  }
+
+  /**
+   * @brief Convenience method to retrieve the finite element space to which the
+   * original function belongs (i.e. before taking the gradient)
+   * @returns shared_ptr to UniformScalarFESpace to which the original function
+   * belongs (i.e. before taking the gradient)
+   */
+  [[nodiscard]] std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>>
+  getFESpace() const {
+    return fe_space_;
+  }
+
+  /** Evaluate the mesh function on a MeshEntity */
   std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> operator()(
       const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const {
     auto grad_sf_eval =
