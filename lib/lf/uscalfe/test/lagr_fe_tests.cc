@@ -370,7 +370,8 @@ TEST(lf_fe_cubic, lf_fe_segment) {
  *
  * @tparam SCALAR field like double
  * @tparam FUNCTION \ref mesh_function "MeshFunction" returning a scalar
- * @tparam FUNCTION_GRAD \ref mesh_function "MeshFunction" returning a Eigen::Vector of scalars
+ * @tparam FUNCTION_GRAD \ref mesh_function "MeshFunction" returning a
+ * Eigen::Vector of scalars
  *
  *
  * @param fe_space  FE space onto which the function is projected

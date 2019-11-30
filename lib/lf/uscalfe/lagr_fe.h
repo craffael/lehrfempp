@@ -1221,13 +1221,10 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     const size_type n_pts(refcoords.cols());
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(10, n_pts);
 
-    auto x0 = refcoords.row(0).array();
-    auto x1 = refcoords.row(1).array();
-
     // evaluation of the barycentric coordinate functions
-    auto lambda0 = 1 - x0 - x1;
-    auto lambda1 = x0;
-    auto lambda2 = x1;
+    auto lambda0 = 1 - refcoords.row(0).array() - refcoords.row(1).array();
+    auto lambda1 = refcoords.row(0).array();
+    auto lambda2 = refcoords.row(1).array();
 
     // evaluation of the shape functions
     result.row(0) = 4.5 * lambda0 * (lambda0 - 1 / 3.0) * (lambda0 - 2 / 3.0);
@@ -1260,13 +1257,10 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
                Eigen::AutoAlign>
         temp(&result(0, 0), 20, n_pts);
 
-    auto x0 = refcoords.row(0).array();
-    auto x1 = refcoords.row(1).array();
-
     // evaulate barycentric coordinate functions:
-    auto l0 = 1 - x0 - x1;
-    auto l1 = x0;
-    auto l2 = x1;
+    auto l0 = 1 - refcoords.row(0).array() - refcoords.row(1).array();
+    auto l1 = refcoords.row(0).array();
+    auto l2 = refcoords.row(1).array();
 
     // vertices
     temp.row(0) = -4.5 * ((l0 - 1 / 3.0) * (l0 - 2 / 3.0) +
