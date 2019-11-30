@@ -400,16 +400,19 @@ TEST(lf_fe_linear, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Vector2d() << 1.0, 1.0).finished();
-  });
+  auto f_1 = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return x[0] + x[1]; });
+  auto grad_1 =
+      MeshFunctionGlobal([](Eigen::Vector2d /*x*/) -> Eigen::Vector2d {
+        return (Eigen::Vector2d() << 1.0, 1.0).finished();
+      });
 
-  auto f_2 =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return 5 * x[0] - 2 * x[1]; });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Vector2d() << 5.0, -2.0).finished();
-  });
+  auto f_2 = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 5 * x[0] - 2 * x[1]; });
+  auto grad_2 =
+      MeshFunctionGlobal([](Eigen::Vector2d /*x*/) -> Eigen::Vector2d {
+        return (Eigen::Vector2d() << 5.0, -2.0).finished();
+      });
 
   EXPECT_NEAR(nodalProjectionTest(fe_space, f_1, grad_1, 20), 0.0, 1e-10)
       << "projection error for f(x,y) = x + y";
@@ -425,19 +428,23 @@ TEST(lf_fe_quadratic, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO2<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Vector2d() << 1.0, 1.0).finished();
-  });
+  auto f_1 = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return x[0] + x[1]; });
+  auto grad_1 =
+      MeshFunctionGlobal([](Eigen::Vector2d /*x*/) -> Eigen::Vector2d {
+        return (Eigen::Vector2d() << 1.0, 1.0).finished();
+      });
 
-  auto f_2 = MeshFunctionGlobal(
-      [](Eigen::Vector2d x) { return 5 * x[0] * x[0] + 2 * x[1] * x[1]; });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_2 = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+    return 5 * x[0] * x[0] + 2 * x[1] * x[1];
+  });
+  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (Eigen::Vector2d() << 10 * x[0], 4 * x[1]).finished();
   });
 
-  auto f_3 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
-  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_3 = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return x[0] * x[1]; });
+  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (Eigen::Vector2d() << x[1], x[0]).finished();
   });
 
@@ -456,22 +463,24 @@ TEST(lf_fe_cubic, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO3<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Vector2d() << 1.0, 1.0).finished();
-  });
+  auto f_1 = MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return x[0] + x[1]; });
+  auto grad_1 =
+      MeshFunctionGlobal([](Eigen::Vector2d /*x*/) -> Eigen::Vector2d {
+        return (Eigen::Vector2d() << 1.0, 1.0).finished();
+      });
 
-  auto f_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_2 = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return 5 * x[0] * x[0] * x[0] + 2 * x[1] * x[1] * x[1];
   });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (Eigen::Vector2d() << 15 * x[0] * x[0], 6 * x[1] * x[1]).finished();
   });
 
-  auto f_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_3 = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return x[0] * x[0] * x[1] + 2 * x[0] * x[1] * x[1];
   });
-  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
     return (Eigen::Vector2d() << 2 * x[0] * x[1] + 2 * x[1] * x[1],
             x[0] * x[0] + 4 * x[0] * x[1])
         .finished();
