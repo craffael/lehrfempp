@@ -374,9 +374,9 @@ class FeLagrangeO3Quad final
 
     // evaluate "marginal" shape functions (b^j and b^l)
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
-        (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
-        (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
 
     // Evaluate basis functions using the tensor product structure of the basis
     // functions
@@ -406,17 +406,17 @@ class FeLagrangeO3Quad final
 
     // evaluate "segment" shape functions (b^j and b^l)
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_eval =
-        (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(0))).array();
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_eval =
-        (rsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
+        (krsf_segment_.EvalReferenceShapeFunctions(refcoords.row(1))).array();
 
     // evaluate derivatives of "segment" shape functions (b^j and
     // b^l)
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x0_grad =
-        (rsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(0)))
+        (krsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(0)))
             .array();
     Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic> segment_x1_grad =
-        (rsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(1)))
+        (krsf_segment_.GradientsReferenceShapeFunctions(refcoords.row(1)))
             .array();
 
     // evaluate gradients using the product rule and
