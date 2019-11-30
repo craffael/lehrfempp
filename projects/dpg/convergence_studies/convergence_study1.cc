@@ -16,7 +16,7 @@ int main() {
 
   // specify the boundary value problems:
   // exact solution:
-  const double PI = std::atan(1.0) * 4;
+  const double PI = lf::base::kPi;
   auto u_exact = [PI](const Eigen::Vector2d& x) -> double {
     return std::sin(PI * x[0]) * std::sin(PI * x[1]);
   };

@@ -20,8 +20,8 @@
 #include "../dpg_element_matrix_provider.h"
 #include "../dpg_element_vector_provider.h"
 #include "../dpg_tools.h"
-#include "../product_element_matrix_provider_factory.h"
-#include "../product_element_vector_provider_factory.h"
+#include "../product_element_matrix_provider_builder.h"
+#include "../product_element_vector_provider_builder.h"
 #include "../product_fe_space.h"
 #include "../product_fe_space_factory.h"
 
@@ -138,10 +138,7 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     auto beta_mf = lf::uscalfe::MeshFunctionGlobal(beta);
     auto f_mf = lf::uscalfe::MeshFunctionGlobal(f);
     auto one_mf = lf::uscalfe::MeshFunctionConstant(1.0);
-    auto zero_mf = lf::uscalfe::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
-          return (Eigen::Vector2d(2) << 0.0, 0.0).finished();
-        });
+    auto zero_mf = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,0.0));
     auto x_selector_mf = lf::uscalfe::MeshFunctionGlobal(
         [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
           return (Eigen::MatrixXd(2, 2) << 1.0, 0.0, 0.0, 0.0).finished();
@@ -151,76 +148,70 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
           return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 0.0, 1.0).finished();
         });
 
-    auto x_selector_mf_vector = lf::uscalfe::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
-          return (Eigen::Vector2d(2) << 1.0, 0.0).finished();
-        });
-    auto y_selector_mf_vector = lf::uscalfe::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
-          return (Eigen::Vector2d(2) << 0.0, 1.0).finished();
-        });
+    auto x_selector_mf_vector = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(1.0,0.0));
+    auto y_selector_mf_vector = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,1.0));
 
     // construct extended stiffness provider
-    ProductElementMatrixProviderFactory stiffness_factory(fe_space_trial,
+    ProductElementMatrixProviderBuilder stiffness_builder(fe_space_trial,
                                                           fe_space_test);
-    stiffness_factory.AddConvectionElementMatrixProvider(u, v, -beta_mf,
+    stiffness_builder.AddConvectionElementMatrixProvider(u, v, -beta_mf,
                                                          zero_mf);
-    stiffness_factory.AddConvectionElementMatrixProvider(
+    stiffness_builder.AddConvectionElementMatrixProvider(
         sigma_x, v, x_selector_mf_vector, zero_mf);
-    stiffness_factory.AddConvectionElementMatrixProvider(
+    stiffness_builder.AddConvectionElementMatrixProvider(
         sigma_y, v, y_selector_mf_vector, zero_mf);
 
-    // stiffness_factory.AddTraceElementMatrixProvider(u_hat, v, beta_mf);
-    stiffness_factory.AddFluxElementMatrixProvider(q_n, v, -one_mf);
+    // stiffness_builder.AddTraceElementMatrixProvider(u_hat, v, beta_mf);
+    stiffness_builder.AddFluxElementMatrixProvider(q_n, v, -one_mf);
 
-    stiffness_factory.AddConvectionElementMatrixProvider(
+    stiffness_builder.AddConvectionElementMatrixProvider(
         u, tau_x, x_selector_mf_vector, zero_mf);
-    stiffness_factory.AddConvectionElementMatrixProvider(
+    stiffness_builder.AddConvectionElementMatrixProvider(
         u, tau_y, y_selector_mf_vector, zero_mf);
 
-    stiffness_factory.AddReactionElementMatrixProvider(sigma_x, tau_x,
+    stiffness_builder.AddReactionElementMatrixProvider(sigma_x, tau_x,
                                                        alpha_inf_mf);
-    stiffness_factory.AddReactionElementMatrixProvider(sigma_y, tau_y,
+    stiffness_builder.AddReactionElementMatrixProvider(sigma_y, tau_y,
                                                        alpha_inf_mf);
 
-    stiffness_factory.AddTraceElementMatrixProvider(u_hat, tau_x,
+    stiffness_builder.AddTraceElementMatrixProvider(u_hat, tau_x,
                                                     -x_selector_mf_vector);
-    stiffness_factory.AddTraceElementMatrixProvider(u_hat, tau_y,
+    stiffness_builder.AddTraceElementMatrixProvider(u_hat, tau_y,
                                                     -y_selector_mf_vector);
-    auto stiffness_provider = stiffness_factory.Build();
+    auto stiffness_provider = stiffness_builder.Build();
 
     // construct gram matrix provider
-    ProductElementMatrixProviderFactory gramian_factory(fe_space_test,
+    ProductElementMatrixProviderBuilder gramian_builder(fe_space_test,
                                                         fe_space_test);
-    gramian_factory.AddDiffusionElementMatrixProvider(v, v, one_mf);
-    gramian_factory.AddReactionElementMatrixProvider(v, v, one_mf);
+    gramian_builder.AddDiffusionElementMatrixProvider(v, v, one_mf);
+    gramian_builder.AddReactionElementMatrixProvider(v, v, one_mf);
 
-    gramian_factory.AddDiffusionElementMatrixProvider(tau_x, tau_x,
+    gramian_builder.AddDiffusionElementMatrixProvider(tau_x, tau_x,
                                                       x_selector_mf);
-    gramian_factory.AddDiffusionElementMatrixProvider(tau_y, tau_y,
+    gramian_builder.AddDiffusionElementMatrixProvider(tau_y, tau_y,
                                                       y_selector_mf);
 
-    gramian_factory.AddDiffusionElementMatrixProvider(
+    gramian_builder.AddDiffusionElementMatrixProvider(
         tau_y, tau_x,
         lf::uscalfe::MeshFunctionGlobal(
             [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 1.0, 0.0, 0.0).finished();
             }));
-    gramian_factory.AddDiffusionElementMatrixProvider(
+    gramian_builder.AddDiffusionElementMatrixProvider(
         tau_x, tau_y,
         lf::uscalfe::MeshFunctionGlobal(
             [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 1.0, 0.0).finished();
             }));
 
-    gramian_factory.AddReactionElementMatrixProvider(tau_x, tau_x, one_mf);
-    gramian_factory.AddReactionElementMatrixProvider(tau_y, tau_y, one_mf);
-    auto gramian_provider = gramian_factory.Build();
+    gramian_builder.AddReactionElementMatrixProvider(tau_x, tau_x, one_mf);
+    gramian_builder.AddReactionElementMatrixProvider(tau_y, tau_y, one_mf);
+    auto gramian_provider = gramian_builder.Build();
 
     // construct the rhs provider:
-    ProductElementVectorProviderFactory rhs_factory(fe_space_test);
-    rhs_factory.AddLoadElementVectorProvider(v, f_mf);
-    auto rhs_provider = rhs_factory.Build();
+    ProductElementVectorProviderBuilder rhs_builder(fe_space_test);
+    rhs_builder.AddLoadElementVectorProvider(v, f_mf);
+    auto rhs_provider = rhs_builder.Build();
 
     // initialize the dpg providers:
     auto element_matrix_provider =

@@ -1,5 +1,5 @@
-#ifndef PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_FACTORY
-#define PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_FACTORY
+#ifndef PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_BUILDER
+#define PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_BUILDER
 
 #include "dpg.h"
 #include "loc_comp_dpg.h"
@@ -8,7 +8,7 @@
 namespace projects::dpg {
 
 /**
- * @brief Factory class to build a ProductElementVectorProvider
+ * @brief Builder class to build a ProductElementVectorProvider
  *
  * @tparam SCLAR type of entries of the element vectors. Fieldtype such as
  * double.
@@ -26,47 +26,47 @@ namespace projects::dpg {
  *  \f[ l((v_1, \dots v_{m-1})) = \sum_{k} l_k(v_{j_k}) \f]
  */
 template <typename SCALAR>
-class ProductElementVectorProviderFactory {
+class ProductElementVectorProviderBuilder {
  public:
   /** @brief standard constructor */
-  ProductElementVectorProviderFactory(
-      const ProductElementVectorProviderFactory&) = delete;
-  ProductElementVectorProviderFactory(
-      ProductElementVectorProviderFactory&&) noexcept = delete;
-  ProductElementVectorProviderFactory& operator=(
-      const ProductElementVectorProviderFactory&) = delete;
-  ProductElementVectorProviderFactory& operator=(
-      ProductElementVectorProviderFactory&&) = delete;
+  ProductElementVectorProviderBuilder(
+      const ProductElementVectorProviderBuilder&) = delete;
+  ProductElementVectorProviderBuilder(
+      ProductElementVectorProviderBuilder&&) noexcept = delete;
+  ProductElementVectorProviderBuilder& operator=(
+      const ProductElementVectorProviderBuilder&) = delete;
+  ProductElementVectorProviderBuilder& operator=(
+      ProductElementVectorProviderBuilder&&) = delete;
 
   /**
    * @brief main contructor, construct a new builder
    * @param fe_space_test collection of specifications about the  (product)
    * space \f$ V \f$
    */
-  explicit ProductElementVectorProviderFactory(
+  explicit ProductElementVectorProviderBuilder(
       std::shared_ptr<ProductUniformFESpace<SCALAR>> fe_space_test)
       : fe_space_test_(std::move(fe_space_test)) {}
 
   /**
    * @brief Adds a linear form \f$ l_k \f$ to \f$ l \f$ representing a simple
- load linear form.
-   *@param test_component index of the  component  \f$ v \f$ of \f$ l_k \f$
+   * load linear form.
+   * @param test_component index of the  component  \f$ v \f$ of \f$ l_k \f$
    * @param f mesh function for the scalar valued source function \f$ f \f$
    *
    * @tparam FUNCTOR see the type requirements of the template parameter FUNCTOR
    * of the LoadElementVectorProvider class.
    *
    * The (local)  added linear form \f$ l_k\f$   is
- @f[
+   @f[
       v \mapsto \int_K f(\mathbf{x})\,v\,\mathrm{d}\mathbf{x}\;,
  * @f]
    *
    * For further information about the added  added linear form \f$ l_k \f$ see
- the documentation of
+   * the documentation of
    * LoadElementVectorProvider
    */
   template <typename FUNCTOR>
-  size_type AddLoadElementVectorProvider(size_type test_component, FUNCTOR f);
+  ProductElementVectorProviderBuilder& AddLoadElementVectorProvider(size_type test_component, FUNCTOR f);
 
   /**
    * @brief Build the ProductElementVectorProvider based on the provided linear
@@ -75,7 +75,7 @@ class ProductElementVectorProviderFactory {
   std::shared_ptr<ProductElementVectorProvider<SCALAR>> Build();
 
   /** @brief default destructor */
-  ~ProductElementVectorProviderFactory() = default;
+  ~ProductElementVectorProviderBuilder() = default;
 
  private:
   /** @brief collection of specifications for the test space */
@@ -87,18 +87,18 @@ class ProductElementVectorProviderFactory {
 
 template <typename SCALAR>
 template <typename FUNCTOR>
-size_type
-ProductElementVectorProviderFactory<SCALAR>::AddLoadElementVectorProvider(
+ProductElementVectorProviderBuilder<SCALAR>&
+ProductElementVectorProviderBuilder<SCALAR>::AddLoadElementVectorProvider(
     size_type test_component, FUNCTOR f) {
   subproviders_.push_back(
       std::make_shared<LoadElementVectorProvider<SCALAR, FUNCTOR>>(
           fe_space_test_, test_component, f));
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 std::shared_ptr<ProductElementVectorProvider<SCALAR>>
-ProductElementVectorProviderFactory<SCALAR>::Build() {
+ProductElementVectorProviderBuilder<SCALAR>::Build() {
   auto provider = std::make_shared<ProductElementVectorProvider<SCALAR>>(
       fe_space_test_, subproviders_);
 
@@ -109,4 +109,4 @@ ProductElementVectorProviderFactory<SCALAR>::Build() {
 
 }  // namespace projects::dpg
 
-#endif  // PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_FACTORY
+#endif  // PROJECTS_DPG_PRODUCT_ELEMENT_VECTOR_PROVIDER_BUILDER

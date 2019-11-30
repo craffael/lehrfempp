@@ -1,5 +1,5 @@
-#ifndef PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_FACTORY
-#define PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_FACTORY
+#ifndef PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_BUILDER
+#define PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_BUILDER
 
 #include "dpg.h"
 #include "loc_comp_dpg.h"
@@ -7,7 +7,7 @@
 
 namespace projects::dpg {
 /**
- * @brief Factory class to build a  ProductElementMatrixProvider
+ * @brief Builder class to build a  ProductElementMatrixProvider
  *
  * @tparam SCALAR type of entries of the element matrics. Field type such as
  * double
@@ -29,17 +29,17 @@ namespace projects::dpg {
  * b_k(u_{i_k},v_{j_k}) \f]
  */
 template <typename SCALAR>
-class ProductElementMatrixProviderFactory {
+class ProductElementMatrixProviderBuilder {
  public:
   /** @brief standard constructor */
-  ProductElementMatrixProviderFactory(
-      const ProductElementMatrixProviderFactory&) = delete;
-  ProductElementMatrixProviderFactory(
-      ProductElementMatrixProviderFactory&&) noexcept = delete;
-  ProductElementMatrixProviderFactory& operator=(
-      const ProductElementMatrixProviderFactory&) = delete;
-  ProductElementMatrixProviderFactory& operator=(
-      ProductElementMatrixProviderFactory&&) = delete;
+  ProductElementMatrixProviderBuilder(
+      const ProductElementMatrixProviderBuilder&) = delete;
+  ProductElementMatrixProviderBuilder(
+      ProductElementMatrixProviderBuilder&&) noexcept = delete;
+  ProductElementMatrixProviderBuilder& operator=(
+      const ProductElementMatrixProviderBuilder&) = delete;
+  ProductElementMatrixProviderBuilder& operator=(
+      ProductElementMatrixProviderBuilder&&) = delete;
 
   /**
    * @brief main constructor, constructs a new builder
@@ -48,7 +48,7 @@ class ProductElementMatrixProviderFactory {
    * @param fe_space_test collection of specifications about the  (product) test
    * space \f$ V \f$
    */
-  ProductElementMatrixProviderFactory(
+  ProductElementMatrixProviderBuilder(
       std::shared_ptr<ProductUniformFESpace<SCALAR>> fe_space_trial,
       std::shared_ptr<ProductUniformFESpace<SCALAR>> fe_space_test)
       : fe_space_trial_(std::move(fe_space_trial)),
@@ -77,11 +77,11 @@ class ProductElementMatrixProviderFactory {
  * @f]
    *
    * For further information about the added bilinear form \f$ b_k \f$
-   * see  documentation of the class DiffusionElementMatrixProvider
+   * see documentation of the class DiffusionElementMatrixProvider
    *
    */
   template <typename DIFF_COEFF>
-  size_type AddDiffusionElementMatrixProvider(size_type trial_component,
+  ProductElementMatrixProviderBuilder& AddDiffusionElementMatrixProvider(size_type trial_component,
                                               size_type test_component,
                                               DIFF_COEFF alpha);
 
@@ -115,7 +115,7 @@ class ProductElementMatrixProviderFactory {
    * the documentation of ConvectionElementMatrixProvider
    */
   template <typename CONVECTION_COEFF_1, typename CONVECTION_COEFF_2>
-  size_type AddConvectionElementMatrixProvider(size_type trial_component,
+  ProductElementMatrixProviderBuilder& AddConvectionElementMatrixProvider(size_type trial_component,
                                                size_type test_component,
                                                CONVECTION_COEFF_1 beta_1,
                                                CONVECTION_COEFF_2 beta_2);
@@ -144,7 +144,7 @@ class ProductElementMatrixProviderFactory {
    * the documentation of ReactionElementMatrixProvider.
    */
   template <typename REACTION_COEFF>
-  size_type AddReactionElementMatrixProvider(size_type trial_component,
+  ProductElementMatrixProviderBuilder& AddReactionElementMatrixProvider(size_type trial_component,
                                              size_type test_component,
                                              REACTION_COEFF gamma);
 
@@ -176,11 +176,11 @@ class ProductElementMatrixProviderFactory {
    *  see the documentation of FluxElementMatrixProvider.
    */
   template <typename DIFF_COEFF>
-  size_type AddFluxElementMatrixProvider(size_type trial_component,
+  ProductElementMatrixProviderBuilder& AddFluxElementMatrixProvider(size_type trial_component,
                                          size_type test_component,
                                          DIFF_COEFF alpha);
 
-  template <typename COEFF>
+
   /**
    * @brief Adds a bilinear form \f$ b_k \f$ to \f$ b \f$ representing a term
  that involves
@@ -204,7 +204,8 @@ class ProductElementMatrixProviderFactory {
    * For further information about the added bilinear form \f$ b_k \f$
    *  see the documentation of TraceElementMatrixProvider.
    */
-  size_type AddTraceElementMatrixProvider(size_type trial_component,
+  template <typename COEFF>
+  ProductElementMatrixProviderBuilder& AddTraceElementMatrixProvider(size_type trial_component,
                                           size_type test_component, COEFF beta);
 
   /**
@@ -214,7 +215,7 @@ class ProductElementMatrixProviderFactory {
   std::shared_ptr<ProductElementMatrixProvider<SCALAR>> Build();
 
   /** @brief virtual destructor */
-  ~ProductElementMatrixProviderFactory() = default;
+  ~ProductElementMatrixProviderBuilder() = default;
 
  private:
   /** @brief  collection of specifications for the trial space */
@@ -228,69 +229,69 @@ class ProductElementMatrixProviderFactory {
 
 template <typename SCALAR>
 template <typename DIFF_COEFF>
-size_type
-ProductElementMatrixProviderFactory<SCALAR>::AddDiffusionElementMatrixProvider(
+ProductElementMatrixProviderBuilder<SCALAR>&
+ProductElementMatrixProviderBuilder<SCALAR>::AddDiffusionElementMatrixProvider(
     size_type trial_component, size_type test_component, DIFF_COEFF alpha) {
   subproviders_.push_back(
       std::make_shared<DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>>(
           fe_space_trial_, fe_space_test_, trial_component, test_component,
           alpha));
 
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 template <typename CONVECTION_COEFF_1, typename CONVECTION_COEFF_2>
-size_type
-ProductElementMatrixProviderFactory<SCALAR>::AddConvectionElementMatrixProvider(
+ProductElementMatrixProviderBuilder<SCALAR>&
+ProductElementMatrixProviderBuilder<SCALAR>::AddConvectionElementMatrixProvider(
     size_type trial_component, size_type test_component,
     CONVECTION_COEFF_1 beta_1, CONVECTION_COEFF_2 beta_2) {
   subproviders_.push_back(std::make_shared<ConvectionElementMatrixProvider<
                               SCALAR, CONVECTION_COEFF_1, CONVECTION_COEFF_2>>(
       fe_space_trial_, fe_space_test_, trial_component, test_component, beta_1,
       beta_2));
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 template <typename REACTION_COEFF>
-size_type
-ProductElementMatrixProviderFactory<SCALAR>::AddReactionElementMatrixProvider(
+ProductElementMatrixProviderBuilder<SCALAR>&
+ProductElementMatrixProviderBuilder<SCALAR>::AddReactionElementMatrixProvider(
     size_type trial_component, size_type test_component, REACTION_COEFF gamma) {
   subproviders_.push_back(
       std::make_shared<ReactionElementMatrixProvider<SCALAR, REACTION_COEFF>>(
           fe_space_trial_, fe_space_test_, trial_component, test_component,
           gamma));
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 template <typename DIFF_COEFF>
-size_type
-ProductElementMatrixProviderFactory<SCALAR>::AddFluxElementMatrixProvider(
+ProductElementMatrixProviderBuilder<SCALAR>&
+ProductElementMatrixProviderBuilder<SCALAR>::AddFluxElementMatrixProvider(
     size_type trial_component, size_type test_component, DIFF_COEFF alpha) {
   subproviders_.push_back(
       std::make_shared<FluxElementMatrixProvider<SCALAR, DIFF_COEFF>>(
           fe_space_trial_, fe_space_test_, trial_component, test_component,
           alpha));
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 template <typename COEFF>
-size_type
-ProductElementMatrixProviderFactory<SCALAR>::AddTraceElementMatrixProvider(
+ProductElementMatrixProviderBuilder<SCALAR>&
+ProductElementMatrixProviderBuilder<SCALAR>::AddTraceElementMatrixProvider(
     size_type trial_component, size_type test_component, COEFF beta) {
   subproviders_.push_back(
       std::make_shared<TraceElementMatrixProvider<SCALAR, COEFF>>(
           fe_space_trial_, fe_space_test_, trial_component, test_component,
           beta));
-  return subproviders_.size();
+  return *this;
 }
 
 template <typename SCALAR>
 std::shared_ptr<ProductElementMatrixProvider<SCALAR>>
-ProductElementMatrixProviderFactory<SCALAR>::Build() {
+ProductElementMatrixProviderBuilder<SCALAR>::Build() {
   auto provider = std::make_shared<ProductElementMatrixProvider<SCALAR>>(
       fe_space_trial_, fe_space_test_, subproviders_);
   // clear supplied information
@@ -300,4 +301,4 @@ ProductElementMatrixProviderFactory<SCALAR>::Build() {
 
 }  // namespace projects::dpg
 
-#endif  // PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_FACTORY
+#endif  // PROJECTS_DPG_PRODUCT_ELEMENT_MATRIX_PROVIDER_BUILDER

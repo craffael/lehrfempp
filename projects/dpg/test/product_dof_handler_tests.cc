@@ -18,7 +18,7 @@
 #include "../lagr_fe_quadratic.h"
 #include "../loc_comp_dpg.h"
 #include "../product_dofhandler.h"
-#include "../product_element_matrix_provider_factory.h"
+#include "../product_element_matrix_provider_builder.h"
 #include "../product_fe_space_factory.h"
 
 #include "assembly_test_utils.h"
@@ -244,10 +244,10 @@ TEST(product_dof_handler, two_component_fe_space) {
 
   auto gamma = lf::uscalfe::MeshFunctionConstant(1.0);
 
-  ProductElementMatrixProviderFactory stiffness_factory(fe_space, fe_space);
-  stiffness_factory.AddReactionElementMatrixProvider(v, v, gamma);
-  stiffness_factory.AddReactionElementMatrixProvider(u, u, gamma);
-  auto provider = stiffness_factory.Build();
+  ProductElementMatrixProviderBuilder stiffness_builder(fe_space, fe_space);
+  stiffness_builder.AddReactionElementMatrixProvider(v, v, gamma);
+  stiffness_builder.AddReactionElementMatrixProvider(u, u, gamma);
+  auto provider = stiffness_builder.Build();
 
   lf::assemble::COOMatrix<double> mat(fe_space->LocGlobMap().NumDofs(),
                                       fe_space->LocGlobMap().NumDofs());

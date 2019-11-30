@@ -18,8 +18,8 @@
 
 #include "../dpg_element_matrix_provider.h"
 #include "../dpg_element_vector_provider.h"
-#include "../product_element_matrix_provider_factory.h"
-#include "../product_element_vector_provider_factory.h"
+#include "../product_element_matrix_provider_builder.h"
+#include "../product_element_vector_provider_builder.h"
 #include "../product_fe_space.h"
 #include "../product_fe_space_factory.h"
 
@@ -129,33 +129,30 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
     auto beta_mf = lf::uscalfe::MeshFunctionGlobal(beta);
     auto f_mf = lf::uscalfe::MeshFunctionGlobal(f);
     auto one_mf = lf::uscalfe::MeshFunctionConstant(1.0);
-    auto zero_mf = lf::uscalfe::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
-          return (Eigen::Vector2d(2) << 0.0, 0.0).finished();
-        });
+    auto zero_mf = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,0.0));
 
     // construct extended stiffness provider
-    ProductElementMatrixProviderFactory stiffness_factory(fe_space_trial,
+    ProductElementMatrixProviderBuilder stiffness_builder(fe_space_trial,
                                                           fe_space_test);
-    stiffness_factory.AddDiffusionElementMatrixProvider(u, v, alpha_mf);
-    stiffness_factory.AddFluxElementMatrixProvider(q_n, v, -one_mf);
-    stiffness_factory.AddConvectionElementMatrixProvider(u, v, zero_mf,
+    stiffness_builder.AddDiffusionElementMatrixProvider(u, v, alpha_mf);
+    stiffness_builder.AddFluxElementMatrixProvider(q_n, v, -one_mf);
+    stiffness_builder.AddConvectionElementMatrixProvider(u, v, zero_mf,
                                                          beta_mf);
-    auto stiffness_provider = stiffness_factory.Build();
+    auto stiffness_provider = stiffness_builder.Build();
 
     // construct gram matrix provider
     auto alpha_squared_mf = lf::uscalfe::MeshFunctionGlobal(
         [alpha](const Eigen::Vector2d& x) { return alpha(x) * alpha(x); });
-    ProductElementMatrixProviderFactory gramian_factory(fe_space_test,
+    ProductElementMatrixProviderBuilder gramian_builder(fe_space_test,
                                                         fe_space_test);
-    gramian_factory.AddDiffusionElementMatrixProvider(v, v, alpha_squared_mf);
-    gramian_factory.AddReactionElementMatrixProvider(v, v, one_mf);
-    auto gramian_provider = gramian_factory.Build();
+    gramian_builder.AddDiffusionElementMatrixProvider(v, v, alpha_squared_mf);
+    gramian_builder.AddReactionElementMatrixProvider(v, v, one_mf);
+    auto gramian_provider = gramian_builder.Build();
 
     // construct the rhs provider:
-    ProductElementVectorProviderFactory rhs_factory(fe_space_test);
-    rhs_factory.AddLoadElementVectorProvider(v, f_mf);
-    auto rhs_provider = rhs_factory.Build();
+    ProductElementVectorProviderBuilder rhs_builder(fe_space_test);
+    rhs_builder.AddLoadElementVectorProvider(v, f_mf);
+    auto rhs_provider = rhs_builder.Build();
 
     // initialize the dpg providers:
     auto element_matrix_provider =

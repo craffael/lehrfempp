@@ -18,6 +18,7 @@
 #include "product_dofhandler.h"
 
 namespace projects::dpg {
+
 /**
  * @headerfile projects/dpg/product_fe_space.h
  * @brief cartesian/prodcut space of finite element functions on a hybrid 2D
@@ -35,14 +36,18 @@ namespace projects::dpg {
  * of scalar  valued functions (see the description in
  *ProductUniformFEDofHandler).
  *
- * This class weakens some constraints compared to the
- *lf::uscalfe::UniformScalarFESpace to represent function spaces as they  occur
+ * To allow this, this class provides some further member functions that give
+ * extra information about the contained FE spaces. It furthermore uses a ProductUniformFEDofHandler
+ * internally resulting in a different dof ordering.
+ *
+ * Furthermore, this class also weakens some constraints on the shape function layouts compared to the
+ * lf::uscalfe::UniformScalarFESpace in order to represent function spaces as they  occur
  *in the description of DPG methods:
  *
  * - There may be multiple global shape functions associated with the same
  *vertex (usually they will belong to different components)
  * - Some components may not specify any local shape functions on triangles or
- *quadrilaterals, but only on segments.
+ * quadrilaterals, but only on segments.
  *
  *
  * @note Some of the pointers may be NULL, which indicates that the shape
