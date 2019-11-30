@@ -52,7 +52,6 @@ bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
 }
 
 TEST(lf_fe_linear, scal_fe_coeff_node) {
-  // Test of consistency of nodal interpolation
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
 
@@ -70,7 +69,6 @@ TEST(lf_fe_linear, scal_fe_coeff_node) {
 }
 
 TEST(lf_fe_quadratic, scal_fe_coeff_node) {
-  // Test of consistency of nodal interpolation
   std::cout << ">>> Quadratic FE: test of consistency of nodal interpolation"
             << std::endl;
 
@@ -88,7 +86,6 @@ TEST(lf_fe_quadratic, scal_fe_coeff_node) {
 }
 
 TEST(lf_fe_cubic, scalf_fe_coeff_node) {
-  // Test of consistency of nodal interpolation
   std::cout << ">>> Cubuic FE: test of consistency of nodal interpolation"
             << std::endl;
   FeLagrangeO3Tria<double> tfe{};
@@ -140,7 +137,6 @@ bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
 }
 
 TEST(lf_fe_linear, scal_fe_val_node) {
-  // Test of exactness of nodal reconstruction
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
   FeLagrangeO1Tria<double> tlfe{};
@@ -369,19 +365,18 @@ TEST(lf_fe_cubic, lf_fe_segment) {
 }
 
 /**
- * @brief performs a nodal projection of the function g into the fe space and
- * retruns the squared H1 error of the difference.
+ * @brief computes a projection of the function g into the fe space and
+ * retruns the squared H1 norm of the difference.
  *
- * @tparam SCALAR scalar type of the FE space, return type of g
+ * @tparam SCALAR field like double
  * @tparam FUNCTION \ref mesh_function "MeshFunction" returning a scalar
- * @tparam FUNCTION_GRAD \ref mesh_function "MeshFunction" returning a vector of
- * scalars
+ * @tparam FUNCTION_GRAD \ref mesh_function "MeshFunction" returning a Eigen::Vector of scalars
  *
  *
  * @param fe_space  FE space onto which the function is projected
  * @param g  function which is projected onto the fe space
  * @param grad_g gradient of the function g
- * @param quad_degre degree of the quadrature rule used to approximate the l2
+ * @param quad_degre degree of the quadrature rule used to approximate the error
  * norm.
  */
 template <typename SCALAR, typename FUNCTION, typename FUNCTION_GRAD>
@@ -635,9 +630,9 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
 
 /**
  * @brief approximates the value of  \f$ b(a_{FE},b_{FE}) \f$, where
- * \f$b(\dot,\dot)\f$ is the bilinear form described in the
+ * \f$b(\dot,\dot)\f$ is the bilinear form described in
  * ReactionDiffusionElementMatrixProvider, and \f$ a_{FE}, b_{FE} \f$ are the
- * projections of a and b onto a finite element space
+ * projections of a and b onto a finite element space.
  *
  * @tparam SCALAR field type such as double
  * @tparam MF_ALPHA a \ref mesh_function "MeshFunction" that defines the

@@ -1166,7 +1166,7 @@ const Eigen::MatrixXi FeLagrangeO2Quad<SCALAR>::ksegment_to_quad_mapping_ =
  * functions on the reference triangle.
  *
  * The first three shape functions are associated with vertices,
- * the next six with the edges of the triangle. The last shape function is an
+ * the next six with edges of the triangle. The last shape function is an
  * interior shape function.
  *
  * @see ScalarReferenceFiniteElement
