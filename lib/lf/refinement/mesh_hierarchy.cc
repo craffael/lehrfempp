@@ -1657,6 +1657,45 @@ void MeshHierarchy::PerformRefinement() {
       }
     }
   }
+  // **********************************************************************
+  // Initialization of rel_ref_geo fields of ParentInfo structures
+  // **********************************************************************
+  {
+    // Reference to ParentInfo vector for nodes of the new mesh
+    std::vector<ParentInfo> &fine_node_parent_info(parent_infos_.back()[2]);
+    // Loop over all nodes of the new mesh (co-dimension = 2)
+    for (const lf::mesh::Entity *node : child_mesh.Entities(2)) {
+      // Obtain index of the node
+      const glb_idx_t nd_idx = child_mesh.Index(*node);
+      // Obtain ParentInfo for the current node
+      const ParentInfo &nd_pi{fine_node_parent_info[nd_idx]};
+      // Obtain parent entity
+      LF_ASSERT_MSG(nd_pi.parent_ptr != nullptr, "No valid parent pointer");
+      const lf::mesh::Entity &parent{*nd_pi.parent_ptr};
+      // Obtain type of parent entity
+      const lf::base::RefEl parent_ref_el(parent.RefEl());
+      // Obtain co-dimension of parent entity
+      const dim_t parent_codim = parent.Codim();
+      // Index of parent entity
+      const glb_idx_t parent_idx = parent_mesh.Index(parent);
+      // Difference in co-dimensions
+      const dim_t child_rel_codim = node->Codim() - parent_codim;
+      // Obtain refinement pattern and anchor. To that end we have to do
+      // different things for different parent types
+      RefPat parent_ref_pat{RefPat::rp_nil};
+      sub_idx_t anchor{idx_nil};
+      switch (parent_ref_el) {
+        case lf::base::RefEl::kPoint(): {
+          // Do nothing if the parent is a point. There is no meaningful
+          // way to describe a geometry
+          break;
+        }
+        default: {
+          break;
+        }
+      }  // end switch(parent_ref_el)
+    }    // end loop over nodes of the fine mesh
+  }
 }
 
 sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
@@ -1691,7 +1730,8 @@ const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
   const std::vector<ParentInfo> &parent_infos{ParentInfos(level, e.Codim())};
   // Fetch ParentInfo structure for entity e
   const ParentInfo &e_parent_info{parent_infos[idx_e]};
-  // Just return the information contained in the relevant ParentInfo structure
+  // Just return the information contained in the relevant ParentInfo
+  // structure
   LF_VERIFY_MSG(e_parent_info.rel_ref_geo_ != nullptr,
                 "No valid parent information for " << e);
   return e_parent_info.rel_ref_geo_.get();
@@ -1724,8 +1764,8 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
     const std::shared_ptr<lf::mesh::Mesh> &mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat) {
   LF_ASSERT_MSG(mesh_p != nullptr, "No valid mesh supplied!");
-  // Set up the builder object for mesh entities, here suitable for a 2D hybrid
-  // mesh comprising triangles and quadrilaterals
+  // Set up the builder object for mesh entities, here suitable for a 2D
+  // hybrid mesh comprising triangles and quadrilaterals
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   // Create a mesh hierarchy with a single level
