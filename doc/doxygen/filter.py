@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # coding=utf-8
+# Author: Huang Liaowang
+# Date: December 2019
+# This is part of the LehrFEM++ code suite
 
 import os
 import re

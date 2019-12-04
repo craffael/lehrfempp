@@ -6,8 +6,20 @@ if(DOXYGEN_FOUND)
   SET(DOXYGEN_INPUT Doxyfile.in)
   SET(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
   SET(DOXYGEN_STRIP_FROM_INC_PATH ${CMAKE_CURRENT_LIST_DIR}/../../lib)
+
+  # Settings for filtering of doxygen comments
+  # Name of filter script (Python3 script)
+  SET(filter_script filter.py)
+  SET(filter_script_output ${CMAKE_CURRENT_BINARY_DIR}/${filter_script})
+  # Name of the file with LaTeX referencing information
+  SET(aux_file NPDEFLrefs.aux)
+  SET(aux_file_output ${CMAKE_CURRENT_BINARY_DIR}/${aux_file})
+  SET(doxygen_filter ${filter_script})
+  SET(doxygen_aux ${aux_file})
+  configure_file(${filter_script} ${filter_script_output} COPYONLY)
+  configure_file(${aux_file} ${aux_file_output} COPYONLY)
   
-  OPTION(LF_DOX_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile. Set this to On in order to also generate doxygen documentation of private members." OFF)
+  OPTION(LF_DOX_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile. Set this to On in order to also generate doxygen documentation of private members." ON)
   OPTION(LF_DOX_INCLUDE_PROJECTS "Set this to true to include all the projects in the ./projects folder in the doxygen documentation." OFF)
   
   if(LF_DOX_EXTRACT_PRIVATE)
