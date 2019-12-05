@@ -52,6 +52,7 @@ void checkGeometryInParent(const MeshHierarchy &mh,
       // Obtain relative geometry
       const lf::geometry::Geometry *geo_in_parent =
           mh.GeometryInParent(level, *entity_p);
+      EXPECT_TRUE(geo_in_parent) << "Missing GIP for " << *fp << *entity_p;
       // Obtain shape information about node
       const lf::geometry::Geometry *geo_child = entity_p->Geometry();
       // Fetch shape information about parent
@@ -60,17 +61,39 @@ void checkGeometryInParent(const MeshHierarchy &mh,
       EXPECT_EQ(geo_in_parent->DimGlobal(), geo_parent->DimLocal())
           << "Mismatch: geo_child->DimGlobal() = " << geo_child->DimGlobal()
           << " <-> geo_parent->DimLocal() = " << geo_parent->DimLocal();
-      // Test point in child reference coordinates
-      const Eigen::VectorXd testpoint =
-          Eigen::VectorXd::Constant(geo_child->DimLocal(), 1.0 / 3.0);
-      // Map test point through the geometry object for the child entity
-      const Eigen::VectorXd pt1 = geo_child->Global(testpoint);
-      // Map test point through relative geometry and then through geometry of
-      // parent
-      const Eigen::VectorXd tmp = geo_in_parent->Global(testpoint);
-      const Eigen::VectorXd pt2 = geo_parent->Global(tmp);
-      // Check whether both mappings yields the same point
-      EXPECT_NEAR((pt1 - pt2).norm(), 0.0, 1E-10)
+      // The following test is valid only for affine entities
+      if (geo_parent->isAffine()) {
+        // Test point in child reference coordinates
+        const Eigen::VectorXd testpoint =
+            Eigen::VectorXd::Constant(geo_child->DimLocal(), 1.0 / 3.0);
+        // Map test point through the geometry object for the child entity
+        const Eigen::VectorXd pt1 = geo_child->Global(testpoint);
+        // Map test point through relative geometry and then through geometry of
+        // parent
+        const Eigen::VectorXd tmp = geo_in_parent->Global(testpoint);
+        const Eigen::VectorXd pt2 = geo_parent->Global(tmp);
+        // Check whether both mappings yields the same point
+        // Note a valid test, in case the entity is not an AFFINE image of
+        // the reference shape.
+        EXPECT_NEAR((pt1 - pt2).norm(), 0.0, 1E-10)
+            << "parent = " << *fp << " < child = " << *entity_p << std::endl
+            << "p_geo = " << std::endl
+            << lf::geometry::Corners(*geo_parent) << std::endl
+            << "child_geo = " << std::endl
+            << lf::geometry::Corners(*geo_child) << std::endl
+            << "c_i_p = " << std::endl
+            << lf::geometry::Corners(*geo_in_parent) << std::endl
+            << "pt1 != pt2: " << pt1.transpose() << " != " << pt2.transpose()
+            << std::endl
+            << "p_ref = " << testpoint.transpose()
+            << ", tmp = " << tmp.transpose();
+        // **********************************************************************
+      }
+      // Test if corners of child entity are mapped correctly
+      const Eigen::MatrixXd child_corners{lf::geometry::Corners(*geo_child)};
+      const Eigen::MatrixXd ref_corners{lf::geometry::Corners(*geo_in_parent)};
+      const Eigen::MatrixXd mapped_corners = geo_parent->Global(ref_corners);
+      EXPECT_NEAR((child_corners - mapped_corners).norm(), 0.0, 1E-10)
           << "parent = " << *fp << " < child = " << *entity_p << std::endl
           << "p_geo = " << std::endl
           << lf::geometry::Corners(*geo_parent) << std::endl
@@ -78,11 +101,8 @@ void checkGeometryInParent(const MeshHierarchy &mh,
           << lf::geometry::Corners(*geo_child) << std::endl
           << "c_i_p = " << std::endl
           << lf::geometry::Corners(*geo_in_parent) << std::endl
-          << "pt1 != pt2: " << pt1.transpose() << " != " << pt2.transpose()
-          << std::endl
-          << "p_ref = " << testpoint.transpose()
-          << ", tmp = " << tmp.transpose();
-      // **********************************************************************
+          << "mapped corners = " << std::endl
+          << mapped_corners;
     }  // loop over entities
   }    // loop over codims
 }  // end checkGeometryInParent()
