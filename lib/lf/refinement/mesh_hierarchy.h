@@ -371,6 +371,18 @@ class MeshHierarchy {
    */
   void PerformRefinement();
 
+  /**
+   * @brief Initialization of rel_ref_geo fields of @ref ParentInfo structures
+   *
+   * This method created @ref lf::refinement::Geometry type objects describing
+   * the shape of a child entity in the reference coordinates of its parent.
+   *
+   * @note This method assumes that the parent-child connections of the mesh
+   * hierarchy have been initialized completely already. Therefore this method
+   * is invoked at the end of @ref PerformRefinement().
+   */
+  void initGeometryInParent();
+
  private:
   /** @brief the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;

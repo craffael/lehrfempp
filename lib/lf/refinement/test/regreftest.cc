@@ -48,7 +48,9 @@ TEST(RegRefTest, RegRef) {
   }
   // Verify that child mesh is properly connected to father mesh
   checkFatherChildRelations(multi_mesh, 0);
-
+  // Verify local child geometry representation
+  checkGeometryInParent(multi_mesh, 0);
+    
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "fine_mesh.m");
 
@@ -102,6 +104,8 @@ TEST(RegRefTest, BarycentricRef) {
   }
   // Verify that child mesh is properly connected to father mesh
   checkFatherChildRelations(multi_mesh, 0);
+  // Verify local child geometry representation
+  checkGeometryInParent(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "barycentric_ref.m");
@@ -160,6 +164,8 @@ TEST(RegRefTest, AllMarkedRefinement) {
   }
   // Verify that child mesh is properly connected to father mesh
   checkFatherChildRelations(multi_mesh, 0);
+  // Verify local child geometry representation
+  checkGeometryInParent(multi_mesh, 0);
 
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "allref.m");
@@ -222,7 +228,9 @@ TEST(LocRefTest, LocalRefinement) {
   }
   // Verify that child mesh is properly connected to father mesh
   checkFatherChildRelations(multi_mesh, 0);
-
+  // Verify local child geometry representation
+  checkGeometryInParent(multi_mesh, 0);
+  
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "locref.m");
 
