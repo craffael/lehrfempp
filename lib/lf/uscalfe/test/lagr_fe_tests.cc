@@ -385,8 +385,8 @@ SCALAR nodalProjectionTest(
     std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTION g,
     FUNCTION_GRAD grad_g, int quad_degree) {
   auto dof_vector = NodalProjection(*fe_space, g);
-  auto mf_fe = MeshFunctionFE(fe_space, dof_vector);
-  auto grad_mf_fe = MeshFunctionGradFE(fe_space, dof_vector);
+  auto mf_fe = MeshFunctionFE<double, double>(fe_space, dof_vector);
+  auto grad_mf_fe = MeshFunctionGradFE<double, double>(fe_space, dof_vector);
 
   return IntegrateMeshFunction(
       *(fe_space->Mesh()),
