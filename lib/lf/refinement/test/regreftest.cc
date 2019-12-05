@@ -50,7 +50,7 @@ TEST(RegRefTest, RegRef) {
   checkFatherChildRelations(multi_mesh, 0);
   // Verify local child geometry representation
   checkGeometryInParent(multi_mesh, 0);
-    
+
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "fine_mesh.m");
 
@@ -230,7 +230,7 @@ TEST(LocRefTest, LocalRefinement) {
   checkFatherChildRelations(multi_mesh, 0);
   // Verify local child geometry representation
   checkGeometryInParent(multi_mesh, 0);
-  
+
   std::cout << "Writing MATLAB file" << std::endl;
   io::writeMatlab(*fine_mesh, "locref.m");
 
