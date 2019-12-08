@@ -15,17 +15,27 @@
 namespace lf::base {
 
 namespace internal {
-template <class T>
-constexpr T&& constexpr_declval() noexcept;
-struct IsEigenTester {
+
+struct IsEigenMatrixTester {
   template <class SCALAR, int ROWS, int COLS, int OPTIONS, int MAX_ROWS,
             int MAX_COLS>
-  static bool IsEigen(
+  static bool Test(
       const Eigen::Matrix<SCALAR, ROWS, COLS, OPTIONS, MAX_ROWS, MAX_COLS>&,
       int);
 
   template <class T>
-  static float IsEigen(const T&, long);
+  static float Test(const T&, long);
+};
+
+struct IsEigenArrayTester {
+  template <class SCALAR, int ROWS, int COLS, int OPTIONS, int MAX_ROWS,
+            int MAX_COLS>
+  static bool Test(
+      const Eigen::Array<SCALAR, ROWS, COLS, OPTIONS, MAX_ROWS, MAX_COLS>&,
+      int);
+
+  template <class T>
+  static float Test(const T&, long);
 };
 
 }  // namespace internal
@@ -35,7 +45,14 @@ struct IsEigenTester {
  */
 template <class T>
 constexpr bool is_eigen_matrix = std::is_same_v<
-    decltype(internal::IsEigenTester::IsEigen(std::declval<T>(), 0)), bool>;
+    decltype(internal::IsEigenMatrixTester::Test(std::declval<T>(), 0)), bool>;
+
+/**
+ * @brief Check if a given type T is an Eigen::Array
+ */
+template <class T>
+constexpr bool is_eigen_array = std::is_same_v<
+    decltype(internal::IsEigenArrayTester::Test(std::declval<T>(), 0)), bool>;
 
 }  // namespace lf::base
 
