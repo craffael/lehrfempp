@@ -1747,7 +1747,8 @@ void MeshHierarchy::initGeometryInParent() {
           // Matrix containing the relative reference coordinates of the
           // child's corners in its columns
           const Eigen::MatrixXd child_corners =
-              child_polygon.cast<double>() / ((double)rp.LatticeConst());
+              child_polygon.cast<double>() /
+              static_cast<double>(rp.LatticeConst());
           switch (codim) {
             case 0: {  // cell in cell
               LF_ASSERT_MSG(parent_child_info.child_cell_idx.at(child_number) ==
@@ -1823,6 +1824,8 @@ void MeshHierarchy::initGeometryInParent() {
                   std::make_unique<lf::geometry::Point>(child_corners);
               break;
             }
+            default:
+              LF_VERIFY_MSG(false, "unexpected codim " << codim);
           }  // end switch codim
           break;
         }
@@ -1846,7 +1849,8 @@ void MeshHierarchy::initGeometryInParent() {
           // Row vector containing the relative reference coordinates of the
           // child's corners
           const Eigen::MatrixXd child_corners =
-              child_polygon.cast<double>() / ((double)rp.LatticeConst());
+              child_polygon.cast<double>() /
+              static_cast<double>(rp.LatticeConst());
           switch (codim) {
             case 1: {  // edge in edge, child_rel_codim = 0
               LF_ASSERT_MSG(parent_child_info.child_edge_idx.at(child_number) ==
