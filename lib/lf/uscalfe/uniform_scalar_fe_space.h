@@ -67,6 +67,8 @@ class UniformScalarFESpace {
    * functions on quadrilateral cells
    * @param rfs_edge_p shared pointer to layout description for reference shape
    * functions on the edges
+   * @param rfs_point_p shared pointer to layout description for reference shape
+   * functions on the edges
    *
    * The schemes for local shape have to satisfy certain _compatibility
    * conditions_:
