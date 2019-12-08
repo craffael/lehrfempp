@@ -23,6 +23,7 @@ class X {
 
   X operator+(const X& rhs) const { return X(x_ + rhs.x_); }
   X operator-(const X& rhs) const { return X(x_ - rhs.x_); }
+  X operator*(const X& rhs) const { return X(x_ * rhs.x_); };
   bool operator==(const X& rhs) const { return x_ == rhs.x_; }
 
  private:
@@ -42,11 +43,28 @@ auto mfVectorB_dynamic = MeshFunctionGlobal([](const Eigen::Vector2d& x) {
   return Eigen::VectorXd(Eigen::Vector2d(x[0], 2 * x[0]));
 });
 
+auto mfArrayA = MeshFunctionGlobal(
+    [](const Eigen::Vector2d& x) -> Eigen::Array2d { return x.array(); });
+auto mfArrayB =
+    MeshFunctionGlobal([](const Eigen::Vector2d& x) -> Eigen::Array2d {
+      return Eigen::Array2d(x[0], 2 * x[0]);
+    });
+auto mfArrayA_dynamic = MeshFunctionGlobal(
+    [](const Eigen::Vector2d& x) -> Eigen::ArrayXd { return x.array(); });
+auto mfArrayB_dynamic =
+    MeshFunctionGlobal([](const Eigen::Vector2d& x) -> Eigen::ArrayXd {
+      return Eigen::Array2d(x[0], 2 * x[0]);
+    });
+
 auto mfMatrixA =
     MeshFunctionGlobal([](auto x) { return (x * x.transpose()).eval(); });
 auto mfMatrixB = MeshFunctionGlobal([](auto x) -> Eigen::Matrix2d {
   return (Eigen::Matrix2d() << 0, 1, x[0], x[1]).finished();
 });
+auto mfArrayA22 = MeshFunctionGlobal(
+    [](auto x) { return (x * x.transpose()).array().eval(); });
+auto mfArrayB22 = MeshFunctionGlobal(
+    [](auto x) { return (Eigen::Array22d() << 0, 1, x[0], x[1]).finished(); });
 
 auto mfXA = MeshFunctionConstant(X(1));
 auto mfXB = MeshFunctionConstant(X(2));
@@ -66,6 +84,10 @@ TEST(meshFunctionBinary, Addition) {
   checkMeshFunctionEqual(*mesh, mfVectorA + mfVectorB_dynamic, mfVecAdd);
   checkMeshFunctionEqual(*mesh, mfVectorA_dynamic + mfVectorB_dynamic,
                          mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfArrayA + mfArrayB, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic + mfArrayB, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfArrayA + mfArrayB_dynamic, mfVecAdd);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic + mfArrayB_dynamic, mfVecAdd);
 
   auto matrixSum = mfMatrixA + mfMatrixB;
   checkMeshFunctionEqual(*mesh, matrixSum, MeshFunctionGlobal([](auto x) {
@@ -88,12 +110,15 @@ TEST(meshFunctionBinary, Subtraction) {
 
   auto mfVecDif = MeshFunctionGlobal(
       [](auto x) { return Eigen::Vector2d(0., x[1] - 2 * x[0]); });
-  auto subVector = mfVectorA - mfVectorB;
   checkMeshFunctionEqual(*mesh, mfVectorA - mfVectorB, mfVecDif);
   checkMeshFunctionEqual(*mesh, mfVectorA_dynamic - mfVectorB, mfVecDif);
   checkMeshFunctionEqual(*mesh, mfVectorA - mfVectorB_dynamic, mfVecDif);
   checkMeshFunctionEqual(*mesh, mfVectorA_dynamic - mfVectorB_dynamic,
                          mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfArrayA - mfArrayB, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic - mfArrayB, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfArrayA - mfArrayB_dynamic, mfVecDif);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic - mfArrayB_dynamic, mfVecDif);
 
   auto subMatrix = mfMatrixA - mfMatrixB;
   checkMeshFunctionEqual(*mesh, subMatrix, MeshFunctionGlobal([](auto x) {
@@ -104,6 +129,86 @@ TEST(meshFunctionBinary, Subtraction) {
 
   auto xSub = mfXA - mfXB;
   checkMeshFunctionEqual(*mesh, xSub, MeshFunctionConstant(X(-1)));
+}
+
+TEST(meshFunctionBinary, Multiplication) {
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  auto mult = mfA * mfB;
+  checkMeshFunctionEqual(*mesh, mult, MeshFunctionGlobal([](auto x) {
+    return (x[0] * x[0] + x[1]) * (x[0] + x[1]);
+  }));
+
+  // mfA * mfVectorA
+  auto mfVecMult = MeshFunctionGlobal([](auto x) {
+    return Eigen::Vector2d(x[0] * (x[0] * x[0] + x[1]),
+                           x[1] * (x[0] * x[0] + x[1]));
+  });
+  checkMeshFunctionEqual(*mesh, mfA * mfVectorA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfVectorA * mfA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfA * mfVectorA_dynamic, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfVectorA_dynamic * mfA, mfVecMult);
+
+  // mfA * mfArrayA
+  checkMeshFunctionEqual(*mesh, mfA * mfArrayA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfArrayA * mfA, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfA * mfArrayA_dynamic, mfVecMult);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic * mfA, mfVecMult);
+
+  // transpose(mfVectorA)*mfVectorB
+  auto mfVecMult2 = MeshFunctionGlobal([](auto x) {
+    return (Eigen::Matrix<double, 1, 1>() << x[0] * x[0] + 2 * x[1] * x[0])
+        .finished();
+  });
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA) * mfVectorB, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA_dynamic) * mfVectorB,
+                         mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorA) * mfVectorB_dynamic,
+                         mfVecMult2);
+  checkMeshFunctionEqual(
+      *mesh, transpose(mfVectorA_dynamic) * mfVectorB_dynamic, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB) * mfVectorA, mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB_dynamic) * mfVectorA,
+                         mfVecMult2);
+  checkMeshFunctionEqual(*mesh, transpose(mfVectorB) * mfVectorA_dynamic,
+                         mfVecMult2);
+  checkMeshFunctionEqual(
+      *mesh, transpose(mfVectorB_dynamic) * mfVectorA_dynamic, mfVecMult2);
+
+  // mfArrayA*mfArrayB
+  auto mfArrayMult = MeshFunctionGlobal(
+      [](auto x) { return Eigen::Array2d(x[0] * x[0], 2 * x[0] * x[1]); });
+  checkMeshFunctionEqual(*mesh, mfArrayA * mfArrayB, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic * mfArrayB, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayA * mfArrayB_dynamic, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayA_dynamic * mfArrayB_dynamic,
+                         mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayB * mfArrayA, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayB_dynamic * mfArrayA, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayB * mfArrayA_dynamic, mfArrayMult);
+  checkMeshFunctionEqual(*mesh, mfArrayB_dynamic * mfArrayA_dynamic,
+                         mfArrayMult);
+
+  // mfMatrixA * mfVectorA
+  auto mfMatrixA_mfVectorA = MeshFunctionGlobal([](auto x) {
+    return Eigen::Vector2d(x[0] * x[0] * x[0] + x[0] * x[1] * x[1],
+                           x[0] * x[0] * x[1] + x[1] * x[1] * x[1]);
+  });
+  checkMeshFunctionEqual(*mesh, mfMatrixA * mfVectorA, mfMatrixA_mfVectorA);
+  checkMeshFunctionEqual(*mesh, mfMatrixA * mfVectorA_dynamic,
+                         mfMatrixA_mfVectorA);
+
+  // mfArrayA22 * mfArrayB22
+  auto mfArrayA22_mfArrayA = MeshFunctionGlobal([](auto x) -> Eigen::Array22d {
+    return (Eigen::Array22d() << 0, x[0] * x[1], x[0] * x[0] * x[1],
+            x[1] * x[1] * x[1])
+        .finished();
+  });
+  checkMeshFunctionEqual(*mesh, mfArrayA22 * mfArrayB22, mfArrayA22_mfArrayA);
+
+  // multiplication of two arbitrary types supporting operator*
+  auto xSub = mfXA * mfXB;
+  checkMeshFunctionEqual(*mesh, mfXA * mfXB, MeshFunctionConstant(X(2)));
 }
 
 }  // namespace lf::uscalfe::test
