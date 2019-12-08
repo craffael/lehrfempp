@@ -377,8 +377,8 @@ TEST(lf_fe_cubic, lf_fe_segment) {
  * @param fe_space  FE space onto which the function is projected
  * @param g  function which is projected onto the fe space
  * @param grad_g gradient of the function g
- * @param quad_degre degree of the quadrature rule used to approximate the error
- * norm.
+ * @param quad_degre degree of the quadrature rule used to approximate the
+ * norm of the error
  */
 template <typename SCALAR, typename FUNCTION, typename FUNCTION_GRAD>
 SCALAR nodalProjectionTest(
@@ -686,6 +686,8 @@ SCALAR reactionDiffusionTest(
 // Test that the ReactionDiffusionElementMatrixProvider works as expected
 // for tensor valued coefficients.
 TEST(lf_fe_linear, ReactionDiffusion) {
+  std::cout << "Linear FE >>> Computation of bilinear forms" << std::endl;
+
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
@@ -709,6 +711,8 @@ TEST(lf_fe_linear, ReactionDiffusion) {
 }
 
 TEST(lf_fe_quadratic, ReactionDiffusion) {
+  std::cout << "Quadratic FE >>> Computation of bilinear forms" << std::endl;
+
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   // Set up finite elements
@@ -731,6 +735,8 @@ TEST(lf_fe_quadratic, ReactionDiffusion) {
 }
 
 TEST(lf_fe_cubic, ReactionDiffusion) {
+  std::cout << "Cubic FE >>> Computation of bilinear forms" << std::endl;
+
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   // Set up finite elements
@@ -752,13 +758,13 @@ TEST(lf_fe_cubic, ReactionDiffusion) {
   EXPECT_NEAR(product, 1996731 / 280., 1.0E-2);
 }
 
-template <typename SCALAR>
 /**
- * @brief computes checks products of the form \f$ x^T *M * y \f$ for certain
+ * @brief checks products of the form \f$ x^T *M * y \f$ for certain
  * element/edge matrices/vectors \f$ M \f$ and vectors \f$ x,y \f$.
  * @param fe_space finite element space used for the computation of the element
  * matrices.
  */
+template <typename SCALAR>
 void locCompProductsTest(
     std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space) {
   auto mesh_p = fe_space->Mesh();
@@ -836,6 +842,8 @@ void locCompProductsTest(
 }
 
 TEST(lf_fe_linear, loc_comp_products_test) {
+  std::cout << "Linear FE >>> Computation of local quantities" << std::endl;
+
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
@@ -843,6 +851,8 @@ TEST(lf_fe_linear, loc_comp_products_test) {
 }
 
 TEST(lf_fe_quadratic, loc_comp_products_test) {
+  std::cout << "Quadratic FE >>> Computation of local quantities " << std::endl;
+
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO2<double>>(mesh_p);
@@ -850,6 +860,8 @@ TEST(lf_fe_quadratic, loc_comp_products_test) {
 }
 
 TEST(lf_fe_cubic, loc_comp_products_test) {
+  std::cout << "Cubic FE >>> Computation of local quantities " << std::endl;
+
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<FeSpaceLagrangeO3<double>>(mesh_p);

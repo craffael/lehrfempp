@@ -1449,7 +1449,7 @@ class FeLagrangeO3Segment final : public ScalarReferenceFiniteElement<SCALAR> {
  *
  * The first four shape functions are associated with the vertices,
  * the next eight with edges of the quadrilateral. The last four shape functions
- * are interior shape function.
+ * are interior shape functions.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -1472,7 +1472,7 @@ class FeLagrangeO3Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 16; }
 
   /** @brief One shape function attached to each node and two to each edge
-   * of the quadrilateral. Four interior shape function.
+   * of the quadrilateral. Four interior shape functions.
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
@@ -1490,7 +1490,7 @@ class FeLagrangeO3Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /** @brief One shape function attached to each node and two to each edge
-   * of the quadrilateral. Four interior shape function.
+   * of the quadrilateral. Four interior shape functions.
    * @copydoc
    * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
