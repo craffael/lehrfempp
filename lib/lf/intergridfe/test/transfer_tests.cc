@@ -23,9 +23,9 @@ TEST(lf_intergridfe, NormLinear) {
     const auto mesh_fine = hierarchy.getMesh(1);
     // Construct the fe spaces on the coarse and on the fine mesh
     const auto fes_coarse =
-        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_coarse);
+        std::make_shared<const lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_coarse);
     const auto fes_fine =
-        std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_fine);
+        std::make_shared<const lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_fine);
     // Iterate over all basis functions on the coarse mesh and transfer them to
     // the fine mesh
     const auto& dofh_coarse = fes_coarse->LocGlobMap();
@@ -35,12 +35,11 @@ TEST(lf_intergridfe, NormLinear) {
       // Construct the mesh function on the coarse mesh
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
-      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::intergridfe::transferCoarseFineFE(
-          hierarchy, *fes_fine, mf_coarse);
+      const auto dofvector_fine = lf::intergridfe::prolongate(hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
+      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       const auto qr_provider = [](const lf::mesh::Entity& e) {
         return lf::quad::make_QuadRule(e.RefEl(), 2);
       };
@@ -70,9 +69,9 @@ TEST(lf_intergridfe, NormQuadratic) {
     const auto mesh_fine = hierarchy.getMesh(1);
     // Construct the fe spaces on the coarse and on the fine mesh
     const auto fes_coarse =
-        std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh_coarse);
+        std::make_shared<const lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh_coarse);
     const auto fes_fine =
-        std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh_fine);
+        std::make_shared<const lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh_fine);
     // Iterate over all basis functions on the coarse mesh and transfer them to
     // the fine mesh
     const auto& dofh_coarse = fes_coarse->LocGlobMap();
@@ -82,12 +81,11 @@ TEST(lf_intergridfe, NormQuadratic) {
       // Construct the mesh function on the coarse mesh
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
-      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::intergridfe::transferCoarseFineFE(
-          hierarchy, *fes_fine, mf_coarse);
+      const auto dofvector_fine = lf::intergridfe::prolongate(hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
+      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       const auto qr_provider = [](const lf::mesh::Entity& e) {
         return lf::quad::make_QuadRule(e.RefEl(), 4);
       };

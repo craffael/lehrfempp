@@ -2,90 +2,68 @@
 #define LF_INTERGRIDFE_MESH_FUNCTION_TRANSFER_H
 
 #include <lf/refinement/mesh_hierarchy.h>
+#include <lf/assemble/dofhandler.h>
 #include <lf/uscalfe/uscalfe.h>
 #include <Eigen/Dense>
+#include <type_traits>
 
 namespace lf::intergridfe {
 
 /**
- * @brief Lift a MeshFunctionFE to a finer mesh inside a MeshHierarchy
- * @tparam SCALAR_FE_COARSE The scalar of the FESpace on the coarse mesh
- * @tparam SCALAR_FE_FINE The scalar of the FESpace on the fine mesh
- * @tparam SCALAR_COEFF The type of the basis function coefficients
- * @param mh The MeshHierarchy on which to lift the MeshFunction
- * @param fes_fine The FESpace on the fine mesh
- * @param mf The MeshFunctionFE to lift to a finer mesh
+ * @brief Interpolate a vector of DOFs on a finer mesh
+ * @tparam SCALAR_COEFF The scalar of the coefficient vector
+ * @tparam FES_COARSE The FE space on the coarse mesh
+ * @tparam FES_FINE The FE space on the fine mesh
+ * @param mh A reference to the MeshHierarchy containing the underlying meshes
+ * @param fespace_coarse The FE space on the coarse mesh
+ * @param fespace_fine The FE space on the fine mesh
+ * @param dofs_coarse A basis function coefficient vector on the coarse mesh
+ * @param level The level of the coarse mesh
+ * @returns An interpolated vector of basis function coefficients on the fine mesh
  */
-template <typename SCALAR_FE_COARSE, typename SCALAR_FE_FINE,
-          typename SCALAR_COEFF>
-[[nodiscard]] Eigen::Matrix<SCALAR_FE_FINE, Eigen::Dynamic, 1>
-transferCoarseFineFE(
-    const lf::refinement::MeshHierarchy& mh,
-    const lf::uscalfe::UniformScalarFESpace<SCALAR_FE_FINE>& fes_fine,
-    const lf::uscalfe::MeshFunctionFE<SCALAR_FE_COARSE, SCALAR_COEFF>& mf) {
-  // Find the index of the coarse mesh in mh
-  const lf::base::size_type mesh_index = [&]() {
-    lf::base::size_type idx = 0;
-    for (const auto mesh : mh.getMeshes()) {
-      if (mesh == mf.getMesh()) {
-        return idx;
-      }
-      ++idx;
+template<typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
+[[nodiscard]] Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> prolongate(const lf::refinement::MeshHierarchy &mh, std::shared_ptr<const FES_COARSE> fespace_coarse, std::shared_ptr<const FES_FINE> fespace_fine, const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> &dofs_coarse, lf::base::size_type level) {
+    // Assert that the FES_* are actually FE spaces
+    using scalar_fe_coarse_t = typename FES_COARSE::Scalar;
+    using scalar_fe_fine_t = typename FES_FINE::Scalar;
+    static_assert(std::is_convertible_v<FES_COARSE, lf::uscalfe::UniformScalarFESpace<scalar_fe_coarse_t>>, "Invalid coarse FE space provided");
+    static_assert(std::is_convertible_v<FES_FINE, lf::uscalfe::UniformScalarFESpace<scalar_fe_fine_t>>, "Invalid fine FE space provided");
+    // Obtain the dofhandlers from the fe spaces
+    const lf::assemble::DofHandler &dofh_coarse{fespace_coarse->LocGlobMap()};
+    const lf::assemble::DofHandler &dofh_fine{fespace_fine->LocGlobMap()};
+    const lf::base::size_type N_coarse = dofh_coarse.NumDofs();
+    const lf::base::size_type N_fine = dofh_fine.NumDofs();
+    // Assert correctness of inputs
+    LF_ASSERT_MSG(level < mh.NumLevels()-1, "level must not point to the finest mesh in the hierarchy");
+    LF_ASSERT_MSG(dofs_coarse.size() >= N_coarse, "Too few basis function coefficients provided for coarse FE space");
+    // Construct a mesh function to simplify the point evaluations
+    const lf::uscalfe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
+    // Initialize the dof vector on the fine mesh
+    Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> dofs_fine = Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>::Zero(N_fine);
+    // Iterate over all entities of the fine mesh and compute the dof values
+    const auto mesh_fine = mh.getMesh(level+1);
+    const auto& pinfos = mh.ParentInfos(level+1, 0);
+    for (const auto child : mesh_fine->Entities(0)) {
+	const lf::base::size_type child_idx = mesh_fine->Index(*child);
+	const auto rel_geom = mh.GeometryInParent(level+1, *child);
+	const auto layout = fespace_fine->ShapeFunctionLayout(child->RefEl());
+	// Compute the value of the coarse mesh function at the evaluation nodes
+	const auto eval_nodes = rel_geom->Global(layout->EvaluationNodes());
+	const auto parent = pinfos[child_idx].parent_ptr;
+	const auto nodal_values = mf_coarse(*parent, eval_nodes);
+	// Convert the nodal values to dofs
+	using scalar_t = typename decltype(nodal_values)::value_type;
+	const Eigen::Map<const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>> nodal_values_map(nodal_values.data(), nodal_values.size());
+	const auto dofs = layout->NodalValuesToDofs(nodal_values_map);
+	// Set the dofs in the dof vector on the fine mesh
+	const auto dofidxs = dofh_fine.GlobalDofIndices(*child);
+	for (lf::base::size_type i = 0 ; i < dofidxs.size() ; ++i) {
+	    dofs_fine[dofidxs[i]] = dofs[i];
+	}
     }
-    return idx;
-  }();
-  // Assert whether the user provided a valid mesh
-  LF_ASSERT_MSG(mesh_index < mh.NumLevels() - 1,
-                "Invalid Mesh provided to function.");
-  // Get the refinement info of the meshes
-  const auto& child_info = mh.CellChildInfos(mesh_index);
-  // Iterate over all coarse cells and lift the coefficients
-  const auto mesh_fine = fes_fine.Mesh();
-  const auto& dofh_fine = fes_fine.LocGlobMap();
-  const lf::uscalfe::FeSpaceLagrangeO1<SCALAR_FE_FINE> fes_lagr_o1_fine(
-      mesh_fine);  // Used for coordinate transformations
-  Eigen::Matrix<SCALAR_FE_FINE, Eigen::Dynamic, 1> coeffs_fine(
-      dofh_fine.NumDofs());
-  const auto cells = mf.getMesh()->Entities(0);
-  for (size_t cell_idx = 0; cell_idx < cells.size(); ++cell_idx) {
-    const auto& cell = *cells[cell_idx];
-    // Reconstruct the refinement pattern
-    const lf::refinement::Hybrid2DRefinementPattern refpat(
-        cell.RefEl(), child_info[cell_idx].ref_pat_,
-        child_info[cell_idx].anchor_);
-    // Iterate over the child cells and set their dof coefficients
-    const auto cp_cells = refpat.ChildPolygons(0);
-    for (lf::base::size_type child_idx = 0; child_idx < cp_cells.size();
-         ++child_idx) {
-      const auto& child_cell = *(mesh_fine->EntityByIndex(
-          0, child_info[cell_idx].child_cell_idx[child_idx]));
-      const auto scalar_ref_fel =
-          fes_fine.ShapeFunctionLayout(child_cell.RefEl());
-      const auto sfl_o1 =
-          fes_lagr_o1_fine.ShapeFunctionLayout(child_cell.RefEl());
-      const auto eval_nodes = (cp_cells[child_idx].cast<SCALAR_FE_FINE>() *
-                               sfl_o1->EvalReferenceShapeFunctions(
-                                   scalar_ref_fel->EvaluationNodes()) /
-                               refpat.LatticeConst())
-                                  .eval();
-      const auto eval_node_values = mf(cell, eval_nodes);
-      // Convert the vector output of the mesh function to a eigen matrix again
-      using mf_t = lf::uscalfe::MeshFunctionFE<SCALAR_FE_COARSE, SCALAR_COEFF>;
-      using mf_ret_t = lf::uscalfe::MeshFunctionReturnType<mf_t>;
-      const Eigen::Map<const Eigen::Matrix<mf_ret_t, 1, Eigen::Dynamic>>
-          nodal_values(eval_node_values.data(), eval_node_values.size());
-      const auto dofs = scalar_ref_fel->NodalValuesToDofs(
-          nodal_values.template cast<SCALAR_FE_FINE>());
-      const auto glob_dof_idxs = dofh_fine.GlobalDofIndices(child_cell);
-      for (lf::base::size_type dof_idx = 0; dof_idx < dofs.size(); ++dof_idx) {
-        coeffs_fine[glob_dof_idxs[dof_idx]] = dofs[dof_idx];
-      }
-    }
-  }
-  // Return the dofvector on the fine mesh
-  return coeffs_fine;
+    return dofs_fine;
 }
-
+    
 }  // namespace lf::intergridfe
 
 #endif  // LF_INTERGRIDFE_MESH_FUNCTION_TRANSFER_H
