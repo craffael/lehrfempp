@@ -1,5 +1,6 @@
 set(sources
     intergridfe.h
+    intergridfe.cc
     mesh_function_transfer.h
 )
 
