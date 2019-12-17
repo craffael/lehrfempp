@@ -74,7 +74,7 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
     const auto dofs = layout->NodalValuesToDofs(nodal_values_map);
     // Set the dofs in the dof vector on the fine mesh
     const auto dofidxs = dofh_fine.GlobalDofIndices(*child);
-    for (lf::base::size_type i = 0; i < dofidxs.size(); ++i) {
+    for (long i = 0; i < dofidxs.size(); ++i) {
       dofs_fine[dofidxs[i]] = dofs[i];
     }
   }
