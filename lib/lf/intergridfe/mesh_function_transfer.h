@@ -58,14 +58,13 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
       Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>::Zero(N_fine);
   // Iterate over all entities of the fine mesh and compute the dof values
   const auto mesh_fine = mh.getMesh(level + 1);
-  const auto &pinfos = mh.ParentInfos(level + 1, 0);
   for (const auto child : mesh_fine->Entities(0)) {
     const lf::base::size_type child_idx = mesh_fine->Index(*child);
     const auto rel_geom = mh.GeometryInParent(level + 1, *child);
     const auto layout = fespace_fine->ShapeFunctionLayout(child->RefEl());
     // Compute the value of the coarse mesh function at the evaluation nodes
     const auto eval_nodes = rel_geom->Global(layout->EvaluationNodes());
-    const auto parent = pinfos[child_idx].parent_ptr;
+    const auto parent = mh.ParentEntity(level+1, *child);
     const auto nodal_values = mf_coarse(*parent, eval_nodes);
     // Convert the nodal values to dofs
     using scalar_t = typename decltype(nodal_values)::value_type;
