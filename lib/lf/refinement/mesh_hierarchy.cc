@@ -353,9 +353,6 @@ void MeshHierarchy::RefineMarked() {
   initGeometryInParent();
 }  // end RefineMarked
 
-/*
- * TODO: Initialization of geometry field of ParentInfo Structure
- */
 // NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
 void MeshHierarchy::PerformRefinement() {
   CONTROLLEDSTATEMENT(output_ctrl_, 10,
@@ -1681,7 +1678,7 @@ void MeshHierarchy::initGeometryInParent() {
   // Invoking this function makes sense only if the finest mesh has been
   // created by refinement.
   LF_ASSERT_MSG(num_levels > 1, "Must have been refined at least once");
-  // Obtain references toe finest and second finest mesh
+  // Obtain references to finest and second finest mesh
   const lf::mesh::Mesh &parent_mesh{*meshes_.at(num_levels - 2)};
   const lf::mesh::Mesh &child_mesh{*meshes_.at(num_levels - 1)};
   // Partly intialized vectors of child information
@@ -1941,7 +1938,7 @@ const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
   const lf::mesh::Mesh &mesh{*getMesh(level)};
   // Get index of entity in fine mesh
   const lf::base::glb_idx_t idx_e{mesh.Index(e)};
-  // Access information ojn parents
+  // Access information on parent
   const std::vector<ParentInfo> &parent_infos{ParentInfos(level, e.Codim())};
   // Fetch ParentInfo structure for entity e
   const ParentInfo &e_parent_info{parent_infos[idx_e]};
@@ -1950,6 +1947,24 @@ const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
   LF_VERIFY_MSG(e_parent_info.rel_ref_geo_ != nullptr,
                 "No valid parent information for " << e);
   return e_parent_info.rel_ref_geo_.get();
+}
+
+const lf::mesh::Entity *MeshHierarchy::ParentEntity(
+    size_type level, const lf::mesh::Entity &e) const {
+  LF_ASSERT_MSG(level > 0, "level > 0 required!");
+  // Obtain reference to fine mesh
+  const lf::mesh::Mesh &mesh{*getMesh(level)};
+  // Get index of entity in fine mesh
+  const lf::base::glb_idx_t idx_e{mesh.Index(e)};
+  // Access information about parent entity on next coarser mesh
+  const std::vector<ParentInfo> &parent_infos{ParentInfos(level, e.Codim())};
+  // Fetch ParentInfo structure for entity e
+  const ParentInfo &e_parent_info{parent_infos[idx_e]};
+  // Just return the information contained in the relevant ParentInfo
+  // structure
+  LF_VERIFY_MSG(e_parent_info.parent_ptr != nullptr,
+                "No valid parent information for " << e);
+  return e_parent_info.parent_ptr;
 }
 
 std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {

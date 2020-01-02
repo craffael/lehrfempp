@@ -840,6 +840,8 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
                   anchor_set_,
                   "Anchor must be set for three edge refinement of a quad");
 
+              // A quadrilateral with three split edges is decomposed into one
+              // child quadrilateral and three triangles
               quad_child_coords.col(0) = lt_node_coords.col(mod_2);
               quad_child_coords.col(1) = lt_node_coords.col(mod_3);
               quad_child_coords.col(2) = lt_midpoint_coords.col(mod_3);
