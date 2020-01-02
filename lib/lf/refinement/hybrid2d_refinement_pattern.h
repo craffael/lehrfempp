@@ -193,7 +193,9 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    * @image html refinement_quad/rp_trisect_0.png width=500px
    *    + Q=4 for `rp_quadsect`, image for anchor=0
    * @image html refinement_quad/rp_quadsect_0.png width=500px
-   *    + Q=4 for `rp_threeedge`
+   *    + Q=4 for `rp_threeedge`, image for anchor=0 (child local indices in
+   * pink, edge local indices in green)
+   * @image html refinement_quad/rp_threeedge.png width=500px
    *    + Q=4 for `rp_regular`/`rp_barycentric`
    *
    * - codim=1: obtain information about _interior_ child edges

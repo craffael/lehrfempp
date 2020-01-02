@@ -318,16 +318,49 @@ class MeshHierarchy {
    * to reference coordinate system of its parent entity.
    *
    * We consider the shape of the reference entity of the parent entity of e as
-   * a triangulated domain. The entities of that triangulation correspond to the
-   * reference shapes of the child entities on the fine mesh. This method
+   * a triangulated domain, if the parent entity has a positive dimension, that
+   * is, if it is not a point. The entities of that triangulation correspond to
+   * the reference shapes of the child entities on the fine mesh. This method
    * returns the shape of an entity of that triangulation.
    *
-   * TODO: give an example for a complex refinement pattern of a quadrilateral.
-   * insert an image.
+   * Example: The case of a quadrilateral split into four child entities,
+   * corresponding to `rp_threeedge` as defined in @ref lf::refinement::RefPat,
+   * @ref lf::refinement::Hybrid2DRefinementPattern::ChildPolygons().
+   * The following image gives the local child numbers in pink.
+   * @image html refinement_quad/rp_threeedge_unitsquare.png width=500px
+   * The geometries of the child entities are as follows:
    *
+   * - Child 0: quadrilateral with corners
+   * \f[ \left[\begin{array}{cccc} 1 & 0 & 0 & 1 \\ 1 & 1 & 0.5 & 0.5
+   * \end{array}\right] \f]
+   * - Child 1: triangle with corners
+   * \f[ \left[\begin{array}{ccc} 0 & 0.5 & 0 \\ 0 & 0  & 0.5 \end{array}
+   * \right] \f]
+   * - Child 2: triangle with corners
+   * \f[ \left[\begin{array}{ccc} 1 & 0.5 & 1 \\ 0.5 & 0 & 0 \end{array} \right]
+   * \f]
+   * - Child 3: triangle with corners
+   * \f[ \left[\begin{array}{ccc} 0.5 & 1 & 0 \\ 0 & 0.5 & 0.5 \end{array}
+   * \right] \f]
+   *
+   * One of the  displayed matrices is returned if the entity `e` corresponds to
+   * that child of a quadrilateral.
    */
   [[nodiscard]] const lf::geometry::Geometry *GeometryInParent(
       size_type level, const lf::mesh::Entity &e) const;
+
+  /** @brief Retrieve the parent of an entity contained in a mesh of a
+   * refinement hierarchy
+   *  @param level refinement level > 0 of the fine mesh
+   *  @param e pointer to (potential) child entity, must be contained in mesh on
+   * the specified level.
+   *  @return pointer to parent entity
+   *
+   * @note to be used in combination with @GeometryInParent()
+   */
+  [[nodiscard]] const lf::mesh::Entity *ParentEntity(
+      size_type level, const lf::mesh::Entity &e) const;
+
   /**
    * @brief Output of information about the mesh hierarchy.
    *

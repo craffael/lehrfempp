@@ -73,8 +73,8 @@ void checkGeometryInParent(const MeshHierarchy &mh,
         const Eigen::VectorXd tmp = geo_in_parent->Global(testpoint);
         const Eigen::VectorXd pt2 = geo_parent->Global(tmp);
         // Check whether both mappings yields the same point
-        // Note a valid test, in case the entity is not an AFFINE image of
-        // the reference shape.
+        // Not a valid test, in case the entity is not an AFFINE image of
+        // the reference shape!
         EXPECT_NEAR((pt1 - pt2).norm(), 0.0, 1E-10)
             << "parent = " << *fp << " < child = " << *entity_p << std::endl
             << "p_geo = " << std::endl
