@@ -21,7 +21,7 @@ enum class Orientation : int { positive = 1, negative = -1 };
 int to_sign(Orientation o);
 char to_char(Orientation o);
 
-/** @brief **Interface class** representing of a topological entity in a
+/** @brief **Interface class** representing a topological entity in a
  * cellular complex
  *
  * Example: a 2D hybrid mesh consists of cells (entities of co-dimension 0),
@@ -32,6 +32,9 @@ char to_char(Orientation o);
  * The core purpose of this class is to provide interface definitions for
  * accessing incidence relations and geometry information. This interface
  * applies  to all (topological) types of entities.
+ *
+ * Further information can be found in @lref{sss:meshtopo} of the 
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
  */
 class Entity {
  protected:
