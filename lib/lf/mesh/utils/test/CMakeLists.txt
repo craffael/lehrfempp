@@ -6,6 +6,7 @@ set(sources
   torus_mesh_builder_tests.cc
   tp_quad_mesh_builder_tests.cc
   tp_triag_mesh_builder_tests.cc
+  transfer_tests.cc
 )
 
 add_executable(lf.mesh.utils.test ${sources})
@@ -15,5 +16,6 @@ target_link_libraries(lf.mesh.utils.test
   lf.mesh.hybrid2d
   lf.mesh.utils
   lf.mesh.test_utils
+  lf.refinement
 )
 gtest_discover_tests(lf.mesh.utils.test)

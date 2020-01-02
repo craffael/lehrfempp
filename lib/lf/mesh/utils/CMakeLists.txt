@@ -15,6 +15,7 @@ set(sources
   tp_triag_mesh_builder.h
   tp_triag_mesh_builder.cc
   utils.h
+  mesh_function_transfer.h
 )
 
 lf_add_library(lf.mesh.utils ${sources})

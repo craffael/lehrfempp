@@ -6,5 +6,4 @@ add_subdirectory(mesh)
 add_subdirectory(quad)
 add_subdirectory(refinement)
 add_subdirectory(uscalfe)
-add_subdirectory(intergridfe)
 
