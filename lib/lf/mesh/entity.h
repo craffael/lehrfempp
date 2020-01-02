@@ -33,7 +33,7 @@ char to_char(Orientation o);
  * accessing incidence relations and geometry information. This interface
  * applies  to all (topological) types of entities.
  *
- * Further information can be found in @lref{sss:meshtopo} of the 
+ * Further information can be found in @lref{sss:meshtopo} of the
  * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
  */
 class Entity {

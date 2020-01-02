@@ -54,8 +54,8 @@ namespace lf::mesh {
  *    (This method is mainly used internally by LehrFEM++)
  * -# Calling LehrFEM++'s generator of test meshes @ref
  lf::mesh::test_utils::GenerateHybrid2DTestMesh().
- * -# Reading a mesh from file, see @ref lf::io::GmshReader, and invoking 
- *    @ref lf::io::GmshReader::mesh(). 
+ * -# Reading a mesh from file, see @ref lf::io::GmshReader, and invoking
+ *    @ref lf::io::GmshReader::mesh().
  * -# Refining an existing mesh, see @ref lf::refinement::MeshHierarchy.
  *
  * #### Use case

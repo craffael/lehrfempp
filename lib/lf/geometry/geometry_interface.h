@@ -13,8 +13,8 @@ namespace lf::geometry {
  *
  * This abstract base class is supposed to provide complete information about
  * the mapping \f$\Phi:\widehat{K}\to K\f$ that takes the reference cell to a
- * particular cell. The reference cell is defined through the topological type 
- * of a cell, see @ref lf::base::RefEl.  
+ * particular cell. The reference cell is defined through the topological type
+ * of a cell, see @ref lf::base::RefEl.
  */
 
 class Geometry {
