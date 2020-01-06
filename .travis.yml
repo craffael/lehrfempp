@@ -113,7 +113,7 @@ jobs:
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
   - stage: doxygen
-    if: branch = master AND type IN (push)
+    # if: branch = master AND type IN (push)
     os: linux
     compiler: gcc
     dist: trusty
