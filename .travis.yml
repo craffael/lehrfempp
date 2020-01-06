@@ -113,15 +113,15 @@ jobs:
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
   - stage: doxygen
-    if: branch = master AND type IN (push)
+    # if: branch = master AND type IN (push)
     os: linux
     compiler: gcc
-    dist: trusty
+    dist: xenial
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - llvm-toolchain-trusty-6.0
+        - llvm-toolchain-xenial-6.0
         packages:
         - graphviz
         - g++-7
