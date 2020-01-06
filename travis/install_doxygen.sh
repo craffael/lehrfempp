@@ -8,7 +8,7 @@ dir=$(pwd)
 
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-if [ ! -d "doxygen-Release_1_8_14" ]; then
+if [ ! -d "doxygen-Release_1_8_17" ]; then
   wget -O - https://github.com/doxygen/doxygen/archive/Release_1_8_17.tar.gz | tar xz
   cd doxygen-Release_1_8_17
   mkdir build
