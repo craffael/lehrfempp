@@ -11,6 +11,102 @@
 
 namespace lf::refinement::test {
 
+void checkGeometryInParent(const MeshHierarchy &mh,
+                           base::size_type father_level) {
+  const base::size_type level = father_level + 1;
+  // Obtain pointers to two consecutive meshes
+  std::shared_ptr<const mesh::Mesh> father_mesh = mh.getMesh(father_level);
+  std::shared_ptr<const mesh::Mesh> child_mesh = mh.getMesh(father_level + 1);
+
+  // Array with information about offsprings of a point
+  const std::vector<lf::refinement::PointChildInfo> &point_child_infos =
+      mh.PointChildInfos(father_level);
+  // Array with information about children of edges
+  const std::vector<lf::refinement::EdgeChildInfo> &edge_child_infos =
+      mh.EdgeChildInfos(father_level);
+  // Array with information about child entities for cells
+  const std::vector<lf::refinement::CellChildInfo> &cell_child_infos =
+      mh.CellChildInfos(father_level);
+
+  // Loop over codimensions
+  for (dim_t codim = 0; codim <= 2; ++codim) {
+    // Array with information about parents of nodes (co-dimension = 2)
+    const std::vector<lf::refinement::ParentInfo> &entity_father_infos =
+        mh.ParentInfos(father_level + 1, codim);
+    // Loop over the entities of the fine mesh
+    for (const lf::mesh::Entity *entity_p : child_mesh->Entities(codim)) {
+      const lf::base::glb_idx_t entity_index = child_mesh->Index(*entity_p);
+      // Info record on parent of current node
+      const lf::refinement::ParentInfo &father_info =
+          entity_father_infos[entity_index];
+      // Pointer to potential parent; every entity of a child mesh must have a
+      // parent
+      const lf::mesh::Entity *fp = father_info.parent_ptr;
+      EXPECT_TRUE(fp) << "Mising parent for entity " << entity_index
+                      << " of child mesh";
+      // Index of father
+      const lf::base::glb_idx_t father_index = father_mesh->Index(*fp);
+      EXPECT_EQ(father_index, father_info.parent_index)
+          << "Index-pointer mismatch for node " << entity_index;
+      // **********************************************************************
+      // Obtain relative geometry
+      const lf::geometry::Geometry *geo_in_parent =
+          mh.GeometryInParent(level, *entity_p);
+      EXPECT_TRUE(geo_in_parent) << "Missing GIP for " << *fp << *entity_p;
+      // Obtain shape information about node
+      const lf::geometry::Geometry *geo_child = entity_p->Geometry();
+      // Fetch shape information about parent
+      const lf::geometry::Geometry *geo_parent = fp->Geometry();
+      // Check matching of dimensions
+      EXPECT_EQ(geo_in_parent->DimGlobal(), geo_parent->DimLocal())
+          << "Mismatch: geo_child->DimGlobal() = " << geo_child->DimGlobal()
+          << " <-> geo_parent->DimLocal() = " << geo_parent->DimLocal();
+      // The following test is valid only for affine entities
+      if (geo_parent->isAffine()) {
+        // Test point in child reference coordinates
+        const Eigen::VectorXd testpoint =
+            Eigen::VectorXd::Constant(geo_child->DimLocal(), 1.0 / 3.0);
+        // Map test point through the geometry object for the child entity
+        const Eigen::VectorXd pt1 = geo_child->Global(testpoint);
+        // Map test point through relative geometry and then through geometry of
+        // parent
+        const Eigen::VectorXd tmp = geo_in_parent->Global(testpoint);
+        const Eigen::VectorXd pt2 = geo_parent->Global(tmp);
+        // Check whether both mappings yields the same point
+        // Not a valid test, in case the entity is not an AFFINE image of
+        // the reference shape!
+        EXPECT_NEAR((pt1 - pt2).norm(), 0.0, 1E-10)
+            << "parent = " << *fp << " < child = " << *entity_p << std::endl
+            << "p_geo = " << std::endl
+            << lf::geometry::Corners(*geo_parent) << std::endl
+            << "child_geo = " << std::endl
+            << lf::geometry::Corners(*geo_child) << std::endl
+            << "c_i_p = " << std::endl
+            << lf::geometry::Corners(*geo_in_parent) << std::endl
+            << "pt1 != pt2: " << pt1.transpose() << " != " << pt2.transpose()
+            << std::endl
+            << "p_ref = " << testpoint.transpose()
+            << ", tmp = " << tmp.transpose();
+        // **********************************************************************
+      }
+      // Test if corners of child entity are mapped correctly
+      const Eigen::MatrixXd child_corners{lf::geometry::Corners(*geo_child)};
+      const Eigen::MatrixXd ref_corners{lf::geometry::Corners(*geo_in_parent)};
+      const Eigen::MatrixXd mapped_corners = geo_parent->Global(ref_corners);
+      EXPECT_NEAR((child_corners - mapped_corners).norm(), 0.0, 1E-10)
+          << "parent = " << *fp << " < child = " << *entity_p << std::endl
+          << "p_geo = " << std::endl
+          << lf::geometry::Corners(*geo_parent) << std::endl
+          << "child_geo = " << std::endl
+          << lf::geometry::Corners(*geo_child) << std::endl
+          << "c_i_p = " << std::endl
+          << lf::geometry::Corners(*geo_in_parent) << std::endl
+          << "mapped corners = " << std::endl
+          << mapped_corners;
+    }  // loop over entities
+  }    // loop over codims
+}  // end checkGeometryInParent()
+
 void checkFatherChildRelations(const MeshHierarchy &mh,
                                base::size_type father_level) {
   // Obtain pointers to two consecutive meshes

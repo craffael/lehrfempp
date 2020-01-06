@@ -12,6 +12,8 @@
 namespace lf::refinement::test {
 
 TEST(lf_refinement, FatherChildRelations) {
+  MeshHierarchy::output_ctrl_ = 100;
+
   auto gmsh_reader =
       io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
   auto base_mesh = gmsh_reader.mesh();
@@ -39,6 +41,7 @@ TEST(lf_refinement, FatherChildRelations) {
 
   auto child_mesh1 = mh.getMesh(1);
   checkFatherChildRelations(mh, 0);
+  checkGeometryInParent(mh, 0);
 }
 
 }  // namespace lf::refinement::test
