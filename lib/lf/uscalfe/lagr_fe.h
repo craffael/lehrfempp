@@ -831,8 +831,8 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     // clang-format off
     Eigen::Matrix<double, 2,6> nodes;
-    nodes << 0.0, 1.0, 0.0, 0.5, 0.5, 0.0,
-             0.0, 0.0, 1.0, 0.0, 0.5, 0.5;
+    nodes << 0.0, 1.0, 0.0,  0.5, 0.5, 0.0,
+             0.0, 0.0, 1.0,  0.0, 0.5, 0.5;
     // clang-format on
     return nodes;
   }
@@ -926,6 +926,7 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
         3, refcoords.cols());
 
     auto x = refcoords.row(0).array();
+
     // endpoints
     result.row(0) = (4.0 * x - 3.0).matrix();
     result.row(1) = (4.0 * x - 1.0).matrix();
@@ -1088,19 +1089,10 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 2, 9> nodes;
 
-    Eigen::Matrix<double, 2, 4> vertices;
-    Eigen::Matrix<double, 2, 4> midpoints;
-    Eigen::Matrix<double, 2, 1> center;
-
     // clang-format off
-    vertices << 0.0, 1.0, 1.0, 0.0,
-                0.0, 0.0, 1.0, 1.0;
-    midpoints << 0.5, 1.0, 0.5, 0.0,
-                 0.0, 0.5, 1.0, 0.5;
-    center << 0.5,
-              0.5;
+    nodes << 0.0, 1.0, 1.0, 0.0,  0.5, 1.0, 0.5, 0.0,  0.5,
+             0.0, 0.0, 1.0, 1.0,  0.0, 0.5, 1.0, 0.5,  0.5;
     // clang-format on
-    nodes << vertices, midpoints, center;
     return nodes;
   }
 
@@ -1134,7 +1126,7 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
    * if \f$p\f$ was the \f$k\f$-th interpolation node, the \f$k\f$-th row would
    * contain the indices \f$j\f$ and \f$l\f$.
    */
-  const static Eigen::MatrixXi ksegment_to_quad_mapping_;
+  const static Eigen::Matrix<int, 9, 2> ksegment_to_quad_mapping_;
 };
 
 template <typename SCALAR>
@@ -1142,17 +1134,18 @@ const FeLagrangeO2Segment<SCALAR> FeLagrangeO2Quad<SCALAR>::krsf_segment_ =
     FeLagrangeO2Segment<SCALAR>();
 
 template <typename SCALAR>
-const Eigen::MatrixXi FeLagrangeO2Quad<SCALAR>::ksegment_to_quad_mapping_ =
-    // clang-format off
-  (Eigen::MatrixXi(9, 2) <<  0, 0,
-                             1, 0,
-                             1, 1,
-                             0, 1,
-                             2, 0,
-                             1, 2,
-                             2, 1,
-                             0, 2,
-                             2, 2).finished();
+const Eigen::Matrix<int, 9, 2>
+    FeLagrangeO2Quad<SCALAR>::ksegment_to_quad_mapping_ =
+        // clang-format off
+  (Eigen::Matrix<int,9,2>() <<  0, 0,
+                                1, 0,
+                                1, 1,
+                                0, 1,
+                                2, 0,
+                                1, 2,
+                                2, 1,
+                                0, 2,
+                                2, 2).finished();
 // clang-format on
 
 /**
@@ -1222,7 +1215,8 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(10, n_pts);
 
     // evaluation of the barycentric coordinate functions
-    auto lambda0 = 1 - refcoords.row(0).array() - refcoords.row(1).array();
+    Eigen::Array<double, 1, Eigen::Dynamic> lambda0 =
+        1 - refcoords.row(0).array() - refcoords.row(1).array();
     auto lambda1 = refcoords.row(0).array();
     auto lambda2 = refcoords.row(1).array();
 
@@ -1258,7 +1252,8 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
         temp(&result(0, 0), 20, n_pts);
 
     // evaulate barycentric coordinate functions:
-    auto l0 = 1 - refcoords.row(0).array() - refcoords.row(1).array();
+    Eigen::Array<double, 1, Eigen::Dynamic> l0 =
+        1 - refcoords.row(0).array() - refcoords.row(1).array();
     auto l1 = refcoords.row(0).array();
     auto l2 = refcoords.row(1).array();
 
@@ -1296,10 +1291,10 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    Eigen::MatrixXd nodes(2, 10);
-    Eigen::MatrixXd vertices(2, 3);
-    Eigen::MatrixXd edges(2, 6);
-    Eigen::MatrixXd center(2, 1);
+    Eigen::Matrix<double, 2, 10> nodes;
+    Eigen::Matrix<double, 2, 3> vertices;
+    Eigen::Matrix<double, 2, 6> edges;
+    Eigen::Matrix<double, 2, 1> center;
 
     // clang-format off
     vertices << 0.0, 1.0, 0.0,
@@ -1415,7 +1410,7 @@ class FeLagrangeO3Segment final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    Eigen::MatrixXd nodes(1, 4);
+    Eigen::Matrix<double, 1, 4> nodes;
     nodes << 0.0, 1.0, 1.0 / 3.0, 2.0 / 3.0;
     return nodes;
   }
@@ -1569,15 +1564,15 @@ class FeLagrangeO3Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    Eigen::MatrixXd nodes(2, 16);
+    Eigen::Matrix<double, 2, 16> nodes;
 
-    Eigen::MatrixXd vertices(2, 4);
-    Eigen::MatrixXd midpoints(2, 8);
-    Eigen::MatrixXd interior(2, 4);
+    Eigen::Matrix<double, 2, 4> vertices;
+    Eigen::Matrix<double, 2, 8> midpoints;
+    Eigen::Matrix<double, 2, 4> interior;
 
     // clang-format off
     vertices << 0.0, 1.0, 1.0, 0.0,
-               0.0, 0.0, 1.0, 1.0;
+                0.0, 0.0, 1.0, 1.0;
     midpoints << 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 0.0,
                  0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0;
     interior << 1.0, 2.0, 2.0, 1.0,
@@ -1621,7 +1616,7 @@ class FeLagrangeO3Quad final : public ScalarReferenceFiniteElement<SCALAR> {
    * if \f$p\f$ was the \f$k\f$-th interpolation node, the \f$k\f$-th row would
    * contain the indices \f$j\f$ and \f$l\f$.
    */
-  const static Eigen::MatrixXi ksegment_to_quad_mapping_;
+  const static Eigen::Matrix<int, 16, 2> ksegment_to_quad_mapping_;
 };
 
 template <typename SCALAR>
@@ -1629,24 +1624,25 @@ const FeLagrangeO3Segment<SCALAR> FeLagrangeO3Quad<SCALAR>::krsf_segment_ =
     FeLagrangeO3Segment<SCALAR>();
 
 template <typename SCALAR>
-const Eigen::MatrixXi FeLagrangeO3Quad<SCALAR>::ksegment_to_quad_mapping_ =
-    // clang-format off
-  (Eigen::MatrixXi(16,2) << 0, 0,
-                            1, 0,
-                            1, 1,
-                            0, 1,
-                            2, 0,
-                            3, 0,
-                            1, 2,
-                            1, 3,
-                            3, 1,
-                            2, 1,
-                            0, 3,
-                            0, 2,
-                            2, 2,
-                            3, 2,
-                            3, 3,
-                            2, 3).finished();
+const Eigen::Matrix<int, 16, 2>
+    FeLagrangeO3Quad<SCALAR>::ksegment_to_quad_mapping_ =
+        // clang-format off
+  (Eigen::Matrix<int,16,2>() << 0, 0,
+                                1, 0,
+                                1, 1,
+                                0, 1,
+                                2, 0,
+                                3, 0,
+                                1, 2,
+                                1, 3,
+                                3, 1,
+                                2, 1,
+                                0, 3,
+                                0, 2,
+                                2, 2,
+                                3, 2,
+                                3, 3,
+                                2, 3).finished();
 // clang-format on
 
 }  // namespace lf::uscalfe
