@@ -513,7 +513,7 @@ class VtkWriter {
    * possible edges/interior (for `order>1`).
    *
    * @tparam MESH_FUNCTION An object fulfilling the \ref mesh_function
-   * concept. The \ref uscalfe::MeshFunctionReturnType should be one of
+   * concept. The \ref mesh::utils::MeshFunctionReturnType should be one of
    * - unsigned char
    * - char
    * - unsigned int
@@ -540,8 +540,9 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfPointUsage
    */
-  template <class MESH_FUNCTION,
-            class = std::enable_if_t<uscalfe::isMeshFunction<MESH_FUNCTION>>>
+  template <
+      class MESH_FUNCTION,
+      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
   void WritePointData(const std::string& name,
                       const MESH_FUNCTION& mesh_function);
 
@@ -717,7 +718,7 @@ class VtkWriter {
    * @brief Sample a \ref mesh_function "MeshFunction" at the barycenter of the
    * cell and visualize it as cell data in the Vtk File.
    * @tparam MESH_FUNCTION An object fulfilling the \ref mesh_function
-   * concept. The \ref uscalfe::MeshFunctionReturnType should be one of
+   * concept. The \ref mesh::utils::MeshFunctionReturnType should be one of
    * - unsigned char
    * - char
    * - unsigned int
@@ -741,8 +742,9 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfCellUsage
    */
-  template <class MESH_FUNCTION,
-            class = std::enable_if_t<uscalfe::isMeshFunction<MESH_FUNCTION>>>
+  template <
+      class MESH_FUNCTION,
+      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
   void WriteCellData(const std::string& name,
                      const MESH_FUNCTION& mesh_function);
 
@@ -847,7 +849,7 @@ void VtkWriter::WritePointData(const std::string& name,
     // for higher orders, we have to evaluate the mesh function at all points
     // and write this into the vtk file:
     CheckAttributeSetName(vtk_file_.point_data, name);
-    using T = uscalfe::MeshFunctionReturnType<MESH_FUNCTION>;
+    using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
     auto dim_mesh = mesh_->DimMesh();
 
     Eigen::Matrix<double, 0, 1> origin;

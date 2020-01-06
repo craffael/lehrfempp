@@ -17,7 +17,6 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include "lf/uscalfe/test/mesh_function_utils.h"
 
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
@@ -44,17 +43,17 @@ int main(int /*argc*/, const char** /*argv*/) {
         .finished();
   };
   // Wrap diffusion coefficient into a MeshFunction
-  lf::uscalfe::MeshFunctionGlobal mf_alpha{alpha};
+  lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
 
   // Scalar valued reaction coefficient c
   auto gamma = [](Eigen::Vector2d x) -> double {
     return (x[0] * x[0] + x[1] * x[1]);
   };
-  lf::uscalfe::MeshFunctionGlobal mf_gamma{gamma};
+  lf::mesh::utils::MeshFunctionGlobal mf_gamma{gamma};
 
   // Scalar valued impedance coefficient
   auto eta = [](Eigen::Vector2d x) -> double { return (1.0 + x[0] + x[1]); };
-  lf::uscalfe::MeshFunctionGlobal mf_eta{eta};
+  lf::mesh::utils::MeshFunctionGlobal mf_eta{eta};
 
   /* SAM_LISTING_BEGIN_1 */
   // Exact solution u
@@ -62,7 +61,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     return std::log(x[0] * x[0] + x[1] + 1.0);
   };
   // Has to be wrapped into a mesh function for error computation
-  lf::uscalfe::MeshFunctionGlobal mf_u{u};
+  lf::mesh::utils::MeshFunctionGlobal mf_u{u};
 
   // Gradient of exact solution
   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
@@ -70,7 +69,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     return ((Eigen::Vector2d() << 2.0 * x[0], 1.0).finished()) / den;
   };
   // Convert into mesh function to use for error computation
-  lf::uscalfe::MeshFunctionGlobal mf_grad_u{grad_u};
+  lf::mesh::utils::MeshFunctionGlobal mf_grad_u{grad_u};
   /* SAM_LISTING_END_1 */
 
   // Right-hand side source function f
@@ -80,7 +79,7 @@ int main(int /*argc*/, const char** /*argv*/) {
         -x[0] * x[0] * (2 * x[1] + 9) - x[0] + 2 * x[1] * x[1] + 9 * x[1] + 5;
     return (-num / (den * den) + gamma(x) * u(x));
   };
-  lf::uscalfe::MeshFunctionGlobal mf_f{f};
+  lf::mesh::utils::MeshFunctionGlobal mf_f{f};
 
   // Boundary conditions and predicates for different boundary parts
   // The predicates are named edge_sel_* and when invoked for an entity of edge
@@ -93,7 +92,7 @@ int main(int /*argc*/, const char** /*argv*/) {
       ((Eigen::Vector2d() << -1.0, 0.2).finished()).normalized();
   // Dirichlet data borrowed from the known exact solution.
   auto g = [&u](const Eigen::Vector2d& x) -> double { return u(x); };
-  lf::uscalfe::MeshFunctionGlobal mf_g{g};
+  lf::mesh::utils::MeshFunctionGlobal mf_g{g};
 
   // Predicates and selectors for boundary conditions
   // Predicates for selecting edges on the Neumann boundary
@@ -133,7 +132,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     LF_ASSERT_MSG(false, "h called for Dirichlet edge!");
     return 0.0;
   };
-  lf::uscalfe::MeshFunctionGlobal mf_h{h};
+  lf::mesh::utils::MeshFunctionGlobal mf_h{h};
 
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
