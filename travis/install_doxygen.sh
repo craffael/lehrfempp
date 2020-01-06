@@ -16,7 +16,7 @@ if [ ! -d "doxygen-Release_1_8_17" ]; then
   cmake -Duse_libclang=ON  ..
   make -j2
 fi
-export PATH=${DEPS_DIR}/doxygen-Release_1_8_14/build/bin:$PATH
+export PATH=${DEPS_DIR}/doxygen-Release_1_8_17/build/bin:$PATH
 doxygen --version
 
 #Change back to where we left off.
