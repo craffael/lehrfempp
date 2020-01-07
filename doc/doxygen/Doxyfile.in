@@ -818,6 +818,7 @@ INPUT_ENCODING         = UTF-8
 # *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf and *.qsf.
 
 FILE_PATTERNS          = *.h \
+		         *.cc \
                          *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -967,7 +968,7 @@ SOURCE_BROWSER         = NO
 # classes and enums directly into the documentation.
 # The default value is: NO.
 
-INLINE_SOURCES         = YES
+INLINE_SOURCES         = NO
 
 # Setting the STRIP_CODE_COMMENTS tag to YES will instruct doxygen to hide any
 # special comment blocks from generated source code fragments. Normal C, C++ and
@@ -994,7 +995,7 @@ REFERENCES_RELATION    = YES
 # link to the documentation.
 # The default value is: YES.
 
-REFERENCES_LINK_SOURCE = NO
+REFERENCES_LINK_SOURCE = YES
 
 # If SOURCE_TOOLTIPS is enabled (the default) then hovering a hyperlink in the
 # source code will show a tooltip with additional information such as prototype,
