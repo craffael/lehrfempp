@@ -954,6 +954,7 @@ IMAGE_PATH             = @CMAKE_CURRENT_SOURCE_DIR@/images
 # with the corresponding label name and numbers. This makes it possible to
 # insert symbolic references to the lecture notes directly in doxygen comments. 
 
+# Old Pyhton-based solution
 INPUT_FILTER 	  = "python3" "@doxygen_filter@ @doxygen_aux@"
 # INPUT_FILTER           = "python3" "filter.py NPDEFLrefs.aux"
 
