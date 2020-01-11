@@ -11,7 +11,7 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -244,6 +244,6 @@ auto transpose(const A& a) {
   return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __b9b63bcccec548419a52fe0b06ffb3fc

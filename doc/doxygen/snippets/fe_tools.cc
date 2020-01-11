@@ -20,7 +20,7 @@ void integrateMeshFunction() {
 
   // integrate the function sin(x)*cos(y) over the mesh using 5th-degree
   // quadrature rules
-  auto mf = MeshFunctionGlobal(
+  auto mf = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return std::sin(x[0]) * std::cos(x[1]); });
 
   auto integral = IntegrateMeshFunction(*mesh, mf, 5);
@@ -35,7 +35,7 @@ void integrateMeshFunction2() {
 
   // integrate the function sin(x)*cos(y) over the mesh using 5th-degree
   // quadrature rules
-  auto mf = MeshFunctionGlobal(
+  auto mf = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return std::sin(x[0]) * std::cos(x[1]); });
 
   // select the quadrature rule explicitly for every element:
@@ -54,7 +54,7 @@ void nodalProjection() {
   // project a first-degree polynomial onto a first order lagrange space and
   // make sure the representation is exact:
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
-  auto mf_linear = MeshFunctionGlobal(
+  auto mf_linear = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return 2 + 3 * x[0] + 4 * x[1]; });
 
   auto dof_vector = NodalProjection(*fe_space, mf_linear);
@@ -79,9 +79,10 @@ void InitEssentialConditionFromFunction() {
 
   // 1) Setup a mesh function that represents the prescribed values of u on the
   // boundary
-  auto mf_boundary = MeshFunctionGlobal([&](const Eigen::Vector2d& x) {
-    return std::cos(x[0]) * std::sin(x[1]);
-  });
+  auto mf_boundary =
+      mesh::utils::MeshFunctionGlobal([&](const Eigen::Vector2d& x) {
+        return std::cos(x[0]) * std::sin(x[1]);
+      });
 
   // 2) determine the dofs on the boundary and to what value the should be set
   auto boundary_cond = InitEssentialConditionFromFunction(
@@ -92,8 +93,8 @@ void InitEssentialConditionFromFunction() {
   // 3) Assemble the stiffness matrix:
   assemble::COOMatrix<double> lhs(fe_space->LocGlobMap().NumDofs(),
                                   fe_space->LocGlobMap().NumDofs());
-  auto mf_one = MeshFunctionConstant(1.);
-  auto mf_zero = MeshFunctionConstant(0.);
+  auto mf_one = mesh::utils::MeshFunctionConstant(1.);
+  auto mf_zero = mesh::utils::MeshFunctionConstant(0.);
   auto matrix_provider =
       ReactionDiffusionElementMatrixProvider(fe_space, mf_one, mf_zero);
   assemble::AssembleMatrixLocally(0, fe_space->LocGlobMap(),

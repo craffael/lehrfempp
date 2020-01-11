@@ -70,10 +70,10 @@ int main() {
   const size_type N_dofs(dofh.NumDofs());
 
   // identity mesh function for very simple problem
-  lf::uscalfe::MeshFunctionConstant mf_identity(1.0);
+  lf::mesh::utils::MeshFunctionConstant mf_identity(1.0);
 
   auto zero = [](const Eigen::Vector2d & /*x*/) -> double { return 0.; };
-  lf::uscalfe::MeshFunctionGlobal mf_zero{zero};
+  lf::mesh::utils::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
@@ -156,7 +156,7 @@ int main() {
     // Version 1: Using Mesh Functions
     auto mf_FE = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
     auto mf_GradFe = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
-    auto h1_norm = std::sqrt(IntegrateMeshFunction(
+    auto h1_norm = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
         *mesh, squaredNorm(mf_FE) + squaredNorm(mf_GradFe), 2));
 
     std::cout << "Computed H1 Norm: " << h1_norm << std::endl;

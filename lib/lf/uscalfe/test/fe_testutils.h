@@ -305,9 +305,9 @@ std::vector<SCALAR> EnergiesOfInterpolants(
     DIFF_COEFF alpha, REAC_COEFF gamma,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
     std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
-  static_assert(isMeshFunction<DIFF_COEFF>);
-  static_assert(isMeshFunction<REAC_COEFF>);
-  static_assert(isMeshFunction<FFUNC>);
+  static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
+  static_assert(mesh::utils::isMeshFunction<REAC_COEFF>);
+  static_assert(mesh::utils::isMeshFunction<FFUNC>);
   // Vector for returning the energies
   std::vector<SCALAR> energies{};
 

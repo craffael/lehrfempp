@@ -22,7 +22,7 @@ void foo() {
   std::shared_ptr<mesh::utils::MeshDataSet<Eigen::Vector2d>> point_data;
 
   // A Mesh function representing the function sin(x)*cos(y)
-  auto mf = uscalfe::MeshFunctionGlobal(
+  auto mf = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return std::sin(x[0]) * std::cos(x[1]); });
 
   io::VtkWriter vtk_writer(mesh, "filename.vtk");
@@ -58,7 +58,7 @@ void mfPointUsage() {
   // Sample the geometry and the mesh function with 3rd order lagrange basis
   // functions (see documentation of VtkWriter):
   io::VtkWriter vtk_writerOrder3(mesh, "order3.vtk", 0, 3);
-  auto mfTrig = uscalfe::MeshFunctionGlobal(
+  auto mfTrig = mesh::utils::MeshFunctionGlobal(
       [](const auto& x) { return std::sin(x[0]) * std::cos(x[1]); });
   vtk_writer.WritePointData("mfTrig", mfTrig);
 
@@ -92,7 +92,7 @@ void highOrder() {
 
   // define mesh function of the form sin(\pi*x)*cos(\pi*y) (in global
   // coordinates)
-  auto mfTrig = uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+  auto mfTrig = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
     return std::sin(base::kPi * x[0]) * std::cos(base::kPi * x[1]);
   });
 
