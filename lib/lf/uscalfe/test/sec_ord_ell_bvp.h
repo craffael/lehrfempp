@@ -187,17 +187,18 @@ SecOrdEllBVPLagrFELinSys(
   // First the volume part for the bilinear form
   SecOrdBVPLagrFEFullInteriorGalMat(
       fe_space,
-      MeshFunctionGlobal([&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
-        return (bvp_p->alpha(x));
-      }),
-      MeshFunctionGlobal(
+      mesh::utils::MeshFunctionGlobal(
+          [&bvp_p](auto x) -> Eigen::Matrix<SCALAR, 2, 2> {
+            return (bvp_p->alpha(x));
+          }),
+      mesh::utils::MeshFunctionGlobal(
           [&bvp_p](auto x) -> double { return (bvp_p->gamma(x)); }),
       A);
   // Update with potential contributions from edges (Impedance boundary
   // conditions)
   if (no_impedance_edges > 0) {
     SecOrdBVPLagrFEBoundaryGalMat(
-        fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
+        fe_space, mesh::utils::MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
           return (bvp_p->eta(x));
         }),
         [&bvp_p](const lf::mesh::Entity& edge) -> bool {
@@ -213,13 +214,14 @@ SecOrdEllBVPLagrFELinSys(
 
   // Assemble volume part of right-hand side vector depending on the function f
   LagrFEVolumeRightHandSideVector(
-      fe_space,
-      MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR { return (bvp_p->f(x)); }),
+      fe_space, mesh::utils::MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
+        return (bvp_p->f(x));
+      }),
       phi);
   // Add contributions from Neumann and impedance edges
   if ((no_Neumann_edges > 0) || (no_impedance_edges > 0)) {
     LagrFEBoundaryRightHandSideVector(
-        fe_space, MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
+        fe_space, mesh::utils::MeshFunctionGlobal([&bvp_p](auto x) -> SCALAR {
           return (bvp_p->h(x));
         }),
         [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
@@ -240,7 +242,7 @@ SecOrdEllBVPLagrFELinSys(
         [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && bvp_p->EssentialConditionsOnEdge(edge));
         },
-        MeshFunctionGlobal(
+        mesh::utils::MeshFunctionGlobal(
             [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); }))};
     // Eliminate Dirichlet dofs from linear system
     lf::assemble::FixFlaggedSolutionComponents<SCALAR>(

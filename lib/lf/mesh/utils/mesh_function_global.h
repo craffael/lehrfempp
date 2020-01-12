@@ -13,7 +13,7 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -78,6 +78,6 @@ class MeshFunctionGlobal {
   F f_;
 };
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __1323b89d2f584608940fcb37657142cc

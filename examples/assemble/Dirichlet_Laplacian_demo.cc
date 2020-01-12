@@ -390,7 +390,7 @@ int main(int argc, char **argv) {
 
     // Compute finite element solution and error
     auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u,
-                                      lf::uscalfe::MeshFunctionGlobal(f));
+                                      lf::mesh::utils::MeshFunctionGlobal(f));
     int level = 0;
     for (auto &err : L2errs) {
       std::cout << "L2 error on level " << level << " = " << err << std::endl;
