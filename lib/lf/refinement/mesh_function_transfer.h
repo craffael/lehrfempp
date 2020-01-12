@@ -2,9 +2,9 @@
 #define LF_REFINEMENT_MESH_FUNCTION_TRANSFER_H
 
 #include <lf/assemble/dofhandler.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/mesh/utils/utils.h>
 #include <Eigen/Dense>
 #include <type_traits>
 
@@ -22,7 +22,8 @@ class MeshFunctionTransfer {
   static std::true_type has_getMesh_impl(int);
   template <typename MF_TEST>
   static std::false_type has_getMesh_impl(...);
-  static constexpr bool provides_getMesh = decltype(has_getMesh_impl<mf_t>(int{})){};
+  static constexpr bool provides_getMesh =
+      decltype(has_getMesh_impl<mf_t>(int{})){};
 
  public:
   MeshFunctionTransfer(const MeshFunctionTransfer &) = default;
@@ -51,7 +52,9 @@ class MeshFunctionTransfer {
     return mf_(*parent, local_parent);
   }
 
-  std::shared_ptr<const lf::mesh::Mesh> getMesh() const { return mh_.getMesh(level_coarse_ + 1); }
+  std::shared_ptr<const lf::mesh::Mesh> getMesh() const {
+    return mh_.getMesh(level_coarse_ + 1);
+  }
 
  private:
   const lf::refinement::MeshHierarchy &mh_;

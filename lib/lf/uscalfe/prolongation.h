@@ -2,10 +2,10 @@
 #define LF_USCALFE_PROLONGATION_H
 
 #include <lf/assemble/dofhandler.h>
-#include <lf/refinement/mesh_hierarchy.h>
-#include <lf/refinement/mesh_function_transfer.h>
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/refinement/mesh_function_transfer.h>
+#include <lf/refinement/mesh_hierarchy.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace lf::uscalfe {
 
@@ -54,11 +54,12 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   // Construct a mesh function to simplify the point evaluations
   const lf::uscalfe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
   // Transfer the mesh function to the finer mesh
-  const lf::refinement::MeshFunctionTransfer mf_fine(mh, mf_coarse, level_coarse);
+  const lf::refinement::MeshFunctionTransfer mf_fine(mh, mf_coarse,
+                                                     level_coarse);
   // Return the nodal projection of this transferred mesh function
   return lf::uscalfe::NodalProjection(*fespace_fine, mf_fine);
 }
 
-}   // end namespace lf::uscalfe
+}  // end namespace lf::uscalfe
 
-#endif // LF_USCALFE_PROLONGATION_H
+#endif  // LF_USCALFE_PROLONGATION_H
