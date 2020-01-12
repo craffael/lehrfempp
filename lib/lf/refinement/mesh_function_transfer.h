@@ -19,10 +19,10 @@ class MeshFunctionTransfer {
   // Metafunction to determine whether MF provides a `getMesh` method
   template <typename MF_TEST,
             typename = decltype(std::declval<MF_TEST>().getMesh())>
-  static std::true_type has_getMesh_impl();
+  static std::true_type has_getMesh_impl(int);
   template <typename MF_TEST>
-  static std::false_type has_getMesh_impl();
-  static constexpr bool provides_getMesh = decltype(has_getMesh_impl<mf_t>()){};
+  static std::false_type has_getMesh_impl(...);
+  static constexpr bool provides_getMesh = decltype(has_getMesh_impl<mf_t>(int{})){};
 
  public:
   MeshFunctionTransfer(const MeshFunctionTransfer &) = default;

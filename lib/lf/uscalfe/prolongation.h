@@ -3,6 +3,7 @@
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/refinement/mesh_hierarchy.h>
+#include <lf/refinement/mesh_function_transfer.h>
 #include <lf/uscalfe/uscalfe.h>
 #include <lf/mesh/utils/utils.h>
 
@@ -27,7 +28,7 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
     std::shared_ptr<const FES_COARSE> fespace_coarse,
     std::shared_ptr<const FES_FINE> fespace_fine,
     const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> &dofs_coarse,
-    lf::base::size_type level) {
+    lf::base::size_type level_coarse) {
   // Assert that the FES_* are actually FE spaces
   using scalar_fe_coarse_t = typename FES_COARSE::Scalar;
   using scalar_fe_fine_t = typename FES_FINE::Scalar;
@@ -52,31 +53,10 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
       "Too few basis function coefficients provided for coarse FE space");
   // Construct a mesh function to simplify the point evaluations
   const lf::uscalfe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
-  // Initialize the dof vector on the fine mesh
-  Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> dofs_fine =
-      Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>::Zero(N_fine);
-  // Iterate over all entities of the fine mesh and compute the dof values
-  const auto mesh_fine = mh.getMesh(level + 1);
-  for (const auto child : mesh_fine->Entities(0)) {
-    const lf::base::size_type child_idx = mesh_fine->Index(*child);
-    const auto rel_geom = mh.GeometryInParent(level + 1, *child);
-    const auto layout = fespace_fine->ShapeFunctionLayout(child->RefEl());
-    // Compute the value of the coarse mesh function at the evaluation nodes
-    const auto eval_nodes = rel_geom->Global(layout->EvaluationNodes());
-    const auto parent = mh.ParentEntity(level + 1, *child);
-    const auto nodal_values = mf_coarse(*parent, eval_nodes);
-    // Convert the nodal values to dofs
-    using scalar_t = typename decltype(nodal_values)::value_type;
-    const Eigen::Map<const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>>
-        nodal_values_map(nodal_values.data(), nodal_values.size());
-    const auto dofs = layout->NodalValuesToDofs(nodal_values_map);
-    // Set the dofs in the dof vector on the fine mesh
-    const auto dofidxs = dofh_fine.GlobalDofIndices(*child);
-    for (long i = 0; i < dofidxs.size(); ++i) {
-      dofs_fine[dofidxs[i]] = dofs[i];
-    }
-  }
-  return dofs_fine;
+  // Transfer the mesh function to the finer mesh
+  const lf::refinement::MeshFunctionTransfer mf_fine(mh, mf_coarse, level_coarse);
+  // Return the nodal projection of this transferred mesh function
+  return lf::uscalfe::NodalProjection(*fespace_fine, mf_fine);
 }
 
 }   // end namespace lf::uscalfe
