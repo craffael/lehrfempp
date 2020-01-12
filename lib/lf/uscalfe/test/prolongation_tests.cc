@@ -7,7 +7,7 @@
 
 using lf::uscalfe::operator-;
 
-TEST(lf_mesh_utils, NormLinear) {
+TEST(lf_uscalfe, NormLinear) {
   // Generate a test mesh, refine it and compare the norm of the coarse and the
   // fine version
   for (int selector = 0; selector < 9; ++selector) {
@@ -56,7 +56,7 @@ TEST(lf_mesh_utils, NormLinear) {
   }
 }
 
-TEST(lf_mesh_utils, NormQuadratic) {
+TEST(lf_uscalfe, NormQuadratic) {
   // Generate a test mesh, refine it and compare the norm of the coarse and the
   // fine version
   for (int selector = 0; selector < 9; ++selector) {
@@ -138,7 +138,7 @@ void check_lagr_interp_nodes(std::shared_ptr<lf::mesh::Mesh> mesh_coarse,
   }
 }
 
-TEST(lf_mesh_utils, LagrInterpNodes) {
+TEST(lf_uscalfe, LagrInterpNodes) {
   for (int selector = 0; selector < 9; ++selector) {
     // Initialize a coarse test mesh
     const auto mesh_coarse =

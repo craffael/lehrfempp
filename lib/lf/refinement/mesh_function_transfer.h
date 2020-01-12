@@ -48,10 +48,10 @@ class MeshFunctionTransfer {
     const auto parent = mh_.ParentEntity(level_coarse_ + 1, e);
     const auto rel_geom = mh_.GeometryInParent(level_coarse_ + 1, e);
     const auto local_parent = rel_geom->Global(local);
-    return mf_(parent, local_parent);
+    return mf_(*parent, local_parent);
   }
 
-  decltype(auto) getMesh() const { return mh_.getMesh(level_coarse_ + 1); }
+  std::shared_ptr<const lf::mesh::Mesh> getMesh() const { return mh_.getMesh(level_coarse_ + 1); }
 
  private:
   const lf::refinement::MeshHierarchy &mh_;
