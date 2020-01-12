@@ -12,7 +12,7 @@
 #include <vector>
 #include "lf/mesh/mesh_interface.h"
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -43,6 +43,6 @@ class MeshFunctionConstant {
   R value_; /**< stored constant value */
 };
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __d0f3b8f133da4af980ce21ffffdf719a

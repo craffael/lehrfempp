@@ -34,7 +34,8 @@ TEST(lf_gfe, lf_gfe_l2norm) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // The function to integrate
-  auto mf = MeshFunctionGlobal([](auto x) { return (x[0] * (1.0 - x[1])); });
+  auto mf = mesh::utils::MeshFunctionGlobal(
+      [](auto x) { return (x[0] * (1.0 - x[1])); });
 
   // compute norm by integrating the mesh function mf over the mesh
   double norm = std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
@@ -64,7 +65,8 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix (mass matrix)
   uscalfe::test::SecOrdBVPLagrFEFullInteriorGalMat(
-      fe_space, MeshFunctionConstant(0.0), MeshFunctionConstant(1.0), A);
+      fe_space, mesh::utils::MeshFunctionConstant(0.0),
+      mesh::utils::MeshFunctionConstant(1.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
@@ -110,8 +112,9 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
   // Assemble finite element Galerkin matrix
   std::shared_ptr<UniformScalarFESpace<double>> temp = fe_space;
-  SecOrdBVPLagrFEFullInteriorGalMat(temp, MeshFunctionConstant(1.0),
-                                    MeshFunctionConstant(0.0), A);
+  SecOrdBVPLagrFEFullInteriorGalMat(temp,
+                                    mesh::utils::MeshFunctionConstant(1.0),
+                                    mesh::utils::MeshFunctionConstant(0.0), A);
 
   // First optin for setting the coefficient vector
   // Model linear function
@@ -147,7 +150,7 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(3);
 
   // mesh function to integrate:
-  auto mf = MeshFunctionGlobal(
+  auto mf = mesh::utils::MeshFunctionGlobal(
       [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); });
 
   // integrate mesh function:
@@ -168,7 +171,8 @@ TEST(lf_gfe, lf_gfe_lintp) {
       std::make_shared<FeLagrangeO1Quad<double>>());
 
   auto u = [](auto x) { return std::exp(x[0] * (1.0 - x[1])); };
-  auto coeffvec = NodalProjection(*fe_space, MeshFunctionGlobal(u));
+  auto coeffvec =
+      NodalProjection(*fe_space, mesh::utils::MeshFunctionGlobal(u));
 
   // Local-to-global index mapped
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
@@ -221,7 +225,7 @@ TEST(lf_gfe, set_dirbdc) {
   };
 
   auto flag_val_vec(InitEssentialConditionFromFunction(
-      dofh, *fe_spec_edge_p, bd_edge_sel, MeshFunctionGlobal(g)));
+      dofh, *fe_spec_edge_p, bd_edge_sel, mesh::utils::MeshFunctionGlobal(g)));
   // Checking agreement of values
   for (lf::assemble::gdof_idx_t j = 0; j < flag_val_vec.size(); ++j) {
     const lf::mesh::Entity &node{dofh.Entity(j)};
@@ -247,7 +251,8 @@ TEST(lf_gfe, set_dirbdc) {
 bool checkInterpolationLinear(
     const std::shared_ptr<UniformScalarFESpace<double>> &fe_space) {
   // Model linear function
-  auto u = MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
+  auto u =
+      mesh::utils::MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
   Eigen::VectorXd coeffvec = NodalProjection(*fe_space, u);
   auto mf_fe = MeshFunctionFE<double, double>(fe_space, coeffvec);
@@ -287,13 +292,14 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
   std::cout << multi_mesh;
 
   // Function
-  auto f = MeshFunctionGlobal(
+  auto f = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
-  auto grad_f = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return (std::exp(x[0] * x[1]) *
-            (Eigen::Vector2d() << x[1], x[0]).finished())
-        .eval();
-  });
+  auto grad_f =
+      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
+        return (std::exp(x[0] * x[1]) *
+                (Eigen::Vector2d() << x[1], x[0]).finished())
+            .eval();
+      });
 
   auto errs{InterpolationErrors(multi_mesh, f, grad_f,
                                 std::make_shared<FeLagrangeO1Tria<double>>(),

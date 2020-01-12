@@ -8,7 +8,7 @@
 
 #include <lf/uscalfe/uscalfe.h>
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 /** Checks whether two mesh functions are equal */
 template <class A, class B>
@@ -58,4 +58,4 @@ void checkMeshFunctionEqual(const mesh::Mesh& m, A a, B b, int codim = 0) {
   }
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

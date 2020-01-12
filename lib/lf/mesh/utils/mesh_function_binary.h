@@ -8,8 +8,12 @@
 
 #ifndef __9bad469d38e04e8ab67391ce50c2c480
 #define __9bad469d38e04e8ab67391ce50c2c480
+#include <Eigen/Eigen>
+#include <type_traits>
+#include <vector>
+#include "mesh_function_traits.h"
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -725,6 +729,6 @@ auto operator*(const A& a, const B& b) {
   return MeshFunctionBinary(internal::OperatorMultiplication{}, a, b);
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __9bad469d38e04e8ab67391ce50c2c480
