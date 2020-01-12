@@ -6,7 +6,6 @@ set(sources
   torus_mesh_builder_tests.cc
   tp_quad_mesh_builder_tests.cc
   tp_triag_mesh_builder_tests.cc
-  transfer_tests.cc
 )
 
 add_executable(lf.mesh.utils.test ${sources})

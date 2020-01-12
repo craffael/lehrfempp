@@ -7,6 +7,7 @@ set(sources
     geo_ref_test.cc
     hybrid2d_refinement_pattern_tests.cc
     regreftest.cc
+    transfer_tests.cc
 )
 
 add_executable(lf.refinement.test ${sources})

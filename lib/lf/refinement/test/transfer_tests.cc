@@ -2,7 +2,7 @@
 
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/test_utils/test_meshes.h>
-#include <lf/mesh/utils/mesh_function_transfer.h>
+#include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/mesh_hierarchy.h>
 
 #include <lf/io/vtk_writer.h>
@@ -38,7 +38,7 @@ TEST(lf_mesh_utils, NormLinear) {
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::mesh::utils::prolongate(
+      const auto dofvector_fine = lf::refinement::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
@@ -87,7 +87,7 @@ TEST(lf_mesh_utils, NormQuadratic) {
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::mesh::utils::prolongate(
+      const auto dofvector_fine = lf::refinement::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
@@ -121,7 +121,7 @@ void check_lagr_interp_nodes(std::shared_ptr<lf::mesh::Mesh> mesh_coarse,
   const auto fes_fine = std::make_shared<const FES_FINE>(mesh_fine);
   // Prolongate the given dof vector
   const auto dofs_fine =
-      lf::mesh::utils::prolongate(mh, fes_coarse, fes_fine, dofs_coarse, 0);
+      lf::refinement::prolongate(mh, fes_coarse, fes_fine, dofs_coarse, 0);
   // Compare the resulting mesh functions at the interpolation nodes
   lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofs_coarse);
   lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofs_fine);

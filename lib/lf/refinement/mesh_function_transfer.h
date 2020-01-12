@@ -7,7 +7,7 @@
 #include <Eigen/Dense>
 #include <type_traits>
 
-namespace lf::mesh::utils {
+namespace lf::refinement {
 
 template <typename MF>
 class MeshFunctionTransfer {
@@ -134,6 +134,6 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   return dofs_fine;
 }
 
-}  // namespace lf::mesh::utils
+}  // namespace lf::refinement
 
 #endif  // LF_INTERGRIDFE_MESH_FUNCTION_TRANSFER_H
