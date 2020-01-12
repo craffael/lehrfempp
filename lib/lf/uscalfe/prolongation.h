@@ -18,7 +18,7 @@ namespace lf::uscalfe {
  * @param fespace_coarse The FE space on the coarse mesh
  * @param fespace_fine The FE space on the fine mesh
  * @param dofs_coarse A basis function coefficient vector on the coarse mesh
- * @param level The level of the coarse mesh
+ * @param level_coarse The level of the coarse mesh
  * @returns An interpolated vector of basis function coefficients on the fine
  * mesh
  */
@@ -46,7 +46,7 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   const lf::base::size_type N_coarse = dofh_coarse.NumDofs();
   const lf::base::size_type N_fine = dofh_fine.NumDofs();
   // Assert correctness of inputs
-  LF_ASSERT_MSG(level < mh.NumLevels() - 1,
+  LF_ASSERT_MSG(level_coarse < mh.NumLevels() - 1,
                 "level must not point to the finest mesh in the hierarchy");
   LF_ASSERT_MSG(
       dofs_coarse.size() >= N_coarse,
