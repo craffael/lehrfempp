@@ -364,54 +364,57 @@ void writeSomeData(VtkWriter& vtk) {
   };
 
   vtk.WritePointData("linear",
-                     uscalfe::MeshFunctionGlobal(
+                     mesh::utils::MeshFunctionGlobal(
                          [](const Eigen::Vector2d& x) { return x[0] + x[1]; }));
 
   vtk.WritePointData("unsigned_char",
-                     uscalfe::MeshFunctionGlobal(
+                     mesh::utils::MeshFunctionGlobal(
                          [&](const Eigen::Vector2d& x) -> unsigned char {
                            return scalarfn(x);
                          }));
-  vtk.WritePointData("char", uscalfe::MeshFunctionGlobal(
+  vtk.WritePointData("char", mesh::utils::MeshFunctionGlobal(
                                  [&](const Eigen::Vector2d& x) -> char {
                                    return scalarfn(x);
                                  }));
-  vtk.WritePointData("unsigned", uscalfe::MeshFunctionGlobal(
+  vtk.WritePointData("unsigned", mesh::utils::MeshFunctionGlobal(
                                      [&](const Eigen::Vector2d& x) -> unsigned {
                                        return scalarfn(x);
                                      }));
   vtk.WritePointData(
-      "int", uscalfe::MeshFunctionGlobal(
+      "int", mesh::utils::MeshFunctionGlobal(
                  [&](const Eigen::Vector2d& x) -> int { return scalarfn(x); }));
-  vtk.WritePointData("float", uscalfe::MeshFunctionGlobal(
+  vtk.WritePointData("float", mesh::utils::MeshFunctionGlobal(
                                   [&](const Eigen::Vector2d& x) -> float {
                                     return scalarfn(x);
                                   }));
-  vtk.WritePointData("double", uscalfe::MeshFunctionGlobal(scalarfn));
+  vtk.WritePointData("double", mesh::utils::MeshFunctionGlobal(scalarfn));
   vtk.WritePointData("vec2_float",
-                     uscalfe::MeshFunctionGlobal(
+                     mesh::utils::MeshFunctionGlobal(
                          [](const Eigen::Vector2d& x) -> Eigen::Vector2f {
                            return x.cast<float>();
                          }));
+  vtk.WritePointData("vec2_double",
+                     mesh::utils::MeshFunctionGlobal(
+                         [](const Eigen::Vector2d& x) { return x; }));
   vtk.WritePointData(
-      "vec2_double",
-      uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; }));
-  vtk.WritePointData("vec3_float",
-                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
-                       return Eigen::Vector3f(x[0], x[1], std::sin(x[0]));
-                     }));
-  vtk.WritePointData("vec3_double",
-                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
-                       return Eigen::Vector3d(x[0], x[1], std::sin(x[0]));
-                     }));
-  vtk.WritePointData("vecd_float",
-                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
-                       return Eigen::VectorXf(x.cast<float>());
-                     }));
-  vtk.WritePointData("vecd_double",
-                     uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
-                       return Eigen::VectorXd(x);
-                     }));
+      "vec3_float",
+      mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+        return Eigen::Vector3f(x[0], x[1], std::sin(x[0]));
+      }));
+  vtk.WritePointData(
+      "vec3_double",
+      mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+        return Eigen::Vector3d(x[0], x[1], std::sin(x[0]));
+      }));
+  vtk.WritePointData(
+      "vecd_float",
+      mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+        return Eigen::VectorXf(x.cast<float>());
+      }));
+  vtk.WritePointData("vecd_double", mesh::utils::MeshFunctionGlobal(
+                                        [](const Eigen::Vector2d& x) {
+                                          return Eigen::VectorXd(x);
+                                        }));
 }
 
 TEST(lf_io_VtkWriter, circle2ndOrderQuad) {

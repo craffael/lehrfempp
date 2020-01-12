@@ -14,7 +14,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_function_utils.h"
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 class X {
  public:
@@ -211,4 +211,4 @@ TEST(meshFunctionBinary, Multiplication) {
   checkMeshFunctionEqual(*mesh, mfXA * mfXB, MeshFunctionConstant(X(2)));
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

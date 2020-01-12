@@ -4,6 +4,7 @@
 #include <lf/assemble/dofhandler.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/mesh/utils/utils.h>
 #include <Eigen/Dense>
 #include <type_traits>
 
@@ -12,7 +13,7 @@ namespace lf::refinement {
 template <typename MF>
 class MeshFunctionTransfer {
   using mf_t = std::remove_cv_t<std::remove_reference_t<MF>>;
-  static_assert(lf::uscalfe::isMeshFunction<mf_t>,
+  static_assert(lf::mesh::utils::isMeshFunction<mf_t>,
                 "MF is not a valid MeshFunction");
 
   // Metafunction to determine whether MF provides a `getMesh` method

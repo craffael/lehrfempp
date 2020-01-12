@@ -302,8 +302,10 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
-  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
+  auto alpha =
+      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
+  auto gamma =
+      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
@@ -341,11 +343,11 @@ TEST(lf_fe_linear, ReactionDiffusionEMPTensor) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
   });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
   // specify quad rule ( default of degree 2 is not enough for a quadratic
   // gamma)
@@ -365,8 +367,9 @@ TEST(lf_fe_linear, ReactionDiffusionEMPTensor) {
                         matrix);
 
   // project two linear functions onto the fespace:
-  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
-  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  mesh::utils::MeshFunctionGlobal a(
+      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  mesh::utils::MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
   auto a_vec = NodalProjection<double>(*fe_space, a);
   auto b_vec = NodalProjection<double>(*fe_space, b);
 
@@ -385,7 +388,7 @@ TEST(lf_fe_linear, lf_fe_edgemass) {
       std::make_shared<FeLagrangeO1Segment<double>>()};
 
   // Set up objects taking care of local computations
-  auto gamma = MeshFunctionConstant(1.0);
+  auto gamma = mesh::utils::MeshFunctionConstant(1.0);
   MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -418,7 +421,7 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto f = MeshFunctionGlobal(
+  auto f = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
   using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
@@ -459,7 +462,7 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto g = MeshFunctionConstant(1.0);
+  auto g = mesh::utils::MeshFunctionConstant(1.0);
   ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -495,10 +498,10 @@ TEST(lf_fe_quadratic, mass_mat_test) {
       mesh_p, rfs_tria, rfs_quad);
 
   // coefficients:
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> double { return 1.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> double { return 1.0; });
 
   // specify quad rule
   quad_rule_collection_t quad_rules{
@@ -536,11 +539,11 @@ TEST(lf_fe_quadratic, ReactionDiffusionEMPTensor) {
       mesh_p, rfs_tria, rfs_quad);
 
   // Set up objects taking care of local computations
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
   });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
   // specify quad rule ( default of degree 2 is not enough for a quadratic
   // gamma)
@@ -560,8 +563,9 @@ TEST(lf_fe_quadratic, ReactionDiffusionEMPTensor) {
                         matrix);
 
   // project two linear functions onto the fespace:
-  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
-  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  mesh::utils::MeshFunctionGlobal a(
+      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  mesh::utils::MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
   auto a_vec = NodalProjection<double>(*fe_space, a);
   auto b_vec = NodalProjection<double>(*fe_space, b);
 
@@ -584,11 +588,11 @@ TEST(lf_fe_quadratic, lf_fe_edgemass) {
       mesh_p, rfs_tria, rfs_quad, rfs_segment);
 
   // coefficientt
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> double { return 1.0; });
 
   // Set up objects taking care of local computations
-  auto g = MeshFunctionConstant(1.0);
+  auto g = mesh::utils::MeshFunctionConstant(1.0);
   MassEdgeMatrixProvider provider{fe_space, g};
 
   // Loop over edges and compute element vectors
@@ -618,8 +622,8 @@ TEST(lf_fe_quadratic, lf_fe_loadvec) {
       mesh_p, rfs_tria, rfs_quad);
 
   // coefficient:
-  auto f =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return (1.0); });
+  auto f = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return (1.0); });
 
   // set up object for local computations
   ScalarLoadElementVectorProvider<double, decltype(f)> provider(fe_space, f);
@@ -651,7 +655,7 @@ TEST(lf_fe_quadratic, lf_fe_edgeload) {
       mesh_p, rfs_tria, rfs_quad, rfs_segment);
 
   // Set up objects taking care of local computations
-  auto g = MeshFunctionConstant(1.0);
+  auto g = mesh::utils::MeshFunctionConstant(1.0);
   ScalarLoadEdgeVectorProvider provider{fe_space, g};
 
   // Loop over edges and compute element vectors
