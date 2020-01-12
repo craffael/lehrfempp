@@ -18,6 +18,7 @@ uniform_scalar_fe_space.h
 uniform_scalar_fe_space.cc
 uscalfe.h
 uscalfe.h
+prolongation.h
 )
 
 lf_add_library(lf.uscalfe ${sources})
