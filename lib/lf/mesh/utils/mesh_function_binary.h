@@ -8,10 +8,12 @@
 
 #ifndef __9bad469d38e04e8ab67391ce50c2c480
 #define __9bad469d38e04e8ab67391ce50c2c480
+#include <Eigen/Eigen>
+#include <type_traits>
+#include <vector>
+#include "mesh_function_traits.h"
 
-#include <unsupported/Eigen/KroneckerProduct>
-
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -37,6 +39,11 @@ namespace lf::uscalfe {
  *
  * @note Usually there is no need to use MeshFunctionBinary directly. There are
  * a number of operator overloads which use MeshFunctionBinary internally.
+ *
+ * @note The last `int` argument of `operator()` can be used to prefer certain
+ * overloads over others, e.g. `operator()(const std::vector<U>& u, const
+ * std::vector<V>& int)` takes higher precedence than `operator()(const
+ * std::vector<U>& u, const std::vector<V>& long)`
  *
  */
 template <class OP, class A, class B>
@@ -65,9 +72,35 @@ class MeshFunctionBinary {
   B b_;
 };
 
+/**
+ * @brief Contains `OP` types (as used by MeshFunctionBinary) which are used by
+ * the respective operator overloads (e.g. `operator+(...)`) to combine two mesh
+ * functions.
+ */
 namespace internal {
+
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise addition of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorAddition {
-  // addition of scalar types:
+  /**
+   * @brief Addition of two scalar types (`std::is_arithmetic_v<...> == true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Matrix<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
+   * us to use the Eigen optimized `operator+`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
@@ -84,7 +117,9 @@ struct OperatorAddition {
     return result;
   }
 
-  // Addition of static sized eigen matrices
+  /**
+   * @brief Addition of two `Eigen::Matrix` types.
+   */
   template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
@@ -117,34 +152,90 @@ struct OperatorAddition {
       std::vector<Eigen::Matrix<scalar_t, fixedRows, fixedCols>> result(
           u.size());
       for (int i = 0; i < u.size(); ++i) {
-        LF_ASSERT_MSG(
-            u[i].rows() == v[i].rows(),
-            "mismatch in #rows of matrices subtracted from each other.");
-        LF_ASSERT_MSG(
-            u[i].cols() == v[i].cols(),
-            "mismatch in #cols of matrices subtracted from each other.");
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of matrices added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of matrices added to each other.");
         result[i] = u[i] + v[i];
       }
       return result;
     } else {  // NOLINT
-      // subtract two dynamic sized matrices from each other:
+      // add two dynamic sized matrices:
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
       result.reserve(u.size());
       for (int i = 0; i < u.size(); ++i) {
-        LF_ASSERT_MSG(
-            u[i].rows() == v[i].rows(),
-            "mismatch in #rows of matrices subtracted from each other.");
-        LF_ASSERT_MSG(
-            u[i].cols() == v[i].cols(),
-            "mismatch in #cols of matrices subtracted from each other.");
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of matrices added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of matrices added to each other.");
         result.emplace_back(u[i] + v[i]);
       }
       return result;
     }
   }
 
-  // addition of arbitrary types supporting + operator:
+  /**
+   * @brief Addition of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) + S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // add two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot add arrays with different #rows.");
+      static_assert(C1 == C2, "cannot add arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um + vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of arrays added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of arrays added to each other.");
+        result[i] = u[i] + v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // add two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(u[i].rows() == v[i].rows(),
+                      "mismatch in #rows of arrays added to each other.");
+        LF_ASSERT_MSG(u[i].cols() == v[i].cols(),
+                      "mismatch in #cols of arrays added to each other.");
+        result.emplace_back(u[i] + v[i]);
+      }
+      return result;
+    }
+  }
+
+  /**
+   * @brief addition of arbitrary types supporting  `operator+`:
+   */
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
                   long /*unused*/) const {
@@ -156,8 +247,29 @@ struct OperatorAddition {
   }
 };
 
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise subtraction of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorSubtraction {
-  // subtraction of scalar types:
+  /**
+   * @brief Subtraction of two scalar types (`std::is_arithmetic_v<...> ==
+   * true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Matrix<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
+   * us to use the Eigen optimized `operator-`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
@@ -174,7 +286,9 @@ struct OperatorSubtraction {
     return result;
   }
 
-  // subtraction of fixed size eigen matrices
+  /**
+   * @brief Subtraction of two `Eigen::Matrix` types.
+   */
   template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
             int R2, int C2, int O2, int MR2, int MC2>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
@@ -184,8 +298,8 @@ struct OperatorSubtraction {
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
                   R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // subtract two static size eigen matrices from each other
-      static_assert(R1 == R2, "cannot add matrices with different #rows.");
-      static_assert(C1 == C2, "cannot add matrices with different #cols.");
+      static_assert(R1 == R2, "cannot subtract matrices with different #rows.");
+      static_assert(C1 == C2, "cannot subtract matrices with different #cols.");
 
       Eigen::Map<const Eigen::Matrix<S1, 1, Eigen::Dynamic>> um(
           &u[0](0, 0), 1, u.size() * R1 * C1);
@@ -221,7 +335,7 @@ struct OperatorSubtraction {
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
       result.reserve(u.size());
-      for (std::size_t i = 0; i < u.size(); ++i) {
+      for (int i = 0; i < u.size(); ++i) {
         LF_ASSERT_MSG(
             u[i].rows() == v[i].rows(),
             "mismatch in #rows of matrices subtracted from each other.");
@@ -234,7 +348,71 @@ struct OperatorSubtraction {
     }
   }
 
-  // subtraction of arbitrary types supporting - operator:
+  /**
+   * @brief Subtraction of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) - S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // subtract two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot subtract arrays with different #rows.");
+      static_assert(C1 == C2, "cannot subtract arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um - vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays subtracted from each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays subtracted from each other.");
+        result[i] = u[i] - v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // subtract two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays subtracted from each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays subtracted from each other.");
+        result.emplace_back(u[i] - v[i]);
+      }
+      return result;
+    }
+  }
+
+  /**
+   *@brief subtraction of arbitrary types supporting - operator:
+   */
   template <class U, class V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v,
                   long /*unused*/) const {
@@ -247,8 +425,29 @@ struct OperatorSubtraction {
   }
 };
 
+/**
+ * @brief Used together with MeshFunctionBinary (`OP` template type) to
+ * represent the pointwise product of two mesh functions.
+ *
+ * This struct contains multiple overloads of `operator()` which specialize for
+ * certain cases, e.g. optimized implementations are provided for
+ * `Eigen::Matrix` valued mesh functions. There is also a general overload of
+ * `operator()` which works for any types that define `operator+`. But the more
+ * specialized overloads are preferred over this one thanks to them having a 3rd
+ * argument of type `int` whereas the general overload accepts a `long`.
+ * (See also MeshFunctionBinary for an explanation)
+ */
 struct OperatorMultiplication {
-  // Multiplication of scalar types:
+  /**
+   * @brief Multiplication of two scalar types (`std::is_arithmetic_v<...> ==
+   * true`)
+   *
+   * @note The implementation of this method makes use of the fact that the
+   * memory layout of the data of `std::vector<U>` and
+   * `Eigen::Array<U,1,Eigen::Dynamic>` is the same. This allows us to
+   * reinterpret the `std::vector<U>` as an `Eigen::Array` which in turn allows
+   * us to use the Eigen optimized `operator*`
+   */
   template <class U, class V,
             class = typename std::enable_if<std::is_arithmetic_v<U> &&
                                             std::is_arithmetic_v<V>>::type>
@@ -296,6 +495,68 @@ struct OperatorMultiplication {
     }
   }
 
+  /**
+   * @brief Multiplication of two `Eigen::Array` types.
+   */
+  template <class S1, int R1, int C1, int O1, int MR1, int MC1, class S2,
+            int R2, int C2, int O2, int MR2, int MC2>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& u,
+                  const std::vector<Eigen::Array<S2, R2, C2, O2, MR2, MC2>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(S1(0) * S2(0));
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
+                  R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
+      // multiply two static size eigen arrays to each other
+      static_assert(R1 == R2, "cannot multiply arrays with different #rows.");
+      static_assert(C1 == C2, "cannot multiply arrays with different #cols.");
+
+      Eigen::Map<const Eigen::Array<S1, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R1 * C1);
+      Eigen::Map<const Eigen::Array<S2, 1, Eigen::Dynamic>> vm(
+          &v[0](0, 0), 1, v.size() * R1 * C1);
+
+      std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+      Eigen::Map<Eigen::Array<scalar_t, 1, Eigen::Dynamic>> rm(
+          &result[0](0, 0), 1, u.size() * R1 * C1);
+      rm = um * vm;
+      return result;
+    }
+    if constexpr ((R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) ||
+                  (R2 != Eigen::Dynamic && C2 != Eigen::Dynamic)) {  // NOLINT
+      // One of the arrays is fixed size:
+      constexpr int fixedRows = std::max(R1, R2);
+      constexpr int fixedCols = std::max(C1, C2);
+
+      std::vector<Eigen::Array<scalar_t, fixedRows, fixedCols>> result(
+          u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays multiplied with each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays multiplied with each other.");
+        result[i] = u[i] * v[i];
+      }
+      return result;
+    } else {  // NOLINT
+      // multiply two dynamic sized arrays:
+      std::vector<Eigen::Array<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
+          result;
+      result.reserve(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        LF_ASSERT_MSG(
+            u[i].rows() == v[i].rows(),
+            "mismatch in #rows of arrays multiplied with each other.");
+        LF_ASSERT_MSG(
+            u[i].cols() == v[i].cols(),
+            "mismatch in #cols of arrays multiplied with each other.");
+        result.emplace_back(u[i] * v[i]);
+      }
+      return result;
+    }
+  }
+
   // multiplication of a scalar with matrix
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
             class = std::enable_if_t<std::is_arithmetic_v<U>>>
@@ -304,7 +565,7 @@ struct OperatorMultiplication {
                   int /*unused*/) const {
     using scalar_t = decltype(u[0] * v[0](0, 0));
     std::vector<Eigen::Matrix<scalar_t, R1, C1>> result(u.size());
-    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {  // NOLINT
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {
       // result is a static sized matrix:
       Eigen::Map<const Eigen::Array<S1, R1 * C1, Eigen::Dynamic>> vm(
           v[0].data(), R1 * C1, v.size());
@@ -314,7 +575,7 @@ struct OperatorMultiplication {
                                                               u.size());
 
       rm = vm * um.template replicate<R1 * C1, 1>();
-    } else {  // NOLINT
+    } else {
       // result is not static sized:
       for (std::size_t i = 0; i < u.size(); ++i) {
         result[i] = u[i] * v[i];
@@ -327,6 +588,41 @@ struct OperatorMultiplication {
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
             class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& v,
+                  const std::vector<U>& u, int /*unused*/) const {
+    return operator()(u, v, 0);
+  }
+
+  // multiplication of a scalar with array
+  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
+            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+  auto operator()(const std::vector<U>& u,
+                  const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
+                  int /*unused*/) const {
+    using scalar_t = decltype(u[0] * v[0](0, 0));
+    std::vector<Eigen::Array<scalar_t, R1, C1>> result(u.size());
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {
+      // result is a static sized array:
+      Eigen::Map<const Eigen::Array<S1, R1 * C1, Eigen::Dynamic>> vm(
+          v[0].data(), R1 * C1, v.size());
+      Eigen::Map<Eigen::Array<scalar_t, R1 * C1, Eigen::Dynamic>> rm(
+          result[0].data(), R1 * C1, v.size());
+      Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                              u.size());
+
+      rm = vm * um.template replicate<R1 * C1, 1>();
+    } else {
+      // result is not static sized:
+      for (std::size_t i = 0; i < u.size(); ++i) {
+        result[i] = u[i] * v[i];
+      }
+    }
+    return result;
+  }
+
+  // multiplication of array with scalar (other way around)
+  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
+            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+  auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
                   const std::vector<U>& u, int /*unused*/) const {
     return operator()(u, v, 0);
   }
@@ -359,7 +655,7 @@ struct OperatorMultiplication {
  *
  * @note the two \ref mesh_function "mesh functions" `a` and `b` should produce
  * the same type of values, e.g. both should be scalar valued or both
- * matrix/vector valued.
+ * matrix/vector/array valued.
  *
  * @note If you want to apply this operator overload to \ref mesh_function "mesh
  * functions" which do not reside in the `lf::uscalfe` namespace, it will not be
@@ -433,6 +729,6 @@ auto operator*(const A& a, const B& b) {
   return MeshFunctionBinary(internal::OperatorMultiplication{}, a, b);
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __9bad469d38e04e8ab67391ce50c2c480

@@ -17,6 +17,7 @@
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_interpolation.h>
@@ -162,7 +163,7 @@ int main() {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
     const auto weight =
-        lf::uscalfe::MeshFunctionGlobal([](const Eigen::Vector2d &x) {
+        lf::mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d &x) {
           return x[1] >= 0.9 ? (1 - std::cos(M_PI / 0.1 * (1 - x[1]))) / 2 : 1.;
         });
     const auto diff = velocity_fine - velocity_exact;
@@ -175,7 +176,7 @@ int main() {
         solutions.back().mesh, diff_weighted, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(
         solutions.back().mesh, diff,
-        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+        lf::mesh::utils::MeshFunctionConstant<Eigen::Matrix2d>(
             Eigen::Matrix2d::Zero()),
         qr_provider);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(
@@ -184,7 +185,7 @@ int main() {
         solutions.back().mesh, diff_weighted_modified, qr_provider);
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
         solutions.back().mesh, diff_modified,
-        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+        lf::mesh::utils::MeshFunctionConstant<Eigen::Matrix2d>(
             Eigen::Matrix2d::Zero()),
         qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2

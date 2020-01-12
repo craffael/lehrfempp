@@ -11,18 +11,14 @@ loc_comp_ellbvp.h
 loc_comp_ellbvp.cc
 loc_comp_norms.h
 loc_comp_norms.cc
-mesh_function_binary.h
-mesh_function_constant.h
 mesh_function_fe.h
 mesh_function_grad_fe.h
-mesh_function_global.h
-mesh_function_traits.h
-mesh_function_unary.h
 precomputed_scalar_reference_finite_element.h				
 uniform_scalar_fe_space.h
 uniform_scalar_fe_space.cc
 uscalfe.h
 uscalfe.h
+prolongation.h
 )
 
 lf_add_library(lf.uscalfe ${sources})

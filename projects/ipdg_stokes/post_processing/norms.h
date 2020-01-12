@@ -11,6 +11,7 @@
 #include <lf/mesh/mesh.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <functional>
 
@@ -73,7 +74,7 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF_F &f,
   // Compute the norm on the edges
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
   using jump_t = std::remove_cv_t<decltype(
-      (std::declval<lf::uscalfe::MeshFunctionReturnType<MF_F>>() *
+      (std::declval<lf::mesh::utils::MeshFunctionReturnType<MF_F>>() *
        std::declval<Eigen::Vector2d>().transpose())
           .eval())>;
   lf::mesh::utils::CodimMeshDataSet<std::vector<jump_t>> eval(mesh, 1);

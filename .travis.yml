@@ -1,5 +1,4 @@
 language: cpp
-sudo: true
 dist: xenial
 env:
   global:
@@ -114,15 +113,15 @@ jobs:
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
   - stage: doxygen
-    if: branch = master AND type IN (push)
+    # if: branch = master AND type IN (push)
     os: linux
     compiler: gcc
-    dist: trusty
+    dist: xenial
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - llvm-toolchain-trusty-6.0
+        - llvm-toolchain-xenial-6.0
         packages:
         - graphviz
         - g++-7
@@ -134,8 +133,14 @@ jobs:
       . ./travis/install_doxygen.sh
       cd $TRAVIS_BUILD_DIR/doc/doxygen
       export CXX=g++-7
-      cmake -H. -BBuild
+      cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON
       cd Build
+      make doxygen
+      cd html
+      mkdir with_projects
+      mv !(with_projects) with_projects
+      cd ..
+      cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
       make doxygen
     deploy:
       provider: pages

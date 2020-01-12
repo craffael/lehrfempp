@@ -19,6 +19,7 @@
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_interpolation.h>
@@ -184,9 +185,9 @@ int main(int argc, char *argv[]) {
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
     const auto velocity_exact =
-        lf::uscalfe::MeshFunctionGlobal(analytic_velocity);
+        lf::mesh::utils::MeshFunctionGlobal(analytic_velocity);
     const auto gradient_exact =
-        lf::uscalfe::MeshFunctionGlobal(analytic_gradient);
+        lf::mesh::utils::MeshFunctionGlobal(analytic_gradient);
     const auto velocity =
         projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
                                                                      double>(

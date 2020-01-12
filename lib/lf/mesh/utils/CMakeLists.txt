@@ -3,6 +3,11 @@ set(sources
   codim_mesh_data_set.h
   lambda_mesh_data_set.h
   mesh_data_set.h
+  mesh_function_binary.h
+  mesh_function_constant.h
+  mesh_function_global.h
+  mesh_function_traits.h
+  mesh_function_unary.h
   print_info.cc
   print_info.h
   special_entity_sets.h

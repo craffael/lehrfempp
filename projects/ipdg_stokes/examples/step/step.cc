@@ -20,6 +20,7 @@
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_interpolation.h>
@@ -251,14 +252,14 @@ int main() {
         solutions.back().mesh, diff, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(
         solutions.back().mesh, diff,
-        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+        lf::mesh::utils::MeshFunctionConstant<Eigen::Matrix2d>(
             Eigen::Matrix2d::Zero()),
         qr_provider);
     const double L2_modified = projects::ipdg_stokes::post_processing::L2norm(
         solutions.back().mesh, diff_modified, qr_provider);
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
         solutions.back().mesh, diff_modified,
-        lf::uscalfe::MeshFunctionConstant<Eigen::Matrix2d>(
+        lf::mesh::utils::MeshFunctionConstant<Eigen::Matrix2d>(
             Eigen::Matrix2d::Zero()),
         qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2

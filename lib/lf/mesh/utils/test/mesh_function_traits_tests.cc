@@ -6,11 +6,10 @@
  * @copyright MIT License
  */
 
-#include <lf/uscalfe/uscalfe.h>
-
 #include <gtest/gtest.h>
+#include <lf/mesh/utils/utils.h>
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 struct ProperMeshFunction {
   auto operator()(const mesh::Entity& e, const Eigen::MatrixXd& local) const {
@@ -123,4 +122,4 @@ TEST(isMeshFunctionTestSuite, checkIsMeshFunction) {
   EXPECT_FALSE((isMeshFunction<decltype(l8), double>));
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

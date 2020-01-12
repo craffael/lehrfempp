@@ -9,13 +9,13 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
-#include <lf/uscalfe/uscalfe.h>
 #include "mesh_function_utils.h"
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 struct X {
   X() = default;
+
   X(int x) : x_(x) {}
 
   X operator-() const { return X(-x_); }
@@ -33,11 +33,21 @@ auto mfVector = MeshFunctionGlobal([](const Eigen::Vector2d& x) { return x; });
 auto mfVector_dynamic = MeshFunctionGlobal(
     [](const Eigen::Vector2d& x) { return Eigen::VectorXd(x); });
 
+auto mfArray = MeshFunctionGlobal(
+    [](const Eigen::Array2d& x) -> Eigen::Array2d { return x.array(); });
+auto mfArray_dynamic = MeshFunctionGlobal(
+    [](const Eigen::Vector2d& x) -> Eigen::ArrayXd { return x.array(); });
+
 auto mfRowVector =
     MeshFunctionGlobal([](auto x) { return Eigen::RowVector2d(x[1], -x[0]); });
-
 auto mfRowVector_dynamic = MeshFunctionGlobal(
     [](auto x) { return Eigen::MatrixXd(Eigen::RowVector2d(x[1], -x[0])); });
+auto mfRowArray = MeshFunctionGlobal(
+    [](auto x) { return Eigen::Array2d(x[1], -x[0]).transpose().eval(); });
+auto mfRowArray_dynamic =
+    MeshFunctionGlobal([](auto x) -> Eigen::Array<double, 1, Eigen::Dynamic> {
+      return Eigen::Array2d(x[1], -x[0]).transpose().eval();
+    });
 
 auto mfMatrix =
     MeshFunctionGlobal([](auto x) { return (x * x.transpose()).eval(); });
@@ -53,10 +63,11 @@ TEST(meshFunctionUnary, minus) {
     return -x[0] * x[0] - x[1];
   }));
 
-  auto minusVector = -mfVector;
-  checkMeshFunctionEqual(*mesh, minusVector, MeshFunctionGlobal([](auto x) {
-    return (-x).eval();
-  }));
+  auto minusVRef = MeshFunctionGlobal([](auto x) { return (-x).eval(); });
+  checkMeshFunctionEqual(*mesh, -mfVector, minusVRef);
+  checkMeshFunctionEqual(*mesh, -mfVector_dynamic, minusVRef);
+  checkMeshFunctionEqual(*mesh, -mfArray, minusVRef);
+  checkMeshFunctionEqual(*mesh, -mfArray_dynamic, minusVRef);
 
   auto minusMatrix = -mfMatrix;
   checkMeshFunctionEqual(*mesh, minusMatrix, MeshFunctionGlobal([](auto x) {
@@ -100,13 +111,17 @@ TEST(meshFunctionUnary, transpose) {
       [](auto x) -> Eigen::Matrix<double, 1, 2> { return x.transpose(); });
   checkMeshFunctionEqual(*mesh, transpose(mfVector), mfVectorT);
   checkMeshFunctionEqual(*mesh, transpose(mfVector_dynamic), mfVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfArray), mfVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfArray_dynamic), mfVectorT);
 
   auto mfRowVectorT = MeshFunctionGlobal(
       [](auto x) -> Eigen::Vector2d { return Eigen::Vector2d(x[1], -x[0]); });
   checkMeshFunctionEqual(*mesh, transpose(mfRowVector), mfRowVectorT);
   checkMeshFunctionEqual(*mesh, transpose(mfRowVector_dynamic), mfRowVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfRowArray), mfRowVectorT);
+  checkMeshFunctionEqual(*mesh, transpose(mfRowArray_dynamic), mfRowVectorT);
 
   checkMeshFunctionEqual(*mesh, transpose(mfMatrix), mfMatrix);
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

@@ -18,6 +18,7 @@
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
@@ -172,11 +173,11 @@ int main() {
   }
 
   // Perform post processing on the data
-  const auto analyticU = lf::uscalfe::MeshFunctionGlobal(
+  const auto analyticU = lf::mesh::utils::MeshFunctionGlobal(
       [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
         return computeU(n, x);
       });
-  const auto analyticF = lf::uscalfe::MeshFunctionGlobal(
+  const auto analyticF = lf::mesh::utils::MeshFunctionGlobal(
       [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
         return computeF(n, x);
       });
@@ -184,9 +185,9 @@ int main() {
     const auto fe_space =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
-    const auto velocity_exact = lf::uscalfe::MeshFunctionGlobal(
+    const auto velocity_exact = lf::mesh::utils::MeshFunctionGlobal(
         [n](const Eigen::Vector2d& x) { return computeU(n, x); });
-    const auto grad_exact = lf::uscalfe::MeshFunctionGlobal(
+    const auto grad_exact = lf::mesh::utils::MeshFunctionGlobal(
         [n](const Eigen::Vector2d& x) -> Eigen::Matrix2d {
           return computeUGrad(n, x);
         });
@@ -228,9 +229,9 @@ int main() {
     std::cout << factor << std::endl;
     // The error in the corrected velocity
     const auto velocity_scaled =
-        lf::uscalfe::MeshFunctionConstant<double>(factor) * velocity;
+        lf::mesh::utils::MeshFunctionConstant<double>(factor) * velocity;
     const auto velocity_scaled_modified =
-        lf::uscalfe::MeshFunctionConstant(factor_modified) * velocity_modified;
+        lf::mesh::utils::MeshFunctionConstant(factor_modified) * velocity_modified;
     const auto diff_v_fac = velocity_scaled - velocity_exact;
     const auto diff_v_fac_modified = velocity_scaled_modified - velocity_exact;
     // The error in the gradient of the corrected velocty

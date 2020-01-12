@@ -11,7 +11,7 @@
 
 #include <lf/mesh/mesh.h>
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -62,23 +62,58 @@ struct UnaryOpMinus {
     return result;
   }
 
-  // minus in front of a fixed size matrix
-  template <
-      class S, int R, int C, int O, int MR, int MC,
-      class = std::enable_if_t<R != Eigen::Dynamic && C != Eigen::Dynamic>>
+  // minus in front of a Eigen::Matrix
+  template <class S, int R, int C, int O, int MR, int MC>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
                   int /*unused*/) const {
-    if (R == 0 || C == 0) {
+    if constexpr (R == 0 || C == 0) {
       // result vector is empty
       return u;
     }
-    Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(&u[0](0, 0), 1,
-                                                             u.size() * R * C);
-    std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> result(u.size());
-    Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0](0, 0), 1,
-                                                       u.size() * R * C);
-    rm = -um;
-    return result;
+    if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
+      // matrix size is known at compile time
+      Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(
+          &u[0](0, 0), 1, u.size() * R * C);
+      std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> result(u.size());
+      Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0](0, 0), 1,
+                                                         u.size() * R * C);
+      rm = -um;
+      return result;
+    } else {
+      // matrix size is dynamic
+      std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> result(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        result[i] = -u[i];
+      }
+      return result;
+    }
+  }
+
+  // minus in front of a Eigen::Array
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Array<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    if constexpr (R == 0 || C == 0) {
+      // result array is empty
+      return u;
+    }
+    if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
+      // array size is known at compile time
+      Eigen::Map<const Eigen::Array<S, 1, Eigen::Dynamic>> um(&u[0](0, 0), 1,
+                                                              u.size() * R * C);
+      std::vector<Eigen::Array<S, R, C, O, MR, MC>> result(u.size());
+      Eigen::Map<Eigen::Array<S, 1, Eigen::Dynamic>> rm(&result[0](0, 0), 1,
+                                                        u.size() * R * C);
+      rm = -um;
+      return result;
+    } else {
+      // array size is dynamic
+      std::vector<Eigen::Array<S, R, C, O, MR, MC>> result(u.size());
+      for (int i = 0; i < u.size(); ++i) {
+        result[i] = -u[i];
+      }
+      return result;
+    }
   }
 
   // minus in front of any object that supports the unary operator-
@@ -147,6 +182,17 @@ struct UnaryOpTranspose {
     }
     return result;
   }
+
+  // transpose the eigen array
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Array<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    std::vector<Eigen::Array<S, C, R>> result(u.size());
+    for (std::size_t i = 0; i < u.size(); ++i) {
+      result[i] = u[i].transpose();
+    }
+    return result;
+  }
 };
 
 }  // namespace internal
@@ -182,14 +228,22 @@ auto squaredNorm(const A& a) {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);
 }
 
+/**
+ * @brief Pointwise transpose of an `Eigen::Matrix` or `Eigen::Array`
+ * @relates lf::uscalfe::MeshFunctionUnary
+ * @tparam A The type of the wrapped mesh function.
+ * @param a The original \ref mesh_function
+ * @return \ref mesh_function representing the pointwise transpose of `a`.
+ */
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto transpose(const A& a) {
   static_assert(
-      base::is_eigen_matrix<MeshFunctionReturnType<A>>,
+      base::is_eigen_matrix<MeshFunctionReturnType<A>> ||
+          base::is_eigen_array<MeshFunctionReturnType<A>>,
       "transpose() only supported for Eigen::Matrix valued mesh functions");
   return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __b9b63bcccec548419a52fe0b06ffb3fc

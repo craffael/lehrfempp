@@ -17,6 +17,7 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/lambda_mesh_data_set.h>
 #include <lf/quad/quad.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <boost/program_options.hpp>
 
@@ -354,8 +355,8 @@ int main(int argc, char *argv[]) {
         solveNestedCylindersNonzeroBC(mesh, dofh, r, R, omega1, omega2, true);
     // Create mesh functions for the analytic and numerical solutions
     const auto velocity_exact =
-        lf::uscalfe::MeshFunctionGlobal(analytic_velocity);
-    const auto grad_exact = lf::uscalfe::MeshFunctionGlobal(analytic_gradient);
+        lf::mesh::utils::MeshFunctionGlobal(analytic_velocity);
+    const auto grad_exact = lf::mesh::utils::MeshFunctionGlobal(analytic_gradient);
     const auto velocity_zero =
         projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
                                                                      double>(
@@ -383,9 +384,9 @@ int main(int argc, char *argv[]) {
     writer_nonzero.WriteCellData("velocity_modified",
                                  velocity_nonzero_modified);
     writer_zero.WriteCellData(
-        "analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
+        "analytic", lf::mesh::utils::MeshFunctionGlobal(analytic_velocity));
     writer_nonzero.WriteCellData(
-        "analytic", lf::uscalfe::MeshFunctionGlobal(analytic_velocity));
+        "analytic", lf::mesh::utils::MeshFunctionGlobal(analytic_velocity));
     // Compute the difference between the numerical and the analytical solution
     auto diff_velocity_zero = velocity_zero - velocity_exact;
     auto diff_velocity_zero_modified = velocity_zero_modified - velocity_exact;
