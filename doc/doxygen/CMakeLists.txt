@@ -20,7 +20,7 @@ if(DOXYGEN_FOUND)
   endif()
   
   if(LF_DOX_INCLUDE_PROJECTS)
-    set(LF_DOX_INCLUDE_PROJECTS_ "@CMAKE_CURRENT_SOURCE_DIR@/../../projects")
+    set(LF_DOX_INCLUDE_PROJECTS_ "${CMAKE_CURRENT_SOURCE_DIR}/../../projects")
   else()
     set(LF_DOX_INCLUDE_PROJECTS_ "")
   endif()
