@@ -136,12 +136,12 @@ jobs:
       cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON
       cd Build
       make doxygen
-      cd doc/doxygen/html
-      mkdir with_projects
-      mv !(with_projects) with_projects
-      cd ..
-      cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-      make doxygen
+      # cd doc/doxygen/html
+      # mkdir with_projects
+      # mv !(with_projects) with_projects
+      # cd ..
+      # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+      # make doxygen
     deploy:
       provider: pages
       skip_cleanup: true
