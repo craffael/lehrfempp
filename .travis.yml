@@ -139,13 +139,13 @@ jobs:
       cd doc/doxygen/html
       mkdir with_projects
       mv !(with_projects) with_projects
-      # cd ..
-      # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-      # make doxygen
+      cd ../../..
+      cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+      make doxygen
     deploy:
       provider: pages
       skip_cleanup: true
-      local_dir: "./Build/html"
+      local_dir: "./Build/doc/doxygen/html"
       github_token: "$GITHUB_API_KEY"
       on:
         branch: master
