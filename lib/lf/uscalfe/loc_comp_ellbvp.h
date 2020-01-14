@@ -140,7 +140,7 @@ class ReactionDiffusionElementMatrixProvider {
    * subset of cells.
    */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  /*
+  /**
    * @brief main routine for the computation of element matrices
    *
    * @param cell reference to the (triangular or quadrilateral) cell for
