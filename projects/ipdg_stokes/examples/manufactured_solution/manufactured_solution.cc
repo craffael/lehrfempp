@@ -22,7 +22,6 @@
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
-#include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>

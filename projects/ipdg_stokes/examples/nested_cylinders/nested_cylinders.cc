@@ -23,7 +23,6 @@
 
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
-#include <mesh_function_interpolation.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>

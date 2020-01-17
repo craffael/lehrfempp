@@ -19,13 +19,12 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+#include <lf/refinement/mesh_function_transfer.h>
 #include <lf/uscalfe/uscalfe.h>
 #include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
-#include <mesh_function_interpolation.h>
 #include <mesh_function_velocity.h>
-#include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
@@ -224,12 +223,8 @@ int main() {
         velocity_lvl(fe_space_lvl, solutions[lvl].solution);
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
-    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
-        velocity_fine(velocity_lvl, *mesh_hierarchy, lvl,
-                      mesh_hierarchy->NumLevels() - 1);
-    projects::ipdg_stokes::post_processing::MeshFunctionInterpolation
-        velocity_fine_modified(velocity_lvl_modified, *mesh_hierarchy, lvl,
-                               mesh_hierarchy->NumLevels() - 1);
+    lf::refinement::MeshFunctionTransfer velocity_fine(*mesh_hierarchy, velocity_lvl, lvl, mesh_hierarchy->NumLevels() - 1);
+    lf::refinement::MeshFunctionTransfer velocity_fine_modified(*mesh_hierarchy, velocity_lvl_modified, lvl, mesh_hierarchy->NumLevels() - 1);
     writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
                          *lf::mesh::utils::make_LambdaMeshDataSet(
                              [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
