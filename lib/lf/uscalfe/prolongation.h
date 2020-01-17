@@ -54,8 +54,8 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   // Construct a mesh function to simplify the point evaluations
   const lf::uscalfe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
   // Transfer the mesh function to the finer mesh
-  const lf::refinement::MeshFunctionTransfer mf_fine(mh, mf_coarse,
-                                                     level_coarse, level_coarse+1);
+  const lf::refinement::MeshFunctionTransfer mf_fine(
+      mh, mf_coarse, level_coarse, level_coarse + 1);
   // Return the nodal projection of this transferred mesh function
   return lf::uscalfe::NodalProjection(*fespace_fine, mf_fine);
 }

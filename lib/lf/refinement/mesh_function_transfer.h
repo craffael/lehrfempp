@@ -11,7 +11,8 @@
 namespace lf::refinement {
 
 /**
- * @brief A MeshFunction representing interpolation on a lf::refinement::MeshHierarchy
+ * @brief A MeshFunction representing interpolation on a
+ * lf::refinement::MeshHierarchy
  * @tparam The type of mesh function to interpolate on a finer mesh
  */
 template <typename MF>
@@ -42,22 +43,29 @@ class MeshFunctionTransfer {
 
   /**
    * @brief Constructor
-   * @param mh The lf::refinement::MeshHierarchy along which the function should be interpolated
+   * @param mh The lf::refinement::MeshHierarchy along which the function should
+   * be interpolated
    * @param mf The mesh function to be interpolated on a finer mesh
    * @param level_coarse The level of the Mesh which `mf` is defined on
-   * @param level_fine The level of the Mesh this wrapper MeshFunction is defined on
+   * @param level_fine The level of the Mesh this wrapper MeshFunction is
+   * defined on
    */
   MeshFunctionTransfer(const lf::refinement::MeshHierarchy &mh, const MF &mf,
-                       lf::base::size_type level_coarse, lf::base::size_type level_fine)
+                       lf::base::size_type level_coarse,
+                       lf::base::size_type level_fine)
       : mh_(mh), mf_(mf), level_coarse_(level_coarse), level_fine_(level_fine) {
     // Assert that the `level_coarse` parameter does not point to the finest
     // mesh
     LF_ASSERT_MSG(
         level_coarse < mh.NumLevels() - 1,
         "level_coarse must not point to the finest mesh in the hierarchy");
-    // Assert that the `level_fine` parameter points to a finer mesh than `level_coarse`
-    LF_ASSERT_MSG(level_fine > level_coarse, "level_fine must be bigger than level_fine");
-    LF_ASSERT_MSG(level_fine < mh.NumLevels(), "level_fine must point to a valid mesh in the mesh hierarchy");
+    // Assert that the `level_fine` parameter points to a finer mesh than
+    // `level_coarse`
+    LF_ASSERT_MSG(level_fine > level_coarse,
+                  "level_fine must be bigger than level_fine");
+    LF_ASSERT_MSG(
+        level_fine < mh.NumLevels(),
+        "level_fine must point to a valid mesh in the mesh hierarchy");
     // If the mesh function is defined over an FE space, assert the correctness
     // of the `level_coarse` parameter
     if constexpr (provides_getMesh) {
@@ -69,7 +77,8 @@ class MeshFunctionTransfer {
   /**
    * @brief Evaluate the MeshFunction
    * @param e The Entity on which to evaluate this MeshFunction
-   * @param local The local coordinates inside `e` where the MeshFunction should be evaluated
+   * @param local The local coordinates inside `e` where the MeshFunction should
+   * be evaluated
    * @returns A std::vector of point evaluations of the MeshFunction
    */
   decltype(auto) operator()(const lf::mesh::Entity &e,
@@ -77,10 +86,11 @@ class MeshFunctionTransfer {
     auto rel_geom = mh_.GeometryInParent(level_fine_, e);
     auto parent = mh_.ParentEntity(level_fine_, e);
     auto local_parent = rel_geom->Global(local);
-    for (lf::base::size_type lvl = level_fine_-1 ; lvl > level_coarse_ ; --lvl) {
-	rel_geom = mh_.GeometryInParent(lvl, *parent);
-	parent = mh_.ParentEntity(lvl, *parent);
-	local_parent = rel_geom->Global(local_parent);
+    for (lf::base::size_type lvl = level_fine_ - 1; lvl > level_coarse_;
+         --lvl) {
+      rel_geom = mh_.GeometryInParent(lvl, *parent);
+      parent = mh_.ParentEntity(lvl, *parent);
+      local_parent = rel_geom->Global(local_parent);
     }
     return mf_(*parent, local_parent);
   }
