@@ -27,13 +27,14 @@ TEST(lf_refinement, MeshFunctionTransferScalar) {
     auto hierarchy =
         lf::refinement::MeshHierarchy(mesh_coarse, std::move(factory));
     hierarchy.RefineRegular();
+    hierarchy.RefineRegular();
     // Transfer all test functions
     for (const auto& f : functions) {
       lf::mesh::utils::MeshFunctionGlobal mf_global(f);
       // Transfer the test function
-      lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_global, 0);
+      lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_global, 0, 2);
       // Compare the two mesh functions at the midpoints of the fine mesh
-      for (const auto cell : hierarchy.getMesh(1)->Entities(0)) {
+      for (const auto cell : hierarchy.getMesh(2)->Entities(0)) {
         const Eigen::Vector2d midpoint = Eigen::Vector2d::Constant(1. / 3);
         const double value_global = mf_global(*cell, midpoint)[0];
         const double value_transferred = mf_fine(*cell, midpoint)[0];
