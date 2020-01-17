@@ -15,10 +15,10 @@
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
-#include <lf/quad/quad.h>
-#include <lf/refinement/refinement.h>
-#include <lf/refinement/mesh_function_transfer.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/quad/quad.h>
+#include <lf/refinement/mesh_function_transfer.h>
+#include <lf/refinement/refinement.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
@@ -146,8 +146,11 @@ int main() {
         velocity_lvl(fe_space_lvl, solutions[lvl].solution);
     projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
-    lf::refinement::MeshFunctionTransfer velocity_fine(*mesh_hierarchy, velocity_lvl, lvl, mesh_hierarchy->NumLevels() - 1);
-    lf::refinement::MeshFunctionTransfer velocity_fine_modified(*mesh_hierarchy, velocity_lvl_modified, lvl, mesh_hierarchy->NumLevels() - 1);
+    lf::refinement::MeshFunctionTransfer velocity_fine(
+        *mesh_hierarchy, velocity_lvl, lvl, mesh_hierarchy->NumLevels() - 1);
+    lf::refinement::MeshFunctionTransfer velocity_fine_modified(
+        *mesh_hierarchy, velocity_lvl_modified, lvl,
+        mesh_hierarchy->NumLevels() - 1);
     writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
                          velocity_fine);
     writer.WriteCellData(

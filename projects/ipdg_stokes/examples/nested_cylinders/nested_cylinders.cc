@@ -16,8 +16,8 @@
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/lambda_mesh_data_set.h>
-#include <lf/quad/quad.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/quad/quad.h>
 
 #include <boost/program_options.hpp>
 
@@ -355,7 +355,8 @@ int main(int argc, char *argv[]) {
     // Create mesh functions for the analytic and numerical solutions
     const auto velocity_exact =
         lf::mesh::utils::MeshFunctionGlobal(analytic_velocity);
-    const auto grad_exact = lf::mesh::utils::MeshFunctionGlobal(analytic_gradient);
+    const auto grad_exact =
+        lf::mesh::utils::MeshFunctionGlobal(analytic_gradient);
     const auto velocity_zero =
         projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
                                                                      double>(

@@ -33,11 +33,11 @@ class AnnulusTriagMeshBuilder {
   explicit AnnulusTriagMeshBuilder(
       std::unique_ptr<lf::mesh::MeshFactory> mesh_factory)
       : inner_radius_(0.25),
-	outer_radius_(1),
-	num_radial_cells_(1),
-	num_angular_cells_(4),
-	center_point_(Eigen::Vector2d::Zero()),
-	mesh_factory_(std::move(mesh_factory)) {
+        outer_radius_(1),
+        num_radial_cells_(1),
+        num_angular_cells_(4),
+        center_point_(Eigen::Vector2d::Zero()),
+        mesh_factory_(std::move(mesh_factory)) {
     // Nothing to do here
   }
 
@@ -45,42 +45,32 @@ class AnnulusTriagMeshBuilder {
    * @breif Sets the radius of the hole
    * @param r The radius of the hole
    */
-  void setInnerRadius(double r) {
-      inner_radius_ = r;
-  }
+  void setInnerRadius(double r) { inner_radius_ = r; }
 
   /**
    * @brief Set the radius of the disk
    * @param r The radius of the disk
    */
-  void setOuterRadius(double r) {
-      outer_radius_ = r;
-  }
+  void setOuterRadius(double r) { outer_radius_ = r; }
 
   /**
    * @brief Set the location of the center
    * @param x The x coordinate of the new center of the annulus
    * @param y The y coordinate of the new center of the annulus
    */
-  void setCenterPoint(double x, double y) {
-      center_point_ << x, y;
-  }
+  void setCenterPoint(double x, double y) { center_point_ << x, y; }
 
   /**
    * @brief Set the number of cells in the radial direction
    * @param n The number of cells in the radial direction
    */
-  void setNumRadialCells(lf::base::size_type n) {
-      num_radial_cells_ = n;
-  }
+  void setNumRadialCells(lf::base::size_type n) { num_radial_cells_ = n; }
 
   /**
    * @brief Set the number of cells in the angular direction
    * @param n The nummber of cells in the angular direction
    */
-  void setNumAngularCells(lf::base::size_type n) {
-      num_angular_cells_ = n;
-  }
+  void setNumAngularCells(lf::base::size_type n) { num_angular_cells_ = n; }
 
   /**
    * @brief Build the mesh

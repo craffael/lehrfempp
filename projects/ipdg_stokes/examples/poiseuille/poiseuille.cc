@@ -17,9 +17,9 @@
 #include <lf/mesh/hybrid2d/mesh.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-#include <lf/mesh/utils/utils.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>

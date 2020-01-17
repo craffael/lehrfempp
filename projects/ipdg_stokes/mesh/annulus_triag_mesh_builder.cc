@@ -11,7 +11,8 @@
 namespace projects::ipdg_stokes::mesh {
 
 std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
-  const lf::base::size_type vertex_count = num_angular_cells_ * (num_radial_cells_ + 1);
+  const lf::base::size_type vertex_count =
+      num_angular_cells_ * (num_radial_cells_ + 1);
   const double r = inner_radius_;
   const double R = outer_radius_;
   const double dr = (R - r) / num_radial_cells_;
@@ -29,7 +30,8 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   std::vector<lf::base::size_type> v_idx(vertex_count);
   lf::base::size_type node_count = 0;
   for (lf::base::size_type r_idx = 0; r_idx < num_radial_cells_ + 1; ++r_idx) {
-    for (lf::base::size_type phi_idx = 0; phi_idx < num_angular_cells_; ++phi_idx) {
+    for (lf::base::size_type phi_idx = 0; phi_idx < num_angular_cells_;
+         ++phi_idx) {
       v_idx[node_count++] =
           mesh_factory_->AddPoint(node_position(r_idx, phi_idx));
     }
@@ -38,12 +40,18 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   // Construct the triangles
   const lf::base::RefEl ref_el = lf::base::RefEl::kTria();
   for (lf::base::size_type r_idx = 0; r_idx < num_radial_cells_; ++r_idx) {
-    for (lf::base::size_type phi_idx = 0; phi_idx < num_angular_cells_; ++phi_idx) {
-      const lf::base::size_type v1 = v_idx[num_angular_cells_ * r_idx + phi_idx];
-      const lf::base::size_type v2 = v_idx[num_angular_cells_ * (r_idx + 1) + phi_idx];
+    for (lf::base::size_type phi_idx = 0; phi_idx < num_angular_cells_;
+         ++phi_idx) {
+      const lf::base::size_type v1 =
+          v_idx[num_angular_cells_ * r_idx + phi_idx];
+      const lf::base::size_type v2 =
+          v_idx[num_angular_cells_ * (r_idx + 1) + phi_idx];
       const lf::base::size_type v3 =
-          v_idx[num_angular_cells_ * (r_idx + 1) + ((phi_idx + 1) % num_angular_cells_)];
-      const lf::base::size_type v4 = v_idx[num_angular_cells_ * r_idx + ((phi_idx + 1) % num_angular_cells_)];
+          v_idx[num_angular_cells_ * (r_idx + 1) +
+                ((phi_idx + 1) % num_angular_cells_)];
+      const lf::base::size_type v4 =
+          v_idx[num_angular_cells_ * r_idx +
+                ((phi_idx + 1) % num_angular_cells_)];
       const std::array<lf::base::size_type, 3> trig1 = {v1, v2, v4};
       const std::array<lf::base::size_type, 3> trig2 = {v2, v3, v4};
       Eigen::Matrix<double, 2, 3> verts1;
