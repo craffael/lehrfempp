@@ -32,16 +32,6 @@ class MeshFunctionTransfer {
 
  public:
   /**
-   * @brief Copy Constructor
-   */
-  MeshFunctionTransfer(const MeshFunctionTransfer &) = default;
-
-  /**
-   * @brief Move Constructor
-   */
-  MeshFunctionTransfer(MeshFunctionTransfer &&) = default;
-
-  /**
    * @brief Constructor
    * @param mh The lf::refinement::MeshHierarchy along which the function should
    * be interpolated
