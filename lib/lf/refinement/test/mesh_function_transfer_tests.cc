@@ -5,9 +5,30 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/mesh_hierarchy.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <cmath>
 #include <functional>
+#include <type_traits>
 #include <vector>
+
+TEST(lf_refinement, MeshFunctionTransferConcept) {
+  using mf_scalar = lf::mesh::utils::MeshFunctionConstant<double>;
+  using mf_matrix = lf::mesh::utils::MeshFunctionConstant<Eigen::MatrixXd>;
+  using mf_array = lf::mesh::utils::MeshFunctionConstant<Eigen::ArrayXd>;
+  using mf_fe = lf::uscalfe::MeshFunctionFE<double, double>;
+  ASSERT_TRUE(std::is_copy_constructible_v<mf_scalar>);
+  ASSERT_TRUE(std::is_copy_constructible_v<mf_matrix>);
+  ASSERT_TRUE(std::is_copy_constructible_v<mf_array>);
+  ASSERT_TRUE(std::is_copy_constructible_v<mf_fe>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf_scalar>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf_matrix>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf_array>);
+  ASSERT_TRUE(std::is_move_constructible_v<mf_fe>);
+  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_scalar>);
+  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_matrix>);
+  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_array>);
+  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_fe>);
+}
 
 TEST(lf_refinement, MeshFunctionTransferScalar) {
   // Declare some arbitrary functions from R^2 to R that will be transferred
