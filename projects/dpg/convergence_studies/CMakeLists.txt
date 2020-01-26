@@ -39,6 +39,9 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study2
   lf.uscalfe
   projects.dpg
   )
+  if(WIN32)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study2 PRIVATE /bigobj)
+  endif()
 target_link_libraries(projects.dpg.convergence_studies.convergence_study3
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
   lf.mesh

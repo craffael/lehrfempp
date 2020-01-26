@@ -66,7 +66,7 @@ struct UnaryOpMinus {
   template <class S, int R, int C, int O, int MR, int MC>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
                   int /*unused*/) const {
-    if constexpr (R == 0 || C == 0) {
+    if constexpr (R == 0 || C == 0) {  // NOLINT
       // result vector is empty
       return u;
     }
