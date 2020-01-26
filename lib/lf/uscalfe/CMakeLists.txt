@@ -1,6 +1,7 @@
 set(sources				
-fe_space_lagrange_o1.h						
-fe_space_lagrange_o2.h						
+fe_space_lagrange_o1.h
+fe_space_lagrange_o2.h
+fe_space_lagrange_o3.h						
 fe_tools.h
 fe_tools.cc
 lagr_fe.h

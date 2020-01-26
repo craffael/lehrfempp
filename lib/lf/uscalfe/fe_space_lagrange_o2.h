@@ -1,16 +1,27 @@
+/**
+ * @file
+ * @brief Defines a special FESpaceUniform that is optimized for second order
+ *        lagrangian shape functions.
+ * @author Philippe Peter
+ * @date   November 2019
+ * @copyright MIT License
+ */
+
 #ifndef LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 #define LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 
+#include "lagr_fe.h"
 #include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
-
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadratic Lagrangian Finite Element space
  *
  * Just a specialization of UniformScalarFESpace based on
- * FeLagrangeO2Tria, FeLagrangeO2Quad and FeLagrangePoint.
+ * FeLagrangeO2Tria, FeLagrangeO2Quad, FeLagrangeO2Segment and FeLagrangePoint.
+ *
+ *
  */
 template <typename SCALAR>
 class FeSpaceLagrangeO2 : public UniformScalarFESpace<SCALAR> {
@@ -38,7 +49,6 @@ class FeSpaceLagrangeO2 : public UniformScalarFESpace<SCALAR> {
             std::make_shared<FeLagrangePoint<SCALAR>>(2)) {}
   ~FeSpaceLagrangeO2() override = default;
 };
-
 }  // namespace lf::uscalfe
 
 #endif  // LF_USCALFE_FE_SPACE_LAGRANGE_O2_H

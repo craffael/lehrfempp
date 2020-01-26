@@ -859,6 +859,7 @@ INPUT_ENCODING         = UTF-8
 # *.vhdl, *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.h \
+		         *.cc \
                          *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -948,8 +949,14 @@ IMAGE_PATH             = @CMAKE_CURRENT_SOURCE_DIR@/images
 # Note that for custom extensions or not directly supported extensions you also
 # need to set EXTENSION_MAPPING for the extension otherwise the files are not
 # properly processed by doxygen.
+#
+# This filter script replaces \lref{<label>} directives in doxygen comments
+# with the corresponding label name and numbers. This makes it possible to
+# insert symbolic references to the lecture notes directly in doxygen comments. 
 
-INPUT_FILTER           =
+# INPUT_FILTER=
+INPUT_FILTER 	  = "@doxygen_input_filter@"
+# INPUT_FILTER           = "python3" "filter.py NPDEFLrefs.aux"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
@@ -997,7 +1004,7 @@ USE_MDFILE_AS_MAINPAGE =
 # also VERBATIM_HEADERS is set to NO.
 # The default value is: NO.
 
-SOURCE_BROWSER         = NO
+SOURCE_BROWSER         = YES
 
 # Setting the INLINE_SOURCES tag to YES will include the body of functions,
 # classes and enums directly into the documentation.
@@ -1016,13 +1023,13 @@ STRIP_CODE_COMMENTS    = YES
 # entity all documented functions referencing it will be listed.
 # The default value is: NO.
 
-REFERENCED_BY_RELATION = NO
+REFERENCED_BY_RELATION = YES
 
 # If the REFERENCES_RELATION tag is set to YES then for each documented function
 # all documented entities called/used by that function will be listed.
 # The default value is: NO.
 
-REFERENCES_RELATION    = NO
+REFERENCES_RELATION    = YES
 
 # If the REFERENCES_LINK_SOURCE tag is set to YES and SOURCE_BROWSER tag is set
 # to YES then the hyperlinks from functions in REFERENCES_RELATION and
