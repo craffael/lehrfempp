@@ -16,8 +16,6 @@
 #include "product_fe_space.h"
 
 #include "discontinuous_fe_constant.h"
-#include "lagr_fe_cubic.h"
-#include "lagr_fe_quadratic.h"
 
 #include "discontinuous_scalar_reference_finite_element.h"
 #include "dpg.h"
@@ -168,9 +166,9 @@ ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
         case (1):
           return std::make_shared<lf::uscalfe::FeLagrangeO1Tria<SCALAR>>();
         case (2):
-          return std::make_shared<FeLagrangeO2Tria<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO2Tria<SCALAR>>();
         case (3):
-          return std::make_shared<FeLagrangeO3Tria<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO3Tria<SCALAR>>();
         default:
           LF_ASSERT_MSG(false, "no fe of degree " << degree
                                                   << " available on ref_el "
@@ -184,9 +182,9 @@ ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
         case (1):
           return std::make_shared<lf::uscalfe::FeLagrangeO1Quad<SCALAR>>();
         case (2):
-          return std::make_shared<FeLagrangeO2Quad<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO2Quad<SCALAR>>();
         case (3):
-          return std::make_shared<FeLagrangeO3Quad<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO3Quad<SCALAR>>();
         default:
           LF_ASSERT_MSG(false, "no fe of degree " << degree
                                                   << "available on ref_el "
@@ -200,9 +198,9 @@ ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
         case (1):
           return std::make_shared<lf::uscalfe::FeLagrangeO1Segment<SCALAR>>();
         case (2):
-          return std::make_shared<FeLagrangeO2Segment<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO2Segment<SCALAR>>();
         case (3):
-          return std::make_shared<FeLagrangeO3Segment<SCALAR>>();
+          return std::make_shared<lf::uscalfe::FeLagrangeO3Segment<SCALAR>>();
         default:
           LF_ASSERT_MSG(false, "no fe of degree " << degree
                                                   << "available on ref_el "

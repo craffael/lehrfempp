@@ -37,12 +37,12 @@ namespace projects::dpg {
  *ProductUniformFEDofHandler).
  *
  * To allow this, this class provides some further member functions that give
- * extra information about the contained FE spaces. It furthermore uses a ProductUniformFEDofHandler
- * internally resulting in a different dof ordering.
+ * extra information about the contained FE spaces. It furthermore uses a
+ *ProductUniformFEDofHandler internally resulting in a different dof ordering.
  *
- * Furthermore, this class also weakens some constraints on the shape function layouts compared to the
- * lf::uscalfe::UniformScalarFESpace in order to represent function spaces as they  occur
- *in the description of DPG methods:
+ * Furthermore, this class also weakens some constraints on the shape function
+ *layouts compared to the lf::uscalfe::UniformScalarFESpace in order to
+ *represent function spaces as they  occur in the description of DPG methods:
  *
  * - There may be multiple global shape functions associated with the same
  *vertex (usually they will belong to different components)

@@ -11,6 +11,7 @@
 
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
+#include <lf/mesh/utils/utils.h>
 
 #include "../loc_comp_dpg.h"
 #include "../product_fe_space.h"
@@ -38,7 +39,7 @@ TEST(DiffusionElementMatrixProvider, mass_mat_test_1) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto alpha = lf::uscalfe::MeshFunctionGlobal(
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d) -> double { return 1.0; });
   DiffusionElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
                                           alpha);
@@ -75,8 +76,8 @@ TEST(DiffusionElementMatrixProvider, mass_mat_test_2) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto alpha =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Matrix2d {
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Matrix2d {
         return (Eigen::Matrix2d(2, 2) << 1.0, 1.0, 1.0, 1.0).finished();
       });
   DiffusionElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
@@ -116,7 +117,7 @@ TEST(ReactionElementMatrixProvider, mass_mat_test) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto gamma = lf::uscalfe::MeshFunctionGlobal(
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d) -> double { return 1.0; });
   ReactionElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
                                          gamma);
@@ -159,12 +160,12 @@ TEST(ConvectionElementMatrixProvider, mass_mat_test_1) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta_1 =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Vector2d {
+  auto beta_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << 1.0, 1.0).finished();
       });
-  auto beta_2 =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Vector2d {
+  auto beta_2 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << 0.0, 0.0).finished();
       });
   ConvectionElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
@@ -202,12 +203,12 @@ TEST(ConvectionElementMatrixProvider, mass_mat_test_2) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta_1 =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Vector2d {
+  auto beta_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << 0.0, 0.0).finished();
       });
-  auto beta_2 =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Vector2d {
+  auto beta_2 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << 1.0, 1.0).finished();
       });
   ConvectionElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
@@ -246,7 +247,7 @@ TEST(FluxElementMatrixProvider, mass_mat_test) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto alpha = lf::uscalfe::MeshFunctionGlobal(
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d) -> double { return 1.0; });
   FluxElementMatrixProvider provider(fe_space_trial, fe_space_test, q_n, v,
                                      alpha);
@@ -297,8 +298,8 @@ TEST(TraceElementMatrixProvider, mass_mat_test_1) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d) -> Eigen::Vector2d {
+  auto beta = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << 1.0, 1.0).finished();
       });
   TraceElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
@@ -334,7 +335,7 @@ TEST(TraceElementMatrixProvider, mass_mat_test_2) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta = lf::uscalfe::MeshFunctionGlobal(
+  auto beta = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> Eigen::Vector2d { return x / 2.0; });
   TraceElementMatrixProvider provider(fe_space_trial, fe_space_test, u, v,
                                       beta);
@@ -371,8 +372,8 @@ TEST(TraceElementMatrixProvider, mass_mat_test_3) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
+  auto beta = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << x[0] * x[0] * x[1], -x[0] * x[1] * x[1])
             .finished();
       });
@@ -411,8 +412,8 @@ TEST(TraceElementMatrixProvider, mass_mat_test_4) {
   auto v = factory_test.AddH1Component(3);
   auto fe_space_test = factory_test.Build();
 
-  auto beta =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
+  auto beta = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> Eigen::Vector2d {
         return (Eigen::Vector2d(2) << std::exp(x[0]) * std::cos(x[1]),
                 -std::exp(x[0]) * std::sin(x[1]))
             .finished();

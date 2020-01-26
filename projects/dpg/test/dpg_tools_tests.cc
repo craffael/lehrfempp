@@ -9,6 +9,7 @@
 #include <lf/io/io.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
+#include <lf/mesh/utils/utils.h>
 
 #include <gtest/gtest.h>
 #include <array>
@@ -162,8 +163,8 @@ TEST(InOutFlowBoundary, assignement_test_1) {
                "in/outflow boundary \n";
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  auto beta =
-      lf::uscalfe::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
+  auto beta = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> Eigen::Vector2d {
         return (Eigen::VectorXd(2) << 1.0, 0.0).finished();
       });
 

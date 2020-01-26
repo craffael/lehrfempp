@@ -15,7 +15,6 @@
 #include <lf/assemble/assemble.h>
 
 #include "../discontinuous_fe_constant.h"
-#include "../lagr_fe_quadratic.h"
 #include "../loc_comp_dpg.h"
 #include "../product_dofhandler.h"
 #include "../product_element_matrix_provider_builder.h"
@@ -242,7 +241,7 @@ TEST(product_dof_handler, two_component_fe_space) {
   auto u = space_fac.AddL2Component(0);
   auto fe_space = space_fac.Build();
 
-  auto gamma = lf::uscalfe::MeshFunctionConstant(1.0);
+  auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
 
   ProductElementMatrixProviderBuilder stiffness_builder(fe_space, fe_space);
   stiffness_builder.AddReactionElementMatrixProvider(v, v, gamma);

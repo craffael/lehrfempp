@@ -208,9 +208,9 @@ ConvectionDiffusionDPGLinSys(
   //           no_Neumann_edges << std::endl;
 
   // wrap the boundary conditions into mesh functions
-  auto g_mf = lf::uscalfe::MeshFunctionGlobal(
+  auto g_mf = lf::mesh::utils::MeshFunctionGlobal(
       [&bvp_p](auto x) -> SCALAR { return bvp_p->g(x); });
-  auto h_mf = lf::uscalfe::MeshFunctionGlobal(
+  auto h_mf = lf::mesh::utils::MeshFunctionGlobal(
       [&bvp_p](auto x) -> SCALAR { return bvp_p->h(x); });
 
   // obtain flags and values of degrees of feedom.

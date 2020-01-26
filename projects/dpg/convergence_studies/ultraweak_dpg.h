@@ -130,26 +130,29 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     auto fe_space_test = factory_test.Build();
 
     // wrap functions into a mesh function:
-    auto alpha_mf = lf::uscalfe::MeshFunctionGlobal(alpha);
-    auto alpha_inf_mf = lf::uscalfe::MeshFunctionGlobal(
+    auto alpha_mf = lf::mesh::utils::MeshFunctionGlobal(alpha);
+    auto alpha_inf_mf = lf::mesh::utils::MeshFunctionGlobal(
         [&alpha](const Eigen::Vector2d& x) -> double {
           return 1.0 / alpha(x);
         });
-    auto beta_mf = lf::uscalfe::MeshFunctionGlobal(beta);
-    auto f_mf = lf::uscalfe::MeshFunctionGlobal(f);
-    auto one_mf = lf::uscalfe::MeshFunctionConstant(1.0);
-    auto zero_mf = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,0.0));
-    auto x_selector_mf = lf::uscalfe::MeshFunctionGlobal(
+    auto beta_mf = lf::mesh::utils::MeshFunctionGlobal(beta);
+    auto f_mf = lf::mesh::utils::MeshFunctionGlobal(f);
+    auto one_mf = lf::mesh::utils::MeshFunctionConstant(1.0);
+    auto zero_mf =
+        lf::mesh::utils::MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0));
+    auto x_selector_mf = lf::mesh::utils::MeshFunctionGlobal(
         [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
           return (Eigen::MatrixXd(2, 2) << 1.0, 0.0, 0.0, 0.0).finished();
         });
-    auto y_selector_mf = lf::uscalfe::MeshFunctionGlobal(
+    auto y_selector_mf = lf::mesh::utils::MeshFunctionGlobal(
         [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
           return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 0.0, 1.0).finished();
         });
 
-    auto x_selector_mf_vector = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(1.0,0.0));
-    auto y_selector_mf_vector = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,1.0));
+    auto x_selector_mf_vector =
+        lf::mesh::utils::MeshFunctionConstant(Eigen::Vector2d(1.0, 0.0));
+    auto y_selector_mf_vector =
+        lf::mesh::utils::MeshFunctionConstant(Eigen::Vector2d(0.0, 1.0));
 
     // construct extended stiffness provider
     ProductElementMatrixProviderBuilder stiffness_builder(fe_space_trial,
@@ -193,13 +196,13 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
 
     gramian_builder.AddDiffusionElementMatrixProvider(
         tau_y, tau_x,
-        lf::uscalfe::MeshFunctionGlobal(
+        lf::mesh::utils::MeshFunctionGlobal(
             [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 1.0, 0.0, 0.0).finished();
             }));
     gramian_builder.AddDiffusionElementMatrixProvider(
         tau_x, tau_y,
-        lf::uscalfe::MeshFunctionGlobal(
+        lf::mesh::utils::MeshFunctionGlobal(
             [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 1.0, 0.0).finished();
             }));
@@ -258,18 +261,18 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
 
     // wrap finite element solution and exact solution into a mesh function:
     auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
-    auto mf_solution_u = lf::uscalfe::MeshFunctionGlobal(solution_u);
+    auto mf_solution_u = lf::mesh::utils::MeshFunctionGlobal(solution_u);
 
     auto mf_fe_sigma_x =
         lf::uscalfe::MeshFunctionFE(fe_space_sigma_x, sol_vec_sigma_x);
-    auto mf_solution_sigma_x = lf::uscalfe::MeshFunctionGlobal(
+    auto mf_solution_sigma_x = lf::mesh::utils::MeshFunctionGlobal(
         [&solution_sigma](Eigen::Vector2d x) -> double {
           return solution_sigma(x)[0];
         });
 
     auto mf_fe_sigma_y =
         lf::uscalfe::MeshFunctionFE(fe_space_sigma_y, sol_vec_sigma_y);
-    auto mf_solution_sigma_y = lf::uscalfe::MeshFunctionGlobal(
+    auto mf_solution_sigma_y = lf::mesh::utils::MeshFunctionGlobal(
         [&solution_sigma](Eigen::Vector2d x) -> double {
           return solution_sigma(x)[1];
         });

@@ -6,8 +6,6 @@ set(src
   discontinuous_fe_constant_tests.cc
   discontinuous_scalar_reference_finite_element_tests.cc
   dpg_tools_tests.cc
-  lagr_fe_cubic_tests.cc
-  lagr_fe_quadratic_tests.cc
   lagr_test_utils.h
   loc_comp_dpg_tests.cc
   product_dof_handler_tests.cc

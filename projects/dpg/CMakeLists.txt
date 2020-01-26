@@ -6,8 +6,6 @@ set(src
   dpg_element_vector_provider.h
   dpg_tools.cc
   dpg_tools.h
-  lagr_fe_cubic.h
-  lagr_fe_quadratic.h
   loc_comp_dpg.h
   product_dofhandler.cc
   product_dofhandler.h

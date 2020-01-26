@@ -125,11 +125,12 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
     auto fe_space_test = factory_test.Build();
 
     // wrap functions into a mesh function:
-    auto alpha_mf = lf::uscalfe::MeshFunctionGlobal(alpha);
-    auto beta_mf = lf::uscalfe::MeshFunctionGlobal(beta);
-    auto f_mf = lf::uscalfe::MeshFunctionGlobal(f);
-    auto one_mf = lf::uscalfe::MeshFunctionConstant(1.0);
-    auto zero_mf = lf::uscalfe::MeshFunctionConstant(Eigen::Vector2d(0.0,0.0));
+    auto alpha_mf = lf::mesh::utils::MeshFunctionGlobal(alpha);
+    auto beta_mf = lf::mesh::utils::MeshFunctionGlobal(beta);
+    auto f_mf = lf::mesh::utils::MeshFunctionGlobal(f);
+    auto one_mf = lf::mesh::utils::MeshFunctionConstant(1.0);
+    auto zero_mf =
+        lf::mesh::utils::MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0));
 
     // construct extended stiffness provider
     ProductElementMatrixProviderBuilder stiffness_builder(fe_space_trial,
@@ -141,7 +142,7 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
     auto stiffness_provider = stiffness_builder.Build();
 
     // construct gram matrix provider
-    auto alpha_squared_mf = lf::uscalfe::MeshFunctionGlobal(
+    auto alpha_squared_mf = lf::mesh::utils::MeshFunctionGlobal(
         [alpha](const Eigen::Vector2d& x) { return alpha(x) * alpha(x); });
     ProductElementMatrixProviderBuilder gramian_builder(fe_space_test,
                                                         fe_space_test);
@@ -189,8 +190,8 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
     // wrap finite element solution and exact solution into a mesh function:
     auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
     auto mf_fe_grad_u = lf::uscalfe::MeshFunctionGradFE(fe_space_u, sol_vec_u);
-    auto mf_solution = lf::uscalfe::MeshFunctionGlobal(solution);
-    auto mf_solution_grad = lf::uscalfe::MeshFunctionGlobal(sol_grad);
+    auto mf_solution = lf::mesh::utils::MeshFunctionGlobal(solution);
+    auto mf_solution_grad = lf::mesh::utils::MeshFunctionGlobal(sol_grad);
 
     // calculate the error in the H1 norm
     double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(

@@ -66,7 +66,8 @@ class ProductElementVectorProviderBuilder {
    * LoadElementVectorProvider
    */
   template <typename FUNCTOR>
-  ProductElementVectorProviderBuilder& AddLoadElementVectorProvider(size_type test_component, FUNCTOR f);
+  ProductElementVectorProviderBuilder& AddLoadElementVectorProvider(
+      size_type test_component, FUNCTOR f);
 
   /**
    * @brief Build the ProductElementVectorProvider based on the provided linear

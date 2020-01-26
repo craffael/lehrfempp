@@ -12,6 +12,7 @@
 
 #include <lf/base/base.h>
 #include <lf/mesh/mesh.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
 
@@ -67,7 +68,7 @@ using quad_rule_collection_t = lf::uscalfe::quad_rule_collection_t;
  */
 template <typename SCALAR, typename DIFF_COEFF>
 class DiffusionElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<DIFF_COEFF>);
+  static_assert(lf::mesh::utils::isMeshFunction<DIFF_COEFF>);
 
  public:
   /** @brief inherited types for element matrices */
@@ -300,7 +301,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  */
 template <typename SCALAR, typename REACTION_COEFF>
 class ReactionElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<REACTION_COEFF>);
+  static_assert(lf::mesh::utils::isMeshFunction<REACTION_COEFF>);
 
  public:
   /** @brief inherited types for element matrices */
@@ -529,8 +530,8 @@ template <typename SCALAR, typename CONVECTION_COEFF_1,
           typename CONVECTION_COEFF_2>
 class ConvectionElementMatrixProvider
     : public SubElementMatrixProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<CONVECTION_COEFF_1>);
-  static_assert(lf::uscalfe::isMeshFunction<CONVECTION_COEFF_2>);
+  static_assert(lf::mesh::utils::isMeshFunction<CONVECTION_COEFF_1>);
+  static_assert(lf::mesh::utils::isMeshFunction<CONVECTION_COEFF_2>);
 
  public:
   /** @brief inherited types for element matrices */
@@ -786,7 +787,7 @@ ConvectionElementMatrixProvider<
  */
 template <typename SCALAR, typename DIFF_COEFF>
 class FluxElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<DIFF_COEFF>);
+  static_assert(lf::mesh::utils::isMeshFunction<DIFF_COEFF>);
 
  public:
   /** @brief inherited types for element matrices */
@@ -1049,7 +1050,7 @@ FluxElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  */
 template <typename SCALAR, typename COEFF>
 class TraceElementMatrixProvider : public SubElementMatrixProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<COEFF>);
+  static_assert(lf::mesh::utils::isMeshFunction<COEFF>);
 
  public:
   /** @brief inherited types for element matrices */
@@ -1326,7 +1327,7 @@ TraceElementMatrixProvider<SCALAR, COEFF>::Eval(const lf::mesh::Entity& cell) {
  */
 template <typename SCALAR, typename FUNCTOR>
 class LoadElementVectorProvider : public SubElementVectorProvider<SCALAR> {
-  static_assert(lf::uscalfe::isMeshFunction<FUNCTOR>);
+  static_assert(lf::mesh::utils::isMeshFunction<FUNCTOR>);
 
  public:
   /** @brief inherited types for element vectors */

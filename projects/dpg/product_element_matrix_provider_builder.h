@@ -81,9 +81,8 @@ class ProductElementMatrixProviderBuilder {
    *
    */
   template <typename DIFF_COEFF>
-  ProductElementMatrixProviderBuilder& AddDiffusionElementMatrixProvider(size_type trial_component,
-                                              size_type test_component,
-                                              DIFF_COEFF alpha);
+  ProductElementMatrixProviderBuilder& AddDiffusionElementMatrixProvider(
+      size_type trial_component, size_type test_component, DIFF_COEFF alpha);
 
   /**
    * @brief Adds a bilinear form \f$ b_k \f$ to \f$ b \f$ representing a
@@ -115,10 +114,9 @@ class ProductElementMatrixProviderBuilder {
    * the documentation of ConvectionElementMatrixProvider
    */
   template <typename CONVECTION_COEFF_1, typename CONVECTION_COEFF_2>
-  ProductElementMatrixProviderBuilder& AddConvectionElementMatrixProvider(size_type trial_component,
-                                               size_type test_component,
-                                               CONVECTION_COEFF_1 beta_1,
-                                               CONVECTION_COEFF_2 beta_2);
+  ProductElementMatrixProviderBuilder& AddConvectionElementMatrixProvider(
+      size_type trial_component, size_type test_component,
+      CONVECTION_COEFF_1 beta_1, CONVECTION_COEFF_2 beta_2);
 
   /**
    * @brief Adds a bilinear form \f$ b_k \f$ to \f$ b \f$ representing a
@@ -144,9 +142,9 @@ class ProductElementMatrixProviderBuilder {
    * the documentation of ReactionElementMatrixProvider.
    */
   template <typename REACTION_COEFF>
-  ProductElementMatrixProviderBuilder& AddReactionElementMatrixProvider(size_type trial_component,
-                                             size_type test_component,
-                                             REACTION_COEFF gamma);
+  ProductElementMatrixProviderBuilder& AddReactionElementMatrixProvider(
+      size_type trial_component, size_type test_component,
+      REACTION_COEFF gamma);
 
   /**
    * @brief Adds a bilinear form \f$ b_k \f$ to \f$ b \f$ representing a term
@@ -176,10 +174,8 @@ class ProductElementMatrixProviderBuilder {
    *  see the documentation of FluxElementMatrixProvider.
    */
   template <typename DIFF_COEFF>
-  ProductElementMatrixProviderBuilder& AddFluxElementMatrixProvider(size_type trial_component,
-                                         size_type test_component,
-                                         DIFF_COEFF alpha);
-
+  ProductElementMatrixProviderBuilder& AddFluxElementMatrixProvider(
+      size_type trial_component, size_type test_component, DIFF_COEFF alpha);
 
   /**
    * @brief Adds a bilinear form \f$ b_k \f$ to \f$ b \f$ representing a term
@@ -205,8 +201,8 @@ class ProductElementMatrixProviderBuilder {
    *  see the documentation of TraceElementMatrixProvider.
    */
   template <typename COEFF>
-  ProductElementMatrixProviderBuilder& AddTraceElementMatrixProvider(size_type trial_component,
-                                          size_type test_component, COEFF beta);
+  ProductElementMatrixProviderBuilder& AddTraceElementMatrixProvider(
+      size_type trial_component, size_type test_component, COEFF beta);
 
   /**
    * @brief Build the ProdcutElementMatrixProvider for the bilinear form \f$
