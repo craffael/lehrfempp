@@ -11,13 +11,13 @@
  * @date October 2018
  * @copyright MIT License
  */
+#include <iostream>
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/uscalfe.h>
-#include <iostream>
 
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace lf::uscalfe::test {
 
@@ -46,13 +46,12 @@ bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> coeffs{
       fe_desc.NodalValuesToDofs(nodvals)};
   // Check agreement of coefficients
-  EXPECT_DOUBLE_EQ((coeffs - rand_coeffs).norm(), 0.0)
+  EXPECT_NEAR((coeffs - rand_coeffs).norm(), 0.0, 1e-13)
       << "Coefficient mismatch" << coeffs << " <-> " << rand_coeffs;
   return true;
 }
 
 TEST(lf_fe_linear, scal_fe_coeff_node) {
-  // Test of consistency of nodal interpolation
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
 
@@ -70,7 +69,6 @@ TEST(lf_fe_linear, scal_fe_coeff_node) {
 }
 
 TEST(lf_fe_quadratic, scal_fe_coeff_node) {
-  // Test of consistency of nodal interpolation
   std::cout << ">>> Quadratic FE: test of consistency of nodal interpolation"
             << std::endl;
 
@@ -83,6 +81,22 @@ TEST(lf_fe_quadratic, scal_fe_coeff_node) {
   EXPECT_TRUE(scalarFEEvalNodeTest(qfe));
 
   FeLagrangeO2Segment<double> sfe{};
+  std::cout << sfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(sfe));
+}
+
+TEST(lf_fe_cubic, scalf_fe_coeff_node) {
+  std::cout << ">>> Cubuic FE: test of consistency of nodal interpolation"
+            << std::endl;
+  FeLagrangeO3Tria<double> tfe{};
+  std::cout << tfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(tfe));
+
+  FeLagrangeO3Quad<double> qfe{};
+  std::cout << qfe << std::endl;
+  EXPECT_TRUE(scalarFEEvalNodeTest(qfe));
+
+  FeLagrangeO3Segment<double> sfe{};
   std::cout << sfe << std::endl;
   EXPECT_TRUE(scalarFEEvalNodeTest(sfe));
 }
@@ -117,13 +131,12 @@ bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   Eigen::RowVectorXd nodvals = coeffs * rsf_at_evln;
 
   // Check agreement of values
-  EXPECT_DOUBLE_EQ((nodvals - rand_vals).norm(), 0.0)
+  EXPECT_NEAR((nodvals - rand_vals).norm(), 0.0, 1e-13)
       << "Value mismatch" << nodvals << " <-> " << rand_vals;
   return true;
 }
 
 TEST(lf_fe_linear, scal_fe_val_node) {
-  // Test of exactness of nodal reconstruction
   std::cout << ">>> Linear FE: test of consistency of nodal interpolation"
             << std::endl;
   FeLagrangeO1Tria<double> tlfe{};
@@ -152,6 +165,23 @@ TEST(lf_fe_quadratic, scal_fe_val_node) {
   EXPECT_TRUE(scalarFEInterpTest(qfe));
 
   FeLagrangeO2Segment<double> sfe{};
+  std::cout << sfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(sfe));
+}
+
+TEST(lf_fe_cubic, scal_fe_val_node) {
+  std::cout << ">>> Cubic FE: test of consistency of nodal interpolation"
+            << std::endl;
+
+  FeLagrangeO3Tria<double> tfe{};
+  std::cout << tfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(tfe));
+
+  FeLagrangeO3Quad<double> qfe{};
+  std::cout << qfe << std::endl;
+  EXPECT_TRUE(scalarFEInterpTest(qfe));
+
+  FeLagrangeO3Segment<double> sfe{};
   std::cout << sfe << std::endl;
   EXPECT_TRUE(scalarFEInterpTest(sfe));
 }
@@ -249,8 +279,37 @@ TEST(lf_fe_quadratic, lf_fe_quadrfe) {
     EXPECT_EQ(qfe.NumRefShapeFunctions(1, 0), 1);
     EXPECT_EQ(qfe.NumRefShapeFunctions(2, 0), 1);
 
+    // cardinal basis property
     EXPECT_TRUE(qfe.EvalReferenceShapeFunctions(qfe.EvaluationNodes())
                     .isApprox(Eigen::MatrixXd::Identity(9, 9)));
+  }
+}
+
+TEST(lf_fe_cubic, lf_fe_cubfe) {
+  // triangular finite element:
+  {
+    FeLagrangeO3Tria<double> tfe{};
+    EXPECT_EQ(tfe.NumRefShapeFunctions(), 10);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(0, 0), 1);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(1, 0), 2);
+    EXPECT_EQ(tfe.NumRefShapeFunctions(2, 0), 1);
+
+    // cardinal basis property
+    EXPECT_TRUE(tfe.EvalReferenceShapeFunctions(tfe.EvaluationNodes())
+                    .isApprox(Eigen::MatrixXd::Identity(10, 10)));
+  }
+
+  // quadrilateral finite element:
+  {
+    FeLagrangeO3Quad<double> qfe{};
+    EXPECT_EQ(qfe.NumRefShapeFunctions(), 16);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(0, 0), 4);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(1, 0), 2);
+    EXPECT_EQ(qfe.NumRefShapeFunctions(2, 0), 1);
+
+    // cardinal basis property
+    EXPECT_TRUE(qfe.EvalReferenceShapeFunctions(qfe.EvaluationNodes())
+                    .isApprox(Eigen::MatrixXd::Identity(16, 16)));
   }
 }
 
@@ -289,8 +348,144 @@ TEST(lf_fe_quadratic, lf_fe_segment) {
   EXPECT_EQ(sfe.NumRefShapeFunctions(0, 0), 1);
   EXPECT_EQ(sfe.NumRefShapeFunctions(1, 0), 1);
 
+  // cardinal basis property
   EXPECT_TRUE(sfe.EvalReferenceShapeFunctions(sfe.EvaluationNodes())
                   .isApprox(Eigen::MatrixXd::Identity(3, 3)));
+}
+
+TEST(lf_fe_cubic, lf_fe_segment) {
+  FeLagrangeO3Segment<double> sfe{};
+  EXPECT_EQ(sfe.NumRefShapeFunctions(), 4);
+  EXPECT_EQ(sfe.NumRefShapeFunctions(0, 0), 2);
+  EXPECT_EQ(sfe.NumRefShapeFunctions(1, 0), 1);
+
+  // cardinal basis property
+  EXPECT_TRUE(sfe.EvalReferenceShapeFunctions(sfe.EvaluationNodes())
+                  .isApprox(Eigen::MatrixXd::Identity(4, 4)));
+}
+
+/**
+ * @brief computes a projection of the function g into the fe space and
+ * retruns the squared H1 norm of the difference.
+ *
+ * @tparam SCALAR field like double
+ * @tparam FUNCTION \ref mesh_function "MeshFunction" returning a scalar
+ * @tparam FUNCTION_GRAD \ref mesh_function "MeshFunction" returning a
+ * Eigen::Vector of scalars
+ *
+ *
+ * @param fe_space  FE space onto which the function is projected
+ * @param g  function which is projected onto the fe space
+ * @param grad_g gradient of the function g
+ * @param quad_degre degree of the quadrature rule used to approximate the
+ * norm of the error
+ */
+template <typename SCALAR, typename FUNCTION, typename FUNCTION_GRAD>
+SCALAR nodalProjectionTest(
+    std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTION g,
+    FUNCTION_GRAD grad_g, int quad_degree) {
+  auto dof_vector = NodalProjection(*fe_space, g);
+  auto mf_fe = MeshFunctionFE<double, double>(fe_space, dof_vector);
+  auto grad_mf_fe = MeshFunctionGradFE<double, double>(fe_space, dof_vector);
+
+  return IntegrateMeshFunction(
+      *(fe_space->Mesh()),
+      squaredNorm(g - mf_fe) + squaredNorm(grad_mf_fe - grad_g), quad_degree);
+}
+
+TEST(lf_fe_linear, projection_test) {
+  std::cout << ">>> Linear FE: Projection into linear fe space" << std::endl;
+
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<const FeSpaceLagrangeO1<double>>(mesh_p);
+
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+    return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
+  });
+
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return 5 * x[0] - 2 * x[1]; });
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+    return (Eigen::VectorXd(2) << 5.0, -2.0).finished();
+  });
+
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_1, grad_1, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = x + y";
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_2, grad_2, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = 5x - 2y";
+}
+
+TEST(lf_fe_quadratic, projection_test) {
+  std::cout << ">>> Quadratic FE: Projection into quadratic fe space"
+            << std::endl;
+
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<const FeSpaceLagrangeO2<double>>(mesh_p);
+
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+    return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
+  });
+
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return 5 * x[0] * x[0] + 2 * x[1] * x[1]; });
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::VectorXd(2) << 10 * x[0], 4 * x[1]).finished();
+  });
+
+  auto f_3 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto grad_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::VectorXd(2) << x[1], x[0]).finished();
+  });
+
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_1, grad_1, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = x + y";
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_2, grad_2, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = 5x^2 + 2y^2";
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_3, grad_3, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = x*y";
+}
+
+TEST(lf_fe_cubic, projection_test) {
+  std::cout << ">>> Cubic FE: Projection into cubic fe space" << std::endl;
+
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<const FeSpaceLagrangeO3<double>>(mesh_p);
+
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+    return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
+  });
+
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return 5 * x[0] * x[0] * x[0] + 2 * x[1] * x[1] * x[1];
+  });
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::VectorXd(2) << 15 * x[0] * x[0], 6 * x[1] * x[1]).finished();
+  });
+
+  auto f_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return x[0] * x[0] * x[1] + 2 * x[0] * x[1] * x[1];
+  });
+  auto grad_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::VectorXd(2) << 2 * x[0] * x[1] + 2 * x[1] * x[1],
+            x[0] * x[0] + 4 * x[0] * x[1])
+        .finished();
+  });
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_1, grad_1, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = x + y";
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_2, grad_2, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = 5x^3 + 2y^3";
+  EXPECT_NEAR(nodalProjectionTest(fe_space, f_3, grad_3, 20), 0.0, 1e-10)
+      << "projection error for f(x,y) = x^2*y + 2*x*y^2";
 }
 
 TEST(lf_fe_linear, lf_fe_ellbvp) {
@@ -303,9 +498,9 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
 
   // Set up objects taking care of local computations
   auto alpha =
-      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
+      lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
   auto gamma =
-      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
+      lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
@@ -333,50 +528,6 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
   }
 }
 
-// Test that the ReactionDiffusionElementMatrixProvider works as expected
-// for tensor valued coefficients.
-TEST(lf_fe_linear, ReactionDiffusionEMPTensor) {
-  // Building the test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
-
-  // Set up finite elements
-  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-
-  // Set up objects taking care of local computations
-  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
-  });
-  auto gamma = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d x) { return x[0] * x[1]; });
-
-  // specify quad rule ( default of degree 2 is not enough for a quadratic
-  // gamma)
-  quad_rule_collection_t quad_rules{
-      {lf::base::RefEl::kTria(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
-      {lf::base::RefEl::kQuad(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
-
-  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
-                                         decltype(gamma)>
-      emp{fe_space, alpha, gamma, quad_rules};
-
-  assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NumDofs(),
-                                     fe_space->LocGlobMap().NumDofs());
-  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
-                        matrix);
-
-  // project two linear functions onto the fespace:
-  mesh::utils::MeshFunctionGlobal a(
-      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
-  mesh::utils::MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
-  auto a_vec = NodalProjection<double>(*fe_space, a);
-  auto b_vec = NodalProjection<double>(*fe_space, b);
-
-  auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
-  EXPECT_NEAR(product(0, 0), 7911. / 8., 1.0E-2);
-}
-
 TEST(lf_fe_linear, lf_fe_edgemass) {
   std::cout << "### TEST: Computation of local edge" << std::endl;
   // Building the test mesh
@@ -388,7 +539,7 @@ TEST(lf_fe_linear, lf_fe_edgemass) {
       std::make_shared<FeLagrangeO1Segment<double>>()};
 
   // Set up objects taking care of local computations
-  auto gamma = mesh::utils::MeshFunctionConstant(1.0);
+  auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
   MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -421,7 +572,7 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto f = mesh::utils::MeshFunctionGlobal(
+  auto f = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
   using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
@@ -462,7 +613,7 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto g = mesh::utils::MeshFunctionConstant(1.0);
+  auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
   ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -484,190 +635,247 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
   }
 }
 
-TEST(lf_fe_quadratic, mass_mat_test) {
-  std::cout << " >>> Quadratic FE: Test of computation of element matrices "
-            << std::endl;
-
-  // build test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
-
-  // set up finite elements
-  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
-  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
-  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
-      mesh_p, rfs_tria, rfs_quad);
-
-  // coefficients:
-  auto alpha = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d) -> double { return 1.0; });
-  auto gamma = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d) -> double { return 1.0; });
-
-  // specify quad rule
+/**
+ * @brief approximates the value of  \f$ b(a_{FE},b_{FE}) \f$, where
+ * \f$b(\dot,\dot)\f$ is the bilinear form described in
+ * ReactionDiffusionElementMatrixProvider, and \f$ a_{FE}, b_{FE} \f$ are the
+ * projections of a and b onto a finite element space.
+ *
+ * @tparam SCALAR field type such as double
+ * @tparam MF_ALPHA a \ref mesh_function "MeshFunction" that defines the
+ * diffusion coefficient in the bilinear form
+ * @tparam MF_ALPHA a \ref mesh_function "MeshFunction" that defines the
+ * reaction coefficient in the bilinear form
+ * @tparam MF_A a SCALAR-valued \ref mesh_function "MeshFunction"
+ * @tparam MF_A a SCALAR-valued \ref mesh_function "MeshFunction"
+ *
+ * @param fe_space finite element space onto which a and b are projected
+ * @param alpha diffusion coefficient of the bilinear form
+ * @param gamma reaction coefficient of the bilinear form
+ * @param a function, whose projection onto the fe space is the first argument
+ * of the evaluated bilinear form
+ * @param b function, whose projection onto the fe sapce is the second argument
+ * of the evalauted bilinear form
+ * @param quad_degree degree of the quadrature rules used in local computations.
+ */
+template <typename SCALAR, typename MF_ALPHA, typename MF_GAMMA, typename MF_A,
+          typename MF_B>
+SCALAR reactionDiffusionTest(
+    std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+    MF_ALPHA alpha, MF_GAMMA gamma, MF_A a, MF_B b, int quad_degree) {
+  // construct quad rules:
   quad_rule_collection_t quad_rules{
       {lf::base::RefEl::kTria(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
+       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quad_degree)},
       {lf::base::RefEl::kQuad(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
-
-  // set up object for local computations
-  ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
-                                         decltype(gamma)>
-      provider(fe_space, alpha, gamma, quad_rules);
-
-  // loop over cells and compute element matrices:
-  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
-    auto M = provider.Eval(*cell);
-
-    Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
-    Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
-    const double vol = one_vec_r.dot(M * one_vec_c);
-
-    EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
-        << "missmatch for cell " << cell << std::endl;
-  }
-}
-
-TEST(lf_fe_quadratic, ReactionDiffusionEMPTensor) {
-  // Building the test mesh
-  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
-
-  // set up finite elements
-  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
-  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
-  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
-      mesh_p, rfs_tria, rfs_quad);
-
-  // Set up objects taking care of local computations
-  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
-    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
-  });
-  auto gamma = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d x) { return x[0] * x[1]; });
-
-  // specify quad rule ( default of degree 2 is not enough for a quadratic
-  // gamma)
-  quad_rule_collection_t quad_rules{
-      {lf::base::RefEl::kTria(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4)},
-      {lf::base::RefEl::kQuad(),
-       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 4)}};
+       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), quad_degree)}};
 
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
-      emp{fe_space, alpha, gamma, quad_rules};
+      provider{fe_space, alpha, gamma, quad_rules};
 
+  // assemble system matrix
   assemble::COOMatrix<double> matrix(fe_space->LocGlobMap().NumDofs(),
                                      fe_space->LocGlobMap().NumDofs());
-  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(), emp,
-                        matrix);
+  AssembleMatrixLocally(0, fe_space->LocGlobMap(), fe_space->LocGlobMap(),
+                        provider, matrix);
 
-  // project two linear functions onto the fespace:
-  mesh::utils::MeshFunctionGlobal a(
-      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
-  mesh::utils::MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  // project functions onto the fe space
   auto a_vec = NodalProjection<double>(*fe_space, a);
   auto b_vec = NodalProjection<double>(*fe_space, b);
 
+  // evaluate bilinear form on projected functions:
   auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();
-  EXPECT_NEAR(product(0, 0), 7911. / 8., 1E-2);
+  return product(0, 0);
 }
 
-TEST(lf_fe_quadratic, lf_fe_edgemass) {
-  std::cout << " >>> Quadratic FE: Test of computation of local edge matrices "
-            << std::endl;
+// Test that the ReactionDiffusionElementMatrixProvider works as expected
+// for tensor valued coefficients.
+TEST(lf_fe_linear, ReactionDiffusion) {
+  std::cout << "Linear FE >>> Computation of bilinear forms" << std::endl;
 
-  // build test mesh
+  // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
-  // set up finite elements
-  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
-  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
-  auto rfs_segment = std::make_shared<FeLagrangeO2Segment<double>>();
-  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
-      mesh_p, rfs_tria, rfs_quad, rfs_segment);
+  // Set up finite elements
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
-  // coefficientt
-  auto gamma = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d) -> double { return 1.0; });
+  // Set parameter functions
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
+  });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
-  // Set up objects taking care of local computations
-  auto g = mesh::utils::MeshFunctionConstant(1.0);
-  MassEdgeMatrixProvider provider{fe_space, g};
+  // functions projected into the fe space
+  lf::mesh::utils::MeshFunctionGlobal a(
+      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  lf::mesh::utils::MeshFunctionGlobal b(
+      [](Eigen::Vector2d x) { return 3 * x[0]; });
 
-  // Loop over edges and compute element vectors
-  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
-    auto M = provider.Eval(*edge);
+  auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 4);
+  EXPECT_NEAR(product, 7911. / 8., 1.0E-2);
+}
 
-    Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
-    Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
+TEST(lf_fe_quadratic, ReactionDiffusion) {
+  std::cout << "Quadratic FE >>> Computation of bilinear forms" << std::endl;
 
-    const double length = one_vec_r.dot(M * one_vec_c);
-    EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
-        << "missmatch for edge " << edge << std::endl;
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  // Set up finite elements
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO2<double>>(mesh_p);
+
+  // Set parameter functions
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0]; });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
+
+  // functions projected into the fe space
+  lf::mesh::utils::MeshFunctionGlobal a(
+      [](Eigen::Vector2d x) { return x[0] * x[0] + x[1] * x[1]; });
+  lf::mesh::utils::MeshFunctionGlobal b(
+      [](Eigen::Vector2d x) { return x[0] * x[0] - x[1] * x[1]; });
+
+  auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 6);
+  EXPECT_NEAR(product, 81., 1.0E-2);
+}
+
+TEST(lf_fe_cubic, ReactionDiffusion) {
+  std::cout << "Cubic FE >>> Computation of bilinear forms" << std::endl;
+
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  // Set up finite elements
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO3<double>>(mesh_p);
+
+  // Set parameter functions
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[1]; });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
+
+  // functions projected into the fe space
+  lf::mesh::utils::MeshFunctionGlobal a([](Eigen::Vector2d x) {
+    return x[0] * x[0] * x[0] + x[1] * x[1] * x[1];
+  });
+  lf::mesh::utils::MeshFunctionGlobal b(
+      [](Eigen::Vector2d x) { return x[0] * x[1] * x[1]; });
+
+  auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 8);
+  EXPECT_NEAR(product, 1996731 / 280., 1.0E-2);
+}
+
+/**
+ * @brief checks products of the form \f$ x^T *M * y \f$ for certain
+ * element/edge matrices/vectors \f$ M \f$ and vectors \f$ x,y \f$.
+ * @param fe_space finite element space used for the computation of the element
+ * matrices.
+ */
+template <typename SCALAR>
+void locCompProductsTest(
+    std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space) {
+  auto mesh_p = fe_space->Mesh();
+
+  // verification based on local element matrices
+  {
+    auto alpha = lf::mesh::utils::MeshFunctionConstant(1.0);
+    auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
+    ReactionDiffusionElementMatrixProvider provider(fe_space, alpha, gamma);
+
+    // loop over cells and compute element matrices:
+    for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+      auto M = provider.Eval(*cell);
+
+      Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
+      Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
+      const double vol = one_vec_r.dot(M * one_vec_c);
+
+      EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
+          << "missmatch for cell " << cell << std::endl;
+    }
+  }
+
+  // verification based on local edge matrices
+  {
+    auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
+    MassEdgeMatrixProvider provider(fe_space, g);
+
+    // loop over edges and compute element matrices:
+    for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+      auto M = provider.Eval(*edge);
+
+      Eigen::VectorXd one_vec_c = Eigen::VectorXd::Constant(M.cols(), 1.0);
+      Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
+
+      const double length = one_vec_r.dot(M * one_vec_c);
+      EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
+          << "missmatch for edge " << edge << std::endl;
+    }
+  }
+
+  // verification based on local element load vectors:
+  {
+    auto f = lf::mesh::utils::MeshFunctionConstant(1.0);
+    ScalarLoadElementVectorProvider provider(fe_space, f);
+
+    // loop over cells and compute element vectors:
+    for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
+      auto v = provider.Eval(*cell);
+
+      Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
+
+      const double vol = one_vec.dot(v);
+      EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
+          << "missmatch for cell " << cell << std::endl;
+    }
+  }
+
+  // verification based on local edge vectors:
+  {
+    auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
+    ScalarLoadEdgeVectorProvider provider(fe_space, g);
+
+    // Loop over edges and compute element vectors
+    for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+      auto v = provider.Eval(*edge);
+
+      Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
+
+      const double length = one_vec.dot(v);
+      EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
+          << "missmatch for edge " << edge << std::endl;
+    }
   }
 }
 
-TEST(lf_fe_quadratic, lf_fe_loadvec) {
-  std::cout << " >>> Quadratic FE: Test of computation of element load vectors "
-            << std::endl;
+TEST(lf_fe_linear, loc_comp_products_test) {
+  std::cout << "Linear FE >>> Computation of local quantities" << std::endl;
 
-  // build test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
-
-  // set up finite elements
-  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
-  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
-  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
-      mesh_p, rfs_tria, rfs_quad);
-
-  // coefficient:
-  auto f = mesh::utils::MeshFunctionGlobal(
-      [](Eigen::Vector2d x) -> double { return (1.0); });
-
-  // set up object for local computations
-  ScalarLoadElementVectorProvider<double, decltype(f)> provider(fe_space, f);
-
-  // loop over cells and compute element vectors:
-  for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
-    auto v = provider.Eval(*cell);
-
-    Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
-
-    const double vol = one_vec.dot(v);
-    EXPECT_NEAR(vol, lf::geometry::Volume(*cell->Geometry()), 1.0E-3)
-        << "missmatch for cell " << cell << std::endl;
-  }
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+  locCompProductsTest(fe_space);
 }
 
-TEST(lf_fe_quadratic, lf_fe_edgeload) {
-  std::cout << " >>> Quadratic FE: Test of computation of local edge vectors "
-            << std::endl;
+TEST(lf_fe_quadratic, loc_comp_products_test) {
+  std::cout << "Quadratic FE >>> Computation of local quantities " << std::endl;
 
-  // build test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
-
-  // set up finite elements
-  auto rfs_tria = std::make_shared<FeLagrangeO2Tria<double>>();
-  auto rfs_quad = std::make_shared<FeLagrangeO2Quad<double>>();
-  auto rfs_segment = std::make_shared<FeLagrangeO2Segment<double>>();
-  auto fe_space = std::make_shared<UniformScalarFESpace<double>>(
-      mesh_p, rfs_tria, rfs_quad, rfs_segment);
-
-  // Set up objects taking care of local computations
-  auto g = mesh::utils::MeshFunctionConstant(1.0);
-  ScalarLoadEdgeVectorProvider provider{fe_space, g};
-
-  // Loop over edges and compute element vectors
-  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
-    auto v = provider.Eval(*edge);
-
-    Eigen::VectorXd one_vec = Eigen::VectorXd::Constant(v.size(), 1.0);
-
-    const double length = one_vec.dot(v);
-    EXPECT_NEAR(length, lf::geometry::Volume(*edge->Geometry()), 1.0E-3)
-        << "missmatch for edge " << edge << std::endl;
-  }
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO2<double>>(mesh_p);
+  locCompProductsTest(fe_space);
 }
 
+TEST(lf_fe_cubic, loc_comp_products_test) {
+  std::cout << "Cubic FE >>> Computation of local quantities " << std::endl;
+
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+  std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
+      std::make_shared<FeSpaceLagrangeO3<double>>(mesh_p);
+  locCompProductsTest(fe_space);
+}
 }  // end namespace lf::uscalfe::test
