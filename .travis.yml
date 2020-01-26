@@ -113,15 +113,15 @@ jobs:
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"
   - stage: doxygen
-    if: branch = master AND type IN (push)
+    # if: branch = master AND type IN (push)
     os: linux
     compiler: gcc
-    dist: trusty
+    dist: xenial
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - llvm-toolchain-trusty-6.0
+        - llvm-toolchain-xenial-6.0
         packages:
         - graphviz
         - g++-7
@@ -131,21 +131,21 @@ jobs:
         - libclang-common-6.0-dev
     script: |
       . ./travis/install_doxygen.sh
-      cd $TRAVIS_BUILD_DIR/doc/doxygen
+      cd $TRAVIS_BUILD_DIR
       export CXX=g++-7
       cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON
       cd Build
       make doxygen
-      cd html
+      cd doc/doxygen/html
       mkdir with_projects
       mv !(with_projects) with_projects
-      cd ..
+      cd ../../..
       cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
       make doxygen
     deploy:
       provider: pages
       skip_cleanup: true
-      local_dir: "./doc/doxygen/Build/html"
+      local_dir: "./Build/doc/doxygen/html"
       github_token: "$GITHUB_API_KEY"
       on:
         branch: master

@@ -12,7 +12,7 @@
 #include <vector>
 #include "lf/mesh/mesh_interface.h"
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -29,7 +29,7 @@ class MeshFunctionConstant {
    * value.
    * @param value The value that the MeshFunction should have globally.
    */
-  explicit MeshFunctionConstant(R value) : value_(value) {}
+  explicit MeshFunctionConstant(R value) : value_(std::move(value)) {}
 
   /**
    * @brief the key evaluation operator to be supplied by all MeshFunctions
@@ -43,6 +43,6 @@ class MeshFunctionConstant {
   R value_; /**< stored constant value */
 };
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __d0f3b8f133da4af980ce21ffffdf719a

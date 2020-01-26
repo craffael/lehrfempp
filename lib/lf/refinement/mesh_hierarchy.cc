@@ -104,6 +104,8 @@ void MeshHierarchy::RefineRegular(RefPat ref_pat) {
   }
   // With all refinement patterns set, generate the new mesh
   PerformRefinement();
+  // Finish initialization
+  initGeometryInParent();
 }
 
 void MeshHierarchy::RefineMarked() {
@@ -345,7 +347,10 @@ void MeshHierarchy::RefineMarked() {
     }    // end loop over cells
   } while (!refinement_complete);
 
+  // Create finer mesh according to set refinment edges
   PerformRefinement();
+  // Finish initialization
+  initGeometryInParent();
 }  // end RefineMarked
 
 // NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
@@ -362,12 +367,14 @@ void MeshHierarchy::PerformRefinement() {
 
   // Retrieve the finest mesh in the hierarchy = parent mesh
   const mesh::Mesh &parent_mesh(*meshes_.back());
+
   {
+    // Partly intialized vectors of child information
+    std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
     // ======================================================================
     // First run through the vertices, create child vertices and register
     // them with the mesh factory
     // Store child indices in an auxiliary array
-    std::vector<PointChildInfo> &pt_child_info(point_child_infos_.back());
     size_type new_node_cnt = 0;
     const Hybrid2DRefinementPattern rp_copy_node(lf::base::RefEl::kPoint(),
                                                  RefPat::rp_copy);
@@ -395,11 +402,12 @@ void MeshHierarchy::PerformRefinement() {
         std::cout << new_node_cnt << " new nodes added" << std::endl;)
     // ======================================================================
 
+    // Partly intialized vectors of child information
+    std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
     // ======================================================================
     // Now traverse the edges. Depending on the refinement pattern,
     // either copy them or split them.
     // Supplement the refinement information for edges accordingly.
-    std::vector<EdgeChildInfo> &ed_child_info(edge_child_infos_.back());
     size_type new_edge_cnt = 0;
     for (const mesh::Entity *edge : parent_mesh.Entities(1)) {
       // Fetch global index of edge
@@ -501,10 +509,11 @@ void MeshHierarchy::PerformRefinement() {
         std::cout << new_edge_cnt << " edges added " << std::endl;)
     // ======================================================================
 
+    // Partly intialized vectors of child information
+    std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
     // ======================================================================
     // Visit all cells, examine their refinement patterns, retrieve indices of
     // their sub-entities, and those of the children.
-    std::vector<CellChildInfo> &cell_child_info(cell_child_infos_.back());
     LF_VERIFY_MSG(cell_child_info.size() == parent_mesh.NumEntities(0),
                   "Size mismatch for CellChildInfos");
     for (const mesh::Entity *cell : parent_mesh.Entities(0)) {
@@ -1654,7 +1663,252 @@ void MeshHierarchy::PerformRefinement() {
       }
     }
   }
-}
+}  // end Perform Refinement
+
+// **********************************************************************
+// Initialization of rel_ref_geo fields of ParentInfo structures
+// **********************************************************************
+void MeshHierarchy::initGeometryInParent() {
+  // number of meshes contained in the hierarchy
+  const size_type num_levels = NumLevels();
+  CONTROLLEDSTATEMENT(output_ctrl_, 10,
+                      std::cout
+                          << "Entering MeshHierarchy::initGeometryInParent: "
+                          << num_levels << " levels" << std::endl;)
+  // Invoking this function makes sense only if the finest mesh has been
+  // created by refinement.
+  LF_ASSERT_MSG(num_levels > 1, "Must have been refined at least once");
+  // Obtain references to finest and second finest mesh
+  const lf::mesh::Mesh &parent_mesh{*meshes_.at(num_levels - 2)};
+  const lf::mesh::Mesh &child_mesh{*meshes_.at(num_levels - 1)};
+  // Partly intialized vectors of child information
+  std::vector<PointChildInfo> &pt_child_info{
+      point_child_infos_.at(num_levels - 2)};
+  std::vector<EdgeChildInfo> &ed_child_info{
+      edge_child_infos_.at(num_levels - 2)};
+  std::vector<CellChildInfo> &cell_child_info{
+      cell_child_infos_.at(num_levels - 2)};
+  // Dummy relative geometry for a point in a point
+  const Eigen::MatrixXd nil_coords(0, 1);
+
+  // Visit all entities of the fine mesh. Outer loop covers co-dimensions
+  // starting with cells (codim = 0)
+  for (dim_t codim = 0; codim <= 2; ++codim) {
+    // Reference to ParentInfo vector for entities of co-dimension codim
+    // of the new mesh
+    std::vector<ParentInfo> &child_entities_parent_info(
+        parent_infos_.back()[codim]);
+    // Loop over all nodes of the new mesh (co-dimension = 2)
+    for (const lf::mesh::Entity *child_entity : child_mesh.Entities(codim)) {
+      // Obtain index of the child entity
+      const glb_idx_t child_idx = child_mesh.Index(*child_entity);
+      // Obtain ParentInfo for the current child entity
+      ParentInfo &child_pi{child_entities_parent_info[child_idx]};
+      LF_ASSERT_MSG(child_pi.rel_ref_geo_ == nullptr,
+                    "No double initialization of rel_ref_geo_");
+      // Get number of child
+      const sub_idx_t child_number = child_pi.child_number;
+      LF_ASSERT_MSG(child_number != idx_nil, "Child number missing");
+      // Obtain parent entity
+      LF_ASSERT_MSG(child_pi.parent_ptr != nullptr, "No valid parent pointer");
+      const lf::mesh::Entity &parent{*child_pi.parent_ptr};
+      // Obtain type of parent entity
+      const lf::base::RefEl parent_ref_el(parent.RefEl());
+      // Obtain co-dimension of parent entity
+      const dim_t parent_codim = parent.Codim();
+      // Index of parent entity
+      const glb_idx_t parent_idx = parent_mesh.Index(parent);
+      // Difference in co-dimensions
+      LF_ASSERT_MSG(parent_codim <= codim, "Paren codim > child codim!");
+      const dim_t child_rel_codim = codim - parent_codim;
+      // Obtain local geometry of child. To that end we have to do
+      // different things for different parent types
+      switch (parent_codim) {
+        case 0: {  // the parent entity is a cell
+                   // Fetch refinement information
+          const CellChildInfo &parent_child_info{cell_child_info[parent_idx]};
+          const RefPat parent_ref_pat{parent_child_info.ref_pat_};
+          const sub_idx_t anchor{parent_child_info.anchor_};
+          // Obtain geometry of child
+          const Hybrid2DRefinementPattern rp(parent_ref_el, parent_ref_pat,
+                                             anchor);
+          const std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+              child_polygon_vec{rp.ChildPolygons(child_rel_codim)};
+          LF_ASSERT_MSG(child_number < child_polygon_vec.size(),
+                        "Child number = " << child_number << " >= "
+                                          << child_polygon_vec.size());
+          const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>
+              &child_polygon{child_polygon_vec[child_number]};
+          LF_ASSERT_MSG(child_polygon.rows() == 2,
+                        "Need two coordinates in parent cell");
+          // Matrix containing the relative reference coordinates of the
+          // child's corners in its columns
+          const Eigen::MatrixXd child_corners =
+              child_polygon.cast<double>() /
+              static_cast<double>(rp.LatticeConst());
+          switch (codim) {
+            case 0: {  // cell in cell
+              LF_ASSERT_MSG(parent_child_info.child_cell_idx.at(child_number) ==
+                                child_idx,
+                            "parent_child_info.child_cell_idx.at("
+                                << child_number << " ) !== child_idx");
+              switch (child_corners.cols()) {
+                case 3: {  // Child is a triangle
+                  LF_ASSERT_MSG(
+                      child_entity->RefEl() == lf::base::RefEl::kTria(),
+                      "Must be triangle!");
+                  CONTROLLEDSTATEMENT(
+                      output_ctrl_, 60,
+                      std::cout << "Triangle in " << parent_ref_el
+                                << ": geo = " << child_corners << std::endl;)
+                  child_pi.rel_ref_geo_ =
+                      std::make_unique<lf::geometry::TriaO1>(child_corners);
+                  break;
+                }
+                case 4: {  // Child is a quadrilateral
+                  LF_ASSERT_MSG(
+                      child_entity->RefEl() == lf::base::RefEl::kQuad(),
+                      "Must be quad!");
+                  CONTROLLEDSTATEMENT(output_ctrl_, 60,
+                                      std::cout << "Quad in " << parent_ref_el
+                                                << ": geo = " << child_corners
+                                                << std::endl;)
+                  child_pi.rel_ref_geo_ =
+                      std::make_unique<lf::geometry::QuadO1>(child_corners);
+                  break;
+                }
+                default: {
+                  LF_ASSERT_MSG(false, "Illegal number "
+                                           << child_corners.cols()
+                                           << " of corners for a child cell");
+                  break;
+                }
+              }
+              break;
+            }
+            case 1: {  // segment in cell, child_rel_codim = 1
+              LF_ASSERT_MSG(parent_child_info.child_edge_idx.at(child_number) ==
+                                child_idx,
+                            "parent_child_info.child_edge_idx.at("
+                                << child_number << " ) !== child_idx");
+              LF_ASSERT_MSG(
+                  child_entity->RefEl() == lf::base::RefEl::kSegment(),
+                  "Must be an edge!");
+              LF_ASSERT_MSG(child_corners.cols() == 2,
+                            "Segement must have two endpoints");
+              CONTROLLEDSTATEMENT(output_ctrl_, 60,
+                                  std::cout << "Segment in " << parent_ref_el
+                                            << ": geo = " << child_corners
+                                            << std::endl;)
+              child_pi.rel_ref_geo_ =
+                  std::make_unique<lf::geometry::SegmentO1>(child_corners);
+              break;
+            }
+            case 2: {  // point in cell, child_rel_codim = 2
+              LF_ASSERT_MSG(parent_child_info.child_point_idx.at(
+                                child_number) == child_idx,
+                            "parent_child_info.child_point_idx.at("
+                                << child_number << " ) !== child_idx");
+              LF_ASSERT_MSG(child_entity->RefEl() == lf::base::RefEl::kPoint(),
+                            "Must be a point!");
+              LF_ASSERT_MSG(child_corners.cols() == 1,
+                            "Only a single coordindate for a point!");
+              CONTROLLEDSTATEMENT(output_ctrl_, 60,
+                                  std::cout << "Point in " << parent_ref_el
+                                            << ": geo = " << child_corners
+                                            << std::endl;)
+              child_pi.rel_ref_geo_ =
+                  std::make_unique<lf::geometry::Point>(child_corners);
+              break;
+            }
+            default:
+              LF_VERIFY_MSG(false, "unexpected codim " << codim);
+          }  // end switch codim
+          break;
+        }
+        case 1: {  // the parent entity is an edge
+                   // Fetch refinement information
+          const EdgeChildInfo &parent_child_info{ed_child_info[parent_idx]};
+          const RefPat parent_ref_pat{parent_child_info.ref_pat_};
+          const sub_idx_t anchor{idx_nil};
+          // Obtain geometry of child
+          const Hybrid2DRefinementPattern rp(parent_ref_el, parent_ref_pat,
+                                             anchor);
+          const std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+              child_polygon_vec{rp.ChildPolygons(child_rel_codim)};
+          LF_ASSERT_MSG(child_number < child_polygon_vec.size(),
+                        "Child number = " << child_number << " >= "
+                                          << child_polygon_vec.size());
+          const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>
+              &child_polygon{child_polygon_vec[child_number]};
+          LF_ASSERT_MSG(child_polygon.rows() == 1,
+                        "Need one coordinate only in parent segment");
+          // Row vector containing the relative reference coordinates of the
+          // child's corners
+          const Eigen::MatrixXd child_corners =
+              child_polygon.cast<double>() /
+              static_cast<double>(rp.LatticeConst());
+          switch (codim) {
+            case 1: {  // edge in edge, child_rel_codim = 0
+              LF_ASSERT_MSG(parent_child_info.child_edge_idx.at(child_number) ==
+                                child_idx,
+                            "edge_child_info.child_edge_idx.at("
+                                << child_number << " ) !== child_idx");
+              LF_ASSERT_MSG(
+                  child_entity->RefEl() == lf::base::RefEl::kSegment(),
+                  "Must be an edge!");
+              LF_ASSERT_MSG(child_corners.cols() == 2,
+                            "Segement must have two endpoints");
+              CONTROLLEDSTATEMENT(output_ctrl_, 60,
+                                  std::cout << "Segment in " << parent_ref_el
+                                            << ": geo = " << child_corners
+                                            << std::endl;)
+              child_pi.rel_ref_geo_ =
+                  std::make_unique<lf::geometry::SegmentO1>(child_corners);
+              break;
+            }
+            case 2: {  // point in edge
+              LF_ASSERT_MSG(parent_child_info.child_point_idx.at(
+                                child_number) == child_idx,
+                            "edge_child_info.child_point_idx.at("
+                                << child_number << " ) !== child_idx");
+              LF_ASSERT_MSG(child_entity->RefEl() == lf::base::RefEl::kPoint(),
+                            "Must be a point!");
+              LF_ASSERT_MSG(child_corners.cols() == 1,
+                            "Only a single coordindate for a point!");
+              CONTROLLEDSTATEMENT(output_ctrl_, 60,
+                                  std::cout << "Point in " << parent_ref_el
+                                            << ": geo = " << child_corners
+                                            << std::endl;)
+              child_pi.rel_ref_geo_ =
+                  std::make_unique<lf::geometry::Point>(child_corners);
+              break;
+            }
+            default: {
+              LF_VERIFY_MSG(
+                  false, "Child of an edge can only be a point or a segment");
+              break;
+            }
+          }  // end switch codim
+          break;
+        }
+        case 2: {  // the parent entity is a point
+          // No relative geometry for a point
+          CONTROLLEDSTATEMENT(
+              output_ctrl_, 60,
+              std::cout << "point in " << parent_ref_el << std::endl;)
+          child_pi.rel_ref_geo_ =
+              std::make_unique<lf::geometry::Point>(nil_coords);
+          break;
+        }
+        default: {
+          LF_VERIFY_MSG(false, "Illegal parent co-dimension" << parent_codim);
+          break;
+        }
+      }  // end switch(parent_codim)
+    }    // end loop over entities of the fine mesh
+  }      // end loop over codims
+}  // end initGeometryInParent
 
 sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
   LF_VERIFY_MSG(T.Codim() == 0, "Entity must be a call");
@@ -1675,6 +1929,42 @@ sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
     }
   }
   return idx_longest_edge;
+}
+
+const lf::geometry::Geometry *MeshHierarchy::GeometryInParent(
+    size_type level, const lf::mesh::Entity &e) const {
+  LF_ASSERT_MSG(level > 0, "level must be that of a child mesh!");
+  // Obtain reference to fine mesh
+  const lf::mesh::Mesh &mesh{*getMesh(level)};
+  // Get index of entity in fine mesh
+  const lf::base::glb_idx_t idx_e{mesh.Index(e)};
+  // Access information on parent
+  const std::vector<ParentInfo> &parent_infos{ParentInfos(level, e.Codim())};
+  // Fetch ParentInfo structure for entity e
+  const ParentInfo &e_parent_info{parent_infos[idx_e]};
+  // Just return the information contained in the relevant ParentInfo
+  // structure
+  LF_VERIFY_MSG(e_parent_info.rel_ref_geo_ != nullptr,
+                "No valid parent information for " << e);
+  return e_parent_info.rel_ref_geo_.get();
+}
+
+const lf::mesh::Entity *MeshHierarchy::ParentEntity(
+    size_type level, const lf::mesh::Entity &e) const {
+  LF_ASSERT_MSG(level > 0, "level > 0 required!");
+  // Obtain reference to fine mesh
+  const lf::mesh::Mesh &mesh{*getMesh(level)};
+  // Get index of entity in fine mesh
+  const lf::base::glb_idx_t idx_e{mesh.Index(e)};
+  // Access information about parent entity on next coarser mesh
+  const std::vector<ParentInfo> &parent_infos{ParentInfos(level, e.Codim())};
+  // Fetch ParentInfo structure for entity e
+  const ParentInfo &e_parent_info{parent_infos[idx_e]};
+  // Just return the information contained in the relevant ParentInfo
+  // structure
+  LF_VERIFY_MSG(e_parent_info.parent_ptr != nullptr,
+                "No valid parent information for " << e);
+  return e_parent_info.parent_ptr;
 }
 
 std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
@@ -1704,8 +1994,8 @@ std::shared_ptr<MeshHierarchy> GenerateMeshHierarchyByUniformRefinemnt(
     const std::shared_ptr<lf::mesh::Mesh> &mesh_p, lf::base::size_type ref_lev,
     RefPat ref_pat) {
   LF_ASSERT_MSG(mesh_p != nullptr, "No valid mesh supplied!");
-  // Set up the builder object for mesh entities, here suitable for a 2D hybrid
-  // mesh comprising triangles and quadrilaterals
+  // Set up the builder object for mesh entities, here suitable for a 2D
+  // hybrid mesh comprising triangles and quadrilaterals
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   // Create a mesh hierarchy with a single level

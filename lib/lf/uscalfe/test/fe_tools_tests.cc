@@ -20,7 +20,7 @@ TEST(feTools, IntegrateMeshFunction) {
   io::VtkWriter vtk_writer(mesh, "mesh.vtk");
 
   // scalar valued mesh function sin(\pi*x)*y
-  auto mfScalar = MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+  auto mfScalar = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
     return std::sin(base::kPi * x[0]) * x[1];
   });
   // Compute the integral with a very high-order quadrature rule
@@ -29,7 +29,7 @@ TEST(feTools, IntegrateMeshFunction) {
 
   // vector valued mesh function: return type is automatically deduced from that
   // of the lambda function
-  auto mfVec = MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+  auto mfVec = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
     return Eigen::Vector3d(x[0], x[0] * x[1], std::cos(base::kPi * x[0]));
   });
   // Integrate with high-order quadrature rule and get back a vector!
@@ -40,8 +40,8 @@ TEST(feTools, IntegrateMeshFunction) {
 
   // dynamic-matrix-valued mesh function: Even in this case return type
   // deduction works!
-  auto mfMatrixDyn =
-      MeshFunctionGlobal([](const Eigen::Vector2d& x) -> Eigen::MatrixXd {
+  auto mfMatrixDyn = mesh::utils::MeshFunctionGlobal(
+      [](const Eigen::Vector2d& x) -> Eigen::MatrixXd {
         return (Eigen::MatrixXd(2, 3) << 1, x[0], x[1], x[0] * x[1],
                 x[0] * x[0], x[1] * x[1])
             .finished();
@@ -70,7 +70,7 @@ TEST(feTools, NodalProjection) {
     return std::exp(x[0] * x[1]);
   };
   // Build a mesh function representing the lambda function
-  auto expmf{lf::uscalfe::MeshFunctionGlobal(expfn)};
+  auto expmf{mesh::utils::MeshFunctionGlobal(expfn)};
 
   // Third stage: perform nodal interpolation
   Eigen::VectorXd mu = lf::uscalfe::NodalProjection(*fe_space_p, expmf);

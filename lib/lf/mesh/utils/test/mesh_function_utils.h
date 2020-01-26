@@ -8,7 +8,7 @@
 
 #include <lf/uscalfe/uscalfe.h>
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 /** Checks whether two mesh functions are equal */
 template <class A, class B>
@@ -27,14 +27,22 @@ void checkMeshFunctionEqual(const mesh::Mesh& m, A a, B b, int codim = 0) {
       }
     }
   } else if constexpr (std::is_convertible_v<MeshFunctionReturnType<A>,
-                                             Eigen::MatrixXd>) {
+                                             Eigen::MatrixXd> ||
+                       std::is_convertible_v<MeshFunctionReturnType<A>,
+                                             Eigen::ArrayXd>) {
     for (auto e : m.Entities(codim)) {
       auto ref_el = e->RefEl();
       auto qr = lf::quad::make_QuadRule(ref_el, 5);
       auto vals1 = a(*e, qr.Points());
       auto vals2 = b(*e, qr.Points());
       for (int i = 0; i < vals1.size(); ++i) {
-        EXPECT_LT((vals1[0] - vals2[0]).norm(), 1e-10);
+        ASSERT_EQ(vals1[i].rows(), vals2[i].rows());
+        ASSERT_EQ(vals1[i].cols(), vals2[i].cols());
+        for (int r = 0; r < vals1[i].rows(); ++r) {
+          for (int c = 0; c < vals1[i].cols(); ++c) {
+            EXPECT_LT(std::abs(vals1[i](r, c) - vals2[i](r, c)), 1e-10);
+          }
+        }
       }
     }
   } else {
@@ -50,4 +58,4 @@ void checkMeshFunctionEqual(const mesh::Mesh& m, A a, B b, int codim = 0) {
   }
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

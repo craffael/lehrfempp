@@ -16,9 +16,9 @@
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
 
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <iostream>
-#include "mesh_function_traits.h"
 #include "precomputed_scalar_reference_finite_element.h"
 #include "uscalfe.h"
 
@@ -77,8 +77,8 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class ReactionDiffusionElementMatrixProvider {
-  static_assert(isMeshFunction<DIFF_COEFF>);
-  static_assert(isMeshFunction<REACTION_COEFF>);
+  static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
+  static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
 
  public:
   /**
@@ -140,7 +140,7 @@ class ReactionDiffusionElementMatrixProvider {
    * subset of cells.
    */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
-  /*
+  /**
    * @brief main routine for the computation of element matrices
    *
    * @param cell reference to the (triangular or quadrilateral) cell for
@@ -340,7 +340,8 @@ ReactionDiffusionElementMatrixProvider<
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
-  using scalar_t = decltype(SCALAR(0) * MeshFunctionReturnType<COEFF>(0));
+  using scalar_t =
+      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<COEFF>(0));
   using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @name standard constructors
@@ -520,7 +521,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  */
 template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
-  static_assert(isMeshFunction<MESH_FUNCTION>);
+  static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
   using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
@@ -657,7 +658,7 @@ typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) {
   // Type for source function
-  using source_fn_t = MeshFunctionReturnType<MESH_FUNCTION>;
+  using source_fn_t = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
   // Topological type of the cell
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Obtain precomputed information about values of local shape functions

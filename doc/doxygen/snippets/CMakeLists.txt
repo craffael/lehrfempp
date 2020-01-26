@@ -13,6 +13,7 @@ set(sources
   coomatrix.cpp
   meshhierarchy.cc
   meshuse.cc
+  entityuse.cc
 )
 
 add_library(docsnippets ${sources})

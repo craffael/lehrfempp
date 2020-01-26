@@ -1,5 +1,7 @@
 set(sources				
-fe_space_lagrange_o1.h						
+fe_space_lagrange_o1.h
+fe_space_lagrange_o2.h
+fe_space_lagrange_o3.h						
 fe_tools.h
 fe_tools.cc
 lagr_fe.h
@@ -10,13 +12,8 @@ loc_comp_ellbvp.h
 loc_comp_ellbvp.cc
 loc_comp_norms.h
 loc_comp_norms.cc
-mesh_function_binary.h
-mesh_function_constant.h
 mesh_function_fe.h
 mesh_function_grad_fe.h
-mesh_function_global.h
-mesh_function_traits.h
-mesh_function_unary.h
 precomputed_scalar_reference_finite_element.h				
 uniform_scalar_fe_space.h
 uniform_scalar_fe_space.cc

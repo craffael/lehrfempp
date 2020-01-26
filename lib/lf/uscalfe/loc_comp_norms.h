@@ -43,7 +43,7 @@ namespace lf::uscalfe {
  */
 template <typename FUNCTOR>
 class MeshFunctionL2NormDifference {
-  static_assert(isMeshFunction<FUNCTOR>);
+  static_assert(mesh::utils::isMeshFunction<FUNCTOR>);
 
  public:
   /** @brief standard constructors */
@@ -226,7 +226,7 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  */
 template <typename VEC_FUNC>
 class MeshFunctionL2GradientDifference {
-  static_assert(isMeshFunction<VEC_FUNC>);
+  static_assert(mesh::utils::isMeshFunction<VEC_FUNC>);
 
  public:
   /** @name standard constructors
