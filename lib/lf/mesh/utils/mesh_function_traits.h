@@ -14,7 +14,7 @@
 #include <lf/mesh/mesh.h>
 #include <type_traits>
 
-namespace lf::uscalfe {
+namespace lf::mesh::utils {
 namespace internal {
 template <class T>
 using MeshFunctionReturnType_t =
@@ -74,6 +74,6 @@ template <class R>
 using MeshFunctionReturnType =
     internal::VectorElement_t<internal::MeshFunctionReturnType_t<R>>;
 
-}  // namespace lf::uscalfe
+}  // namespace lf::mesh::utils
 
 #endif  // __7e4ffaa81e244723acbfbbaea68e03b1

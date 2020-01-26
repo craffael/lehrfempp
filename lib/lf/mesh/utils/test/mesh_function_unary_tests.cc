@@ -9,10 +9,9 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
-#include <lf/uscalfe/uscalfe.h>
 #include "mesh_function_utils.h"
 
-namespace lf::uscalfe::test {
+namespace lf::mesh::utils::test {
 
 struct X {
   X() = default;
@@ -125,4 +124,4 @@ TEST(meshFunctionUnary, transpose) {
   checkMeshFunctionEqual(*mesh, transpose(mfMatrix), mfMatrix);
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::mesh::utils::test

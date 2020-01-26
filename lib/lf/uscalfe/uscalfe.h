@@ -22,14 +22,11 @@
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
 #include "loc_comp_norms.h"
-#include "mesh_function_binary.h"
-#include "mesh_function_constant.h"
 #include "mesh_function_fe.h"
-#include "mesh_function_global.h"
 #include "mesh_function_grad_fe.h"
-#include "mesh_function_traits.h"
-#include "mesh_function_unary.h"
 #include "uniform_scalar_fe_space.h"
+
+#include <lf/mesh/utils/utils.h>
 
 /**
  * @brief Collects data structures and algorithms designed for scalar finite
@@ -58,6 +55,14 @@
  * - Non-Scalar valued approximation spaces such as EdgeFunctions/Nedelec
  *   elements or Thomas-Raviart elements.
  */
-namespace lf::uscalfe {}
+namespace lf::uscalfe {
+// Import operators/free functions from lf::mesh::utils so we can apply them
+// also to mesh functions defined in lf::uscalfe (Argument Dependent Lookup)
+using mesh::utils::operator*;
+using mesh::utils::operator+;
+using mesh::utils::operator-;
+using mesh::utils::squaredNorm;
+using mesh::utils::transpose;
+}  // namespace lf::uscalfe
 
 #endif

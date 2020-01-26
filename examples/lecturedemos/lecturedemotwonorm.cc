@@ -65,7 +65,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
                           const Eigen::VectorXd &uvec) {
   LF_ASSERT_MSG(dofh.NumDofs() == uvec.size(),
                 "Size mismatch: NumDofs = " << dofh.NumDofs()
-                                           << " <-> size = " << uvec.size());
+                                            << " <-> size = " << uvec.size());
   // Obtain reference to current mesh
   const lf::mesh::Mesh &mesh{*dofh.Mesh()};
   // Summation variable for square of L2-norm
@@ -112,8 +112,8 @@ double l2normByMeshFunction(
   // Compute norms of finite element function by means of numerical quadrature
   // which is exact for piecewise quadratic polynomials (degree of exactness 2)
   auto mf_fe = lf::uscalfe::MeshFunctionFE<double, double>(fe_space, uvec);
-  return std::sqrt(lf::uscalfe::IntegrateMeshFunction(*fe_space->Mesh(),
-                                                      squaredNorm(mf_fe), 2));
+  return std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+      *fe_space->Mesh(), lf::mesh::utils::squaredNorm(mf_fe), 2));
 }
 
 void lecturedemotwonorm() {
@@ -143,7 +143,7 @@ void lecturedemotwonorm() {
   // Build finite element coefficient vector by interpolating
   // a known linear (!) function. The L2-norm of linear functions
   // should be computed exactly.
-  auto u = lf::uscalfe::MeshFunctionGlobal(
+  auto u = lf::mesh::utils::MeshFunctionGlobal(
       [](auto x) -> double { return 2 * x[0] + x[1]; });
   const Eigen::VectorXd uvec =
       lf::uscalfe::NodalProjection<double>(*fe_space_p, u);
