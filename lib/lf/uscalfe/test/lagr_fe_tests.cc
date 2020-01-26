@@ -11,13 +11,13 @@
  * @date October 2018
  * @copyright MIT License
  */
+#include <iostream>
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/uscalfe.h>
-#include <iostream>
 
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace lf::uscalfe::test {
 
@@ -400,14 +400,15 @@ TEST(lf_fe_linear, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<const FeSpaceLagrangeO1<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
     return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
   });
 
-  auto f_2 =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return 5 * x[0] - 2 * x[1]; });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return 5 * x[0] - 2 * x[1]; });
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
     return (Eigen::VectorXd(2) << 5.0, -2.0).finished();
   });
 
@@ -425,19 +426,21 @@ TEST(lf_fe_quadratic, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<const FeSpaceLagrangeO2<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
     return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
   });
 
-  auto f_2 = MeshFunctionGlobal(
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) { return 5 * x[0] * x[0] + 2 * x[1] * x[1]; });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::VectorXd(2) << 10 * x[0], 4 * x[1]).finished();
   });
 
-  auto f_3 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
-  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_3 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto grad_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::VectorXd(2) << x[1], x[0]).finished();
   });
 
@@ -456,22 +459,23 @@ TEST(lf_fe_cubic, projection_test) {
   std::shared_ptr<const UniformScalarFESpace<double>> fe_space =
       std::make_shared<const FeSpaceLagrangeO3<double>>(mesh_p);
 
-  auto f_1 = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] + x[1]; });
-  auto grad_1 = MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
+  auto f_1 = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] + x[1]; });
+  auto grad_1 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d /*x*/) {
     return (Eigen::VectorXd(2) << 1.0, 1.0).finished();
   });
 
-  auto f_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return 5 * x[0] * x[0] * x[0] + 2 * x[1] * x[1] * x[1];
   });
-  auto grad_2 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto grad_2 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::VectorXd(2) << 15 * x[0] * x[0], 6 * x[1] * x[1]).finished();
   });
 
-  auto f_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto f_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return x[0] * x[0] * x[1] + 2 * x[0] * x[1] * x[1];
   });
-  auto grad_3 = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto grad_3 = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::VectorXd(2) << 2 * x[0] * x[1] + 2 * x[1] * x[1],
             x[0] * x[0] + 4 * x[0] * x[1])
         .finished();
@@ -493,8 +497,10 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
-  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
+  auto alpha =
+      lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 1.0; });
+  auto gamma =
+      lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d) { return 0.0; });
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
@@ -533,7 +539,7 @@ TEST(lf_fe_linear, lf_fe_edgemass) {
       std::make_shared<FeLagrangeO1Segment<double>>()};
 
   // Set up objects taking care of local computations
-  auto gamma = MeshFunctionConstant(1.0);
+  auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
   MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -566,7 +572,7 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto f = MeshFunctionGlobal(
+  auto f = lf::mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2 * x[0] + x[1]); });
   using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
@@ -607,7 +613,7 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
   auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set up objects taking care of local computations
-  auto g = MeshFunctionConstant(1.0);
+  auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
   ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
   // Set debugging flags
   // comp_elem_mat.ctrl_ = 255;
@@ -696,15 +702,17 @@ TEST(lf_fe_linear, ReactionDiffusion) {
       std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
 
   // Set parameter functions
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) {
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
     return (Eigen::Matrix2d() << 1, x[0], x[1], x[0] * x[1]).finished();
   });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
   // functions projected into the fe space
-  MeshFunctionGlobal a([](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
-  MeshFunctionGlobal b([](Eigen::Vector2d x) { return 3 * x[0]; });
+  lf::mesh::utils::MeshFunctionGlobal a(
+      [](Eigen::Vector2d x) { return 1 + x[0] + 2 * x[1]; });
+  lf::mesh::utils::MeshFunctionGlobal b(
+      [](Eigen::Vector2d x) { return 3 * x[0]; });
 
   auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 4);
   EXPECT_NEAR(product, 7911. / 8., 1.0E-2);
@@ -720,14 +728,15 @@ TEST(lf_fe_quadratic, ReactionDiffusion) {
       std::make_shared<FeSpaceLagrangeO2<double>>(mesh_p);
 
   // Set parameter functions
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0]; });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0]; });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
   // functions projected into the fe space
-  MeshFunctionGlobal a(
+  lf::mesh::utils::MeshFunctionGlobal a(
       [](Eigen::Vector2d x) { return x[0] * x[0] + x[1] * x[1]; });
-  MeshFunctionGlobal b(
+  lf::mesh::utils::MeshFunctionGlobal b(
       [](Eigen::Vector2d x) { return x[0] * x[0] - x[1] * x[1]; });
 
   auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 6);
@@ -744,15 +753,17 @@ TEST(lf_fe_cubic, ReactionDiffusion) {
       std::make_shared<FeSpaceLagrangeO3<double>>(mesh_p);
 
   // Set parameter functions
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) { return x[1]; });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) { return x[0] * x[1]; });
+  auto alpha = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[1]; });
+  auto gamma = lf::mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) { return x[0] * x[1]; });
 
   // functions projected into the fe space
-  MeshFunctionGlobal a([](Eigen::Vector2d x) {
+  lf::mesh::utils::MeshFunctionGlobal a([](Eigen::Vector2d x) {
     return x[0] * x[0] * x[0] + x[1] * x[1] * x[1];
   });
-  MeshFunctionGlobal b([](Eigen::Vector2d x) { return x[0] * x[1] * x[1]; });
+  lf::mesh::utils::MeshFunctionGlobal b(
+      [](Eigen::Vector2d x) { return x[0] * x[1] * x[1]; });
 
   auto product = reactionDiffusionTest(fe_space, alpha, gamma, a, b, 8);
   EXPECT_NEAR(product, 1996731 / 280., 1.0E-2);
@@ -771,8 +782,8 @@ void locCompProductsTest(
 
   // verification based on local element matrices
   {
-    auto alpha = MeshFunctionConstant(1.0);
-    auto gamma = MeshFunctionConstant(1.0);
+    auto alpha = lf::mesh::utils::MeshFunctionConstant(1.0);
+    auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
     ReactionDiffusionElementMatrixProvider provider(fe_space, alpha, gamma);
 
     // loop over cells and compute element matrices:
@@ -790,7 +801,7 @@ void locCompProductsTest(
 
   // verification based on local edge matrices
   {
-    auto g = MeshFunctionConstant(1.0);
+    auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
     MassEdgeMatrixProvider provider(fe_space, g);
 
     // loop over edges and compute element matrices:
@@ -808,7 +819,7 @@ void locCompProductsTest(
 
   // verification based on local element load vectors:
   {
-    auto f = MeshFunctionConstant(1.0);
+    auto f = lf::mesh::utils::MeshFunctionConstant(1.0);
     ScalarLoadElementVectorProvider provider(fe_space, f);
 
     // loop over cells and compute element vectors:
@@ -825,7 +836,7 @@ void locCompProductsTest(
 
   // verification based on local edge vectors:
   {
-    auto g = MeshFunctionConstant(1.0);
+    auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
     ScalarLoadEdgeVectorProvider provider(fe_space, g);
 
     // Loop over edges and compute element vectors
