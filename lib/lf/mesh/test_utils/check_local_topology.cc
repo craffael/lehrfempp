@@ -53,7 +53,6 @@ void checkLocalTopology(const Entity &e) {
   }
 }
 
-// clang-format off
 /* SAM_LISTING_BEGIN_1 */
 void checkRelCodim(const Entity &e) {
   using dim_t = lf::base::RefEl::dim_t;
@@ -66,7 +65,8 @@ void checkRelCodim(const Entity &e) {
   // Loop over all possible co-dimensions of sub-entities
   for (dim_t sub_codim = 1; sub_codim <= dimension; ++sub_codim) {
     // Obtain array of sub-entities of co-dimensjon sub\_codim
-    auto sub_ent_array = e.SubEntities(sub_codim);
+    nonstd::span<const lf::mesh::Entity *const> sub_ent_array{
+        e.SubEntities(sub_codim)};
     // Query number of sub-entities
     const size_type num_subent = ref_el.NumSubEntities(sub_codim);
     // Index-based loop over sub-entities
@@ -74,12 +74,11 @@ void checkRelCodim(const Entity &e) {
       // Test whether relative dimension matches absolute dimensions
       EXPECT_EQ(sub_codim,
                 dimension - sub_ent_array[sub_ent_idx]->RefEl().Dimension())
-          << "Dimension mismatch: " << e << " <-> subent("
-	  << sub_ent_idx << ")"  << std::endl;
+          << "Dimension mismatch: " << e << " <-> subent(" << sub_ent_idx << ")"
+          << std::endl;
     }
   }
 }
 /* SAM_LISTING_END_1 */
-// clang-format on
 
 }  // namespace lf::mesh::test_utils

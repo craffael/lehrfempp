@@ -39,18 +39,17 @@ Doxygen parse the source file.
 #include <boost/spirit/include/karma_string.hpp>
 #include <boost/spirit/include/qi.hpp>
 
-using namespace std;
-
 class Filter {
  private:
-  unordered_map<string, string> label_map_;
-  std::vector<std::pair<string, string>> aux_table_;
+  unordered_map<std::string, std::string> label_map_;
+  std::vector<std::pair<std::string, std::string>> aux_table_;
 
-  string aux_file_;
-  string file_;
+  std::string aux_file_;
+  std::string file_;
 
  public:
-  Filter(string file, string aux_file) : file_(file), aux_file_(aux_file) {
+  Filter(std::string file, std::string aux_file)
+      : file_(std::move(file)), aux_file_(std::move(aux_file)) {
     label_map_ = {{"equation", "Equation"},
                   {"par", "Paragraph"},
                   {"chapter", "Chapter"},
@@ -58,12 +57,14 @@ class Filter {
                   {"subsection", "Subsection"},
                   {"figure", "Figure"},
                   {"code", "Code"},
-                  {"remark", "Remark"}};
+                  {"remark", "Remark"},
+                  {"subsubsection", "Subsection"},
+                  {"example", "Example"}};
   }
 
   /**
-   * @brief Reads a file from disk into a std::string. If the file doesn't exist
-   * or cannot be opened, an empty optional is returned.
+   * @brief Reads a file from disk into a std::string. If the file doesn't
+   * exist or cannot be opened, an empty optional is returned.
    * @param file_name The path to the file that should be opened.
    */
   std::optional<std::string> ReadFile(const std::string& file_name);
@@ -89,13 +90,13 @@ class Filter {
   void ReplaceLref();
 };
 
-std::optional<string> Filter::ReadFile(const std::string& file_name) {
+std::optional<std::string> Filter::ReadFile(const std::string& file_name) {
   ifstream t(file_name, ios::binary);  // open the file
   if (!t.is_open()) {
     return {};
   }
   t.seekg(0, std::ios::end);
-  size_t aux_size = t.tellg();
+  std::size_t aux_size = t.tellg();
   std::string result;
   result.resize(aux_size);
   t.seekg(0);
@@ -115,14 +116,15 @@ void Filter::LoadAuxTable() {
               << std::flush;
     std::exit(1);
   }
-  auto aux_hash = std::hash<string>()(aux_string.value());
+  auto aux_hash = std::hash<std::string>()(aux_string.value());
 
   // load cache file and retrieve hash
   std::string cache_filename = "filter.cache";
   bool rebuild_cache = false;  // should we save our cache at the end?
   auto cache_string = ReadFile(cache_filename);
   if (cache_string.has_value()) {
-    size_t cache_hash, num_entries;
+    std::size_t cache_hash;
+    std::size_t num_entries;
     auto begin = cache_string.value().cbegin();
     auto end = cache_string.value().cend();
     if (!qi::phrase_parse(begin, end, qi::ulong_long >> qi::ulong_long, qi::eol,
@@ -132,10 +134,11 @@ void Filter::LoadAuxTable() {
       rebuild_cache = true;
     } else {
       if (cache_hash != aux_hash) {
-        // if hash stored in cache file doesn't agree with our computed hash of
-        // the aux file, rebuild cache
+        // if hash stored in cache file doesn't agree with our computed hash
+        // of the aux file, rebuild cache
         rebuild_cache = true;
-        std::cerr << "filter.cpp : Hashes don't agree -> Rebuild Cache" << std::endl;
+        std::cerr << "filter.cpp : Hashes don't agree -> Rebuild Cache"
+                  << std::endl;
       } else {
         // load the rest of the cache
         aux_table_.reserve(num_entries);
@@ -143,7 +146,8 @@ void Filter::LoadAuxTable() {
                               *(qi::lexeme[+(qi::char_ - qi::eol)] >>
                                 qi::lexeme[+(qi::char_ - qi::eol)]),
                               qi::eol, aux_table_)) {
-          std::cerr << "filter.cpp : Cannot load cache entries -> rebuilding cache";
+          std::cerr
+              << "filter.cpp : Cannot load cache entries -> rebuilding cache";
           rebuild_cache = true;
         }
       }
@@ -162,15 +166,17 @@ void Filter::LoadAuxTable() {
     while (regex_search(begin, aux_string.value().cend(), matches,
                         label_pattern)) {
       if (matches.ready() && !matches.empty()) {
-        string label = matches.str(1);
-        string Label = label_map_.count(matches.str(2)) > 0u
-                           ? label_map_[matches.str(2)]
-                           : matches.str(2);
-        string number = matches.str(4);
+        std::string label = matches.str(1);
+        // NOLINTNEXTLINE
+        std::string Label = label_map_.count(matches.str(2)) > 0U
+                                ? label_map_[matches.str(2)]
+                                : matches.str(2);
+        std::string number = matches.str(4);
 
         if (!matches.str(1).empty()) {
           // convert the <Label> into human readable form:
           // aux_table_[matches.str(1)] = Label + " " + number;
+          // NOLINTNEXTLINE
           aux_table_.emplace_back(matches.str(1), Label + " " + number);
         }
         begin += matches.prefix().length() + matches[0].length();
@@ -203,12 +209,13 @@ void Filter::ReplaceLref() {
   // Read file into memory
   auto file_string = ReadFile(file_);
   if (!file_string.has_value()) {
-    std::cerr << "filter.cpp : Could not open " << file_ << std::endl << std::flush;
+    std::cerr << "filter.cpp : Could not open " << file_ << std::endl
+              << std::flush;
     std::exit(1);
   }
 
   // construct result with regex.
-  string result;
+  std::string result;
   result.reserve(file_string.value().size() + 100);
   regex lref("@lref\\{(.*?)\\}", regex_constants::optimize);
   smatch match;
@@ -219,11 +226,13 @@ void Filter::ReplaceLref() {
       // build aux lookup table only if we need it.
       LoadAuxTable();
     }
-    auto search_result = std::lower_bound(
-        aux_table_.begin(), aux_table_.end(),
-        std::pair<string, string>(match[1], ""),
-        [](const std::pair<string, string>& a,
-           const std::pair<string, string>& b) { return a.first < b.first; });
+    auto search_result =
+        std::lower_bound(aux_table_.begin(), aux_table_.end(),
+                         std::pair<std::string, std::string>(match[1], ""),
+                         [](const std::pair<std::string, std::string>& a,
+                            const std::pair<std::string, std::string>& b) {
+                           return a.first < b.first;
+                         });
     if (search_result == aux_table_.end()) {
       cerr << "filter.cpp : Cannot find a label for " << match[1] << endl;
       result += match[0];
@@ -241,7 +250,8 @@ int main(int argc, char* argv[]) {
   // takes a file as input and print the content after parsing.
   // the output is cout which can be understood natively by doxygen.
   // Process arguments
-  string aux_file, file;
+  std::string aux_file;
+  std::string file;
   switch (argc) {
     case 1: {
       std::cout << "Usage: " << argv[0] << " [aux file] <source file>" << endl;

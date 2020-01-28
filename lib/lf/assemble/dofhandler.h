@@ -19,7 +19,9 @@
 
 namespace lf::assemble {
 /**
- * @brief A general (_interface_) class for DOF handling.
+ * @brief A general (_interface_) class for DOF handling, see [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:betldofmap}.
  *
  * Objects of this class provide the local-to-global map for indices
  * of local/global shape functions.
@@ -36,7 +38,7 @@ namespace lf::assemble {
  * or **subordinate** to a  mesh entity are those whose supports cover that
  * entity. Hence all interior d.o.f. must also belong to an entity.
  *
- * # Rules for ordering global shape functions <-> degrees of freedom (dof)
+ * ## Rules for ordering global shape functions <-> degrees of freedom (dof)
  *
  * Note that every global shape (dof) function belongs to a unique mesh entity.
  * Ordering them means assigning a unique (vector component) index starting from
@@ -51,7 +53,7 @@ namespace lf::assemble {
  *    with the lower index are numbered before the dofs of that with
  *    the higher index: *dof numbering is compatible with indexing*
  *
- * # Rules for numbering local shape functions (local dof)
+ * ## Rules for numbering local shape functions (local dof)
  *
  * -# As above, Dofs belonging to _sub-entities_ of a larger (relative)
  * co-dimension are arranged before dofs associated with _sub-entities_ of a
@@ -60,7 +62,7 @@ namespace lf::assemble {
  * -# dofs for _sub-entities_ of the same co-dimension are taken into account in
  * the order given by the _local indexing_ of the sub-entities.
  *
- * # Local-to-global dof index mapping for entities of higher co-dimension
+ * ## Local-to-global dof index mapping for entities of higher co-dimension
  *
  * The method getGlobalDofs() is available for entities of _any co-dimension_.
  * For instance, this allows assembly of contributions from low-dimensional
@@ -72,7 +74,19 @@ namespace lf::assemble {
  * along the edge and those "closer to endpoint 0" are numbered first. In 3D
  * many more situations have to be dealt with.
  *
- * # Conventions for numbering global shape functions
+ * The local numbering conventions are also defined in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:betlordlsf} and illustrated in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{ex:quadnodes}.
+ *
+ * #### Demonstration code
+ * ([Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{cpp:lfpd})
+ *
+ * @snippet dofhandleruse.cc pdi
+ *
+ * ### Conventions for numbering global shape functions
  *
  * Though not important for most finite element computations, the **current
  * implementations**
@@ -85,6 +99,9 @@ namespace lf::assemble {
  * -# Within entities of the same co-dimension the _numbering follows their
  * indexing_ through the member function @ref lf::mesh::Mesh::Index().
  *
+ * Also refer to [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{rem:lfdofnumb}.
  */
 class DofHandler {
  public:
@@ -144,12 +161,16 @@ class DofHandler {
    *
    * The basis functions of every finite element space must be associated with a
    * unique geometric entity. Conversely, every entity can possess a finite
-   * number of basis functions = degrees of freedom. This functions return the
-   * global indices of all basis functions associated with the entity _and its
-   * sub-entitites_.
+   * number of basis functions = degrees of freedom. This member function
+   * returns the global indices of all basis functions associated with the
+   * entity **and its sub-entitites** (the _covering_ local shape functions).
    *
    * The size of the returned range must agree with the value returned
    * by NumLocalDofs() when supplied with the same arguments.
+   *
+   * Consult [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:betldofmap} for more information.
    */
   [[nodiscard]] virtual nonstd::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
@@ -164,7 +185,9 @@ class DofHandler {
    *
    * Each global shape function is associated with a unique mesh entity.
    * This method provides all the global indices of the shape function
-   * associated to the entity specified by the function arguments.
+   * _associated to_ the entity specified by the function arguments, see
+   * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:betldofmap} for additional explanations.
    *
    * @note Be aware of the difference of @ref GlobalDofIndices() and @ref
    * InteriorGlobalDofIndices()
@@ -230,6 +253,13 @@ class UniformFEDofHandler : public DofHandler {
   /** @brief Construction from a map object
    *
    * @param dofmap map telling number of interior dofs for every type of entity
+   *
+   * Detailed information about the construction from a map object
+   * is given in [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:dofhinit}. Also study [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{ex:dofdist}.
    */
   using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
   UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,

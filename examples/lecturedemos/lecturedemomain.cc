@@ -1,3 +1,9 @@
+// **********************************************************************
+// This file is part of the LehrFEM++ finite element library developed
+// from 2018 at the Seminar of Applied Mathematics of ETH Zurich for
+// teaching purposes.
+// This header must not be removed.
+// **********************************************************************
 /**
  * @file
  * @brief Driver function for simple LehrFEM++ demo
@@ -15,7 +21,12 @@
 #include "lecturedemotwonorm.h"
 
 int main(int argc, char **argv) {
+  // We rely on Boost's program_option library for parsing command line
+  // arguments
   namespace po = boost::program_options;
+  // We specify what to do for the two allowed options -h and -d, which are
+  // linked to the keys 'help' and 'demo_number'. We tell the computer that -d
+  // expects an integer argument and that the default value is 0
   po::options_description desc("Allowed options");
   // clang-format off
   desc.add_options()

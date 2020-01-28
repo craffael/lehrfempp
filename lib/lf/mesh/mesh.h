@@ -9,6 +9,13 @@
  *        provides mesh-related tools that build on these interfaces.
  *
  * @see lf::mesh::hybrid2d for a concrete implementation of a %mesh manager.
+ *
+ * For a discussion of the functionality and design of mesh data structures see
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sec:meshdata}. A mathematical definition of a finite element mesh is
+ * given in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sec:meshes}.
  */
 namespace lf::mesh {}
 

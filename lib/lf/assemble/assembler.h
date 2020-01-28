@@ -55,11 +55,12 @@ extern unsigned int ass_mat_dbg_ctrl;
  * matrices, must model the concept \ref entity_matrix_provider
  * @param codim co-dimension of mesh entities which should be traversed
  *              in the course of assembly
- * @param dof_handler_trial a dof handler object for column space @see
+ * @param dof_handler_trial a dof handler object for _column space_, see @ref
  * DofHandler
- * @param dof_handler_test a dof handler object for row space @see DofHandler
- * @param entity_matrix_provider entity_matrix_provider object for passing all
- * kinds of data
+ * @param dof_handler_test a dof handler object for _row space_, see @ref
+ * DofHandler
+ * @param entity_matrix_provider @ref entity_matrix_provider object for passing
+ * all kinds of data
  * @param matrix matrix object to which the assembled matrix will be added.
  *
  * @note The matrix object passed in `matrix` is not set to zero in the
@@ -174,9 +175,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
  * TMPMATRIX &matrix)
  *
- * @note An extra requirement for the type TMPMATRIX is imposed; it must
+ * @note Extra requirements for the type TMPMATRIX is imposed; it must
  *       provide the method `setZero()` for setting all entries of the
- *       matrix to zero.
+ *       matrix to zero. It must also possess a constructor that takes
+ *       row and column numbers and creates an (empty) matrix of that size.
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(
