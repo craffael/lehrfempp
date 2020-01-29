@@ -42,7 +42,16 @@ The concept of a EntityMatrixProvider is widely used in the `lf::assemble` and
 `EntityMatrixProvider` which in turn defines how the (sparse) system matrix is
 assembled.
 
+## Implementations 
+
+Examples for classes implementing the concept EntityMatrixProvider are
+@ref lf::uscalfe::LinearFELaplaceElementMatrix and
+@ref lf::uscalfe::ReactionDiffusionElementMatrixProvider
+
 ## See also
 - The concept \ref entity_vector_provider
+- The cell-oriented assembly functions \ref assemble_matrix_locally
+- [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ex:lfemp}
+- [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ex:lfbdse1}
 
 */

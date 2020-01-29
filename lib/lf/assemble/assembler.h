@@ -30,7 +30,7 @@ namespace lf::assemble {
  * - bit 3: prints element matrix (`md_locmat`)
  * - bit 4: prints global indices of local shape functions (`amd_gdof`)
  */
-// extern unsigned int ass_mat_dbg_ctrl;
+extern unsigned int ass_mat_dbg_ctrl;
 const unsigned int amd_entity = 1;
 const unsigned int amd_lmdim = 2;
 const unsigned int amd_locmat = 4;
@@ -45,7 +45,30 @@ const unsigned int amd_lass = 16;
 // EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
 //                  "Debugging output control for AssembleMatrixLocally()");
 
-extern unsigned int ass_mat_dbg_ctrl;
+/**
+ * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
+ * @brief Based on helper objects that provide element matrices these functions
+ * rely on the distribute assembly policy to set the entries of global Galerk9in
+ * matrices.
+ *
+ * All the function have the name `AssembleMatrixLocally`, but they difer in
+ * their arguments. What they have in common is that they are all templated with
+ * two types:
+ * - ENTITY_MATRIX_PROVIDER is a @ref entity_matrix_provider
+ * - TMPMATRIX, a rudimentary matrix type with an `AddToEntry(` mutbale access
+ * function
+ *
+ * The principles of local cell-oriented assembly of Galerkin matrices are
+ * explained in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sss:assalg}, in particular [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:assmat}. An example for the use of local assembly is given in
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{ex:gallse}.
+ *
+ *  @{
+ */
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -63,9 +86,16 @@ extern unsigned int ass_mat_dbg_ctrl;
  * all kinds of data
  * @param matrix matrix object to which the assembled matrix will be added.
  *
+ * The rationale for passing two different @ref DofHandler objects for trial and
+ * test space is given in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{rem:pg}.
+ *
  * @note The matrix object passed in `matrix` is not set to zero in the
  * beginning! This makes is possible to assemble a matrix piecemeal via several
- * successive calls to @ref AssembleMatrixLocally()
+ * successive calls to @ref AssembleMatrixLocally(), see
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{cpp:lfelaplbdmat}.
  *
  * This method performs cell-oriented assembly controlled by a local-to-global
  * index map ("dof handler").
@@ -218,7 +248,27 @@ TMPMATRIX AssembleMatrixLocally(
   return AssembleMatrixLocally<TMPMATRIX, ENTITY_MATRIX_PROVIDER>(
       codim, dof_handler, dof_handler, entity_matrix_provider);
 }
+/** @} */  // end of group assemble_matrix_locally
 
+/**
+ * @defgroup assemble_vector_locally Cell-Oriented Assembly of R.h.s. Galerkin
+ Vectors
+ * @brief Functions `assembleVectorLocally()` for setting entries of the vector
+ representing the finite element Galerkin discretization of a linear functional.
+ *
+ * The functions differ in their arguments, but all are templated with the
+ following types:
+ * - ENTITY_VECTOR_PROVIDER matching the concept @ref entity_vector_provider
+ * - VECTOR a generic vector type compliant with Eigen::Vector
+ *
+ * Also refer to [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:vectorassembler} and [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{ex:gallse}.
+ *
+ * @{
+ */
 /**
  * @brief entity-local assembly of (right-hand-side) vectors from element
  * vectors
@@ -308,6 +358,8 @@ VECTOR AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       codim, dof_handler, entity_vector_provider, resultvector);
   return resultvector;
 }  // end AssembleVectorLocally
+
+/** @} */  // end group assemble_vector_locally
 
 }  // namespace lf::assemble
 

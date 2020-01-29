@@ -41,7 +41,7 @@ Doxygen parse the source file.
 
 class Filter {
  private:
-  unordered_map<std::string, std::string> label_map_;
+  std::unordered_map<std::string, std::string> label_map_;
   std::vector<std::pair<std::string, std::string>> aux_table_;
 
   std::string aux_file_;
@@ -91,7 +91,7 @@ class Filter {
 };
 
 std::optional<std::string> Filter::ReadFile(const std::string& file_name) {
-  ifstream t(file_name, ios::binary);  // open the file
+  std::ifstream t(file_name, std::ios::binary);  // open the file
   if (!t.is_open()) {
     return {};
   }
@@ -159,8 +159,8 @@ void Filter::LoadAuxTable() {
   if (rebuild_cache) {
     // build cache:
     auto begin = aux_string.value().cbegin();
-    smatch matches;
-    regex label_pattern(
+    std::smatch matches;
+    std::regex label_pattern(
         R"(\\newlabel\{(.*)@cref\}\{\{\[([^,\]]*)\](\[[^\}]*\])*([0-9\.]*)\})",
         std::regex::optimize);
     while (regex_search(begin, aux_string.value().cend(), matches,
@@ -217,8 +217,8 @@ void Filter::ReplaceLref() {
   // construct result with regex.
   std::string result;
   result.reserve(file_string.value().size() + 100);
-  regex lref("@lref\\{(.*?)\\}", regex_constants::optimize);
-  smatch match;
+  std::regex lref("@lref\\{(.*?)\\}", std::regex_constants::optimize);
+  std::smatch match;
   auto begin = file_string.value().cbegin();
   while (regex_search(begin, file_string.value().cend(), match, lref)) {
     result += match.prefix().str();
@@ -234,7 +234,8 @@ void Filter::ReplaceLref() {
                            return a.first < b.first;
                          });
     if (search_result == aux_table_.end()) {
-      cerr << "filter.cpp : Cannot find a label for " << match[1] << endl;
+      std::cerr << "filter.cpp : Cannot find a label for " << match[1]
+                << std::endl;
       result += match[0];
     } else {
       result += search_result->second;
@@ -254,7 +255,8 @@ int main(int argc, char* argv[]) {
   std::string file;
   switch (argc) {
     case 1: {
-      std::cout << "Usage: " << argv[0] << " [aux file] <source file>" << endl;
+      std::cout << "Usage: " << argv[0] << " [aux file] <source file>"
+                << std::endl;
       return -1;
     }
     case 2: {
