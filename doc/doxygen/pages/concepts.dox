@@ -3,20 +3,17 @@
  
  @brief This page contains a list of Concepts (sometimes also called Named Requirements) used by LehrFEM++.
  
- Concepts are a set of requirements that is imposed on a particular type. 
- They are most useful in the declaration/definition of templates where they can be used to place additional restrictions on the template type parameters.
+ Concepts are a set of requirements that is imposed on a particular type.  They are most
+ useful in the declaration/definition of templates where they can be used to place
+ additional restrictions on the template type parameters.
  
- So far concepts are mostly enforced through documentation, see e.g. the documentation of lf::assemble::AssembleMatrixLocally().
- For some concepts there are helper variable templates that can be used to determine if a type fulfills a concept.
- 
- 
+ So far concepts are mostly enforced through documentation, see e.g. the documentation of
+ lf::assemble::AssembleMatrixLocally().  For some concepts there are helper variable
+ templates that can be used to determine if a type fulfills a concept.
  
  @{
  @defgroup entity_matrix_provider EntityMatrixProvider
  @defgroup entity_vector_provider EntityVectorProvider
  @defgroup mesh_function MeshFunction
- 
- 
- 
  @}
 */

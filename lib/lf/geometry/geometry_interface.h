@@ -221,6 +221,16 @@ double Volume(const Geometry& geo);
  * will completely define the shape. This is the case with shapes represented by
  * the types
  * @ref lf::geometry::TriaO1 and @ref lf::geometry::QuadO1
+ *
+ * #### Demonstration code [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{cpp:lfgeo}
+ * @snippet geometryuse.cc corners
+ *
+ * Additional explanations can be found in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:coords}.
+ *
  */
 inline Eigen::MatrixXd Corners(const Geometry& geo) {
   return geo.Global(geo.RefEl().NodeCoords());

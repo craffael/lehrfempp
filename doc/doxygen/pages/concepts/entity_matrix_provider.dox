@@ -6,8 +6,9 @@
 
 ## Description
 
-An EntityMatrixProvider is an object that provides a local element matrix for a given mesh entity.
-EntityMatrixProvider's are mostly used together with `lf::assemble::AssembleMatrixLocally` to assemble a sparse system matrix. 
+An EntityMatrixProvider is an object that provides a local element matrix for a
+given mesh entity. EntityMatrixProvider's are mostly used together with
+`lf::assemble::AssembleMatrixLocally` to assemble a sparse system matrix.
 
 ## Requirements
 
@@ -16,22 +17,41 @@ The type `EMP` satisfies the Concept `EntityMatrixProvider` if given
 - `e` is a lf::mesh::Entity object
 - `SCALAR` is an Eigen supported scalar datatype (e.g. `double`)
 - `ROWS` is the number of rows of the local element matrix or `Eigen::Dynamic`
-- `COLS` is the number of columns of the local element matrix or `Eigen::Dynamic`
+- `COLS` is the number of columns of the local element matrix or
+`Eigen::Dynamic`
 
 the following expressions are valid:
 
 <table>
 <tr> <th>expression  <th>return type     <th>semantics
-<tr> <td> `emp.isActive(e)`         <td> `bool`                                  <td> Defines whether the entity `e` is taken into account by the assembly routine.
-<tr> <td> `emp.Eval(e)`             <td> `Eigen::Matrix<SCALAR, ROWS, COLS>`     <td> Returns the local element matrix for mesh entity `e`. Is only called if `emp.isActive(e)==true`.
+<tr> <td> `emp.isActive(e)`         <td> `bool` <td> Defines whether the entity
+`e` is taken into account by the assembly routine. <tr> <td> `emp.Eval(e)` <td>
+`Eigen::Matrix<SCALAR, ROWS, COLS>`     <td> Returns the local element matrix
+for mesh entity `e`. Is only called if `emp.isActive(e)==true`.
 </table>
 
-## Usage scenarios
-The concept of a EntityMatrixProvider is widely used in the `lf::assemble` and `lf::uscalfe` modules:
-- The function `lf::assemble::AssembleMatrixLocally()` accepts an `EntityMatrixProvider` which in turn defines how the (sparse) system matrix is assembled.
+@note returning a matix object through `Eval()` may sacrifice efficiency because
+it may entail additional allocation of dynamic memory. However, this design was
+chosen for the sake of readability of the code and in order to avoid nasty
+memory access errors that often occur when passing a matrix by reference.
 
+## Usage scenarios
+The concept of a EntityMatrixProvider is widely used in the `lf::assemble` and
+`lf::uscalfe` modules:
+- The function `lf::assemble::AssembleMatrixLocally()` accepts an
+`EntityMatrixProvider` which in turn defines how the (sparse) system matrix is
+assembled.
+
+## Implementations 
+
+Examples for classes implementing the concept EntityMatrixProvider are
+@ref lf::uscalfe::LinearFELaplaceElementMatrix and
+@ref lf::uscalfe::ReactionDiffusionElementMatrixProvider
 
 ## See also
 - The concept \ref entity_vector_provider
+- The cell-oriented assembly functions \ref assemble_matrix_locally
+- [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ex:lfemp}
+- [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ex:lfbdse1}
 
 */
