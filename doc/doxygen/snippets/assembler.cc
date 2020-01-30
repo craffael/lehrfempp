@@ -3,6 +3,28 @@
 
 namespace lf {
 
+//! [lflinfeelmat]
+class ElemMatProvider {
+ public:
+  // Constructor can be used to pass data required for local computations
+  ElemMatProvider() = default;
+  // Select cells taken into account during cell-oriented assembly
+  virtual bool isActive(const lf::mesh::Entity& cell);
+  // Compute element matrix for a cell, here a fixed-size matrix
+  Eigen::Matrix<double, 3, 3> Eval(const lf::mesh::Entity& cell);
+};
+//! [lflinfeelmat]
+
+bool ElemMatProvider::isActive(const lf::mesh::Entity& cell) {
+  if (cell.RefEl() == lf::base::RefEl::kTria()) return true;
+  return false;
+}
+
+Eigen::Matrix<double, 3, 3> ElemMatProvider::Eval(
+    const lf::mesh::Entity& cell) {
+  return Eigen::Matrix<double, 3, 3>::Constant(1.0);
+}
+
 void matrix() {
   //! [matrix_usage]
   // initialize triangular 2d mesh somehow

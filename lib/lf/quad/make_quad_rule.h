@@ -27,13 +27,22 @@ namespace lf::quad {
  */
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree);
 
-/** @name Special "named" quadrature rules
+/** @defgroup namedqr Special "named" quadrature rules
+ * @breif Creation of special quadrature rules
+ *
  * These functions provide a number of special quadrature rules
  * in the forms of @ref QuadRule objects. They are meant to be
  * used in low-order finite element methods when the quadrature
  * rules can easily fixed a-priori and should feature a special
  * location of quadrature points as is required, e.g., for mass-lumping
- * technoiques.
+ * techniques.
+ *
+ * For some examples see [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{ex:triquadrules}.
+ *
+ * QuadRule objects with a particular order but otherwise unspecified properties
+ * can be created by @ref lf::quad::make_QuadRule().
  * @{
  */
 

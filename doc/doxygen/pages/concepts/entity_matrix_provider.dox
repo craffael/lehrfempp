@@ -30,6 +30,10 @@ the following expressions are valid:
 for mesh entity `e`. Is only called if `emp.isActive(e)==true`.
 </table>
 
+### Typical class definition
+
+@snippet assembler.cc lflinfeelmat
+
 @note returning a matix object through `Eval()` may sacrifice efficiency because
 it may entail additional allocation of dynamic memory. However, this design was
 chosen for the sake of readability of the code and in order to avoid nasty

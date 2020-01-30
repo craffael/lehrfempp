@@ -14,6 +14,15 @@
 
 /** @brief Rules for numerical quadrature on reference entity shapes
  *
+ * Quadrature rules are specified by
+ * - a sequence of _reference coordinates_ for quadrature points
+ * - a corresponding sequence of real-valued quadrature weights
+ * The main interface is provided by the class @ref lf::quad::QuadRule.
+ *
+ * Refer to [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:lfquad}.
+ *
  */
 namespace lf::quad {}
 

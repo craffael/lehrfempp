@@ -16,6 +16,7 @@ set(sources
   entityuse.cc
   geometryuse.cc
   dofhandleruse.cc
+  quadruleuse.cc
 )
 
 add_library(docsnippets ${sources})

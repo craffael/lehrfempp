@@ -121,12 +121,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                            const DofHandler &dof_handler_test,
                            ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
                            TMPMATRIX &matrix) {
-  // Pointer to underlying mesh
+  // Fetch pointer to underlying mesh
   auto mesh = dof_handler_trial.Mesh();
-
   LF_ASSERT_MSG(mesh == dof_handler_test.Mesh(),
                 "Trial and test space must be defined on the same mesh");
-
   // Central assembly loop over entities of co-dimension specified by
   // the function argument codim
   for (const lf::mesh::Entity *entity : mesh->Entities(codim)) {
@@ -144,8 +142,8 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       // Column indices of for contributions of cells
       nonstd::span<const gdof_idx_t> col_idx(
           dof_handler_trial.GlobalDofIndices(*entity));
-      // Request local matrix from entity_matrix_provider object. In the case
-      // codim = 0, when `entity` is a cell, this is the element matrix
+      // Request local matrix from entity_matrix_provider object. In the
+      // case codim = 0, when `entity` is a cell, this is the element matrix
       const auto elem_mat{entity_matrix_provider.Eval(*entity)};
       LF_ASSERT_MSG(elem_mat.rows() >= nrows_loc,
                     "nrows mismatch " << elem_mat.rows() << " <-> " << nrows_loc
