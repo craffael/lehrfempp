@@ -63,7 +63,9 @@ namespace lf::assemble {
     \mathbf{b} = \left[\begin{array}{c} \mathbf{b}_1 \\ \mathbf{b}_2
  \end{array}\right] \f]
  * Then the solution of the system with fixed solution components is
- * given by
+ * given by, see also [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{eq:ffsc}
  * \f[
       \left[\begin{array}{cc} \mathbf{A}_{11} & 0  \\
         \mathbf{0} & \mathbf{I}
@@ -76,6 +78,11 @@ namespace lf::assemble {
        \widehat{\mathbf{x}}
       \end{array}\right]
    \f]
+ *
+ * The underlying mathematics is elaborated in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:lfffsc}.
+ *
  */
 template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
 void FixFlaggedSolutionComponents(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
@@ -163,7 +170,17 @@ void FixFlaggedSolutionComponents(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
  \widehat{\mathbf{x}}
  \end{array}\right]
  \f]
-*/
+ * Please refer to [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:lfffsc} for deeper exposition.
+ *
+ * #### Sample code
+ *
+ * The use of this function is demonstrated in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{cpp:lfdir}.
+ *
+ */
 template <typename SCALAR, typename SELECTOR, typename RHSVECTOR>
 void FixFlaggedSolutionCompAlt(SELECTOR &&selectvals, COOMatrix<SCALAR> &A,
                                RHSVECTOR &b) {

@@ -14,8 +14,11 @@ set(sources
   meshhierarchy.cc
   meshuse.cc
   entityuse.cc
+  geometryuse.cc
+  dofhandleruse.cc
+  quadruleuse.cc
 )
 
 add_library(docsnippets ${sources})
-target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base lf.mesh)
+target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base lf.mesh lf.geometry lf.assemble)
 target_compile_features(docsnippets PUBLIC cxx_std_17)

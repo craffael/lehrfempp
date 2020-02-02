@@ -3,6 +3,7 @@ set(sources
   hybrid2d_refinement_pattern.h hybrid2d_refinement_pattern.cc
   mesh_hierarchy.h mesh_hierarchy.cc
   refutils.h refutils.cc
+  mesh_function_transfer.h
   )
 
 lf_add_library(lf.refinement ${sources})
