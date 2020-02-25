@@ -3,7 +3,7 @@
 
 # LehrFEM++
 Simplistic Finite Element Framework for research and eduction optimzed for clarity and
-flexibility with some trade-off concerning performance.
+flexibility with some trade-off concerning performance. This libary is used for the course _Numerical Methods for Partial Differential Euqations_ taught by Prof. R. Hiptmair at ETH Zurich.
 
 * LehrFEM++ follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html#Naming).
@@ -13,3 +13,4 @@ Guide](https://google.github.io/styleguide/cppguide.html#Naming).
   instructions in the [testing
   guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
 * [Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
+* [Getting Started Guide](https://craffael.github.io/lehrfempp/getting_started.html)
