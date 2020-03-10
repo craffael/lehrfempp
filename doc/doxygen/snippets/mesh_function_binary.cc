@@ -80,4 +80,44 @@ void multiplication() {
   //! [product]
 }
 
+void mfgdemo(const lf::mesh::Mesh& mesh) {
+  //! [mfgdemo]
+  // Define a tensor field through a lambda function
+  auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
+    return (Eigen::Matrix<double, 2, 2>() << (3.0 + x[1]), x[0], x[0],
+            (2.0 + x[0]))
+        .finished();
+  };
+  // Wrap the tensor field into a MeshFunction
+  lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
+  // evaluate the tensor field at the nodes of the mesh
+  const Eigen::Matrix<double, 0, 1> dummy;
+  for (const lf::mesh::Entity* node : mesh.Entities(2)) {
+    const std::vector<Eigen::Matrix<double, 2, 2>> a{mf_alpha(*node, dummy)};
+    std::cout << a[0] << std::endl;
+  }
+  //! [mfgdemo]
+}
+
+//! [mffedemo]
+double computeL2ErrorNorm(
+    std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> fe_space_p,
+    const Eigen::VectorXd& mu) {
+  // Reference to underlying mesh
+  const lf::mesh::Mesh& mesh{*(fe_space_p->Mesh())};
+  // Lambda function providing the "exact solution"
+  auto u = [](Eigen::Vector2d x) -> double {
+    return std::log(x[0] * x[0] + x[1] + 1.0);
+  };
+  // Has to be wrapped into a mesh function for error computation
+  lf::mesh::utils::MeshFunctionGlobal mf_u{u};
+  // create mesh functions representing solution / gradient of solution
+  auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space_p, mu);
+  // compute errors with 10-th order quadrature rules
+  double L2err_2 =  // NOLINT
+      std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
+  return std::sqrt(L2err_2);
+}
+//! [mffedemo]
+
 }  // namespace lf::uscalfe

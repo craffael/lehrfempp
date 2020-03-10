@@ -23,7 +23,7 @@ bool assertNonDegenerateQuad(
  * This element shape arises from subjecting the unit square to
  * a componentwise bilinear mapping. This results in a _non-flat_ quadrilateral
  * with _straight_ edges, whose shape is determined by the location of the
- * four vertices.
+ * four vertices, see @lref{sec:parquad} for the planar case.
  */
 class QuadO1 : public Geometry {
  public:
@@ -43,12 +43,28 @@ class QuadO1 : public Geometry {
     return base::RefEl::kQuad();
   }
 
+  /** @copydoc Geometry::Gloval()
+   *
+   * For formulas and explanations see @\lref{par:bilintrf}.
+   */
   [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
+  /** @copydoc Geometry::Jacobian()
+   *
+   * The formulas are discussed in @\lref{ex:trftechbil}.
+   */
   [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override;
+  /** @copydoc Geometry::JacobianInverseGramian()
+   *
+   * The formulas are discussed in @\lref{ex:trftechbil}.
+   */
   [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const override;
+  /** @copydoc Geometry::IntegrationElement()
+   *
+   * The formulas are discussed in @\lref{ex:trftechbil}.
+   */
   [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
 

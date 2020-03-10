@@ -52,6 +52,14 @@ class Geometry {
    * @return A Matrix of size `DimGlobal() x numPoints` that contains the mapped
    *         points as column vectors. Here `numPoints` is the number of columns
    *         of the matrix passed in the `local` argument.
+   * \f[
+   \mathtt{Global}\left(\left[\widehat{x}^1,\ldots,\widehat{x}^k\right]\right) =
+   \left[
+   \mathbf{\Phi}_K(\widehat{x}^1),\ldots,\mathbf{\Phi}_K(\widehat{x}^1)\right]\;,\quad
+   \widehat{x}^{\ell}\in\widehat{K}\;,
+   * \f]
+   * where \f$\mathbf{\Phi}\f$ is the mapping taking the reference element to
+   * the current element \f$K\f$.
    *
    * This method provides a complete description of the shape of an entity
    * through a parameterization over the corresponding reference element =
@@ -115,6 +123,7 @@ class Geometry {
    * ~~~
    * JacobianInverseGramian(local).block(0,i*D,D,D)
    * ~~~
+   * More explanations in @lref{rem:jti}.
    */
   [[nodiscard]] virtual Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const = 0;
