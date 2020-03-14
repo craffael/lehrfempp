@@ -55,7 +55,7 @@ class Geometry {
    * \f[
    \mathtt{Global}\left(\left[\widehat{x}^1,\ldots,\widehat{x}^k\right]\right) =
    \left[
-   \mathbf{\Phi}_K(\widehat{x}^1),\ldots,\mathbf{\Phi}_K(\widehat{x}^1)\right]\;,\quad
+   \mathbf{\Phi}_K(\widehat{x}^1),\ldots,\mathbf{\Phi}_K(\widehat{x}^k)\right]\;,\quad
    \widehat{x}^{\ell}\in\widehat{K}\;,
    * \f]
    * where \f$\mathbf{\Phi}\f$ is the mapping taking the reference element to

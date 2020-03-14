@@ -43,27 +43,27 @@ class QuadO1 : public Geometry {
     return base::RefEl::kQuad();
   }
 
-  /** @copydoc Geometry::Gloval()
+  /** @copydoc Geometry::Global()
    *
-   * For formulas and explanations see @\lref{par:bilintrf}.
+   * For formulas and explanations see @lref{par:bilintrf}.
    */
   [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
   /** @copydoc Geometry::Jacobian()
    *
-   * The formulas are discussed in @\lref{ex:trftechbil}.
+   * The formulas are discussed in @lref{ex:trftechbil}.
    */
   [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override;
   /** @copydoc Geometry::JacobianInverseGramian()
    *
-   * The formulas are discussed in @\lref{ex:trftechbil}.
+   * The formulas are discussed in @lref{ex:trftechbil}.
    */
   [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const override;
   /** @copydoc Geometry::IntegrationElement()
    *
-   * The formulas are discussed in @\lref{ex:trftechbil}.
+   * The formulas are discussed in @lref{ex:trftechbil}.
    */
   [[nodiscard]] Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const override;
