@@ -1,5 +1,7 @@
 # cmake configuration file for compilation of LehrFEM++ lecture demo codes:
 
+add_subdirectory(convergencestudies)
+
 set(lecturedemo
   lecturedemotwonorm.h lecturedemotwonorm.cc
   lecturedemomesh.h lecturedemomesh.cc
