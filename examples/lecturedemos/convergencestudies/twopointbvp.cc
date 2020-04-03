@@ -6,6 +6,8 @@
  * @copyright MIT License
  */
 
+#define _USE_MATH_DEFINES
+
 #include <lf/quad/gauss_quadrature.h>
 
 #include <Eigen/Dense>
