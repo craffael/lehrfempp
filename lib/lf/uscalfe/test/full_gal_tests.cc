@@ -52,13 +52,14 @@ TEST(lf_gfe, a_dir_dbg_1) {
             << std::endl;
   std::cout << "alpha = 1, gamma =, => energy = 0 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto v = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
   // Diffusion coefficient
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   Eigen::VectorXd energies =
@@ -73,14 +74,14 @@ TEST(lf_gfe, a_dir_dbg_2) {
             << std::endl;
   std::cout << "alpha = 1+x, gamma =, => energy = 7.5 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Diffusion coefficient
-  auto alpha = MeshFunctionGlobal(
+  auto alpha = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (1.0 + x[0]); });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 7.5, 1.0E-4);
@@ -93,15 +94,15 @@ TEST(lf_gfe, a_dir_dbg_3) {
             << std::endl;
   std::cout << "alpha = 1+x^2+y^2, gamma =, => energy = 25/3 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Diffusion coefficient
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (1.0 + x[0] * x[0] + x[1] * x[1]);
   });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 25.0 / 3.0, 1.0E-4);
@@ -114,14 +115,14 @@ TEST(lf_gfe, a_dir_dbg_4) {
             << std::endl;
   std::cout << "alpha = 0, gamma = 1, => energy = 8/3 = 2.6666.." << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Diffusion coefficient
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 8.0 / 3.0, 1.0E-4);
@@ -135,13 +136,13 @@ TEST(lf_gfe, a_dir_dbg_5) {
   std::cout << "alpha = 0, gamma = 1/(x^2+y^2), => energy = 1.42447.."
             << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Diffusion coefficient
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
   // Reaction coefficient
-  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto gamma = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (1.0 / (1 + x[0] * x[0] + x[1] * x[1]));
   });
 
@@ -155,14 +156,14 @@ TEST(lf_gfe, a_dir_dbg_6) {
   std::cout << "#### TEST: Bilinear form test 6, f = e^(x*y)" << std::endl;
   std::cout << "alpha = 1, gamma = 0, => energy = 1.59726.." << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Diffusion coefficient
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 1.59726, 2.0E-3);
@@ -175,15 +176,15 @@ TEST(lf_gfe, a_dir_dbg_7) {
   std::cout << "alpha = 1+x^2+y^2, gamma = 0, => energy = 3.39057.."
             << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Diffusion coefficient
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (1.0 + x[0] * x[0] + x[1] * x[1]);
   });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 3.39057, 2.0E-3);
@@ -196,14 +197,14 @@ TEST(lf_gfe, a_dir_dbg_8) {
   std::cout << "alpha = 1+x^2+y^2, gamma = 1/(x^2+y^2), => energy = 4.44757.."
             << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Diffusion coefficient
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto alpha = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (1.0 + x[0] * x[0] + x[1] * x[1]);
   });
   // Reaction coefficient
-  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto gamma = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return 1.0 / (1.0 + x[0] * x[0] + x[1] * x[1]);
   });
 
@@ -218,16 +219,17 @@ TEST(lf_gfe, a_dir_dbg_9) {
   std::cout << "alpha = [1+x_2,0;0,1+x_1], gamma = 0, => energy = 7.5.."
             << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Diffusion coefficient
-  auto alpha = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Matrix2d {
-    return (Eigen::Matrix2d(2, 2) << 1.0 + x[1], 0.0, 0.0, 1.0 + x[0])
-        .finished();
-  });
+  auto alpha =
+      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Matrix2d {
+        return (Eigen::Matrix2d(2, 2) << 1.0 + x[1], 0.0, 0.0, 1.0 + x[0])
+            .finished();
+      });
   // Reaction coefficient
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 0.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 0.0; });
 
   auto en{LinFEEnergyTest(reflevels, v, alpha, gamma)};
   EXPECT_NEAR(en.back(), 7.5, 2.0E-3);
@@ -272,11 +274,11 @@ TEST(lf_full, bd_a_1) {
 
   std::cout << "eta = 1 => energy = 32/3 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Impedance coefficient
-  auto eta =
-      MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto eta = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
 
   auto en{LinFEInterfaceEnergyTest(reflevels, v, eta)};
   EXPECT_NEAR(en.back(), 32.0 / 3.0, 1.0E-4);
@@ -289,10 +291,10 @@ TEST(lf_full, bd_a_2) {
 
   std::cout << "eta = x^2+y^2 => energy = 46/3" << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Impedance coefficient
-  auto eta = MeshFunctionGlobal(
+  auto eta = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (x[0] * x[0] + x[1] * x[1]); });
 
   auto en{LinFEInterfaceEnergyTest(reflevels, v, eta)};
@@ -307,10 +309,10 @@ TEST(lf_full, bd_a_3) {
 
   std::cout << "eta = x^2+y^2 => energy = 9.58358.." << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Impedance coefficient
-  auto eta = MeshFunctionGlobal(
+  auto eta = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (x[0] * x[0] + x[1] * x[1]); });
 
   auto en{LinFEInterfaceEnergyTest(reflevels, v, eta)};
@@ -348,10 +350,11 @@ TEST(lf_full, ell_1) {
 
   std::cout << "f = 1 => fval = 1.5 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Right hand side source function
-  auto f = MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto f = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
 
   auto en{LinFERHSTest(reflevels, v, f)};
   EXPECT_NEAR(en.back(), 1.5, 1.0E-4);
@@ -364,10 +367,10 @@ TEST(lf_full, ell_2) {
 
   std::cout << "f = x/(1+y) => fval = " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Right hand side source function
-  auto f = MeshFunctionGlobal(
+  auto f = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (x[0] / (1.0 + x[1])); });
 
   auto en{LinFERHSTest(reflevels, v, f)};
@@ -413,10 +416,11 @@ TEST(lf_full, bd_rhs_1) {
 
   std::cout << "h = 1 => fval = 4.5 " << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (2.0 * x[0] + x[1]); });
   // Right hand side source function
-  auto f = MeshFunctionGlobal([](Eigen::Vector2d x) -> double { return 1.0; });
+  auto f = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d x) -> double { return 1.0; });
 
   auto en{LinFEBoundaryRHSTest(reflevels, v, f)};
   EXPECT_NEAR(en.back(), 4.5, 1.0E-4);
@@ -429,10 +433,10 @@ TEST(lf_full, bd_rhs_2) {
 
   std::cout << "h = x/(1+y) => fval = 1.62539" << std::endl;
   // Synthetic function
-  auto v = MeshFunctionGlobal(
+  auto v = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return std::exp(x[0] * x[1]); });
   // Right hand side source function
-  auto f = MeshFunctionGlobal(
+  auto f = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return (x[0] / (1.0 + x[1])); });
 
   auto en{LinFEBoundaryRHSTest(reflevels, v, f)};

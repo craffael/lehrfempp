@@ -16,18 +16,19 @@
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
-#include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
 using lf::uscalfe::operator-;
+using lf::uscalfe::operator*;
 
 /**
  * @brief Compute the analytic flow velocity
@@ -171,11 +172,11 @@ int main() {
   }
 
   // Perform post processing on the data
-  const auto analyticU = lf::uscalfe::MeshFunctionGlobal(
+  const auto analyticU = lf::mesh::utils::MeshFunctionGlobal(
       [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
         return computeU(n, x);
       });
-  const auto analyticF = lf::uscalfe::MeshFunctionGlobal(
+  const auto analyticF = lf::mesh::utils::MeshFunctionGlobal(
       [&](const Eigen::Vector2d& x) -> Eigen::Vector2d {
         return computeF(n, x);
       });
@@ -183,9 +184,9 @@ int main() {
     const auto fe_space =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
-    const auto velocity_exact = lf::uscalfe::MeshFunctionGlobal(
+    const auto velocity_exact = lf::mesh::utils::MeshFunctionGlobal(
         [n](const Eigen::Vector2d& x) { return computeU(n, x); });
-    const auto grad_exact = lf::uscalfe::MeshFunctionGlobal(
+    const auto grad_exact = lf::mesh::utils::MeshFunctionGlobal(
         [n](const Eigen::Vector2d& x) -> Eigen::Matrix2d {
           return computeUGrad(n, x);
         });
@@ -195,29 +196,10 @@ int main() {
         velocity_modified(fe_space, solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));
-    writer.WriteCellData("analyticU",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return analyticU(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
-    writer.WriteCellData("analyticF",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return analyticF(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
-    writer.WriteCellData(
-        "U", *lf::mesh::utils::make_LambdaMeshDataSet(
-                 [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                   return velocity(e, Eigen::Vector2d::Constant(1. / 3))[0];
-                 }));
-    writer.WriteCellData("U_modified",
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity& e) -> Eigen::Vector2d {
-                               return velocity_modified(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
+    writer.WriteCellData("analyticU", analyticU);
+    writer.WriteCellData("analyticF", analyticF);
+    writer.WriteCellData("U", velocity);
+    writer.WriteCellData("U_modified", velocity_modified);
     // The error in the velocity
     const auto diff_v = velocity - velocity_exact;
     const auto diff_v_modified = velocity_modified - velocity_exact;
@@ -225,56 +207,36 @@ int main() {
     const auto diff_grad = -grad_exact;
     const auto diff_grad_modified = -grad_exact;
     // Approximately compute the factor the numerical solution is off by
-    const auto operator_dot = [](const auto& a, const auto& b, int /*unused*/) {
-      std::vector<double> result;
-      result.reserve(a.size());
-      for (size_t i = 0; i < a.size(); ++i) {
-        result.push_back(a[i].dot(b[i]));
-      }
-      return result;
-    };
-    const auto operator_multiplication = [](const auto& a, const auto& b, int /*unused*/) {
-      std::vector<Eigen::Vector2d> result;
-      for (size_t i = 0; i < a.size(); ++i) {
-        result.push_back(a[i] * b[i]);
-      }
-      return result;
-    };
     const auto qr_provider = [](const lf::mesh::Entity& e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
     const double factor = lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
-                              lf::uscalfe::MeshFunctionBinary(
-                                  operator_dot, velocity, velocity_exact),
-                              qr_provider) /
+                              lf::uscalfe::transpose(velocity) * velocity_exact,
+                              qr_provider)(0, 0) /
                           lf::uscalfe::IntegrateMeshFunction(
                               *(solutions[lvl].mesh),
                               lf::uscalfe::squaredNorm(velocity), qr_provider);
     const double factor_modified =
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh),
-            lf::uscalfe::MeshFunctionBinary(operator_dot, velocity_modified,
-                                            velocity_exact),
-            qr_provider) /
+            lf::uscalfe::transpose(velocity_modified) * velocity_exact,
+            qr_provider)(0, 0) /
         lf::uscalfe::IntegrateMeshFunction(
             *(solutions[lvl].mesh), lf::uscalfe::squaredNorm(velocity_modified),
             qr_provider);
     std::cout << factor << std::endl;
     // The error in the corrected velocity
-    const auto velocity_scaled = lf::uscalfe::MeshFunctionBinary(
-        operator_multiplication,
-        lf::uscalfe::MeshFunctionConstant<double>(factor),
-	velocity);
-    const auto velocity_scaled_modified = lf::uscalfe::MeshFunctionBinary(
-        operator_multiplication,
-        lf::uscalfe::MeshFunctionConstant(factor_modified),
-	velocity_modified);
+    const auto velocity_scaled =
+        lf::mesh::utils::MeshFunctionConstant<double>(factor) * velocity;
+    const auto velocity_scaled_modified =
+        lf::mesh::utils::MeshFunctionConstant(factor_modified) *
+        velocity_modified;
     const auto diff_v_fac = velocity_scaled - velocity_exact;
     const auto diff_v_fac_modified = velocity_scaled_modified - velocity_exact;
     // The error in the gradient of the corrected velocty
-    const auto &diff_g_fac = diff_grad;
-    const auto &diff_g_fac_modified = diff_grad_modified;
+    const auto& diff_g_fac = diff_grad;
+    const auto& diff_g_fac_modified = diff_grad_modified;
     const double L2 = projects::ipdg_stokes::post_processing::L2norm(
         solutions[lvl].mesh, diff_v, qr_provider);
     const double DG = projects::ipdg_stokes::post_processing::DGnorm(

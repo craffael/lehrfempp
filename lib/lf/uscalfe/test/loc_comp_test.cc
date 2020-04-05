@@ -34,10 +34,10 @@ TEST(lf_uscalfe, mass_mat_test) {
       {lf::base::RefEl::kQuad(), lf::quad::make_QuadQR_P1O2()}};
 
   // Coefficients
-  auto alpha =
-      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
-  auto gamma =
-      MeshFunctionGlobal([](Eigen::Vector2d) -> double { return 1.0; });
+  auto alpha = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> double { return 1.0; });
+  auto gamma = mesh::utils::MeshFunctionGlobal(
+      [](Eigen::Vector2d) -> double { return 1.0; });
 
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
@@ -81,14 +81,14 @@ TEST(lf_uscalfe, cross_val) {
        lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2)}};
 
   // Coefficients, reasonably complicated
-  auto alpha = MeshFunctionGlobal(
+  auto alpha = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return x[0] * x[0] + x[1] * x[1]; });
 
-  auto gamma = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto gamma = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return 1.0 / (1 + x[0] * x[0] + x[1] * x[1]);
   });
 
-  auto f = MeshFunctionGlobal(
+  auto f = mesh::utils::MeshFunctionGlobal(
       [](Eigen::Vector2d x) -> double { return x[0] * x[0] - x[1] * x[1]; });
 
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),

@@ -25,7 +25,7 @@ namespace lf::geometry {
  * between topological and geometric operations.
  *
  * Example: fundamental lattice with constant 6 (default setting) for a
- * triangle: every lattice point has integerf coordinates \f$(i,j)\f$, \f$0\leq
+ * triangle: every lattice point has integer coordinates \f$(i,j)\f$, \f$0\leq
  * i,j \leq 6\f$, \f$i+j\leq 6\f$.
  * @image html trialattice.png width=500px
  */

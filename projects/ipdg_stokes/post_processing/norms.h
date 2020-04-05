@@ -9,6 +9,7 @@
 
 #include <lf/mesh/entity.h>
 #include <lf/mesh/mesh.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
 
@@ -53,7 +54,7 @@ double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF &f,
  * @param f_grad The gradient of the function to take the norm from
  * @param qr_selector A function giving the quadrature rule to use for a given
  * element
- * @returns The @f$H^1@f$-norm of the function over the mesh
+ * @returns The DG-norm of the function over the mesh
  *
  * This functoin computes the following formula
  * @f[
@@ -73,7 +74,7 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF_F &f,
   // Compute the norm on the edges
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
   using jump_t = std::remove_cv_t<decltype(
-      (std::declval<lf::uscalfe::MeshFunctionReturnType<MF_F>>() *
+      (std::declval<lf::mesh::utils::MeshFunctionReturnType<MF_F>>() *
        std::declval<Eigen::Vector2d>().transpose())
           .eval())>;
   lf::mesh::utils::CodimMeshDataSet<std::vector<jump_t>> eval(mesh, 1);

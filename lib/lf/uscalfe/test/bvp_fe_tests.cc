@@ -162,12 +162,13 @@ TEST(lfe_bvpfe, bvp_DirNeu) {
   // Set debugging flags
   // LFELinSys_ctrl = 0;
   // The solution and its gradient
-  auto u = MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
+  auto u = mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> double {
     return (0.5 * std::log(x.squaredNorm() + 1.0));
   });
-  auto grad_u = MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return (1.0 / (x.squaredNorm() + 1.0)) * x;
-  });
+  auto grad_u =
+      mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) -> Eigen::Vector2d {
+        return (1.0 / (x.squaredNorm() + 1.0)) * x;
+      });
   auto bvp_p = std::make_shared<MixedEllipticBVP>();
   auto errnorms = TestConvergenceEllBVPFESol(REFLEV, bvp_p, u, grad_u);
 
@@ -294,10 +295,10 @@ TEST(lfe_bvpfe, bvp_demo) {
   auto bvp_p = std::make_shared<DemoEllipticBVP>();
 
   // The solution and its gradient
-  auto u = MeshFunctionGlobal(
+  auto u = mesh::utils::MeshFunctionGlobal(
       [bvp_p](Eigen::Vector2d x) -> double { return bvp_p->u(x); });
-  auto grad_u =
-      MeshFunctionGlobal([bvp_p](Eigen::Vector2d x) -> Eigen::Vector2d {
+  auto grad_u = mesh::utils::MeshFunctionGlobal(
+      [bvp_p](Eigen::Vector2d x) -> Eigen::Vector2d {
         return bvp_p->grad_u(x);
       });
   // Compute error norms, specify test mesh #6 (no scaling)

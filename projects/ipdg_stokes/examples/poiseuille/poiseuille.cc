@@ -17,13 +17,12 @@
 #include <lf/mesh/hybrid2d/mesh.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
 
 #include <build_system_matrix.h>
-#include <mesh_function_interpolation.h>
 #include <mesh_function_velocity.h>
-#include <mesh_hierarchy_function.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
@@ -184,9 +183,9 @@ int main(int argc, char *argv[]) {
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
     const auto velocity_exact =
-        lf::uscalfe::MeshFunctionGlobal(analytic_velocity);
+        lf::mesh::utils::MeshFunctionGlobal(analytic_velocity);
     const auto gradient_exact =
-        lf::uscalfe::MeshFunctionGlobal(analytic_gradient);
+        lf::mesh::utils::MeshFunctionGlobal(analytic_gradient);
     const auto velocity =
         projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
                                                                      double>(

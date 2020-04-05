@@ -16,8 +16,8 @@
  */
 
 #include <lf/assemble/assemble.h>
+#include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
-#include "mesh_function_traits.h"
 #include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {
@@ -33,8 +33,8 @@ namespace internal {
 // is resolved.
 template <class MF, class QR_SELECTOR>
 auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
-                   const MF &mf) -> MeshFunctionReturnType<MF> {
-  using MfType = MeshFunctionReturnType<MF>;
+                   const MF &mf) -> mesh::utils::MeshFunctionReturnType<MF> {
+  using MfType = mesh::utils::MeshFunctionReturnType<MF>;
   auto qr = qr_selector(e);
   auto values = mf(e, qr.Points());
   auto weights_ie =
@@ -42,7 +42,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
           .eval();
   LF_ASSERT_MSG(values.size() == qr.NumPoints(),
                 "mf returns vector with wrong size.");
-  if constexpr (std::is_arithmetic_v<MfType>) {
+  if constexpr (std::is_arithmetic_v<MfType>) {  // NOLINT
     auto value_m = Eigen::Map<Eigen::Matrix<MfType, 1, Eigen::Dynamic>>(
         &values[0], 1, values.size());
     return (value_m * weights_ie)(0);
@@ -108,9 +108,10 @@ template <class MF, class QR_SELECTOR,
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
                            const QR_SELECTOR &qr_selector,
                            const ENTITY_PREDICATE &ep = base::PredicateTrue{},
-                           int codim = 0) -> MeshFunctionReturnType<MF> {
-  static_assert(isMeshFunction<MF>);
-  using MfType = MeshFunctionReturnType<MF>;
+                           int codim = 0)
+    -> mesh::utils::MeshFunctionReturnType<MF> {
+  static_assert(mesh::utils::isMeshFunction<MF>);
+  using MfType = mesh::utils::MeshFunctionReturnType<MF>;
 
   auto entities = mesh.Entities(codim);
   auto result = internal::LocalIntegral(**entities.begin(), qr_selector, mf);
@@ -201,10 +202,11 @@ static const unsigned int kout_prj_vals = 2;
 template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
 auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
                      SELECTOR &&pred = base::PredicateTrue{}) {
-  static_assert(isMeshFunction<std::remove_reference_t<MF>>);
+  static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<MF>>);
   // choose scalar type so it can hold the scalar type of u as well as
   // SCALAR
-  using scalarMF_t = MeshFunctionReturnType<std::remove_reference_t<MF>>;
+  using scalarMF_t =
+      mesh::utils::MeshFunctionReturnType<std::remove_reference_t<MF>>;
   using scalar_t = decltype(SCALAR(0) * scalarMF_t(0));
   // Return type, type for FE coefficient vector
   using dof_vec_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
@@ -310,7 +312,7 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const lf::assemble::DofHandler &dofh,
     const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
     EDGESELECTOR &&esscondflag, FUNCTION &&g) {
-  static_assert(isMeshFunction<std::remove_reference_t<FUNCTION>>);
+  static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<FUNCTION>>);
   // static_assert(isMeshFunction<FUNCTION>, "g must by a MeshFunction object");
   LF_ASSERT_MSG(fe_spec_edge.RefEl() == lf::base::RefEl::kSegment(),
                 "finite element specification must be for an edge!");

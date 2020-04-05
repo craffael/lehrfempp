@@ -3,7 +3,6 @@ include(GoogleTest)
 set(src
   fe_testutils.h
   fe_testutils.cc
-  mesh_function_utils.h
   sec_ord_ell_bvp.h
   #sec_ord_ell_bvp.cc // nothing in the cc file, all is in the header
   loc_comp_test.cc
@@ -14,9 +13,7 @@ set(src
   lagr_fe_tests.cc
   mesh_function_fe_tests.cc
   mesh_function_grad_fe_tests.cc
-  mesh_function_traits_tests.cc
-  mesh_function_binary_tests.cc
-  mesh_function_unary_tests.cc
+  prolongation_tests.cc
 )
 
 add_executable(lf.uscalfe.test ${src})

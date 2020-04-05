@@ -21,6 +21,9 @@ namespace lf::refinement::test {
 void checkFatherChildRelations(const MeshHierarchy &mh,
                                base::size_type father_level);
 
+void checkGeometryInParent(const MeshHierarchy &mh,
+                           base::size_type father_level);
+
 }  // namespace lf::refinement::test
 
 #endif
