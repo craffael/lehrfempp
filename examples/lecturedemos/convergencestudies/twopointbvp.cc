@@ -114,14 +114,7 @@ int main(int argc, char *argv[]) {
     const Eigen::VectorXd sol = solver.solve(rhs);
 
     // Compute the norms and store them in the results matrix
-    const Eigen::VectorXd cell_values_analytic =
-        Eigen::VectorXd::LinSpaced(M, h / 2, 1. - h / 2).unaryExpr(u);
-    const Eigen::VectorXd cell_values_approximate =
-        (sol.head(M) + sol.tail(M)) / 2;
-    double norm_max = (cell_values_approximate - cell_values_analytic)
-                          .array()
-                          .abs()
-                          .maxCoeff();
+    double norm_max = 0;
     double norm_H1_squared = 0;
     double norm_L2_squared = 0;
     for (int i = 0; i < M; ++i) {
@@ -145,6 +138,12 @@ int main(int argc, char *argv[]) {
       // solution
       const auto diff_grad = [&](double x) { return u_h_grad(x) - u_grad(x); };
 
+      // Compute the max norm by evaluating the functions on a fine grid
+      norm_max =
+          std::max(norm_max, Eigen::ArrayXd::LinSpaced(10 * M_max / M, a, b)
+                                 .unaryExpr(diff)
+                                 .abs()
+                                 .maxCoeff());
       // Compute the H1 and L2 norms by integrating using a numerical quadrature
       for (int k = 0; k < num_quad_points; ++k) {
         norm_H1_squared += loc_quad_weights[k] * diff_grad(loc_quad_points[k]) *
