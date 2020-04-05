@@ -13,7 +13,7 @@
 
 namespace lf::base {
 
-/*!
+/**
  * @brief An enum that defines all possible RefEl types.
  *
  * This enum is only rarely used direcly because there is a one-to-one relation
@@ -58,12 +58,20 @@ constexpr dim_t DimensionImpl(RefElType type) {
 /** @class RefEl lf/base/base.h
  * @brief Represents a reference element with all its properties.
  *
- * Every Entity of a mesh in LehrFEM++ is the image of a reference element
+ * Every entity of a mesh in LehrFEM++ is the image of a reference element
  * under an entity-specific (smooth) transformation (which is described by the
  * lf::mesh::Geometry class). This transformation describes the shape of the
  * actual entity, but also the algebraic relations between its sub-entities.
+ * For details consult [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sec:trftech. @lref{def:parfe}
  *
- * The reference element serves two main purposes:
+ * On a more fundamental level objects of this class distinguish the
+ * **topological type** of a mesh entity, see [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:loctop}.
+ *
+ * Summing up, the reference element serves two main purposes:
  * - it defines the _local topology_ of the mesh in terms of incidence relations
  *   of the entities. For instance the reference element defines the number of
  *   edges of a cell.

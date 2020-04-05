@@ -65,6 +65,10 @@ namespace lf::mesh {
  * of a mesh.
  * @snippet meshuse.cc usage
  *
+ * Design and use of @ref lf::mesh::Mesh functionality is also presented in
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sss:lfmeshcnt}
+ *
  */
 class Mesh {
  protected:
@@ -82,6 +86,8 @@ class Mesh {
    * @brief The dimension of the manifold described by the mesh, or
    *        equivalently the maximum dimension of the reference elements
    *        present in the mesh.
+   *
+   * See the code snippet showing the use of @ref lf::mesh::Mesh
    */
   [[nodiscard]] virtual unsigned DimMesh() const = 0;
 
@@ -115,6 +121,13 @@ class Mesh {
    *
    * @note The pointer remains valid for as long as the mesh data structure
    * remains valid.
+   *
+   * #### Demonstration code
+   * @snippet meshuse.cc loopentity
+   *
+   * Also see [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{ex:lftrv} or the code snippet showing the use of @ref lf::mesh::Mesh
    */
   [[nodiscard]] virtual nonstd::span<const Entity* const> Entities(
       unsigned codim) const = 0;
@@ -123,6 +136,8 @@ class Mesh {
    * @brief The number of Entities that have the given codimension.
    * @param codim The codimension of the entities that should be counted.
    * @return That number of entities that have the given codimension.
+   *
+   * See the code snippet showing the use of @ref lf::mesh::Mesh
    */
   [[nodiscard]] virtual size_type NumEntities(unsigned codim) const = 0;
 
@@ -142,9 +157,18 @@ class Mesh {
    * It is a strict convention in LehrFEM++ that all entities of the same
    * co-dimension belonging to a mesh are endowed with an integer index. These
    * indices are guaranteed to be contiguous and to range from 0 to
-   * `Size(codim)-1`.
+   * `Size(codim)-1`, cf. [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{lfppindex}.
+   *
    * @note The index of a mesh entity is NOT related to its position in the
    * range returned by the Entities() method.
+   *
+   * Also see the code snippet showing the use of @ref lf::mesh::Mesh
+   *
+   * The indexing of mesh entities is explained in [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{sss:lfmeshcnt}
    */
   [[nodiscard]] virtual size_type Index(const Entity& e) const = 0;
 
@@ -165,6 +189,8 @@ class Mesh {
    * ~~~
    *
    * @note O(1) access complexity due to table lookup.
+   *
+   * Also see the code snippet showing the use of @ref lf::mesh::Mesh
    */
   [[nodiscard]] virtual const mesh::Entity* EntityByIndex(
       dim_t codim, base::glb_idx_t index) const = 0;

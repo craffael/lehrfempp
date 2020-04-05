@@ -1,3 +1,9 @@
+// **********************************************************************
+// This file is part of the LehrFEM++ finite element library developed
+// from 2018 at the Seminar of Applied Mathematics of ETH Zurich for
+// teaching purposes.
+// This header must not be removed.
+// **********************************************************************
 /**
  * @file
  * @brief Computation of L2-norm of piecewise linear FE function

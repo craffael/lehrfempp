@@ -34,6 +34,11 @@ namespace lf::uscalfe {
  * @note A MeshFunctionFE can be evaluated on entities of all codimensions.
  *   The mesh function will simply use the ScalarReferenceFiniteElement from
  *   the feSpace.
+ *
+ * ### Use case
+ *
+ * @snippet mesh_function_binary.cc mffedemo
+ *
  */
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionFE {

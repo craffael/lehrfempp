@@ -14,5 +14,10 @@ of the C++ code into LaTeX files.
 - `lecturedemoassemble`: demonstrates the use of local provider objects for assembly of
   Galerkin matrices and right-hand side vectors. 
 - `lecturedemoquad`: introduces the use of the local quadrature rules in LehrFEM++
+- `lecturedemorefine`: shows how to use (local) mesh refinement
+- `lecturedemotwonorm`: illustrates different ways of computing the L2 norm of a finite
+  element function 
+  
+  
 
 

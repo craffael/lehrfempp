@@ -20,9 +20,9 @@ using quadDegree_t = unsigned int;
 /**
  * @brief Represents a Quadrature Rule over one of the Reference Elements
  *
- * A Quadrature rule essentially consists of quadrature nodes \f$ \{\vec{\xi}_0,
- * \ldots, \vec{\xi}_{n-1}\} \f$ and quadrature weights \f$ \{\omega_1, \ldots,
- * \omega_{n-1}\}\f$.
+ * A Quadrature rule essentially boils down to pairs of quadrature nodes \f$
+ * \{\vec{\xi}_0, \ldots, \vec{\xi}_{n-1}\} \f$ and quadrature weights \f$
+ * \{\omega_1, \ldots, \omega_{n-1}\}\f$.
  *
  * The integral of a function \f$ f \f$ over the reference element \f$K\f$
  * is then approximated by
@@ -30,6 +30,28 @@ using quadDegree_t = unsigned int;
  * \int_K f(\vec{x}) \, d\vec{x} \approx \sum_{i=0}^{n-1} f(\vec{\xi_i})
  * \omega_i
  * \f]
+ *
+ * See [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{sss:locquad} for more explanations.
+ *
+ * #### Use case
+ *
+ * @snippet quadruleuse.cc quadrule
+ *
+ * To create a suitable @ref QuadRule object, use dedicated utility functions:
+ * - @ref lf::quad::make_QuadRule()
+ * - @ref lf::quad::make_TriaQR_MidpointRule(), @ref
+ * lf::quad::make_TriaQR_P1O2()
+ * - @ref lf::quad::make_TriaQR_EdgeMidpointRule(), @ref
+ * lf::quad::make_TriaQR_P3O3()
+ * - @ref lf::quad::make_TriaQR_P7O6()
+ * - @ref lf::quad::make_TriaQR_P6O4()
+ * - @ref lf::quad::make_QuadQR_MidpointRule(), @ref
+ * lf::quad::make_QuadQR_P1O2()
+ * - @ref lf::quad::make_QuadQR_EdgeMidpointRule(), @ref
+ * lf::quad::make_QuadQR_P4O2()
+ * - @ref lf::quad::make_QuadQR_P4O4()
  *
  */
 class QuadRule {
@@ -75,7 +97,7 @@ class QuadRule {
   }
 
   /**
-   * @brief The reference element \f$ K \f$ over which this QuadRule
+   * @brief The reference element \f$ \hat{K} \f$ over which this QuadRule
    * integrates.
    */
   [[nodiscard]] base::RefEl RefEl() const { return ref_el_; }
