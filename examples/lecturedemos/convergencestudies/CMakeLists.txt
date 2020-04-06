@@ -11,3 +11,19 @@ add_custom_target(examples.lecturedemos.convergencestudies.twopointbvp_run
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/twopointbvp_plot.py
 )
 add_dependencies(examples_run examples.lecturedemos.convergencestudies.twopointbvp_run)
+
+
+add_executable(examples.lecturedemos.convergencestudies.linquadlagrfe linquadlagrfe.cc)
+target_link_libraries(examples.lecturedemos.convergencestudies.linquadlagrfe
+    PUBLIC Eigen3::Eigen
+    Boost::filesystem
+    Boost::system
+    lf.base
+    lf.uscalfe
+    lf.mesh
+    lf.mesh.utils
+    lf.mesh.hybrid2d
+    lf.assemble
+    lf.quad
+    lf.io
+)
