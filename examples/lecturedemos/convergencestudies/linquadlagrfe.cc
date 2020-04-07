@@ -88,6 +88,11 @@ int main(int argc, char *argv[]) {
     }
     const std::string output_file = vm["output"].as<std::string>();
 
+    // The analytic solution
+    const auto u = [](const Eigen::VectorXd &x) -> double {
+	return std::sin(M_PI*x[0]) * std::sin(M_PI*x[1]);
+    };
+    const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
     // The gradient of the analytic solution
     const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
 	Eigen::Vector2d grad;
@@ -99,7 +104,7 @@ int main(int argc, char *argv[]) {
 
     const boost::filesystem::path here = __FILE__;
     const boost::filesystem::path mesh_folder = here.parent_path() / "meshes";
-    Eigen::MatrixXd results(num_meshes, 5);
+    Eigen::MatrixXd results(num_meshes, 7);
     for (int mesh_idx = 0 ; mesh_idx < num_meshes ; ++mesh_idx) {
 	std::cout << "> Mesh Nr. " << mesh_idx << std::endl;
 
@@ -116,6 +121,7 @@ int main(int argc, char *argv[]) {
 	const auto fe_space_o1 = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 	std::cout << " (" << fe_space_o1->LocGlobMap().NumDofs() << " DOFs)" << std::endl;
 	const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
+	const lf::uscalfe::MeshFunctionFE<double, double> mf_o1(fe_space_o1, solution_o1);
 	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o1(fe_space_o1, solution_o1);
 	
 	// Solve the problem with quadratic finite elements
@@ -123,14 +129,18 @@ int main(int argc, char *argv[]) {
 	const auto fe_space_o2 = std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh);
 	std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)" << std::endl;
 	const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
+	const lf::uscalfe::MeshFunctionFE<double, double> mf_o2(fe_space_o2, solution_o2);
 	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2, solution_o2);
 
-	// Compute the H1-error
+	// Compute the H1 and L2 errors
+	std::cout << "\t> Computing Error Norms" << std::endl;
 	const auto quadrule_provider = [](const lf::mesh::Entity & entity) {
 	    return lf::quad::make_QuadRule(entity.RefEl(), 6);
 	};
-	const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, squaredNorm(mf_grad_o1 - mf_u_grad), quadrule_provider));
-	const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, squaredNorm(mf_grad_o2 - mf_u_grad), quadrule_provider));
+	const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o1 - mf_u_grad), quadrule_provider));
+	const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o2 - mf_u_grad), quadrule_provider));
+	const double L2_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_o1 - mf_u), quadrule_provider));
+	const double L2_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_o2 - mf_u), quadrule_provider));
 
 	// Store the mesh width, the number of DOFs and the errors in the results matrix
 	results(mesh_idx, 0) = std::sqrt(1. / mesh->NumEntities(0));
@@ -138,6 +148,8 @@ int main(int argc, char *argv[]) {
 	results(mesh_idx, 2) = fe_space_o2->LocGlobMap().NumDofs();
 	results(mesh_idx, 3) = H1_err_o1;
 	results(mesh_idx, 4) = H1_err_o2;
+	results(mesh_idx, 5) = L2_err_o1;
+	results(mesh_idx, 6) = L2_err_o2;
     }
 
     // Output the resulting errors to a file
