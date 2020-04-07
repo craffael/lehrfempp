@@ -9,7 +9,9 @@
 #define _USE_MATH_DEFINES
 
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <Eigen/Dense>
@@ -23,6 +25,11 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/io/io.h>
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
+
+
+
+namespace po = boost::program_options;
 
 
 
@@ -71,8 +78,28 @@ Eigen::VectorXd solvePoisson(const std::shared_ptr<const lf::mesh::Mesh> &mesh, 
 int main(int argc, char *argv[]) {
     const int num_meshes = 7;
 
+    po::options_description desc("allowed options");
+    desc.add_options()("output,o", po::value<std::string>(), "Name of the output file");
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    if (vm.count("output") == 0) {
+	std::cout << desc << std::endl;
+	exit(1);
+    }
+    const std::string output_file = vm["output"].as<std::string>();
+
+    // The gradient of the analytic solution
+    const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
+	Eigen::Vector2d grad;
+	grad[0] = M_PI * std::cos(M_PI*x[0]) * std::sin(M_PI*x[1]);
+	grad[1] = M_PI * std::sin(M_PI*x[0]) * std::cos(M_PI*x[1]);
+	return grad;
+    };
+    const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
+
     const boost::filesystem::path here = __FILE__;
     const boost::filesystem::path mesh_folder = here.parent_path() / "meshes";
+    Eigen::MatrixXd results(num_meshes, 5);
     for (int mesh_idx = 0 ; mesh_idx < num_meshes ; ++mesh_idx) {
 	std::cout << "> Mesh Nr. " << mesh_idx << std::endl;
 
@@ -96,8 +123,30 @@ int main(int argc, char *argv[]) {
 	const auto fe_space_o2 = std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh);
 	std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)" << std::endl;
 	const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
-	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o1, solution_o2);
+	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2, solution_o2);
+
+	// Compute the H1-error
+	const auto quadrule_provider = [](const lf::mesh::Entity & entity) {
+	    return lf::quad::make_QuadRule(entity.RefEl(), 6);
+	};
+	const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, squaredNorm(mf_grad_o1 - mf_u_grad), quadrule_provider));
+	const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, squaredNorm(mf_grad_o2 - mf_u_grad), quadrule_provider));
+
+	// Store the mesh width, the number of DOFs and the errors in the results matrix
+	results(mesh_idx, 0) = std::sqrt(1. / mesh->NumEntities(0));
+	results(mesh_idx, 1) = fe_space_o1->LocGlobMap().NumDofs();
+	results(mesh_idx, 2) = fe_space_o2->LocGlobMap().NumDofs();
+	results(mesh_idx, 3) = H1_err_o1;
+	results(mesh_idx, 4) = H1_err_o2;
     }
+
+    // Output the resulting errors to a file
+    const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision,
+                                           Eigen::DontAlignCols, ", ", "\n");
+    std::ofstream file;
+    file.open(output_file);
+    file << results.format(CSVFormat);
+    file.close();
 
     return 0;
 }

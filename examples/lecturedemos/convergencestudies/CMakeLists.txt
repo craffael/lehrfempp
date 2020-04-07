@@ -18,6 +18,7 @@ target_link_libraries(examples.lecturedemos.convergencestudies.linquadlagrfe
     PUBLIC Eigen3::Eigen
     Boost::filesystem
     Boost::system
+    Boost::program_options
     lf.base
     lf.uscalfe
     lf.mesh
@@ -27,3 +28,8 @@ target_link_libraries(examples.lecturedemos.convergencestudies.linquadlagrfe
     lf.quad
     lf.io
 )
+add_custom_target(examples.lecturedemos.convergencestudies.linquadlagrfe_run
+    COMMAND examples.lecturedemos.convergencestudies.linquadlagrfe -o ${CMAKE_CURRENT_BINARY_DIR}/results.csv && python3 ${CMAKE_CURRENT_SOURCE_DIR}/linquadlagrfe_plot.py ${CMAKE_CURRENT_BINARY_DIR}/results.csv
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linquadlagrfe_plot.py
+)
+add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadlagrfe_run)
