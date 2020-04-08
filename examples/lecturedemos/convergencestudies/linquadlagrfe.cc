@@ -1,6 +1,6 @@
 /**
  * @file linquadlagrfe.cc
- * @brief Creates convergence plots for experiment 3.2.3.7
+ * @brief Creates convergence plots for experiment 3.2.3.7 and 3.2.3.8
  * @author Tobias Rohner
  * @date April 2020
  * @copyright MIT License
