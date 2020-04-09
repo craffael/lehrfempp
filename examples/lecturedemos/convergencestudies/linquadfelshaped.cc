@@ -120,11 +120,9 @@ int main(int argc, char *argv[]) {
 	if (phi < 0) {
 	    phi += 2*M_PI;
 	}
-	const double grad_r = 2./3 * std::pow(r, -1./3) * std::sin(2./3*phi);
-	const double grad_phi = 2./3 * std::pow(r, -1./3) * std::cos(2./3*phi);
 	Eigen::Vector2d grad;
-	grad[0] = grad_r * std::cos(grad_phi);
-	grad[1] = grad_r * std::sin(grad_phi);
+	grad[0] = 2./3 * std::pow(r, -4./3) * (x[0]*std::sin(2./3*phi) - x[1]*std::cos(2./3*phi));
+	grad[1] = 2./3 * std::pow(r, -4./3) * (x[1]*std::sin(2./3*phi) + x[0]*std::cos(2./3*phi));
 	return grad;
     };
     lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
@@ -150,14 +148,6 @@ int main(int argc, char *argv[]) {
 	const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
 	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o1(fe_space_o1, solution_o1);
 
-	/*
-	lf::io::VtkWriter writer_o1(mesh, "result" + std::to_string(mesh_idx) + "_o1.vtk");
-	writer_o1.WriteCellData("grad_exact", mf_u_grad);
-	writer_o1.WriteCellData("grad_approx", mf_grad_o1);
-	writer_o1.WriteCellData("exact", mf_u);
-	writer_o1.WriteCellData("approx", lf::uscalfe::MeshFunctionFE<double, double>(fe_space_o1, solution_o1));
-	*/
-	
 	// Solve the problem with quadratic finite elements
 	std::cout << "\t> Quadratic Lagrangian FE";
 	const auto fe_space_o2 = std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh);
@@ -165,18 +155,10 @@ int main(int argc, char *argv[]) {
 	const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
 	const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2, solution_o2);
 
-	/*
-	lf::io::VtkWriter writer_o2(mesh, "result" + std::to_string(mesh_idx) + "_o2.vtk");
-	writer_o2.WriteCellData("grad_exact", mf_u_grad);
-	writer_o2.WriteCellData("grad_approx", mf_grad_o2);
-	writer_o2.WriteCellData("exact", mf_u);
-	writer_o2.WriteCellData("approx", lf::uscalfe::MeshFunctionFE<double, double>(fe_space_o2, solution_o2));
-	*/
-
 	// Compute the errors
 	std::cout << "\t> Computing Error Norms" << std::endl;
 	const auto quadrule_provider = [](const lf::mesh::Entity &entity) {
-	    return lf::quad::make_QuadRule(entity.RefEl(), 6);
+	    return lf::quad::make_QuadRule(entity.RefEl(), 10);
 	};
 	const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o1 - mf_u_grad), quadrule_provider));
 	const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o2 - mf_u_grad), quadrule_provider));
