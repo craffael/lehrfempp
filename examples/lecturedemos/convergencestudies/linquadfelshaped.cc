@@ -62,15 +62,15 @@ Eigen::VectorXd solvePoisson(const std::shared_ptr<const lf::mesh::Mesh> &mesh, 
 	const lf::geometry::Geometry *geom = entity.Geometry();
 	// Find out where the evaluation node corresponding to the DOF is
 	const auto shape_function_layout = fe_space->ShapeFunctionLayout(entity.RefEl());
-	const auto num_int_dofs = dofh.NumInteriorDofs(entity);
-	const auto int_glob_dof_idxs = dofh.InteriorGlobalDofIndices(entity);
-	int int_dof_idx;
-	for (int_dof_idx = 0 ; int_dof_idx < num_int_dofs ; ++int_dof_idx) {
-	    if (int_glob_dof_idxs[int_dof_idx] == idx) {
+	const auto num_dofs = dofh.NumLocalDofs(entity);
+	const auto glob_dof_idxs = dofh.GlobalDofIndices(entity);
+	int dof_idx;
+	for (dof_idx = 0 ; dof_idx < num_dofs ; ++dof_idx) {
+	    if (glob_dof_idxs[dof_idx] == idx) {
 		break;
 	    }
 	}
-	const Eigen::VectorXd eval_node = shape_function_layout->EvaluationNodes().col(int_dof_idx);
+	const Eigen::VectorXd eval_node = shape_function_layout->EvaluationNodes().col(dof_idx);
 	const Eigen::Vector2d pos = geom->Global(eval_node);
 	// Return the value on the boundary at the position of the evaluation node corresponding to the dof
 	return {true, u_bd(pos)};
