@@ -55,3 +55,11 @@ add_custom_target(examples.lecturedemos.convergencestudies.linquadfelshaped_run
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linquadfelshaped_plot.py
 )
 add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadfelshaped_run)
+
+add_executable(examples.lecturedemos.convergencestudies.prefinement prefinement.cc)
+target_link_libraries(examples.lecturedemos.convergencestudies.prefinement
+    PUBLIC Eigen3::Eigen
+    lf.base
+    lf.assemble
+    lf.uscalfe
+)
