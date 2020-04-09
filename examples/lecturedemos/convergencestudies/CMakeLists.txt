@@ -50,3 +50,8 @@ target_link_libraries(examples.lecturedemos.convergencestudies.linquadfelshaped
     lf.quad
     lf.io
 )
+add_custom_target(examples.lecturedemos.convergencestudies.linquadfelshaped_run
+    COMMAND examples.lecturedemos.convergencestudies.linquadfelshaped -o ${CMAKE_CURRENT_BINARY_DIR}/results.csv && python3 ${CMAKE_CURRENT_SOURCE_DIR}/linquadfelshaped_plot.py ${CMAKE_CURRENT_BINARY_DIR}/results.csv
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linquadfelshaped_plot.py
+)
+add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadfelshaped_run)

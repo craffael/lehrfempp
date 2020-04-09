@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 	// Compute the errors
 	std::cout << "\t> Computing Error Norms" << std::endl;
 	const auto quadrule_provider = [](const lf::mesh::Entity &entity) {
-	    return lf::quad::make_QuadRule(entity.RefEl(), 10);
+	    return lf::quad::make_QuadRule(entity.RefEl(), 6);
 	};
 	const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o1 - mf_u_grad), quadrule_provider));
 	const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_grad_o2 - mf_u_grad), quadrule_provider));
