@@ -20,7 +20,7 @@ public:
 
     FeLagrangeONTria(unsigned degree) : degree_(degree), eval_nodes_(), ref_func_coeffs_() {
 	eval_nodes_ = ComputeEvaluationNodes(degree);
-	ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse();
+	ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
     }
 
     [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -63,7 +63,15 @@ public:
     }
     
     [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-	// TODO: Implement
+	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grads(NumRefShapeFunctions(), 2*refcoords.cols());
+	const auto [basis_dx, basis_dy] = ComputePolyBasisDerivative(refcoords);
+	const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dx = ref_func_coeffs_ * basis_dx.transpose();
+	const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dy = ref_func_coeffs_ * basis_dy.transpose();
+	for (int refcoord_idx = 0 ; refcoord_idx < refcoords.cols() ; ++refcoord_idx) {
+	    grads.col(2*refcoord_idx+0) = dx.col(refcoord_idx);
+	    grads.col(2*refcoord_idx+1) = dy.col(refcoord_idx);
+	}
+	return grads;
     }
 
     [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
