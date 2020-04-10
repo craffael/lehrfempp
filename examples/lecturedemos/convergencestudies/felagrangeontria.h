@@ -59,7 +59,7 @@ public:
 
     [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
 	const auto poly_basis = ComputePolyBasis(refcoords);
-	return ref_func_coeffs_ * poly_basis;
+	return ref_func_coeffs_ * poly_basis.transpose();
     }
     
     [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {

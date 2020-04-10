@@ -9,6 +9,7 @@
 #define _USE_MATH_DEFINES
 
 #include "felagrangeontria.h"
+#include "felagrangeonsegment.h"
 #include <iostream>
 #include <lf/uscalfe/uscalfe.h>
 
@@ -16,12 +17,12 @@
 
 
 int main(int argc, char *argv[]) {
-    const lf::uscalfe::FeLagrangeO1Tria<double> lf_o1;
-    const lf::uscalfe::FeLagrangeO2Tria<double> lf_o2;
-    const lf::uscalfe::FeLagrangeO3Tria<double> lf_o3;
-    const FeLagrangeONTria<double> own_o1(1);
-    const FeLagrangeONTria<double> own_o2(2);
-    const FeLagrangeONTria<double> own_o3(3);
+    const lf::uscalfe::FeLagrangeO1Segment<double> lf_o1;
+    const lf::uscalfe::FeLagrangeO2Segment<double> lf_o2;
+    const lf::uscalfe::FeLagrangeO3Segment<double> lf_o3;
+    const FeLagrangeONSegment<double> own_o1(1);
+    const FeLagrangeONSegment<double> own_o2(2);
+    const FeLagrangeONSegment<double> own_o3(3);
 
     std::cout << "LF O1:" << std::endl;
     std::cout << lf_o1.GradientsReferenceShapeFunctions(lf_o1.EvaluationNodes()) << std::endl;
