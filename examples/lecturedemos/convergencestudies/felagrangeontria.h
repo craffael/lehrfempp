@@ -85,11 +85,11 @@ public:
 
 private:
     unsigned degree_;
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> eval_nodes_;
+    Eigen::MatrixXd eval_nodes_;
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_func_coeffs_;
 
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputeEvaluationNodes(unsigned p) const {
-	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> eval_nodes(2, (p+1)*(p+2)/2);
+    Eigen::MatrixXd ComputeEvaluationNodes(unsigned p) const {
+	Eigen::MatrixXd eval_nodes(2, (p+1)*(p+2)/2);
 	// Add the evaluation nodes corresponding to the vertices of the triangle
 	eval_nodes(0, 0) = 0;
 	eval_nodes(1, 0) = 0;
@@ -99,30 +99,30 @@ private:
 	eval_nodes(1, 2) = 1;
 	// Add the evaluation nodes corresponding to the edges of the triangle
 	for (int i = 0 ; i < p-1 ; ++i) {
-	    eval_nodes(0, 3+i) = static_cast<SCALAR>(i+1) / p;
+	    eval_nodes(0, 3+i) = static_cast<double>(i+1) / p;
 	    eval_nodes(1, 3+i) = 0;
 	}
 	for (int i = 0 ; i < p-1 ; ++i) {
-	    eval_nodes(0, 2+p+i) = 1. - (static_cast<SCALAR>(i+1) / p);
-	    eval_nodes(1, 2+p+i) = static_cast<SCALAR>(i+1) / p;
+	    eval_nodes(0, 2+p+i) = 1. - (static_cast<double>(i+1) / p);
+	    eval_nodes(1, 2+p+i) = static_cast<double>(i+1) / p;
 	}
 	for (int i = 0 ; i < p-1 ; ++i) {
 	    eval_nodes(0, 1+p+p+i) = 0;
-	    eval_nodes(1, 1+p+p+i) = 1. - (static_cast<SCALAR>(i+1) / p);
+	    eval_nodes(1, 1+p+p+i) = 1. - (static_cast<double>(i+1) / p);
 	}
 	// Add the evaluation nodes corresponding to the interior of the triangle
 	if (p > 2) {
 	    for (int i = 0 ; i < p-2 ; ++i) {
 		for (int j = 0 ; j <= i ; ++j) {
-		    eval_nodes(0, (3*p)+(i*(i+1)/2)+j) = static_cast<SCALAR>(i-j+1) / p;
-		    eval_nodes(1, (3*p)+(i*(i+1)/2)+j) = static_cast<SCALAR>(j+1) / p;
+		    eval_nodes(0, (3*p)+(i*(i+1)/2)+j) = static_cast<double>(i-j+1) / p;
+		    eval_nodes(1, (3*p)+(i*(i+1)/2)+j) = static_cast<double>(j+1) / p;
 		}
 	    }
 	}
 	return eval_nodes;
     }
 
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputePolyBasis(const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> &refcoords) const {
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputePolyBasis(const Eigen::MatrixXd &refcoords) const {
 	// The coefficients are ordered x^0y^0, x^0y^1, ..., x^0y^p, x^1y^0, x^1y^1, ..., x^1, y^(p-1), ... x^(p-1)y^0, x^(p-1)y^1, x^py^0
 	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs(refcoords.cols(), (degree_+1)*(degree_+2)/2);
 	unsigned coeff_idx = 0;
@@ -137,7 +137,7 @@ private:
 	return coeffs;
     }
 
-    std::pair<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ComputePolyBasisDerivative(const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> &refcoords) const {
+    std::pair<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ComputePolyBasisDerivative(const Eigen::MatrixXd &refcoords) const {
 	// The coefficients are ordered x^0y^0, x^0y^1, ..., x^0y^p, x^1y^0, x^1y^1, ..., x^1, y^(p-1), ... x^(p-1)y^0, x^(p-1)y^1, x^py^0
 	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dx(refcoords.cols(), (degree_+1)*(degree_+2)/2);
 	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dy(refcoords.cols(), (degree_+1)*(degree_+2)/2);

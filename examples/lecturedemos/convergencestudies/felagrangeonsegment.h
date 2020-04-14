@@ -63,17 +63,17 @@ public:
 
 private:
     unsigned degree_;
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> eval_nodes_;
+    Eigen::MatrixXd eval_nodes_;
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_func_coeffs_;
 
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputeEvaluationNodes(unsigned p) const {
-	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> nodes(1, p+1);
+    Eigen::MatrixXd ComputeEvaluationNodes(unsigned p) const {
+	Eigen::MatrixXd nodes(1, p+1);
 	// Add the evaluation nodes corresponding to the vertices of the segment
 	nodes(0, 0) = 0;
 	nodes(0, 1) = 1;
 	// Add the evaluation nodes corresponding to the interior of the segment
 	for (int i = 0 ; i < p-1 ; ++i) {
-	    nodes(0, i+2) = static_cast<SCALAR>(i+1) / p;
+	    nodes(0, i+2) = static_cast<double>(i+1) / p;
 	}
 	return nodes;
     }
