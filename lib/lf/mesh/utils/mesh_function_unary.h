@@ -66,7 +66,7 @@ struct UnaryOpMinus {
   template <class S, int R, int C, int O, int MR, int MC>
   auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
                   int /*unused*/) const {
-    if constexpr (R == 0 || C == 0) {
+    if constexpr (R == 0 || C == 0) {  // NOLINT
       // result vector is empty
       return u;
     }
@@ -149,13 +149,13 @@ struct UnaryOpSquaredNorm {
           R > 0 && C > 0,
           "squaredNorm only supported for matrices with at least 1 row "
           "and column");
-      if constexpr (C == 1) {
+      if constexpr (C == 1) {  // NOLINT
         Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
                                                                  u.size());
         Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0], 1,
                                                            u.size());
         rm = um.cwiseAbs2().colwise().sum();
-      } else if constexpr (R == 1) {
+      } else if constexpr (R == 1) {  // NOLINT
         Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, C, Eigen::RowMajor>>
             um(&u[0](0, 0), u.size(), C);
         Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(&result[0], u.size(),
