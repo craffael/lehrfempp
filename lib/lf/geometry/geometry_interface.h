@@ -52,6 +52,14 @@ class Geometry {
    * @return A Matrix of size `DimGlobal() x numPoints` that contains the mapped
    *         points as column vectors. Here `numPoints` is the number of columns
    *         of the matrix passed in the `local` argument.
+   * \f[
+   \mathtt{Global}\left(\left[\widehat{x}^1,\ldots,\widehat{x}^k\right]\right) =
+   \left[
+   \mathbf{\Phi}_K(\widehat{x}^1),\ldots,\mathbf{\Phi}_K(\widehat{x}^k)\right]\;,\quad
+   \widehat{x}^{\ell}\in\widehat{K}\;,
+   * \f]
+   * where \f$\mathbf{\Phi}\f$ is the mapping taking the reference element to
+   * the current element \f$K\f$.
    *
    * This method provides a complete description of the shape of an entity
    * through a parameterization over the corresponding reference element =
@@ -59,6 +67,16 @@ class Geometry {
    * vectors of points in the reference element. For the sake of efficiency,
    * these coordinate vectors are passed as the columns of a dynamic matrix type
    * as supplied by Eigen.
+   *
+   * For instance, this method is used in @ref lf::geometry::Corners()
+   * ~~~
+   inline Eigen::MatrixXd Corners(const Geometry& geo) {
+   return geo.Global(geo.RefEl().NodeCoords()); }
+   * ~~~
+   * Additional explanations in [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:dunetrf}.
+   *
    */
   [[nodiscard]] virtual Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const = 0;
@@ -105,6 +123,7 @@ class Geometry {
    * ~~~
    * JacobianInverseGramian(local).block(0,i*D,D,D)
    * ~~~
+   * More explanations in @lref{rem:jti}.
    */
   [[nodiscard]] virtual Eigen::MatrixXd JacobianInverseGramian(
       const Eigen::MatrixXd& local) const = 0;
@@ -114,21 +133,29 @@ class Geometry {
    *        formula, see below) at number of evaluation points (specified in
    *        local coordinates).
    * @param local A Matrix of size `DimLocal() x numPoints` that contains the
-   *              evaluation points (in local coordinates) as column vectors.
+   *         evaluation points (in local = reference coordinates) as column
+   *         vectors.
    * @return A Vector of size `numPoints x 1` that contains the integration
    *         elements at every evaluation point.
    *
    * For a transformation \f$ \Phi : K \mapsto R^{\text{DimGlobal}}\f$ with
    * Jacobian \f$ D\Phi : K \mapsto R^{\text{DimGlobal} \times \text{DimLocal}}
    * \f$ the integration element \f$ g \f$ at point \f$ \xi \in K \f$ is defined
-   * by \f[ g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
+   * by
+   * \f[
+       g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
    * \f]
+   *
+   * More information also related to the use of lovcal quadrature rules is
+   * given in [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:tranquil}.
    */
   [[nodiscard]] virtual Eigen::VectorXd IntegrationElement(
       const Eigen::MatrixXd& local) const = 0;
 
   /**
-   * @brief Construct a new Geometry() object that describes the geometry of
+   * @brief **Construct** a new Geometry() object that describes the geometry of
    *        the `i`-th sub-entity with codimension=`codim`
    * @param codim The codimension of the sub-entity (w.r.t. `DimLocal()`)
    * @param i The zero-based index of the sub-entity.
@@ -151,7 +178,7 @@ class Geometry {
       dim_t codim, dim_t i) const = 0;
 
   /**
-   * @brief Generate geometry objects for child entities created in
+   * @brief **Generate** geometry objects for child entities created in
    *        the course of refinement.
    *
    * @param ref_pat An object encoding the details of refinement
@@ -165,8 +192,8 @@ class Geometry {
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
    * The details of subdivisions corresponding to particular refinement patterns
-   * are fixed by the method `Hybrid2DRefinementPattern::ChildPolygons()` and
-   * should be documented there.
+   * are fixed by the method @ref Hybrid2D::RefinementPattern::ChildPolygons()
+   * and should be documented there.
    *
    * @sa class lf::geometry::RefinementPattern
    *
@@ -221,6 +248,16 @@ double Volume(const Geometry& geo);
  * will completely define the shape. This is the case with shapes represented by
  * the types
  * @ref lf::geometry::TriaO1 and @ref lf::geometry::QuadO1
+ *
+ * #### Demonstration code [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{cpp:lfgeo}
+ * @snippet geometryuse.cc corners
+ *
+ * Additional explanations can be found in [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{par:coords}.
+ *
  */
 inline Eigen::MatrixXd Corners(const Geometry& geo) {
   return geo.Global(geo.RefEl().NodeCoords());

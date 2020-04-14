@@ -44,6 +44,10 @@ namespace lf::io {
  * - The GmshReader doesn't support the options "Save parametric coordinates"
  *   and "Save one file per partition".
  *
+ * The import of meshes from Gmsh-generated mesh files is also discussed in
+ * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{rem:betlgmsh}.
+ *
  * #### Sample usage:
  * @snippet gmsh_reader.cc usage
  *
@@ -59,8 +63,6 @@ namespace lf::io {
  * doesn't insert into the mesh auxilliary nodes or nodes not belonging to at
  * least one cell. Auxilliary nodes are however used in the construction of
  * higher order geometry objects.
- *
- *
  *
  */
 class GmshReader {
@@ -89,7 +91,8 @@ class GmshReader {
    * @return  Number of the physical entity (as shown in Gmsh)
    * @note If you have defined a physical entity in GMSH without
    * giving it a name, you cannot use this function.
-   * @sa PhysicalEntityNr2Name()
+   * @sa PhysicalEntityNr2Name() and the code snippet in the documentation of
+   * @ref GmshReader.
    */
   [[nodiscard]] size_type PhysicalEntityName2Nr(const std::string& name,
                                                 dim_t codim = -1) const;
@@ -113,6 +116,8 @@ class GmshReader {
    * @brief Retrieve a list of all (Gmsh) physical entities of the given codim.
    * @param codim The codimension
    * @return A list of physical entities (number, name)
+   *
+   * See the code snippet in the documentation of @ref GmshReader.
    */
   [[nodiscard]] std::vector<std::pair<size_type, std::string>> PhysicalEntities(
       dim_t codim) const;
@@ -136,7 +141,8 @@ class GmshReader {
    * if the vector returned by `PhysicalEntityNr(e)` contains
    * `physical_entity_nr`
    *
-   * @sa PhysicalEntityNr()
+   * @sa PhysicalEntityNr() and the code snippet in the documentation of
+   * @ref GmshReader.
    */
   [[nodiscard]] bool IsPhysicalEntity(const mesh::Entity& e,
                                       size_type physical_entity_nr) const;

@@ -335,7 +335,7 @@ struct OperatorSubtraction {
       std::vector<Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>>
           result;
       result.reserve(u.size());
-      for (int i = 0; i < u.size(); ++i) {
+      for (unsigned long i = 0; i < u.size(); ++i) {
         LF_ASSERT_MSG(
             u[i].rows() == v[i].rows(),
             "mismatch in #rows of matrices subtracted from each other.");
@@ -565,7 +565,7 @@ struct OperatorMultiplication {
                   int /*unused*/) const {
     using scalar_t = decltype(u[0] * v[0](0, 0));
     std::vector<Eigen::Matrix<scalar_t, R1, C1>> result(u.size());
-    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {
+    if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic) {  // NOLINT
       // result is a static sized matrix:
       Eigen::Map<const Eigen::Array<S1, R1 * C1, Eigen::Dynamic>> vm(
           v[0].data(), R1 * C1, v.size());
@@ -575,7 +575,7 @@ struct OperatorMultiplication {
                                                               u.size());
 
       rm = vm * um.template replicate<R1 * C1, 1>();
-    } else {
+    } else {  // NOLINT
       // result is not static sized:
       for (std::size_t i = 0; i < u.size(); ++i) {
         result[i] = u[i] * v[i];

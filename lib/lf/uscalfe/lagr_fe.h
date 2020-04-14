@@ -40,15 +40,18 @@ using sub_idx_t = lf::base::sub_idx_t;
  * `complex<double>`
  *
  * A scalar parametric finite element is defined through a set of
- * reference shape functions (RSFs) on a particular reference entity.
+ * reference shape functions (RSFs) on a particular reference entity, cf.
+ * \@lref{def:parfe}.
  *
  * Each reference shape function is associated with a unique sub-entity
- * of the reference entity.
+ * of the reference entity according to @lref{eq:lbaff}.
  *
  * Specializations of this class support the evaluation of RSFs in
  * arbitrary points in the reference element and the computation of their
  * gradients. The also provide local components for the defintion of nodal
  * interpolants.
+ *
+ * This class is discussed in @lref{par:lfppparfe}.
  *
  * ### Numbering _convention_ for reference shape functions
  *

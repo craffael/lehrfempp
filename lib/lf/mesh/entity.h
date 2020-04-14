@@ -56,8 +56,13 @@ class Entity {
    *        codimension (w.r.t. this entity!)
    * @param rel_codim The _relative co-dimension_ w.r.t. this entity
    * @return A [span](https://en.cppreference.com/w/cpp/container/span) of
-   pointers to the sub-entities with the specified _relative co-dimension_
-
+   * pointers to the sub-entities with the specified _relative co-dimension_
+   *
+   * Implicitly this function defines the numbering of sub-entities, see @ref
+   * lf::bas::RefEl and [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{par:subentnum}.
+   *
    * @note For a mesh covering a manifold of dimension 2, we have the following
    * cases
    * - For a cell (co-dimension 0 entity), the cell itself is a subentity
@@ -73,6 +78,10 @@ class Entity {
    *
    * #### Demonstration of usage
    * @snippet entityuse.cc usage
+   *
+   * Use of this method is also shown in [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{ex:subent}.
    */
   [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
@@ -80,6 +89,13 @@ class Entity {
   /**
    * @brief return [span](https://en.cppreference.com/w/cpp/container/span) of
    * relative orientations of sub-entities of the next higher co-dimension.
+   *
+   * The corners of every entity are numbered and, thus, define a _local
+   * orientation_ of the sub-entitites of co-dimension+1 as explained in
+   * [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+   * @lref{rem:ori}. This local orientation need not agree with the _intrinsic
+   * orientation_ of that sub-entity as given by its own numbering of corners.
+   * Such a possible mismatch is detected by this function.
    */
   [[nodiscard]] virtual nonstd::span<const Orientation> RelativeOrientations()
       const = 0;
