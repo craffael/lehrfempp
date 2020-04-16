@@ -59,7 +59,15 @@ add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadfe
 add_executable(examples.lecturedemos.convergencestudies.prefinement prefinement.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.prefinement
     PUBLIC Eigen3::Eigen
+    Boost::filesystem
+    Boost::system
+    Boost::program_options
     lf.base
-    lf.assemble
     lf.uscalfe
+    lf.mesh
+    lf.mesh.utils
+    lf.mesh.hybrid2d
+    lf.assemble
+    lf.quad
+    lf.io
 )

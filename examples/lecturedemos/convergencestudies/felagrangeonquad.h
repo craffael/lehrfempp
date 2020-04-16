@@ -57,7 +57,15 @@ public:
     }
 
     [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-	// TODO: Implement
+	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grads(NumRefShapeFunctions(), 2*refcoords.cols());
+	const auto [basis_dx, basis_dy] = ComputePolyBasisDerivative(refcoords);
+	const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dx = ref_func_coeffs_ * basis_dx.transpose();
+	const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dy = ref_func_coeffs_ * basis_dy.transpose();
+	for (int refcoord_idx = 0 ; refcoord_idx < refcoords.cols() ; ++refcoord_idx) {
+	    grads.col(2*refcoord_idx+0) = dx.col(refcoord_idx);
+	    grads.col(2*refcoord_idx+1) = dy.col(refcoord_idx);
+	}
+	return grads;
     }
 
     [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
@@ -122,6 +130,30 @@ private:
 	    }
 	}
 	return poly;
+    }
+
+    std::pair<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>> ComputePolyBasisDerivative(const Eigen::MatrixXd &refcoords) const {
+	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dx(refcoords.cols(), (degree_+1)*(degree_+1));
+	Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dy(refcoords.cols(), (degree_+1)*(degree_+1));
+	for (unsigned powx = 0 ; powx <= degree_ ; ++powx) {
+	    for (unsigned powy = 0 ; powy <= degree_ ; ++powy) {
+		for (unsigned node_idx = 0 ; node_idx < refcoords.cols() ; ++node_idx) {
+		    if (powx > 0) {
+			coeffs_dx(node_idx, (degree_+1)*powx+powy) = powx * std::pow(refcoords(0, node_idx), powx-1) * std::pow(refcoords(1, node_idx), powy);
+		    }
+		    else {
+			coeffs_dx(node_idx, (degree_+1)*powx+powy) = 0;
+		    }
+		    if (powy > 0) {
+			coeffs_dy(node_idx, (degree_+1)*powx+powy) = powy * std::pow(refcoords(0, node_idx), powx) * std::pow(refcoords(1, node_idx), powy-1);
+		    }
+		    else {
+			coeffs_dy(node_idx, (degree_+1)*powx+powy) = 0;
+		    }
+		}
+	    }
+	}
+	return {coeffs_dx, coeffs_dy};
     }
 };
 
