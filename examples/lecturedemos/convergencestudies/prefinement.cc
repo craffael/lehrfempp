@@ -130,8 +130,8 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
 
     // Compute the H1 and L2 errors
     std::cout << "\t\t> Computing Error Norms" << std::endl;
-    const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 19);
-    const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 19);
+    const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment())->Degree());
+    const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree());
     const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
 	const lf::base::RefEl refel = entity.RefEl();
 	if (refel == lf::base::RefEl::kTria()) {
