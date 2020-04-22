@@ -70,6 +70,8 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
 
 
 std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
+    // Get the degree of the fe space
+    const auto degree = fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
     // The analytic solution
     const auto u = [](const Eigen::VectorXd &x) -> double {
       return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
@@ -90,33 +92,32 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
     };
     const lf::mesh::utils::MeshFunctionGlobal mf_load(load);
   
-    // Intialize the matrix and vector providers
-    const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
-    const lf::mesh::utils::MeshFunctionConstant<double> mf_gamma(0);
-    lf::uscalfe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
-        fe_space, mf_alpha, mf_gamma);
-    lf::uscalfe::ScalarLoadElementVectorProvider element_vector_provider(
-        fe_space, mf_load,
-        {{lf::base::RefEl::kTria(),
-          lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 6)},
-         {lf::base::RefEl::kQuad(),
-          lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 6)}});
-  
     // Assemble the system matrix and right hand side
     const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
     lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
     std::cout << "\t\t> Assembling System Matrix" << std::endl;
+    const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
+    const lf::mesh::utils::MeshFunctionConstant<double> mf_gamma(0);
+    lf::uscalfe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
+        fe_space, mf_alpha, mf_gamma);
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                         A_COO);
     std::cout << "\t\t> Assembling right Hand Side" << std::endl;
+    lf::uscalfe::ScalarLoadElementVectorProvider element_vector_provider(
+        fe_space, mf_load,
+        {{lf::base::RefEl::kTria(),
+          lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*degree-1)},
+         {lf::base::RefEl::kQuad(),
+          lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2*degree-1)}});
     lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
   
     // Enforce zero dirichlet boundary conditions
     std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
     const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
     const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
-      return {boundary(dofh.Entity(idx)), 0};
+      const auto& entity = dofh.Entity(idx);
+      return {entity.Codim() > 0 && boundary(entity), 0};
     };
     lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
   
@@ -130,8 +131,8 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
 
     // Compute the H1 and L2 errors
     std::cout << "\t\t> Computing Error Norms" << std::endl;
-    const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment())->Degree());
-    const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree());
+    const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*degree-1);
+    const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*degree-1);
     const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
 	const lf::base::RefEl refel = entity.RefEl();
 	if (refel == lf::base::RefEl::kTria()) {
@@ -141,7 +142,7 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
 	    return qr_segment;
 	}
 	else {
-	    return lf::quad::make_QuadRule(refel, 2*fe_space->ShapeFunctionLayout(refel)->Degree());
+	    return lf::quad::make_QuadRule(refel, 2*degree-1);
 	}
     };
     const double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad), quadrule_provider));
@@ -187,10 +188,7 @@ int main(int argc, char *argv[]) {
 
     const boost::filesystem::path here = __FILE__;
     // Load the unit square mesh
-    const boost::filesystem::path square_mesh_file = here.parent_path() / "meshes" / "unitsquare0.msh";
-    auto mesh_factory_square = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-    const lf::io::GmshReader reader_square(std::move(mesh_factory_square), square_mesh_file.string());
-    const auto square_mesh = getSquareDomain();//reader_square.mesh();
+    const auto square_mesh = getSquareDomain();
     // Load the L-shaped domain mesh
     const boost::filesystem::path L_mesh_file = here.parent_path() / "meshes" / "L0.msh";
     auto mesh_factory_L = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
