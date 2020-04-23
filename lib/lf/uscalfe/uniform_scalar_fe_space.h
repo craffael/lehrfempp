@@ -41,8 +41,9 @@ namespace lf::uscalfe {
  *
  * @note Some of the pointers may be NULL. For instance, if all computations
  *       are done on purely triangular meshes then a finite element
- * specification for quadrilaterals need not be given, \see
- * UniformScalarFESpace().
+ * specification for quadrilaterals need not be given.
+ *
+ * This class is covered in @\lref{par:fespace}.
  */
 template <typename SCALAR>
 class UniformScalarFESpace {

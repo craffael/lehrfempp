@@ -56,7 +56,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  \;,
  * @f]
  * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
- * @f$\gamma@f$.
+ * @f$\gamma@f$, see also @lref{ex:rdemp}
  *
  * ## Template parameter requirement
  *

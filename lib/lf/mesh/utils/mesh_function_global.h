@@ -40,8 +40,16 @@ namespace lf::mesh::utils {
  * - `std::complex<double>` for complex valued mesh function
  * - `Eigen::Vector2d` for a tensor valued mesh function.
  *
+ * For instance, a @ref MeshFunctionGlobal object may be instantiated with a
+ * lambda function.
+ *
  * @note For `DimGlobal==3`, the call operator should of course accept a
  * `Eigen::Vector3d`.
+ *
+ * ### Use case
+ *
+ * @snippet mesh_function_binary.cc mfgdemo
+ *
  */
 template <class F>
 class MeshFunctionGlobal {

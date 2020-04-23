@@ -42,7 +42,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
           .eval();
   LF_ASSERT_MSG(values.size() == qr.NumPoints(),
                 "mf returns vector with wrong size.");
-  if constexpr (std::is_arithmetic_v<MfType>) {
+  if constexpr (std::is_arithmetic_v<MfType>) {  // NOLINT
     auto value_m = Eigen::Map<Eigen::Matrix<MfType, 1, Eigen::Dynamic>>(
         &values[0], 1, values.size());
     return (value_m * weights_ie)(0);

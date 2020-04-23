@@ -15,6 +15,10 @@
 /**
  * @brief tools for regular or local refinement of 2D hybrid meshes
  *
+ * LehrFEM++ supports the _local_ refinement of hybrid meshes ensuring mesh
+ * conformity in the process. Edge marking is used to single out cells that must
+ * be refined. Other cells may also undergo refinement in order to avoid hanging
+ * nodes.
  */
 namespace lf::refinement {}  // namespace lf::refinement
 
