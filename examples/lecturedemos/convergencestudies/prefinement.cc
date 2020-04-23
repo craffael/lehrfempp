@@ -64,12 +64,65 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
     factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
     // Build the mesh
     return factory.Build();
-
 }
 
 
 
-std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
+std::shared_ptr<lf::mesh::Mesh> getLDomain() {
+    lf::mesh::hybrid2d::MeshFactory factory(2);
+    // Add the vertices
+    std::vector<lf::mesh::MeshFactory::size_type> vertices;
+    Eigen::Vector2d vertex_coord;
+    vertex_coord << -1, -1;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    vertex_coord << 0, -1;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    vertex_coord << 0, 0;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    vertex_coord << 1, 0;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    vertex_coord << 1, 1;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    vertex_coord << -1, 1;
+    vertices.push_back(factory.AddPoint(vertex_coord));
+    // Add the triangles
+    Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
+    lf::mesh::MeshFactory::size_type nodes[3];
+    coords << -1, 0, -1,
+	      -1, 0, 1;
+    nodes[0] = vertices[0];
+    nodes[1] = vertices[2];
+    nodes[2] = vertices[5];
+    auto geom_tria1 = std::make_unique<lf::geometry::TriaO1>(coords);
+    factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria1));
+    coords << 0, 1, -1,
+	      0, 1, 1;
+    nodes[0] = vertices[2];
+    nodes[1] = vertices[4];
+    nodes[2] = vertices[5];
+    auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
+    factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
+    coords << -1, 0, 0,
+	      -1, -1, 0;
+    nodes[0] = vertices[0];
+    nodes[1] = vertices[1];
+    nodes[2] = vertices[2];
+    auto geom_tria3 = std::make_unique<lf::geometry::TriaO1>(coords);
+    factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria3));
+    coords << 0, 1, 1,
+	      0, 0, 1;
+    nodes[0] = vertices[2];
+    nodes[1] = vertices[3];
+    nodes[2] = vertices[4];
+    auto geom_tria4 = std::make_unique<lf::geometry::TriaO1>(coords);
+    factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria4));
+    // Build the mesh
+    return factory.Build();
+}
+
+
+
+std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
     // Get the degree of the fe space
     const auto degree = fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
     // The analytic solution
@@ -133,6 +186,7 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
     std::cout << "\t\t> Computing Error Norms" << std::endl;
     const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*degree-1);
     const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*degree-1);
+    const auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2*degree-1);
     const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
 	const lf::base::RefEl refel = entity.RefEl();
 	if (refel == lf::base::RefEl::kTria()) {
@@ -140,6 +194,9 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
 	}
 	else if (refel == lf::base::RefEl::kSegment()) {
 	    return qr_segment;
+	}
+	else if (refel == lf::base::RefEl::kQuad()) {
+	    return qr_quad;
 	}
 	else {
 	    return lf::quad::make_QuadRule(refel, 2*degree-1);
@@ -154,20 +211,105 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<const
 
 
 
-std::tuple<double, double> computeErrorsLDomain(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space_p) {
+std::tuple<double, double> computeErrorsLDomain(const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
     // The analytic solution
-    const auto u = [](const Eigen::VectorXd &x) -> double {
-      return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    const auto u = [](const Eigen::Vector2d &x) -> double {
+	const double r = x.norm();
+	double phi = std::atan2(x[1], x[0]);
+	if (phi < 0) {
+	    phi += 2*M_PI;
+	}
+	return std::pow(r, 2./3) * std::sin(2./3 * phi);
     };
-    const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
+    lf::mesh::utils::MeshFunctionGlobal mf_u(u);
     // The gradient of the analytic solution
     const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
-      Eigen::Vector2d grad;
-      grad[0] = M_PI * std::cos(M_PI * x[0]) * std::sin(M_PI * x[1]);
-      grad[1] = M_PI * std::sin(M_PI * x[0]) * std::cos(M_PI * x[1]);
-      return grad;
+	const double r = x.norm();
+	double phi = std::atan2(x[1], x[0]);
+	if (phi < 0) {
+	    phi += 2*M_PI;
+	}
+	Eigen::Vector2d grad;
+	grad[0] = 2./3 * std::pow(r, -4./3) * (x[0]*std::sin(2./3*phi) - x[1]*std::cos(2./3*phi));
+	grad[1] = 2./3 * std::pow(r, -4./3) * (x[1]*std::sin(2./3*phi) + x[0]*std::cos(2./3*phi));
+	return grad;
     };
-    const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
+    lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
+
+    // Get a few useful variables
+    const lf::assemble::DofHandler& dofh = fe_space->LocGlobMap();
+    const unsigned degree = fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
+
+    // Assemble the system matrix
+    std::cout << "\t\t> Assembling System Matrix" << std::endl;
+    const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
+    const lf::mesh::utils::MeshFunctionConstant<double> mf_gamma(0);
+    lf::uscalfe::ReactionDiffusionElementMatrixProvider element_matrix_provider(fe_space, mf_alpha, mf_gamma);
+    lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
+    lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider, A_COO);
+    
+    // The right hand side is zero because we have no load
+    Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
+
+    // Enforce the dirichlet boundary conditions
+    std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
+    const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
+    const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
+	const lf::mesh::Entity &entity = dofh.Entity(idx);
+	if (!boundary(entity)) {
+	    return {false, 0};
+	}
+	const lf::geometry::Geometry *geom = entity.Geometry();
+	// Find out where the evaluation node corresponding to the DOF is
+	const auto shape_function_layout = fe_space->ShapeFunctionLayout(entity.RefEl());
+	const auto num_dofs = dofh.NumLocalDofs(entity);
+	const auto glob_dof_idxs = dofh.GlobalDofIndices(entity);
+	int dof_idx;
+	for (dof_idx = 0 ; dof_idx < num_dofs ; ++dof_idx) {
+	    if (glob_dof_idxs[dof_idx] == idx) {
+		break;
+	    }
+	}
+	const Eigen::VectorXd eval_node = shape_function_layout->EvaluationNodes().col(dof_idx);
+	const Eigen::Vector2d pos = geom->Global(eval_node);
+	// Return the value on the boundary at the position of the evaluation node corresponding to the dof
+	return {true, u(pos)};
+    };
+    lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
+
+    // Solve the LSE using Cholesky decomposition
+    std::cout << "\t\t> Solving LSE" << std::endl;
+    Eigen::SparseMatrix<double> A = A_COO.makeSparse();
+    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
+    const Eigen::VectorXd solution = solver.solve(rhs);
+    const lf::uscalfe::MeshFunctionFE<double, double> mf_numeric(fe_space, solution);
+    const lf::uscalfe::MeshFunctionGradFE<double, double> mf_numeric_grad(fe_space, solution);
+
+    // Compute the H1 and L2 errors
+    std::cout << "\t\t> Computing Error Norms" << std::endl;
+    const auto qr_segment = lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*degree-1);
+    const auto qr_tria = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2*degree-1);
+    const auto qr_quad = lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2*degree-1);
+    const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
+	const lf::base::RefEl refel = entity.RefEl();
+	if (refel == lf::base::RefEl::kTria()) {
+	    return qr_tria;
+	}
+	else if (refel == lf::base::RefEl::kSegment()) {
+	    return qr_segment;
+	}
+	else if (refel == lf::base::RefEl::kQuad()) {
+	    return qr_quad;
+	}
+	else {
+	    return lf::quad::make_QuadRule(refel, 2*degree-1);
+	}
+    };
+    const double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad), quadrule_provider));
+    const double L2_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(*mesh, lf::mesh::utils::squaredNorm(mf_u - mf_numeric), quadrule_provider));
+
+    // Return the errors
+    return {H1_err, L2_err};
 }
 
 
@@ -190,10 +332,7 @@ int main(int argc, char *argv[]) {
     // Load the unit square mesh
     const auto square_mesh = getSquareDomain();
     // Load the L-shaped domain mesh
-    const boost::filesystem::path L_mesh_file = here.parent_path() / "meshes" / "L0.msh";
-    auto mesh_factory_L = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-    const lf::io::GmshReader reader_L(std::move(mesh_factory_L), L_mesh_file.string());
-    const auto L_mesh = reader_L.mesh();
+    const auto L_mesh = getLDomain();
 
     // Compute the errors for different polynomial degrees
     Eigen::MatrixXd results(max_p, 7);
