@@ -76,3 +76,15 @@ add_custom_target(examples.lecturedemos.convergencestudies.prefinement_run
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/prefinement_plot.py
 )
 add_dependencies(examples_run examples.lecturedemos.convergencestudies.prefinement_run)
+
+add_executable(examples.lecturedemos.convergencestudies.asymptotic asymptotic.cc)
+target_link_libraries(examples.lecturedemos.convergencestudies.asymptotic
+    PUBLIC Eigen3::Eigen
+    Boost::program_options
+    lf.quad
+)
+add_custom_target(examples.lecturedemos.convergencestudies.asymptotic_run
+    COMMAND examples.lecturedemos.convergencestudies.asymptotic -o ${CMAKE_CURRENT_BINARY_DIR}/results.csv && python3 ${CMAKE_CURRENT_SOURCE_DIR}/asymptotic_plot.py ${CMAKE_CURRENT_BINARY_DIR}/results.csv
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/asymptotic_plot.py
+)
+add_dependencies(examples_run examples.lecturedemos.convergencestudies.asymptotic_run)
