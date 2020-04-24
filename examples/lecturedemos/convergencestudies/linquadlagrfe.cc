@@ -38,7 +38,7 @@ namespace po = boost::program_options;
  *
  * The Dirichlet boundary conditions are set to zero and the load is given by
  * \f[
-	f(x) = 2\pi^2\sin(\pi x_1)\sin\pi x_2)
+        f(x) = 2\pi^2\sin(\pi x_1)\sin\pi x_2)
    \f]
  */
 Eigen::VectorXd solvePoisson(

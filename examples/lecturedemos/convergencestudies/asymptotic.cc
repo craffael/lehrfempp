@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
 
   // Load function
   const auto f = [](double x) {
-      return 10000*M_PI*M_PI*x*x*std::sin(50*M_PI*x*x) - 100*M_PI*std::cos(50*M_PI*x*x);
+    return 10000 * M_PI * M_PI * x * x * std::sin(50 * M_PI * x * x) -
+           100 * M_PI * std::cos(50 * M_PI * x * x);
   };
   // Analytic solution
   const auto u = [](double x) { return std::sin(50 * M_PI * x * x); };
