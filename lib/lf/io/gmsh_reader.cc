@@ -152,7 +152,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
 
       ++num_entities[DimOf(e.Type)];
 
-      if (DimOf(e.Type) == dim_mesh) {
+      if (e.Type != GMshFileV2::ElementType::POINT) {
         // mark main nodes
         auto ref_el = RefElOf(e.Type);
         for (unsigned int i = 0; i < ref_el.NumNodes(); ++i) {
@@ -160,7 +160,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
           if (is_main_node.size() <= node_number) {
             is_main_node.resize(node_number + 1);
           }
-          is_main_node[e.NodeNumbers[i]] = true;
+          is_main_node[node_number] = true;
         }
       }
     }
