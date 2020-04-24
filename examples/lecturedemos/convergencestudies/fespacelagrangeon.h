@@ -9,10 +9,13 @@
 #include <memory>
 #include <cmath>
 
-#include <iostream>
 
 
-
+/**
+ * @brief Computes Chebyshev interpolation nodes in [0, 1]
+ * @param n Degree of the Chebyshev interpolation nodes
+ * @returns An Eigen vector containing the interpolation nodes on [0, 1]
+ */
 Eigen::VectorXd chebyshevNodes(unsigned n) {
     // Compute the chebyshev nodes in the interval [0, 1]
     const auto cosine = [](double x) -> double { return std::cos(x); };
@@ -21,6 +24,13 @@ Eigen::VectorXd chebyshevNodes(unsigned n) {
 
 
 
+/**
+ * @brief Lagrangian Finite Elements of arbitrary degreen on segments
+ *
+ * The evaluation nodes are given by the Chebyshev nodes and include the endpoints of the segment.
+ *
+ * @see ScalarReferenceFiniteElement
+ */
 template<typename SCALAR>
 class FeLagrangeONSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
 public:
@@ -33,8 +43,6 @@ public:
     FeLagrangeONSegment(unsigned degree) : degree_(degree), ref_func_coeffs_() {
 	eval_nodes_ = ComputeEvaluationNodes(degree);
 	ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
-	//std::cout << "FeLagrangeONSegment(" << degree << ")\n";
-	//std::cout << eval_nodes_ << std::endl;
     }
 
     [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -45,14 +53,26 @@ public:
 	return degree_;
     }
 
+    /**
+     * @brief The local shape functions
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions() const override {
 	return degree_ + 1;
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions for the segment
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim) const override {
 	return codim == 0 ? degree_-1 : 1;
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions for the segment
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t, lf::base::sub_idx_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim, lf::base::sub_idx_t /*subidx*/) const override {
 	return NumRefShapeFunctions(codim);
     }
@@ -67,10 +87,18 @@ public:
 	return ref_func_coeffs_ * dx.transpose();
     }
 
+    /**
+     * @brief Evaluation nodes are the endpoints of the segment and the Chebyshev nodes of degree p-1 on the segment
+     * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+     */
     [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
 	return eval_nodes_;
     }
 
+    /**
+     * @brief p+1 shape functions
+     * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+     */
     [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
 	return NumRefShapeFunctions();
     }
@@ -118,6 +146,13 @@ private:
 
 
 
+/**
+ * @brief Lagrangian Finite Elements of arbitrary degreen on triangles
+ *
+ * The evaluation nodes are derived from the Chebyshev interpolation nodes
+ *
+ * @see ScalarReferenceFiniteElement
+ */
 template<typename SCALAR>
 class FeLagrangeONTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
 public:
@@ -130,8 +165,6 @@ public:
     FeLagrangeONTria(unsigned degree) : degree_(degree), eval_nodes_(), ref_func_coeffs_() {
 	eval_nodes_ = ComputeEvaluationNodes(degree);
 	ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
-	//std::cout << "FeLagrangeONTria(" << degree << ")\n";
-	//std::cout << eval_nodes_ << std::endl;
     }
 
     [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -142,10 +175,18 @@ public:
 	return degree_;
     }
 
+    /**
+     * @brief The local shape functions
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions() const override {
 	return (degree_+1) * (degree_+2) / 2;
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions on the edges and max(0, (p-2)*(p-1)/2) shape functions on the triangle
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim) const override {
 	switch (codim) {
 	    case 0:
@@ -164,6 +205,10 @@ public:
 	}
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions on the edges and max(0, (p-2)*(p-1)/2) shape functions on the triangle
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim, lf::base::sub_idx_t /*subidx*/) const override {
 	return NumRefShapeFunctions(codim);
     }
@@ -185,10 +230,18 @@ public:
 	return grads;
     }
 
+    /**
+     * @brief Evaluation nodes are the vertices, the Chebyshev nodes of degree p-1 on the edges and the corresponding nodes on the triangle
+     * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+     */
     [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
 	return eval_nodes_;
     }
 
+    /**
+     * @brief (p+1)*(p+2)/2 evaluation nodes
+     * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+     */
     [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
 	return NumRefShapeFunctions();
     }
@@ -279,6 +332,13 @@ private:
 
 
 
+/**
+ * @brief Lagrangian Finite Elements of arbitrary degreen on quadrilaterals
+ *
+ * The evaluation nodes are derived from the Chebyshev interpolation nodes
+ *
+ * @see ScalarReferenceFiniteElement
+ */
 template<typename SCALAR>
 class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
 public:
@@ -301,10 +361,18 @@ public:
 	return degree_;
     }
 
+    /**
+     * @brief The local shape functions
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions() const override {
 	return (degree_+1) * (degree_+1);
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions on the edges and (p-1)^2 shape functions on the quadrilateral
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim) const override {
 	switch (codim) {
 	    case 0:
@@ -318,6 +386,10 @@ public:
 	}
     }
 
+    /**
+     * @brief One shape function for each vertex, p-1 shape functions on the edges and (p-1)^2 shape functions on the quadrilateral
+     * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(lf::assemble::dim_t)
+     */
     [[nodiscard]] lf::base::size_type NumRefShapeFunctions(lf::assemble::dim_t codim, lf::base::sub_idx_t /*subidx*/) const override {
 	return NumRefShapeFunctions(codim);
     }
@@ -339,10 +411,18 @@ public:
 	return grads;
     }
 
+    /**
+     * @brief Evaluation nodes are the vertices, the Chebyshev nodes of degree p-1 on the edges and the corresponding nodes on the quadrilateral
+     * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+     */
     [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
 	return eval_nodes_;
     }
 
+    /**
+     * @brief (p+1)^2 evaluation nodes
+     * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+     */
     [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
 	return NumRefShapeFunctions();
     }
@@ -431,6 +511,9 @@ private:
 
 
 
+/**
+ * @brief Lagrangian Finite Element Space of arbitrary degree
+ */
 template<typename SCALAR>
 class FeSpaceLagrangeON : public lf::uscalfe::UniformScalarFESpace<SCALAR> {
 public:
@@ -441,6 +524,12 @@ public:
     FeSpaceLagrangeON(FeSpaceLagrangeON&&) noexcept = default;
     FeSpaceLagrangeON& operator=(const FeSpaceLagrangeON&) = delete;
     FeSpaceLagrangeON& operator=(FeSpaceLagrangeON&&) noexcept = default;
+
+    /**
+     * @brief Constructor: Sets up the dof handler
+     * @param mesh_p A shared pointer to the underlying mesh (immutable)
+     * @param N The polynomial degree of the Finite Element Space
+     */
     explicit FeSpaceLagrangeON(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned N)
 	: lf::uscalfe::UniformScalarFESpace<SCALAR>(
 		mesh_p,

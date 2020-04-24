@@ -32,6 +32,10 @@ namespace po = boost::program_options;
 
 
 
+/**
+ * @brief Builds a mesh on [0, 1]^2 from two triangles
+ * @returns A shared pointer to a mesh
+ */
 std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
     lf::mesh::hybrid2d::MeshFactory factory(2);
     // Add the vertices
@@ -68,6 +72,10 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
 
 
 
+/**
+ * @brief Builds a mesh on [-1, 1]^2 \ (]0, 1[x]-1, 0[) from four triangles
+ * @returns A shared pointer to a mesh
+ */
 std::shared_ptr<lf::mesh::Mesh> getLDomain() {
     lf::mesh::hybrid2d::MeshFactory factory(2);
     // Add the vertices
@@ -122,6 +130,16 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
 
 
 
+/**
+ * @brief Get the error of a test problem for the given mesh and FE space
+ * @param mesh The mesh on which to solve the PDE
+ * @param fe_space The Finite Element Space to use for the computation
+ *
+ * The test problem is formulated on [0, 1]^2 with Dirichlet boundary conditions and has the analytic solution
+ * \f[
+	u(x) = \sin(\pi x_1)\sin(\pi x_2)
+   \f]
+ */
 std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
     // Get the degree of the fe space
     const auto degree = fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
@@ -211,6 +229,16 @@ std::tuple<double, double> computeErrorsSquareDomain(const std::shared_ptr<lf::m
 
 
 
+/**
+ * @brief Get the error of a test problem for the given mesh and FE space
+ * @param mesh The mesh on which to solve the PDE
+ * @param fe_space The Finite Element Space to use for the computation
+ *
+ * The test problem is formulated on [-1, 1]^2 \ (]0, 1[x]-1, 0[) with Dirichlet boundary conditions and has the analytic solution
+ * \f[
+	u(r, \phi) = r^{\frac{2}{3}}\sin(\frac{2}{3}\phi)
+   \f]
+ */
 std::tuple<double, double> computeErrorsLDomain(const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> & fe_space) {
     // The analytic solution
     const auto u = [](const Eigen::Vector2d &x) -> double {

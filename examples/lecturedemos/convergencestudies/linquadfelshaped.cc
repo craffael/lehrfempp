@@ -28,6 +28,17 @@ namespace po = boost::program_options;
 
 
 
+/**
+ * @brief Solves the Poisson problem on a given mesh
+ * @param mesh The mesh on which to solve the PDE
+ * @param fe_space The Finite Element Space to use
+ * @returns The dof vector corresponding to the solution of the PDE
+ *
+ * The problem that is solved has load zero and Dirichlet boundary conditions given by
+ * \f[
+	g(r, \phi) = r^{\frac{2}{3}}\sin(\frac{2}{3}\phi)
+   \f]
+ */
 Eigen::VectorXd solvePoisson(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> &fe_space) {
     // Define the boundary values
     const auto u_bd = [](const Eigen::Vector2d &x) -> double {
