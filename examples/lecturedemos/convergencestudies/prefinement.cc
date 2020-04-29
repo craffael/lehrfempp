@@ -14,6 +14,10 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
 
+#include <lf/refinement/refinement.h>
+#include <lf/refinement/mesh_function_transfer.h>
+#include <lf/io/io.h>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <boost/filesystem.hpp>
@@ -62,6 +66,18 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[2] = vertices[3];
   auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
+  /*
+  Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
+  lf::mesh::MeshFactory::size_type nodes[4];
+  coords << 0, 1, 1, 0,
+	    0, 0, 1, 1;
+  nodes[0] = vertices[0];
+  nodes[1] = vertices[1];
+  nodes[2] = vertices[2];
+  nodes[3] = vertices[3];
+  auto geom = std::make_unique<lf::geometry::QuadO1>(coords);
+  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom));
+  */
   // Build the mesh
   return factory.Build();
 }
@@ -194,6 +210,19 @@ std::tuple<double, double> computeErrorsSquareDomain(
                                                                solution);
   const lf::uscalfe::MeshFunctionGradFE<double, double> mf_numeric_grad(
       fe_space, solution);
+
+  // Store all basis functions for debugging purposes
+  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
+  const unsigned ndofs = fe_space->ShapeFunctionLayout(lf::base::RefEl::kQuad())->NumRefShapeFunctions();
+  Eigen::VectorXd basis_dofs(ndofs);
+  lf::io::VtkWriter writer(mh->getMesh(6), "basis_" + std::to_string(ndofs) + ".vtk");
+  for (unsigned i = 0 ; i < ndofs ; ++i) {
+      basis_dofs.setZero();
+      basis_dofs[i] = 1;
+      const lf::uscalfe::MeshFunctionFE<double, double> mf_basis(fe_space, basis_dofs);
+      const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
+      writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
+  }
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
@@ -372,6 +401,7 @@ int main(int argc, char *argv[]) {
   const boost::filesystem::path here = __FILE__;
   // Load the unit square mesh
   const auto square_mesh = getSquareDomain();
+  lf::io::writeTikZ(*square_mesh, "unitsquare.tikz", lf::io::TikzOutputCtrl(31));
   // Load the L-shaped domain mesh
   const auto L_mesh = getLDomain();
 

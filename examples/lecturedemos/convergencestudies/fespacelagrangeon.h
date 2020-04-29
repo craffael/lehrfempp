@@ -9,32 +9,62 @@
 
 #include <cmath>
 #include <memory>
+#include <vector>
 
-/**
- * @brief Computes Chebyshev interpolation nodes in [0, 1]
- * @param n Degree of the Chebyshev interpolation nodes
- * @returns An Eigen vector containing the interpolation nodes on [0, 1]
- */
-Eigen::VectorXd chebyshevNodes(unsigned n) {
-  // Compute the chebyshev nodes in the interval [0, 1]
-  const auto cosine = [](double x) -> double { return std::cos(x); };
-  return (Eigen::VectorXd::Ones(n) +
-          Eigen::VectorXd::LinSpaced(n, M_PI - M_PI / (2 * n), M_PI / (2 * n))
-              .unaryExpr(cosine)) /
-         2;
-}
+
+template<typename SCALAR>
+struct LegendrePoly {
+    static SCALAR eval(unsigned n, double x) {
+	double Ljm1 = 1;
+	double Lj = x;
+	if (n == 0) {
+	    return Ljm1;
+	}
+	else if (n == 1) {
+	    return Lj;
+	}
+	else {
+	    for (unsigned j = 1 ; j < n ; ++j) {
+		double Ljp1 = ((2*j+1)*x*Lj - j*Ljm1) / (j+1);
+		Ljm1 = Lj;
+		Lj = Ljp1;
+	    }
+	    return Lj;
+	}
+    }
+
+    static SCALAR integral(unsigned n, double x) {
+	if (n == 0) {
+	    return -1;
+	}
+	else if (n == 1) {
+	    return x;
+	}
+	else {
+	    double Ljm2 = 1;
+	    double Ljm1 = x;
+	    double Lj = (3*x*x - 1) / 2;
+	    for (unsigned j = 2 ; j < n ; ++j) {
+		double Ljp1 = ((2*j+1)*x*Lj - j*Ljm1) / (j+1);
+		Ljm2 = Ljm1;
+		Ljm1 = Lj;
+		Lj = Ljp1;
+	    }
+	    return (Lj - Ljm2) / (2*n-1);
+	}
+    }
+};
+
 
 /**
  * @brief Lagrangian Finite Elements of arbitrary degreen on segments
  *
- * The evaluation nodes are given by the Chebyshev nodes and include the
- * endpoints of the segment.
+ * The Shape Functions are taken from the following paper: https://arxiv.org/pdf/1504.03025.pdf
  *
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONSegment final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeONSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeONSegment(const FeLagrangeONSegment &) = default;
   FeLagrangeONSegment(FeLagrangeONSegment &&) = default;
@@ -42,9 +72,8 @@ class FeLagrangeONSegment final
   FeLagrangeONSegment &operator=(FeLagrangeONSegment &&) = default;
   ~FeLagrangeONSegment() = default;
 
-  FeLagrangeONSegment(unsigned degree) : degree_(degree), ref_func_coeffs_() {
-    eval_nodes_ = ComputeEvaluationNodes(degree);
-    ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
+  FeLagrangeONSegment(unsigned degree) : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree) {
+    eval_nodes_ = ComputeEvaluationNodes();
   }
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -87,15 +116,34 @@ class FeLagrangeONSegment final
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-    const auto poly_basis = ComputePolyBasis(refcoords);
-    return ref_func_coeffs_ * poly_basis.transpose();
+      LF_ASSERT_MSG(refcoords.rows() == 1, "refcoords must be a row vector");
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), refcoords.cols());
+      // Get the shape functions associated with the vertices
+      result.row(0) = refcoords.unaryExpr([&](double x) -> SCALAR { return 1-x; });
+      result.row(1) = refcoords.unaryExpr([&](double x) -> SCALAR { return x; });
+      // Get the shape functions associated with the interior of the segment
+      for (int i = 0 ; i < degree_-1 ; ++i) {
+	  result.row(i+2) = refcoords.unaryExpr([&](double x) -> SCALAR {
+	    return LegendrePoly<SCALAR>::integral(i+2, 2*x-1);
+	  });
+      }
+      return result;
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-  GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd &refcoords) const override {
-    const auto dx = ComputePolyBasisDerivative(refcoords);
-    return ref_func_coeffs_ * dx.transpose();
+  GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
+      LF_ASSERT_MSG(refcoords.rows() == 1, "refcoords must be a row vector");
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), refcoords.cols());
+      // Get the gradient of the shape functions associated with the vertices
+      result.row(0) = refcoords.unaryExpr([&](double x) -> SCALAR { return -1; });
+      result.row(1) = refcoords.unaryExpr([&](double x) -> SCALAR { return 1; });
+      // Get the shape functions associated with the interior of the segment
+      for (int i = 0 ; i < degree_-1 ; ++i) {
+	  result.row(i+2) = refcoords.unaryExpr([&](double x) -> SCALAR {
+	    return 2*LegendrePoly<SCALAR>::eval(i+1, 2*x-1);
+	  });
+      }
+      return result;
   }
 
   /**
@@ -104,7 +152,7 @@ class FeLagrangeONSegment final
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    return eval_nodes_;
+      return eval_nodes_;
   }
 
   /**
@@ -112,67 +160,38 @@ class FeLagrangeONSegment final
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
-    return NumRefShapeFunctions();
+      return degree_ + 1;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
+    LF_ASSERT_MSG(false, "Segment::NodalValuesToDofs() not yet implemented");
   }
 
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_func_coeffs_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes(unsigned p) const {
-    Eigen::MatrixXd nodes(1, p + 1);
-    // Add the evaluation nodes corresponding to the vertices of the segment
-    nodes(0, 0) = 0;
-    nodes(0, 1) = 1;
-    // Add the evaluation nodes corresponding to the interior of the segment
-    if (p > 1) {
-      nodes.block(0, 2, 1, p - 1) = chebyshevNodes(p - 1).transpose();
-    }
-    return nodes;
-  }
-
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputePolyBasis(
-      const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> &refcoords)
-      const {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> poly_basis(
-        refcoords.cols(), degree_ + 1);
-    for (unsigned exponent = 0; exponent <= degree_; ++exponent) {
-      for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-        poly_basis(node_idx, exponent) =
-            std::pow(refcoords(0, node_idx), exponent);
+  Eigen::MatrixXd ComputeEvaluationNodes() const {
+      Eigen::MatrixXd nodes(1, degree_+1);
+      nodes(0, 0) = 0;
+      nodes(0, 1) = 1;
+      if (degree_ > 1) {
+	  nodes.block(0, 2, 1, degree_-1) = Eigen::VectorXd::LinSpaced(degree_+1, 0, 1).segment(1, degree_-1).transpose();
       }
-    }
-    return poly_basis;
-  }
-
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-  ComputePolyBasisDerivative(
-      const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> &refcoords)
-      const {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dx(refcoords.cols(),
-                                                             degree_ + 1);
-    dx.col(0).setZero();
-    for (unsigned exponent = 1; exponent <= degree_; ++exponent) {
-      for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-        dx(node_idx, exponent) =
-            exponent * std::pow(refcoords(0, node_idx), exponent - 1);
-      }
-    }
-    return dx;
+      return nodes;
   }
 };
 
 /**
  * @brief Lagrangian Finite Elements of arbitrary degreen on triangles
  *
- * The evaluation nodes are derived from the Chebyshev interpolation nodes
+ * The Shape Functions are taken from the following paper: https://arxiv.org/pdf/1504.03025.pdf
+ * where Legendre polynomials are taken for the face bubbles instead of Jacobi polynomials
  *
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONTria final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeONTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeONTria(const FeLagrangeONTria &) = default;
   FeLagrangeONTria(FeLagrangeONTria &&) = default;
@@ -181,9 +200,8 @@ class FeLagrangeONTria final
   ~FeLagrangeONTria() = default;
 
   FeLagrangeONTria(unsigned degree)
-      : degree_(degree), eval_nodes_(), ref_func_coeffs_() {
-    eval_nodes_ = ComputeEvaluationNodes(degree);
-    ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
+      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_() {
+    eval_nodes_ = ComputeEvaluationNodes();
   }
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -238,26 +256,104 @@ class FeLagrangeONTria final
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-    const auto poly_basis = ComputePolyBasis(refcoords);
-    return ref_func_coeffs_ * poly_basis.transpose();
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), refcoords.cols());
+      // Compute the barycentric coordinate functions
+      Eigen::RowVectorXd lambda1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
+      Eigen::RowVectorXd lambda2 = refcoords.row(0);
+      Eigen::RowVectorXd lambda3 = refcoords.row(1);
+      // Get the basis functions associated with the vertices
+      result.row(0) = lambda1.unaryExpr([&](double x) -> SCALAR { return x; });
+      result.row(1) = lambda2.unaryExpr([&](double x) -> SCALAR { return x; });
+      result.row(2) = lambda3.unaryExpr([&](double x) -> SCALAR { return x; });
+      // Get the basis functions associated with the first edge
+      for (int i = 0 ; i < degree_-1 ; ++i) {
+	  result.row(i+3) = ((lambda1 + lambda2).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			     (lambda1.array()/(lambda1+lambda2).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+      }
+      // Get the basis functions associated with the second edge
+      for (int i = 0 ; i < degree_-1 ; ++i) {
+	  result.row(i+degree_+2) = ((lambda2 + lambda3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			             (lambda2.array()/(lambda2+lambda3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+      }
+      // Get the basis functions associated with the third edge
+      for (int i = 0 ; i < degree_-1 ; ++i) {
+	  result.row(i+2*degree_+1) = ((lambda3 + lambda1).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			               (lambda3.array()/(lambda3+lambda1).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+      }
+      // Get the basis functions associated with the interior of the triangle
+      if (degree_ > 2) {
+	  int idx = 3 * degree_;
+	  for (int i = 0 ; i < degree_-2 ; ++i) {
+	      for (int j = 0 ; j < degree_-i-2 ; ++j) {
+		  result.row(idx) = ((lambda2 + lambda3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+				     (lambda2.array()/(lambda2+lambda3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); }) *
+				     lambda1.array().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(j+2, 2*x-1); })).matrix();
+		  ++ idx;
+	      }
+	  }
+      }
+      return result;
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-  GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd &refcoords) const override {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grads(
-        NumRefShapeFunctions(), 2 * refcoords.cols());
-    const auto [basis_dx, basis_dy] = ComputePolyBasisDerivative(refcoords);
-    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dx =
-        ref_func_coeffs_ * basis_dx.transpose();
-    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dy =
-        ref_func_coeffs_ * basis_dy.transpose();
-    for (int refcoord_idx = 0; refcoord_idx < refcoords.cols();
-         ++refcoord_idx) {
-      grads.col(2 * refcoord_idx + 0) = dx.col(refcoord_idx);
-      grads.col(2 * refcoord_idx + 1) = dy.col(refcoord_idx);
+  GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), 2 * refcoords.cols());
+    // Compute the barycentric coordinate functions
+    Eigen::RowVectorXd lambda1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
+    Eigen::RowVectorXd lambda2 = refcoords.row(0);
+    Eigen::RowVectorXd lambda3 = refcoords.row(1);
+    for (int i = 0 ; i < refcoords.cols() ; ++i) {
+      // Get the gradient of the basis functions associated with the vertices
+      result(0, 2*i+0) = -1;
+      result(0, 2*i+1) = -1;
+      result(1, 2*i+0) = 1;
+      result(1, 2*i+1) = 0;
+      result(2, 2*i+0) = 0;
+      result(2, 2*i+1) = 1;
+      // Get the gradient of the basis functions associated with the first edge
+      double lambda1p2 = 1 - refcoords(1, i);
+      double lambda1norm = lambda1[i] / lambda1p2;
+      for (int j = 0 ; j < degree_-1 ; ++j) {
+	  SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda1norm-1);
+	  SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda1norm-1);
+	  result(j+3, 2*i+0) = -2 * std::pow(lambda1p2, j+1) * leg1eval;
+	  result(j+3, 2*i+1) = -(j+2)*std::pow(lambda1p2, j+1)*leg1inte + 2*lambda2[i]*std::pow(lambda1p2, j)*leg1eval;
+      }
+      // Get the gradient of the basis functions associated with the second edge
+      double lambda2p3 = refcoords(0, i) + refcoords(1, i);
+      double lambda2norm = lambda2[i] / lambda2p3;
+      for (int j = 0 ; j < degree_-1 ; ++j) {
+	  SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda2norm-1);
+	  SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda2norm-1);
+	  result(j+degree_+2, 2*i+0) = (j+2)*std::pow(lambda2p3, j+1)*leg2inte + 2*lambda3[i]*std::pow(lambda2p3, j)*leg2eval;
+	  result(j+degree_+2, 2*i+1) = (j+2)*std::pow(lambda2p3, j+1)*leg2inte - 2*lambda2[i]*std::pow(lambda2p3, j)*leg2eval;
+      }
+      // Get the gradient of the basis functions associated with the third edge
+      double lambda3p1 = 1 - refcoords(0, i);
+      double lambda3norm = lambda3[i] / lambda3p1;
+      for (int j = 0 ; j < degree_-1 ; ++j) {
+	  SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda3norm-1);
+	  SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda3norm-1);
+	  result(j+2*degree_-1, 2*i+0) = -(j+2)*std::pow(lambda3p1, j+1)*leg3inte + 2*lambda3[i]*std::pow(lambda3p1, j)*leg3eval;
+	  result(j+2*degree_-1, 2*i+1) = 2 * std::pow(lambda3p1, j+1) * leg3eval;
+      }
+      // Get the gradient of the basis functions associated with the interior of the triangle
+      if (degree_ > 2) {
+	  int idx = 3 * degree_;
+	  for (int j = 0 ; j < degree_-2 ; ++j) {
+	      SCALAR legjinte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda2norm-1);
+	      SCALAR legjeval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda2norm-1);
+	      for (int k = 0 ; k < degree_-j-2 ; ++k) {
+		  SCALAR legkinte = LegendrePoly<SCALAR>::integral(k+2, 2*lambda1[i]-1);
+		  SCALAR legkeval = LegendrePoly<SCALAR>::eval(k+1, 2*lambda1[i]-1);
+		  result(idx, 2*i+0) = (j+2)*std::pow(lambda2p3, j+1)*legjinte*legkinte + 2*lambda3[i]*std::pow(lambda2p3, j)*legjeval*legkinte - 2*std::pow(lambda2p3, j+2)*legjinte*legkeval;
+		  result(idx, 2*i+1) = (j+2)*std::pow(lambda2p3, j+1)*legjinte*legkinte - 2*lambda2[i]*std::pow(lambda2p3, j)*legjeval*legkinte - 2*std::pow(lambda2p3, j+2)*legjinte*legkeval;
+		  ++idx;
+	      }
+	  }
+      }
     }
-    return grads;
+    return result;
   }
 
   /**
@@ -277,13 +373,16 @@ class FeLagrangeONTria final
     return NumRefShapeFunctions();
   }
 
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
+    LF_ASSERT_MSG(false, "Tria::NodalValuesToDofs() not yet implemented");
+  }
+
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_func_coeffs_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes(unsigned p) const {
-    Eigen::MatrixXd eval_nodes(2, (p + 1) * (p + 2) / 2);
+  Eigen::MatrixXd ComputeEvaluationNodes() const {
+    Eigen::MatrixXd eval_nodes(2, (degree_ + 1) * (degree_ + 2) / 2);
     // Add the evaluation nodes corresponding to the vertices of the triangle
     eval_nodes(0, 0) = 0;
     eval_nodes(1, 0) = 0;
@@ -292,95 +391,42 @@ class FeLagrangeONTria final
     eval_nodes(0, 2) = 0;
     eval_nodes(1, 2) = 1;
     // Add the evaluation nodes corresponding to the edges of the triangle
-    const Eigen::VectorXd cheb = chebyshevNodes(p - 1);
-    for (int i = 0; i < p - 1; ++i) {
-      eval_nodes(0, 3 + i) = cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      eval_nodes(0, 3 + i) = static_cast<double>(i+1) / (degree_+1);
       eval_nodes(1, 3 + i) = 0;
     }
-    for (int i = 0; i < p - 1; ++i) {
-      eval_nodes(0, 2 + p + i) = 1. - cheb[i];
-      eval_nodes(1, 2 + p + i) = cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      eval_nodes(0, 2 + degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
+      eval_nodes(1, 2 + degree_ + i) = static_cast<double>(i+1)/(degree_+1);
     }
-    for (int i = 0; i < p - 1; ++i) {
-      eval_nodes(0, 1 + p + p + i) = 0;
-      eval_nodes(1, 1 + p + p + i) = 1. - cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      eval_nodes(0, 1 + 2*degree_ + i) = 0;
+      eval_nodes(1, 1 + 2*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
     }
     // Add the evaluation nodes corresponding to the interior of the triangle
-    if (p > 2) {
-      for (int i = 0; i < p - 2; ++i) {
-        for (int j = 0; j <= i; ++j) {
-          eval_nodes(0, (3 * p) + (i * (i + 1) / 2) + j) = cheb[p - 3 - i];
-          eval_nodes(1, (3 * p) + (i * (i + 1) / 2) + j) = cheb[j];
+    if (degree_ > 2) {
+      int idx = 3 * degree_;
+      for (int i = 0; i < degree_ - 2; ++i) {
+        for (int j = 0; j < degree_-2-i ; ++j) {
+          eval_nodes(0, idx) = static_cast<double>(j+1) / (degree_+1);
+          eval_nodes(1, idx) = static_cast<double>(i+1) / (degree_+1);
+	  ++idx;
         }
       }
     }
     return eval_nodes;
-  }
-
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputePolyBasis(
-      const Eigen::MatrixXd &refcoords) const {
-    // The coefficients are ordered x^0y^0, x^0y^1, ..., x^0y^p, x^1y^0, x^1y^1,
-    // ..., x^1, y^(p-1), ... x^(p-1)y^0, x^(p-1)y^1, x^py^0
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 2) / 2);
-    unsigned coeff_idx = 0;
-    for (unsigned powx = 0; powx <= degree_; ++powx) {
-      for (unsigned powy = 0; powy <= degree_ - powx; ++powy) {
-        for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-          coeffs(node_idx, coeff_idx) = std::pow(refcoords(0, node_idx), powx) *
-                                        std::pow(refcoords(1, node_idx), powy);
-        }
-        ++coeff_idx;
-      }
-    }
-    return coeffs;
-  }
-
-  std::pair<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
-            Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
-  ComputePolyBasisDerivative(const Eigen::MatrixXd &refcoords) const {
-    // The coefficients are ordered x^0y^0, x^0y^1, ..., x^0y^p, x^1y^0, x^1y^1,
-    // ..., x^1, y^(p-1), ... x^(p-1)y^0, x^(p-1)y^1, x^py^0
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dx(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 2) / 2);
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dy(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 2) / 2);
-    unsigned coeff_idx = 0;
-    for (unsigned powx = 0; powx <= degree_; ++powx) {
-      for (unsigned powy = 0; powy <= degree_ - powx; ++powy) {
-        for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-          if (powx > 0) {
-            coeffs_dx(node_idx, coeff_idx) =
-                powx * std::pow(refcoords(0, node_idx), powx - 1) *
-                std::pow(refcoords(1, node_idx), powy);
-          } else {
-            coeffs_dx(node_idx, coeff_idx) = 0;
-          }
-          if (powy > 0) {
-            coeffs_dy(node_idx, coeff_idx) =
-                powy * std::pow(refcoords(0, node_idx), powx) *
-                std::pow(refcoords(1, node_idx), powy - 1);
-          } else {
-            coeffs_dy(node_idx, coeff_idx) = 0;
-          }
-        }
-        ++coeff_idx;
-      }
-    }
-    return {coeffs_dx, coeffs_dy};
   }
 };
 
 /**
  * @brief Lagrangian Finite Elements of arbitrary degreen on quadrilaterals
  *
- * The evaluation nodes are derived from the Chebyshev interpolation nodes
+ * The Shape Functions are taken from the following paper: https://arxiv.org/pdf/1504.03025.pdf
  *
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONQuad final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeONQuad(const FeLagrangeONQuad &) = default;
   FeLagrangeONQuad(FeLagrangeONQuad &&) = default;
@@ -389,9 +435,8 @@ class FeLagrangeONQuad final
   ~FeLagrangeONQuad() = default;
 
   FeLagrangeONQuad(unsigned degree)
-      : degree_(degree), eval_nodes_(), ref_func_coeffs_() {
-    eval_nodes_ = ComputeEvaluationNodes(degree);
-    ref_func_coeffs_ = ComputePolyBasis(eval_nodes_).inverse().transpose();
+      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_(), fe1d_(degree) {
+    eval_nodes_ = ComputeEvaluationNodes();
   }
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
@@ -442,26 +487,87 @@ class FeLagrangeONQuad final
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-    const auto poly_basis = ComputePolyBasis(refcoords);
-    return ref_func_coeffs_ * poly_basis.transpose();
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), refcoords.cols());
+    // Compute the 1D shape functions at the x and y coordinates
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_x = fe1d_.EvalReferenceShapeFunctions(refcoords.row(0));
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_y = fe1d_.EvalReferenceShapeFunctions(refcoords.row(1));
+    // Get the basis functions associated with the vertices
+    result.row(0) = (sf1d_x.row(0).array() * sf1d_y.row(0).array()).matrix();
+    result.row(1) = (sf1d_x.row(1).array() * sf1d_y.row(0).array()).matrix();
+    result.row(2) = (sf1d_x.row(1).array() * sf1d_y.row(1).array()).matrix();
+    result.row(3) = (sf1d_x.row(0).array() * sf1d_y.row(1).array()).matrix();
+    // Get the basis functions associated with the first edge
+    for (int i = 0 ; i < degree_-1 ; ++i) {
+	result.row(4+i) = (sf1d_x.row(i+2).array() * sf1d_y.row(0).array()).matrix();
+    }
+    // Get the basis functions associated with the second edge
+    for (int i = 0 ; i < degree_-1 ; ++i) {
+	result.row(3+degree_+i) = (sf1d_x.row(1).array() * sf1d_y.row(i+2).array()).matrix();
+    }
+    // Get the basis functions associated with the third edge
+    for (int i = 0 ; i < degree_-1 ; ++i) {
+	result.row(2+2*degree_+i) = (sf1d_x.row(degree_-i).array() * sf1d_y.row(1).array()).matrix();
+    }
+    // Get the basis functions associated with the fourth edge
+    for (int i = 0 ; i < degree_-1 ; ++i) {
+	result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(degree_-i).array()).matrix();
+    }
+    // Get the basis functions associated with the interior of the quad
+    for (int i = 0 ; i < degree_-1 ; ++i) {
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    result.row(4*degree_ + (degree_-1)*i + j) = (sf1d_x.row(j+2).array() * sf1d_y.row(i+2).array()).matrix();
+	}
+    }
+    return result;
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-  GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd &refcoords) const override {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grads(
-        NumRefShapeFunctions(), 2 * refcoords.cols());
-    const auto [basis_dx, basis_dy] = ComputePolyBasisDerivative(refcoords);
-    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dx =
-        ref_func_coeffs_ * basis_dx.transpose();
-    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dy =
-        ref_func_coeffs_ * basis_dy.transpose();
-    for (int refcoord_idx = 0; refcoord_idx < refcoords.cols();
-         ++refcoord_idx) {
-      grads.col(2 * refcoord_idx + 0) = dx.col(refcoord_idx);
-      grads.col(2 * refcoord_idx + 1) = dy.col(refcoord_idx);
+  GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), 2*refcoords.cols());
+    // Compute the gradient of the 1D shape functions at the x and y coordinates
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_x = fe1d_.EvalReferenceShapeFunctions(refcoords.row(0));
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_y = fe1d_.EvalReferenceShapeFunctions(refcoords.row(1));
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_dx = fe1d_.GradientsReferenceShapeFunctions(refcoords.row(0));
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_dy = fe1d_.GradientsReferenceShapeFunctions(refcoords.row(1));
+    for (int i = 0 ; i < refcoords.cols() ; ++i) {
+	// Get the gradient of the basis functions associated with the vertices
+	result(0, 2*i+0) = sf1d_dx(0, i) * sf1d_y(0, i);
+	result(0, 2*i+1) = sf1d_x(0, i) * sf1d_dy(0, i);
+	result(1, 2*i+0) = sf1d_dx(1, i) * sf1d_y(0, i);
+	result(1, 2*i+1) = sf1d_x(1, i) * sf1d_dy(0, i);
+	result(2, 2*i+0) = sf1d_dx(1, i) * sf1d_y(1, i);
+	result(2, 2*i+1) = sf1d_x(1, i) * sf1d_dy(1, i);
+	result(3, 2*i+0) = sf1d_dx(0, i) * sf1d_y(1, i);
+	result(3, 2*i+1) = sf1d_x(0, i) * sf1d_dy(1, i);
+	// Get the basis functions associated with the first edge
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    result(4+j, 2*i+0) = sf1d_dx(j+2, i) * sf1d_y(0, i);
+	    result(4+j, 2*i+1) = sf1d_x(j+2, i) * sf1d_dy(0, i);
+	}
+	// Get the basis functions associated with the second edge
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    result(3+degree_+j, 2*i+0) = sf1d_dx(1, i) * sf1d_y(j+2, i);
+	    result(3+degree_+j, 2*i+1) = sf1d_x(1, i) * sf1d_dy(j+2, i);
+	}
+	// Get the basis functions associated with the third edge
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
+	    result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
+	}
+	// Get the basis functions associated with the fourth edge
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
+	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
+	}
+	// Get the basis functions associated with the interior of the quad
+	for (int j = 0 ; j < degree_-1 ; ++j) {
+	    for (int k = 0 ; k < degree_-1 ; ++k) {
+		result(4*degree_ + (degree_-1)*j +k, 2*i+0) = sf1d_dx(k+2, i) * sf1d_y(j+2, i);
+		result(4*degree_ + (degree_-1)*j +k, 2*i+1) = sf1d_x(k+2, i) * sf1d_dy(j+2, i);
+	    }
+	}
     }
-    return grads;
+    return result;
   }
 
   /**
@@ -481,13 +587,17 @@ class FeLagrangeONQuad final
     return NumRefShapeFunctions();
   }
 
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
+    LF_ASSERT_MSG(false, "Quad::NodalValuesToDofs() not yet implemented");
+  }
+
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_func_coeffs_;
+  FeLagrangeONSegment<SCALAR> fe1d_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes(unsigned p) const {
-    Eigen::MatrixXd nodes(2, (p + 1) * (p + 1));
+  Eigen::MatrixXd ComputeEvaluationNodes() const {
+    Eigen::MatrixXd nodes(2, (degree_ + 1) * (degree_ + 1));
     // Add the evaluation nodes corresponding to the vertices
     nodes(0, 0) = 0;
     nodes(1, 0) = 0;
@@ -498,77 +608,30 @@ class FeLagrangeONQuad final
     nodes(0, 3) = 0;
     nodes(1, 3) = 1;
     // Add the evaluation nodes corresponding to the edges of the quad
-    const Eigen::VectorXd cheb = chebyshevNodes(p - 1);
-    for (int i = 0; i < p - 1; ++i) {
-      nodes(0, 4 + i) = cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      nodes(0, 4 + i) = static_cast<double>(i+1) / (degree_+1);
       nodes(1, 4 + i) = 0;
     }
-    for (int i = 0; i < p - 1; ++i) {
-      nodes(0, 3 + p + i) = 1;
-      nodes(1, 3 + p + i) = cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      nodes(0, 3 + degree_ + i) = 1;
+      nodes(1, 3 + degree_ + i) = static_cast<double>(i+1) / (degree_+1);
     }
-    for (int i = 0; i < p - 1; ++i) {
-      nodes(0, 2 + p + p + i) = 1. - cheb[i];
-      nodes(1, 2 + p + p + i) = 1;
+    for (int i = 0; i < degree_ - 1; ++i) {
+      nodes(0, 2 + 2*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
+      nodes(1, 2 + 2*degree_ + i) = 1;
     }
-    for (int i = 0; i < p - 1; ++i) {
-      nodes(0, 1 + p + p + p + i) = 0;
-      nodes(1, 1 + p + p + p + i) = 1. - cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      nodes(0, 1 + 3*degree_ + i) = 0;
+      nodes(1, 1 + 3*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
     }
     // Add the evaluation nodes corresponding to the interior of the quad
-    for (int i = 0; i < p - 1; ++i) {
-      for (int j = 0; j < p - 1; ++j) {
-        nodes(0, 4 * p + (p - 1) * i + j) = cheb[j];
-        nodes(1, 4 * p + (p - 1) * i + j) = cheb[i];
+    for (int i = 0; i < degree_ - 1; ++i) {
+      for (int j = 0; j < degree_ - 1; ++j) {
+        nodes(0, 4 * degree_ + (degree_ - 1) * i + j) = static_cast<double>(j+1) / (degree_+1);
+        nodes(1, 4 * degree_ + (degree_ - 1) * i + j) = static_cast<double>(i+1) / (degree_+1);
       }
     }
     return nodes;
-  }
-
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ComputePolyBasis(
-      const Eigen::MatrixXd &refcoords) const {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> poly(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 1));
-    for (unsigned powx = 0; powx <= degree_; ++powx) {
-      for (unsigned powy = 0; powy <= degree_; ++powy) {
-        for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-          poly(node_idx, (degree_ + 1) * powx + powy) =
-              std::pow(refcoords(0, node_idx), powx) *
-              std::pow(refcoords(1, node_idx), powy);
-        }
-      }
-    }
-    return poly;
-  }
-
-  std::pair<Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
-            Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>>
-  ComputePolyBasisDerivative(const Eigen::MatrixXd &refcoords) const {
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dx(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 1));
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> coeffs_dy(
-        refcoords.cols(), (degree_ + 1) * (degree_ + 1));
-    for (unsigned powx = 0; powx <= degree_; ++powx) {
-      for (unsigned powy = 0; powy <= degree_; ++powy) {
-        for (unsigned node_idx = 0; node_idx < refcoords.cols(); ++node_idx) {
-          if (powx > 0) {
-            coeffs_dx(node_idx, (degree_ + 1) * powx + powy) =
-                powx * std::pow(refcoords(0, node_idx), powx - 1) *
-                std::pow(refcoords(1, node_idx), powy);
-          } else {
-            coeffs_dx(node_idx, (degree_ + 1) * powx + powy) = 0;
-          }
-          if (powy > 0) {
-            coeffs_dy(node_idx, (degree_ + 1) * powx + powy) =
-                powy * std::pow(refcoords(0, node_idx), powx) *
-                std::pow(refcoords(1, node_idx), powy - 1);
-          } else {
-            coeffs_dy(node_idx, (degree_ + 1) * powx + powy) = 0;
-          }
-        }
-      }
-    }
-    return {coeffs_dx, coeffs_dy};
   }
 };
 

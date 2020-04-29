@@ -1,4 +1,5 @@
 
+add_subdirectory(test)
 
 add_executable(examples.lecturedemos.convergencestudies.twopointbvp twopointbvp.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.twopointbvp
@@ -70,9 +71,10 @@ target_link_libraries(examples.lecturedemos.convergencestudies.prefinement
     lf.assemble
     lf.quad
     lf.io
+    lf.refinement
 )
 add_custom_target(examples.lecturedemos.convergencestudies.prefinement_run
-    COMMAND examples.lecturedemos.convergencestudies.prefinement -o ${CMAKE_CURRENT_BINARY_DIR}/results.csv -p 10 && python3 ${CMAKE_CURRENT_SOURCE_DIR}/prefinement_plot.py ${CMAKE_CURRENT_BINARY_DIR}/results.csv
+    COMMAND examples.lecturedemos.convergencestudies.prefinement -o ${CMAKE_CURRENT_BINARY_DIR}/results.csv -p 20 && python3 ${CMAKE_CURRENT_SOURCE_DIR}/prefinement_plot.py ${CMAKE_CURRENT_BINARY_DIR}/results.csv
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/prefinement_plot.py
 )
 add_dependencies(examples_run examples.lecturedemos.convergencestudies.prefinement_run)
