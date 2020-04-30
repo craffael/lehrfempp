@@ -1,6 +1,6 @@
 include(GoogleTest)
 
-add_executable(examples.lecturedemos.convergencestudies.test fespacelagrangeon_tests.cc)
+add_executable(examples.lecturedemos.convergencestudies.test fespacehp_tests.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.test PUBLIC
     Eigen3::Eigen
     GTest::gtest_main

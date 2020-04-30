@@ -1,5 +1,5 @@
-#ifndef EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACELAGRANGEON_H_
-#define EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACELAGRANGEON_H_
+#ifndef EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACEHP_H_
+#define EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACEHP_H_
 
 #define _USE_MATH_DEFINES
 
@@ -64,15 +64,15 @@ struct LegendrePoly {
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeHPSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeLagrangeONSegment(const FeLagrangeONSegment &) = default;
-  FeLagrangeONSegment(FeLagrangeONSegment &&) = default;
-  FeLagrangeONSegment &operator=(const FeLagrangeONSegment &) = default;
-  FeLagrangeONSegment &operator=(FeLagrangeONSegment &&) = default;
-  ~FeLagrangeONSegment() = default;
+  FeHPSegment(const FeHPSegment &) = default;
+  FeHPSegment(FeHPSegment &&) = default;
+  FeHPSegment &operator=(const FeHPSegment &) = default;
+  FeHPSegment &operator=(FeHPSegment &&) = default;
+  ~FeHPSegment() = default;
 
-  FeLagrangeONSegment(unsigned degree) : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree) {
+  FeHPSegment(unsigned degree) : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
 
@@ -163,8 +163,9 @@ class FeLagrangeONSegment final : public lf::uscalfe::ScalarReferenceFiniteEleme
       return degree_ + 1;
   }
 
-  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
-    LF_ASSERT_MSG(false, "Segment::NodalValuesToDofs() not yet implemented");
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodevals) const override {
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> shape_functions_at_nodes = EvalReferenceShapeFunctions(EvaluationNodes());
+    return shape_functions_at_nodes.transpose().fullPivHouseholderQr().solve(nodevals.transpose()).transpose();
   }
 
  private:
@@ -191,15 +192,15 @@ class FeLagrangeONSegment final : public lf::uscalfe::ScalarReferenceFiniteEleme
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeLagrangeONTria(const FeLagrangeONTria &) = default;
-  FeLagrangeONTria(FeLagrangeONTria &&) = default;
-  FeLagrangeONTria &operator=(const FeLagrangeONTria &) = default;
-  FeLagrangeONTria &operator=(FeLagrangeONTria &&) = default;
-  ~FeLagrangeONTria() = default;
+  FeHPTria(const FeHPTria &) = default;
+  FeHPTria(FeHPTria &&) = default;
+  FeHPTria &operator=(const FeHPTria &) = default;
+  FeHPTria &operator=(FeHPTria &&) = default;
+  ~FeHPTria() = default;
 
-  FeLagrangeONTria(unsigned degree)
+  FeHPTria(unsigned degree)
       : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_() {
     eval_nodes_ = ComputeEvaluationNodes();
   }
@@ -373,8 +374,9 @@ class FeLagrangeONTria final : public lf::uscalfe::ScalarReferenceFiniteElement<
     return NumRefShapeFunctions();
   }
 
-  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
-    LF_ASSERT_MSG(false, "Tria::NodalValuesToDofs() not yet implemented");
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodevals) const override {
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> shape_functions_at_nodes = EvalReferenceShapeFunctions(EvaluationNodes());
+    return shape_functions_at_nodes.transpose().fullPivHouseholderQr().solve(nodevals.transpose()).transpose();
   }
 
  private:
@@ -426,15 +428,15 @@ class FeLagrangeONTria final : public lf::uscalfe::ScalarReferenceFiniteElement<
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeLagrangeONQuad(const FeLagrangeONQuad &) = default;
-  FeLagrangeONQuad(FeLagrangeONQuad &&) = default;
-  FeLagrangeONQuad &operator=(const FeLagrangeONQuad &) = default;
-  FeLagrangeONQuad &operator=(FeLagrangeONQuad &&) = default;
-  ~FeLagrangeONQuad() = default;
+  FeHPQuad(const FeHPQuad &) = default;
+  FeHPQuad(FeHPQuad &&) = default;
+  FeHPQuad &operator=(const FeHPQuad &) = default;
+  FeHPQuad &operator=(FeHPQuad &&) = default;
+  ~FeHPQuad() = default;
 
-  FeLagrangeONQuad(unsigned degree)
+  FeHPQuad(unsigned degree)
       : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_(), fe1d_(degree) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
@@ -506,11 +508,13 @@ class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<
     }
     // Get the basis functions associated with the third edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	result.row(2+2*degree_+i) = (sf1d_x.row(degree_-i).array() * sf1d_y.row(1).array()).matrix();
+	//result.row(2+2*degree_+i) = (sf1d_x.row(degree_-i).array() * sf1d_y.row(1).array()).matrix();
+	result.row(2+2*degree_+i) = (sf1d_x.row(i+2).array() * sf1d_y.row(1).array()).matrix();
     }
     // Get the basis functions associated with the fourth edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(degree_-i).array()).matrix();
+	//result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(degree_-i).array()).matrix();
+	result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(i+2).array()).matrix();
     }
     // Get the basis functions associated with the interior of the quad
     for (int i = 0 ; i < degree_-1 ; ++i) {
@@ -551,13 +555,17 @@ class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<
 	}
 	// Get the basis functions associated with the third edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
-	    result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
+	    //result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
+	    //result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
+	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(j+2, i) * sf1d_y(1, i);
+	    result(2+2*degree_+j, 2*i+1) = sf1d_x(j+2, i) * sf1d_dy(1, i);
 	}
 	// Get the basis functions associated with the fourth edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
-	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
+	    //result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
+	    //result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
+	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(j+2, i);
+	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(j+2, i);
 	}
 	// Get the basis functions associated with the interior of the quad
 	for (int j = 0 ; j < degree_-1 ; ++j) {
@@ -587,14 +595,15 @@ class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<
     return NumRefShapeFunctions();
   }
 
-  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodvals) const override {
-    LF_ASSERT_MSG(false, "Quad::NodalValuesToDofs() not yet implemented");
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>& nodevals) const override {
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> shape_functions_at_nodes = EvalReferenceShapeFunctions(EvaluationNodes());
+    return shape_functions_at_nodes.transpose().fullPivHouseholderQr().solve(nodevals.transpose()).transpose();
   }
 
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
-  FeLagrangeONSegment<SCALAR> fe1d_;
+  FeHPSegment<SCALAR> fe1d_;
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(2, (degree_ + 1) * (degree_ + 1));
@@ -639,29 +648,51 @@ class FeLagrangeONQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<
  * @brief Lagrangian Finite Element Space of arbitrary degree
  */
 template <typename SCALAR>
-class FeSpaceLagrangeON : public lf::uscalfe::UniformScalarFESpace<SCALAR> {
+class FeSpaceHP : public lf::uscalfe::UniformScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  FeSpaceLagrangeON() = delete;
-  FeSpaceLagrangeON(const FeSpaceLagrangeON &) = delete;
-  FeSpaceLagrangeON(FeSpaceLagrangeON &&) noexcept = default;
-  FeSpaceLagrangeON &operator=(const FeSpaceLagrangeON &) = delete;
-  FeSpaceLagrangeON &operator=(FeSpaceLagrangeON &&) noexcept = default;
+  FeSpaceHP() = delete;
+  FeSpaceHP(const FeSpaceHP &) = delete;
+  FeSpaceHP(FeSpaceHP &&) noexcept = default;
+  FeSpaceHP &operator=(const FeSpaceHP &) = delete;
+  FeSpaceHP &operator=(FeSpaceHP &&) noexcept = default;
 
   /**
    * @brief Constructor: Sets up the dof handler
    * @param mesh_p A shared pointer to the underlying mesh (immutable)
    * @param N The polynomial degree of the Finite Element Space
    */
-  explicit FeSpaceLagrangeON(
+  explicit FeSpaceHP(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned N)
       : lf::uscalfe::UniformScalarFESpace<SCALAR>(
-            mesh_p, std::make_shared<FeLagrangeONTria<SCALAR>>(N),
-            std::make_shared<FeLagrangeONQuad<SCALAR>>(N),
-            std::make_shared<FeLagrangeONSegment<SCALAR>>(N),
-            std::make_shared<lf::uscalfe::FeLagrangePoint<SCALAR>>(N)) {}
-  ~FeSpaceLagrangeON() override = default;
+            mesh_p, std::make_shared<FeHPTria<SCALAR>>(N),
+            std::make_shared<FeHPQuad<SCALAR>>(N),
+            std::make_shared<FeHPSegment<SCALAR>>(N),
+            std::make_shared<lf::uscalfe::FeLagrangePoint<SCALAR>>(N)) {
+	// This constructor does very unorthodox things, but there is no easy way around it
+	// with the current state of LehrFEM++
+	// Permute the edge dofs such that they have a global instead of a local ordering
+	const auto& dofh = lf::uscalfe::UniformScalarFESpace<SCALAR>::LocGlobMap();
+	for (auto cell : mesh_p->Entities(0)) {
+	    const auto dofidxs = dofh.GlobalDofIndices(*cell);
+	    // Extreamly evil but necessary as UniformFEDofHandler does not expose its dofs_ array
+	    lf::assemble::gdof_idx_t* edge_dofidx = const_cast<lf::assemble::gdof_idx_t*>(dofidxs.data());
+	    edge_dofidx += cell->RefEl().NumSubEntities(2);
+	    const auto orient = cell->RelativeOrientations();
+	    const auto edges = cell->SubEntities(1);
+	    // Iterate over all edges and reverse their dofs if orient[i] is negative
+	    for (int i = 0 ; i < edges.size() ; ++i) {
+		const auto num_edge_dofs = dofh.NumInteriorDofs(*(edges[i]));
+		if (orient[i] == lf::mesh::Orientation::negative) {
+		    std::reverse(edge_dofidx, edge_dofidx+num_edge_dofs);
+		}
+		edge_dofidx += num_edge_dofs;
+	    }
+	}
+    }
+
+  ~FeSpaceHP() override = default;
 };
 
-#endif  // EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACELAGRANGEON_H_
+#endif  // EXAMPLES_LECTUREDEMOS_CONVERGENCESTUDIES_FESPACEHP_H_

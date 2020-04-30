@@ -30,7 +30,7 @@
 #include <tuple>
 #include <vector>
 
-#include "fespacelagrangeon.h"
+#include "fespacehp.h"
 
 namespace po = boost::program_options;
 
@@ -52,21 +52,24 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertex_coord << 0, 1;
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
+  /*
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
   lf::mesh::MeshFactory::size_type nodes[3];
-  coords << 0, 1, 0, 0, 0, 1;
+  coords << 0, 1, 0,
+	    0, 0, 1;
   nodes[0] = vertices[0];
   nodes[1] = vertices[1];
   nodes[2] = vertices[3];
   auto geom_tria1 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria1));
-  coords << 1, 1, 0, 0, 1, 1;
+  coords << 1, 1, 0,
+	    0, 1, 1;
   nodes[0] = vertices[1];
   nodes[1] = vertices[2];
   nodes[2] = vertices[3];
   auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
-  /*
+  */
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
   lf::mesh::MeshFactory::size_type nodes[4];
   coords << 0, 1, 1, 0,
@@ -77,7 +80,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[3] = vertices[3];
   auto geom = std::make_unique<lf::geometry::QuadO1>(coords);
   factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom));
-  */
   // Build the mesh
   return factory.Build();
 }
@@ -88,6 +90,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
  */
 std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   lf::mesh::hybrid2d::MeshFactory factory(2);
+  /*
   // Add the vertices
   std::vector<lf::mesh::MeshFactory::size_type> vertices;
   Eigen::Vector2d vertex_coord;
@@ -130,6 +133,51 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   nodes[2] = vertices[4];
   auto geom_tria4 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria4));
+  */
+  std::vector<lf::mesh::MeshFactory::size_type> vertices;
+  Eigen::Vector2d vertex_coord;
+  vertex_coord << -1, -1;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << 0, -1;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << 0, 0;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << 1, 0;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << 1, 1;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << 0, 1;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << -1, 1;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  vertex_coord << -1, 0;
+  vertices.push_back(factory.AddPoint(vertex_coord));
+  Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
+  lf::mesh::MeshFactory::size_type nodes[4];
+  coords << -1,  0, 0, -1,
+	    -1, -1, 0,  0;
+  nodes[0] = vertices[0];
+  nodes[1] = vertices[1];
+  nodes[2] = vertices[2];
+  nodes[3] = vertices[7];
+  auto geom_quad1 = std::make_unique<lf::geometry::QuadO1>(coords);
+  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad1));
+  coords << 0, 1, 1, 0,
+	    0, 0, 1, 1;
+  nodes[0] = vertices[2];
+  nodes[1] = vertices[3];
+  nodes[2] = vertices[4];
+  nodes[3] = vertices[5];
+  auto geom_quad2 = std::make_unique<lf::geometry::QuadO1>(coords);
+  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad2));
+  coords << -1, 0, 0, -1,
+	     0, 0, 1,  1;
+  nodes[0] = vertices[7];
+  nodes[1] = vertices[2];
+  nodes[2] = vertices[5];
+  nodes[3] = vertices[6];
+  auto geom_quad3 = std::make_unique<lf::geometry::QuadO1>(coords);
+  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad3));
   // Build the mesh
   return factory.Build();
 }
@@ -213,9 +261,11 @@ std::tuple<double, double> computeErrorsSquareDomain(
 
   // Store all basis functions for debugging purposes
   const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
-  const unsigned ndofs = fe_space->ShapeFunctionLayout(lf::base::RefEl::kQuad())->NumRefShapeFunctions();
+  const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
-  lf::io::VtkWriter writer(mh->getMesh(6), "basis_" + std::to_string(ndofs) + ".vtk");
+  lf::io::VtkWriter writer(mh->getMesh(6), "basis_unitsquare_" + std::to_string(ndofs) + ".vtk");
+  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
+  writer.WriteCellData("numeric", mf_sol_fine);
   for (unsigned i = 0 ; i < ndofs ; ++i) {
       basis_dofs.setZero();
       basis_dofs[i] = 1;
@@ -317,29 +367,10 @@ std::tuple<double, double> computeErrorsLDomain(
   // Enforce the dirichlet boundary conditions
   std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
+  const auto boundary_dofs = lf::uscalfe::NodalProjection(*fe_space, mf_u);
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     const lf::mesh::Entity &entity = dofh.Entity(idx);
-    if (!boundary(entity)) {
-      return {false, 0};
-    }
-    const lf::geometry::Geometry *geom = entity.Geometry();
-    // Find out where the evaluation node corresponding to the DOF is
-    const auto shape_function_layout =
-        fe_space->ShapeFunctionLayout(entity.RefEl());
-    const auto num_dofs = dofh.NumLocalDofs(entity);
-    const auto glob_dof_idxs = dofh.GlobalDofIndices(entity);
-    int dof_idx;
-    for (dof_idx = 0; dof_idx < num_dofs; ++dof_idx) {
-      if (glob_dof_idxs[dof_idx] == idx) {
-        break;
-      }
-    }
-    const Eigen::VectorXd eval_node =
-        shape_function_layout->EvaluationNodes().col(dof_idx);
-    const Eigen::Vector2d pos = geom->Global(eval_node);
-    // Return the value on the boundary at the position of the evaluation node
-    // corresponding to the dof
-    return {true, u(pos)};
+    return {entity.Codim() > 0 && boundary(entity), boundary_dofs[idx]};
   };
   lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
 
@@ -352,6 +383,21 @@ std::tuple<double, double> computeErrorsLDomain(
                                                                solution);
   const lf::uscalfe::MeshFunctionGradFE<double, double> mf_numeric_grad(
       fe_space, solution);
+
+  // Store all basis functions for debugging purposes
+  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
+  const unsigned ndofs = dofh.NumDofs();
+  Eigen::VectorXd basis_dofs(ndofs);
+  lf::io::VtkWriter writer(mh->getMesh(6), "basis_L_" + std::to_string(ndofs) + ".vtk");
+  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
+  writer.WriteCellData("numeric", mf_sol_fine);
+  for (unsigned i = 0 ; i < ndofs ; ++i) {
+      basis_dofs.setZero();
+      basis_dofs[i] = 1;
+      const lf::uscalfe::MeshFunctionFE<double, double> mf_basis(fe_space, basis_dofs);
+      const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
+      writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
+  }
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
@@ -413,7 +459,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
     const auto fe_space_square =
-        std::make_shared<FeSpaceLagrangeON<double>>(square_mesh, p);
+        std::make_shared<FeSpaceHP<double>>(square_mesh, p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_square, L2_square] =
@@ -422,7 +468,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the L-shaped domain
     std::cout << "\t> L-shaped Domain";
     const auto fe_space_L =
-        std::make_shared<FeSpaceLagrangeON<double>>(L_mesh, p);
+        std::make_shared<FeSpaceHP<double>>(L_mesh, p);
     std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_L, L2_L] = computeErrorsLDomain(L_mesh, fe_space_L);

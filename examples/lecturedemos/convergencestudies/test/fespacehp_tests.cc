@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../fespacelagrangeon.h"
+#include "../fespacehp.h"
 
 #include <cmath>
 #include <array>
@@ -111,7 +111,7 @@ TEST(fespacelagrangeon, bilinear_laplacian) {
 	Eigen::VectorXd error(max_p);
 	for (unsigned p = 1 ; p <= max_p ; ++p) {
 	    // Construct the FE space
-	    const auto fe_space = std::make_shared<FeSpaceLagrangeON<double>>(mesh, p);
+	    const auto fe_space = std::make_shared<FeSpaceHP<double>>(mesh, p);
 	    const auto& dofh = fe_space->LocGlobMap();
 	    // Assemble the bilinear form
 	    const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
