@@ -52,7 +52,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertex_coord << 0, 1;
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
-  /*
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
   lf::mesh::MeshFactory::size_type nodes[3];
   coords << 0, 1, 0,
@@ -69,7 +68,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[2] = vertices[3];
   auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
-  */
+  /*
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
   lf::mesh::MeshFactory::size_type nodes[4];
   coords << 0, 1, 1, 0,
@@ -80,6 +79,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[3] = vertices[3];
   auto geom = std::make_unique<lf::geometry::QuadO1>(coords);
   factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom));
+  */
   // Build the mesh
   return factory.Build();
 }
@@ -270,8 +270,11 @@ std::tuple<double, double> computeErrorsSquareDomain(
       basis_dofs.setZero();
       basis_dofs[i] = 1;
       const lf::uscalfe::MeshFunctionFE<double, double> mf_basis(fe_space, basis_dofs);
+      const lf::uscalfe::MeshFunctionGradFE<double, double> mf_basis_grad(fe_space, basis_dofs);
       const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
+      const lf::refinement::MeshFunctionTransfer mf_basis_fine_grad(*mh, mf_basis_grad, 0, 6);
       writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
+      writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
   }
 
   // Compute the H1 and L2 errors
@@ -385,6 +388,7 @@ std::tuple<double, double> computeErrorsLDomain(
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
+  /*
   const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
@@ -398,6 +402,7 @@ std::tuple<double, double> computeErrorsLDomain(
       const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
       writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
   }
+  */
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;

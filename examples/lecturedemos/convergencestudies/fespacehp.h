@@ -57,6 +57,19 @@ struct LegendrePoly {
 
 
 /**
+ * @brief Computes Chebyshev interpolation nodes in [0, 1]
+ * @param n Degree of the Chebyshev interpolation nodes
+ * @returns An Eigen vector containing the interpolation nodes on [0, 1]
+ */
+Eigen::VectorXd chebyshevNodes(unsigned n) {
+    // Compute the chebyshev nodes in the interval [0, 1]
+    const auto cosine = [](double x) -> double { return std::cos(x); };
+    return (Eigen::VectorXd::Ones(n) + Eigen::VectorXd::LinSpaced(n, M_PI-M_PI/(2*n), M_PI/(2*n)).unaryExpr(cosine)) / 2;
+}
+
+
+
+/**
  * @brief Lagrangian Finite Elements of arbitrary degreen on segments
  *
  * The Shape Functions are taken from the following paper: https://arxiv.org/pdf/1504.03025.pdf
@@ -177,7 +190,7 @@ class FeHPSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALA
       nodes(0, 0) = 0;
       nodes(0, 1) = 1;
       if (degree_ > 1) {
-	  nodes.block(0, 2, 1, degree_-1) = Eigen::VectorXd::LinSpaced(degree_+1, 0, 1).segment(1, degree_-1).transpose();
+	  nodes.block(0, 2, 1, degree_-1) = chebyshevNodes(degree_-1).transpose();
       }
       return nodes;
   }
@@ -385,6 +398,7 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd eval_nodes(2, (degree_ + 1) * (degree_ + 2) / 2);
+    const auto cheb = chebyshevNodes(degree_-1);
     // Add the evaluation nodes corresponding to the vertices of the triangle
     eval_nodes(0, 0) = 0;
     eval_nodes(1, 0) = 0;
@@ -394,24 +408,24 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
     eval_nodes(1, 2) = 1;
     // Add the evaluation nodes corresponding to the edges of the triangle
     for (int i = 0; i < degree_ - 1; ++i) {
-      eval_nodes(0, 3 + i) = static_cast<double>(i+1) / (degree_+1);
+      eval_nodes(0, 3 + i) = cheb[i];
       eval_nodes(1, 3 + i) = 0;
     }
     for (int i = 0; i < degree_ - 1; ++i) {
-      eval_nodes(0, 2 + degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
-      eval_nodes(1, 2 + degree_ + i) = static_cast<double>(i+1)/(degree_+1);
+      eval_nodes(0, 2 + degree_ + i) = 1. - cheb[i];
+      eval_nodes(1, 2 + degree_ + i) = cheb[i];
     }
     for (int i = 0; i < degree_ - 1; ++i) {
       eval_nodes(0, 1 + 2*degree_ + i) = 0;
-      eval_nodes(1, 1 + 2*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
+      eval_nodes(1, 1 + 2*degree_ + i) = 1. - cheb[i];
     }
     // Add the evaluation nodes corresponding to the interior of the triangle
     if (degree_ > 2) {
       int idx = 3 * degree_;
       for (int i = 0; i < degree_ - 2; ++i) {
         for (int j = 0; j < degree_-2-i ; ++j) {
-          eval_nodes(0, idx) = static_cast<double>(j+1) / (degree_+1);
-          eval_nodes(1, idx) = static_cast<double>(i+1) / (degree_+1);
+          eval_nodes(0, idx) = cheb[j];
+          eval_nodes(1, idx) = cheb[i];
 	  ++idx;
         }
       }
@@ -555,17 +569,13 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 	}
 	// Get the basis functions associated with the third edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    //result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
-	    //result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
-	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(j+2, i) * sf1d_y(1, i);
-	    result(2+2*degree_+j, 2*i+1) = sf1d_x(j+2, i) * sf1d_dy(1, i);
+	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
+	    result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
 	}
 	// Get the basis functions associated with the fourth edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    //result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
-	    //result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
-	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(j+2, i);
-	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(j+2, i);
+	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
+	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
 	}
 	// Get the basis functions associated with the interior of the quad
 	for (int j = 0 ; j < degree_-1 ; ++j) {
@@ -607,6 +617,7 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(2, (degree_ + 1) * (degree_ + 1));
+    const auto cheb = chebyshevNodes(degree_-1);
     // Add the evaluation nodes corresponding to the vertices
     nodes(0, 0) = 0;
     nodes(1, 0) = 0;
@@ -618,26 +629,26 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
     nodes(1, 3) = 1;
     // Add the evaluation nodes corresponding to the edges of the quad
     for (int i = 0; i < degree_ - 1; ++i) {
-      nodes(0, 4 + i) = static_cast<double>(i+1) / (degree_+1);
+      nodes(0, 4 + i) = cheb[i];
       nodes(1, 4 + i) = 0;
     }
     for (int i = 0; i < degree_ - 1; ++i) {
       nodes(0, 3 + degree_ + i) = 1;
-      nodes(1, 3 + degree_ + i) = static_cast<double>(i+1) / (degree_+1);
+      nodes(1, 3 + degree_ + i) = cheb[i];
     }
     for (int i = 0; i < degree_ - 1; ++i) {
-      nodes(0, 2 + 2*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
+      nodes(0, 2 + 2*degree_ + i) = 1. - cheb[i];
       nodes(1, 2 + 2*degree_ + i) = 1;
     }
     for (int i = 0; i < degree_ - 1; ++i) {
       nodes(0, 1 + 3*degree_ + i) = 0;
-      nodes(1, 1 + 3*degree_ + i) = 1. - static_cast<double>(i+1)/(degree_+1);
+      nodes(1, 1 + 3*degree_ + i) = 1. - cheb[i];
     }
     // Add the evaluation nodes corresponding to the interior of the quad
     for (int i = 0; i < degree_ - 1; ++i) {
       for (int j = 0; j < degree_ - 1; ++j) {
-        nodes(0, 4 * degree_ + (degree_ - 1) * i + j) = static_cast<double>(j+1) / (degree_+1);
-        nodes(1, 4 * degree_ + (degree_ - 1) * i + j) = static_cast<double>(i+1) / (degree_+1);
+        nodes(0, 4 * degree_ + (degree_ - 1) * i + j) = cheb[j];
+        nodes(1, 4 * degree_ + (degree_ - 1) * i + j) = cheb[i];
       }
     }
     return nodes;
