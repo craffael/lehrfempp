@@ -18,6 +18,7 @@
 #include "fe_space_lagrange_o1.h"
 #include "fe_space_lagrange_o2.h"
 #include "fe_space_lagrange_o3.h"
+#include "fe_space_hp.h"
 #include "fe_tools.h"
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"

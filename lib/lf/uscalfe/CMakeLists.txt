@@ -2,12 +2,15 @@ set(sources
 fe_space_lagrange_o1.h
 fe_space_lagrange_o2.h
 fe_space_lagrange_o3.h						
+fe_space_hp.h
 fe_tools.h
 fe_tools.cc
 lagr_fe.h
 lagr_fe.cc
 lin_fe.h
 lin_fe.cc
+hp_fe.h
+hp_fe.cc
 loc_comp_ellbvp.h
 loc_comp_ellbvp.cc
 loc_comp_norms.h
