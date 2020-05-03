@@ -20,6 +20,8 @@ mesh_function_grad_fe.h
 precomputed_scalar_reference_finite_element.h				
 uniform_scalar_fe_space.h
 uniform_scalar_fe_space.cc
+scalar_fe_space.h
+scalar_fe_space.cc
 uscalfe.h
 uscalfe.h
 prolongation.h

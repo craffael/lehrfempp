@@ -108,7 +108,7 @@ class FeHPSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALA
   FeHPSegment &operator=(FeHPSegment &&) = default;
   ~FeHPSegment() = default;
 
-  FeHPSegment(unsigned degree) : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree) {
+  FeHPSegment(unsigned degree, nonstd::span<const lf::mesh::Orientation> rel_orient) : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), rel_orient_(rel_orient) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
 
@@ -207,6 +207,7 @@ class FeHPSegment final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALA
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
+  nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
       Eigen::MatrixXd nodes(1, degree_+1);
@@ -237,8 +238,8 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
   FeHPTria &operator=(FeHPTria &&) = default;
   ~FeHPTria() = default;
 
-  FeHPTria(unsigned degree)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_() {
+  FeHPTria(unsigned degree, nonstd::span<const lf::mesh::Orientation> rel_orient)
+      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), rel_orient_(rel_orient), eval_nodes_() {
     eval_nodes_ = ComputeEvaluationNodes();
   }
 
@@ -296,36 +297,39 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
   EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
       Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), refcoords.cols());
       // Compute the barycentric coordinate functions
-      Eigen::RowVectorXd lambda1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
-      Eigen::RowVectorXd lambda2 = refcoords.row(0);
-      Eigen::RowVectorXd lambda3 = refcoords.row(1);
+      Eigen::RowVectorXd l1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
+      Eigen::RowVectorXd l2 = refcoords.row(0);
+      Eigen::RowVectorXd l3 = refcoords.row(1);
+      Eigen::RowVectorXd l1f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l1;
+      Eigen::RowVectorXd l2f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l2;
+      Eigen::RowVectorXd l3f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l3;
       // Get the basis functions associated with the vertices
-      result.row(0) = lambda1.unaryExpr([&](double x) -> SCALAR { return x; });
-      result.row(1) = lambda2.unaryExpr([&](double x) -> SCALAR { return x; });
-      result.row(2) = lambda3.unaryExpr([&](double x) -> SCALAR { return x; });
+      result.row(0) = l1.unaryExpr([&](double x) -> SCALAR { return x; });
+      result.row(1) = l2.unaryExpr([&](double x) -> SCALAR { return x; });
+      result.row(2) = l3.unaryExpr([&](double x) -> SCALAR { return x; });
       // Get the basis functions associated with the first edge
       for (int i = 0 ; i < degree_-1 ; ++i) {
-	  result.row(i+3) = ((lambda1 + lambda2).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
-			     (lambda1.array()/(lambda1+lambda2).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+	  result.row(i+3) = ((l1 + l2).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			     (l1.array()/(l1+l2).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
       }
       // Get the basis functions associated with the second edge
       for (int i = 0 ; i < degree_-1 ; ++i) {
-	  result.row(i+degree_+2) = ((lambda2 + lambda3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
-			             (lambda2.array()/(lambda2+lambda3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+	  result.row(i+degree_+2) = ((l2 + l3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			             (l2.array()/(l2+l3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
       }
       // Get the basis functions associated with the third edge
       for (int i = 0 ; i < degree_-1 ; ++i) {
-	  result.row(i+2*degree_+1) = ((lambda3 + lambda1).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
-			               (lambda3.array()/(lambda3+lambda1).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
+	  result.row(i+2*degree_+1) = ((l3 + l1).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+			               (l3.array()/(l3+l1).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); })).matrix();
       }
       // Get the basis functions associated with the interior of the triangle
       if (degree_ > 2) {
 	  int idx = 3 * degree_;
 	  for (int i = 0 ; i < degree_-2 ; ++i) {
 	      for (int j = 0 ; j < degree_-i-2 ; ++j) {
-		  result.row(idx) = ((lambda2 + lambda3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
-				     (lambda2.array()/(lambda2+lambda3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); }) *
-				     lambda1.array().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(j+2, 2*x-1); })).matrix();
+		  result.row(idx) = ((l2 + l3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
+				     (l2.array()/(l2+l3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); }) *
+				     l1.array().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(j+2, 2*x-1); })).matrix();
 		  ++ idx;
 	      }
 	  }
@@ -337,9 +341,12 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
   GradientsReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(NumRefShapeFunctions(), 2 * refcoords.cols());
     // Compute the barycentric coordinate functions
-    Eigen::RowVectorXd lambda1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
-    Eigen::RowVectorXd lambda2 = refcoords.row(0);
-    Eigen::RowVectorXd lambda3 = refcoords.row(1);
+    Eigen::RowVectorXd l1 = Eigen::RowVectorXd::Ones(refcoords.cols()) - refcoords.row(0) - refcoords.row(1);
+    Eigen::RowVectorXd l2 = refcoords.row(0);
+    Eigen::RowVectorXd l3 = refcoords.row(1);
+    Eigen::RowVectorXd l1f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l1;
+    Eigen::RowVectorXd l2f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l2;
+    Eigen::RowVectorXd l3f = Eigen::RowVectorXd::Constant(refcoords.cols(), 0.5) - l3;
     for (int i = 0 ; i < refcoords.cols() ; ++i) {
       // Get the gradient of the basis functions associated with the vertices
       result(0, 2*i+0) = -1;
@@ -349,43 +356,43 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
       result(2, 2*i+0) = 0;
       result(2, 2*i+1) = 1;
       // Get the gradient of the basis functions associated with the first edge
-      double lambda1p2 = 1 - refcoords(1, i);
-      double lambda1norm = lambda1[i] / lambda1p2;
+      double l1p2 = 1 - refcoords(1, i);
+      double l1norm = l1[i] / l1p2;
       for (int j = 0 ; j < degree_-1 ; ++j) {
-	  SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda1norm-1);
-	  SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda1norm-1);
-	  result(j+3, 2*i+0) = -2 * std::pow(lambda1p2, j+1) * leg1eval;
-	  result(j+3, 2*i+1) = -(j+2)*std::pow(lambda1p2, j+1)*leg1inte + 2*lambda2[i]*std::pow(lambda1p2, j)*leg1eval;
+	  SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j+2, 2*l1norm-1);
+	  SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j+1, 2*l1norm-1);
+	  result(j+3, 2*i+0) = -2 * std::pow(l1p2, j+1) * leg1eval;
+	  result(j+3, 2*i+1) = -(j+2)*std::pow(l1p2, j+1)*leg1inte + 2*l2[i]*std::pow(l1p2, j)*leg1eval;
       }
       // Get the gradient of the basis functions associated with the second edge
-      double lambda2p3 = refcoords(0, i) + refcoords(1, i);
-      double lambda2norm = lambda2[i] / lambda2p3;
+      double l2p3 = refcoords(0, i) + refcoords(1, i);
+      double l2norm = l2[i] / l2p3;
       for (int j = 0 ; j < degree_-1 ; ++j) {
-	  SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda2norm-1);
-	  SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda2norm-1);
-	  result(j+degree_+2, 2*i+0) = (j+2)*std::pow(lambda2p3, j+1)*leg2inte + 2*lambda3[i]*std::pow(lambda2p3, j)*leg2eval;
-	  result(j+degree_+2, 2*i+1) = (j+2)*std::pow(lambda2p3, j+1)*leg2inte - 2*lambda2[i]*std::pow(lambda2p3, j)*leg2eval;
+	  SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j+2, 2*l2norm-1);
+	  SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j+1, 2*l2norm-1);
+	  result(j+degree_+2, 2*i+0) = (j+2)*std::pow(l2p3, j+1)*leg2inte + 2*l3[i]*std::pow(l2p3, j)*leg2eval;
+	  result(j+degree_+2, 2*i+1) = (j+2)*std::pow(l2p3, j+1)*leg2inte - 2*l2[i]*std::pow(l2p3, j)*leg2eval;
       }
       // Get the gradient of the basis functions associated with the third edge
-      double lambda3p1 = 1 - refcoords(0, i);
-      double lambda3norm = lambda3[i] / lambda3p1;
+      double l3p1 = 1 - refcoords(0, i);
+      double l3norm = l3[i] / l3p1;
       for (int j = 0 ; j < degree_-1 ; ++j) {
-	  SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda3norm-1);
-	  SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda3norm-1);
-	  result(j+2*degree_-1, 2*i+0) = -(j+2)*std::pow(lambda3p1, j+1)*leg3inte + 2*lambda3[i]*std::pow(lambda3p1, j)*leg3eval;
-	  result(j+2*degree_-1, 2*i+1) = 2 * std::pow(lambda3p1, j+1) * leg3eval;
+	  SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j+2, 2*l3norm-1);
+	  SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j+1, 2*l3norm-1);
+	  result(j+2*degree_-1, 2*i+0) = -(j+2)*std::pow(l3p1, j+1)*leg3inte + 2*l3[i]*std::pow(l3p1, j)*leg3eval;
+	  result(j+2*degree_-1, 2*i+1) = 2 * std::pow(l3p1, j+1) * leg3eval;
       }
       // Get the gradient of the basis functions associated with the interior of the triangle
       if (degree_ > 2) {
 	  int idx = 3 * degree_;
 	  for (int j = 0 ; j < degree_-2 ; ++j) {
-	      SCALAR legjinte = LegendrePoly<SCALAR>::integral(j+2, 2*lambda2norm-1);
-	      SCALAR legjeval = LegendrePoly<SCALAR>::eval(j+1, 2*lambda2norm-1);
+	      SCALAR legjinte = LegendrePoly<SCALAR>::integral(j+2, 2*l2norm-1);
+	      SCALAR legjeval = LegendrePoly<SCALAR>::eval(j+1, 2*l2norm-1);
 	      for (int k = 0 ; k < degree_-j-2 ; ++k) {
-		  SCALAR legkinte = LegendrePoly<SCALAR>::integral(k+2, 2*lambda1[i]-1);
-		  SCALAR legkeval = LegendrePoly<SCALAR>::eval(k+1, 2*lambda1[i]-1);
-		  result(idx, 2*i+0) = (j+2)*std::pow(lambda2p3, j+1)*legjinte*legkinte + 2*lambda3[i]*std::pow(lambda2p3, j)*legjeval*legkinte - 2*std::pow(lambda2p3, j+2)*legjinte*legkeval;
-		  result(idx, 2*i+1) = (j+2)*std::pow(lambda2p3, j+1)*legjinte*legkinte - 2*lambda2[i]*std::pow(lambda2p3, j)*legjeval*legkinte - 2*std::pow(lambda2p3, j+2)*legjinte*legkeval;
+		  SCALAR legkinte = LegendrePoly<SCALAR>::integral(k+2, 2*l1[i]-1);
+		  SCALAR legkeval = LegendrePoly<SCALAR>::eval(k+1, 2*l1[i]-1);
+		  result(idx, 2*i+0) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte + 2*l3[i]*std::pow(l2p3, j)*legjeval*legkinte - 2*std::pow(l2p3, j+2)*legjinte*legkeval;
+		  result(idx, 2*i+1) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte - 2*l2[i]*std::pow(l2p3, j)*legjeval*legkinte - 2*std::pow(l2p3, j+2)*legjinte*legkeval;
 		  ++idx;
 	      }
 	  }
@@ -419,6 +426,7 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
+  nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd eval_nodes(2, (degree_ + 1) * (degree_ + 2) / 2);
@@ -476,8 +484,8 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
   FeHPQuad &operator=(FeHPQuad &&) = default;
   ~FeHPQuad() = default;
 
-  FeHPQuad(unsigned degree)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), eval_nodes_(), fe1d_(degree) {
+  FeHPQuad(unsigned degree, nonstd::span<const lf::mesh::Orientation> rel_orient)
+      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(), degree_(degree), rel_orient_(rel_orient), eval_nodes_(), fe1d_(degree) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
 
@@ -540,21 +548,23 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
     result.row(3) = (sf1d_x.row(0).array() * sf1d_y.row(1).array()).matrix();
     // Get the basis functions associated with the first edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	result.row(4+i) = (sf1d_x.row(i+2).array() * sf1d_y.row(0).array()).matrix();
+	const int idx = rel_orient_[0] == lf::mesh::Orientation::positive ? i+2 : degree_-i;
+	result.row(4+i) = (sf1d_x.row(idx).array() * sf1d_y.row(0).array()).matrix();
     }
     // Get the basis functions associated with the second edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	result.row(3+degree_+i) = (sf1d_x.row(1).array() * sf1d_y.row(i+2).array()).matrix();
+	const int idx = rel_orient_[1] == lf::mesh::Orientation::positive ? i+2 : degree_-i;
+	result.row(3+degree_+i) = (sf1d_x.row(1).array() * sf1d_y.row(idx).array()).matrix();
     }
     // Get the basis functions associated with the third edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	//result.row(2+2*degree_+i) = (sf1d_x.row(degree_-i).array() * sf1d_y.row(1).array()).matrix();
-	result.row(2+2*degree_+i) = (sf1d_x.row(i+2).array() * sf1d_y.row(1).array()).matrix();
+	const int idx = rel_orient_[3] == lf::mesh::Orientation::positive ? degree_-i : i+2;
+	result.row(2+2*degree_+i) = (sf1d_x.row(idx).array() * sf1d_y.row(1).array()).matrix();
     }
     // Get the basis functions associated with the fourth edge
     for (int i = 0 ; i < degree_-1 ; ++i) {
-	//result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(degree_-i).array()).matrix();
-	result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(i+2).array()).matrix();
+	const int idx = rel_orient_[3] == lf::mesh::Orientation::positive ? degree_-i : i+2;
+	result.row(1+3*degree_+i) = (sf1d_x.row(0).array() * sf1d_y.row(idx).array()).matrix();
     }
     // Get the basis functions associated with the interior of the quad
     for (int i = 0 ; i < degree_-1 ; ++i) {
@@ -585,23 +595,27 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 	result(3, 2*i+1) = sf1d_x(0, i) * sf1d_dy(1, i);
 	// Get the basis functions associated with the first edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(4+j, 2*i+0) = sf1d_dx(j+2, i) * sf1d_y(0, i);
-	    result(4+j, 2*i+1) = sf1d_x(j+2, i) * sf1d_dy(0, i);
+	    const int idx = rel_orient_[0] == lf::mesh::Orientation::positive ? j+2 : degree_-j;
+	    result(4+j, 2*i+0) = sf1d_dx(idx, i) * sf1d_y(0, i);
+	    result(4+j, 2*i+1) = sf1d_x(idx, i) * sf1d_dy(0, i);
 	}
 	// Get the basis functions associated with the second edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(3+degree_+j, 2*i+0) = sf1d_dx(1, i) * sf1d_y(j+2, i);
-	    result(3+degree_+j, 2*i+1) = sf1d_x(1, i) * sf1d_dy(j+2, i);
+	    const int idx = rel_orient_[1] == lf::mesh::Orientation::positive ? j+2 : degree_-j;
+	    result(3+degree_+j, 2*i+0) = sf1d_dx(1, i) * sf1d_y(idx, i);
+	    result(3+degree_+j, 2*i+1) = sf1d_x(1, i) * sf1d_dy(idx, i);
 	}
 	// Get the basis functions associated with the third edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(degree_-j, i) * sf1d_y(1, i);
-	    result(2+2*degree_+j, 2*i+1) = sf1d_x(degree_-j, i) * sf1d_dy(1, i);
+	    const int idx = rel_orient_[2] == lf::mesh::Orientation::positive ? degree_-j : j+2;
+	    result(2+2*degree_+j, 2*i+0) = sf1d_dx(idx, i) * sf1d_y(1, i);
+	    result(2+2*degree_+j, 2*i+1) = sf1d_x(idx, i) * sf1d_dy(1, i);
 	}
 	// Get the basis functions associated with the fourth edge
 	for (int j = 0 ; j < degree_-1 ; ++j) {
-	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(degree_-j, i);
-	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(degree_-j, i);
+	    const int idx = rel_orient_[3] == lf::mesh::Orientation::positive ? degree_-j : j+2;
+	    result(1+3*degree_+j, 2*i+0) = sf1d_dx(0, i) * sf1d_y(idx, i);
+	    result(1+3*degree_+j, 2*i+1) = sf1d_x(0, i) * sf1d_dy(idx, i);
 	}
 	// Get the basis functions associated with the interior of the quad
 	for (int j = 0 ; j < degree_-1 ; ++j) {
@@ -640,6 +654,7 @@ class FeHPQuad final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
   FeHPSegment<SCALAR> fe1d_;
+  nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
   Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(2, (degree_ + 1) * (degree_ + 1));
