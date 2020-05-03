@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "uniform_scalar_fe_space.h"
+#include "scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -53,19 +53,14 @@ class MeshFunctionFE {
    * functions of `fe_space`
    */
   MeshFunctionFE(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space,
+      std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {
-    for (auto& ref_el : {base::RefEl::kPoint(), base::RefEl::kSegment(),
-                         base::RefEl::kTria(), base::RefEl::kQuad()}) {
-      fe_[ref_el.Id()] = fe_space_->ShapeFunctionLayout(ref_el);
-    }
-  }
+      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) { }
 
   /** Evaluate the mesh function on a MeshEntity */
   std::vector<Scalar> operator()(const lf::mesh::Entity& e,
                                  const Eigen::MatrixXd& local) const {
-    auto sf_eval = fe_[e.RefEl().Id()]->EvalReferenceShapeFunctions(local);
+    auto sf_eval = fe_space_->ShapeFunctionLayout(e)->EvalReferenceShapeFunctions(local);
 
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(1,
                                                               sf_eval.rows());
@@ -92,19 +87,17 @@ class MeshFunctionFE {
   /**
    * @brief Convenience method to retrieve the finite element space in which the
    * mesh function lives
-   * @returns shared_ptr to UniformScalarFESpace in which the mesh function
+   * @returns shared_ptr to ScalarFESpace in which the mesh function
    * lives.
    */
-  [[nodiscard]] std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>>
+  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>>
   getFESpace() const {
     return fe_space_;
   }
 
  private:
-  std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space_;
+  std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
-  std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
-      fe_;
 };
 
 // deduction guide
