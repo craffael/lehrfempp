@@ -113,7 +113,7 @@ class ReactionDiffusionElementMatrixProvider {
    * exactness as the polynomial degree of the finite element space.
    */
   ReactionDiffusionElementMatrixProvider(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
       DIFF_COEFF alpha, REACTION_COEFF gamma);
   /** @brief Constructor: cell-independent precomputations and custom quadrature
    * rule
@@ -171,7 +171,7 @@ class ReactionDiffusionElementMatrixProvider {
   /** @} */
 
   // fe_precomp_[i] contains precomputed reference finite element for ref_el i.
-  std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
+  lf::mesh::utils::AllCodimMeshDataSet<std::shared_ptr<const PrecomputedScalarReferenceFiniteElement<SCALAR>>> fe_precomp_;
 
  public:
   /** @brief output control variable */
@@ -194,21 +194,62 @@ ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
-        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma)
-    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
-  for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
-    auto fe = fe_space->ShapeFunctionLayout(ref_el);
-    // Check whether shape functions for that entity type are available.
-    // Note that the corresponding PrecomputedScalarReferenceFiniteElement local
-    // object is not initialized if the associated description of local shape
-    // functions is missing.
-    if (fe != nullptr) {
-      // Precompute cell-independent quantities based on quadrature rules
-      // with twice the degree of exactness compared to the degree of the
-      // finite element space.
-      fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
-          fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_(fe_space->Mesh(), nullptr) {
+  // Check whether the fe space is uniform. If that's the case,
+  // we can reduce the computational time spent in the
+  // constructor drastically
+  const auto uniform_fe_space = std::dynamic_pointer_cast<const UniformScalarFESpace<SCALAR>>(fe_space);
+  if (uniform_fe_space != nullptr) {
+    std::array<std::shared_ptr<PrecomputedScalarReferenceFiniteElement<SCALAR>>, 5> precomp;
+    for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
+      auto fe = uniform_fe_space->ShapeFunctionLayout(ref_el);
+      // Check whether shape functions for that entity type are available.
+      // Note that the corresponding PrecomputedScalarReferenceFiniteElement local
+      // object is not initialized if the associated description of local shape
+      // functions is missing.
+      if (fe != nullptr) {
+        // Precompute cell-independent quantities based on quadrature rules
+        // with twice the degree of exactness compared to the degree of the
+        // finite element space.
+        precomp[ref_el.Id()] = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(
+            fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+      }
+    }
+    // As we have a uniform fe space, initialize all precomputed
+    // finite elements with the same one
+    for (auto&& node : fe_space->Mesh()->Entities(2)) {
+      fe_precomp_(*node) = precomp[node->RefEl().Id()];
+    }
+    for (auto&& edge : fe_space->Mesh()->Entities(1)) {
+      fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
+    }
+    for (auto&& cell : fe_space->Mesh()->Entities(0)) {
+      fe_precomp_(*cell) = precomp[cell->RefEl().Id()];
+    }
+  }
+  else {
+    // Because the fe space is not necessarily uniform, we need
+    // to initialize the precomputed finite elements for each
+    // entity independently
+    for (auto&& node : fe_space->Mesh()->Entities(2)) {
+        const auto fe = fe_space->ShapeFunctionLayout(*node);
+        if (fe != nullptr) {
+  	  fe_precomp_(*node) = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, quad::make_QuadRule(node->RefEl(), 2*fe->Degree()));
+        }
+    }
+    for (auto&& edge : fe_space->Mesh()->Entities(1)) {
+        const auto fe = fe_space->ShapeFunctionLayout(*edge);
+        if (fe != nullptr) {
+  	  fe_precomp_(*edge) = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, quad::make_QuadRule(edge->RefEl(), 2*fe->Degree()));
+        }
+    }
+    for (auto&& cell : fe_space->Mesh()->Entities(0)) {
+        const auto fe = fe_space->ShapeFunctionLayout(*cell);
+        if (fe != nullptr) {
+  	  fe_precomp_(*cell) = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, quad::make_QuadRule(cell->RefEl(), 2*fe->Degree()));
+        }
     }
   }
 }
@@ -220,7 +261,8 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
         std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
         DIFF_COEFF alpha, REACTION_COEFF gamma,
         quad_rule_collection_t qr_collection)
-    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_() {
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_precomp_(fe_space->Mesh(), nullptr) {
+  std::array<std::shared_ptr<PrecomputedScalarReferenceFiniteElement<SCALAR>>, 5> precomp;
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     // Obtain pointer to an object describing local shape functions
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -237,14 +279,25 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
         LF_ASSERT_MSG(qr.RefEl() == ref_el,
                       "qr.RefEl() = " << qr.RefEl() << " <-> " << ref_el);
         // Precomputations of cell-independent quantities
-        fe_precomp_[ref_el.Id()] =
-            PrecomputedScalarReferenceFiniteElement(fe, qr);
+        precomp[ref_el.Id()] =
+            std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, qr);
       } else {
         // Quadrature rule is missing for an entity type for which
         // local shape functions are available
         LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
       }
     }
+  }
+  // Initialize all precomputed reference elements
+  // with the same one
+  for (auto&& node : fe_space->Mesh()->Entities(2)) {
+    fe_precomp_(*node) = precomp[node->RefEl().Id()];
+  }
+  for (auto&& edge : fe_space->Mesh()->Entities(1)) {
+    fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
+  }
+  for (auto&& cell : fe_space->Mesh()->Entities(0)) {
+    fe_precomp_(*cell) = precomp[cell->RefEl().Id()];
   }
 }
 
@@ -260,8 +313,7 @@ ReactionDiffusionElementMatrixProvider<
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Obtain precomputed information about values of local shape functions
   // and their gradients at quadrature points.
-  PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
-      fe_precomp_[ref_el.Id()];
+  const PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe = *(fe_precomp_(cell));
   // Accident: cell is of a type not coverence by finite element specifications
   LF_ASSERT_MSG(
       pfe.isInitialized(),
