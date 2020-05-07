@@ -3,11 +3,14 @@
  * @brief Produces h-convergence results for the lid driven cavity experiment
  */
 
+#define _USE_MATH_DEFINES
+
 #include <iomanip>
 #include <iostream>
 #include <numeric>
 #include <sstream>
 #include <string>
+#include <cmath>
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>

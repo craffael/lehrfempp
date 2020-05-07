@@ -3,12 +3,15 @@
  * @brief Compute the convergence of the nested cylinders experiment
  */
 
+#define _USE_MATH_DEFINES
+
 #include <algorithm>
 #include <boost/filesystem.hpp>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
