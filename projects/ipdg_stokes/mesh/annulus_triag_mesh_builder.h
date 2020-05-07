@@ -6,6 +6,8 @@
  * @brief Constructs a mesh on an annulus
  */
 
+#define _USE_MATH_DEFINES
+
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/structured_mesh_builder.h>
 
