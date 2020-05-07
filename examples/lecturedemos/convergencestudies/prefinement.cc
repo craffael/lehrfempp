@@ -30,8 +30,6 @@
 #include <tuple>
 #include <vector>
 
-#include "fespacehp.h"
-
 namespace po = boost::program_options;
 
 /**
@@ -184,8 +182,9 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
 
 /**
  * @brief Get the error of a test problem for the given mesh and FE space
+ * @param degree The polynomial degree to use
  * @param mesh The mesh on which to solve the PDE
- * @param fe_space The Finite Element Space to use for the computation
+ * @param fe_space The fe space to use
  *
  * The test problem is formulated on [0, 1]^2 with Dirichlet boundary conditions
  and has the analytic solution
@@ -193,13 +192,7 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
         u(x) = \sin(\pi x_1)\sin(\pi x_2)
    \f]
  */
-std::tuple<double, double> computeErrorsSquareDomain(
-    const std::shared_ptr<lf::mesh::Mesh> &mesh,
-    const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>>
-        &fe_space) {
-  // Get the degree of the fe space
-  const auto degree =
-      fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
+std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<lf::uscalfe::ScalarFESpace<double>>& fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
     return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
@@ -260,6 +253,7 @@ std::tuple<double, double> computeErrorsSquareDomain(
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
+  /*
   const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
@@ -276,6 +270,7 @@ std::tuple<double, double> computeErrorsSquareDomain(
       writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
       writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
   }
+  */
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
@@ -310,6 +305,7 @@ std::tuple<double, double> computeErrorsSquareDomain(
 
 /**
  * @brief Get the error of a test problem for the given mesh and FE space
+ * @param degree The polynomial degree of the basis functions
  * @param mesh The mesh on which to solve the PDE
  * @param fe_space The Finite Element Space to use for the computation
  *
@@ -319,9 +315,7 @@ std::tuple<double, double> computeErrorsSquareDomain(
         u(r, \phi) = r^{\frac{2}{3}}\sin(\frac{2}{3}\phi)
    \f]
  */
-std::tuple<double, double> computeErrorsLDomain(
-    const std::shared_ptr<lf::mesh::Mesh> &mesh,
-    const std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>>
+std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::ScalarFESpace<double>>
         &fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::Vector2d &x) -> double {
@@ -351,8 +345,6 @@ std::tuple<double, double> computeErrorsLDomain(
 
   // Get a few useful variables
   const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
-  const unsigned degree =
-      fe_space->ShapeFunctionLayout(lf::base::RefEl::kTria())->Degree();
 
   // Assemble the system matrix
   std::cout << "\t\t> Assembling System Matrix" << std::endl;
@@ -464,19 +456,19 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
     const auto fe_space_square =
-        std::make_shared<FeSpaceHP<double>>(square_mesh, p);
+        std::make_shared<lf::uscalfe::FeSpaceHP<double>>(square_mesh, p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_square, L2_square] =
-        computeErrorsSquareDomain(square_mesh, fe_space_square);
+        computeErrorsSquareDomain(p, square_mesh, fe_space_square);
 
     // Solve the problem on the L-shaped domain
     std::cout << "\t> L-shaped Domain";
     const auto fe_space_L =
-        std::make_shared<FeSpaceHP<double>>(L_mesh, p);
+        std::make_shared<lf::uscalfe::FeSpaceHP<double>>(L_mesh, p);
     std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
-    const auto [H1_L, L2_L] = computeErrorsLDomain(L_mesh, fe_space_L);
+    const auto [H1_L, L2_L] = computeErrorsLDomain(p, L_mesh, fe_space_L);
 
     // Store the computed quantities in the results matrix
     results(p - 1, 0) = p;
