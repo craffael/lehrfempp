@@ -189,8 +189,8 @@ TEST(lf_io, readLectureDemoMesh) {
 }
 
 // loads a coarse mesh of a circle parametrized with first order/second order
-// elements and computes the volume of the circle and compares it with the exact
-// volume.
+// elements and computes the volume of the circle and compares it with the
+// exact / volume.
 TEST(lf_io, secondOrderMesh) {
   std::vector<quad::QuadRule> quad_rules(5);
   quad_rules[base::RefEl::kTria().Id()] =
@@ -224,7 +224,7 @@ TEST(lf_io, secondOrderMesh) {
   EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
   reader = test_utils::getGmshReader("circle_second_order_quad_v4.msh", 2);
   EXPECT_LT(std::abs(computeVolume(*reader.mesh()) - base::kPi), 0.003);
-}
+}  // namespace lf::io::test
 
 void checkPieceOfCake(const GmshReader& reader) {
 #pragma GCC diagnostic push
@@ -310,4 +310,12 @@ TEST(lf_io, curvedSquareTests) {
   reader = test_utils::getGmshReader("curved_square_quads_2nd_order_v4.msh", 2);
   reader = test_utils::getGmshReader("curved_square_trias_2nd_order_v4.msh", 2);
 }
+
+TEST(lf_ioDeathTest, earthRefined) {
+  // Make sure that gmsh reader can read earth_refined, but expect that hybrid
+  // mesh factory will throw an error:
+  ASSERT_DEATH(test_utils::getGmshReader("earth_refined.msh", 2),
+               "Mesh is incomplete");
+}
+
 }  // namespace lf::io::test

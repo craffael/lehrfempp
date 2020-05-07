@@ -8,7 +8,7 @@
 
 #ifndef __b6997524e2834b5b8e4bba019fb35cc6
 #define __b6997524e2834b5b8e4bba019fb35cc6
-#include "uniform_scalar_fe_space.h"
+#include "scalar_fe_space.h"
 
 namespace lf::uscalfe {
 
@@ -47,14 +47,9 @@ class MeshFunctionGradFE {
    * functions of `fe_space`
    */
   MeshFunctionGradFE(
-      std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space,
+      std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {
-    for (auto& ref_el : {base::RefEl::kSegment(), base::RefEl::kTria(),
-                         base::RefEl::kQuad()}) {
-      fe_[ref_el.Id()] = fe_space_->ShapeFunctionLayout(ref_el);
-    }
-  }
+      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) { }
 
   /**
    * @brief Convenience method to retrieve the underlying mesh
@@ -67,10 +62,10 @@ class MeshFunctionGradFE {
   /**
    * @brief Convenience method to retrieve the finite element space to which the
    * original function belongs (i.e. before taking the gradient)
-   * @returns shared_ptr to UniformScalarFESpace to which the original function
+   * @returns shared_ptr to ScalarFESpace to which the original function
    * belongs (i.e. before taking the gradient)
    */
-  [[nodiscard]] std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>>
+  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>>
   getFESpace() const {
     return fe_space_;
   }
@@ -79,7 +74,7 @@ class MeshFunctionGradFE {
   std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> operator()(
       const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const {
     auto grad_sf_eval =
-        fe_[e.RefEl().Id()]->GradientsReferenceShapeFunctions(local);
+        fe_space_->ShapeFunctionLayout(e)->GradientsReferenceShapeFunctions(local);
 
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(
         1, grad_sf_eval.rows());
@@ -104,10 +99,8 @@ class MeshFunctionGradFE {
   }
 
  private:
-  std::shared_ptr<const UniformScalarFESpace<SCALAR_FE>> fe_space_;
+  std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space_;
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
-  std::array<std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR_FE>>, 5>
-      fe_;
 };
 
 // deduction guide
