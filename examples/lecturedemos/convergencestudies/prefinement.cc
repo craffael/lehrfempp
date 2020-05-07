@@ -50,6 +50,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertex_coord << 0, 1;
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
+  /*
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
   lf::mesh::MeshFactory::size_type nodes[3];
   coords << 0, 1, 0,
@@ -66,7 +67,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[2] = vertices[3];
   auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
-  /*
+  */
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
   lf::mesh::MeshFactory::size_type nodes[4];
   coords << 0, 1, 1, 0,
@@ -77,7 +78,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[3] = vertices[3];
   auto geom = std::make_unique<lf::geometry::QuadO1>(coords);
   factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom));
-  */
   // Build the mesh
   return factory.Build();
 }

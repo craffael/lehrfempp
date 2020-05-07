@@ -219,9 +219,6 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     }
     // As we have a uniform fe space, initialize all precomputed
     // finite elements with the same one
-    for (auto&& node : fe_space->Mesh()->Entities(2)) {
-      fe_precomp_(*node) = precomp[node->RefEl().Id()];
-    }
     for (auto&& edge : fe_space->Mesh()->Entities(1)) {
       fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
     }
@@ -233,12 +230,6 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     // Because the fe space is not necessarily uniform, we need
     // to initialize the precomputed finite elements for each
     // entity independently
-    for (auto&& node : fe_space->Mesh()->Entities(2)) {
-        const auto fe = fe_space->ShapeFunctionLayout(*node);
-        if (fe != nullptr) {
-  	  fe_precomp_(*node) = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, quad::make_QuadRule(node->RefEl(), 2*fe->Degree()));
-        }
-    }
     for (auto&& edge : fe_space->Mesh()->Entities(1)) {
         const auto fe = fe_space->ShapeFunctionLayout(*edge);
         if (fe != nullptr) {
@@ -290,9 +281,6 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
   }
   // Initialize all precomputed reference elements
   // with the same one
-  for (auto&& node : fe_space->Mesh()->Entities(2)) {
-    fe_precomp_(*node) = precomp[node->RefEl().Id()];
-  }
   for (auto&& edge : fe_space->Mesh()->Entities(1)) {
     fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
   }
@@ -680,9 +668,6 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     }
     // As we have a uniform fe space, initialize all precomputed
     // finite elements with the same one
-    for (auto&& node : fe_space->Mesh()->Entities(2)) {
-      fe_precomp_(*node) = precomp[node->RefEl().Id()];
-    }
     for (auto&& edge : fe_space->Mesh()->Entities(1)) {
       fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
     }
@@ -694,12 +679,6 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     // Because the fe space is not necessarily uniform, we need
     // to initialize the precomputed finite elements for each
     // entity independently
-    for (auto&& node : fe_space->Mesh()->Entities(2)) {
-        const auto fe = fe_space->ShapeFunctionLayout(*node);
-        if (fe != nullptr) {
-  	  fe_precomp_(*node) = std::make_shared<PrecomputedScalarReferenceFiniteElement<SCALAR>>(fe, quad::make_QuadRule(node->RefEl(), 2*fe->Degree()));
-        }
-    }
     for (auto&& edge : fe_space->Mesh()->Entities(1)) {
         const auto fe = fe_space->ShapeFunctionLayout(*edge);
         if (fe != nullptr) {
@@ -749,9 +728,6 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
   }
   // Initialize all precomputed reference elements
   // with the same one
-  for (auto&& node : fe_space->Mesh()->Entities(2)) {
-    fe_precomp_(*node) = precomp[node->RefEl().Id()];
-  }
   for (auto&& edge : fe_space->Mesh()->Entities(1)) {
     fe_precomp_(*edge) = precomp[edge->RefEl().Id()];
   }
