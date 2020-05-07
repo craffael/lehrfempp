@@ -225,12 +225,7 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
   std::cout << "\t\t> Assembling right Hand Side" << std::endl;
-  lf::uscalfe::ScalarLoadElementVectorProvider element_vector_provider(
-      fe_space, mf_load,
-      {{lf::base::RefEl::kTria(),
-        lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2 * degree - 1)},
-       {lf::base::RefEl::kQuad(),
-        lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2 * degree - 1)}});
+  lf::uscalfe::ScalarLoadElementVectorProvider element_vector_provider(fe_space, mf_load);
   lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
 
   // Enforce zero dirichlet boundary conditions

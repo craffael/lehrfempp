@@ -1,6 +1,4 @@
 
-add_subdirectory(test)
-
 add_executable(examples.lecturedemos.convergencestudies.twopointbvp twopointbvp.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.twopointbvp
     PUBLIC Eigen3::Eigen
