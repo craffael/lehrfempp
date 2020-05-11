@@ -50,7 +50,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertex_coord << 0, 1;
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
-  /*
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
   lf::mesh::MeshFactory::size_type nodes[3];
   coords << 0, 1, 0,
@@ -67,17 +66,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   nodes[2] = vertices[3];
   auto geom_tria2 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria2));
-  */
-  Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
-  lf::mesh::MeshFactory::size_type nodes[4];
-  coords << 0, 1, 1, 0,
-	    0, 0, 1, 1;
-  nodes[0] = vertices[0];
-  nodes[1] = vertices[1];
-  nodes[2] = vertices[2];
-  nodes[3] = vertices[3];
-  auto geom = std::make_unique<lf::geometry::QuadO1>(coords);
-  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom));
   // Build the mesh
   return factory.Build();
 }
@@ -88,7 +76,6 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
  */
 std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   lf::mesh::hybrid2d::MeshFactory factory(2);
-  /*
   // Add the vertices
   std::vector<lf::mesh::MeshFactory::size_type> vertices;
   Eigen::Vector2d vertex_coord;
@@ -131,51 +118,6 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   nodes[2] = vertices[4];
   auto geom_tria4 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria4));
-  */
-  std::vector<lf::mesh::MeshFactory::size_type> vertices;
-  Eigen::Vector2d vertex_coord;
-  vertex_coord << -1, -1;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << 0, -1;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << 0, 0;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << 1, 0;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << 1, 1;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << 0, 1;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << -1, 1;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  vertex_coord << -1, 0;
-  vertices.push_back(factory.AddPoint(vertex_coord));
-  Eigen::Matrix<double, Eigen::Dynamic, 4> coords(2, 4);
-  lf::mesh::MeshFactory::size_type nodes[4];
-  coords << -1,  0, 0, -1,
-	    -1, -1, 0,  0;
-  nodes[0] = vertices[0];
-  nodes[1] = vertices[1];
-  nodes[2] = vertices[2];
-  nodes[3] = vertices[7];
-  auto geom_quad1 = std::make_unique<lf::geometry::QuadO1>(coords);
-  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad1));
-  coords << 0, 1, 1, 0,
-	    0, 0, 1, 1;
-  nodes[0] = vertices[2];
-  nodes[1] = vertices[3];
-  nodes[2] = vertices[4];
-  nodes[3] = vertices[5];
-  auto geom_quad2 = std::make_unique<lf::geometry::QuadO1>(coords);
-  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad2));
-  coords << -1, 0, 0, -1,
-	     0, 0, 1,  1;
-  nodes[0] = vertices[7];
-  nodes[1] = vertices[2];
-  nodes[2] = vertices[5];
-  nodes[3] = vertices[6];
-  auto geom_quad3 = std::make_unique<lf::geometry::QuadO1>(coords);
-  factory.AddEntity(lf::base::RefEl::kQuad(), nodes, std::move(geom_quad3));
   // Build the mesh
   return factory.Build();
 }
@@ -248,22 +190,26 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
-  /*
   const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
   lf::io::VtkWriter writer(mh->getMesh(6), "basis_unitsquare_" + std::to_string(ndofs) + ".vtk");
   const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
+  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 6);
   writer.WriteCellData("numeric", mf_sol_fine);
+  writer.WriteCellData("exact", mf_u);
+  writer.WriteCellData("numeric_grad", mf_sol_grad_fine);
+  writer.WriteCellData("exact_grad", mf_u_grad);
+  /*
   for (unsigned i = 0 ; i < ndofs ; ++i) {
       basis_dofs.setZero();
       basis_dofs[i] = 1;
       const lf::uscalfe::MeshFunctionFE<double, double> mf_basis(fe_space, basis_dofs);
       const lf::uscalfe::MeshFunctionGradFE<double, double> mf_basis_grad(fe_space, basis_dofs);
       const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
-      const lf::refinement::MeshFunctionTransfer mf_basis_fine_grad(*mh, mf_basis_grad, 0, 6);
+      //const lf::refinement::MeshFunctionTransfer mf_basis_fine_grad(*mh, mf_basis_grad, 0, 6);
       writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
-      writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
+      //writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
   }
   */
 
@@ -375,13 +321,17 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
-  /*
   const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
   lf::io::VtkWriter writer(mh->getMesh(6), "basis_L_" + std::to_string(ndofs) + ".vtk");
   const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
+  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 6);
   writer.WriteCellData("numeric", mf_sol_fine);
+  writer.WriteCellData("exact", mf_u);
+  writer.WriteCellData("numeric_grad", mf_sol_grad_fine);
+  writer.WriteCellData("exact_grad", mf_u_grad);
+  /*
   for (unsigned i = 0 ; i < ndofs ; ++i) {
       basis_dofs.setZero();
       basis_dofs[i] = 1;
