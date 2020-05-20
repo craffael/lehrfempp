@@ -9,7 +9,7 @@
 /**
  * @file
  * @brief Data structure describing scalar-valued finite element spaces
- * @author Ralf Hiptmair, Tobias Rohner
+ * @author Ralf Hiptmair
  * @date November 2018
  * @copyright MIT License
  */

@@ -8,13 +8,15 @@
 
 #include "hp_fe.h"
 
-
 namespace lf::uscalfe {
 
 Eigen::VectorXd chebyshevNodes(unsigned n) {
-    // Compute the chebyshev nodes in the interval [0, 1]
-    const auto cosine = [](double x) -> double { return std::cos(x); };
-    return (Eigen::VectorXd::Ones(n) + Eigen::VectorXd::LinSpaced(n, M_PI-M_PI/(2*n), M_PI/(2*n)).unaryExpr(cosine)) / 2;
+  // Compute the chebyshev nodes in the interval [0, 1]
+  const auto cosine = [](double x) -> double { return std::cos(x); };
+  return (Eigen::VectorXd::Ones(n) +
+          Eigen::VectorXd::LinSpaced(n, M_PI - M_PI / (2 * n), M_PI / (2 * n))
+              .unaryExpr(cosine)) /
+         2;
 }
 
-}   // end namespace lf::uscalfe
+}  // end namespace lf::uscalfe
