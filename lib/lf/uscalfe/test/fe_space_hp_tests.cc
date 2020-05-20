@@ -96,7 +96,7 @@ TEST(fe_space_hp, grad_segment) {
 
 TEST(fe_space_hp, grad_tria) {
     // Test the gradients of the shape functions up to degree p=20
-    for (unsigned p = 1 ; p <= 10 ; ++p) {
+    for (unsigned p = 1 ; p <= 20 ; ++p) {
 	// Test for all possible combinations of orientations
 	lf::mesh::Orientation orient[4];
 	for (const auto o0 : {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {

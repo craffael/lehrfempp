@@ -190,26 +190,26 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
-  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
+  /*
+  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 8);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
-  lf::io::VtkWriter writer(mh->getMesh(6), "basis_unitsquare_" + std::to_string(ndofs) + ".vtk");
-  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
-  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 6);
+  lf::io::VtkWriter writer(mh->getMesh(8), "basis_unitsquare_" + std::to_string(ndofs) + ".vtk");
+  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 8);
+  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 8);
   writer.WriteCellData("numeric", mf_sol_fine);
   writer.WriteCellData("exact", mf_u);
   writer.WriteCellData("numeric_grad", mf_sol_grad_fine);
   writer.WriteCellData("exact_grad", mf_u_grad);
-  /*
   for (unsigned i = 0 ; i < ndofs ; ++i) {
       basis_dofs.setZero();
       basis_dofs[i] = 1;
       const lf::uscalfe::MeshFunctionFE<double, double> mf_basis(fe_space, basis_dofs);
       const lf::uscalfe::MeshFunctionGradFE<double, double> mf_basis_grad(fe_space, basis_dofs);
-      const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 6);
-      //const lf::refinement::MeshFunctionTransfer mf_basis_fine_grad(*mh, mf_basis_grad, 0, 6);
+      const lf::refinement::MeshFunctionTransfer mf_basis_fine(*mh, mf_basis, 0, 8);
+      const lf::refinement::MeshFunctionTransfer mf_basis_fine_grad(*mh, mf_basis_grad, 0, 8);
       writer.WriteCellData("basis_" + std::to_string(i), mf_basis_fine);
-      //writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
+      writer.WriteCellData("grad_" + std::to_string(i), mf_basis_fine_grad);
   }
   */
 
@@ -303,7 +303,19 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
   // Enforce the dirichlet boundary conditions
   std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
-  const auto boundary_dofs = lf::uscalfe::NodalProjection(*fe_space, mf_u);
+  Eigen::VectorXd boundary_dofs = Eigen::VectorXd::Zero(dofh.NumDofs());
+  for (const auto edge : mesh->Entities(1)) {
+      if (boundary(*edge)) {
+	  const auto sfl = fe_space->ShapeFunctionLayout(*edge);
+	  const auto eval_nodes = sfl->EvaluationNodes();
+	  const Eigen::RowVectorXd nodal_values = Eigen::Map<Eigen::RowVectorXd>(mf_u(*edge, eval_nodes).data(), eval_nodes.cols());
+	  const Eigen::VectorXd locdofs = sfl->NodalValuesToDofs(nodal_values);
+	  const auto dofidxs = dofh.GlobalDofIndices(*edge);
+	  for (int i = 0 ; i < dofidxs.size() ; ++i) {
+	      boundary_dofs[dofidxs[i]] = locdofs[i];
+	  }
+      }
+  }
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     const lf::mesh::Entity &entity = dofh.Entity(idx);
     return {entity.Codim() > 0 && boundary(entity), boundary_dofs[idx]};
@@ -321,17 +333,17 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
       fe_space, solution);
 
   // Store all basis functions for debugging purposes
-  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 6);
+  /*
+  const auto mh = lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh, 7);
   const unsigned ndofs = dofh.NumDofs();
   Eigen::VectorXd basis_dofs(ndofs);
-  lf::io::VtkWriter writer(mh->getMesh(6), "basis_L_" + std::to_string(ndofs) + ".vtk");
-  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 6);
-  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 6);
+  lf::io::VtkWriter writer(mh->getMesh(7), "basis_L_" + std::to_string(ndofs) + ".vtk");
+  const lf::refinement::MeshFunctionTransfer mf_sol_fine(*mh, mf_numeric, 0, 7);
+  const lf::refinement::MeshFunctionTransfer mf_sol_grad_fine(*mh, mf_numeric_grad, 0, 7);
   writer.WriteCellData("numeric", mf_sol_fine);
   writer.WriteCellData("exact", mf_u);
   writer.WriteCellData("numeric_grad", mf_sol_grad_fine);
   writer.WriteCellData("exact_grad", mf_u_grad);
-  /*
   for (unsigned i = 0 ; i < ndofs ; ++i) {
       basis_dofs.setZero();
       basis_dofs[i] = 1;

@@ -356,7 +356,7 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 	      for (int j = 0 ; j < degree_-i-2 ; ++j) {
 		  result.row(idx) = ((l2 + l3).unaryExpr([&](double x) -> SCALAR { return std::pow(x, i+2); }).array() *
 				     (l2.array()/(l2+l3).array()).unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(i+2, 2*x-1); }) *
-				     l1.array().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(j+2, 2*x-1); })).matrix();
+				     l1.array().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::integral(j+2, x-1); })).matrix();
 		  ++ idx;
 	      }
 	  }
@@ -455,10 +455,10 @@ class FeHPTria final : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> 
 	      SCALAR legjinte = LegendrePoly<SCALAR>::integral(j+2, 2*l2n-1);
 	      SCALAR legjeval = LegendrePoly<SCALAR>::eval(j+1, 2*l2n-1);
 	      for (int k = 0 ; k < degree_-j-2 ; ++k) {
-		  SCALAR legkinte = LegendrePoly<SCALAR>::integral(k+2, 2*l1[i]-1);
-		  SCALAR legkeval = LegendrePoly<SCALAR>::eval(k+1, 2*l1[i]-1);
-		  result(idx, 2*i+0) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte + 2*l3[i]*std::pow(l2p3, j)*legjeval*legkinte - 2*std::pow(l2p3, j+2)*legjinte*legkeval;
-		  result(idx, 2*i+1) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte - 2*l2[i]*std::pow(l2p3, j)*legjeval*legkinte - 2*std::pow(l2p3, j+2)*legjinte*legkeval;
+		  SCALAR legkinte = LegendrePoly<SCALAR>::integral(k+2, l1[i]-1);
+		  SCALAR legkeval = LegendrePoly<SCALAR>::eval(k+1, l1[i]-1);
+		  result(idx, 2*i+0) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte + 2*l3[i]*std::pow(l2p3, j)*legjeval*legkinte - std::pow(l2p3, j+2)*legjinte*legkeval;
+		  result(idx, 2*i+1) = (j+2)*std::pow(l2p3, j+1)*legjinte*legkinte - 2*l2[i]*std::pow(l2p3, j)*legjeval*legkinte - std::pow(l2p3, j+2)*legjinte*legkeval;
 		  ++idx;
 	      }
 	  }
