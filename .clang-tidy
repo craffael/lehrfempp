@@ -234,7 +234,7 @@ CheckOptions:
   - key:             performance-unnecessary-value-param.IncludeStyle
     value:           llvm
   - key:             performance-unnecessary-value-param.AllowedTypes
-    value:           ''
+    value:           'shared_ptr'
   - key:             readability-braces-around-statements.ShortStatementLines
     value:           '0'
   - key:             readability-function-size.BranchThreshold
