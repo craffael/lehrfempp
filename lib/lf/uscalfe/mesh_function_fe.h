@@ -55,12 +55,13 @@ class MeshFunctionFE {
   MeshFunctionFE(
       std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) { }
+      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {}
 
   /** Evaluate the mesh function on a MeshEntity */
   std::vector<Scalar> operator()(const lf::mesh::Entity& e,
                                  const Eigen::MatrixXd& local) const {
-    auto sf_eval = fe_space_->ShapeFunctionLayout(e)->EvalReferenceShapeFunctions(local);
+    auto sf_eval =
+        fe_space_->ShapeFunctionLayout(e)->EvalReferenceShapeFunctions(local);
 
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(1,
                                                               sf_eval.rows());
@@ -90,8 +91,8 @@ class MeshFunctionFE {
    * @returns shared_ptr to ScalarFESpace in which the mesh function
    * lives.
    */
-  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>>
-  getFESpace() const {
+  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>> getFESpace()
+      const {
     return fe_space_;
   }
 

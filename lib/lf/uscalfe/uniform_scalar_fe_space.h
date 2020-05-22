@@ -131,15 +131,17 @@ class UniformScalarFESpace : public ScalarFESpace<SCALAR> {
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
    */
-  [[nodiscard]] size_type NumRefShapeFunctions(const lf::mesh::Entity &entity) const override;
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      const lf::mesh::Entity &entity) const override;
 
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
    */
-  [[nodiscard]] size_type NumRefShapeFunctions(lf::base::RefEl ref_el_type) const;
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      lf::base::RefEl ref_el_type) const;
 
   /** @brief No special destructor */
-  virtual ~UniformScalarFESpace() = default;
+  ~UniformScalarFESpace() override = default;
 
  private:
   /** Description of reference shape functions on triangular cells */
@@ -272,15 +274,17 @@ void UniformScalarFESpace<SCALAR>::init() {
       std::make_unique<lf::assemble::UniformFEDofHandler>(Mesh(), rsf_layout);
 }
 
-template<typename SCALAR>
+template <typename SCALAR>
 std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
-UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(const lf::mesh::Entity &entity) const {
-    return ShapeFunctionLayout(entity.RefEl());
+UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
+    const lf::mesh::Entity &entity) const {
+  return ShapeFunctionLayout(entity.RefEl());
 }
 
 template <typename SCALAR>
 std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
-UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(lf::base::RefEl ref_el_type) const {
+UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
+    lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
@@ -311,9 +315,10 @@ UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(lf::base::RefEl ref_el_type) c
   return nullptr;
 }
 
-template<typename SCALAR>
-size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(const lf::mesh::Entity &entity) const {
-    return NumRefShapeFunctions(entity.RefEl());
+template <typename SCALAR>
+size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
+    const lf::mesh::Entity &entity) const {
+  return NumRefShapeFunctions(entity.RefEl());
 }
 
 /* number of _interior_ shape functions associated to entities of various types

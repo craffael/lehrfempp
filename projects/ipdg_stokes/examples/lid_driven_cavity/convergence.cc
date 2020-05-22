@@ -5,12 +5,12 @@
 
 #define _USE_MATH_DEFINES
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
 #include <sstream>
 #include <string>
-#include <cmath>
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>

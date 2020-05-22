@@ -59,8 +59,8 @@ class ScalarFESpace {
    *
    * @param mesh_p shared pointer to underlying mesh (immutable)
    */
-  ScalarFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
-      : mesh_p_(std::move(mesh_p)) { }
+  explicit ScalarFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
+      : mesh_p_(std::move(mesh_p)) {}
 
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
@@ -82,13 +82,15 @@ class ScalarFESpace {
    * element specification was not given for a particular topological type of
    * entity.
    */
-  [[nodiscard]] virtual std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] virtual std::shared_ptr<
+      const ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const = 0;
 
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
    */
-  [[nodiscard]] virtual size_type NumRefShapeFunctions(const lf::mesh::Entity &entity) const = 0;
+  [[nodiscard]] virtual size_type NumRefShapeFunctions(
+      const lf::mesh::Entity &entity) const = 0;
 
   /** @brief No special destructor */
   virtual ~ScalarFESpace() = default;
@@ -107,8 +109,7 @@ class ScalarFESpace {
 
 /** @brief output operator for scalar parametric finite element space */
 template <typename SCALAR>
-std::ostream &operator<<(std::ostream &o,
-                         const ScalarFESpace<SCALAR> &fes);
+std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes);
 
 // Output control variable
 template <typename SCALAR>
@@ -116,20 +117,16 @@ unsigned int ScalarFESpace<SCALAR>::ctrl_ = 0;
 
 /** output operator for scalar parametric finite element space */
 template <typename SCALAR>
-std::ostream &operator<<(std::ostream &o,
-                         const ScalarFESpace<SCALAR> &fes) {
+std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes) {
   o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
     << std::endl;
-  if (ScalarFESpace<SCALAR>::ctrl_ &
-      ScalarFESpace<SCALAR>::kout_mesh) {
+  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_mesh) {
     o << fes.Mesh() << std::endl;
   }
-  if (ScalarFESpace<SCALAR>::ctrl_ &
-      ScalarFESpace<SCALAR>::kout_dofh) {
+  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_dofh) {
     o << fes.LocGlobMap() << std::endl;
   }
-  if (ScalarFESpace<SCALAR>::ctrl_ &
-      ScalarFESpace<SCALAR>::kout_rsfs) {
+  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_rsfs) {
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
       << std::endl;
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())

@@ -7,11 +7,11 @@
 
 #include <algorithm>
 #include <boost/filesystem.hpp>
+#include <cmath>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <cmath>
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>

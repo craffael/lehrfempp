@@ -44,35 +44,35 @@ struct LegendrePoly {
     double Lj = x;
     if (n == 0) {
       return Ljm1;
-    } else if (n == 1) {
-      return Lj;
-    } else {
-      for (unsigned j = 1; j < n; ++j) {
-        double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
-        Ljm1 = Lj;
-        Lj = Ljp1;
-      }
+    }
+    if (n == 1) {
       return Lj;
     }
+    for (unsigned j = 1; j < n; ++j) {
+      const double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
+      Ljm1 = Lj;
+      Lj = Ljp1;
+    }
+    return Lj;
   }
 
   static SCALAR integral(unsigned n, double x) {
     if (n == 0) {
       return -1;
-    } else if (n == 1) {
-      return x;
-    } else {
-      double Ljm2 = 1;
-      double Ljm1 = x;
-      double Lj = (3 * x * x - 1) / 2;
-      for (unsigned j = 2; j < n; ++j) {
-        double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
-        Ljm2 = Ljm1;
-        Ljm1 = Lj;
-        Lj = Ljp1;
-      }
-      return (Lj - Ljm2) / (2 * n - 1);
     }
+    if (n == 1) {
+      return x;
+    }
+    double Ljm2 = 1;
+    double Ljm1 = x;
+    double Lj = (3 * x * x - 1) / 2;
+    for (unsigned j = 2; j < n; ++j) {
+      double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
+      Ljm2 = Ljm1;
+      Ljm1 = Lj;
+      Lj = Ljp1;
+    }
+    return (Lj - Ljm2) / (2 * n - 1);
   }
 };
 
@@ -97,9 +97,9 @@ class FeHPSegment final
     : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPSegment(const FeHPSegment &) = default;
-  FeHPSegment(FeHPSegment &&) = default;
+  FeHPSegment(FeHPSegment &&) noexcept = default;
   FeHPSegment &operator=(const FeHPSegment &) = default;
-  FeHPSegment &operator=(FeHPSegment &&) = default;
+  FeHPSegment &operator=(FeHPSegment &&) noexcept = default;
   ~FeHPSegment() = default;
 
   FeHPSegment(unsigned degree,
@@ -172,8 +172,10 @@ class FeHPSegment final
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         NumRefShapeFunctions(), refcoords.cols());
     // Get the gradient of the shape functions associated with the vertices
-    result.row(0) = refcoords.unaryExpr([&](double x) -> SCALAR { return -1; });
-    result.row(1) = refcoords.unaryExpr([&](double x) -> SCALAR { return 1; });
+    result.row(0) =
+        refcoords.unaryExpr([&](double /*x*/) -> SCALAR { return -1; });
+    result.row(1) =
+        refcoords.unaryExpr([&](double /*x*/) -> SCALAR { return 1; });
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
@@ -216,7 +218,7 @@ class FeHPSegment final
   Eigen::MatrixXd eval_nodes_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes() const {
+  [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(1, degree_ + 1);
     nodes(0, 0) = 0;
     nodes(0, 1) = 1;
@@ -243,17 +245,16 @@ class FeHPTria final
     : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPTria(const FeHPTria &) = default;
-  FeHPTria(FeHPTria &&) = default;
+  FeHPTria(FeHPTria &&) noexcept = default;
   FeHPTria &operator=(const FeHPTria &) = default;
-  FeHPTria &operator=(FeHPTria &&) = default;
+  FeHPTria &operator=(FeHPTria &&) noexcept = default;
   ~FeHPTria() = default;
 
   FeHPTria(unsigned degree,
            nonstd::span<const lf::mesh::Orientation> rel_orient)
       : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
-        rel_orient_(rel_orient),
-        eval_nodes_() {
+        rel_orient_(rel_orient) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
 
@@ -321,7 +322,7 @@ class FeHPTria final
     result.row(2) = l3.unaryExpr([&](double x) -> SCALAR { return x; });
     // Get the basis functions associated with the first edge
     Eigen::RowVectorXd l1n(refcoords.cols());
-    for (int i = 0; i < refcoords.cols(); ++i) {
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
       l1n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l1[i] / (l1[i] + l2[i]);
     }
     for (int i = 0; i < degree_ - 1; ++i) {
@@ -347,7 +348,7 @@ class FeHPTria final
     }
     // Get the basis functions associated with the second edge
     Eigen::RowVectorXd l2n(refcoords.cols());
-    for (int i = 0; i < refcoords.cols(); ++i) {
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
       l2n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l2[i] / (l2[i] + l3[i]);
     }
     for (int i = 0; i < degree_ - 1; ++i) {
@@ -373,7 +374,7 @@ class FeHPTria final
     }
     // Get the basis functions associated with the third edge
     Eigen::RowVectorXd l3n(refcoords.cols());
-    for (int i = 0; i < refcoords.cols(); ++i) {
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
       l3n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l3[i] / (l3[i] + l1[i]);
     }
     for (int i = 0; i < degree_ - 1; ++i) {
@@ -443,7 +444,7 @@ class FeHPTria final
         Eigen::RowVectorXd::Constant(refcoords.cols(), 0);
     const Eigen::RowVectorXd l3_dy =
         Eigen::RowVectorXd::Constant(refcoords.cols(), 1);
-    for (int i = 0; i < refcoords.cols(); ++i) {
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
       // Get the gradient of the basis functions associated with the vertices
       result(0, 2 * i + 0) = l1_dx[i];
       result(0, 2 * i + 1) = l1_dy[i];
@@ -618,7 +619,7 @@ class FeHPTria final
   Eigen::MatrixXd eval_nodes_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes() const {
+  [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd eval_nodes(2, (degree_ + 1) * (degree_ + 2) / 2);
     const auto cheb = chebyshevNodes(degree_ - 1);
     // Add the evaluation nodes corresponding to the vertices of the triangle
@@ -671,9 +672,9 @@ class FeHPQuad final
     : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPQuad(const FeHPQuad &) = default;
-  FeHPQuad(FeHPQuad &&) = default;
+  FeHPQuad(FeHPQuad &&) noexcept = default;
   FeHPQuad &operator=(const FeHPQuad &) = default;
-  FeHPQuad &operator=(FeHPQuad &&) = default;
+  FeHPQuad &operator=(FeHPQuad &&) noexcept = default;
   ~FeHPQuad() = default;
 
   FeHPQuad(unsigned degree,
@@ -681,7 +682,6 @@ class FeHPQuad final
       : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient),
-        eval_nodes_(),
         fe1d_(degree, rel_orient) {
     eval_nodes_ = ComputeEvaluationNodes();
   }
@@ -833,7 +833,7 @@ class FeHPQuad final
         fe1d_.GradientsReferenceShapeFunctions(
             Eigen::RowVectorXd::Constant(refcoords.cols(), 1) -
             refcoords.row(1));
-    for (int i = 0; i < refcoords.cols(); ++i) {
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
       // Get the gradient of the basis functions associated with the vertices
       result(0, 2 * i + 0) = sf1d_dx(0, i) * sf1d_y(0, i);
       result(0, 2 * i + 1) = sf1d_x(0, i) * sf1d_dy(0, i);
@@ -940,7 +940,7 @@ class FeHPQuad final
   FeHPSegment<SCALAR> fe1d_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
-  Eigen::MatrixXd ComputeEvaluationNodes() const {
+  [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(2, (degree_ + 1) * (degree_ + 1));
     const auto cheb = chebyshevNodes(degree_ - 1);
     // Add the evaluation nodes corresponding to the vertices

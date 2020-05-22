@@ -49,7 +49,7 @@ class MeshFunctionGradFE {
   MeshFunctionGradFE(
       std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) { }
+      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {}
 
   /**
    * @brief Convenience method to retrieve the underlying mesh
@@ -65,8 +65,8 @@ class MeshFunctionGradFE {
    * @returns shared_ptr to ScalarFESpace to which the original function
    * belongs (i.e. before taking the gradient)
    */
-  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>>
-  getFESpace() const {
+  [[nodiscard]] std::shared_ptr<const ScalarFESpace<SCALAR_FE>> getFESpace()
+      const {
     return fe_space_;
   }
 
@@ -74,7 +74,8 @@ class MeshFunctionGradFE {
   std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> operator()(
       const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const {
     auto grad_sf_eval =
-        fe_space_->ShapeFunctionLayout(e)->GradientsReferenceShapeFunctions(local);
+        fe_space_->ShapeFunctionLayout(e)->GradientsReferenceShapeFunctions(
+            local);
 
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(
         1, grad_sf_eval.rows());
