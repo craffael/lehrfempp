@@ -119,10 +119,12 @@ class Geometry {
    * the passed points. These are square DxD matrices.
    *
    * To retrieve the j-th inverse transposed Jacobian from the returned matrix,
-   * use the `block` methdod of `Eigen`:
+   * use the `block` methdod of `Eigen` (case `(D = DimLocal()) == DimGlobal()`)
    * ~~~
    * JacobianInverseGramian(local).block(0,i*D,D,D)
    * ~~~
+   * @image html jiglfpp.png
+   *
    * More explanations in @lref{rem:jti}.
    */
   [[nodiscard]] virtual Eigen::MatrixXd JacobianInverseGramian(

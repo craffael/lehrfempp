@@ -41,7 +41,7 @@ using sub_idx_t = lf::base::sub_idx_t;
  *
  * A scalar parametric finite element is defined through a set of
  * reference shape functions (RSFs) on a particular reference entity, cf.
- * \@lref{def:parfe}.
+ * @lref{def:parfe}.
  *
  * Each reference shape function is associated with a unique sub-entity
  * of the reference entity according to @lref{eq:lbaff}.
@@ -51,12 +51,12 @@ using sub_idx_t = lf::base::sub_idx_t;
  * gradients. The also provide local components for the defintion of nodal
  * interpolants.
  *
- * This class is discussed in @lref{par:lfppparfe}.
+ * This class is discussed in detail in @lref{par:lfppparfe}.
  *
  * ### Numbering _convention_ for reference shape functions
  *
  * The numbering of reference shape functions is done according to the
- * following convention:
+ * following convention, see also @lref{par:betlordlsf}
  *
  * -# RSFs  belonging to _sub-entities_ of a larger (relative)
  * co-dimension are arranged before dofs associated with _sub-entities_ of a
@@ -81,6 +81,9 @@ using sub_idx_t = lf::base::sub_idx_t;
  * - RSF 5,6 -> edge 1 (5 closer to endpoint 0, 6 closer to endpoint 1)
  * - RSF 7,8 -> edge 2 (7 closer to endpoint 0, 8 closer to endpoint 1)
  * - RSF 9  -> triangle
+ *
+ * The rules governing this numbering in LehrFEM++ are explained above and in
+ * @lref{par:betlordlsf}.
  */
 template <typename SCALAR>
 class ScalarReferenceFiniteElement {
