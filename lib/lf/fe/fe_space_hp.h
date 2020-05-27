@@ -34,8 +34,8 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
    * @param mesh_p A shared pointer to the underlying mesh (immutable)
    * @param N The polynomial degree of the Finite Element Space
    */
-  explicit FeSpaceHP(std::shared_ptr<const lf::mesh::Mesh> mesh_p, unsigned N)
-      : ScalarFESpace<SCALAR>(std::move(mesh_p)),
+  explicit FeSpaceHP(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p, unsigned N)
+      : ScalarFESpace<SCALAR>(mesh_p),
         ref_el_(mesh_p, nullptr),
         degree_(N) {
     init();
