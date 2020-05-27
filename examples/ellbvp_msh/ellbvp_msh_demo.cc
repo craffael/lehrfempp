@@ -17,6 +17,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <boost/filesystem.hpp>
 
@@ -119,7 +120,7 @@ int main() {
     };
 
     // Obtain specification for shape functions on edges
-    std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
         rsf_edge_p = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     LF_ASSERT_MSG(rsf_edge_p != nullptr, "FE specification for edges missing");
 
@@ -129,7 +130,7 @@ int main() {
     // boundary edges are flagged as 'dir' anyway. In other cases this might
     // however be necessary.
     auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
-    auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
+    auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
         dofh, *rsf_edge_p,
         [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && edge_sel_dir(edge));
@@ -154,10 +155,10 @@ int main() {
   // Compute H1 Norm
   if (N_dofs > 0) {
     // Version 1: Using Mesh Functions
-    auto mf_FE = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
-    auto mf_GradFe = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
-    auto h1_norm = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        *mesh, squaredNorm(mf_FE) + squaredNorm(mf_GradFe), 2));
+    auto mf_FE = lf::fe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_GradFe = lf::fe::MeshFunctionGradFE(fe_space, sol_vec);
+    auto h1_norm = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh, lf::mesh::utils::squaredNorm(mf_FE) + lf::mesh::utils::squaredNorm(mf_GradFe), 2));
 
     std::cout << "Computed H1 Norm: " << h1_norm << std::endl;
 

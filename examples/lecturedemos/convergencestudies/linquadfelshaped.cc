@@ -15,6 +15,7 @@
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -166,7 +167,7 @@ int main(int argc, char *argv[]) {
     std::cout << " (" << fe_space_o1->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
-    const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o1(
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(
         fe_space_o1, solution_o1);
 
     // Solve the problem with quadratic finite elements
@@ -176,7 +177,7 @@ int main(int argc, char *argv[]) {
     std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
-    const lf::uscalfe::MeshFunctionGradFE<double, double> mf_grad_o2(
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(
         fe_space_o2, solution_o2);
 
     // Compute the errors
@@ -184,10 +185,10 @@ int main(int argc, char *argv[]) {
     const auto quadrule_provider = [](const lf::mesh::Entity &entity) {
       return lf::quad::make_QuadRule(entity.RefEl(), 6);
     };
-    const double H1_err_o1 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    const double H1_err_o1 = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh, lf::mesh::utils::squaredNorm(mf_grad_o1 - mf_u_grad),
         quadrule_provider));
-    const double H1_err_o2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    const double H1_err_o2 = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh, lf::mesh::utils::squaredNorm(mf_grad_o2 - mf_u_grad),
         quadrule_provider));
 

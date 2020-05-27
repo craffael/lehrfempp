@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 #include <iostream>
 
 #include <lf/mesh/utils/utils.h>
@@ -38,7 +39,7 @@ TEST(lf_gfe, lf_gfe_l2norm) {
       [](auto x) { return (x[0] * (1.0 - x[1])); });
 
   // compute norm by integrating the mesh function mf over the mesh
-  double norm = std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
+  double norm = std::sqrt(lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
 
   EXPECT_NEAR(norm, 5.19615, 1E-4);
 }
@@ -82,9 +83,9 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
 
   // Directly compute L2 norm of FE function by integrating the
   // associated mesh function:
-  MeshFunctionFE<double, double> mf_fe(fe_space, coeffvec);
+  lf::fe::MeshFunctionFE<double, double> mf_fe(fe_space, coeffvec);
 
-  double normsq_direct = IntegrateMeshFunction(*mesh_p, squaredNorm(mf_fe), 2);
+  double normsq_direct = lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(mf_fe), 2);
 
   std::cout << "Norm^2 through A = " << normsq_from_A << std::endl;
   std::cout << "Norm^2 directly = " << normsq_direct << std::endl;
@@ -129,10 +130,10 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
   const double normsq_from_A = coeffvec.dot(A.MatVecMult(1.0, coeffvec));
 
   // Directly compute H1 seminorm by integrating the mesh function
-  MeshFunctionGradFE mf_grad_fe(fe_space, coeffvec);
+  lf::fe::MeshFunctionGradFE mf_grad_fe(fe_space, coeffvec);
 
   double normsq_direct =
-      IntegrateMeshFunction(*mesh_p, squaredNorm(mf_grad_fe), 2);
+      lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(mf_grad_fe), 2);
 
   std::cout << "H1 norm^2 through A = " << normsq_from_A << std::endl;
   std::cout << "H1 norm^2 directly = " << normsq_direct << std::endl;
@@ -154,7 +155,7 @@ TEST(lf_gfe, lf_gfe_l2norm_vf) {
       [](auto x) { return (Eigen::Vector2d() << x[1], -x[0]).finished(); });
 
   // integrate mesh function:
-  double norm = std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
+  double norm = std::sqrt(lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(mf), 4));
 
   std::cout << "Norm of vectorfield = " << norm << std::endl;
   EXPECT_NEAR(norm, 7.34847, 1E-4);
@@ -255,9 +256,9 @@ bool checkInterpolationLinear(
       mesh::utils::MeshFunctionGlobal([](auto x) { return (x[0] - 2 * x[1]); });
   // Interpolation
   Eigen::VectorXd coeffvec = NodalProjection(*fe_space, u);
-  auto mf_fe = MeshFunctionFE<double, double>(fe_space, coeffvec);
+  auto mf_fe = lf::fe::MeshFunctionFE<double, double>(fe_space, coeffvec);
   auto norm =
-      IntegrateMeshFunction(*fe_space->Mesh(), squaredNorm(mf_fe - u), 4);
+      lf::fe::IntegrateMeshFunction(*fe_space->Mesh(), squaredNorm(mf_fe - u), 4);
 
   EXPECT_NEAR(norm, 0.0, 1E-6);
   return (std::fabs(norm) < 1.0E-6);

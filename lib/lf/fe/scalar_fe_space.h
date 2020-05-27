@@ -15,10 +15,9 @@
  */
 
 #include <lf/assemble/assemble.h>
+#include "scalar_reference_finite_element.h"
 
-#include "lagr_fe.h"
-
-namespace lf::uscalfe {
+namespace lf::fe {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -139,6 +138,6 @@ std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes) {
   return o;
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::fe
 
 #endif

@@ -17,6 +17,7 @@
 
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 namespace lf::uscalfe::test {
 /**
@@ -232,7 +233,7 @@ SecOrdEllBVPLagrFELinSys(
 
   // III: Fixing coefficients due to essential boundary conditions
   if (no_Dirichlet_edges > 0) {
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>> rfs_edge_p =
         fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     LF_ASSERT_MSG(rfs_edge_p != nullptr, "FE specification for edges missing");
 

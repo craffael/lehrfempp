@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/io/test_utils/read_mesh.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/test/mesh_function_utils.h"
 
@@ -26,8 +27,8 @@ TEST(meshFunctionGradFE, ProjectionTest) {
 
   auto fespaceO1 = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
 
-  auto projected = NodalProjection(*fespaceO1, mf_linear);
-  auto mf_grad_projected = MeshFunctionGradFE(fespaceO1, projected);
+  auto projected = lf::fe::NodalProjection(*fespaceO1, mf_linear);
+  auto mf_grad_projected = lf::fe::MeshFunctionGradFE(fespaceO1, projected);
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_grad, mf_grad_projected);
 }
 

@@ -12,6 +12,7 @@
 
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include "../product_fe_space.h"
 
@@ -171,10 +172,10 @@ ConvectionDiffusionDPGLinSys(
 
   // assemble boundary conditions:
   // obtain pointers to reference shape functions on edges:
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
       rfs_edge_trace_p = fe_space->ShapeFunctionLayout(
           lf::base::RefEl::kSegment(), trace_component);
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
       rfs_edge_flux_p = fe_space->ShapeFunctionLayout(
           lf::base::RefEl::kSegment(), flux_component);
   LF_ASSERT_MSG(rfs_edge_trace_p != nullptr && rfs_edge_flux_p != nullptr,

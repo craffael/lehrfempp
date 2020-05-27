@@ -10,6 +10,7 @@
 #include <lf/io/io.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 namespace lf::uscalfe::test {
 
@@ -24,7 +25,7 @@ TEST(feTools, IntegrateMeshFunction) {
     return std::sin(base::kPi * x[0]) * x[1];
   });
   // Compute the integral with a very high-order quadrature rule
-  auto intScalar = IntegrateMeshFunction(*mesh, mfScalar, 20);
+  auto intScalar = lf::fe::IntegrateMeshFunction(*mesh, mfScalar, 20);
   EXPECT_FLOAT_EQ(intScalar, 9 / base::kPi);
 
   // vector valued mesh function: return type is automatically deduced from that
@@ -33,7 +34,7 @@ TEST(feTools, IntegrateMeshFunction) {
     return Eigen::Vector3d(x[0], x[0] * x[1], std::cos(base::kPi * x[0]));
   });
   // Integrate with high-order quadrature rule and get back a vector!
-  auto intVec = IntegrateMeshFunction(*mesh, mfVec, 20);
+  auto intVec = lf::fe::IntegrateMeshFunction(*mesh, mfVec, 20);
   EXPECT_FLOAT_EQ(intVec[0], 27. / 2.);
   EXPECT_FLOAT_EQ(intVec[1], 81. / 4.);
   EXPECT_LT(intVec[2], 1e-10);
@@ -47,7 +48,7 @@ TEST(feTools, IntegrateMeshFunction) {
             .finished();
       });
   // Numerical integration returns a matrix
-  auto intMatrixDyn = IntegrateMeshFunction(*mesh, mfMatrixDyn, 10);
+  auto intMatrixDyn = lf::fe::IntegrateMeshFunction(*mesh, mfMatrixDyn, 10);
   EXPECT_FLOAT_EQ(intMatrixDyn(0, 0), 9.);
   EXPECT_FLOAT_EQ(intMatrixDyn(0, 1), 27. / 2.);
   EXPECT_FLOAT_EQ(intMatrixDyn(0, 2), 27. / 2.);
@@ -73,7 +74,7 @@ TEST(feTools, NodalProjection) {
   auto expmf{mesh::utils::MeshFunctionGlobal(expfn)};
 
   // Third stage: perform nodal interpolation
-  Eigen::VectorXd mu = lf::uscalfe::NodalProjection(*fe_space_p, expmf);
+  Eigen::VectorXd mu = lf::fe::NodalProjection(*fe_space_p, expmf);
 
   // Fourth stage: validation
   const lf::mesh::Mesh& mesh{*(fe_space_p->Mesh())};

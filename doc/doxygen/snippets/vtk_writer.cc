@@ -8,6 +8,7 @@
 
 #include <lf/io/io.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 namespace lf::io {
 
@@ -42,10 +43,10 @@ void mfPointUsage() {
   // A Mesh function representing the first shape function of fes
   Eigen::VectorXd x(fes->LocGlobMap().NumDofs());
   x[0] = 1.0;
-  auto mfShapeFun = uscalfe::MeshFunctionFE(fes, x);
+  auto mfShapeFun = fe::MeshFunctionFE(fes, x);
 
   // A Meshfunction representing the gradient of the first shape function:
-  auto mfGradShapeFun = uscalfe::MeshFunctionGradFE(fes, x);
+  auto mfGradShapeFun = fe::MeshFunctionGradFE(fes, x);
 
   // write to VTK
   io::VtkWriter vtk_writer(mesh, "filename.vtk");
@@ -75,7 +76,7 @@ void mfCellUsage() {
   // A Mesh function representing the gradient of the first shape function
   Eigen::VectorXd x(fes->LocGlobMap().NumDofs());
   x[0] = 1.0;
-  auto mfShapeFun = uscalfe::MeshFunctionGradFE(fes, x);
+  auto mfShapeFun = fe::MeshFunctionGradFE(fes, x);
 
   // write the gradient to vtk (cell based)
   io::VtkWriter vtk_writer(mesh, "filename.vtk");

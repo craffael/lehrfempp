@@ -8,7 +8,7 @@
 
 #include "hp_fe.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 Eigen::VectorXd chebyshevNodes(unsigned n) {
   // Compute the chebyshev nodes in the interval [0, 1]
@@ -19,4 +19,4 @@ Eigen::VectorXd chebyshevNodes(unsigned n) {
          2;
 }
 
-}  // end namespace lf::uscalfe
+}  // end namespace lf::fe

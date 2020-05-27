@@ -13,7 +13,7 @@
 #include "hp_fe.h"
 #include "scalar_fe_space.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 /**
  * @brief Lagrangian Finite Element Space of arbitrary degree
@@ -74,7 +74,7 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
  private:
   // R.H.: Should this really be shared pointers ?
   lf::mesh::utils::AllCodimMeshDataSet<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       ref_el_;
   std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
   unsigned degree_;
@@ -84,7 +84,7 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = std::make_shared<FeLagrangePoint<SCALAR>>(degree_);
+      ref_el_(*entity) = std::make_shared<FeHPPoint<SCALAR>>(degree_);
     }
     // Initialize all shape function layouts for the edges
     size_type num_rsf_edge = 0;
@@ -123,6 +123,6 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
   }
 };
 
-}  // end namespace lf::uscalfe
+}  // end namespace lf::fe
 
 #endif  // LF_USCALFE_FE_SPACE_HP_H_

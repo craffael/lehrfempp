@@ -19,6 +19,7 @@
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+#include <lf/fe/fe.h>
 
 #include "product_dofhandler.h"
 #include "product_element_matrix_provider.h"
@@ -270,8 +271,8 @@ template <typename SCALAR, typename EDGESELECTOR_DIRICHLET,
           typename FUNCTION_H>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionsFromFunctions(
     const ProductUniformFEDofHandler& dofh,
-    const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_trace,
-    const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_flux,
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_trace,
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_flux,
     EDGESELECTOR_DIRICHLET&& dirichletcondflag,
     EDGESELECTOR_NEUMANN&& neumanncondflag, FUNCTION_G&& g, FUNCTION_H&& h,
     size_type trace_component, size_type flux_component) {
@@ -285,10 +286,10 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionsFromFunctions(
 
   // flag dofs on the component spaces
   std::vector<std::pair<bool, SCALAR>> componentTraceConditions =
-      lf::uscalfe::InitEssentialConditionFromFunction(
+      lf::fe::InitEssentialConditionFromFunction(
           trace_dofh, fe_spec_edge_trace, dirichletcondflag, g);
   std::vector<std::pair<bool, SCALAR>> componentFluxConditions =
-      lf::uscalfe::InitEssentialConditionFromFunction(
+      lf::fe::InitEssentialConditionFromFunction(
           flux_dofh, fe_spec_edge_flux, neumanncondflag, h);
 
   // calculate offsets to transform flags on component spaces

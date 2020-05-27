@@ -12,6 +12,7 @@
 #include <lf/base/base.h>
 #include <lf/mesh/mesh.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include "product_fe_space.h"
 
@@ -129,7 +130,7 @@ class ProductUniformFESpaceFactory {
    * @return returns a Pointer to an object representing Lagrangian shape
    * functions of the specified degree and on the specified reference element.
    */
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
   ReferenceFiniteElement(lf::base::RefEl ref_el, size_type degree);
 
   /** the underlying mesh on which the fe-space will be built. */
@@ -138,16 +139,16 @@ class ProductUniformFESpaceFactory {
   /** descriptions of reference shape functions for already added components on
    * different types of entities */
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_tria_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_quad_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_segment_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_point_v_;
 
   /** the number of already added components. */
@@ -155,7 +156,7 @@ class ProductUniformFESpaceFactory {
 };
 
 template <typename SCALAR>
-std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
 ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
     lf::base::RefEl ref_el, size_type degree) {
   switch (ref_el) {

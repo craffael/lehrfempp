@@ -14,6 +14,7 @@
 #include <typeinfo>
 
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include "dpg.h"
 
@@ -25,7 +26,7 @@ namespace projects::dpg {
  *  traces on the cell boundary.
  * @tparam SCALAR The scalar type of the shape functions e.g.'double'
  *
- * The class decorates any lf::uscalfe::ScalarReferenceFiniteElement and
+ * The class decorates any lf::fe::ScalarReferenceFiniteElement and
  * drops all its interior shape functions.
  *
  *
@@ -39,7 +40,7 @@ namespace projects::dpg {
  */
 template <typename SCALAR>
 class TraceScalarReferenceFiniteElement
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
    * @brief Default constructor, does not initialize this class (invalid state).
@@ -58,9 +59,9 @@ class TraceScalarReferenceFiniteElement
       TraceScalarReferenceFiniteElement&&) noexcept = default;
 
   explicit TraceScalarReferenceFiniteElement(
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
           cfe)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
+      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
         cfe_(std::move(cfe)) {}
 
   /**
@@ -116,7 +117,7 @@ class TraceScalarReferenceFiniteElement
     return cfe_->EvaluationNodes().leftCols(NumRefShapeFunctions());
   }
 
-  [[nodiscard]] lf::uscalfe::size_type NumEvaluationNodes() const override {
+  [[nodiscard]] lf::fe::size_type NumEvaluationNodes() const override {
     LF_ASSERT_MSG(isInitialized(), "Not initialized");
     return cfe_->NumEvaluationNodes() - cfe_->NumRefShapeFunctions(0);
   }
@@ -152,7 +153,7 @@ class TraceScalarReferenceFiniteElement
 
  private:
   /** The underlying scalar-valued paramteric finite element */
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>> cfe_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> cfe_;
 };
 
 }  // namespace projects::dpg

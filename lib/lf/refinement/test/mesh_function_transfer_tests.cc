@@ -6,6 +6,7 @@
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 #include <cmath>
 #include <functional>
 #include <type_traits>
@@ -15,7 +16,7 @@ TEST(lf_refinement, MeshFunctionTransferConcept) {
   using mf_scalar = lf::mesh::utils::MeshFunctionConstant<double>;
   using mf_matrix = lf::mesh::utils::MeshFunctionConstant<Eigen::MatrixXd>;
   using mf_array = lf::mesh::utils::MeshFunctionConstant<Eigen::ArrayXd>;
-  using mf_fe = lf::uscalfe::MeshFunctionFE<double, double>;
+  using mf_fe = lf::fe::MeshFunctionFE<double, double>;
   ASSERT_TRUE(std::is_copy_constructible_v<mf_scalar>);
   ASSERT_TRUE(std::is_copy_constructible_v<mf_matrix>);
   ASSERT_TRUE(std::is_copy_constructible_v<mf_array>);

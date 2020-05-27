@@ -6,12 +6,13 @@
 
 /**
  * @file
- * @brief auxiliary functions for dealing with finite element spaces
- * @author Ralf Hiptmair
+ * @brief implementation of methods for data structures
+ *        describing finite element spaces
+ * @author Ralf Hiptmair, Tobias Rohner
  * @date October 2018
  * @copyright MIT License
  */
 
-#include "fe_tools.h"
+#include "scalar_fe_space.h"
 
-namespace lf::uscalfe {}
+namespace lf::fe {}  // namespace lf::fe

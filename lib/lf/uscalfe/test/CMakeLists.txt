@@ -14,7 +14,6 @@ set(src
   mesh_function_fe_tests.cc
   mesh_function_grad_fe_tests.cc
   prolongation_tests.cc
-  fe_space_hp_tests.cc
 )
 
 add_executable(lf.uscalfe.test ${src})

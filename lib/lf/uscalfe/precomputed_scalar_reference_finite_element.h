@@ -40,7 +40,7 @@ namespace lf::uscalfe {
  */
 template <class SCALAR>
 class PrecomputedScalarReferenceFiniteElement
-    : public ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
    * @brief Default constructor which does not initialize this class at all
@@ -61,9 +61,9 @@ class PrecomputedScalarReferenceFiniteElement
       PrecomputedScalarReferenceFiniteElement&&) noexcept = default;
 
   PrecomputedScalarReferenceFiniteElement(
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> fe,
       quad::QuadRule qr)
-      : ScalarReferenceFiniteElement<SCALAR>(),
+      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
         fe_(std::move(fe)),
         qr_(std::move(qr)),
         shap_fun_(fe_->EvalReferenceShapeFunctions(qr_.Points())),
@@ -166,7 +166,7 @@ class PrecomputedScalarReferenceFiniteElement
 
  private:
   /** The underlying scalar-valued parametric finite element */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> fe_;
   /** Uniform parametric quadrature rule for the associated type of reference
    * element */
   quad::QuadRule qr_;

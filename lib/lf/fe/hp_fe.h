@@ -18,9 +18,9 @@
 #include <memory>
 #include <vector>
 
-#include "lagr_fe.h"
+#include "scalar_reference_finite_element.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 /** Type for indices into global matrices/vectors */
 using gdof_idx_t = lf::assemble::gdof_idx_t;
 /** Type for indices referring to entity matrices/vectors */
@@ -85,6 +85,53 @@ Eigen::VectorXd chebyshevNodes(unsigned n);
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
+ * @brief Linear finite element on a point
+ *
+ * This is a specialization of ScalarReferenceFiniteElement for an entity
+ * of dimension 0, which is exactly one scalar value. It is an ingredient
+ * of all Lagrange type finite element spaces (any degree).
+ */
+template <class SCALAR>
+class FeHPPoint : public ScalarReferenceFiniteElement<SCALAR> {
+ public:
+  /**
+   * @brief Create a new FeHPPoint by specifying the degree of the shape
+   * functions.
+   * @param degree The degree of the shape function.
+   */
+  explicit FeHPPoint(unsigned degree) : degree_(degree) {}
+
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kPoint();
+  }
+  [[nodiscard]] unsigned Degree() const override { return degree_; }
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      dim_t codim, sub_idx_t subidx) const override {
+    LF_ASSERT_MSG(codim == 0, "Codim out of bounds");
+    LF_ASSERT_MSG(subidx == 0, "subidx out of bounds.");
+    return 1;
+  }
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+    LF_ASSERT_MSG(refcoords.rows() == 0, "refcoords has too many rows.");
+    return Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Ones(1, refcoords.cols());
+  }
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
+      const Eigen::MatrixXd& /*refcoords*/) const override {
+    LF_VERIFY_MSG(false, "gradients not defined in points of mesh.");
+  }
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
+    return Eigen::MatrixXd(0, 1);
+  }
+  [[nodiscard]] size_type NumEvaluationNodes() const override { return 1; }
+
+ private:
+  unsigned degree_;
+};
+
+/**
+ * @headerfile lf/uscalfe/uscalfe.h
  * @brief HP Finite Elements of arbitrary degree on segments
  *
  * The Shape Functions are taken from the following paper:
@@ -94,7 +141,7 @@ Eigen::VectorXd chebyshevNodes(unsigned n);
  */
 template <typename SCALAR>
 class FeHPSegment final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPSegment(const FeHPSegment &) = default;
   FeHPSegment(FeHPSegment &&) noexcept = default;
@@ -104,7 +151,7 @@ class FeHPSegment final
 
   FeHPSegment(unsigned degree,
               nonstd::span<const lf::mesh::Orientation> rel_orient)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
+      : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient) {
     eval_nodes_ = ComputeEvaluationNodes();
@@ -242,7 +289,7 @@ class FeHPSegment final
  */
 template <typename SCALAR>
 class FeHPTria final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPTria(const FeHPTria &) = default;
   FeHPTria(FeHPTria &&) noexcept = default;
@@ -252,7 +299,7 @@ class FeHPTria final
 
   FeHPTria(unsigned degree,
            nonstd::span<const lf::mesh::Orientation> rel_orient)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
+      : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient) {
     eval_nodes_ = ComputeEvaluationNodes();
@@ -669,7 +716,7 @@ class FeHPTria final
  */
 template <typename SCALAR>
 class FeHPQuad final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHPQuad(const FeHPQuad &) = default;
   FeHPQuad(FeHPQuad &&) noexcept = default;
@@ -679,7 +726,7 @@ class FeHPQuad final
 
   FeHPQuad(unsigned degree,
            nonstd::span<const lf::mesh::Orientation> rel_orient)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
+      : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient),
         fe1d_(degree, rel_orient) {
@@ -980,6 +1027,6 @@ class FeHPQuad final
   }
 };
 
-}  // end namespace lf::uscalfe
+}  // end namespace lf::fe
 
 #endif  // LF_USCALFE_HP_FE_H_

@@ -18,9 +18,9 @@
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
-#include "uniform_scalar_fe_space.h"
+#include "scalar_fe_space.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 static const unsigned int kout_l2_qr = 1;
 static const unsigned int kout_l2_rsfvals = 2;
@@ -200,7 +200,7 @@ static const unsigned int kout_prj_vals = 2;
  * @snippet fe_tools.cc nodalProjection
  */
 template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(const ScalarFESpace<SCALAR> &fe_space, MF &&u,
+auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
                      SELECTOR &&pred = base::PredicateTrue{}) {
   static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<MF>>);
   // choose scalar type so it can hold the scalar type of u as well as
@@ -310,7 +310,7 @@ auto NodalProjection(const ScalarFESpace<SCALAR> &fe_space, MF &&u,
 template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const lf::assemble::DofHandler &dofh,
-    const ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_spec_edge,
     EDGESELECTOR &&esscondflag, FUNCTION &&g) {
   static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<FUNCTION>>);
   // static_assert(isMeshFunction<FUNCTION>, "g must by a MeshFunction object");
@@ -492,6 +492,6 @@ double NormOfDifference(const lf::assemble::DofHandler &dofh,
   return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::fe
 
 #endif

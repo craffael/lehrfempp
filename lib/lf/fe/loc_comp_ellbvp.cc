@@ -6,13 +6,13 @@
 
 /**
  * @file
- * @brief implementation of methods for data structures
- *        describing finite element spaces
- * @author Ralf Hiptmair, Tobias Rohner
+ * @brief Implementation of local computations for Lagrange FE for
+ * 2nd-order linear elliptic boundary value problems.
+ * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License
  */
 
-#include "scalar_fe_space.h"
+#include "loc_comp_ellbvp.h"
 
-namespace lf::uscalfe {}  // namespace lf::uscalfe
+namespace lf::fe {}  // end namespace lf::fe

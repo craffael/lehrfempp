@@ -9,8 +9,9 @@
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 void integrateMeshFunction() {
   //! [integrateMeshFunction]
@@ -53,12 +54,12 @@ void nodalProjection() {
 
   // project a first-degree polynomial onto a first order lagrange space and
   // make sure the representation is exact:
-  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
+  auto fe_space = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
   auto mf_linear = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return 2 + 3 * x[0] + 4 * x[1]; });
 
   auto dof_vector = NodalProjection(*fe_space, mf_linear);
-  auto mf_fe = MeshFunctionFE(fe_space, dof_vector);
+  auto mf_fe = lf::fe::MeshFunctionFE(fe_space, dof_vector);
 
   assert(IntegrateMeshFunction(*mesh, squaredNorm(mf_fe - mf_linear), 2) <
          1e-12);
@@ -71,7 +72,7 @@ void InitEssentialConditionFromFunction() {
   auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
   auto mesh = gmsh_reader.mesh();
 
-  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
+  auto fe_space = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
   // We want to solve the pde
   // - \laplace u = 0
@@ -96,7 +97,7 @@ void InitEssentialConditionFromFunction() {
   auto mf_one = mesh::utils::MeshFunctionConstant(1.);
   auto mf_zero = mesh::utils::MeshFunctionConstant(0.);
   auto matrix_provider =
-      ReactionDiffusionElementMatrixProvider(fe_space, mf_one, mf_zero);
+      lf::uscalfe::ReactionDiffusionElementMatrixProvider(fe_space, mf_one, mf_zero);
   assemble::AssembleMatrixLocally(0, fe_space->LocGlobMap(),
                                   fe_space->LocGlobMap(), matrix_provider, lhs);
 
@@ -115,4 +116,4 @@ void InitEssentialConditionFromFunction() {
   //! [InitEssentialConditionFromFunction]
 }
 
-}  // namespace lf::uscalfe
+}  // namespace lf::fe

@@ -14,7 +14,7 @@
 
 #include "scalar_fe_space.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -107,6 +107,6 @@ MeshFunctionFE(std::shared_ptr<T>,
                const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
     ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 
-}  // namespace lf::uscalfe
+}  // namespace lf::fe
 
 #endif  // __4ee2d6e8004446558bc6d2186596e392

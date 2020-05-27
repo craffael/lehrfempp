@@ -3,9 +3,9 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/uscalfe/prolongation.h>
+#include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
-using lf::uscalfe::operator-;
 
 TEST(lf_uscalfe, NormLinear) {
   // Generate a test mesh, refine it and compare the norm of the coarse and the
@@ -38,16 +38,16 @@ TEST(lf_uscalfe, NormLinear) {
       // Transfer the mesh function one level down in the hierarchy
       const auto dofvector_fine = lf::uscalfe::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
-      lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
+      lf::fe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
-      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
+      lf::fe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       const auto qr_provider = [](const lf::mesh::Entity& e) {
         return lf::quad::make_QuadRule(e.RefEl(), 2);
       };
-      const double norm_coarse = lf::uscalfe::IntegrateMeshFunction(
-          *mesh_coarse, lf::uscalfe::squaredNorm(mf_coarse), qr_provider);
-      const double norm_fine = lf::uscalfe::IntegrateMeshFunction(
-          *mesh_fine, lf::uscalfe::squaredNorm(mf_fine), qr_provider);
+      const double norm_coarse = lf::fe::IntegrateMeshFunction(
+          *mesh_coarse, lf::mesh::utils::squaredNorm(mf_coarse), qr_provider);
+      const double norm_fine = lf::fe::IntegrateMeshFunction(
+          *mesh_fine, lf::mesh::utils::squaredNorm(mf_fine), qr_provider);
       ASSERT_DOUBLE_EQ(norm_coarse, norm_fine)
           << "dofidx = " << dofidx << "\ndofvector_coarse = ["
           << dofvector_coarse.transpose() << "]\ndofvector_fine = ["
@@ -87,16 +87,16 @@ TEST(lf_uscalfe, NormQuadratic) {
       // Transfer the mesh function one level down in the hierarchy
       const auto dofvector_fine = lf::uscalfe::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
-      lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
+      lf::fe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
-      lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
+      lf::fe::MeshFunctionFE mf_coarse(fes_coarse, dofvector_coarse);
       const auto qr_provider = [](const lf::mesh::Entity& e) {
         return lf::quad::make_QuadRule(e.RefEl(), 4);
       };
-      const double norm_coarse = lf::uscalfe::IntegrateMeshFunction(
-          *mesh_coarse, lf::uscalfe::squaredNorm(mf_coarse), qr_provider);
-      const double norm_fine = lf::uscalfe::IntegrateMeshFunction(
-          *mesh_fine, lf::uscalfe::squaredNorm(mf_fine), qr_provider);
+      const double norm_coarse = lf::fe::IntegrateMeshFunction(
+          *mesh_coarse, lf::mesh::utils::squaredNorm(mf_coarse), qr_provider);
+      const double norm_fine = lf::fe::IntegrateMeshFunction(
+          *mesh_fine, lf::mesh::utils::squaredNorm(mf_fine), qr_provider);
       ASSERT_TRUE(std::fabs(norm_coarse - norm_fine) < 1e-10)
           << "dofidx = " << dofidx << "\ndofvector_coarse = ["
           << dofvector_coarse.transpose() << "]\ndofvector_fine = ["
@@ -121,8 +121,8 @@ void check_lagr_interp_nodes(std::shared_ptr<lf::mesh::Mesh> mesh_coarse,
   const auto dofs_fine =
       lf::uscalfe::prolongate(mh, fes_coarse, fes_fine, dofs_coarse, 0);
   // Compare the resulting mesh functions at the interpolation nodes
-  lf::uscalfe::MeshFunctionFE mf_coarse(fes_coarse, dofs_coarse);
-  lf::uscalfe::MeshFunctionFE mf_fine(fes_fine, dofs_fine);
+  lf::fe::MeshFunctionFE mf_coarse(fes_coarse, dofs_coarse);
+  lf::fe::MeshFunctionFE mf_fine(fes_fine, dofs_fine);
   for (const auto cell : mesh_fine->Entities(0)) {
     const auto idx = mesh_fine->Index(*cell);
     const auto layout = fes_fine->ShapeFunctionLayout(cell->RefEl());

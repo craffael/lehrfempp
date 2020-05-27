@@ -8,6 +8,7 @@
  */
 
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 namespace projects::ipdg_stokes {
 
@@ -49,7 +50,7 @@ class MeshFunctionVelocity {
   }
 
  private:
-  const lf::uscalfe::MeshFunctionGradFE<SCALAR_FE, SCALAR_COEFF> grad_;
+  const lf::fe::MeshFunctionGradFE<SCALAR_FE, SCALAR_COEFF> grad_;
 };
 
 template <typename T, typename SCALAR_COEFF>

@@ -5,7 +5,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 namespace lf::uscalfe {
 
@@ -34,11 +34,11 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   using scalar_fe_fine_t = typename FES_FINE::Scalar;
   static_assert(
       std::is_convertible_v<
-          FES_COARSE, lf::uscalfe::UniformScalarFESpace<scalar_fe_coarse_t>>,
+          FES_COARSE&, lf::fe::ScalarFESpace<scalar_fe_coarse_t>&>,
       "Invalid coarse FE space provided");
   static_assert(
       std::is_convertible_v<
-          FES_FINE, lf::uscalfe::UniformScalarFESpace<scalar_fe_fine_t>>,
+          FES_FINE&, lf::fe::ScalarFESpace<scalar_fe_fine_t>&>,
       "Invalid fine FE space provided");
   // Obtain the dofhandlers from the fe spaces
   const lf::assemble::DofHandler &dofh_coarse{fespace_coarse->LocGlobMap()};
@@ -52,12 +52,12 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
       dofs_coarse.size() >= N_coarse,
       "Too few basis function coefficients provided for coarse FE space");
   // Construct a mesh function to simplify the point evaluations
-  const lf::uscalfe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
+  const lf::fe::MeshFunctionFE mf_coarse(fespace_coarse, dofs_coarse);
   // Transfer the mesh function to the finer mesh
   const lf::refinement::MeshFunctionTransfer mf_fine(
       mh, mf_coarse, level_coarse, level_coarse + 1);
   // Return the nodal projection of this transferred mesh function
-  return lf::uscalfe::NodalProjection(*fespace_fine, mf_fine);
+  return lf::fe::NodalProjection(*fespace_fine, mf_fine);
 }
 
 }  // end namespace lf::uscalfe

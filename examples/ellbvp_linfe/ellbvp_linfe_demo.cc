@@ -17,6 +17,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
@@ -322,7 +323,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     // boundary conditions
     if (no_Dirichlet_edges > 0) {
       // Obtain specification for shape functions on edges
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
           rsf_edge_p =
               fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
       LF_ASSERT_MSG(rsf_edge_p != nullptr,
@@ -330,7 +331,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
       // Fetch flags and values for degrees of freedom located on Dirichlet
       // edges.
-      auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
+      auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
           dofh, *rsf_edge_p,
           [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
             return (bd_flags(edge) && edge_sel_dir(edge));
@@ -362,19 +363,19 @@ int main(int /*argc*/, const char** /*argv*/) {
     // Helper class for H1 semi norm
     lf::uscalfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
 
-    double L2err = lf::uscalfe::NormOfDifference(dofh, lc_L2, sol_vec);
-    double H1serr = lf::uscalfe::NormOfDifference(dofh, lc_H1, sol_vec);
+    double L2err = lf::fe::NormOfDifference(dofh, lc_L2, sol_vec);
+    double H1serr = lf::fe::NormOfDifference(dofh, lc_H1, sol_vec);
     /* SAM_LISTING_END_2 */
 
     // An alternative more elegant way to compute the error norms:
     /* SAM_LISTING_BEGIN_7 */
     // create mesh functions representing solution / gradient of solution
-    auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
-    auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
+    auto mf_sol = lf::fe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_grad_sol = lf::fe::MeshFunctionGradFE(fe_space, sol_vec);
     // compute errors with 10-th order quadrature rules
     double L2err_2 =  // NOLINT
         std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
-    double H1serr_2 = std::sqrt(lf::uscalfe::IntegrateMeshFunction(  // NOLINT
+    double H1serr_2 = std::sqrt(lf::fe::IntegrateMeshFunction(  // NOLINT
         mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
     /* SAM_LISTING_END_7 */
     errs.emplace_back(N_dofs, L2err, H1serr);

@@ -10,7 +10,7 @@
 #define __b6997524e2834b5b8e4bba019fb35cc6
 #include "scalar_fe_space.h"
 
-namespace lf::uscalfe {
+namespace lf::fe {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
@@ -110,6 +110,6 @@ MeshFunctionGradFE(std::shared_ptr<T>,
                    const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
     ->MeshFunctionGradFE<typename T::Scalar, SCALAR_COEFF>;
 
-}  // namespace lf::uscalfe
+}  // namespace lf::fe
 
 #endif  // __b6997524e2834b5b8e4bba019fb35cc6

@@ -12,7 +12,7 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
-#include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <lf/refinement/refinement.h>
 #include <lf/refinement/mesh_function_transfer.h>
@@ -134,7 +134,7 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
         u(x) = \sin(\pi x_1)\sin(\pi x_2)
    \f]
  */
-std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<lf::uscalfe::ScalarFESpace<double>>& fe_space) {
+std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<lf::fe::ScalarFESpace<double>>& fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
     return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
@@ -162,12 +162,12 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   std::cout << "\t\t> Assembling System Matrix" << std::endl;
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
   const lf::mesh::utils::MeshFunctionConstant<double> mf_gamma(0);
-  lf::uscalfe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
+  lf::fe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
       fe_space, mf_alpha, mf_gamma);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
   std::cout << "\t\t> Assembling right Hand Side" << std::endl;
-  lf::uscalfe::ScalarLoadElementVectorProvider element_vector_provider(fe_space, mf_load);
+  lf::fe::ScalarLoadElementVectorProvider element_vector_provider(fe_space, mf_load);
   lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
 
   // Enforce zero dirichlet boundary conditions
@@ -184,9 +184,9 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
-  const lf::uscalfe::MeshFunctionFE<double, double> mf_numeric(fe_space,
+  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space,
                                                                solution);
-  const lf::uscalfe::MeshFunctionGradFE<double, double> mf_numeric_grad(
+  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(
       fe_space, solution);
 
   // Compute the H1 and L2 errors
@@ -209,10 +209,10 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
       return lf::quad::make_QuadRule(refel, 2 * degree - 1);
     }
   };
-  const double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+  const double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad),
       quadrule_provider));
-  const double L2_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+  const double L2_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u - mf_numeric),
       quadrule_provider));
 
@@ -232,7 +232,7 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
         u(r, \phi) = r^{\frac{2}{3}}\sin(\frac{2}{3}\phi)
    \f]
  */
-std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::uscalfe::ScalarFESpace<double>>
+std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::fe::ScalarFESpace<double>>
         &fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::Vector2d &x) -> double {
@@ -267,7 +267,7 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
   std::cout << "\t\t> Assembling System Matrix" << std::endl;
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
   const lf::mesh::utils::MeshFunctionConstant<double> mf_gamma(0);
-  lf::uscalfe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
+  lf::fe::ReactionDiffusionElementMatrixProvider element_matrix_provider(
       fe_space, mf_alpha, mf_gamma);
   lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
@@ -303,9 +303,9 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
-  const lf::uscalfe::MeshFunctionFE<double, double> mf_numeric(fe_space,
+  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space,
                                                                solution);
-  const lf::uscalfe::MeshFunctionGradFE<double, double> mf_numeric_grad(
+  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(
       fe_space, solution);
 
   // Compute the H1 and L2 errors
@@ -328,10 +328,10 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
       return lf::quad::make_QuadRule(refel, 2 * degree - 1);
     }
   };
-  const double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+  const double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad),
       quadrule_provider));
-  const double L2_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+  const double L2_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u - mf_numeric),
       quadrule_provider));
 
@@ -368,7 +368,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
     const auto fe_space_square =
-        std::make_shared<lf::uscalfe::FeSpaceHP<double>>(square_mesh, p);
+        std::make_shared<lf::fe::FeSpaceHP<double>>(square_mesh, p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_square, L2_square] =
@@ -377,7 +377,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the L-shaped domain
     std::cout << "\t> L-shaped Domain";
     const auto fe_space_L =
-        std::make_shared<lf::uscalfe::FeSpaceHP<double>>(L_mesh, p);
+        std::make_shared<lf::fe::FeSpaceHP<double>>(L_mesh, p);
     std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_L, L2_L] = computeErrorsLDomain(p, L_mesh, fe_space_L);

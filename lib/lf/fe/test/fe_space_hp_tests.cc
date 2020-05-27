@@ -9,12 +9,12 @@
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
-#include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <cmath>
 #include <limits>
 
-namespace lf::uscalfe::test {
+namespace lf::fe::test {
 
 TEST(fe_space_hp, continuity) {
   for (int selector = 0; selector <= 8; ++selector) {
@@ -23,7 +23,7 @@ TEST(fe_space_hp, continuity) {
     for (unsigned p = 1; p <= 20; ++p) {
       // Generate a FeSpaceHP with order p on the mesh
       const auto fe_space =
-          std::make_unique<lf::uscalfe::FeSpaceHP<double>>(mesh, p);
+          std::make_unique<lf::fe::FeSpaceHP<double>>(mesh, p);
       // Test the continuity of each basis function associated with an edge
       for (auto&& cell : mesh->Entities(0)) {
         const auto sfl_cell = fe_space->ShapeFunctionLayout(*cell);
@@ -93,7 +93,7 @@ TEST(fe_space_hp, grad_segment) {
     for (const auto o0 :
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       orient[0] = o0;
-      const lf::uscalfe::FeHPSegment<double> sfl(p, orient);
+      const lf::fe::FeHPSegment<double> sfl(p, orient);
       const auto eval_nodes = sfl.EvaluationNodes();
       // Compute the exact gradients
       const auto grad_exact = sfl.GradientsReferenceShapeFunctions(eval_nodes);
@@ -133,7 +133,7 @@ TEST(fe_space_hp, grad_tria) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             orient[3] = o3;
-            const lf::uscalfe::FeHPTria<double> sfl(p, orient);
+            const lf::fe::FeHPTria<double> sfl(p, orient);
             const auto eval_nodes = sfl.EvaluationNodes();
             // Compute the exact gradients
             const auto grad_exact =
@@ -207,7 +207,7 @@ TEST(fe_space_hp, grad_quad) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             orient[3] = o3;
-            const lf::uscalfe::FeHPQuad<double> sfl(p, orient);
+            const lf::fe::FeHPQuad<double> sfl(p, orient);
             const auto eval_nodes = sfl.EvaluationNodes();
             // Compute the exact gradients
             const auto grad_exact =
@@ -264,4 +264,4 @@ TEST(fe_space_hp, grad_quad) {
   }
 }
 
-}  // end namespace lf::uscalfe::test
+}  // end namespace lf::fe::test

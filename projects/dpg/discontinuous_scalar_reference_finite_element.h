@@ -14,6 +14,7 @@
 #include <typeinfo>
 
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include "dpg.h"
 
@@ -25,7 +26,7 @@ namespace projects::dpg {
  * discontinuous shape functions.
  * @tparam SCALAR The scalar type of the shape functions e.g. 'double'
  *
- * The class decorates any lf::uscalfe::ScalarReferenceFiniteElement and
+ * The class decorates any lf::fe::ScalarReferenceFiniteElement and
  * forwards most calls to the decorated instance. The exception are methods
  * requesting the number of shape functions associated with certain codimensions
  * or subentities. Here the class changes the underlying implementation and
@@ -39,7 +40,7 @@ namespace projects::dpg {
  */
 template <typename SCALAR>
 class DiscontinuousScalarReferenceFiniteElement
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
    * Default constructor, does not initialize this class (invalid state).
@@ -57,9 +58,9 @@ class DiscontinuousScalarReferenceFiniteElement
       DiscontinuousScalarReferenceFiniteElement&&) noexcept = default;
 
   explicit DiscontinuousScalarReferenceFiniteElement(
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
           cfe)
-      : lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>(),
+      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
         cfe_(std::move(cfe)) {}
 
   /**
@@ -140,7 +141,7 @@ class DiscontinuousScalarReferenceFiniteElement
 
  private:
   /** The underlying (continuous) scalar-valued paramteric finite element */
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>> cfe_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> cfe_;
 };
 
 }  // namespace projects::dpg

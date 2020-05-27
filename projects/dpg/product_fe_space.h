@@ -13,6 +13,7 @@
 
 #include <lf/base/base.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include "dpg.h"
 #include "product_dofhandler.h"
@@ -91,16 +92,16 @@ class ProductUniformFESpace {
   ProductUniformFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
       std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_tria_v,
       std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_quad_v,
       std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_edge_v,
       std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_point_v)
       : mesh_p_(std::move(mesh_p)),
         rfs_tria_v_(std::move(rfs_tria_v)),
@@ -139,7 +140,7 @@ class ProductUniformFESpace {
    * element specification was not given for a particular topological type of
    * entity and e particular component.
    */
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(lf::base::RefEl ref_el_type, size_type component) const;
 
   /** @brief number of interior shape functions associated to entities of
@@ -175,16 +176,16 @@ class ProductUniformFESpace {
   /** descritpions of reference shape functions for all components on
    *  different types of entities. */
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_tria_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_quad_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_edge_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_point_v_;
 
   /** numbers of local shape functions for all components
@@ -343,7 +344,7 @@ void ProductUniformFESpace<SCALAR>::init() {
 }
 
 template <typename SCALAR>
-std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
 ProductUniformFESpace<SCALAR>::ShapeFunctionLayout(lf::base::RefEl ref_el_type,
                                                    size_type component) const {
   // Retrive specification of local shape functions for
