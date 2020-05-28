@@ -206,7 +206,7 @@ class FeHPSegment final
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
-        return LegendrePoly<SCALAR>::integral(i + 2, 1 - 2 * x);
+        return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
       });
     }
     return result;
@@ -226,7 +226,7 @@ class FeHPSegment final
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
-        return -2 * LegendrePoly<SCALAR>::eval(i + 1, 1 - 2 * x);
+        return 2 * LegendrePoly<SCALAR>::eval(i + 1, 2 * x - 1);
       });
     }
     return result;
@@ -363,15 +363,25 @@ class FeHPTria final
                                   refcoords.row(0) - refcoords.row(1);
     const Eigen::RowVectorXd l2 = refcoords.row(0);
     const Eigen::RowVectorXd l3 = refcoords.row(1);
+    Eigen::RowVectorXd l121n(refcoords.cols());
+    Eigen::RowVectorXd l122n(refcoords.cols());
+    Eigen::RowVectorXd l232n(refcoords.cols());
+    Eigen::RowVectorXd l233n(refcoords.cols());
+    Eigen::RowVectorXd l313n(refcoords.cols());
+    Eigen::RowVectorXd l311n(refcoords.cols());
+    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
+      l121n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l1[i] / (l1[i] + l2[i]);
+      l122n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l2[i] / (l1[i] + l2[i]);
+      l232n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l2[i] / (l2[i] + l3[i]);
+      l233n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l3[i] / (l2[i] + l3[i]);
+      l313n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l3[i] / (l3[i] + l1[i]);
+      l311n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l1[i] / (l3[i] + l1[i]);
+    }
     // Get the basis functions associated with the vertices
     result.row(0) = l1.unaryExpr([&](double x) -> SCALAR { return x; });
     result.row(1) = l2.unaryExpr([&](double x) -> SCALAR { return x; });
     result.row(2) = l3.unaryExpr([&](double x) -> SCALAR { return x; });
     // Get the basis functions associated with the first edge
-    Eigen::RowVectorXd l1n(refcoords.cols());
-    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
-      l1n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l1[i] / (l1[i] + l2[i]);
-    }
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         result.row(3 + i) =
@@ -379,7 +389,7 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l1n.array().unaryExpr([&](double x) -> SCALAR {
+             l122n.array().unaryExpr([&](double x) -> SCALAR {
                return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       } else {
@@ -388,16 +398,12 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l1n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, 1 - 2 * x);
+             l121n.array().unaryExpr([&](double x) -> SCALAR {
+               return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       }
     }
     // Get the basis functions associated with the second edge
-    Eigen::RowVectorXd l2n(refcoords.cols());
-    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
-      l2n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l2[i] / (l2[i] + l3[i]);
-    }
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         result.row(degree_ + 2 + i) =
@@ -405,7 +411,7 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l2n.array().unaryExpr([&](double x) -> SCALAR {
+             l233n.array().unaryExpr([&](double x) -> SCALAR {
                return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       } else {
@@ -414,16 +420,12 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l2n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, 1 - 2 * x);
+             l232n.array().unaryExpr([&](double x) -> SCALAR {
+               return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       }
     }
     // Get the basis functions associated with the third edge
-    Eigen::RowVectorXd l3n(refcoords.cols());
-    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
-      l3n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l3[i] / (l3[i] + l1[i]);
-    }
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         result.row(2 * degree_ + 1 + i) =
@@ -431,7 +433,7 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l3n.array().unaryExpr([&](double x) -> SCALAR {
+             l311n.array().unaryExpr([&](double x) -> SCALAR {
                return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       } else {
@@ -440,8 +442,8 @@ class FeHPTria final
                  .unaryExpr(
                      [&](double x) -> SCALAR { return std::pow(x, i + 2); })
                  .array() *
-             l3n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, 1 - 2 * x);
+             l313n.array().unaryExpr([&](double x) -> SCALAR {
+               return LegendrePoly<SCALAR>::integral(i + 2, 2 * x - 1);
              })).matrix();
       }
     }
@@ -492,6 +494,57 @@ class FeHPTria final
     const Eigen::RowVectorXd l3_dy =
         Eigen::RowVectorXd::Constant(refcoords.cols(), 1);
     for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
+      const SCALAR l1p2 = l1[i] + l2[i];
+      const SCALAR l1p2_dx = l1_dx[i] + l2_dx[i];
+      const SCALAR l1p2_dy = l1_dy[i] + l2_dy[i];
+      const SCALAR l121n = l1p2 == 0 ? SCALAR(0) : (l1[i] / l1p2);
+      const SCALAR l121n_dx =
+          l1p2 == 0 ? SCALAR(0)
+                    : ((l1_dx[i] * l1p2 - l1[i] * l1p2_dx) / (l1p2 * l1p2));
+      const SCALAR l121n_dy =
+          l1p2 == 0 ? SCALAR(0)
+                    : ((l1_dy[i] * l1p2 - l1[i] * l1p2_dy) / (l1p2 * l1p2));
+      const SCALAR l122n = l1p2 == 0 ? SCALAR(0) : (l2[i] / l1p2);
+      const SCALAR l122n_dx =
+          l1p2 == 0 ? SCALAR(0)
+                    : ((l2_dx[i] * l1p2 - l2[i] * l1p2_dx) / (l1p2 * l1p2));
+      const SCALAR l122n_dy =
+          l1p2 == 0 ? SCALAR(0)
+                    : ((l2_dy[i] * l1p2 - l2[i] * l1p2_dy) / (l1p2 * l1p2));
+      const SCALAR l2p3 = l2[i] + l3[i];
+      const SCALAR l2p3_dx = l2_dx[i] + l3_dx[i];
+      const SCALAR l2p3_dy = l2_dy[i] + l3_dy[i];
+      const SCALAR l232n = l2p3 == 0 ? SCALAR(0) : (l2[i] / l2p3);
+      const SCALAR l232n_dx =
+          l2p3 == 0 ? SCALAR(0)
+                    : ((l2_dx[i] * l2p3 - l2[i] * l2p3_dx) / (l2p3 * l2p3));
+      const SCALAR l232n_dy =
+          l2p3 == 0 ? SCALAR(0)
+                    : ((l2_dy[i] * l2p3 - l2[i] * l2p3_dy) / (l2p3 * l2p3));
+      const SCALAR l233n = l2p3 == 0 ? SCALAR(0) : (l3[i] / l2p3);
+      const SCALAR l233n_dx =
+          l2p3 == 0 ? SCALAR(0)
+                    : ((l3_dx[i] * l2p3 - l3[i] * l2p3_dx) / (l2p3 * l2p3));
+      const SCALAR l233n_dy =
+          l2p3 == 0 ? SCALAR(0)
+                    : ((l3_dy[i] * l2p3 - l3[i] * l2p3_dy) / (l2p3 * l2p3));
+      const SCALAR l3p1 = l3[i] + l1[i];
+      const SCALAR l3p1_dx = l3_dx[i] + l1_dx[i];
+      const SCALAR l3p1_dy = l3_dy[i] + l1_dy[i];
+      const SCALAR l313n = l3p1 == 0 ? SCALAR(0) : (l3[i] / l3p1);
+      const SCALAR l313n_dx =
+          l3p1 == 0 ? SCALAR(0)
+                    : ((l3_dx[i] * l3p1 - l3[i] * l3p1_dx) / (l3p1 * l3p1));
+      const SCALAR l313n_dy =
+          l3p1 == 0 ? SCALAR(0)
+                    : ((l3_dy[i] * l3p1 - l3[i] * l3p1_dy) / (l3p1 * l3p1));
+      const SCALAR l311n = l3p1 == 0 ? SCALAR(0) : (l1[i] / l3p1);
+      const SCALAR l311n_dx =
+          l3p1 == 0 ? SCALAR(0)
+                    : ((l1_dx[i] * l3p1 - l1[i] * l3p1_dx) / (l3p1 * l3p1));
+      const SCALAR l311n_dy =
+          l3p1 == 0 ? SCALAR(0)
+                    : ((l1_dy[i] * l3p1 - l1[i] * l3p1_dy) / (l3p1 * l3p1));
       // Get the gradient of the basis functions associated with the vertices
       result(0, 2 * i + 0) = l1_dx[i];
       result(0, 2 * i + 1) = l1_dy[i];
@@ -500,111 +553,81 @@ class FeHPTria final
       result(2, 2 * i + 0) = l3_dx[i];
       result(2, 2 * i + 1) = l3_dy[i];
       // Get the gradient of the basis functions associated with the first edge
-      const SCALAR l1p2 = l1[i] + l2[i];
-      const SCALAR l1p2_dx = l1_dx[i] + l2_dx[i];
-      const SCALAR l1p2_dy = l1_dy[i] + l2_dy[i];
-      const SCALAR l1n = l1p2 == 0 ? SCALAR(0) : (l1[i] / l1p2);
-      const SCALAR l1n_dx =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l1_dx[i] * l1p2 - l1[i] * l1p2_dx) / (l1p2 * l1p2));
-      const SCALAR l1n_dy =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l1_dy[i] * l1p2 - l1[i] * l1p2_dy) / (l1p2 * l1p2));
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-          const SCALAR leg1inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 2 * l1n - 1);
-          const SCALAR leg1eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 2 * l1n - 1);
+          const SCALAR leg2inte =
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l122n - 1);
+          const SCALAR leg2eval =
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l122n - 1);
           result(3 + j, 2 * i + 0) =
-              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
-              std::pow(l1p2, j + 2) * 2 * l1n_dx * leg1eval;
+              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
+              std::pow(l1p2, j + 2) * 2 * l122n_dx * leg2eval;
           result(3 + j, 2 * i + 1) =
-              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
-              std::pow(l1p2, j + 2) * 2 * l1n_dy * leg1eval;
+              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
+              std::pow(l1p2, j + 2) * 2 * l122n_dy * leg2eval;
         } else {
           const SCALAR leg1inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 1 - 2 * l1n);
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l121n - 1);
           const SCALAR leg1eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 1 - 2 * l1n);
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l121n - 1);
           result(degree_ + 1 - j, 2 * i + 0) =
-              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg1inte -
-              std::pow(l1p2, j + 2) * 2 * l1n_dx * leg1eval;
+              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
+              std::pow(l1p2, j + 2) * 2 * l121n_dx * leg1eval;
           result(degree_ + 1 - j, 2 * i + 1) =
-              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg1inte -
-              std::pow(l1p2, j + 2) * 2 * l1n_dy * leg1eval;
+              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
+              std::pow(l1p2, j + 2) * 2 * l121n_dy * leg1eval;
         }
       }
       // Get the gradient of the basis functions associated with the second edge
-      const SCALAR l2p3 = l2[i] + l3[i];
-      const SCALAR l2p3_dx = l2_dx[i] + l3_dx[i];
-      const SCALAR l2p3_dy = l2_dy[i] + l3_dy[i];
-      const SCALAR l2n = l2p3 == 0 ? SCALAR(0) : (l2[i] / l2p3);
-      const SCALAR l2n_dx =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l2_dx[i] * l2p3 - l2[i] * l2p3_dx) / (l2p3 * l2p3));
-      const SCALAR l2n_dy =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l2_dy[i] * l2p3 - l2[i] * l2p3_dy) / (l2p3 * l2p3));
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-          const SCALAR leg2inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 2 * l2n - 1);
-          const SCALAR leg2eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 2 * l2n - 1);
+          const SCALAR leg3inte =
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l233n - 1);
+          const SCALAR leg3eval =
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l233n - 1);
           result(2 + degree_ + j, 2 * i + 0) =
-              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
-              std::pow(l2p3, j + 2) * 2 * l2n_dx * leg2eval;
+              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
+              std::pow(l2p3, j + 2) * 2 * l233n_dx * leg3eval;
           result(2 + degree_ + j, 2 * i + 1) =
-              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
-              std::pow(l2p3, j + 2) * 2 * l2n_dy * leg2eval;
+              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
+              std::pow(l2p3, j + 2) * 2 * l233n_dy * leg3eval;
         } else {
           const SCALAR leg2inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 1 - 2 * l2n);
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l232n - 1);
           const SCALAR leg2eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 1 - 2 * l2n);
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l232n - 1);
           result(2 * degree_ - j, 2 * i + 0) =
-              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg2inte -
-              std::pow(l2p3, j + 2) * 2 * l2n_dx * leg2eval;
+              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
+              std::pow(l2p3, j + 2) * 2 * l232n_dx * leg2eval;
           result(2 * degree_ - j, 2 * i + 1) =
-              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg2inte -
-              std::pow(l2p3, j + 2) * 2 * l2n_dy * leg2eval;
+              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
+              std::pow(l2p3, j + 2) * 2 * l232n_dy * leg2eval;
         }
       }
       // Get the gradient of the basis functions associated with the third edge
-      const SCALAR l3p1 = l3[i] + l1[i];
-      const SCALAR l3p1_dx = l3_dx[i] + l1_dx[i];
-      const SCALAR l3p1_dy = l3_dy[i] + l1_dy[i];
-      const SCALAR l3n = l3p1 == 0 ? SCALAR(0) : (l3[i] / l3p1);
-      const SCALAR l3n_dx =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l3_dx[i] * l3p1 - l3[i] * l3p1_dx) / (l3p1 * l3p1));
-      const SCALAR l3n_dy =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l3_dy[i] * l3p1 - l3[i] * l3p1_dy) / (l3p1 * l3p1));
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-          const SCALAR leg3inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 2 * l3n - 1);
-          const SCALAR leg3eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 2 * l3n - 1);
+          const SCALAR leg1inte =
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l311n - 1);
+          const SCALAR leg1eval =
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l311n - 1);
           result(1 + 2 * degree_ + j, 2 * i + 0) =
-              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
-              std::pow(l3p1, j + 2) * 2 * l3n_dx * leg3eval;
+              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
+              std::pow(l3p1, j + 2) * 2 * l311n_dx * leg1eval;
           result(1 + 2 * degree_ + j, 2 * i + 1) =
-              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
-              std::pow(l3p1, j + 2) * 2 * l3n_dy * leg3eval;
+              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
+              std::pow(l3p1, j + 2) * 2 * l311n_dy * leg1eval;
         } else {
           const SCALAR leg3inte =
-              LegendrePoly<SCALAR>::integral(j + 2, 1 - 2 * l3n);
+              LegendrePoly<SCALAR>::integral(j + 2, 2 * l313n - 1);
           const SCALAR leg3eval =
-              LegendrePoly<SCALAR>::eval(j + 1, 1 - 2 * l3n);
+              LegendrePoly<SCALAR>::eval(j + 1, 2 * l313n - 1);
           result(3 * degree_ - 1 - j, 2 * i + 0) =
-              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg3inte -
-              std::pow(l3p1, j + 2) * 2 * l3n_dx * leg3eval;
+              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
+              std::pow(l3p1, j + 2) * 2 * l313n_dx * leg3eval;
           result(3 * degree_ - 1 - j, 2 * i + 1) =
-              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg3inte -
-              std::pow(l3p1, j + 2) * 2 * l3n_dy * leg3eval;
+              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
+              std::pow(l3p1, j + 2) * 2 * l313n_dy * leg3eval;
         }
       }
       // Get the gradient of the basis functions associated with the interior of
@@ -612,8 +635,8 @@ class FeHPTria final
       if (degree_ > 2) {
         int idx = 3 * degree_;
         for (int j = 0; j < degree_ - 2; ++j) {
-          SCALAR legjinte = LegendrePoly<SCALAR>::integral(j + 2, 2 * l2n - 1);
-          SCALAR legjeval = LegendrePoly<SCALAR>::eval(j + 1, 2 * l2n - 1);
+          SCALAR legjinte = LegendrePoly<SCALAR>::integral(j + 2, 2 * l232n - 1);
+          SCALAR legjeval = LegendrePoly<SCALAR>::eval(j + 1, 2 * l232n - 1);
           for (int k = 0; k < degree_ - j - 2; ++k) {
             SCALAR legkinte = LegendrePoly<SCALAR>::integral(k + 2, l1[i] - 1);
             SCALAR legkeval = LegendrePoly<SCALAR>::eval(k + 1, l1[i] - 1);
