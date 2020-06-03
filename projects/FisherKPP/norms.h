@@ -5,7 +5,6 @@
  *  @copyright ETH Zurich
  */
 
-
 #include <Eigen/Core>
 
 #include <lf/mesh/mesh.h>

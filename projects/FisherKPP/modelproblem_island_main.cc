@@ -33,27 +33,24 @@ int main(int /*argc*/, char ** /*argv*/){
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
 
-  /* Initial Population density */
-  Eigen::VectorXd u0(N_dofs); u0.setZero(); 
-  u0(51) = 0.3;
   std::cout << "N_dofs :" << N_dofs << std::endl; 
   
+  /* Initial Population density */
+  Eigen::VectorXd u0(N_dofs); u0.setZero(); 
+  u0(1099) = 0.3;
+
   /* Diffusion Coefficient */
-  Eigen::Vector2d init(-330, -14);
-  // TEST: non constant diffusion coefficient: take into account topology.
-  auto c = [&init] (Eigen::Vector2d x) -> double { 
-	double diffcoeff = 1.2;
+  auto c = [](Eigen::Vector2d x) -> double { return 1.2; }; 
+  /* In the case where we intend to model a low diffusion coefficient, 
+   * such that sea crossings are more attractive than diffusion on land.
+   */
+  /* auto c = [](Eigen::Vector2d x) -> double { return 0.0625; }; */
 
-    if((x - init).norm() <= 1) {
-	  diffcoeff = 0.2;
-	  std::cout << "Take topography into account." << std::endl;
-	}
-
-	return diffcoeff;
-  };
-  
   /* Growth Factor */
   double lambda = 2.1;
+
+  /* In the case of a low diffusion coefficient. */
+  /*  double lambda = 1.1; */
 
   /* Non Local Boundary Conditions */
 
@@ -69,52 +66,36 @@ int main(int /*argc*/, char ** /*argv*/){
 	  return bd_flags_edge(edge);
   };
   
-  
   /* This h is to be used as a function handle for the gain term.
    * Use it in the MassEdgeMatrix Provider.
    */
   auto h = [fe_space, mesh_p, edge_pred] (Eigen::Vector2d x) -> double {
     double res = 0.0;
-    /* Decaying function handle depending on x and y.
-     * g has a non negative contribution to the integral value
-     * for all nodes which are not too far away from x.
-     */
+    /* Decaying function handle depending on x and y. */
 	auto g = [x] (Eigen::Vector2d y) -> double {
 	  double tmp_res = 0.0;
-	  // NORM 
-	  if((x-y).norm() >= 15 &&(x-y).norm() <= 35 ) {
-		tmp_res = ( 1.0 / (1.0 + (x-y).squaredNorm()) );
-	 }
-	  
+	  tmp_res = ( 1.0 / (1.0 + (x-y).squaredNorm()) );
       return tmp_res;
-	
 	};
     
 	auto fe = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     res = localQuadFunction(*mesh_p,
 				{{lf::base::RefEl::kSegment(), lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*fe->Degree())},
 				{lf::base::RefEl::kTria(), lf::quad::make_TriaQR_EdgeMidpointRule()}}, g, 1, edge_pred);
-    std::cout << "rse " << res << std::endl;
 	return res;
 
   };
   /* In what follows, the loss term is assembled. */
   Eigen::MatrixXd L(N_dofs, N_dofs); 
   for(int j = 0; j < N_dofs; j++) {
-    
 	if(boundary_nodes(j)) {
-
 	auto L_j = [fe_space, &dofh, N_dofs, edge_pred, j] (Eigen::Vector2d x) -> double {
 	  
  	  auto g_j = [x] (Eigen::Vector2d y) -> double {
         double tmp_res = 0.0;
-		if((x-y).norm() >= 15 &&(x-y).norm() <= 35) {
-		  tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()) );
-		}
-		
+		tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()) );
 		return tmp_res;
-	   
-	 };
+	  };
 	 
 	  Eigen::VectorXd L1(N_dofs); L1.setZero();
 
@@ -138,9 +119,7 @@ int main(int /*argc*/, char ** /*argv*/){
 	else {
 	  L.col(j) = Eigen::VectorXd::Zero(N_dofs);
 	}
-
   }
-  std::cout << "L " << L.norm() << std::endl;
   
   /* Strang Splitting Method
    * SDIRK-2 evolution of linear parabolic term 
@@ -148,8 +127,8 @@ int main(int /*argc*/, char ** /*argv*/){
    */
   
   /* Total number of timesteps */ 
-  unsigned int m = 121;
-  double T = 1.; 			// the timestepsize tau will equal T/m = 0.0083
+  unsigned int m = 120;
+  double T = 1.; 			
   
 
   /* Now we may compute the solution */
@@ -160,12 +139,12 @@ int main(int /*argc*/, char ** /*argv*/){
   cap = 0.9 * Eigen::VectorXd::Ones(N_dofs);
   
   sol.col(0) = StrangSplitter.Evolution(cap, u0);
-  for(int i = 1; i < 10; i++) {
+  for(int i = 1; i < 6; i++) {
     sol.col(i) = StrangSplitter.Evolution(cap, sol.col(i-1));
   }
 
   /* Use VTK-Writer for Visualization of solution */
-  for(int k = 1; k < 11; k++) {
+  for(int k = 1; k < 7; k++) {
 
     std::stringstream filename;
     filename << "sol" << k << ".vtk";

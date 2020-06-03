@@ -37,11 +37,11 @@ double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p) {
   return mesh_size;
 } 
 
-/**
- * @brief Converts a large vector on  a grid to a smaller vector correponding to a sub-grid.
- * @param mu vector of function values on a spacial grid of size N_large
- * @param N divides the size N_large of mu
- * @return a vector mu_sub of size N, that represents mu on a sub-grid of size N
+/*
+ * Converts a large vector on  a grid to a smaller vector correponding to a sub-grid.
+ * mu vector of function values on a spacial grid of size N_large
+ * N divides the size N_large of mu
+ * returns a vector mu_sub of size N, that represents mu on a sub-grid of size N
  */
 Eigen::VectorXd reduce(const Eigen::VectorXd &mu, unsigned int N) {
   Eigen::VectorXd mu_sub(N);

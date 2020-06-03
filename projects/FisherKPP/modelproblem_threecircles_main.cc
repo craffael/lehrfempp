@@ -43,8 +43,6 @@ int main(int /*argc*/, char ** /*argv*/){
   /* In case of three circles: Mesh 2. */
   u0(0) = 0.00008; 
 
-  std::cout << "norm u0 " << u0.norm() << std::endl;
-  
   /* Diffusion Coefficient */
   auto c = [] (Eigen::Vector2d x) -> double { 
 	/* In case of three circles: Mesh 2. */
@@ -78,19 +76,36 @@ int main(int /*argc*/, char ** /*argv*/){
  
   auto h = [fe_space, mesh_p, edge_pred] (Eigen::Vector2d x) -> double {
     double res = 0.0;
-
-	auto g = [x] (Eigen::Vector2d y) -> double {
-	  double tmp_res = 0.0;
-   	  if( 0.75 <= (x-y).norm() &&  (x-y).norm() <= 5 ) {
-		tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
-	  }
-	  return tmp_res;
-	};
     
+	/* The kernel g_1: No bounds on \| x - y \|. */
+    auto g_1 = [x] (Eigen::Vector2d y) -> double {
+      double tmp_res = 0.0;
+      tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+      return tmp_res;
+    };
+
+    /* The kernel g_2: Only an upper bound. */
+    auto g_2 = [x] (Eigen::Vector2d y) -> double {
+      double tmp_res = 0.0;
+      if((x-y).norm() <= 1.75 ) {
+        tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+      }
+      return tmp_res;
+    };
+
+    /* The kernel g_3: Lower and Upper bound. */
+    auto g_3 = [x] (Eigen::Vector2d y) -> double {
+      double tmp_res = 0.0;
+      if( 1.25 <= (x-y).norm() &&  (x-y).norm() <= 1.75 ) {
+        tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+      }
+      return tmp_res;
+    };
+
 	auto fe = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     res = localQuadFunction(*mesh_p,
 				{{lf::base::RefEl::kSegment(), lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2*fe->Degree())},
-				{lf::base::RefEl::kTria(), lf::quad::make_TriaQR_EdgeMidpointRule()}}, g, 1, edge_pred);
+				{lf::base::RefEl::kTria(), lf::quad::make_TriaQR_EdgeMidpointRule()}}, g_1, 1, edge_pred);
     
 	return res;
   };
@@ -99,18 +114,35 @@ int main(int /*argc*/, char ** /*argv*/){
   for(int j = 0; j < N_dofs; j++) {
 	if(boundary_nodes(j)) {
 	  auto L_j = [fe_space, &dofh, N_dofs, edge_pred, j] (Eigen::Vector2d x) -> double {
-	  
-	    auto g_j = [x] (Eigen::Vector2d y) -> double {
-	      double tmp_res = 0.0;
-		  if( 0.75 <= (x-y).norm() &&  (x-y).norm() <= 5 ) {
-		    tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
-		  }
-	      return tmp_res;
-	    };
+	    
+		/* The kernel g_1: No bounds on \| x - y \|. */
+        auto g_1_j = [x] (Eigen::Vector2d y) -> double {
+          double tmp_res = 0.0;
+          tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+          return tmp_res;
+        };
+
+        /* The kernel g_2: Only an upper bound. */
+        auto g_2_j = [x] (Eigen::Vector2d y) -> double {
+          double tmp_res = 0.0;
+          if((x-y).norm() <= 1.75 ) {
+            tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+          }
+          return tmp_res;
+        };
+
+        /* The kernel g_3: Lower and Upper bound. */
+        auto g_3_j = [x] (Eigen::Vector2d y) -> double {
+          double tmp_res = 0.0;
+          if( 1.25 <= (x-y).norm() &&  (x-y).norm() <= 1.75 ) {
+            tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
+          }
+          return tmp_res;
+        };
           	 
 	    Eigen::VectorXd L1(N_dofs); L1.setZero();
 
-	    lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
+	    lf::mesh::utils::MeshFunctionGlobal mf_g{g_1_j};
 	    lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_g), decltype(edge_pred)>  edgeVec_y(fe_space, mf_g, edge_pred);
 	    lf::assemble::AssembleVectorLocally(1, dofh, edgeVec_y, L1);
 	 
@@ -145,7 +177,7 @@ int main(int /*argc*/, char ** /*argv*/){
   /* First we assemble the carrying capacity maps */
 
   Eigen::VectorXd cap(N_dofs); cap.setZero();
-  cap = 0.8 *Eigen::VectorXd::Ones(N_dofs);
+  cap = 0.8 * Eigen::VectorXd::Ones(N_dofs);
   
   /* Now we may compute the solution */
   StrangSplit StrangSplitter(fe_space, T, m, lambda, c, h, L);

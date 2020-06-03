@@ -36,6 +36,7 @@ int main(int /*argc*/, char ** /*argv*/){
   /* Initial Population density */
   Eigen::VectorXd u0(N_dofs); u0.setZero(); 
   u0(277) = 80;
+  
   std::cout << "N_dofs :" << N_dofs << std::endl; 
   
   /* Diffusion Coefficient 
@@ -125,20 +126,13 @@ int main(int /*argc*/, char ** /*argv*/){
    */
   auto h = [fe_space, mesh_p, edge_pred] (Eigen::Vector2d x) -> double {
     double res = 0.0;
-    /* Decaying function handle depending on x and y.
-     * (If x and y are too far away, the integrand g = 0.)
-     * g has a non negative contribution to the integral value
-     * for all nodes which are not too far away from x.
-     */
+    /* Decaying function handle depending on x and y. */
 	auto g = [x] (Eigen::Vector2d y) -> double {
 	  double tmp_res = 0.0;
-
 	  if( 5 <= (x-y).norm() &&  (x-y).norm() <= 30 ) {
 		tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
 	  }
-
 	  return tmp_res;
-	
 	};
     
 	auto fe = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
@@ -154,20 +148,15 @@ int main(int /*argc*/, char ** /*argv*/){
   /* In what follows, the loss term is assembled. */
   Eigen::MatrixXd L(N_dofs, N_dofs); 
   for(int j = 0; j < N_dofs; j++) {
-    
 	if(boundary_nodes(j)) {
-
 	  auto L_j = [fe_space, &dofh, N_dofs, edge_pred, j] (Eigen::Vector2d x) -> double {
 	  
 	    auto g_j = [x] (Eigen::Vector2d y) -> double {
 	      double tmp_res = 0.0;
-		
 		  if( 5 <= (x-y).norm() &&  (x-y).norm() <= 30 ) {
 		    tmp_res = (1.0 / (1.0 + (x-y).squaredNorm()));
 		  }
-
 	      return tmp_res;
-	   
 	    };
           	 
 	    Eigen::VectorXd L1(N_dofs); L1.setZero();
@@ -410,8 +399,5 @@ int main(int /*argc*/, char ** /*argv*/){
   }
 
 
-
-
   return 0;
-
 }
