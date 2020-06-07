@@ -18,30 +18,30 @@ auto localQuadFunction(
     std::function<bool(const lf::mesh::Entity &)> pred){
 
   LF_ASSERT_MSG(mesh.DimMesh() >= codim, "Illegal codim = " << codim);
-  // Variable for summing the result
+  /* Variable for summing the result */
   using value_t = std::invoke_result_t<FUNCTOR, Eigen::VectorXd>;
   value_t sum_var{};
-  // Loop over entities of co-dimension codim
+  /* Loop over entities of co-dimension codim */
   for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
     if(pred(*entity)) {
-      // Obtain geometry information for entity
+      /* Obtain geometry information for entity */
       const lf::geometry::Geometry &geo{*entity->Geometry()};
-      // obtain quadrature rule suitable for entity type
+      /* obtain quadrature rule suitable for entity type */
       auto tmp = quadrules.find(entity->RefEl());
       if (tmp != quadrules.end()) {
-        // A quadrature rule has been found
+        /* A quadrature rule has been found */
         const lf::quad::QuadRule &qr{tmp->second};
-        // Number of quadrature points
+        /* Number of quadrature points */
         const lf::base::size_type P = qr.NumPoints();
-        // Quadrature points
+        /* Quadrature points */
         const Eigen::MatrixXd zeta_ref{qr.Points()};
-        // Map quadrature points to physical/world coordinates
+        /* Map quadrature points to physical/world coordinates */
         const Eigen::MatrixXd zeta{geo.Global(zeta_ref)};
-        // Quadrature weights
+        /* Quadrature weights */
         const Eigen::VectorXd w_ref{qr.Weights()};
-        // Gramian determinants
+        /* Gramian determinants */
         const Eigen::VectorXd gram_dets{geo.IntegrationElement(zeta_ref)};
-        // Iterate over the quadrature points
+        /* Iterate over the quadrature points */
         for (int l = 0; l < P; ++l) {
           sum_var += w_ref[l] * f(zeta.col(l)) * gram_dets[l];
         }

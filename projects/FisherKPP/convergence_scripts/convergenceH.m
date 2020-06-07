@@ -2,22 +2,28 @@ function convergenceH
 
 N = [39; 125; 444; 1670];
 
-meshsizes = [3.52544; 2.22684; 1.24263; 0.669219];
+meshsizes = [3.52544; 1.76272; 0.88136; 0.44068];
 
-eL2 = [0.555827; 0.370117; 0.20476; 0.106244];
+eL2 = [6.22193; 3.91591; 0.884941; 0.308175];
 
-% Normalize L2 error obtained from simulation
+eL2 = sqrt(meshsizes) .* eL2;
+ 
+p1 = polyfit(log(N), log(eL2), 1);          % result: p = [-1.1166, 6.7270]
+p2 = polyfit(log(meshsizes), log(eL2), 1);  % result: p = [-2.0152, 0.1397]
 
- eL2 = (1./sqrt(N)) .* eL2;
- 
- p = polyfit(log(N), log(eL2), 1);         % result: p = [-0.9441, 1.0910]
- 
- figure()
- loglog(N, eL2, '-o')
- hold on
- loglog(N, exp(p(1)*log(N) + p(2)))
- xlabel('Number of degrees of freedom')
- ylabel('L2 error with respect to solution on finest mesh');
- legend('L2 error', 'slope: -0.94');
- 
+figure()
+loglog(N, eL2, '-o')
+hold on
+loglog(N, exp(p1(1)*log(N) + p1(2)))
+xlabel('Number of degrees of freedom')
+ylabel('L2 error with respect to solution on finest mesh');
+legend('L2 error', 'slope: -1.12');
+
+figure()
+loglog(meshsizes, eL2, '-o')
+hold on
+loglog(meshsizes, exp(p2(1)*log(meshsizes) + p2(2)))
+xlabel('Mesh Width h');
+ylabel('L2 error with respect to solution on finest mesh');
+legend('L2 error', 'slope: 2.02');
  

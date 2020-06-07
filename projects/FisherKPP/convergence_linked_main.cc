@@ -5,7 +5,6 @@
  *  @copyright ETH Zurich
  */
 
-#include "norms.cc"
 #include "strangsplitting.cc"
 
 #include <cmath>
@@ -13,82 +12,113 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <vector>
 
 #include <boost/filesystem.hpp>
 
+#include <lf/assemble/dofhandler.h>
 #include <lf/io/io.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
+#include <lf/mesh/utils/utils.h>
+#include <lf/refinement/mesh_function_transfer.h>
+#include <lf/refinement/mesh_hierarchy.h>
+#include <lf/refinement/refinement.h>
+#include <lf/uscalfe/uscalfe.h>
 
 using namespace FisherKPP;
 
+double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p) {
+  
+  double mesh_size = 0.0;
+  /* Find maximal edge length */
+  double edge_length;
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    /* Compute the length of the edge */
+    auto endpoints = lf::geometry::Corners(*(edge->Geometry()));
+    edge_length = (endpoints.col(0) - endpoints.col(1)).norm();
+    if (mesh_size < edge_length) {
+      mesh_size = edge_length;
+    }
+  }
+  return mesh_size;
+}
+
 int main(int /*argc*/, char ** /*argv*/){
- 
+  
+  /* Obtain mesh */
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  boost::filesystem::path here = __FILE__;
+  auto mesh_file = (here.parent_path() /"/meshes/test1.msh").string();
+  lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
+  std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();
+  /* Mesh hierarchy */
+  std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory2 = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+  lf::refinement::MeshHierarchy hierarchy(mesh_p, std::move(mesh_factory2));
+  /* Finite element space on finest mesh */
+  std::shared_ptr<lf::uscalfe::FeSpaceLagrangeO1<double>> fe_space_fine;
+
   Eigen::VectorXi numDofs(5); numDofs.setZero();
   Eigen::VectorXd meshsizes(5); meshsizes.setZero();
-  Eigen::VectorXd eL2(5); eL2.setZero();
   Eigen::VectorXi m(5); m.setZero();
   Eigen::VectorXd tau(5); tau.setZero();
-
-  Eigen::VectorXd sol1(39); sol1.setZero();
-  Eigen::VectorXd sol2(125); sol2.setZero();
-  Eigen::VectorXd sol3(444); sol3.setZero();
-  Eigen::VectorXd sol4(1670); sol4.setZero();
-  Eigen::VectorXd sol5(6474); sol5.setZero();
-
-  Eigen::VectorXd cap1(39); cap1.setZero();
-  cap1 = 0.8 * Eigen::VectorXd::Ones(39);
   
-  Eigen::VectorXd cap2(125); cap2.setZero();
-  cap2 = 0.8 * Eigen::VectorXd::Ones(125);
+  /* Final time */
+  double T = 1.;
+  
+  m(0) = 100;
+  tau(0) = T/m(0);
+  meshsizes(0) = 3.52544;
+  
+  Eigen::VectorXd mu1(39); mu1.setZero();
+  Eigen::VectorXd mu2(125); mu2.setZero();
+  Eigen::VectorXd mu3(444); mu3.setZero();
+  Eigen::VectorXd mu4(1670); mu4.setZero();
+  Eigen::VectorXd mu5(6474); mu5.setZero();
 
-  Eigen::VectorXd cap3(444); cap3.setZero();
-  cap3 = 0.8 * Eigen::VectorXd::Ones(444);
-
-  Eigen::VectorXd cap4(1670); cap4.setZero();
-  cap4 = 0.8 * Eigen::VectorXd::Ones(1670);
-
-  Eigen::VectorXd cap5(6474); cap5.setZero();
-  cap5 = 0.8 * Eigen::VectorXd::Ones(6474);
+  Eigen::VectorXd mu1_ipol(6474); mu1_ipol.setZero();
+  Eigen::VectorXd mu2_ipol(6474); mu2_ipol.setZero();
+  Eigen::VectorXd mu3_ipol(6474); mu3_ipol.setZero();
+  Eigen::VectorXd mu4_ipol(6474); mu4_ipol.setZero();
 
   /* Diffusion Coefficient */
   auto c = [] (Eigen::Vector2d x) -> double { return 1.2;};
   /* Growth Factor */
   double lambda = 2.1;
   
-  for(int l = 1; l <= 5; l++) {
-    
-	/* Obtain mesh */
-    auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-    boost::filesystem::path here = __FILE__;
-	auto mesh_file = (here.parent_path() / ("/meshes/test" + std::to_string(l) + ".msh")).string();
-	lf::io::GmshReader reader(std::move(mesh_factory), mesh_file); 
-	std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();
+  hierarchy.RefineRegular();
+  hierarchy.RefineRegular();
+  hierarchy.RefineRegular();
+  hierarchy.RefineRegular();
 
-    /* Finite Element Space */
+  for(int l = 4; l >= 0; l--) {
+    
+	mesh_p = hierarchy.getMesh(l);
+	/* Finite Element Space */
     auto fe_space = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
     /* Dofhandler */
     const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
     const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
-    numDofs(l-1) = N_dofs;
-	meshsizes(l-1) = getMeshSize(mesh_p);
-    std::cout << "N_dofs std" << N_dofs << std::endl;
-	std::cout << "meshsize " << meshsizes << std::endl;
+    
+	numDofs(l) = N_dofs;
+	meshsizes(l) = getMeshSize(mesh_p);
+	
+	std::cout << "Num of Dofs " << N_dofs << std::endl;
+    std::cout << "Meshsizes " << meshsizes(l) << std::endl;
 
 	/* Initial Population density */
     Eigen::VectorXd u0(N_dofs); u0.setZero(); 
     
-	if(l == 1) {
-	  u0(13) = 0.3;
-	} else if(l == 2) {
-	  u0(26) = 0.3;
-	} else if(l == 3) {
-	  u0(52) = 0.3;
-	} else if(l == 4) {
+	if(l == 0) {
+      u0(13) = 0.3;
+    } else if(l == 1) {
+      u0(26) = 0.3;
+    } else if(l == 2) {
+      u0(52) = 0.3;
+    } else if(l == 3) {
       u0(104) = 0.3;
-    } else if(l == 5) {
+    } else if(l == 4) {
       u0(208) = 0.3;
     }
-	
+
 	/* Non Local Boundary Conditions */
 
     /* This predicate returns true for nodes on the boundary */
@@ -170,74 +200,77 @@ int main(int /*argc*/, char ** /*argv*/){
      * Exact Evolution for nonlinear reaction term
      */
   
-    /* Total number of timesteps */ 
-    double T = 1.; 			
-    m(0) = 100;
-    tau(0) = T/m(0);
-	
-	if(l > 1) {
-	  tau(l-1) = (tau(0) / meshsizes(0)) * meshsizes(l-1);
-	  m(l-1) = std::round(T/tau(l-1));
+	if(l > 0) {
+	  tau(l) = (tau(0) / meshsizes(0)) * meshsizes(l);
+	  m(l) = std::round(T/tau(l));
 	}
     
-	std::cout << "tau " << tau(l-1) << std::endl;
-	std::cout << "m " << m(l-1) << std::endl;
+	std::cout << "tau " << tau(l) << std::endl;
+	std::cout << "M " << m(l) << std::endl;
     
+	/* Carrying Capacity */
+    Eigen::VectorXd cap(N_dofs); cap.setZero();
+    cap = 0.8 * Eigen::VectorXd::Ones(N_dofs);
+
 	/* Now we may compute the solution */
-    if(l == 1) {
+    if(l == 0) {
 	  StrangSplit StrangSplitter1(fe_space, T, m(0), lambda, c, h, L);
-  	  sol1 = StrangSplitter1.Evolution(cap1, u0);
-	} 
-	else if(l == 2) {
-  	  StrangSplit StrangSplitter2(fe_space, T, m(1), lambda, c, h, L);
-  	  sol2 = StrangSplitter2.Evolution(cap2, u0);
-	}
-	else if(l == 3) {
-	  StrangSplit StrangSplitter3(fe_space, T, m(2), lambda, c, h, L);
-      sol3 = StrangSplitter3.Evolution(cap3, u0);
-	}
-	else if(l == 4) {
-	  StrangSplit StrangSplitter4(fe_space, T, m(3), lambda, c, h, L);
-  	  sol4 = StrangSplitter4.Evolution(cap4, u0);
-	}
-	else if(l == 5) {
-  	  StrangSplit StrangSplitter5(fe_space, T, m(4), lambda, c, h, L);
-      sol5 = StrangSplitter5.Evolution(cap5, u0);
+	  mu1 = StrangSplitter1.Evolution(cap, u0);
+	  const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu1);
+      const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse, 0, 4);
+      mu1_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
 	}
 
+	if(l == 1) {
+	  StrangSplit StrangSplitter2(fe_space, T, m(1), lambda, c, h, L);
+      mu2 = StrangSplitter2.Evolution(cap, u0);
+      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu2);
+      const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse, 1, 4);
+      mu2_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+	}
+	if(l == 2) {
+      StrangSplit StrangSplitter3(fe_space, T, m(2), lambda, c, h, L);
+      mu3 = StrangSplitter3.Evolution(cap, u0);
+      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu3);
+      const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse, 2, 4);
+      mu3_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+    }
+
+    if(l == 3) {
+      StrangSplit StrangSplitter4(fe_space, T, m(3), lambda, c, h, L);
+      mu4 = StrangSplitter4.Evolution(cap, u0);
+      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu4);
+      const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse, 3, 4);
+      mu4_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+    }
+
+    if(l == 4) {
+      StrangSplit StrangSplitter5(fe_space, T, m(4), lambda, c, h, L);
+      mu5 = StrangSplitter5.Evolution(cap, u0);
+      fe_space_fine = fe_space;
+    }
+
   }
+  
   /* Compare the solution to the Reference solution on the finest mesh. */
-  Eigen::VectorXd sol5_sub1(numDofs(0));
-  Eigen::VectorXd sol5_sub2(numDofs(1));
-  Eigen::VectorXd sol5_sub3(numDofs(2));
-  Eigen::VectorXd sol5_sub4(numDofs(3));
-  Eigen::VectorXd sol5_sub5(numDofs(4));
+  Eigen::Vector4d eL2; eL2.setZero();
 
-  sol5_sub1 = reduce(sol5, numDofs(0));
-  sol5_sub2 = reduce(sol5, numDofs(1));
-  sol5_sub3 = reduce(sol5, numDofs(2));
-  sol5_sub4 = reduce(sol5, numDofs(3));
-  sol5_sub5 = reduce(sol5, numDofs(4));
+  eL2(0) = (mu1_ipol - mu5).lpNorm<2>();
+  eL2(1) = (mu2_ipol - mu5).lpNorm<2>();
+  eL2(2) = (mu3_ipol - mu5).lpNorm<2>();
+  eL2(3) = (mu4_ipol - mu5).lpNorm<2>();
 
-  eL2(0) = (sol1 - sol5_sub1).lpNorm<2>();
-  eL2(1) = (sol2 - sol5_sub2).lpNorm<2>();
-  eL2(2) = (sol3 - sol5_sub3).lpNorm<2>();
-  eL2(3) = (sol4 - sol5_sub4).lpNorm<2>();
-  eL2(4) = (sol5 - sol5_sub5).lpNorm<2>();
+  for(int l = 0; l < 4; l++) {
 
-  std::cout << "errors computed" << std::endl;
- 
-  for(int l = 0; l < 5; l++) {
-
-	std::cout << "numdofs for l = " << l << " : " << numDofs(l) << std::endl;
-	std::cout << "meshsize for l = " << l << " : " << meshsizes(l) << std::endl;
+    std::cout << "numdofs for l = " << l << " : " << numDofs(l) << std::endl;
+    std::cout << "meshsize for l = " << l << " : " << meshsizes(l) << std::endl;
     std::cout << "for l = " << l << "number of timesteps m : " << m(l) << std::endl;
-	std::cout << "for l = " << l << "timestep size : " << tau(l) << std::endl;
+    std::cout << "for l = " << l << "timestep size : " << tau(l) << std::endl;
 
-    std::cout << "L2-error with respect to solution on finest mesh with smallest time step size for l = " << l << " : " << eL2(l) << std::endl;
+    std::cout << "L2 error of solution with respect to reference solution on finest mesh, for l = " << l << " : " << eL2(l) << std::endl;
   }
 
-  // Define output file format
+  /* Define output file format */
   const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision,
                                          Eigen::DontAlignCols, ", ", "\n");
   std::ofstream file;
@@ -261,46 +294,43 @@ int main(int /*argc*/, char ** /*argv*/){
   file.open("meshsizes.csv");
   file << meshsizes.format(CSVFormat);
   file.close();
-  
+ 
   /* SOLUTION */
-  file.open("sol1.csv");
-  file << sol1.format(CSVFormat);
-  file.close();
-  file.open("sol2.csv");
-  file << sol2.format(CSVFormat);
+  file.open("mu1.csv");
+  file << mu1.format(CSVFormat);
   file.close();
 
-  file.open("sol3.csv");
-  file << sol3.format(CSVFormat);
+  file.open("mu2.csv");
+  file << mu2.format(CSVFormat);
   file.close();
 
-  file.open("sol4.csv");
-  file << sol4.format(CSVFormat);
+  file.open("mu3.csv");
+  file << mu3.format(CSVFormat);
   file.close();
 
-  file.open("sol5.csv");
-  file << sol5.format(CSVFormat);
-  file.close();
-  
-  /* REFERENCE SOLUTION REDUCED */
-  file.open("sol5_sub1.csv");
-  file << sol5_sub1.format(CSVFormat);
+  file.open("mu4.csv");
+  file << mu4.format(CSVFormat);
   file.close();
 
-  file.open("sol5_sub2.csv");
-  file << sol5_sub2.format(CSVFormat);
+  file.open("mu5.csv");
+  file << mu5.format(CSVFormat);
   file.close();
 
-  file.open("sol5_sub3.csv");
-  file << sol5_sub3.format(CSVFormat);
+  /* Interpolated Solution */
+  file.open("mu1_ipol.csv");
+  file << mu1_ipol.format(CSVFormat);
   file.close();
 
-  file.open("sol5_sub4.csv");
-  file << sol5_sub4.format(CSVFormat);
+  file.open("mu2_ipol.csv");
+  file << mu2_ipol.format(CSVFormat);
   file.close();
 
-  file.open("sol5_sub5.csv");
-  file << sol5_sub5.format(CSVFormat);
+  file.open("mu3_ipol.csv");
+  file << mu3_ipol.format(CSVFormat);
+  file.close();
+
+  file.open("mu4_ipol.csv");
+  file << mu4_ipol.format(CSVFormat);
   file.close();
 
   return 0;

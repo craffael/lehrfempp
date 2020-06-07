@@ -5,20 +5,34 @@
  *  @copyright ETH Zurich
  */
 
-#include "norms.cc"
 #include "strangsplitting.cc"
 
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <vector>
 
 #include <boost/filesystem.hpp>
 
 #include <lf/io/io.h>
 
 using namespace FisherKPP;
+
+double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p) {
+  
+  double mesh_size = 0.0;
+  /* Find maximal edge length */
+  double edge_length;
+  for (const lf::mesh::Entity *edge : mesh_p->Entities(1)) {
+    /* Compute the length of the edge */
+    auto endpoints = lf::geometry::Corners(*(edge->Geometry()));
+    edge_length = (endpoints.col(0) - endpoints.col(1)).norm();
+    if (mesh_size < edge_length) {
+      mesh_size = edge_length;
+    }
+  }
+  return mesh_size;
+}
 
 int main(int /*argc*/, char ** /*argv*/){
  
@@ -40,7 +54,7 @@ int main(int /*argc*/, char ** /*argv*/){
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
   
-  std::cout << "Ndofs " << N_dofs << std::endl;
+  std::cout << "Num of dofs " << N_dofs << std::endl;
 
   /* Initial Population density */
   Eigen::VectorXd u0(N_dofs); u0.setZero();
@@ -190,7 +204,7 @@ int main(int /*argc*/, char ** /*argv*/){
   }
 
 
-  // Define output file format
+  /* Define output file format */
   const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision,
                                          Eigen::DontAlignCols, ", ", "\n");
   

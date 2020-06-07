@@ -64,8 +64,6 @@ set(SOURCES
 	${DIR}/convergence_meshwidth_main.cc
 	${DIR}/convergence_tau_main.cc
 	${DIR}/convergence_linked_main.cc
-	${DIR}/norms.h
-	${DIR}/norms.cc
 	)
 
 # Define executable

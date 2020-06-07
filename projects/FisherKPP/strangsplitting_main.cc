@@ -205,8 +205,8 @@ int main(int /*argc*/, char ** /*argv*/){
   StrangSplit DiffusionCapacity(fe_space, T, m, 0.0, c_cap, h_cap, L_cap);
   
   Eigen::VectorXd k0(N_dofs);
-
-  // t = 200 kya - 150 kya
+ 
+  /* t = 200 kya - 150 kya */
   k0.setZero();
   k0(277) = 80;
   car_cap.col(0) = DiffusionCapacity.Evolution(K, k0);
@@ -216,10 +216,10 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Carrying Capacity 200kya - 150kya!" << std::endl;
 
-  // t = 150 kya - 130 kya
+  /* t = 150 kya - 130 kya */
   std::cout << "Carrying Capacity 150kya - 130kya!" << std::endl;
 
-  // t = 130 kya - 100 kya
+  /* t = 130 kya - 100 kya */
   k0.setZero();
   k0(334) = 80;
   car_cap.col(3) = DiffusionCapacity.Evolution(K, k0);
@@ -229,10 +229,10 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Carrying Capacity 130kya - 100kya!" << std::endl;
 
-  // t = 100 kya - 70 kya
+  /* t = 100 kya - 70 kya */
   std::cout << "Carrying Capacity 100kya - 70kya!" << std::endl;
 
-  // t = 70 kya - 65 kya
+  /* t = 70 kya - 65 kya */
   k0.setZero();
   k0(253) = 80;
   car_cap.col(6) = DiffusionCapacity.Evolution(K, k0);
@@ -241,7 +241,7 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Carrying Capacity 70kya - 65kya!" << std::endl;
 
-  // t = 65 kya - 50 kya
+  /* t = 65 kya - 50 kya */
   k0.setZero();
   k0(1775) = 80;
   k0(222) = 80;
@@ -252,7 +252,7 @@ int main(int /*argc*/, char ** /*argv*/){
   
   std::cout << "Carrying Capacity 65kya - 50kya!" << std::endl;
  
-  // t = 50 kya - 45 kya
+  /* t = 50 kya - 45 kya */
   k0.setZero();
   k0(400) = 200;
   car_cap.col(10) = DiffusionCapacity.Evolution(K, k0);
@@ -260,7 +260,7 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Carrying Capacity 50kya - 45kya!" << std::endl;
 
-  // t = 45 kya - 25 kya
+  /* t = 45 kya - 25 kya */
   k0.setZero();
   k0(492) = 80;
   k0(114) = 80;
@@ -270,7 +270,7 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Carrying Capacity 45kya - 25kya!" << std::endl;
 
-  // t = 25 kya - 15 kya
+  /* t = 25 kya - 15 kya */
   k0.setZero();
   k0(1342) = 80;
   car_cap.col(13) = DiffusionCapacity.Evolution(K, k0);
@@ -279,7 +279,7 @@ int main(int /*argc*/, char ** /*argv*/){
  
   std::cout << "Carrying Capacity 25kya - 15kya!" << std::endl;
 
-  // t = 15 kya - 0 kya
+  /* t = 15 kya - 0 kya */
   k0.setZero();
   k0(1257) = 80;
   k0(1100) = 80;
@@ -294,49 +294,49 @@ int main(int /*argc*/, char ** /*argv*/){
   
   Eigen::MatrixXd sol(N_dofs, 40);
   Eigen::VectorXd cap(N_dofs); cap.setZero();
-  // t = 200 kya - 150 kya
+  /* t = 200 kya - 150 kya */
   cap = car_cap.col(2);
   sol.col(0) = StrangSplitter.Evolution(cap, u0);
   
   std::cout << "Solution 200kya - 150kya!" << std::endl;
   
-  // t = 150 kya - 130 kya
+  /* t = 150 kya - 130 kya */
   sol.col(1) = StrangSplitter.Evolution(cap, sol.col(0));
 
   std::cout << "Solution 150kya - 130kya!" << std::endl;
 
-  // t = 130 kya - 100 kya
+  /* t = 130 kya - 100 kya */
   cap = cap + car_cap.col(5);
   sol.col(2) = StrangSplitter.Evolution(cap, sol.col(1));
   
   std::cout << "Solution 130kya - 100kya!" << std::endl;
 
-  // t = 100 kya - 70 kya  
+  /* t = 100 kya - 70 kya */
   sol.col(3) = StrangSplitter.Evolution(cap, sol.col(2));
   
   std::cout << "Solution 100kya - 70kya!" << std::endl;
 
-  // t = 70 kya - 65 kya
+  /* t = 70 kya - 65 kya */
   cap = cap + car_cap.col(7); 
   sol.col(4) = StrangSplitter.Evolution(cap, sol.col(3));
   sol.col(5) = StrangSplitter.Evolution(cap, sol.col(4));
 
   std::cout << "Solution 70kya - 65kya!" << std::endl;
 
-  // t = 65 kya - 50 kya 
+  /* t = 65 kya - 50 kya */
   cap = cap + car_cap.col(9);
   sol.col(6) = StrangSplitter.Evolution(cap, sol.col(5));
   sol.col(7) = StrangSplitter.Evolution(cap, sol.col(6));
   
   std::cout << "Solution 65kya - 50kya!" << std::endl;
 
-  // t = 50 kya - 45 kya
+  /* t = 50 kya - 45 kya */
   cap = cap + car_cap.col(10);
   sol.col(8) = StrangSplitter.Evolution(cap, sol.col(7));
   
   std::cout << "Solution 50kya - 45kya!" << std::endl;
 
-  // t = 45 kya - 25 kya
+  /* t = 45 kya - 25 kya */
   cap = cap + car_cap.col(12);
   sol.col(9) = StrangSplitter.Evolution(cap, sol.col(8));
   sol.col(10) = StrangSplitter.Evolution(cap, sol.col(9));
@@ -345,14 +345,14 @@ int main(int /*argc*/, char ** /*argv*/){
 
   std::cout << "Solution 45kya - 25kya!" << std::endl;
 
-  // t = 25 kya - 15 kya 
+  /* t = 25 kya - 15 kya */
   cap = cap + car_cap.col(14);
   sol.col(13) = StrangSplitter.Evolution(cap, sol.col(12));
   sol.col(14) = StrangSplitter.Evolution(cap, sol.col(13));
   
   std::cout << "Solution 25kya - 15kya!" << std::endl;
 
-  // t = 15 kya - 0 kya
+  /* t = 15 kya - 0 kya */
   cap = cap + car_cap.col(15);
   sol.col(15) = StrangSplitter.Evolution(cap, sol.col(14));
   sol.col(16) = StrangSplitter.Evolution(cap, sol.col(15));
