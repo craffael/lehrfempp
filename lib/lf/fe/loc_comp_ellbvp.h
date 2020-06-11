@@ -106,8 +106,8 @@ class ReactionDiffusionElementMatrixProvider {
    * exactness as the polynomial degree of the finite element space.
    */
   ReactionDiffusionElementMatrixProvider(
-      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
-      DIFF_COEFF alpha, REACTION_COEFF gamma);
+      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
+      REACTION_COEFF gamma);
 
   /**
    * @brief All cells are considered active in the default implementation
@@ -170,16 +170,16 @@ ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
-        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
-        DIFF_COEFF alpha, REACTION_COEFF gamma)
-    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_space_(fe_space) { }
+        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
+        REACTION_COEFF gamma)
+    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_space_(fe_space) {}
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-typename lf::fe::ReactionDiffusionElementMatrixProvider<
-    SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat
+typename lf::fe::ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
+                                                        REACTION_COEFF>::ElemMat
 ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
   // Query the shape of the cell
@@ -196,19 +196,17 @@ ReactionDiffusionElementMatrixProvider<
 
   // Get a quadrature rule of sufficiently high degree on the element
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
-  const lf::quad::QuadRule qr = lf::quad::make_QuadRule(cell.RefEl(), 2*sfl->Degree());
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
 
-  const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr.Points()));
+  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
   // Fetch the transformation matrices for the gradients
-  const Eigen::MatrixXd JinvT(
-      geo_ptr->JacobianInverseGramian(qr.Points()));
-  LF_ASSERT_MSG(
-      JinvT.cols() == 2 * qr.NumPoints(),
-      "Mismatch " << JinvT.cols() << " <-> " << 2 * qr.NumPoints());
+  const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(qr.Points()));
+  LF_ASSERT_MSG(JinvT.cols() == 2 * qr.NumPoints(),
+                "Mismatch " << JinvT.cols() << " <-> " << 2 * qr.NumPoints());
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
 
@@ -229,13 +227,11 @@ ReactionDiffusionElementMatrixProvider<
     const double w = qr.Weights()[k] * determinants[k];
     // Transformed gradients
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        grsf.block(0, 2 * k, mat.rows(), 2)
-			    .transpose());
+                        grsf.block(0, 2 * k, mat.rows(), 2).transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
     mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                (gammaval[k] * rsf.col(k)) *
-                    (rsf.col(k).transpose()));
+                (gammaval[k] * rsf.col(k)) * (rsf.col(k).transpose()));
   }
   return mat;
 }
@@ -285,12 +281,12 @@ class MassEdgeMatrixProvider {
    * This constructor chooses a local quadature rule with double the degree of
    * exactness as the polynomial degree of the finite element space.
    */
-  MassEdgeMatrixProvider(
-      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, COEFF gamma,
-      EDGESELECTOR edge_selector = base::PredicateTrue{})
+  MassEdgeMatrixProvider(std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
+                         COEFF gamma,
+                         EDGESELECTOR edge_selector = base::PredicateTrue{})
       : gamma_(std::move(gamma)),
         edge_sel_(std::move(edge_selector)),
-        fe_space_(fe_space) { }
+        fe_space_(fe_space) {}
 
   /**
    * @brief If true, then an edge is taken into account during assembly
@@ -354,17 +350,16 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
   // Get the shape function layout on the edge
   const auto sfl = fe_space_->ShapeFunctionLayout(edge);
   // Compute a quadrature rule on the given entity
-  const lf::quad::QuadRule qr = lf::quad::make_QuadRule(edge.RefEl(), 2*sfl->Degree());
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(edge.RefEl(), 2 * sfl->Degree());
   // Obtain the metric factors for the quadrature points
-  const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr.Points()));
-  LF_ASSERT_MSG(determinants.size() == qr.NumPoints(),
-                "Mismatch " << determinants.size() << " <-> "
-                            << qr.NumPoints());
+  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
+  LF_ASSERT_MSG(
+      determinants.size() == qr.NumPoints(),
+      "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
 
   // Element matrix
-  ElemMat mat(sfl->NumRefShapeFunctions(),
-              sfl->NumRefShapeFunctions());
+  ElemMat mat(sfl->NumRefShapeFunctions(), sfl->NumRefShapeFunctions());
   mat.setZero();
 
   auto gammaval = gamma_(edge, qr.Points());
@@ -375,11 +370,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
   for (long k = 0; k < determinants.size(); ++k) {
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
-    const auto w =
-        (qr.Weights()[k] * determinants[k]) * gammaval[k];
-    mat += ((rsf.col(k)) *
-            (rsf.col(k).transpose())) *
-           w;
+    const auto w = (qr.Weights()[k] * determinants[k]) * gammaval[k];
+    mat += ((rsf.col(k)) * (rsf.col(k).transpose())) * w;
   }
   return mat;
 }
@@ -436,8 +428,7 @@ class ScalarLoadElementVectorProvider {
    * degree of the finite element space.
    */
   ScalarLoadElementVectorProvider(
-      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
-      MESH_FUNCTION f);
+      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, MESH_FUNCTION f);
   /** @brief Default implement: all cells are active */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
   /*
@@ -483,7 +474,7 @@ template <typename SCALAR, typename FUNCTOR>
 ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     ScalarLoadElementVectorProvider(
         std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
-    : f_(std::move(f)), fe_space_(fe_space) { }
+    : f_(std::move(f)), fe_space_(fe_space) {}
 
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
@@ -499,7 +490,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
 
   // Initialize a quadrature rule of sufficiently high degree
-  const lf::quad::QuadRule qr = lf::quad::make_QuadRule(cell.RefEl(), 2*sfl->Degree());
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
 
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
@@ -512,13 +504,13 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
                               << std::endl);
 
   // Obtain the metric factors for the quadrature points
-  const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr.Points()));
+  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
   SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                    std::cout << "LOCVEC(" << cell.RefEl() << "): Metric factors :\n "
+                    std::cout << "LOCVEC(" << cell.RefEl()
+                              << "): Metric factors :\n "
                               << determinants.transpose() << std::endl);
   // Element vector
   ElemVec vec(sfl->NumRefShapeFunctions());
@@ -531,13 +523,12 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SWITCHEDSTATEMENT(
-        ctrl_, kout_loop,
-        std::cout << "LOCVEC: [" << qr.Points().transpose() << "] -> ["
-                  << "weight = " << qr.Weights()[k] << std::endl);
+    SWITCHEDSTATEMENT(ctrl_, kout_loop,
+                      std::cout << "LOCVEC: [" << qr.Points().transpose()
+                                << "] -> ["
+                                << "weight = " << qr.Weights()[k] << std::endl);
     // Contribution of current quadrature point
-    vec += (qr.Weights()[k] * determinants[k] * fval[k]) *
-           rsf.col(k);
+    vec += (qr.Weights()[k] * determinants[k] * fval[k]) * rsf.col(k);
   }
   SWITCHEDSTATEMENT(ctrl_, kout_locvec,
                     std::cout << "LOCVEC = \n"
@@ -604,7 +595,7 @@ class ScalarLoadEdgeVectorProvider {
   ScalarLoadEdgeVectorProvider(
       std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, FUNCTOR g,
       EDGESELECTOR edge_sel = base::PredicateTrue{})
-      : g_(std::move(g)), edge_sel_(std::move(edge_sel)), fe_space_(fe_space) { }
+      : g_(std::move(g)), edge_sel_(std::move(edge_sel)), fe_space_(fe_space) {}
 
   /** @brief Default implement: all edges are active */
   virtual bool isActive(const lf::mesh::Entity &cell) {
@@ -664,15 +655,14 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
   const auto sfl = fe_space_->ShapeFunctionLayout(edge);
 
   // Quadrature points on physical edge
-  const lf::quad::QuadRule qr = lf::quad::make_QuadRule(edge.RefEl(), 2*sfl->Degree());
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(edge.RefEl(), 2 * sfl->Degree());
   const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr.Points()));
-  LF_ASSERT_MSG(
-      mapped_qpts.cols() == qr.NumPoints(),
-      "Mismatch " << mapped_qpts.cols() << " <-> " << qr.NumPoints());
+  LF_ASSERT_MSG(mapped_qpts.cols() == qr.NumPoints(),
+                "Mismatch " << mapped_qpts.cols() << " <-> " << qr.NumPoints());
 
   // Obtain the metric factors for the quadrature points
-  const Eigen::VectorXd determinants(
-      geo_ptr->IntegrationElement(qr.Points()));
+  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
@@ -698,4 +688,3 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
 }  // namespace lf::fe
 
 #endif
-

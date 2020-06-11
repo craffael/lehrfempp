@@ -7,10 +7,10 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 namespace lf::uscalfe::test {
 

@@ -13,8 +13,8 @@
  */
 
 #include <gtest/gtest.h>
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <iostream>
 #include "fe_testutils.h"
 
@@ -95,9 +95,10 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
     Eigen::VectorXd sol_vec = solver.solve(phi);
     // Compute error norms
     lf::fe::MeshFunctionFE<double, double> mf_solution(fe_space, sol_vec);
-    lf::fe::MeshFunctionGradFE<double, double> mf_grad_solution(fe_space, sol_vec);
-    double L2err = std::sqrt(
-        lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(solution - mf_solution), 2));
+    lf::fe::MeshFunctionGradFE<double, double> mf_grad_solution(fe_space,
+                                                                sol_vec);
+    double L2err = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh_p, squaredNorm(solution - mf_solution), 2));
     double H1serr = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh_p, squaredNorm(sol_grad - mf_grad_solution), 2));
     std::cout << "Level " << l << " : errors, L2 = " << L2err

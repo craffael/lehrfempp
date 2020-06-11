@@ -2,9 +2,9 @@
 #define LF_REFINEMENT_MESH_FUNCTION_TRANSFER_H
 
 #include <lf/assemble/dofhandler.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/fe/fe.h>
 #include <Eigen/Dense>
 #include <type_traits>
 

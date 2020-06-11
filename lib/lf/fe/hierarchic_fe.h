@@ -87,29 +87,33 @@ struct JacobiPoly {
     double Pjm1 = 1;
     double Pj = (2 + alpha) * x - 1;
     if (n == 0) {
-	return Pjm1;
+      return Pjm1;
     }
     if (n == 1) {
-	return Pj;
+      return Pj;
     }
-    for (unsigned j = 1 ; j < n ; ++j) {
-	const double ajp1 = 2 * (j+1) * ((j+1) + alpha) * (2 * (j+1) + alpha - 2);
-	const double bjp1 = 2 * (j+1) + alpha - 1;
-	const double cjp1 = (2 * (j+1) + alpha) * (2 * (j+1) + alpha - 2);
-	const double djp1 = 2 * ((j+1) + alpha - 1) * ((j+1) - 1) * (2 * (j+1) + alpha);
-	double Pjp1 = (bjp1 * (cjp1 * (2 * x - 1) + alpha * alpha) * Pj - djp1 * Pjm1) / ajp1;
-	Pjm1 = Pj;
-	Pj = Pjp1;
+    for (unsigned j = 1; j < n; ++j) {
+      const double ajp1 =
+          2 * (j + 1) * ((j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
+      const double bjp1 = 2 * (j + 1) + alpha - 1;
+      const double cjp1 = (2 * (j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
+      const double djp1 =
+          2 * ((j + 1) + alpha - 1) * ((j + 1) - 1) * (2 * (j + 1) + alpha);
+      double Pjp1 =
+          (bjp1 * (cjp1 * (2 * x - 1) + alpha * alpha) * Pj - djp1 * Pjm1) /
+          ajp1;
+      Pjm1 = Pj;
+      Pj = Pjp1;
     }
     return Pj;
   }
 
   static SCALAR integral(unsigned n, double alpha, double x) {
     if (n == 0) {
-	return -1;
+      return -1;
     }
     if (n == 1) {
-	return x;
+      return x;
     }
     double ajp1P = 2 * 2 * (2 + alpha) * (2 * 2 + alpha - 2);
     double bjp1P = 2 * 2 + alpha - 1;
@@ -117,16 +121,20 @@ struct JacobiPoly {
     double djp1P = 2 * (2 + alpha - 1) * (2 - 1) * (2 * 2 + alpha);
     double Pjm2 = 1;
     double Pjm1 = (2 + alpha) * x - 1;
-    double Pj = (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pjm1 - djp1P * Pjm2) / ajp1P;
-    for (unsigned j = 2 ; j < n ; ++j) {
-	ajp1P = 2 * (j+1) * ((j+1) + alpha) * (2 * (j+1) + alpha - 2);
-	bjp1P = 2 * (j+1) + alpha - 1;
-	cjp1P = (2 * (j+1) + alpha) * (2 * (j+1) + alpha - 2);
-	djp1P = 2 * ((j+1) + alpha - 1) * ((j+1) - 1) * (2 * (j+1) + alpha);
-	double Pjp1 = (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pj - djp1P * Pjm1) / ajp1P;
-	Pjm2 = Pjm1;
-	Pjm1 = Pj;
-	Pj = Pjp1;
+    double Pj =
+        (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pjm1 - djp1P * Pjm2) /
+        ajp1P;
+    for (unsigned j = 2; j < n; ++j) {
+      ajp1P = 2 * (j + 1) * ((j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
+      bjp1P = 2 * (j + 1) + alpha - 1;
+      cjp1P = (2 * (j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
+      djp1P = 2 * ((j + 1) + alpha - 1) * ((j + 1) - 1) * (2 * (j + 1) + alpha);
+      double Pjp1 =
+          (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pj - djp1P * Pjm1) /
+          ajp1P;
+      Pjm2 = Pjm1;
+      Pjm1 = Pj;
+      Pj = Pjp1;
     }
     const double anL = (n + alpha) / ((2 * n + alpha - 1) * (2 * n + alpha));
     const double bnL = alpha / ((2 * n + alpha - 2) * (2 * n + alpha));
@@ -171,13 +179,13 @@ class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
     return 1;
   }
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 0, "refcoords has too many rows.");
     return Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>::Ones(1, refcoords.cols());
   }
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd& /*refcoords*/) const override {
+      const Eigen::MatrixXd & /*refcoords*/) const override {
     LF_VERIFY_MSG(false, "gradients not defined in points of mesh.");
   }
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
@@ -199,8 +207,7 @@ class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHierarchicSegment final
-    : public ScalarReferenceFiniteElement<SCALAR> {
+class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHierarchicSegment(const FeHierarchicSegment &) = default;
   FeHierarchicSegment(FeHierarchicSegment &&) noexcept = default;
@@ -209,7 +216,7 @@ class FeHierarchicSegment final
   ~FeHierarchicSegment() = default;
 
   FeHierarchicSegment(unsigned degree,
-              nonstd::span<const lf::mesh::Orientation> rel_orient)
+                      nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient) {
@@ -346,8 +353,7 @@ class FeHierarchicSegment final
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHierarchicTria final
-    : public ScalarReferenceFiniteElement<SCALAR> {
+class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHierarchicTria(const FeHierarchicTria &) = default;
   FeHierarchicTria(FeHierarchicTria &&) noexcept = default;
@@ -356,7 +362,7 @@ class FeHierarchicTria final
   ~FeHierarchicTria() = default;
 
   FeHierarchicTria(unsigned degree,
-           nonstd::span<const lf::mesh::Orientation> rel_orient)
+                   nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient) {
@@ -442,14 +448,14 @@ class FeHierarchicTria final
     // Get the basis functions associated with the first edge
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-        result.row(3 + i) =
-            ((l1 + l2)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l122n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        result.row(3 + i) = ((l1 + l2)
+                                 .unaryExpr([&](double x) -> SCALAR {
+                                   return std::pow(x, i + 2);
+                                 })
+                                 .array() *
+                             l122n.array().unaryExpr([&](double x) -> SCALAR {
+                               return LegendrePoly<SCALAR>::integral(i + 2, x);
+                             })).matrix();
       } else {
         result.row(degree_ + 1 - i) =
             ((l1 + l2)
@@ -511,17 +517,18 @@ class FeHierarchicTria final
       for (int i = 0; i < degree_ - 2; ++i) {
         for (int j = 0; j < degree_ - i - 2; ++j) {
           if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-	      result.row(idx) = (result.row(degree_ + 2 + i).array() *
-		      l1.array().unaryExpr([&](double x) -> SCALAR {
-			  return JacobiPoly<SCALAR>::integral(j+1, 2*i+4, x);
-			})).matrix();
-	  }
-	  else {
-	      result.row(idx) = (result.row(2 * degree_ - i).array() *
-		      l1.array().unaryExpr([&](double x) -> SCALAR {
-			  return JacobiPoly<SCALAR>::integral(j+1, 2*i+4, x);
-			})).matrix();
-	  }
+            result.row(idx) =
+                (result.row(degree_ + 2 + i).array() *
+                 l1.array().unaryExpr([&](double x) -> SCALAR {
+                   return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
+                 })).matrix();
+          } else {
+            result.row(idx) =
+                (result.row(2 * degree_ - i).array() *
+                 l1.array().unaryExpr([&](double x) -> SCALAR {
+                   return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
+                 })).matrix();
+          }
           ++idx;
         }
       }
@@ -613,10 +620,8 @@ class FeHierarchicTria final
       // Get the gradient of the basis functions associated with the first edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-          const SCALAR leg2inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l122n);
-          const SCALAR leg2eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l122n);
+          const SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j + 2, l122n);
+          const SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j + 1, l122n);
           result(3 + j, 2 * i + 0) =
               l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
               std::pow(l1p2, j + 2) * l122n_dx * leg2eval;
@@ -624,10 +629,8 @@ class FeHierarchicTria final
               l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
               std::pow(l1p2, j + 2) * l122n_dy * leg2eval;
         } else {
-          const SCALAR leg1inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l121n);
-          const SCALAR leg1eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l121n);
+          const SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j + 2, l121n);
+          const SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j + 1, l121n);
           result(degree_ + 1 - j, 2 * i + 0) =
               l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
               std::pow(l1p2, j + 2) * l121n_dx * leg1eval;
@@ -639,10 +642,8 @@ class FeHierarchicTria final
       // Get the gradient of the basis functions associated with the second edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-          const SCALAR leg3inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l233n);
-          const SCALAR leg3eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l233n);
+          const SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j + 2, l233n);
+          const SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j + 1, l233n);
           result(2 + degree_ + j, 2 * i + 0) =
               l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
               std::pow(l2p3, j + 2) * l233n_dx * leg3eval;
@@ -650,10 +651,8 @@ class FeHierarchicTria final
               l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
               std::pow(l2p3, j + 2) * l233n_dy * leg3eval;
         } else {
-          const SCALAR leg2inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l232n);
-          const SCALAR leg2eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l232n);
+          const SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j + 2, l232n);
+          const SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j + 1, l232n);
           result(2 * degree_ - j, 2 * i + 0) =
               l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
               std::pow(l2p3, j + 2) * l232n_dx * leg2eval;
@@ -665,10 +664,8 @@ class FeHierarchicTria final
       // Get the gradient of the basis functions associated with the third edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-          const SCALAR leg1inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l311n);
-          const SCALAR leg1eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l311n);
+          const SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j + 2, l311n);
+          const SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j + 1, l311n);
           result(1 + 2 * degree_ + j, 2 * i + 0) =
               l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
               std::pow(l3p1, j + 2) * l311n_dx * leg1eval;
@@ -676,10 +673,8 @@ class FeHierarchicTria final
               l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
               std::pow(l3p1, j + 2) * l311n_dy * leg1eval;
         } else {
-          const SCALAR leg3inte =
-              LegendrePoly<SCALAR>::integral(j + 2, l313n);
-          const SCALAR leg3eval =
-              LegendrePoly<SCALAR>::eval(j + 1, l313n);
+          const SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j + 2, l313n);
+          const SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j + 1, l313n);
           result(3 * degree_ - 1 - j, 2 * i + 0) =
               l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
               std::pow(l3p1, j + 2) * l313n_dx * leg3eval;
@@ -693,24 +688,28 @@ class FeHierarchicTria final
       if (degree_ > 2) {
         int idx = 3 * degree_;
         for (int j = 0; j < degree_ - 2; ++j) {
-	  SCALAR edge_eval;
-	  SCALAR edge_dx;
-	  SCALAR edge_dy;
-	  if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-	      edge_eval = std::pow(l2p3, j+2) * LegendrePoly<SCALAR>::integral(j+2, l233n);
-	      edge_dx = result(2 + degree_ + j, 2 * i + 0);
-	      edge_dy = result(2 + degree_ + j, 2 * i + 1);
-	  }
-	  else {
-	      edge_eval = std::pow(l2p3, j+2) * LegendrePoly<SCALAR>::integral(j+2, l232n);
-	      edge_dx = result(2 * degree_ - j, 2 * i + 0);
-	      edge_dy = result(2 * degree_ - j, 2 * i + 1);
-	  }
+          SCALAR edge_eval;
+          SCALAR edge_dx;
+          SCALAR edge_dy;
+          if (rel_orient_[1] == lf::mesh::Orientation::positive) {
+            edge_eval = std::pow(l2p3, j + 2) *
+                        LegendrePoly<SCALAR>::integral(j + 2, l233n);
+            edge_dx = result(2 + degree_ + j, 2 * i + 0);
+            edge_dy = result(2 + degree_ + j, 2 * i + 1);
+          } else {
+            edge_eval = std::pow(l2p3, j + 2) *
+                        LegendrePoly<SCALAR>::integral(j + 2, l232n);
+            edge_dx = result(2 * degree_ - j, 2 * i + 0);
+            edge_dy = result(2 * degree_ - j, 2 * i + 1);
+          }
           for (int k = 0; k < degree_ - j - 2; ++k) {
-            SCALAR jackinte = JacobiPoly<SCALAR>::integral(k+1, 2*j+4, l1[i]);
-            SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2*j+4, l1[i]);
-            result(idx, 2 * i + 0) = jackinte*edge_dx + edge_eval*jackeval*l1_dx[i];
-            result(idx, 2 * i + 1) = jackinte*edge_dy + edge_eval*jackeval*l1_dy[i];
+            SCALAR jackinte =
+                JacobiPoly<SCALAR>::integral(k + 1, 2 * j + 4, l1[i]);
+            SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2 * j + 4, l1[i]);
+            result(idx, 2 * i + 0) =
+                jackinte * edge_dx + edge_eval * jackeval * l1_dx[i];
+            result(idx, 2 * i + 1) =
+                jackinte * edge_dy + edge_eval * jackeval * l1_dy[i];
             ++idx;
           }
         }
@@ -801,8 +800,7 @@ class FeHierarchicTria final
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHierarchicQuad final
-    : public ScalarReferenceFiniteElement<SCALAR> {
+class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeHierarchicQuad(const FeHierarchicQuad &) = default;
   FeHierarchicQuad(FeHierarchicQuad &&) noexcept = default;
@@ -811,7 +809,7 @@ class FeHierarchicQuad final
   ~FeHierarchicQuad() = default;
 
   FeHierarchicQuad(unsigned degree,
-           nonstd::span<const lf::mesh::Orientation> rel_orient)
+                   nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
         rel_orient_(rel_orient),

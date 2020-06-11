@@ -16,8 +16,8 @@
 
 #include <lf/assemble/assemble.h>
 
-#include "lagr_fe.h"
 #include <lf/fe/scalar_fe_space.h>
+#include "lagr_fe.h"
 
 namespace lf::uscalfe {
 
@@ -84,12 +84,14 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
    */
   UniformScalarFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p,
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p,
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p =
-          nullptr,
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_point_p =
-          nullptr)
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_tria_p,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_quad_p,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_edge_p = nullptr,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_point_p = nullptr)
       : lf::fe::ScalarFESpace<SCALAR>(std::move(mesh_p)),
         rfs_tria_p_(std::move(rfs_tria_p)),
         rfs_quad_p_(std::move(rfs_quad_p)),
@@ -113,7 +115,8 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
   /** @brief access to shape function layout for cells
    * @copydoc SclarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
    */
-  [[nodiscard]] std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] std::shared_ptr<
+      const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const override;
 
   /** @brief access to shape function layout for cells
@@ -125,7 +128,8 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
    * element specification was not given for a particular topological type of
    * entity.
    */
-  [[nodiscard]] std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] std::shared_ptr<
+      const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
   ShapeFunctionLayout(lf::base::RefEl ref_el_type) const;
 
   /** @brief number of _interior_ shape functions associated to entities of
@@ -145,13 +149,17 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
 
  private:
   /** Description of reference shape functions on triangular cells */
-  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_tria_p_;
   /** Description of reference shape functions on quadrilateral cells */
-  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_quad_p_;
   /** Description of reference shape functions on an edge */
-  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_edge_p_;
   /** Description of refererence shape functions on a point */
-  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> rfs_point_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_point_p_;
   /** Numbers of local shape functions for different types of entities */
   size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
       num_rsf_quad_{0};

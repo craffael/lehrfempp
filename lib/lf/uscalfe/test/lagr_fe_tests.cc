@@ -15,15 +15,16 @@
 
 #include <gtest/gtest.h>
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 namespace lf::uscalfe::test {
 
 template <typename SCALAR>
-bool scalarFEEvalNodeTest(const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+bool scalarFEEvalNodeTest(
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Evaluates a random linear combination of reference shape functions
   // at the evaluation nodes for the finite element and then reconstructs
   // the "interpolant" which must agree with what we started from
@@ -103,7 +104,8 @@ TEST(lf_fe_cubic, scalf_fe_coeff_node) {
 }
 
 template <typename SCALAR>
-bool scalarFEInterpTest(const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+bool scalarFEInterpTest(
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Interpolates random values at interpolation nodes
   // and checks whether the resulting linear combination of
   // basis functions reproduces those values
@@ -387,7 +389,8 @@ SCALAR nodalProjectionTest(
     FUNCTION_GRAD grad_g, int quad_degree) {
   auto dof_vector = lf::fe::NodalProjection(*fe_space, g);
   auto mf_fe = lf::fe::MeshFunctionFE<double, double>(fe_space, dof_vector);
-  auto grad_mf_fe = lf::fe::MeshFunctionGradFE<double, double>(fe_space, dof_vector);
+  auto grad_mf_fe =
+      lf::fe::MeshFunctionGradFE<double, double>(fe_space, dof_vector);
 
   return lf::fe::IntegrateMeshFunction(
       *(fe_space->Mesh()),

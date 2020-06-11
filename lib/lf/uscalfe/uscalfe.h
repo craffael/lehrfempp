@@ -21,8 +21,8 @@
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
 #include "loc_comp_norms.h"
-#include "uniform_scalar_fe_space.h"
 #include "prolongation.h"
+#include "uniform_scalar_fe_space.h"
 
 #include <lf/mesh/utils/utils.h>
 

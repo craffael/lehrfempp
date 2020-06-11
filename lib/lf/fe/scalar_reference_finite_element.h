@@ -352,6 +352,6 @@ std::ostream& operator<<(std::ostream& o,
   return fe_desc.print(o);
 }
 
-} // end namespace lf::fe
+}  // end namespace lf::fe
 
-#endif // LF_FE_SCALAR_REFERENCE_FINITE_ELEMENT_H_
+#endif  // LF_FE_SCALAR_REFERENCE_FINITE_ELEMENT_H_

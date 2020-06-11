@@ -2,10 +2,10 @@
 #define LF_USCALFE_PROLONGATION_H
 
 #include <lf/assemble/dofhandler.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/fe/fe.h>
 
 namespace lf::uscalfe {
 
@@ -33,12 +33,12 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   using scalar_fe_coarse_t = typename FES_COARSE::Scalar;
   using scalar_fe_fine_t = typename FES_FINE::Scalar;
   static_assert(
-      std::is_convertible_v<
-          FES_COARSE&, lf::fe::ScalarFESpace<scalar_fe_coarse_t>&>,
+      std::is_convertible_v<FES_COARSE &,
+                            lf::fe::ScalarFESpace<scalar_fe_coarse_t> &>,
       "Invalid coarse FE space provided");
   static_assert(
-      std::is_convertible_v<
-          FES_FINE&, lf::fe::ScalarFESpace<scalar_fe_fine_t>&>,
+      std::is_convertible_v<FES_FINE &,
+                            lf::fe::ScalarFESpace<scalar_fe_fine_t> &>,
       "Invalid fine FE space provided");
   // Obtain the dofhandlers from the fe spaces
   const lf::assemble::DofHandler &dofh_coarse{fespace_coarse->LocGlobMap()};

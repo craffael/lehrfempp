@@ -52,7 +52,8 @@ using sub_idx_t = lf::base::sub_idx_t;
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO1Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Tria final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO1Tria(const FeLagrangeO1Tria&) = default;
   FeLagrangeO1Tria(FeLagrangeO1Tria&&) noexcept = default;
@@ -152,7 +153,8 @@ class FeLagrangeO1Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALA
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO1Quad final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Quad final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO1Quad(const FeLagrangeO1Quad&) = default;
   FeLagrangeO1Quad(FeLagrangeO1Quad&&) noexcept = default;
@@ -261,7 +263,8 @@ class FeLagrangeO1Quad final : public lf::fe::ScalarReferenceFiniteElement<SCALA
  *  @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO1Segment final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO1Segment final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO1Segment(const FeLagrangeO1Segment&) = default;
   FeLagrangeO1Segment(FeLagrangeO1Segment&&) noexcept = default;
@@ -406,7 +409,8 @@ class FeLagrangePoint : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO2Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO2Tria final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO2Tria(const FeLagrangeO2Tria&) = default;
   FeLagrangeO2Tria(FeLagrangeO2Tria&&) noexcept = default;
@@ -536,7 +540,8 @@ class FeLagrangeO2Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALA
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO2Segment : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO2Segment
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO2Segment(const FeLagrangeO2Segment&) = default;
   FeLagrangeO2Segment(FeLagrangeO2Segment&&) noexcept = default;
@@ -656,7 +661,8 @@ class FeLagrangeO2Segment : public lf::fe::ScalarReferenceFiniteElement<SCALAR> 
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO2Quad final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO2Quad final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO2Quad(const FeLagrangeO2Quad&) = default;
   FeLagrangeO2Quad(FeLagrangeO2Quad&&) noexcept = default;
@@ -843,7 +849,8 @@ const Eigen::Matrix<int, 9, 2>
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO3Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO3Tria final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO3Tria(const FeLagrangeO3Tria&) = default;
   FeLagrangeO3Tria(FeLagrangeO3Tria&&) noexcept = default;
@@ -1008,7 +1015,8 @@ class FeLagrangeO3Tria final : public lf::fe::ScalarReferenceFiniteElement<SCALA
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO3Segment final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO3Segment final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO3Segment(const FeLagrangeO3Segment&) = default;
   FeLagrangeO3Segment(FeLagrangeO3Segment&&) noexcept = default;
@@ -1127,7 +1135,8 @@ class FeLagrangeO3Segment final : public lf::fe::ScalarReferenceFiniteElement<SC
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeLagrangeO3Quad final : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
+class FeLagrangeO3Quad final
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeLagrangeO3Quad(const FeLagrangeO3Quad&) = default;
   FeLagrangeO3Quad(FeLagrangeO3Quad&&) noexcept = default;

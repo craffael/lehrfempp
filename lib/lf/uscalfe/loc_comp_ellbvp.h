@@ -887,4 +887,3 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
 }  // namespace lf::uscalfe
 
 #endif
-

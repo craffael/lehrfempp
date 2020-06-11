@@ -29,7 +29,6 @@
  *
  * TODO: ADD DOCUMENTATION
  */
-namespace lf::fe {
-}  // namespace lf::uscalfe
+namespace lf::fe {}  // namespace lf::fe
 
 #endif
