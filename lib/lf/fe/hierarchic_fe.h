@@ -397,6 +397,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
 
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
+    // Simply solve the LSE for the basis function coefficients
     const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
         shape_functions_at_nodes =
             EvalReferenceShapeFunctions(EvaluationNodes());
@@ -413,8 +414,10 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
 
   [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd nodes(1, degree_ + 1);
+    // Node 0 and 1 are the vertices
     nodes(0, 0) = 0;
     nodes(0, 1) = 1;
+    // The rest of the nodes are Chebyshev nodes
     if (degree_ > 1) {
       nodes.block(0, 2, 1, degree_ - 1) =
           chebyshevNodes(degree_ - 1).transpose();
@@ -507,6 +510,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                                   refcoords.row(0) - refcoords.row(1);
     const Eigen::RowVectorXd l2 = refcoords.row(0);
     const Eigen::RowVectorXd l3 = refcoords.row(1);
+    // Compute normalized coordinates for the scaled polynomials
     Eigen::RowVectorXd l121n(refcoords.cols());
     Eigen::RowVectorXd l122n(refcoords.cols());
     Eigen::RowVectorXd l232n(refcoords.cols());
@@ -528,6 +532,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the basis functions associated with the first edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
+	// L_{i+2}(\lambda_2 ; \lambda_1+\lambda_2)
         result.row(3 + i) = ((l1 + l2)
                                  .unaryExpr([&](double x) -> SCALAR {
                                    return std::pow(x, i + 2);
@@ -537,6 +542,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                                return LegendrePoly<SCALAR>::integral(i + 2, x);
                              })).matrix();
       } else {
+	// L_{i+2}(\lambda_1 ; \lambda_1+\lambda_2)
         result.row(degree_ + 1 - i) =
             ((l1 + l2)
                  .unaryExpr(
@@ -550,6 +556,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the basis functions associated with the second edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
+	// L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3)
         result.row(degree_ + 2 + i) =
             ((l2 + l3)
                  .unaryExpr(
@@ -559,6 +566,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                return LegendrePoly<SCALAR>::integral(i + 2, x);
              })).matrix();
       } else {
+	// L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3)
         result.row(2 * degree_ - i) =
             ((l2 + l3)
                  .unaryExpr(
@@ -572,6 +580,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the basis functions associated with the third edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
+	// L_{i+2}(\lambda_1 ; \lambda_3+\lambda_1)
         result.row(2 * degree_ + 1 + i) =
             ((l3 + l1)
                  .unaryExpr(
@@ -581,6 +590,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                return LegendrePoly<SCALAR>::integral(i + 2, x);
              })).matrix();
       } else {
+	// L_{i+2}(\lambda_3 ; \lambda_3+\lambda_1)
         result.row(3 * degree_ - 1 - i) =
             ((l3 + l1)
                  .unaryExpr(
@@ -594,15 +604,19 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the basis functions associated with the interior of the triangle
     if (degree_ > 2) {
       unsigned idx = 3 * degree_;
+      // i is the degree of the ede function
       for (unsigned i = 0; i < degree_ - 2; ++i) {
+	// j is the degree of the blending polynomial
         for (unsigned j = 0; j < degree_ - i - 2; ++j) {
           if (rel_orient_[1] == lf::mesh::Orientation::positive) {
+	    // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3) * P_{j+1}^{2i+4}(\lambda_1)
             result.row(idx) =
                 (result.row(degree_ + 2 + i).array() *
                  l1.array().unaryExpr([&](double x) -> SCALAR {
                    return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
                  })).matrix();
           } else {
+	    // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3) * P_{j+1}^{2i+4}(\lambda_1)
             result.row(idx) =
                 (result.row(2 * degree_ - i).array() *
                  l1.array().unaryExpr([&](double x) -> SCALAR {
@@ -626,6 +640,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                                   refcoords.row(0) - refcoords.row(1);
     const Eigen::RowVectorXd l2 = refcoords.row(0);
     const Eigen::RowVectorXd l3 = refcoords.row(1);
+    // Comput the gradients of the barycentrc coordinate functions
     const Eigen::RowVectorXd l1_dx =
         Eigen::RowVectorXd::Constant(refcoords.cols(), -1);
     const Eigen::RowVectorXd l1_dy =
@@ -638,7 +653,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         Eigen::RowVectorXd::Constant(refcoords.cols(), 0);
     const Eigen::RowVectorXd l3_dy =
         Eigen::RowVectorXd::Constant(refcoords.cols(), 1);
+    // Iterate over all refcoords
     for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
+      // Compute normalized coordinates for edge 1
       const SCALAR l1p2 = l1[i] + l2[i];
       const SCALAR l1p2_dx = l1_dx[i] + l2_dx[i];
       const SCALAR l1p2_dy = l1_dy[i] + l2_dy[i];
@@ -656,6 +673,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       const SCALAR l122n_dy =
           l1p2 == 0 ? SCALAR(0)
                     : ((l2_dy[i] * l1p2 - l2[i] * l1p2_dy) / (l1p2 * l1p2));
+      // Compute normalized coordinates for edge 2
       const SCALAR l2p3 = l2[i] + l3[i];
       const SCALAR l2p3_dx = l2_dx[i] + l3_dx[i];
       const SCALAR l2p3_dy = l2_dy[i] + l3_dy[i];
@@ -673,6 +691,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       const SCALAR l233n_dy =
           l2p3 == 0 ? SCALAR(0)
                     : ((l3_dy[i] * l2p3 - l3[i] * l2p3_dy) / (l2p3 * l2p3));
+      // Compute normalized coordinates for edge 3
       const SCALAR l3p1 = l3[i] + l1[i];
       const SCALAR l3p1_dx = l3_dx[i] + l1_dx[i];
       const SCALAR l3p1_dy = l3_dy[i] + l1_dy[i];
@@ -817,6 +836,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
+    // Simply solfe the LSE for the basis function coefficients
     const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
         shape_functions_at_nodes =
             EvalReferenceShapeFunctions(EvaluationNodes());
@@ -842,19 +862,24 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     eval_nodes(0, 2) = 0;
     eval_nodes(1, 2) = 1;
     // Add the evaluation nodes corresponding to the edges of the triangle
+    // They are given by Chebyshev nodes
     for (int i = 0; i < degree_ - 1; ++i) {
+      // Edge 1
       eval_nodes(0, 3 + i) = cheb[i];
       eval_nodes(1, 3 + i) = 0;
     }
     for (int i = 0; i < degree_ - 1; ++i) {
+      // Edge 2
       eval_nodes(0, 2 + degree_ + i) = 1. - cheb[i];
       eval_nodes(1, 2 + degree_ + i) = cheb[i];
     }
     for (int i = 0; i < degree_ - 1; ++i) {
+      // Edge 3
       eval_nodes(0, 1 + 2 * degree_ + i) = 0;
       eval_nodes(1, 1 + 2 * degree_ + i) = 1. - cheb[i];
     }
     // Add the evaluation nodes corresponding to the interior of the triangle
+    // They are given by Chebyshev nodes
     if (degree_ > 2) {
       int idx = 3 * degree_;
       for (int i = 0; i < degree_ - 2; ++i) {
@@ -965,6 +990,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     result.row(2) = (sf1d_x.row(1).array() * sf1d_y.row(1).array()).matrix();
     result.row(3) = (sf1d_x.row(0).array() * sf1d_y.row(1).array()).matrix();
     // Get the basis functions associated with the first edge
+    // as a tensor product of 1D basis functions
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         result.row(4 + i) =
@@ -975,6 +1001,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the second edge
+    // as a tensor product of 1D basis functions
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         result.row(3 + degree_ + i) =
@@ -985,6 +1012,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the third edge
+    // as a tensor product of 1D basis functions
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         result.row(2 + 2 * degree_ + i) =
@@ -995,6 +1023,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the fourth edge
+    // as a tensor product of 1D basis functions
     for (int i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[3] == lf::mesh::Orientation::positive) {
         result.row(1 + 3 * degree_ + i) =
@@ -1005,6 +1034,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the interior of the quad
+    // as a tensor product of 1D basis functions
     for (int i = 0; i < degree_ - 1; ++i) {
       for (int j = 0; j < degree_ - 1; ++j) {
         result.row(4 * degree_ + (degree_ - 1) * i + j) =
@@ -1028,6 +1058,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         fe1d_.GradientsReferenceShapeFunctions(refcoords.row(0));
     const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1d_dy =
         fe1d_.GradientsReferenceShapeFunctions(refcoords.row(1));
+    // Compute the gradient of the flipped 1D shape functions at the x and y coordinates
     const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> sf1df_x =
         fe1d_.EvalReferenceShapeFunctions(
             Eigen::RowVectorXd::Constant(refcoords.cols(), 1) -
