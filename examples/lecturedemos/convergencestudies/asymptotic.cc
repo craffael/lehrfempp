@@ -76,7 +76,6 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(M + 1);
     for (int i = 0; i < M; ++i) {
       const double a = static_cast<double>(i) / M;
-      const double b = static_cast<double>(i + 1) / M;
       const Eigen::VectorXd loc_quad_points =
           Eigen::VectorXd::Constant(num_quad_points, a) + h * quad_points;
       const Eigen::VectorXd loc_quad_weights = h * quad_weights;
@@ -92,11 +91,11 @@ int main(int argc, char *argv[]) {
     }
 
     // Enforce zero dirichlet boundary conditions
-    for (int k = 0; k < A.outerSize(); ++k) {
+    for (long k = 0; k < A.outerSize(); ++k) {
       for (Eigen::SparseMatrix<double>::InnerIterator it(A, k); it; ++it) {
         const int row = it.row();
         const int col = it.col();
-        if ((row == 0 && col == 0) || row == M && col == M) {
+        if ((row == 0 && col == 0) || (row == M && col == M)) {
           it.valueRef() = 1;
         } else if (row == 0 || row == M || col == 0 || col == M) {
           it.valueRef() = 0;

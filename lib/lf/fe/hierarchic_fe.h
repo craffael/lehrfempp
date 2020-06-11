@@ -296,7 +296,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicSegment(FeHierarchicSegment &&) noexcept = default;
   FeHierarchicSegment &operator=(const FeHierarchicSegment &) = default;
   FeHierarchicSegment &operator=(FeHierarchicSegment &&) noexcept = default;
-  ~FeHierarchicSegment() = default;
+  ~FeHierarchicSegment() override = default;
 
   FeHierarchicSegment(unsigned degree,
                       nonstd::span<const lf::mesh::Orientation> rel_orient)
@@ -442,7 +442,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicTria(FeHierarchicTria &&) noexcept = default;
   FeHierarchicTria &operator=(const FeHierarchicTria &) = default;
   FeHierarchicTria &operator=(FeHierarchicTria &&) noexcept = default;
-  ~FeHierarchicTria() = default;
+  ~FeHierarchicTria() override = default;
 
   FeHierarchicTria(unsigned degree,
                    nonstd::span<const lf::mesh::Orientation> rel_orient)
@@ -529,7 +529,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     result.row(1) = l2.unaryExpr([&](double x) -> SCALAR { return x; });
     result.row(2) = l3.unaryExpr([&](double x) -> SCALAR { return x; });
     // Get the basis functions associated with the first edge
-    for (int i = 0; i < degree_ - 1; ++i) {
+    for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         result.row(3 + i) = ((l1 + l2)
                                  .unaryExpr([&](double x) -> SCALAR {
@@ -551,7 +551,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the second edge
-    for (int i = 0; i < degree_ - 1; ++i) {
+    for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         result.row(degree_ + 2 + i) =
             ((l2 + l3)
@@ -573,7 +573,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       }
     }
     // Get the basis functions associated with the third edge
-    for (int i = 0; i < degree_ - 1; ++i) {
+    for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         result.row(2 * degree_ + 1 + i) =
             ((l3 + l1)
@@ -596,9 +596,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     }
     // Get the basis functions associated with the interior of the triangle
     if (degree_ > 2) {
-      int idx = 3 * degree_;
-      for (int i = 0; i < degree_ - 2; ++i) {
-        for (int j = 0; j < degree_ - i - 2; ++j) {
+      unsigned idx = 3 * degree_;
+      for (unsigned i = 0; i < degree_ - 2; ++i) {
+        for (unsigned j = 0; j < degree_ - i - 2; ++j) {
           if (rel_orient_[1] == lf::mesh::Orientation::positive) {
             result.row(idx) =
                 (result.row(degree_ + 2 + i).array() *
@@ -889,7 +889,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicQuad(FeHierarchicQuad &&) noexcept = default;
   FeHierarchicQuad &operator=(const FeHierarchicQuad &) = default;
   FeHierarchicQuad &operator=(FeHierarchicQuad &&) noexcept = default;
-  ~FeHierarchicQuad() = default;
+  ~FeHierarchicQuad() override = default;
 
   FeHierarchicQuad(unsigned degree,
                    nonstd::span<const lf::mesh::Orientation> rel_orient)

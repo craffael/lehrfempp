@@ -51,7 +51,7 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
-  lf::mesh::MeshFactory::size_type nodes[3];
+  lf::mesh::MeshFactory::size_type nodes[3];	// NOLINT
   coords << 0, 1, 0,
 	    0, 0, 1;
   nodes[0] = vertices[0];
@@ -93,7 +93,7 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
-  lf::mesh::MeshFactory::size_type nodes[3];
+  lf::mesh::MeshFactory::size_type nodes[3];	// NOLINT
   coords << -1, 0, -1, -1, 0, 1;
   nodes[0] = vertices[0];
   nodes[1] = vertices[2];
@@ -199,14 +199,15 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2 * degree - 1);
   const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
     const lf::base::RefEl refel = entity.RefEl();
-    if (refel == lf::base::RefEl::kTria()) {
-      return qr_tria;
-    } else if (refel == lf::base::RefEl::kSegment()) {
-      return qr_segment;
-    } else if (refel == lf::base::RefEl::kQuad()) {
-      return qr_quad;
-    } else {
-      return lf::quad::make_QuadRule(refel, 2 * degree - 1);
+    switch (refel) {
+      case lf::base::RefEl::kTria();
+        return qr_tria;
+      case lf::base::RefEl::kSegment();
+        return qr_segment;
+      case lf::base::RefEl::kQuad():
+        return qr_quad;
+      default:
+        return lf::quad::make_QuadRule(refel, 2 * degree - 1);
     }
   };
   const double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
@@ -287,7 +288,7 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
 	  const Eigen::RowVectorXd nodal_values = Eigen::Map<Eigen::RowVectorXd>(mf_u(*edge, eval_nodes).data(), eval_nodes.cols());
 	  const Eigen::VectorXd locdofs = sfl->NodalValuesToDofs(nodal_values);
 	  const auto dofidxs = dofh.GlobalDofIndices(*edge);
-	  for (int i = 0 ; i < dofidxs.size() ; ++i) {
+	  for (long i = 0 ; i < dofidxs.size() ; ++i) {
 	      boundary_dofs[dofidxs[i]] = locdofs[i];
 	  }
       }
@@ -318,15 +319,16 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2 * degree - 1);
   const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
     const lf::base::RefEl refel = entity.RefEl();
-    if (refel == lf::base::RefEl::kTria()) {
-      return qr_tria;
-    } else if (refel == lf::base::RefEl::kSegment()) {
-      return qr_segment;
-    } else if (refel == lf::base::RefEl::kQuad()) {
-      return qr_quad;
-    } else {
-      return lf::quad::make_QuadRule(refel, 2 * degree - 1);
-    }
+    switch (refel) {
+      case lf::base::RefEl::kTria():
+        return qr_tria;
+      case lf::base::RefEl::kSegment():
+        return qr_segment;
+      case lf::base::RefEl::kQuad():
+        return qr_quad;
+      default:
+        return lf::quad::make_QuadRule(refel, 2 * degree - 1);
+      }
   };
   const double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad),
