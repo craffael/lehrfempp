@@ -200,9 +200,9 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
     const lf::base::RefEl refel = entity.RefEl();
     switch (refel) {
-      case lf::base::RefEl::kTria();
+      case lf::base::RefEl::kTria():
         return qr_tria;
-      case lf::base::RefEl::kSegment();
+      case lf::base::RefEl::kSegment():
         return qr_segment;
       case lf::base::RefEl::kQuad():
         return qr_quad;

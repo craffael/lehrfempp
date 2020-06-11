@@ -785,8 +785,8 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       // Get the gradient of the basis functions associated with the interior of
       // the triangle
       if (degree_ > 2) {
-        int idx = 3 * degree_;
-        for (int j = 0; j < degree_ - 2; ++j) {
+        unsigned idx = 3 * degree_;
+        for (unsigned j = 0; j < degree_ - 2; ++j) {
           SCALAR edge_eval;
           SCALAR edge_dx;
           SCALAR edge_dy;
@@ -801,7 +801,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
             edge_dx = result(2 * degree_ - j, 2 * i + 0);
             edge_dy = result(2 * degree_ - j, 2 * i + 1);
           }
-          for (int k = 0; k < degree_ - j - 2; ++k) {
+          for (unsigned k = 0; k < degree_ - j - 2; ++k) {
             SCALAR jackinte =
                 JacobiPoly<SCALAR>::integral(k + 1, 2 * j + 4, l1[i]);
             SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2 * j + 4, l1[i]);
