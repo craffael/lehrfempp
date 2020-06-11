@@ -36,10 +36,27 @@ using sub_idx_t = lf::base::sub_idx_t;
 
 /**
  * @brief Struct for computing Legrendre and integrated Legendre polynomials
+ * on the interval [0, 1]
  */
 template <typename SCALAR>
 struct LegendrePoly {
+  /**
+   * @brief computes the `n`-th degree shifted Legendre Polynomial \f$ P_n(x) \f$
+   * @param n The degree of the polynomial
+   * @param x The evaluation coordinate in [0, 1]
+   *
+   * To evaluate the non-shifted Legendre Polynomials \f$ \tilde{P}_p(x) \f$ on [-1, 1] we use that
+   * \f[
+   *	\begin{aligned}
+   *	    \tilde{P}_0(x) &= 1 \\
+   *	    \tilde{P}_1(x) &= x \\
+   *	    (p+1)\tilde{P}_{p+1}(x) &= (2p+1)\tilde{P}_p(x) - p\tilde{P}_{p-1}(x)
+   *	\end{aligned}
+   * \f]
+   */
   static SCALAR eval(unsigned n, double x) {
+    // The recurrence relation is for the non-shifted Legendre Polynomials
+    // We thus map [0, 1] onto [-1, 1]
     x = 2 * x - 1;
     double Ljm1 = 1;
     double Lj = x;
@@ -49,6 +66,7 @@ struct LegendrePoly {
     if (n == 1) {
       return Lj;
     }
+    // If the degree is > 1, we use the recurrence relation
     for (unsigned j = 1; j < n; ++j) {
       const double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
       Ljm1 = Lj;
@@ -57,6 +75,19 @@ struct LegendrePoly {
     return Lj;
   }
 
+  /**
+   * @brief computes the integral of the (n-1)-th degree shifted Legendre Polynomial
+   * @param n The degree of the integrated polynomial
+   * @param x The evaluation coordinate in [0, 1]
+   *
+   * The integral is evaluated using
+   * \f[
+   *	\begin{aligned}
+   *	    L_1(x) &= x \\
+   *	    2(2p-1)L_p(x) &= P_p(x) - P_{p-2}(x)
+   *	\end{aligned}
+   * \f]
+   */
   static SCALAR integral(unsigned n, double x) {
     if (n == 0) {
       return -1;
@@ -64,7 +95,9 @@ struct LegendrePoly {
     if (n == 1) {
       return x;
     }
+    // Map to the interval [-1, 1]
     x = 2 * x - 1;
+    // Compute the n-th and (n-2)-th degree shifted Legendre Polynomials
     double Ljm2 = 1;
     double Ljm1 = x;
     double Lj = (3 * x * x - 1) / 2;
@@ -74,15 +107,40 @@ struct LegendrePoly {
       Ljm1 = Lj;
       Lj = Ljp1;
     }
+    // Compute the integral
     return (Lj - Ljm2) / (4 * n - 2);
   }
 };
 
 /**
- * @brief Struct for computing Jacobi and integrated Jacobi polynomials
+ * @brief Struct for computing Jacobi and integrated Jacobi polynomials with \f$ \beta=0 \f$
  */
 template <typename SCALAR>
 struct JacobiPoly {
+  /**
+   * @brief Evaluate the n-th degree Jacobi polynomial
+   * @param n The degree of the polynomial
+   * @param alpha The \f$ \alpha \f$ parameter to the Jacobi polynomial
+   * @param x The evaluation point in [0, 1]
+   *
+   * For the evaluation, we use that
+   * \f[
+   *	\begin{aligned}
+   *	    P_0^\alpha(x) &= 1 \\
+   *	    P_1^\alpha(x) &= (2+\alpha)x - 1 \\
+   *	    a_pP_p^\alpha(x) &= b_p(c_p(2x-1)+\alpha^2)P_{p-1}^\alpha(x) - d_pP_{p-2}^\alpha(x)
+   *	\end{aligned}
+   * \f]
+   * where the coefficients are defined as
+   * \f[
+   *	\begin{aligned}
+   *	    a_p &= 2p(p+\alpha)(2p+\alpha-2) \\
+   *	    b_p &= 2p + \alpha - 1 \\
+   *	    c_p &= (2p+\alpha)(2p+\alpha-2) \\
+   *	    d_p &= 2(p+\alpha-1)(p-1)(2p+\alpha)
+   *	\end{aligned}
+   * \f]
+   */
   static SCALAR eval(unsigned n, double alpha, double x) {
     double Pjm1 = 1;
     double Pj = (2 + alpha) * x - 1;
@@ -92,6 +150,7 @@ struct JacobiPoly {
     if (n == 1) {
       return Pj;
     }
+    // For n >= 2 we need to use the recurrence relation
     for (unsigned j = 1; j < n; ++j) {
       const double ajp1 =
           2 * (j + 1) * ((j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
@@ -108,6 +167,28 @@ struct JacobiPoly {
     return Pj;
   }
 
+  /**
+   * @brief Evaluate the integral of the (n-1)-th degree Jacobi Polynomial
+   * @param n The degree of the integrated polynomial
+   * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
+   * @param x The evaluation coordinate in [0, 1]
+   *
+   * The integral is evaluated using
+   * \f[
+   *	\begin{aligned}
+   *	    L_1^\alpha(x) &= x \\
+   *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) - c_pP_{p-2}^\alpha(x)
+   *	\end{aligned}
+   * \f]
+   * where the coefficients are defined as
+   * \f[
+   *	\begin{aligned}
+   *	    a_p &= \frac{p+\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
+   *	    b_p &= \frac{\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
+   *	    c_p &= \frac{p-1}{(2p+\alpha-2)(2p+\alpha-1)}
+   *	\end{aligned}
+   * \f]
+   */
   static SCALAR integral(unsigned n, double alpha, double x) {
     if (n == 0) {
       return -1;
@@ -115,6 +196,7 @@ struct JacobiPoly {
     if (n == 1) {
       return x;
     }
+    // Compute the n-th, (n-1)-th and (n-2)-th Jacobi Polynomial
     double ajp1P = 2 * 2 * (2 + alpha) * (2 * 2 + alpha - 2);
     double bjp1P = 2 * 2 + alpha - 1;
     double cjp1P = (2 * 2 + alpha) * (2 * 2 + alpha - 2);
@@ -136,6 +218,7 @@ struct JacobiPoly {
       Pjm1 = Pj;
       Pj = Pjp1;
     }
+    // Compute the integral by the formula in the docstring
     const double anL = (n + alpha) / ((2 * n + alpha - 1) * (2 * n + alpha));
     const double bnL = alpha / ((2 * n + alpha - 2) * (2 * n + alpha));
     const double cnL = (n - 1) / ((2 * n + alpha - 2) * (2 * n + alpha - 1));
