@@ -13,9 +13,10 @@
 #include <stdexcept>
 #include <string>
 
-#include "strangsplitting.cc"
+#include "strangsplitting.h"
 
-using namespace FisherKPP;
+using FisherKPP::localQuadFunction;
+using FisherKPP::StrangSplit;
 
 double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p) {
   double mesh_size = 0.0;
@@ -79,7 +80,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   auto h = [fe_space, mesh_p, edge_pred](const Eigen::Vector2d &x) -> double {
     double res = 0.0;
 
-    auto g = [x](const Eigen::Vector2d &y) -> double {
+    auto g = [&x](const Eigen::Vector2d &y) -> double {
       double tmp_res = 0.0;
       if ((x - y).norm() >= 15 && (x - y).norm() <= 35) {
         tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
@@ -104,7 +105,7 @@ int main(int /*argc*/, char ** /*argv*/) {
     if (boundary_nodes(j)) {
       auto L_j = [fe_space, &dofh, N_dofs, edge_pred,
                   j](const Eigen::Vector2d &x) -> double {
-        auto g_j = [x](const Eigen::Vector2d &y) -> double {
+        auto g_j = [&x](const Eigen::Vector2d &y) -> double {
           double tmp_res = 0.0;
           if ((x - y).norm() >= 15 && (x - y).norm() <= 35) {
             tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));

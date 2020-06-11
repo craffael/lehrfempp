@@ -14,9 +14,9 @@
 #include <string>
 #include <vector>
 
-#include "strangsplitting.cc"
+#include "strangsplitting.h"
 
-using namespace FisherKPP;
+using FisherKPP::StrangSplit;
 
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */
