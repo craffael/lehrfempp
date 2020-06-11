@@ -16,6 +16,54 @@
 
 namespace lf::fe::test {
 
+TEST(fe_space_hp, legendre) {
+    const unsigned N = 1000;
+    const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
+    for (unsigned p = 0 ; p < 20 ; ++p) {
+	for (unsigned i = 0 ; i <= N ; ++i) {
+	    const double x = static_cast<double>(i) / N;
+	    // Compute the legendre polynomial at x
+	    const double exact = lf::fe::LegendrePoly<double>::eval(p, x);
+	    // Differentiate the integral using central differences
+	    const double intp = lf::fe::LegendrePoly<double>::integral(p+1, x+eps/2);
+	    const double intm = lf::fe::LegendrePoly<double>::integral(p+1, x-eps/2);
+	    const double approx = (intp - intm) / eps;
+	    // Compare the two values
+	    if (std::fabs(exact) < 100) {
+		ASSERT_NEAR(approx, exact, 1e-5) << "P=" << p << " x=" << x;
+	    }
+	    else {
+		ASSERT_NEAR(approx/exact, 1, 1e-5) << "p=" << p << " x=" << x;
+	    }
+	}
+    }
+}
+
+TEST(fe_space_hp, jacobi) {
+    const unsigned N = 1000;
+    const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
+    for (unsigned p = 0 ; p < 20 ; ++p) {
+	for (unsigned alpha = 1 ; alpha < 10 ; ++alpha) {
+	    for (unsigned i = 0 ; i <= N ; ++i) {
+		const double x = static_cast<double>(i) / N;
+		// Compute the jacobi polynomial at x
+		const double exact = lf::fe::JacobiPoly<double>::eval(p, alpha, x);
+		// Differentiate the integral using central differences
+		const double intp = lf::fe::JacobiPoly<double>::integral(p+1, alpha, x+eps/2);
+		const double intm = lf::fe::JacobiPoly<double>::integral(p+1, alpha, x-eps/2);
+		const double approx = (intp - intm) / eps;
+		// Compare the two values
+		if (std::fabs(exact) < 100) {
+		    ASSERT_NEAR(approx, exact, 1e-5) << "P=" << p << " alpha=" << alpha << " x=" << x;
+		}
+		else {
+		    ASSERT_NEAR(approx/exact, 1, 1e-5) << "p=" << p << " alpha=" << alpha << " x=" << x;
+		}
+	    }
+	}
+    }
+}
+
 TEST(fe_space_hp, continuity) {
   for (int selector = 0; selector <= 8; ++selector) {
     // Get a hybrid test mesh on [0, 3]^2
