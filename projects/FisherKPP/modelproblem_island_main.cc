@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "strangsplitting.cc"
+#include "strangsplitting.h"
 
 using FisherKPP::localQuadFunction;
 using FisherKPP::StrangSplit;

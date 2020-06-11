@@ -20,7 +20,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "strangsplitting.cc"
+#include "strangsplitting.h"
 
 using FisherKPP::localQuadFunction;
 using FisherKPP::StrangSplit;
