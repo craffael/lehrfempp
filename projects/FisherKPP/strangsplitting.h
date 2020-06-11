@@ -5,6 +5,9 @@
  *  @copyright ETH Zurich
  */
 
+#ifndef STRANG_SPLIT_H
+#define STRANG_SPLIT_H
+
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
@@ -13,12 +16,12 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <Eigen/Dense>
 #include <Eigen/LU>
 #include <Eigen/Sparse>
 #include <memory>
-#include <stdio.h>
-#include <stdlib.h>
 #include <utility>
 
 namespace FisherKPP {
@@ -43,7 +46,8 @@ class StrangSplit {
   /* Member Functions */
   Eigen::VectorXd diffusionEvolutionOperator(bool firstcall,
                                              const Eigen::VectorXd &mu);
-  Eigen::VectorXd Evolution(const Eigen::VectorXd &cap, const Eigen::VectorXd &mu);
+  Eigen::VectorXd Evolution(const Eigen::VectorXd &cap,
+                            const Eigen::VectorXd &mu);
 
  private:
   /* Finite Element Space */
@@ -69,3 +73,5 @@ class StrangSplit {
 };
 
 } /* namespace FisherKPP */
+
+#endif
