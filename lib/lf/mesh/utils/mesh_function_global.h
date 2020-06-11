@@ -56,6 +56,13 @@ class MeshFunctionGlobal {
   using F_return_type =
       decltype(std::declval<F>()(std::declval<Eigen::Vector2d>()));
 
+  // The following is needed because otherwise
+  // MeshFunctionGlobal(MeshFunctionGlobal&&) is not noexcept!
+  // Once http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1286r2.html
+  // has been implemented by compilers, we can drop this requirement.
+  static_assert(std::is_nothrow_move_constructible_v<F>,
+                "The functor F must be noexcept move constructible!");
+
  public:
   MeshFunctionGlobal(const MeshFunctionGlobal&) = default;
   MeshFunctionGlobal(MeshFunctionGlobal&&) noexcept = default;
