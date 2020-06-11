@@ -78,14 +78,14 @@ int main(int /*argc*/, char** /*argv*/) {
     double res = 0.0;
 
     /* The kernel g_1: No bounds on \| x - y \|. */
-    auto g_1 = [x](const Eigen::Vector2d& y) -> double {
+    auto g_1 = [&x](const Eigen::Vector2d& y) -> double {
       double tmp_res = 0.0;
       tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
       return tmp_res;
     };
 
     /* The kernel g_2: Only an upper bound. */
-    auto g_2 = [x](const Eigen::Vector2d& y) -> double {
+    auto g_2 = [&x](const Eigen::Vector2d& y) -> double {
       double tmp_res = 0.0;
       if ((x - y).norm() <= 1.75) {
         tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
@@ -94,7 +94,7 @@ int main(int /*argc*/, char** /*argv*/) {
     };
 
     /* The kernel g_3: Lower and Upper bound. */
-    auto g_3 = [x](const Eigen::Vector2d& y) -> double {
+    auto g_3 = [&x](const Eigen::Vector2d& y) -> double {
       double tmp_res = 0.0;
       if (1.25 <= (x - y).norm() && (x - y).norm() <= 1.75) {
         tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
@@ -120,14 +120,14 @@ int main(int /*argc*/, char** /*argv*/) {
       auto L_j = [fe_space, &dofh, N_dofs, edge_pred,
                   j](const Eigen::Vector2d& x) -> double {
         /* The kernel g_1: No bounds on \| x - y \|. */
-        auto g_1_j = [x](const Eigen::Vector2d& y) -> double {
+        auto g_1_j = [&x](const Eigen::Vector2d& y) -> double {
           double tmp_res = 0.0;
           tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
           return tmp_res;
         };
 
         /* The kernel g_2: Only an upper bound. */
-        auto g_2_j = [x](const Eigen::Vector2d& y) -> double {
+        auto g_2_j = [&x](const Eigen::Vector2d& y) -> double {
           double tmp_res = 0.0;
           if ((x - y).norm() <= 1.75) {
             tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
@@ -136,7 +136,7 @@ int main(int /*argc*/, char** /*argv*/) {
         };
 
         /* The kernel g_3: Lower and Upper bound. */
-        auto g_3_j = [x](const Eigen::Vector2d& y) -> double {
+        auto g_3_j = [&x](const Eigen::Vector2d& y) -> double {
           double tmp_res = 0.0;
           if (1.25 <= (x - y).norm() && (x - y).norm() <= 1.75) {
             tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));

@@ -129,7 +129,7 @@ int main(int /*argc*/, char** /*argv*/) {
   auto h = [fe_space, mesh_p, edge_pred](const Eigen::Vector2d& x) -> double {
     double res = 0.0;
     /* Decaying function handle depending on x and y. */
-    auto g = [x](const Eigen::Vector2d& y) -> double {
+    auto g = [&x](const Eigen::Vector2d& y) -> double {
       double tmp_res = 0.0;
       if (5 <= (x - y).norm() && (x - y).norm() <= 30) {
         tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
@@ -156,7 +156,7 @@ int main(int /*argc*/, char** /*argv*/) {
     if (boundary_nodes(j)) {
       auto L_j = [fe_space, &dofh, N_dofs, edge_pred,
                   j](const Eigen::Vector2d& x) -> double {
-        auto g_j = [x](const Eigen::Vector2d& y) -> double {
+        auto g_j = [&x](const Eigen::Vector2d& y) -> double {
           double tmp_res = 0.0;
           if (5 <= (x - y).norm() && (x - y).norm() <= 30) {
             tmp_res = (1.0 / (1.0 + (x - y).squaredNorm()));
