@@ -96,7 +96,8 @@ assembleGalerkinMatrices(const lf::assemble::DofHandler &dofh, DIFF_COEFF &&c,
   lf::assemble::AssembleMatrixLocally(1, dofh, dofh, elMat_Edge, A_COO);
 
   Eigen::SparseMatrix<double> A_sps = A_COO.makeSparse();
-  Eigen::SparseMatrix<double> M = M_COO.makeSparse();
+  Eigen::SparseMatrix<double> M(N_dofs, N_dofs);
+  M = M_COO.makeSparse();
 
   Eigen::MatrixXd A_ds(A_sps);
   Eigen::MatrixXd A_ds1 = A_ds - L;
@@ -114,46 +115,66 @@ template <typename DIFF_COEFF, typename NONLOC_BC>
 StrangSplit::StrangSplit(
     std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> &fe_space,
     double T, unsigned m, double lambda, DIFF_COEFF &&c, NONLOC_BC &&h,
-    Eigen::MatrixXd L)
-    : fe_space_(fe_space), T_(T), m_(m), lambda_(lambda) {
-  const lf::assemble::DofHandler &dofh{fe_space_->LocGlobMap()};
+    const Eigen::MatrixXd &L)
+    : fe_space_(fe_space), T_(T), m_(m), lambda_(lambda){
 
+  const lf::assemble::DofHandler &dofh{fe_space_->LocGlobMap()};
+  const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
   std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-      galerkinpair = assembleGalerkinMatrices(dofh, c, h, L);
+      galerkinpair = assembleGalerkinMatrices(dofh, c, h, L); 
   A_ = galerkinpair.first;
   M_ = galerkinpair.second;
 
   /* Butcher Tableau Coefficient for SDIRK-2 */
   kappa_ = 1.0 - 0.5 * sqrt(2.0);
+  
+  tau_ = T_/m_;
+  solver1.compute(M_ + 0.5 * tau_ * kappa_ * A_);
+  LF_VERIFY_MSG(solver1.info() == Eigen::Success, "LU decomposition failed");
+  solver2.compute(M_ + tau_ * kappa_ * A_);
+  LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
 }
 
 /* Member Function StrangSplit
  * Computes the Evolution Operator for the linear parabolic diffusion term
  */
-Eigen::VectorXd StrangSplit::diffusionEvolutionOperator(
-    double tau, const Eigen::VectorXd &mu) {
+Eigen::VectorXd StrangSplit::diffusionEvolutionOperator(bool firstcall, const Eigen::VectorXd &mu) {
   Eigen::VectorXd evol_op;
-
+  
   /* Precomputation */
-  solver.compute(M_ + tau * kappa_ * A_);
+/*  solver.compute(M_ + tau * kappa_ * A_);
   LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
+ */
   Eigen::VectorXd rhs = -A_ * mu;
 
-  /* First stage SDIRK-2 */
-  Eigen::VectorXd k1 = solver.solve(rhs);
-  LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
-  /* Second stage SDIRK-2 */
-  Eigen::VectorXd k2 = solver.solve(rhs - tau * (1 - kappa_) * A_ * k1);
-  LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
+  if(firstcall) {
+	/* First stage SDIRK-2 */
+  	Eigen::VectorXd k1 = solver1.solve(rhs);
+  	LF_VERIFY_MSG(solver1.info() == Eigen::Success, "LU decomposition failed");
+  	/* Second stage SDIRK-2 */
+  	Eigen::VectorXd k2 = solver1.solve(rhs - 0.5 * tau_ * (1 - kappa_) * A_ * k1);
+  	LF_VERIFY_MSG(solver1.info() == Eigen::Success, "LU decomposition failed");
 
-  evol_op = mu + tau * (1 - kappa_) * k1 + tau * kappa_ * k2;
+  	evol_op = mu + 0.5 * tau_ * (1 - kappa_) * k1 + 0.5 * tau_ * kappa_ * k2;
+  
+  } else {
+	 /* First stage SDIRK-2 */
+    Eigen::VectorXd k1 = solver2.solve(rhs);
+    LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
+    /* Second stage SDIRK-2 */
+    Eigen::VectorXd k2 = solver2.solve(rhs - tau_ * (1 - kappa_) * A_ * k1);
+    LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
+
+    evol_op = mu + tau_ * (1 - kappa_) * k1 + tau_ * kappa_ * k2;
+  }
+  
   return evol_op;
 }
 
 /* Member Function StrangSplit
  * Computes the Evolution for m_ timesteps
  */
-Eigen::VectorXd StrangSplit::Evolution(Eigen::VectorXd &cap,
+Eigen::VectorXd StrangSplit::Evolution(const Eigen::VectorXd &cap,
                                        const Eigen::VectorXd &mu) {
   const lf::assemble::DofHandler &dofh{fe_space_->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
@@ -165,27 +186,28 @@ Eigen::VectorXd StrangSplit::Evolution(Eigen::VectorXd &cap,
   Eigen::VectorXd ones = Eigen::VectorXd::Ones(N_dofs);
 
   /* Time Steps */
-  double tau = T_ / m_;
+  //double tau = T_ / m_;
 
   /* Strang Splitting Method
    * First half time step [0, tau/2]: Diffusion
    */
-  sol_cur = StrangSplit::diffusionEvolutionOperator(tau / 2., mu);
-
+  bool firstcall = true;
+  sol_cur = StrangSplit::diffusionEvolutionOperator(firstcall, mu);
+  firstcall = false;
   /* loop through time steps */
   for (unsigned int i = 1; i < m_ - 1; i++) {
     /* Reaction for next full time step */
     sol_next = cap.cwiseQuotient(ones + (cap.cwiseQuotient(sol_cur) - ones) *
-                                            std::exp(-lambda_ * tau));
+                                            std::exp(-lambda_ * tau_));
     sol_cur = sol_next;
     /* Diffusion for next full time step */
-    sol_next = StrangSplit::diffusionEvolutionOperator(tau, sol_cur);
+    sol_next = StrangSplit::diffusionEvolutionOperator(firstcall, sol_cur);
     sol_cur = sol_next;
   }
 
   /* Last half time step: Reaction */
   sol_next = cap.cwiseQuotient(ones + (cap.cwiseQuotient(sol_cur) - ones) *
-                                          std::exp(-lambda_ * tau / 2.));
+                                          std::exp(-lambda_ * tau_ / 2.));
   sol_cur = sol_next;
 
   sol = sol_cur;

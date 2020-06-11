@@ -16,7 +16,7 @@
 
 #include "strangsplitting.cc"
 
-using namespace FisherKPP;
+using FisherKPP::StrangSplit;
 
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */

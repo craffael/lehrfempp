@@ -17,6 +17,8 @@
 #include <Eigen/LU>
 #include <Eigen/Sparse>
 #include <memory>
+#include <stdio.h>
+#include <stdlib.h>
 #include <utility>
 
 namespace FisherKPP {
@@ -34,15 +36,14 @@ class StrangSplit {
   explicit StrangSplit(
       std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> &fe_space,
       double T, unsigned int m, double lambda, DIFF_COEFF &&c, NONLOC_BC &&h,
-      Eigen::MatrixXd L);
+      const Eigen::MatrixXd &L);
   /* Destructor */
   virtual ~StrangSplit() = default;
 
   /* Member Functions */
-  Eigen::VectorXd diffusionEvolutionOperator(double tau,
+  Eigen::VectorXd diffusionEvolutionOperator(bool firstcall,
                                              const Eigen::VectorXd &mu);
-
-  Eigen::VectorXd Evolution(Eigen::VectorXd &cap, const Eigen::VectorXd &mu);
+  Eigen::VectorXd Evolution(const Eigen::VectorXd &cap, const Eigen::VectorXd &mu);
 
  private:
   /* Finite Element Space */
@@ -51,6 +52,8 @@ class StrangSplit {
   double T_;
   /* Number of Timesteps */
   unsigned int m_;
+  /* Time step size */
+  double tau_;
   /* Growth Factor */
   double lambda_;
   /* coefficient for SDIRK-2 Butcher Tableau */
@@ -61,7 +64,8 @@ class StrangSplit {
   /* Galerkin matrix for the Mass Matrix */
   Eigen::SparseMatrix<double> M_;
   /* Precompute LU decomposition needed for time stepping */
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver1;
+  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver2;
 };
 
 } /* namespace FisherKPP */
