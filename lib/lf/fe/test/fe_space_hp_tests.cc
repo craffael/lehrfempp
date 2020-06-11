@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Check that the FeSpaceHP class works as expected
+ * @brief Check that the FeSpaceHierarchic class works as expected
  * @author Tobias Rohner
  * @date May 2020
  * @copyright MIT License
@@ -16,7 +16,7 @@
 
 namespace lf::fe::test {
 
-TEST(fe_space_hp, legendre) {
+TEST(fe_space_hierarchic, legendre) {
     const unsigned N = 1000;
     const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
     for (unsigned p = 0 ; p < 20 ; ++p) {
@@ -39,7 +39,7 @@ TEST(fe_space_hp, legendre) {
     }
 }
 
-TEST(fe_space_hp, jacobi) {
+TEST(fe_space_hierarchic, jacobi) {
     const unsigned N = 1000;
     const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
     for (unsigned p = 0 ; p < 20 ; ++p) {
@@ -64,14 +64,14 @@ TEST(fe_space_hp, jacobi) {
     }
 }
 
-TEST(fe_space_hp, continuity) {
+TEST(fe_space_hierarchic, continuity) {
   for (int selector = 0; selector <= 8; ++selector) {
     // Get a hybrid test mesh on [0, 3]^2
     const auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     for (unsigned p = 1; p <= 20; ++p) {
-      // Generate a FeSpaceHP with order p on the mesh
+      // Generate a FeSpaceHierarchic with order p on the mesh
       const auto fe_space =
-          std::make_unique<lf::fe::FeSpaceHP<double>>(mesh, p);
+          std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, p);
       // Test the continuity of each basis function associated with an edge
       for (auto&& cell : mesh->Entities(0)) {
         const auto sfl_cell = fe_space->ShapeFunctionLayout(*cell);
@@ -133,7 +133,7 @@ TEST(fe_space_hp, continuity) {
   }
 }
 
-TEST(fe_space_hp, grad_segment) {
+TEST(fe_space_hierarchic, grad_segment) {
   // Test the gradients of the shape functions up to degree p=20
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
@@ -141,7 +141,7 @@ TEST(fe_space_hp, grad_segment) {
     for (const auto o0 :
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       orient[0] = o0;
-      const lf::fe::FeHPSegment<double> sfl(p, orient);
+      const lf::fe::FeHierarchicSegment<double> sfl(p, orient);
       const auto eval_nodes = sfl.EvaluationNodes();
       // Compute the exact gradients
       const auto grad_exact = sfl.GradientsReferenceShapeFunctions(eval_nodes);
@@ -164,7 +164,7 @@ TEST(fe_space_hp, grad_segment) {
   }
 }
 
-TEST(fe_space_hp, grad_tria) {
+TEST(fe_space_hierarchic, grad_tria) {
   // Test the gradients of the shape functions up to degree p=20
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
@@ -181,7 +181,7 @@ TEST(fe_space_hp, grad_tria) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             orient[3] = o3;
-            const lf::fe::FeHPTria<double> sfl(p, orient);
+            const lf::fe::FeHierarchicTria<double> sfl(p, orient);
             const auto eval_nodes = sfl.EvaluationNodes();
             // Compute the exact gradients
             const auto grad_exact =
@@ -238,7 +238,7 @@ TEST(fe_space_hp, grad_tria) {
   }
 }
 
-TEST(fe_space_hp, grad_quad) {
+TEST(fe_space_hierarchic, grad_quad) {
   // Test the gradients of the shape functions up to degree p=20
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
@@ -255,7 +255,7 @@ TEST(fe_space_hp, grad_quad) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             orient[3] = o3;
-            const lf::fe::FeHPQuad<double> sfl(p, orient);
+            const lf::fe::FeHierarchicQuad<double> sfl(p, orient);
             const auto eval_nodes = sfl.EvaluationNodes();
             // Compute the exact gradients
             const auto grad_exact =

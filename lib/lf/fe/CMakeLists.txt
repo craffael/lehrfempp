@@ -1,9 +1,9 @@
 set(sources				
     scalar_fe_space.h
     scalar_fe_space.cc
-    fe_space_hp.h
-    hp_fe.h
-    hp_fe.cc
+    fe_space_hierarchic.h
+    hierarchic_fe.h
+    hierarchic_fe.cc
     fe_tools.h
     fe_tools.cc
     mesh_function_fe.h

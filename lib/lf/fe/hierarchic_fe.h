@@ -151,14 +151,14 @@ Eigen::VectorXd chebyshevNodes(unsigned n);
  * of all Lagrange type finite element spaces (any degree).
  */
 template <class SCALAR>
-class FeHPPoint : public ScalarReferenceFiniteElement<SCALAR> {
+class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
-   * @brief Create a new FeHPPoint by specifying the degree of the shape
+   * @brief Create a new FeHierarchicPoint by specifying the degree of the shape
    * functions.
    * @param degree The degree of the shape function.
    */
-  explicit FeHPPoint(unsigned degree) : degree_(degree) {}
+  explicit FeHierarchicPoint(unsigned degree) : degree_(degree) {}
 
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kPoint();
@@ -199,16 +199,16 @@ class FeHPPoint : public ScalarReferenceFiniteElement<SCALAR> {
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHPSegment final
+class FeHierarchicSegment final
     : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeHPSegment(const FeHPSegment &) = default;
-  FeHPSegment(FeHPSegment &&) noexcept = default;
-  FeHPSegment &operator=(const FeHPSegment &) = default;
-  FeHPSegment &operator=(FeHPSegment &&) noexcept = default;
-  ~FeHPSegment() = default;
+  FeHierarchicSegment(const FeHierarchicSegment &) = default;
+  FeHierarchicSegment(FeHierarchicSegment &&) noexcept = default;
+  FeHierarchicSegment &operator=(const FeHierarchicSegment &) = default;
+  FeHierarchicSegment &operator=(FeHierarchicSegment &&) noexcept = default;
+  ~FeHierarchicSegment() = default;
 
-  FeHPSegment(unsigned degree,
+  FeHierarchicSegment(unsigned degree,
               nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
@@ -346,16 +346,16 @@ class FeHPSegment final
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHPTria final
+class FeHierarchicTria final
     : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeHPTria(const FeHPTria &) = default;
-  FeHPTria(FeHPTria &&) noexcept = default;
-  FeHPTria &operator=(const FeHPTria &) = default;
-  FeHPTria &operator=(FeHPTria &&) noexcept = default;
-  ~FeHPTria() = default;
+  FeHierarchicTria(const FeHierarchicTria &) = default;
+  FeHierarchicTria(FeHierarchicTria &&) noexcept = default;
+  FeHierarchicTria &operator=(const FeHierarchicTria &) = default;
+  FeHierarchicTria &operator=(FeHierarchicTria &&) noexcept = default;
+  ~FeHierarchicTria() = default;
 
-  FeHPTria(unsigned degree,
+  FeHierarchicTria(unsigned degree,
            nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
@@ -801,16 +801,16 @@ class FeHPTria final
  * @see ScalarReferenceFiniteElement
  */
 template <typename SCALAR>
-class FeHPQuad final
+class FeHierarchicQuad final
     : public ScalarReferenceFiniteElement<SCALAR> {
  public:
-  FeHPQuad(const FeHPQuad &) = default;
-  FeHPQuad(FeHPQuad &&) noexcept = default;
-  FeHPQuad &operator=(const FeHPQuad &) = default;
-  FeHPQuad &operator=(FeHPQuad &&) noexcept = default;
-  ~FeHPQuad() = default;
+  FeHierarchicQuad(const FeHierarchicQuad &) = default;
+  FeHierarchicQuad(FeHierarchicQuad &&) noexcept = default;
+  FeHierarchicQuad &operator=(const FeHierarchicQuad &) = default;
+  FeHierarchicQuad &operator=(FeHierarchicQuad &&) noexcept = default;
+  ~FeHierarchicQuad() = default;
 
-  FeHPQuad(unsigned degree,
+  FeHierarchicQuad(unsigned degree,
            nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
@@ -1070,7 +1070,7 @@ class FeHPQuad final
  private:
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
-  FeHPSegment<SCALAR> fe1d_;
+  FeHierarchicSegment<SCALAR> fe1d_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
   [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {

@@ -10,7 +10,7 @@
 #define LF_USCALFE_FE_SPACE_HP_H_
 
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
-#include "hp_fe.h"
+#include "hierarchic_fe.h"
 #include "scalar_fe_space.h"
 
 namespace lf::fe {
@@ -19,22 +19,22 @@ namespace lf::fe {
  * @brief Lagrangian Finite Element Space of arbitrary degree
  */
 template <typename SCALAR>
-class FeSpaceHP : public ScalarFESpace<SCALAR> {
+class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  FeSpaceHP() = delete;
-  FeSpaceHP(const FeSpaceHP &) = delete;
-  FeSpaceHP(FeSpaceHP &&) noexcept = default;
-  FeSpaceHP &operator=(const FeSpaceHP &) = delete;
-  FeSpaceHP &operator=(FeSpaceHP &&) noexcept = default;
+  FeSpaceHierarchic() = delete;
+  FeSpaceHierarchic(const FeSpaceHierarchic &) = delete;
+  FeSpaceHierarchic(FeSpaceHierarchic &&) noexcept = default;
+  FeSpaceHierarchic &operator=(const FeSpaceHierarchic &) = delete;
+  FeSpaceHierarchic &operator=(FeSpaceHierarchic &&) noexcept = default;
 
   /**
    * @brief Constructor: Sets up the dof handler
    * @param mesh_p A shared pointer to the underlying mesh (immutable)
    * @param N The polynomial degree of the Finite Element Space
    */
-  explicit FeSpaceHP(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p, unsigned N)
+  explicit FeSpaceHierarchic(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p, unsigned N)
       : ScalarFESpace<SCALAR>(mesh_p),
         ref_el_(mesh_p, nullptr),
         degree_(N) {
@@ -69,7 +69,7 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
     return ShapeFunctionLayout(entity)->NumRefShapeFunctions();
   }
 
-  ~FeSpaceHP() override = default;
+  ~FeSpaceHierarchic() override = default;
 
  private:
   // R.H.: Should this really be shared pointers ?
@@ -84,12 +84,12 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = std::make_shared<FeHPPoint<SCALAR>>(degree_);
+      ref_el_(*entity) = std::make_shared<FeHierarchicPoint<SCALAR>>(degree_);
     }
     // Initialize all shape function layouts for the edges
     size_type num_rsf_edge = 0;
     for (auto entity : Mesh()->Entities(1)) {
-      ref_el_(*entity) = std::make_shared<FeHPSegment<SCALAR>>(
+      ref_el_(*entity) = std::make_shared<FeHierarchicSegment<SCALAR>>(
           degree_, entity->RelativeOrientations());
       num_rsf_edge = ref_el_(*entity)->NumRefShapeFunctions(0);
     }
@@ -99,12 +99,12 @@ class FeSpaceHP : public ScalarFESpace<SCALAR> {
     for (auto entity : Mesh()->Entities(0)) {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria():
-          ref_el_(*entity) = std::make_shared<FeHPTria<SCALAR>>(
+          ref_el_(*entity) = std::make_shared<FeHierarchicTria<SCALAR>>(
               degree_, entity->RelativeOrientations());
           num_rsf_tria = ref_el_(*entity)->NumRefShapeFunctions(0);
           break;
         case lf::base::RefEl::kQuad():
-          ref_el_(*entity) = std::make_shared<FeHPQuad<SCALAR>>(
+          ref_el_(*entity) = std::make_shared<FeHierarchicQuad<SCALAR>>(
               degree_, entity->RelativeOrientations());
           num_rsf_quad = ref_el_(*entity)->NumRefShapeFunctions(0);
           break;

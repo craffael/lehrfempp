@@ -6,7 +6,7 @@
  * @copyright MIT License
  */
 
-#include "hp_fe.h"
+#include "hierarchic_fe.h"
 
 namespace lf::fe {
 
