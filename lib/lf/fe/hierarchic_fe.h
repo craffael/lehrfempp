@@ -41,18 +41,17 @@ using sub_idx_t = lf::base::sub_idx_t;
 template <typename SCALAR>
 struct LegendrePoly {
   /**
-   * @brief computes the `n`-th degree shifted Legendre Polynomial \f$ P_n(x) \f$
+   * @brief computes the `n`-th degree shifted Legendre Polynomial \f$ P_n(x)
+   *\f$
    * @param n The degree of the polynomial
    * @param x The evaluation coordinate in [0, 1]
    *
-   * To evaluate the non-shifted Legendre Polynomials \f$ \tilde{P}_p(x) \f$ on [-1, 1] we use that
-   * \f[
-   *	\begin{aligned}
+   * To evaluate the non-shifted Legendre Polynomials \f$ \tilde{P}_p(x) \f$ on
+   *[-1, 1] we use that \f[ \begin{aligned}
    *	    \tilde{P}_0(x) &= 1 \\
    *	    \tilde{P}_1(x) &= x \\
-   *	    (p+1)\tilde{P}_{p+1}(x) &= (2p+1)\tilde{P}_p(x) - p\tilde{P}_{p-1}(x)
-   *	\end{aligned}
-   * \f]
+   *	    (p+1)\tilde{P}_{p+1}(x) &= (2p+1)\tilde{P}_p(x) -
+   *p\tilde{P}_{p-1}(x) \end{aligned} \f]
    */
   static SCALAR eval(unsigned n, double x) {
     // The recurrence relation is for the non-shifted Legendre Polynomials
@@ -76,7 +75,8 @@ struct LegendrePoly {
   }
 
   /**
-   * @brief computes the integral of the (n-1)-th degree shifted Legendre Polynomial
+   * @brief computes the integral of the (n-1)-th degree shifted Legendre
+   *Polynomial
    * @param n The degree of the integrated polynomial
    * @param x The evaluation coordinate in [0, 1]
    *
@@ -113,7 +113,8 @@ struct LegendrePoly {
 };
 
 /**
- * @brief Struct for computing Jacobi and integrated Jacobi polynomials with \f$ \beta=0 \f$
+ * @brief Struct for computing Jacobi and integrated Jacobi polynomials with \f$
+ * \beta=0 \f$
  */
 template <typename SCALAR>
 struct JacobiPoly {
@@ -128,10 +129,8 @@ struct JacobiPoly {
    *	\begin{aligned}
    *	    P_0^\alpha(x) &= 1 \\
    *	    P_1^\alpha(x) &= (2+\alpha)x - 1 \\
-   *	    a_pP_p^\alpha(x) &= b_p(c_p(2x-1)+\alpha^2)P_{p-1}^\alpha(x) - d_pP_{p-2}^\alpha(x)
-   *	\end{aligned}
-   * \f]
-   * where the coefficients are defined as
+   *	    a_pP_p^\alpha(x) &= b_p(c_p(2x-1)+\alpha^2)P_{p-1}^\alpha(x) -
+   *d_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
    * \f[
    *	\begin{aligned}
    *	    a_p &= 2p(p+\alpha)(2p+\alpha-2) \\
@@ -177,10 +176,8 @@ struct JacobiPoly {
    * \f[
    *	\begin{aligned}
    *	    L_1^\alpha(x) &= x \\
-   *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) - c_pP_{p-2}^\alpha(x)
-   *	\end{aligned}
-   * \f]
-   * where the coefficients are defined as
+   *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) -
+   *c_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
    * \f[
    *	\begin{aligned}
    *	    a_p &= \frac{p+\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
