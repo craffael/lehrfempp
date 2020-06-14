@@ -8,7 +8,7 @@
 
 /**
  * @file
- * @brief Data structures representing simple finite elements
+ * @brief Implementati0on of parametric Lagrangian finite elements
  * @author Ralf Hiptmair
  * @date October 2018
  * @copyright MIT License
@@ -721,15 +721,26 @@ class FeLagrangePoint : public ScalarReferenceFiniteElement<SCALAR> {
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadratic Lagrangian finite element on a triangular reference element
  *
- * This is a specialization of ScalarReferenceFiniteElement.
- * Refer to its documentation.
+ * This is a specialization of @ref ScalarReferenceFiniteElement.
  *
  * The reference shape functions are combinations of the barycentric coordinate
- * functions on the reference triangle.
+ * functions on the reference triangle, see @lref{ex:quadLFE}.
  *
  * The first three shape functions are associated to the vertices,
  * the other three shape functions to the edges of the triangle. There are
- * no interior shape functions.
+ * no interior shape functions, see @lref{eq:quadlsf}:
+ *
+ * \f{eqnarray}{
+    \hat{b}^1({\bf x}) &=& 2(1-x_1-x_2)(\frac12 -x_1 -x_2)\;,\\
+    \hat{b}^2({\bf x}) &=& 2x_1(x_1-\frac12)\;,\\
+    \hat{b}^3({\bf x}) &=& 2x_2(x_2-\frac12)\;,\\
+    \hat{b}^4({\bf x}) &=& 4(1-x_1-x_2)x_1\;,\\
+    \hat{b}^5({\bf x}) &=& 4x_1x_2\;,\\
+    \hat{b}^6({\bf x}) &=& 4(1-x_1-x_2)x_2\;.
+ * \f}
+ *
+ * The numbering convention for the local shape functions is explained in
+ @lref{ex:quadnodes}.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -743,18 +754,29 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO2Tria() = default;
   ~FeLagrangeO2Tria() override = default;
 
+  /** @copydoc ScalarReferenceFiniteElement::RefEl()
+   */
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kTria();
   }
 
+  /**  @brief Quadratic Lagrangian finite elements rely on polynomials of degree
+   * 2
+   */
   [[nodiscard]] unsigned Degree() const override { return 2; }
 
+  /** @brief Six local shape functions are associated with a triangular cell in
+   *         the case of quadratic Lagrangian finite elements.
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 6; }
 
   /**  @brief One shape function attached to each node
    * and one to each edge of the triangle. There are no interior
    * shape functions.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
@@ -764,8 +786,8 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   /**  @brief One shape function attached to each node
    * and one to each edge of the triangle. There are no interior
    * shape functions.
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t /*subidx*/) const override {
@@ -773,78 +795,97 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     return (codim == 0) ? 0 : 1;
   }
 
+  /** @brief Point evaluation of reference shape functions
+   *
+   * The formulas of the reference shape functions are given in the class
+   * documentation of @ref FeLagrangeO2Tria.
+   *
+   * @sa ScalarReferenceFiniteElement::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-
+    // Number of evaluation points
     const size_type n_pts(refcoords.cols());
+    // Result returned in 6 x P matrix
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(6, n_pts);
-
+    // Convert to array type for componentwise operations
     auto x0 = refcoords.row(0).array();
     auto x1 = refcoords.row(1).array();
-
+    // Compound evaluation of formulas for reference shape functions
     result.row(0) = (2.0 * (1 - x0 - x1) * (0.5 - x0 - x1)).matrix();
     result.row(1) = (2.0 * x0 * (x0 - 0.5)).matrix();
     result.row(2) = (2.0 * x1 * (x1 - 0.5)).matrix();
     result.row(3) = (4.0 * (1 - x0 - x1) * x0).matrix();
     result.row(4) = (4.0 * x0 * x1).matrix();
     result.row(5) = (4.0 * (1 - x0 - x1) * x1).matrix();
-
     return result;
   }
 
+  /** @brief Point evaluations of gradients of reference shape functions
+   *
+   *  Refer to @lref{ex:qfemelmat} for related explanations
+   *
+   * @sa ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-
+    // Number of evaluation points
     const size_type n_pts(refcoords.cols());
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(6, 2 * n_pts);
-
     // reshape into a 12xn_pts matrix.
     Eigen::Map<Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
                Eigen::AutoAlign>
         temp(&result(0, 0), 12, n_pts);
-
+    // Convert to array type for componentwise operations
     auto x0 = refcoords.row(0).array();
     auto x1 = refcoords.row(1).array();
-
-    // d/dx_0
+    // d/dx_0 for all reference shape functions
     temp.row(0) = -3.0 + 4.0 * x0 + 4.0 * x1;
     temp.row(1) = 4.0 * x0 - 1.0;
     temp.row(2) = 0.0;
     temp.row(3) = 4 - 0 - 8.0 * x0 - 4.0 * x1;
     temp.row(4) = 4.0 * x1;
     temp.row(5) = -4.0 * x1;
-
-    // d/dx_1
+    // d/dx_1 for the reference shape functions
     temp.row(6) = -3.0 + 4.0 * x0 + 4.0 * x1;
     temp.row(7) = 0.0;
     temp.row(8) = 4.0 * x1 - 1.0;
     temp.row(9) = -4 * x0;
     temp.row(10) = 4.0 * x0;
     temp.row(11) = 4.0 - 8.0 * x1 - 4.0 * x0;
-
     return result;
   }
 
-  /** @brief Evaluation nodes are the vertices of the triangle and
-   * the midpoints of the edges.
-   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+  /** @brief Evaluation nodes are the three vertices of the triangle and
+   * the three midpoints of its edges.
+   *
+   * The reference shape functions as implemented by this class are a _cardinal
+   * basis_ of the space of quadratic two-variate polynomials  with respect to
+   * these evaluation nodes.
+   *
+   * The numbering of evluation nodes is fixed by the numbering of the local
+   * shape functions.
+   *
+   * @sa ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     // clang-format off
     Eigen::Matrix<double, 2,6> nodes;
+    // Reference coordinates of evaluation nodes in the columns of a 2 x 6 - matrix. 
     nodes << 0.0, 1.0, 0.0,  0.5, 0.5, 0.0,
              0.0, 0.0, 1.0,  0.0, 0.5, 0.5;
     // clang-format on
     return nodes;
   }
 
-  /** @brief Six evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+  /** @brief Six evaluation nodes, the same number as local shape functions
+   *
+   * @sa ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -855,11 +896,13 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadratic Lagrangian finite element on a line segment
  *
- * This is a specialization of ScalarReferenceFiniteElement.
- * Refer to its documentation.
+ * This is a specialization of ScalarReferenceFiniteElement for quadratic
+ * Lagrangian finite elements on a segment.
  *
  * The first two shape functions are associated with the vertices of the
- * segment. The last one is an interior shape function.
+ * segment. The last one is an interior shape function. This complies with the
+ * ordering convention of LehreFEM++ for local shape functions, see
+ * @lref{par:betlordlsf}.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -877,13 +920,24 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
     return base::RefEl::kSegment();
   }
 
+  /** @brief Quadratic Lagrangian finite element rely on polynomials of degree 2
+   */
   [[nodiscard]] unsigned Degree() const override { return 2; }
 
+  /** @brief Three local shape functions are associated with an edge
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   * @sa FeLagrangeO2Segment::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 3; }
 
   /** @brief One shape function attached to each node and one interior shape
    * function.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   *
+   * Hence (sub-)entities of any co-dimension possess exactly one local shape
+   * function.
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
@@ -892,8 +946,8 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
 
   /** @brief One shape function attached to each node and one interior shape
    * function.
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t /*subidx*/) const override {
@@ -901,43 +955,60 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
     return 1;
   }
 
+  /** @brief Evaluation of shape functions on reference segment (unit interval)
+   *
+   * The local shape functions are associated with a segment in the case of
+   * quadratic Lagrangian finite elements. In reference coordinates those are:
+   * \f[
+         \hat{b}^1(x) = 2(1-x)(\frac12-x)\;,\quad
+         \hat{b}^2(x) = 2x(x-\frac12)\;,\quad
+         \hat{b}^3(x) = 4(1-x)x\;.
+   * \f]
+   * This is a _cardinal basis_ of the space of quadratic univariate polynomials
+   with respect to the points \f$x=0,\frac12,1\f$.
+   *
+   * @sa ScalarReferenceFiniteElement::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
-
+    // Matrix for returning values of local shape functions
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(3, n_pts);
-
+    // Convert into an array type for componentwise operations
     auto x = refcoords.row(0).array();
-
-    // endpoints
+    // local shape functions belonging to the endpoints
     result.row(0) = 2.0 * (1.0 - x) * (0.5 - x);
     result.row(1) = 2.0 * x * (x - 0.5);
-
-    // midpoint
+    // local shape function sitting at midpoint (belonging to segment)
     result.row(2) = 4.0 * (1.0 - x) * x;
-
     return result;
   }
 
+  /** @brief Evaluation of derivatives of local shape function on reference
+   * interval
+   *
+   * For the passed points return the derivative of the three local shape
+   * functions on the reference interval in the rows of a matrix.
+   *
+   * @sa FeLagrangeO2Segment::EvalReferenceShapeFunctions()
+   * @sa ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 1,
                   "Reference coordinates must be 1-vectors");
     const size_type n_pts(refcoords.cols());
-
-    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
-        3, refcoords.cols());
-
+    // Matrix for returning the derivatives of the local shape functions
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(3, n_pts);
+    // Convert to array for componentwise operations
     auto x = refcoords.row(0).array();
-
-    // endpoints
+    // LSF at endpoints
     result.row(0) = (4.0 * x - 3.0).matrix();
     result.row(1) = (4.0 * x - 1.0).matrix();
-
-    // midpoint:
+    // LSF at midpoint:
     result.row(2) = (4.0 - 8.0 * x).matrix();
     return result;
   }
@@ -947,11 +1018,12 @@ class FeLagrangeO2Segment : public ScalarReferenceFiniteElement<SCALAR> {
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 1, 3> nodes;
+    // Reference coordinates of the three evaluation nodes
     nodes << 0.0, 1.0, 0.5;
     return nodes;
   }
 
-  /** @brief Three evaluation nodes
+  /** @brief Three evaluation nodes, same number as local shape functions
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
@@ -993,17 +1065,27 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO2Quad() = default;
   ~FeLagrangeO2Quad() override = default;
 
+  /** @copydoc ScalarReferenceFiniteElement::RefEl() */
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kQuad();
   }
 
+  /** @brief Quadratic Lagrangian finite elements sport polynomials of degree 2
+   */
   [[nodiscard]] unsigned Degree() const override { return 2; }
 
+  /** @brief Nine local shape functions are associated with a quadrilateral cell
+   *
+   * Refer to @lref{ex:QuadTPLFE}.
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 9; }
 
   /** @brief One shape function is attached to each node and edge of
    * the quadrilateral. One interior shape function.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t codim)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
@@ -1012,7 +1094,8 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
 
   /** @brief One shape function is attached to each node
    * and each edge of the quadrilateral. One interior shape function.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,
    * sub_idx_t)
    */
   [[nodiscard]] size_type NumRefShapeFunctions(
@@ -1021,11 +1104,28 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     return 1;
   }
 
+  /** @brief Point evaluation of reference local shape functions in unit square
+   *
+   * The nine local shape functions for quadratic Lagrangian finite elements on
+   * the unit square can be obtained by forming tensor product of the three
+   * local shape functions on the unit interval. This entails taking into
+   * account the numbering of the local shape functions: LSF 0-3 belong to the
+   * four corners, LSF 4-7 belong to the edges, LSF 8 belongs to the cell. This
+   * complies with the numbering convention for local shape functions as
+   * explained in @lref{par:betlordlsf}, @lref{ex:quadnodes}.
+   *
+   * Here the local shape functions are chosen as _cardinal basis_ of the space
+   * of tensor product polynomials of degree 2 with respect to the following
+   * nine evaluation nodes: the four corners of the unit square, the four
+   * midpoints of its edges, and its center of gravity, see @lref{tplfeldof}.
+   *
+   * @see ScalarReferenceFiniteElement::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-
+    // Number of evaluation points
     const size_type n_pts(refcoords.cols());
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(9, n_pts);
 
@@ -1044,6 +1144,15 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
     return result;
   }
 
+  /** @brief Point evaluation of gradient of reference shape functions for
+   * quadratic Lagrangian finite elements on quadrilateral cells
+   *
+   * Gradients are returned packed in the rows of a 9 x 2P matrix, where
+   * P is the number of evaluation points passed as a 2 x P matrix.
+   *
+   * @sa FeLagrangeO2Quad::EvalReferenceShapeFunctions()
+   * @sa ScalarReferenceFiniteElement::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -1090,20 +1199,26 @@ class FeLagrangeO2Quad final : public ScalarReferenceFiniteElement<SCALAR> {
 
   /** @brief Evaluation nodes are the vertices,
    * the midpoints of the edges and the center of the  quadrilateral.
-   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   *
+   * Location and numbering of evaluation nodes:
+   * @image html lnlfe2.png
+   *
+   * @return a 2x9 matrix containing the refrence coordinates of the evaluation
+   * nodes in its columns
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 2, 9> nodes;
 
     // clang-format off
     nodes << 0.0, 1.0, 1.0, 0.0,  0.5, 1.0, 0.5, 0.0,  0.5,
-             0.0, 0.0, 1.0, 1.0,  0.0, 0.5, 1.0, 0.5,  0.5;
+               0.0, 0.0, 1.0, 1.0,  0.0, 0.5, 1.0, 0.5,  0.5;
     // clang-format on
     return nodes;
   }
 
-  /** @brief Nine evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+  /** @brief Nine evaluation nodes, same as the number of local shape functions
+   *
+   * @sa FeLagrangeO2Quad::EvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
