@@ -16,8 +16,8 @@
 
 #include "strangsplitting.h"
 
-using FisherKPP::StrangSplit;
 using FisherKPP::localQuadFunction;
+using FisherKPP::StrangSplit;
 
 int main(int /*argc*/, char** /*argv*/) {
   /* Obtain mesh */
