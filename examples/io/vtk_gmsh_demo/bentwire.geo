@@ -25,3 +25,7 @@ Physical Curve("Contact1") = {5};
 Physical Curve("Insulated") = {3, 7, 4, 6, 8, 1};
 //+ Computational domain
 Physical Surface("wire") = {1};
+//+
+Physical Point("bottomcontact") = {1, 2};
+//+
+Physical Point("leftcontact") = {8, 9};

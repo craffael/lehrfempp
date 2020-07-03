@@ -1,7 +1,7 @@
 /** @file
  * @brief Prints information about a mesh stored in the Gmsh .msh file
  * @author Ralf Hiptmair
- * @dateJuly 2020
+ * @date July 2020
  * @copyright MIT License
  */
 
@@ -74,4 +74,29 @@ int main(int argc, char **argv) {
     }
   }
 
+  // Finally output (small) mesh in TikZ format
+  if (mesh.NumEntities(0) < 100) {
+    using lf::io::TikzOutputCtrl;
+    std::stringstream filename_tikz;
+    filename_tikz << filename.substr(0, filename.find_last_of(".")) << ".tex";
+    lf::io::writeTikZ(
+        *mesh_p, filename_tikz.str(),
+        TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
+            TikzOutputCtrl::EdgeNumbering | TikzOutputCtrl::CellNumbering |
+            TikzOutputCtrl::NodeNumbering | TikzOutputCtrl::ArrowTips |
+            TikzOutputCtrl::WithPreamble);
+  }
 }  // end main
+
+/* Output when invoked without an argument
+tk_gmsh_demo $ ./examples.io.mesh_analysis_demo
+Mesh read from file
+/scratch/users/ralfh/NOSAVE/numpde/Numcourses/NumPDE/lehrfempp/examples/io/vtk_gmsh_demo/bentwire.msh
+2D mesh in 2D: 55 nodes, 131 edges, 77 cells
+codim = 0 physical group wire, id = 4: 77 entitites
+codim = 1 physical group Contact0, id = 1: 2 entitites
+codim = 1 physical group Contact1, id = 2: 2 entitites
+codim = 1 physical group Insulated, id = 3: 27 entitites
+codim = 2 physical group bottomcontact, id = 5: 2 entitites
+codim = 2 physical group leftcontact, id = 6: 2 entitites
+*/
