@@ -26,7 +26,8 @@ enum class TikzOutputCtrl : unsigned int {
   VerticeNumbering = 4,
   NodeNumbering = 8,
   EdgeNumbering = 16,
-  ArrowTips = 32
+  ArrowTips = 32,
+  WithPreamble = 64
 };
 
 TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs);
@@ -67,7 +68,7 @@ addition to the mesh grid
 cells
  * - TikzOutputCtrl::NodeNumbering to display numbering of nodes
  * - TikzOutputCtrl::EdgeNumbering to display edge numbering
- *
+ * - TikzOutputCtrl::WithPreamble to generate compilable LaTeX document
  *
  * @note If no details about nodes, cells or edges are wanted, simply pass 0 as
 the 'int output_ctrl' parameter in writeTikZ(). This will draw only the mesh

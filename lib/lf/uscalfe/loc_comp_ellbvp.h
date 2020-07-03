@@ -248,9 +248,7 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
   }
 }
 
-// TODO(craffael) remove const once
-// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
-// is resolved
+// Main method for the computation of the element matrix
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 typename lf::uscalfe::ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat
@@ -278,7 +276,7 @@ ReactionDiffusionElementMatrixProvider<
                               << std::endl);
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
-
+  // Gram determinant at quadrature points
   const Eigen::VectorXd determinants(
       geo_ptr->IntegrationElement(pfe.Qr().Points()));
   LF_ASSERT_MSG(
@@ -293,7 +291,7 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
 
-  // compute values of alpha, gamma at quadrature points:
+  // compute values of coefficients alpha, gamma at quadrature points:
   auto alphaval = alpha_(cell, pfe.Qr().Points());
   auto gammaval = gamma_(cell, pfe.Qr().Points());
 

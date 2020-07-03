@@ -39,6 +39,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   bool RenderCellsOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::RenderCells);
   bool ArrowsOn = static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
+  bool WithPreamble =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::WithPreamble);
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
@@ -55,6 +57,11 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   size_type node_count = 0;
 
   // START writing to file
+  if (WithPreamble) {
+    outfile << "\\documentclass[12pt,a4paper]{article}\n\\usepackage{tikz}"
+               "\n\\begin{document}\n"
+            << std::endl;
+  }
   outfile << "% TikZ document graphics \n";
 
   // Scale font size for large meshes
@@ -245,6 +252,9 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   }  // for codim
 
   outfile << "\\end{tikzpicture}\n";
+  if (WithPreamble) {
+    outfile << "\n\\end{document}" << std::endl;
+  }
   return true;
 }  // writetikz
 
