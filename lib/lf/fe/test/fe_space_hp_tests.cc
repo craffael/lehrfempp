@@ -16,7 +16,7 @@
 
 namespace lf::fe::test {
 
-TEST(fe_space_hierarchic, legendre) {
+TEST(fe_space_hierarchic, legendre_integral) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
@@ -40,7 +40,31 @@ TEST(fe_space_hierarchic, legendre) {
   }
 }
 
-TEST(fe_space_hierarchic, jacobi) {
+TEST(fe_space_hierarchic, legendre_derivative) {
+  const unsigned N = 1000;
+  const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
+  for (unsigned p = 0; p < 20; ++p) {
+    for (unsigned i = 0; i <= N; ++i) {
+      const double x = static_cast<double>(i) / N;
+      // Compute the differentiated legendre polynomial at x
+      const double exact = lf::fe::LegendrePoly<double>::derivative(p, x);
+      // Differentiate the polynomial using central differences
+      const double evalp =
+          lf::fe::LegendrePoly<double>::eval(p + 1, x + eps / 2);
+      const double evalm =
+          lf::fe::LegendrePoly<double>::eval(p + 1, x - eps / 2);
+      const double approx = (evalp - evalm) / eps;
+      // Compare the two values
+      if (std::fabs(exact) < 100) {
+        ASSERT_NEAR(approx, exact, 1e-5) << "p=" << p << " x=" << x << " exact=" << exact << " approx=" << approx;
+      } else {
+        ASSERT_NEAR(approx / exact, 1, 1e-5) << "p=" << p << " x=" << x << " exact=" << exact << " approx=" << approx;
+      }
+    }
+  }
+}
+
+TEST(fe_space_hierarchic, jacobi_integral) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {

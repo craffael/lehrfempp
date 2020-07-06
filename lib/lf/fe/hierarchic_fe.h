@@ -110,6 +110,47 @@ struct LegendrePoly {
     // Compute the integral
     return (Lj - Ljm2) / (4 * n - 2);
   }
+
+  /**
+   * @brief Computes the derivative of the (n+1)-th degree shifted Legendre
+   * Polynomial
+   * @param n The degree of the differentiated polynomial
+   * @param x The evaluation coordinate in [0, 1]
+   *
+   * The derivative is evaluated using
+   * \f[
+   *	P_n'(x) = \begin{cases}
+   *	    n(n+1) &\mbox{ for } x = 1 \\
+   *	    (-1)^{n+1}n(n+1) &\mbox{ for } x = 0 \\
+   *	    \frac{n}{2x^2-2x}\left((2x-1)P_n(x)-P_{n-1}(x)\right)
+   *	\end{cases}
+   * \f]
+   */
+  static SCALAR derivative(unsigned n, double x) {
+    if (n == 0) {
+      return 2;
+    }
+    // Special cases for x == 0 and x == 1
+    if (x == 1) {
+      return (n + 1) * (n + 2);
+    }
+    if (x == 0) {
+      // Depends on whether the polynomial is even or odd
+      return n % 2 == 0 ? (n + 1.) * (n + 2.) : -(n + 1.) * (n + 2.);
+    }
+    // Map to the interval [-1, 1]
+    x = 2 * x - 1;
+    // Compute the n-th and (n+1)-th degree shifted Legendre Polynomials
+    double Ljm1 = 1;
+    double Lj = x;
+    for (unsigned j = 1; j < n+1; ++j) {
+      const double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
+      Ljm1 = Lj;
+      Lj = Ljp1;
+    }
+    // Compute the derivative of the (n+1)-th polynomial
+    return (2 * n + 2) / (x * x - 1) * (x * Lj - Ljm1);
+  }
 };
 
 /**
