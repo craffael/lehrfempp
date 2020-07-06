@@ -56,9 +56,13 @@ TEST(fe_space_hierarchic, legendre_derivative) {
       const double approx = (evalp - evalm) / eps;
       // Compare the two values
       if (std::fabs(exact) < 100) {
-        ASSERT_NEAR(approx, exact, 1e-5) << "p=" << p << " x=" << x << " exact=" << exact << " approx=" << approx;
+        ASSERT_NEAR(approx, exact, 1e-5)
+            << "p=" << p << " x=" << x << " exact=" << exact
+            << " approx=" << approx;
       } else {
-        ASSERT_NEAR(approx / exact, 1, 1e-5) << "p=" << p << " x=" << x << " exact=" << exact << " approx=" << approx;
+        ASSERT_NEAR(approx / exact, 1, 1e-5)
+            << "p=" << p << " x=" << x << " exact=" << exact
+            << " approx=" << approx;
       }
     }
   }
@@ -164,34 +168,38 @@ TEST(fe_space_hierarchic, continuity) {
 TEST(fe_space_hierarchic, segment_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 20
-  for (unsigned p = 1 ; p <= 20 ; ++p) {
+  for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
     for (const auto o0 :
-	 {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
+         {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       const lf::mesh::Orientation orientations[] = {o0};
       const lf::fe::FeHierarchicSegment<double> sfl(p, orientations);
       // Get the evaluation nodes for the segment
       const auto eval_nodes = sfl.EvaluationNodes();
       // Interpolate all polynomials up to degree p
-      for (unsigned i = 0 ; i <= p ; ++i) {
-        const auto poly = [&](double x) {
-  	  return std::pow(x, i);
-        };
-	// Evaluate the polynomial at the evaluation nodes
-	const Eigen::RowVectorXd eval = eval_nodes.unaryExpr([&](double x) -> double { return poly(x); });
-	// Compute the basis function coefficients
-	const auto dofs = sfl.NodalValuesToDofs(eval);
-	// Compute the exact polynomial on a fine grid
-	const int N = 100;
-	const Eigen::RowVectorXd points = Eigen::RowVectorXd::LinSpaced(N, 0, 1);
-	const Eigen::RowVectorXd exact = points.unaryExpr([&](double x) -> double { return poly(x); });
-	// Compute the interpolation on a fine grid
-	const Eigen::MatrixXd basis_eval = sfl.EvalReferenceShapeFunctions(points);
-	const Eigen::RowVectorXd approx = dofs * basis_eval;
-	// Compare the exact and interpolated functions
-	long idx;
-	const double diff = (exact - approx).array().maxCoeff(&idx);
-	ASSERT_TRUE(diff < 1e-10) << "\nexact = [" << exact << "]\napprox = [" << approx << "]\nAt idx = " << idx << std::endl;
+      for (unsigned i = 0; i <= p; ++i) {
+        const auto poly = [&](double x) { return std::pow(x, i); };
+        // Evaluate the polynomial at the evaluation nodes
+        const Eigen::RowVectorXd eval =
+            eval_nodes.unaryExpr([&](double x) -> double { return poly(x); });
+        // Compute the basis function coefficients
+        const auto dofs = sfl.NodalValuesToDofs(eval);
+        // Compute the exact polynomial on a fine grid
+        const int N = 100;
+        const Eigen::RowVectorXd points =
+            Eigen::RowVectorXd::LinSpaced(N, 0, 1);
+        const Eigen::RowVectorXd exact =
+            points.unaryExpr([&](double x) -> double { return poly(x); });
+        // Compute the interpolation on a fine grid
+        const Eigen::MatrixXd basis_eval =
+            sfl.EvalReferenceShapeFunctions(points);
+        const Eigen::RowVectorXd approx = dofs * basis_eval;
+        // Compare the exact and interpolated functions
+        long idx;
+        const double diff = (exact - approx).array().maxCoeff(&idx);
+        ASSERT_TRUE(diff < 1e-10)
+            << "\nexact = [" << exact << "]\napprox = [" << approx
+            << "]\nAt idx = " << idx << std::endl;
       }
     }
   }
