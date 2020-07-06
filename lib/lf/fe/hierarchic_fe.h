@@ -13,6 +13,7 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/mesh.h>
+#include <lf/quad/quad.h>
 
 #include <cmath>
 #include <memory>
@@ -340,9 +341,8 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
                       nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
-        rel_orient_(rel_orient) {
-    eval_nodes_ = ComputeEvaluationNodes();
-  }
+	qr_dual_(lf::quad::make_QuadRule(RefEl(), degree)),
+        rel_orient_(rel_orient) { }
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
     return lf::base::RefEl::kSegment();
@@ -425,7 +425,13 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    return eval_nodes_;
+    // First two nodes are vertices of the segment
+    Eigen::MatrixXd nodes(1, NumEvaluationNodes());
+    nodes(0, 0) = 0;
+    nodes(0, 1) = 1;
+    // The other nodes are quadrature points
+    nodes.block(0, 2, 1, qr_dual_.NumPoints()) = qr_dual_.Points();
+    return nodes;
   }
 
   /**
@@ -433,38 +439,46 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
-    return degree_ + 1;
+    return qr_dual_.NumPoints() + 2;
   }
 
+  /**
+   * @brief Maps function evaluations to basis function coefficients
+   * @param nodevals The value of the function at the evaluation nodes
+   *
+   * This function computes the basis function coefficients using the dual
+   * basis of the basis functions on the segment. It is given by
+   * \f[
+   *	\lambda_i^e[f] = \begin{cases}
+   *	    f(0) &\mbox{ for } i = 0 \\
+   *	    f(1) &\mbox{ for } i = 1 \\
+   *	    P_{i-1}(1)f(1) - P_{i-1}(0)f(0) - \int_0^1\! P_{i-1}'(x)f(x) \,\mathrm{d}x &\mbox{ for } i \geq 2
+   *	\end{cases}
+   * \f]
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
-    // Simply solve the LSE for the basis function coefficients
-    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
-        shape_functions_at_nodes =
-            EvalReferenceShapeFunctions(EvaluationNodes());
-    return shape_functions_at_nodes.transpose()
-        .fullPivHouseholderQr()
-        .solve(nodevals.transpose())
-        .transpose();
+    Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(NumRefShapeFunctions());
+    // Compute the first and second basis function coefficients
+    dofs[0] = nodevals[0];
+    dofs[1] = nodevals[1];
+    // Compute the other basis function coefficients
+    for (lf::base::size_type i = 2 ; i < NumRefShapeFunctions() ; ++i) {
+      const SCALAR P0 = LegendrePoly<SCALAR>::eval(i - 1, 0);
+      const SCALAR P1 = LegendrePoly<SCALAR>::eval(i - 1, 1);
+      const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR { return LegendrePoly<SCALAR>::derivative(i - 2, x); });
+      // Evaluate the integral from the dual basis
+      const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.tail(qr_dual_.NumPoints()).array()).sum();
+      // Compute the basis function coefficient
+      dofs[i] = P0 * nodevals[0] - P1 * nodevals[1] - integ;
+    }
+    return dofs;
   }
 
  private:
   unsigned degree_;
-  Eigen::MatrixXd eval_nodes_;
+  lf::quad::QuadRule qr_dual_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
-
-  [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
-    Eigen::MatrixXd nodes(1, degree_ + 1);
-    // Node 0 and 1 are the vertices
-    nodes(0, 0) = 0;
-    nodes(0, 1) = 1;
-    // The rest of the nodes are Chebyshev nodes
-    if (degree_ > 1) {
-      nodes.block(0, 2, 1, degree_ - 1) =
-          chebyshevNodes(degree_ - 1).transpose();
-    }
-    return nodes;
-  }
 };
 
 /**
