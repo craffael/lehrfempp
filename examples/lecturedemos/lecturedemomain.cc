@@ -19,6 +19,7 @@
 #include "lecturedemoquad.h"
 #include "lecturedemorefine.h"
 #include "lecturedemotwonorm.h"
+#include "lecturedemomeshfunction.h"
 
 int main(int argc, char **argv) {
   // We rely on Boost's program_option library for parsing command line
@@ -47,6 +48,7 @@ int main(int argc, char **argv) {
     std::cout << "N = 5: demo of solving a Dirichlet BVP" << std::endl;
     std::cout << "N = 6: demo of mesh refinement" << std::endl;
     std::cout << "N = 7: Various of ways of computing an L2-norm" << std::endl;
+    std::cout << "N = 8: Demo for MeshFunction" << std::endl;
   } else {
     int selector = vm["demo_number"].as<int>();
     if ((selector == 1) || (selector == 0)) {
@@ -69,6 +71,9 @@ int main(int argc, char **argv) {
     }
     if ((selector == 7) || (selector == 0)) {
       lecturedemo::lecturedemotwonorm();
+    }
+    if ((selector == 8) || (selector == 0)) {
+      lecturedemo::lecturedemomeshfunction();
     }
   }
 

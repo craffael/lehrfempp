@@ -74,11 +74,20 @@ int main(int argc, char **argv) {
     }
   }
 
-  // Finally output (small) mesh in TikZ format
-  if (mesh.NumEntities(0) < 100) {
+  // Finally output (small) mesh in TikZ format: basic information
+  {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
     filename_tikz << filename.substr(0, filename.find_last_of(".")) << ".tex";
+    lf::io::writeTikZ(*mesh_p, filename_tikz.str(),
+                      TikzOutputCtrl::WithPreamble);
+  }
+  // Finally output (small) mesh in TikZ format: full information
+  {
+    using lf::io::TikzOutputCtrl;
+    std::stringstream filename_tikz;
+    filename_tikz << filename.substr(0, filename.find_last_of("."))
+                  << "_full.tex";
     lf::io::writeTikZ(
         *mesh_p, filename_tikz.str(),
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
