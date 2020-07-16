@@ -9,11 +9,10 @@
  */
 
 #include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/utils/utils.h>
-#include <lf/uscalfe/uscalfe.h>
-#include <lf/refinement/refinement.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/refinement/refinement.h>
+#include <lf/uscalfe/uscalfe.h>
 
 #include <iostream>
 
@@ -34,6 +33,7 @@ namespace lecturedemo {
  *
  *
  */
+/* SAM_LISTING_BEGIN_1 */
 template <typename COEFFFUNCTION, typename VECTORFIELD>
 double integrateCoeffgradUhVf(
     std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>> fe_space,
@@ -55,6 +55,7 @@ double integrateCoeffgradUhVf(
       })(0, 0);
   return s;
 }  // end stabFlux
+/* SAM_LISTING_END_1 */
 
 void lecturedemomeshfunction();
 
