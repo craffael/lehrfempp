@@ -215,10 +215,10 @@ TEST(fe_space_hierarchic, quad_dual) {
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       for (const auto o1 :
            {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-        for (const auto o2 :
-             {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-          for (const auto o3 :
-               {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
+        for (const auto o2 : {lf::mesh::Orientation::positive,
+                              lf::mesh::Orientation::negative}) {
+          for (const auto o3 : {lf::mesh::Orientation::positive,
+                                lf::mesh::Orientation::negative}) {
             const lf::mesh::Orientation orientations[] = {o0, o1, o2, o3};
             const lf::fe::FeHierarchicQuad<double> sfl(p, orientations);
             // Get the evaluation nodes for the segment
@@ -226,29 +226,31 @@ TEST(fe_space_hierarchic, quad_dual) {
             // Interpolate all polynomials up to degree p
             for (unsigned i = 0; i <= p; ++i) {
               for (unsigned j = 0; j <= p; ++j) {
-                const auto poly = [&](double x, double y) { return std::pow(x, i) * std::pow(y, j); };
+                const auto poly = [&](double x, double y) {
+                  return std::pow(x, i) * std::pow(y, j);
+                };
                 // Evaluate the polynomial at the evaluation nodes
                 Eigen::RowVectorXd eval(eval_nodes.cols());
-		for (long k = 0 ; k < eval_nodes.cols() ; ++k) {
-		  eval[k] = poly(eval_nodes(0, k), eval_nodes(1, k));
-		}
+                for (long k = 0; k < eval_nodes.cols(); ++k) {
+                  eval[k] = poly(eval_nodes(0, k), eval_nodes(1, k));
+                }
                 // Compute the basis function coefficients
                 const auto dofs = sfl.NodalValuesToDofs(eval);
                 // Compute the exact polynomial on a fine grid
                 const int N = 101;
-		Eigen::MatrixXd points(2, N*N);
-		for (int k = 0 ; k < N ; ++k) {
-		  const double x = static_cast<double>(k) / (N - 1);
-		  for (int l = 0 ; l < N ; ++l) {
-		    const double y = static_cast<double>(l) / (N - 1);
-		    points(0, N * k + l) = x;
-		    points(1, N * k + l) = y;
-		  }
-		}
+                Eigen::MatrixXd points(2, N * N);
+                for (int k = 0; k < N; ++k) {
+                  const double x = static_cast<double>(k) / (N - 1);
+                  for (int l = 0; l < N; ++l) {
+                    const double y = static_cast<double>(l) / (N - 1);
+                    points(0, N * k + l) = x;
+                    points(1, N * k + l) = y;
+                  }
+                }
                 Eigen::RowVectorXd exact(N * N);
-		for (int k = 0 ; k < N * N ; ++k) {
-		  exact[k] = poly(points(0, k), points(1, k));
-		}
+                for (int k = 0; k < N * N; ++k) {
+                  exact[k] = poly(points(0, k), points(1, k));
+                }
                 // Compute the interpolation on a fine grid
                 const Eigen::MatrixXd basis_eval =
                     sfl.EvalReferenceShapeFunctions(points);
@@ -257,16 +259,13 @@ TEST(fe_space_hierarchic, quad_dual) {
                 long idx;
                 const double diff = (exact - approx).array().maxCoeff(&idx);
                 ASSERT_TRUE(diff < 1e-10)
-                    << "\ndiff = " << diff
-		    << "]\n point = [" << points(0, idx) << ", " << points(1, idx)
-                    << "]\nAt idx = " << idx  << " of " << N * N
-		    << "\norientations = ["
-		    << to_char(o0) << ", " << to_char(o1)
-		    << ", " << to_char(o2) << ", " << to_char(o3)
-		    << "]\ndofs = [" << dofs
-		    << "]\n p = " << p
-		    << "\n i=" << i << ", j=" << j << std::endl;
-	      }  
+                    << "\ndiff = " << diff << "]\n point = [" << points(0, idx)
+                    << ", " << points(1, idx) << "]\nAt idx = " << idx << " of "
+                    << N * N << "\norientations = [" << to_char(o0) << ", "
+                    << to_char(o1) << ", " << to_char(o2) << ", " << to_char(o3)
+                    << "]\ndofs = [" << dofs << "]\n p = " << p << "\n i=" << i
+                    << ", j=" << j << std::endl;
+              }
             }
           }
         }

@@ -912,7 +912,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   unsigned degree_;
   Eigen::MatrixXd eval_nodes_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
-  
+
   [[nodiscard]] Eigen::MatrixXd ComputeEvaluationNodes() const {
     Eigen::MatrixXd eval_nodes(2, (degree_ + 1) * (degree_ + 2) / 2);
     const auto cheb = chebyshevNodes(degree_ - 1);
@@ -981,7 +981,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         degree_(degree),
         qr_dual_(lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), degree)),
         rel_orient_(rel_orient),
-        fe1d_(degree, rel_orient) { }
+        fe1d_(degree, rel_orient) {}
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
     return lf::base::RefEl::kQuad();
@@ -1234,15 +1234,18 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     nodes.block(0, 4 + N, 1, N).setOnes();
     nodes.block(1, 4 + N, 1, N) = qr_dual_.Points();
     // Add the quadrature points on the third edge
-    nodes.block(0, 4 + 2 * N, 1, N) = Eigen::RowVectorXd::Ones(N) - qr_dual_.Points();
+    nodes.block(0, 4 + 2 * N, 1, N) =
+        Eigen::RowVectorXd::Ones(N) - qr_dual_.Points();
     nodes.block(1, 4 + 2 * N, 1, N).setOnes();
     // Add the quadrature points on the first edge
     nodes.block(0, 4 + 3 * N, 1, N).setZero();
-    nodes.block(1, 4 + 3 * N, 1, N) = Eigen::RowVectorXd::Ones(N) - qr_dual_.Points();
+    nodes.block(1, 4 + 3 * N, 1, N) =
+        Eigen::RowVectorXd::Ones(N) - qr_dual_.Points();
     // Add the quadrature points for the face
-    for (lf::base::size_type i = 0 ; i < N ; ++i) {
+    for (lf::base::size_type i = 0; i < N; ++i) {
       nodes.block(0, 4 + (4 + i) * N, 1, N) = qr_dual_.Points();
-      nodes.block(1, 4 + (4 + i) * N, 1, N).setConstant(qr_dual_.Points()(0, i));
+      nodes.block(1, 4 + (4 + i) * N, 1, N)
+          .setConstant(qr_dual_.Points()(0, i));
     }
     return nodes;
   }
@@ -1267,73 +1270,97 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     dofs[3] = nodevals[3];
     // Compute the basis function coefficients on the edges
     // by applying the dual basis of the segment
-    for (lf::base::size_type i = 2; i < Degree()+1; ++i) {
+    for (lf::base::size_type i = 2; i < Degree() + 1; ++i) {
       const SCALAR P0 = LegendrePoly<SCALAR>::eval(i - 1, 0);
       const SCALAR P1 = LegendrePoly<SCALAR>::eval(i - 1, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd(N);
       // Compute the basis function coefficients for the first edge
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4, N).array()).sum();
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, x);
+        });
+        const SCALAR integ = (qr_dual_.Weights().transpose().array() *
+                              psidd.array() * nodevals.segment(4, N).array())
+                                 .sum();
         dofs[2 + i] = P1 * nodevals[1] - P0 * nodevals[0] - integ;
-      }
-      else {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4, N).array()).sum();
+      } else {
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x);
+        });
+        const SCALAR integ = (qr_dual_.Weights().transpose().array() *
+                              psidd.array() * nodevals.segment(4, N).array())
+                                 .sum();
         dofs[2 + i] = P1 * nodevals[0] - P0 * nodevals[1] - integ;
       }
       // Compute the basis function coefficients for the second edge
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + N, N).array()).sum();
-        dofs[2 + i + (Degree() - 1)] = P1 * nodevals[2] - P0 * nodevals[1] - integ;
-      }
-      else {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + N, N).array()).sum();
-        dofs[2 + i + (Degree() - 1)] = P1 * nodevals[1] - P0 * nodevals[2] - integ;
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + N, N).array())
+                .sum();
+        dofs[2 + i + (Degree() - 1)] =
+            P1 * nodevals[2] - P0 * nodevals[1] - integ;
+      } else {
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + N, N).array())
+                .sum();
+        dofs[2 + i + (Degree() - 1)] =
+            P1 * nodevals[1] - P0 * nodevals[2] - integ;
       }
       // Compute the basis function coefficients for the third edge
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + 2 * N, N).array()).sum();
-        dofs[2 + i + 2 * (Degree() - 1)] = P1 * nodevals[3] - P0 * nodevals[2] - integ;
-      }
-      else {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + 2 * N, N).array()).sum();
-        dofs[2 + i + 2 * (Degree() - 1)] = P1 * nodevals[2] - P0 * nodevals[3] - integ;
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + 2 * N, N).array())
+                .sum();
+        dofs[2 + i + 2 * (Degree() - 1)] =
+            P1 * nodevals[3] - P0 * nodevals[2] - integ;
+      } else {
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + 2 * N, N).array())
+                .sum();
+        dofs[2 + i + 2 * (Degree() - 1)] =
+            P1 * nodevals[2] - P0 * nodevals[3] - integ;
       }
       // Compute the basis function coefficients for the fourth edge
       if (rel_orient_[3] == lf::mesh::Orientation::positive) {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + 3 * N, N).array()).sum();
-        dofs[2 + i + 3 * (Degree() - 1)] = P1 * nodevals[0] - P0 * nodevals[3] - integ;
-      }
-      else {
-	psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-	    return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x); 
-	});
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() * psidd.array() * nodevals.segment(4 + 3 * N, N).array()).sum();
-        dofs[2 + i + 3 * (Degree() - 1)] = P1 * nodevals[3] - P0 * nodevals[0] - integ;
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + 3 * N, N).array())
+                .sum();
+        dofs[2 + i + 3 * (Degree() - 1)] =
+            P1 * nodevals[0] - P0 * nodevals[3] - integ;
+      } else {
+        psidd = qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
+          return LegendrePoly<SCALAR>::derivative(i - 2, 1 - x);
+        });
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psidd.array() *
+             nodevals.segment(4 + 3 * N, N).array())
+                .sum();
+        dofs[2 + i + 3 * (Degree() - 1)] =
+            P1 * nodevals[3] - P0 * nodevals[0] - integ;
       }
     }
     // Compute the basis function coefficients for the face bubbles
-    for (unsigned i = 0 ; i < Degree()-1 ; ++i) {
+    for (unsigned i = 0; i < Degree() - 1; ++i) {
       // Apply the 1d dual along the x-axis
       const SCALAR P0i = LegendrePoly<SCALAR>::eval(i + 1, 0);
       const SCALAR P1i = LegendrePoly<SCALAR>::eval(i + 1, 1);
@@ -1342,22 +1369,34 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
             return LegendrePoly<SCALAR>::derivative(i, x);
           });
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> partial(N);
-      for (lf::base::size_type j = 0 ; j < N ; ++j) {
-	const SCALAR integ = (qr_dual_.Weights().transpose().array() * psiddi.array() * nodevals.segment(4 + (4 + j) * N, N).array()).sum();
-	partial[j] = P1i * nodevals[4 + N + j] - P0i * nodevals[3 + 4 * N - j] - integ;
+      for (lf::base::size_type j = 0; j < N; ++j) {
+        const SCALAR integ =
+            (qr_dual_.Weights().transpose().array() * psiddi.array() *
+             nodevals.segment(4 + (4 + j) * N, N).array())
+                .sum();
+        partial[j] =
+            P1i * nodevals[4 + N + j] - P0i * nodevals[3 + 4 * N - j] - integ;
       }
-      const SCALAR f0 = (qr_dual_.Weights().transpose().array() * psiddi.array() * nodevals.segment(4, N).array()).sum();
-      const SCALAR f1 = (qr_dual_.Weights().transpose().array() * psiddi.array() * nodevals.segment(4 + 2 * N, N).array()).sum();
-      for (unsigned j = 0 ; j < Degree()-1 ; ++j) {
-	// Apply the 1d dual along the y-axis
+      const SCALAR f0 = (qr_dual_.Weights().transpose().array() *
+                         psiddi.array() * nodevals.segment(4, N).array())
+                            .sum();
+      const SCALAR f1 =
+          (qr_dual_.Weights().transpose().array() * psiddi.array() *
+           nodevals.segment(4 + 2 * N, N).array())
+              .sum();
+      for (unsigned j = 0; j < Degree() - 1; ++j) {
+        // Apply the 1d dual along the y-axis
         const SCALAR P0j = LegendrePoly<SCALAR>::eval(j + 1, 0);
         const SCALAR P1j = LegendrePoly<SCALAR>::eval(j + 1, 1);
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psiddj =
             qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
               return LegendrePoly<SCALAR>::derivative(j, x);
             });
-	const SCALAR integ = (qr_dual_.Weights().transpose().array() * psiddj.array() * partial.array()).sum();
-	dofs[4 * Degree() + j * (Degree() - 1) + i] = P1j * f1 - P0j * f0 - integ;
+        const SCALAR integ = (qr_dual_.Weights().transpose().array() *
+                              psiddj.array() * partial.array())
+                                 .sum();
+        dofs[4 * Degree() + j * (Degree() - 1) + i] =
+            P1j * f1 - P0j * f0 - integ;
       }
     }
     return dofs;
