@@ -115,6 +115,7 @@ class ReactionDiffusionElementMatrixProvider {
   ReactionDiffusionElementMatrixProvider(
       std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
       DIFF_COEFF alpha, REACTION_COEFF gamma);
+
   /** @brief Constructor: cell-independent precomputations and custom quadrature
    * rule
    * @param fe_space collection of specifications for scalar-valued parametric
@@ -122,9 +123,11 @@ class ReactionDiffusionElementMatrixProvider {
    * @param alpha mesh function for the (possibly matrix-valued) diffusion
    * coefficient
    * @param gamma mesh function providing scalar-valued diffusion coefficient
-   * @param qr_collection collection of quadrature rules. A quadrature rule is
-   *  required for every cell type for which the finite element space provides
-   * local shape functions.
+   * @param qr_collection collection of quadrature rules. If a quadrature rule
+   * is not specified for a cell type for which the finite element space
+   * provides local shape functions, a local quadature rule with double the
+   * degree of exactness as the polynomial degree of the finite element space is
+   * used.
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
@@ -140,6 +143,7 @@ class ReactionDiffusionElementMatrixProvider {
    * subset of cells.
    */
   virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+
   /**
    * @brief main routine for the computation of element matrices
    *
