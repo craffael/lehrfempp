@@ -240,9 +240,14 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
         fe_precomp_[ref_el.Id()] =
             PrecomputedScalarReferenceFiniteElement(fe, qr);
       } else {
-        // Quadrature rule is missing for an entity type for which
-        // local shape functions are available
-        LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
+        // Quadrature rule is not specified or an entity type for which
+        // local shape functions are available. In this case use quadrature rule
+        // with twice the degree of exactness compared to the degree of the
+        // finite element space.
+        fe_precomp_[ref_el.Id()] = PrecomputedScalarReferenceFiniteElement(
+            fe, quad::make_QuadRule(ref_el, 2 * fe->Degree()));
+        // This is problematic
+        // LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
       }
     }
   }
