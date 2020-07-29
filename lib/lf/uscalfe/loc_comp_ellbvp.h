@@ -115,6 +115,7 @@ class ReactionDiffusionElementMatrixProvider {
   ReactionDiffusionElementMatrixProvider(
       std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
       DIFF_COEFF alpha, REACTION_COEFF gamma);
+
   /** @brief Constructor: cell-independent precomputations and custom quadrature
    * rule
    * @param fe_space collection of specifications for scalar-valued parametric
@@ -124,7 +125,9 @@ class ReactionDiffusionElementMatrixProvider {
    * @param gamma mesh function providing scalar-valued diffusion coefficient
    * @param qr_collection collection of quadrature rules. A quadrature rule is
    *  required for every cell type for which the finite element space provides
-   * local shape functions.
+   *  local shape functions. If a quadrature rule is not specified for a cell
+   *  type and the Eval() method is called for such a cell, an assertion will
+   *  fail.
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
@@ -239,10 +242,6 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
         // Precomputations of cell-independent quantities
         fe_precomp_[ref_el.Id()] =
             PrecomputedScalarReferenceFiniteElement(fe, qr);
-      } else {
-        // Quadrature rule is missing for an entity type for which
-        // local shape functions are available
-        LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
       }
     }
   }
@@ -261,9 +260,10 @@ ReactionDiffusionElementMatrixProvider<
   PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
       fe_precomp_[ref_el.Id()];
   // Accident: cell is of a type not coverence by finite element specifications
-  LF_ASSERT_MSG(
-      pfe.isInitialized(),
-      "No local shape function information for entity type " << ref_el);
+  LF_ASSERT_MSG(pfe.isInitialized(),
+                "No local shape function information or no quadrature rule for "
+                "reference element type "
+                    << ref_el);
 
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
