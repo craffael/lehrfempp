@@ -115,6 +115,7 @@ class ReactionDiffusionElementMatrixProvider {
   ReactionDiffusionElementMatrixProvider(
       std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
       DIFF_COEFF alpha, REACTION_COEFF gamma);
+
   /** @brief Constructor: cell-independent precomputations and custom quadrature
    * rule
    * @param fe_space collection of specifications for scalar-valued parametric
@@ -124,7 +125,9 @@ class ReactionDiffusionElementMatrixProvider {
    * @param gamma mesh function providing scalar-valued diffusion coefficient
    * @param qr_collection collection of quadrature rules. A quadrature rule is
    *  required for every cell type for which the finite element space provides
-   * local shape functions.
+   *  local shape functions. If a quadrature rule is not specified for a cell
+   *  type and the Eval() method is called for such a cell, exception will be
+   * thrown.
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
@@ -153,8 +156,9 @@ class ReactionDiffusionElementMatrixProvider {
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials o degree 2p.
    *
-   * Throws an assertion in case the finite element specification is missing for
-   * the type of the cell.
+   * @throw base::LfException in case the finite element specification is
+   * missing for the type of the cell or if there is no quadrature rule
+   * specified for the given cell type.
    */
   ElemMat Eval(const lf::mesh::Entity &cell);
 
@@ -187,6 +191,13 @@ unsigned int ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
 template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
                                        REACTION_COEFF gamma)
+    ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
+                                             DIFF_COEFF, REACTION_COEFF>;
+
+template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
+ReactionDiffusionElementMatrixProvider(
+    PTR fe_space, DIFF_COEFF alpha, REACTION_COEFF gamma,
+    std::map<lf::base::RefEl, lf::quad::QuadRule>)
     ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
                                              DIFF_COEFF, REACTION_COEFF>;
 
@@ -239,10 +250,6 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
         // Precomputations of cell-independent quantities
         fe_precomp_[ref_el.Id()] =
             PrecomputedScalarReferenceFiniteElement(fe, qr);
-      } else {
-        // Quadrature rule is missing for an entity type for which
-        // local shape functions are available
-        LF_ASSERT_MSG(false, "Quadrature rule missing for " << ref_el);
       }
     }
   }
@@ -260,10 +267,16 @@ ReactionDiffusionElementMatrixProvider<
   // and their gradients at quadrature points.
   PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
       fe_precomp_[ref_el.Id()];
-  // Accident: cell is of a type not coverence by finite element specifications
-  LF_ASSERT_MSG(
-      pfe.isInitialized(),
-      "No local shape function information for entity type " << ref_el);
+  if (!pfe.isInitialized()) {
+    // Accident: cell is of a type not covered by finite element
+    // specifications or there is no quadrature rule available for this
+    // reference element type
+    std::stringstream temp;
+    temp << "No local shape function information or no quadrature rule for "
+            "reference element type "
+         << ref_el;
+    throw base::LfException(temp.str());
+  }
 
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
