@@ -12,6 +12,7 @@
 #include <lf/mesh/test_utils/test_meshes.h>
 
 #include <cmath>
+#include <fstream>
 #include <limits>
 
 namespace lf::fe::test {
@@ -176,30 +177,17 @@ TEST(fe_space_hierarchic, segment_dual) {
       const lf::fe::FeHierarchicSegment<double> sfl(p, orientations);
       // Get the evaluation nodes for the segment
       const auto eval_nodes = sfl.EvaluationNodes();
-      // Interpolate all polynomials up to degree p
-      for (unsigned i = 0; i <= p; ++i) {
-        const auto poly = [&](double x) { return std::pow(x, i); };
-        // Evaluate the polynomial at the evaluation nodes
-        const Eigen::RowVectorXd eval =
-            eval_nodes.unaryExpr([&](double x) -> double { return poly(x); });
+      // Evaluate the basis functions at the evaluation nodes
+      const Eigen::MatrixXd basis = sfl.EvalReferenceShapeFunctions(eval_nodes);
+      // Interpolate all basis functions
+      for (unsigned i = 0; i < basis.rows(); ++i) {
         // Compute the basis function coefficients
-        const auto dofs = sfl.NodalValuesToDofs(eval);
-        // Compute the exact polynomial on a fine grid
-        const int N = 100;
-        const Eigen::RowVectorXd points =
-            Eigen::RowVectorXd::LinSpaced(N, 0, 1);
-        const Eigen::RowVectorXd exact =
-            points.unaryExpr([&](double x) -> double { return poly(x); });
-        // Compute the interpolation on a fine grid
-        const Eigen::MatrixXd basis_eval =
-            sfl.EvalReferenceShapeFunctions(points);
-        const Eigen::RowVectorXd approx = dofs * basis_eval;
-        // Compare the exact and interpolated functions
-        long idx;
-        const double diff = (exact - approx).array().maxCoeff(&idx);
-        ASSERT_TRUE(diff < 1e-10)
-            << "\nexact = [" << exact << "]\napprox = [" << approx
-            << "]\nAt idx = " << idx << std::endl;
+        const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
+        // Only the i-th entry should be 1, all others 0
+        for (long j = 0; j < dofs.size(); ++j) {
+          ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+              << "p=" << p << " i=" << i << " j=" << j;
+        }
       }
     }
   }
@@ -208,8 +196,7 @@ TEST(fe_space_hierarchic, segment_dual) {
 TEST(fe_space_hierarchic, quad_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 10
-  for (unsigned p = 1; p <= 5; ++p) {
-    std::cout << p << std::endl;
+  for (unsigned p = 1; p <= 10; ++p) {
     // Test for all possible combinations of orientations
     for (const auto o0 :
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
@@ -221,50 +208,20 @@ TEST(fe_space_hierarchic, quad_dual) {
                                 lf::mesh::Orientation::negative}) {
             const lf::mesh::Orientation orientations[] = {o0, o1, o2, o3};
             const lf::fe::FeHierarchicQuad<double> sfl(p, orientations);
-            // Get the evaluation nodes for the segment
+            // Get the evaluation nodes for the quad
             const auto eval_nodes = sfl.EvaluationNodes();
-            // Interpolate all polynomials up to degree p
-            for (unsigned i = 0; i <= p; ++i) {
-              for (unsigned j = 0; j <= p; ++j) {
-                const auto poly = [&](double x, double y) {
-                  return std::pow(x, i) * std::pow(y, j);
-                };
-                // Evaluate the polynomial at the evaluation nodes
-                Eigen::RowVectorXd eval(eval_nodes.cols());
-                for (long k = 0; k < eval_nodes.cols(); ++k) {
-                  eval[k] = poly(eval_nodes(0, k), eval_nodes(1, k));
-                }
-                // Compute the basis function coefficients
-                const auto dofs = sfl.NodalValuesToDofs(eval);
-                // Compute the exact polynomial on a fine grid
-                const int N = 101;
-                Eigen::MatrixXd points(2, N * N);
-                for (int k = 0; k < N; ++k) {
-                  const double x = static_cast<double>(k) / (N - 1);
-                  for (int l = 0; l < N; ++l) {
-                    const double y = static_cast<double>(l) / (N - 1);
-                    points(0, N * k + l) = x;
-                    points(1, N * k + l) = y;
-                  }
-                }
-                Eigen::RowVectorXd exact(N * N);
-                for (int k = 0; k < N * N; ++k) {
-                  exact[k] = poly(points(0, k), points(1, k));
-                }
-                // Compute the interpolation on a fine grid
-                const Eigen::MatrixXd basis_eval =
-                    sfl.EvalReferenceShapeFunctions(points);
-                const Eigen::RowVectorXd approx = dofs * basis_eval;
-                // Compare the exact and interpolated functions
-                long idx;
-                const double diff = (exact - approx).array().maxCoeff(&idx);
-                ASSERT_TRUE(diff < 1e-10)
-                    << "\ndiff = " << diff << "]\n point = [" << points(0, idx)
-                    << ", " << points(1, idx) << "]\nAt idx = " << idx << " of "
-                    << N * N << "\norientations = [" << to_char(o0) << ", "
-                    << to_char(o1) << ", " << to_char(o2) << ", " << to_char(o3)
-                    << "]\ndofs = [" << dofs << "]\n p = " << p << "\n i=" << i
-                    << ", j=" << j << std::endl;
+            // Evaluate the basis functions at the evaluation nodes
+            const Eigen::MatrixXd basis =
+                sfl.EvalReferenceShapeFunctions(eval_nodes);
+            // Interpolate all basis functions
+            for (unsigned i = 0; i < basis.rows(); ++i) {
+              // Compute the basis function coefficients
+              const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
+              // Only the i-th entry should be 1, all others 0
+              for (long j = 0; j < dofs.size(); ++j) {
+                ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+                    << "o=" << to_char(o0) << to_char(o1) << to_char(o2)
+                    << to_char(o3) << " p=" << p << " i=" << i << " j=" << j;
               }
             }
           }

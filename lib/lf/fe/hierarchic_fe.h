@@ -61,10 +61,10 @@ struct LegendrePoly {
     double Ljm1 = 1;
     double Lj = x;
     if (n == 0) {
-      return Ljm1;
+      return Ljm1;  // * std::sqrt(2 * n + 1);
     }
     if (n == 1) {
-      return Lj;
+      return Lj;  // * std::sqrt(2 * n + 1);
     }
     // If the degree is > 1, we use the recurrence relation
     for (unsigned j = 1; j < n; ++j) {
@@ -72,7 +72,7 @@ struct LegendrePoly {
       Ljm1 = Lj;
       Lj = Ljp1;
     }
-    return Lj;
+    return Lj;  // * std::sqrt(2 * n + 1);
   }
 
   /**
@@ -94,7 +94,7 @@ struct LegendrePoly {
       return -1;
     }
     if (n == 1) {
-      return x;
+      return x;  // * std::sqrt(2 * n - 1);
     }
     // Map to the interval [-1, 1]
     x = 2 * x - 1;
@@ -109,7 +109,7 @@ struct LegendrePoly {
       Lj = Ljp1;
     }
     // Compute the integral
-    return (Lj - Ljm2) / (4 * n - 2);
+    return (Lj - Ljm2) / (4 * n - 2);  // * std::sqrt(2 * n - 1);
   }
 
   /**
@@ -129,15 +129,16 @@ struct LegendrePoly {
    */
   static SCALAR derivative(unsigned n, double x) {
     if (n == 0) {
-      return 2;
+      return 2.;  // * std::sqrt(2 * n + 3);
     }
     // Special cases for x == 0 and x == 1
     if (x == 1) {
-      return (n + 1) * (n + 2);
+      return (n + 1) * (n + 2);  // * std::sqrt(2 * n + 3);
     }
     if (x == 0) {
       // Depends on whether the polynomial is even or odd
-      return n % 2 == 0 ? (n + 1.) * (n + 2.) : -(n + 1.) * (n + 2.);
+      return (n % 2 == 0 ? (n + 1.) * (n + 2.)
+                         : -(n + 1.) * (n + 2.));  // * std::sqrt(2 * n + 3);
     }
     // Map to the interval [-1, 1]
     x = 2 * x - 1;
@@ -150,7 +151,8 @@ struct LegendrePoly {
       Lj = Ljp1;
     }
     // Compute the derivative of the (n+1)-th polynomial
-    return (2 * n + 2) / (x * x - 1) * (x * Lj - Ljm1);
+    return (2 * n + 2) / (x * x - 1) *
+           (x * Lj - Ljm1);  // * std::sqrt(2 * n + 3);
   }
 };
 
@@ -475,7 +477,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
            nodevals.tail(qr_dual_.NumPoints()).array())
               .sum();
       // Compute the basis function coefficient
-      dofs[i] = P1 * nodevals[1] - P0 * nodevals[0] - integ;
+      dofs[i] = (P1 * nodevals[1] - P0 * nodevals[0] - integ) * (2 * i - 1);
     }
     return dofs;
   }
