@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   if (mesh.NumEntities(0) < 100) {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
-    filename_tikz << filename.substr(0, filename.find_last_of(".")) << ".tex";
+    filename_tikz << filename.substr(0, filename.find_last_of('.')) << ".tex";
     lf::io::writeTikZ(
         *mesh_p, filename_tikz.str(),
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
