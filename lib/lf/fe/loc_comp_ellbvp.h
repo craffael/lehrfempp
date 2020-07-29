@@ -172,7 +172,9 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
         std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
         REACTION_COEFF gamma)
-    : alpha_(std::move(alpha)), gamma_(std::move(gamma)), fe_space_(fe_space) {}
+    : alpha_(std::move(alpha)),
+      gamma_(std::move(gamma)),
+      fe_space_(std::move(fe_space)) {}
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
@@ -474,7 +476,7 @@ template <typename SCALAR, typename FUNCTOR>
 ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
     ScalarLoadElementVectorProvider(
         std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
-    : f_(std::move(f)), fe_space_(fe_space) {}
+    : f_(std::move(f)), fe_space_(std::move(fe_space)) {}
 
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html

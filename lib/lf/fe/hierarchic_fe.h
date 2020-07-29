@@ -946,8 +946,8 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // They are given by Chebyshev nodes
     if (degree_ > 2) {
       int idx = 3 * degree_;
-      for (int i = 0; i < degree_ - 2; ++i) {
-        for (int j = 0; j < degree_ - 2 - i; ++j) {
+      for (unsigned i = 0; i < degree_ - 2; ++i) {
+        for (unsigned j = 0; j < degree_ - 2 - i; ++j) {
           eval_nodes(0, idx) = cheb[j];
           eval_nodes(1, idx) = cheb[i];
           ++idx;
