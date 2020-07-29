@@ -126,8 +126,8 @@ class ReactionDiffusionElementMatrixProvider {
    * @param qr_collection collection of quadrature rules. A quadrature rule is
    *  required for every cell type for which the finite element space provides
    *  local shape functions. If a quadrature rule is not specified for a cell
-   *  type and the Eval() method is called for such a cell, an assertion will
-   *  fail.
+   *  type and the Eval() method is called for such a cell, exception will be
+   * thrown.
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    */
@@ -156,8 +156,9 @@ class ReactionDiffusionElementMatrixProvider {
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials o degree 2p.
    *
-   * Throws an assertion in case the finite element specification is missing for
-   * the type of the cell.
+   * @throw base::LfException in case the finite element specification is
+   * missing for the type of the cell or if there is no quadrature rule
+   * specified for the given cell type.
    */
   ElemMat Eval(const lf::mesh::Entity &cell);
 
