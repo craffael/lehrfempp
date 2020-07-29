@@ -129,4 +129,35 @@ TEST(lf_uscalfe, cross_val) {
   }
 }
 
+TEST(lf_uscalfe, missingQuadRule) {
+  // We test that an exception is thrown when a quadrature rule is missing
+  // for a hybrid mesh and we call Eval() for a quad cell
+
+  // Building the test mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  // Set up finite elements
+  auto fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+
+  // Quadrature rules of degree of exactness = 2
+  quad_rule_collection_t quad_rules{
+      {lf::base::RefEl::kTria(),
+       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2)}};
+
+  // Coefficients, reasonably complicated
+  auto coeff = mesh::utils::MeshFunctionConstant(2.0);
+
+  ReactionDiffusionElementMatrixProvider rdemp(fe_space, coeff, coeff,
+                                               quad_rules);
+
+  for (auto e : mesh_p->Entities(0)) {
+    if (e->RefEl() == base::RefEl::kTria()) {
+      // Check NoThrow:
+      EXPECT_NO_THROW(rdemp.Eval(*e));
+    } else {
+      EXPECT_THROW(rdemp.Eval(*e), base::LfException);
+    }
+  }
+}
+
 }  // namespace lf::uscalfe::test
