@@ -13,7 +13,7 @@ branches:
   - gh-pages
 stages:
 # - clang-format
-- hunter_dependencies
+# - hunter_dependencies
 - clang-tidy
 - compile_test
 - doxygen
@@ -32,21 +32,21 @@ jobs:
     # script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
       # --color always ./lib/"
   # Clang-tidy
-  - stage: hunter_dependencies
-    os: linux
-    env: 
-      - COMPILER=clang++-8
-      - BUILD_TYPE='Debug'
-    addons:
-      apt:
-        update: true
-        sources:
-        - llvm-toolchain-xenial-8
-        - ubuntu-toolchain-r-test
-        packages:
-        - clang-tidy-8
-        - g++-7
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: linux
+    # env: 
+      # - COMPILER=clang++-8
+      # - BUILD_TYPE='Debug'
+    # addons:
+      # apt:
+        # update: true
+        # sources:
+        # - llvm-toolchain-xenial-8
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - clang-tidy-8
+        # - g++-7
+    # script: "./travis/build_dependencies.sh"
   - stage: clang-tidy
     os: linux
     env: 
@@ -62,8 +62,7 @@ jobs:
         - clang-tidy-8
         - g++-7
     script: 
-      - export FILES='^((?!snippets|/test/|/test_utils/|/projects/|).)*$'
-      - "./travis/run_clang_tidy.sh"
+      - "./travis/run_clang_tidy.sh '^((?!snippets|/test/|/test_utils/|/projects/|).)*$'"
   - stage: clang-tidy
     os: linux
     env: 
@@ -79,22 +78,21 @@ jobs:
         - clang-tidy-8
         - g++-7
     script: 
-      - export FILES='/projects/'
-      - ./travis/run_clang_tidy.sh
+      - "./travis/run_clang_tidy.sh '/projects/'"
     # gcc Debug
-  - stage: hunter_dependencies
-    os: linux
-    env:
-    - COMPILER=g++-7
-    - BUILD_TYPE='Debug'
-    addons:
-      apt:
-        update: true
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-7
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: linux
+    # env:
+    # - COMPILER=g++-7
+    # - BUILD_TYPE='Debug'
+    # addons:
+      # apt:
+        # update: true
+        # sources:
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - g++-7
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
@@ -110,20 +108,20 @@ jobs:
         - g++-7
     script: "./travis/compile_test.sh"
   # gcc Release
-  - stage: hunter_dependencies
-    os: linux
-    compiler: gcc
-    env:
-    - COMPILER=g++-7
-    - BUILD_TYPE='Release'
-    addons:
-      apt:
-        update: true
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-7
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: linux
+    # compiler: gcc
+    # env:
+    # - COMPILER=g++-7
+    # - BUILD_TYPE='Release'
+    # addons:
+      # apt:
+        # update: true
+        # sources:
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - g++-7
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
@@ -139,21 +137,21 @@ jobs:
         - g++-7
     script: "./travis/compile_test.sh"
   # clang debug
-  - stage: hunter_dependencies
-    os: linux
-    compiler: clang
-    env:
-    - COMPILER='clang++-5.0'
-    - BUILD_TYPE='Debug'
-    addons:
-      apt:
-        sources:
-        - llvm-toolchain-xenial-5.0
-        - ubuntu-toolchain-r-test
-        packages:
-        - clang-5.0
-        - g++-7
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: linux
+    # compiler: clang
+    # env:
+    # - COMPILER='clang++-5.0'
+    # - BUILD_TYPE='Debug'
+    # addons:
+      # apt:
+        # sources:
+        # - llvm-toolchain-xenial-5.0
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - clang-5.0
+        # - g++-7
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: clang
@@ -170,21 +168,21 @@ jobs:
         - g++-7
     script: "./travis/compile_test.sh"
   # clang release
-  - stage: hunter_dependencies
-    os: linux
-    compiler: clang
-    env:
-    - COMPILER='clang++-5.0'
-    - BUILD_TYPE='Release'
-    addons:
-      apt:
-        sources:
-        - llvm-toolchain-xenial-5.0
-        - ubuntu-toolchain-r-test
-        packages:
-        - clang-5.0
-        - g++-7
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: linux
+    # compiler: clang
+    # env:
+    # - COMPILER='clang++-5.0'
+    # - BUILD_TYPE='Release'
+    # addons:
+      # apt:
+        # sources:
+        # - llvm-toolchain-xenial-5.0
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - clang-5.0
+        # - g++-7
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: clang
@@ -201,12 +199,12 @@ jobs:
         - g++-7
     script: "./travis/compile_test.sh"
   # clang debug osx
-  - stage: hunter_dependencies
-    os: osx
-    osx_image: xcode10.2
-    compiler: clang
-    env: COMPILER='clang++' BUILD_TYPE='Debug'
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: osx
+    # osx_image: xcode10.2
+    # compiler: clang
+    # env: COMPILER='clang++' BUILD_TYPE='Debug'
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: osx
     osx_image: xcode10.2
@@ -214,12 +212,12 @@ jobs:
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
  # clang release osx
-  - stage: hunter_dependencies
-    os: osx
-    osx_image: xcode10.2
-    compiler: clang
-    env: COMPILER='clang++' BUILD_TYPE='Release'
-    script: "./travis/build_dependencies.sh"
+  # - stage: hunter_dependencies
+    # os: osx
+    # osx_image: xcode10.2
+    # compiler: clang
+    # env: COMPILER='clang++' BUILD_TYPE='Release'
+    # script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: osx
     osx_image: xcode10.2
