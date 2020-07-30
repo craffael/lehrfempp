@@ -34,7 +34,7 @@ jobs:
   - stage: hunter_dependencies
     os: linux
     env: 
-      - CXX=clang++-8
+      - COMPILER=clang++-8
       - BUILD_TYPE='Debug'
     addons:
       apt:
