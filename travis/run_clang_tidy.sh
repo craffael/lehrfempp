@@ -16,4 +16,5 @@ source $(dirname $0)/build_dependencies.sh
 
 # run clang-tidy
 cd Build
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On .
 ../run_clang_tidy.sh
