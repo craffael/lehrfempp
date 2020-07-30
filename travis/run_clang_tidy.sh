@@ -11,14 +11,8 @@ set -e
 
 mkdir -p ${HUNTER_ROOT}
 
-# Install cmake
-echo pwd
-source $(dirname $0)/install_cmake.sh
-
-# compile
-cd ${TRAVIS_BUILD_DIR}
-export CXX=clang++-8
-cmake -H. -BBuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=On -Wdev
+# Initialize cmake and build all dependencies
+source ${dirname $0}/build_dependencies.sh
 
 # run clang-tidy
 cd Build
