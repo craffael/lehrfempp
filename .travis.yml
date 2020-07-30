@@ -52,7 +52,6 @@ jobs:
     env: 
       - COMPILER=clang++-8
       - BUILD_TYPE='Debug'
-      - FILES='^((?!snippets|/test/|/test_utils/|/projects/|).)*$'
     addons:
       apt:
         update: true
@@ -62,13 +61,14 @@ jobs:
         packages:
         - clang-tidy-8
         - g++-7
-    script: "./travis/run_clang_tidy.sh"
+    script: 
+      - export FILES='^((?!snippets|/test/|/test_utils/|/projects/|).)*$'
+      - "./travis/run_clang_tidy.sh"
   - stage: clang-tidy
     os: linux
     env: 
       - COMPILER=clang++-8
       - BUILD_TYPE='Debug'
-      - FILES='/projects/'
     addons:
       apt:
         update: true
@@ -78,7 +78,9 @@ jobs:
         packages:
         - clang-tidy-8
         - g++-7
-    script: "./travis/run_clang_tidy.sh"
+    script: 
+      - export FILES='/projects/'
+      - ./travis/run_clang_tidy.sh
     # gcc Debug
   - stage: hunter_dependencies
     os: linux
