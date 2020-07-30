@@ -62,7 +62,7 @@ jobs:
         - clang-tidy-8
         - g++-7
     script: 
-      - "./travis/run_clang_tidy.sh '^((?!snippets|/test/|/test_utils/|/projects/|).)*$'"
+      - "./travis/run_clang_tidy.sh '^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
   - stage: clang-tidy
     os: linux
     env: 
@@ -78,7 +78,7 @@ jobs:
         - clang-tidy-8
         - g++-7
     script: 
-      - "./travis/run_clang_tidy.sh '/projects/'"
+      - "./travis/run_clang_tidy.sh '^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     # gcc Debug
   # - stage: hunter_dependencies
     # os: linux
