@@ -10,7 +10,7 @@
 set -e
 
 # Initialize cmake and build all dependencies
-source ${dirname $0}/build_dependencies.sh
+source $(dirname $0)/build_dependencies.sh
 
 cd Build
 make -j${NUM_PROC:-2}

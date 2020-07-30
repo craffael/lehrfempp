@@ -12,7 +12,7 @@ set -e
 mkdir -p ${HUNTER_ROOT}
 
 # Initialize cmake and build all dependencies
-source ${dirname $0}/build_dependencies.sh
+source $(dirname $0)/build_dependencies.sh
 
 # run clang-tidy
 cd Build
