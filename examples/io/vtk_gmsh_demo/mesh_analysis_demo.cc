@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     // Obtain list of physical groups for that co-dimension
     std::vector<std::pair<size_type, std::string>> phys_ent_list{
         reader.PhysicalEntities(codim)};
-    if (phys_ent_list.size() > 0) {
+    if (!phys_ent_list.empty()) {
       // Loop over all physical groups of a particular co-dimension
       for (auto &ent_code : phys_ent_list) {
         std::cout << "codim = " << codim << " physical group "
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   if (mesh.NumEntities(0) < 100) {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
-    filename_tikz << filename.substr(0, filename.find_last_of(".")) << ".tex";
+    filename_tikz << filename.substr(0, filename.find_last_of('.')) << ".tex";
     lf::io::writeTikZ(
         *mesh_p, filename_tikz.str(),
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |
