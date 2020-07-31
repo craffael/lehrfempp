@@ -3,7 +3,6 @@
 # It takes two inputs as environment variables:
 #   COMPILER specifies the compiler to use (e.g. g++-7)
 #   BUILD_TYPE specifies the CMAKE_BUILD_TYPE.
-# 
 # It builds and tests Lehrfempp using the provided compiler + cmake configuration.
 
 # Exit immediately from this script upon error
