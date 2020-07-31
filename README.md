@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/craffael/lehrfempp.svg?branch=master)](https://travis-ci.org/craffael/lehrfempp/branches)
+[![Build Status](https://travis-ci.com/craffael/lehrfempp.svg?branch=master)](https://travis-ci.com/craffael/lehrfempp)
 [![Build status](https://ci.appveyor.com/api/projects/status/wfr8sb13ivp3595w/branch/master?svg=true)](https://ci.appveyor.com/project/craffael/lehrfempp/branch/master)
 
 # LehrFEM++
