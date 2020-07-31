@@ -15,4 +15,4 @@ cd Build
 make -j${NUM_PROC:-2}
 
 # test
-ctest -V
+ctest
