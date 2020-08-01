@@ -18,10 +18,12 @@ namespace lf::uscalfe {
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadratic Lagrangian Finite Element space
  *
- * Just a specialization of UniformScalarFESpace based on
- * FeLagrangeO2Tria, FeLagrangeO2Quad, FeLagrangeO2Segment and FeLagrangePoint.
+ * Just a specialization of UniformScalarFESpace for quadratic Lagrangian finite
+ * elements and based on FeLagrangeO2Tria, FeLagrangeO2Quad, FeLagrangeO2Segment
+ * and FeLagrangePoint.
  *
- *
+ * For information on quadratic Lagrangian finite elements see @lref{ex:quadLFE}
+ * and @lref{ex:QuadTPLFE}
  */
 template <typename SCALAR>
 class FeSpaceLagrangeO2 : public UniformScalarFESpace<SCALAR> {

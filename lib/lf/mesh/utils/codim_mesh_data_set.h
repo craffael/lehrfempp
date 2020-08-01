@@ -89,15 +89,6 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   typename Container<T, int>::type_t data_;
   /** co-dimension */
   dim_t codim_;
-
-  // Friends:
-  template <class S>
-  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const lf::mesh::Mesh> mesh, base::dim_t codim);
-
-  template <class S, class>
-  friend std::shared_ptr<CodimMeshDataSet<S>> make_CodimMeshDataSet(  // NOLINT
-      std::shared_ptr<const lf::mesh::Mesh> mesh, base::dim_t codim, S init);
 };
 
 /**
@@ -111,7 +102,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
  */
 template <class T>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
-    const std::shared_ptr<const Mesh>& mesh, base::dim_t codim) {
+    const std::shared_ptr<const lf::mesh::Mesh>& mesh, base::dim_t codim) {
   using impl_t = CodimMeshDataSet<T>;
   return std::shared_ptr<impl_t>(new impl_t(mesh, codim));
 }
