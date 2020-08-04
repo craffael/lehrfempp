@@ -6,6 +6,7 @@
 # HOW TO USE:
 # - change into your CMake build directory and call this script from there.
 # - If you want to run it in parallel, append e.g. `-j4` as an argument.
+# - If you want to use a custom regex for filtering the files on which clang-tidy is run, add the `--files`
 
 set -e
 
@@ -35,4 +36,26 @@ if [ -z "$ct" ]; then
 fi
 echo $ct
 $ct --version
-$(dirname $0)/travis/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ '^((?!snippets|/test/|/test_utils/).)*$' $1
+
+# Parse commandline arguments to see if --files option has been passed:
+FILES='^((?!snippets|/test/|/test_utils/).)*$'
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -f|--files)
+    FILES="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+$(dirname $0)/travis/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ $FILES $1
