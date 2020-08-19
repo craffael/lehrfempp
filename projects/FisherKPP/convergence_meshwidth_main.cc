@@ -13,6 +13,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <boost/filesystem.hpp>
 #include <cstdlib>
@@ -227,31 +228,31 @@ int main(int /*argc*/, char ** /*argv*/) {
 
     if (l == 0) {
       mu1 = sol;
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu1);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu1);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          0, 4);
-      mu1_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu1_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
 
     } else if (l == 1) {
       mu2 = sol;
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu2);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu2);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          1, 4);
-      mu2_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu2_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
 
     } else if (l == 2) {
       mu3 = sol;
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu3);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu3);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          2, 4);
-      mu3_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu3_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
 
     } else if (l == 3) {
       mu4 = sol;
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu4);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu4);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          3, 4);
-      mu4_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu4_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
 
     } else if (l == 4) {
       mu5 = sol;

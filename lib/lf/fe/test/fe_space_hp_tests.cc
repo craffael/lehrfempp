@@ -10,12 +10,38 @@
 #include <lf/fe/fe.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
+#include <lf/quad/gauss_quadrature.h>
 
 #include <cmath>
 #include <fstream>
 #include <limits>
 
 namespace lf::fe::test {
+
+TEST(fe_space_hierarchic, legendre_orthogonality) {
+  // Maximum degrees of Legendre polynomials to test
+  const int N = 20;
+  const int M = 20;
+  // Compute the inner product of the n-th and m-th Legendre polynomial
+  // and compare it to the analytic solution
+  for (int n = 0; n < N; ++n) {
+    for (int m = 0; m < M; ++m) {
+      const int degree = n + m;
+      const int num_points = degree / 2 + 1;
+      const auto [points, weights] = lf::quad::GaussLegendre(num_points);
+      // Integrate the product of the n-th and m-th legendre polynomial
+      // to check whether the norm is as expected
+      double result = 0;
+      for (int i = 0; i < num_points; ++i) {
+        const double Ln = lf::fe::LegendrePoly<double>::eval(n, points[i]);
+        const double Lm = lf::fe::LegendrePoly<double>::eval(m, points[i]);
+        result += weights[i] * Ln * Lm;
+      }
+      const double expected = n == m ? 1. / (2 * n + 1) : 0.;
+      ASSERT_NEAR(result, expected, 1e-8) << "n=" << n << " m=" << m;
+    }
+  }
+}
 
 TEST(fe_space_hierarchic, legendre_integral) {
   const unsigned N = 1000;
@@ -185,8 +211,9 @@ TEST(fe_space_hierarchic, segment_dual) {
         const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
         // Only the i-th entry should be 1, all others 0
         for (long j = 0; j < dofs.size(); ++j) {
-          ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
-              << "p=" << p << " i=" << i << " j=" << j;
+          EXPECT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+              << "p=" << p << " i=" << i << " j=" << j << "\ndofs=[" << dofs
+              << "]";
         }
       }
     }

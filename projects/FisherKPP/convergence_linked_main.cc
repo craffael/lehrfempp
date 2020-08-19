@@ -13,6 +13,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <lf/fe/fe.h>
 
 #include <boost/filesystem.hpp>
 #include <cmath>
@@ -239,36 +240,36 @@ int main(int /*argc*/, char** /*argv*/) {
     if (l == 0) {
       StrangSplit StrangSplitter1(fe_space, T, m(0), lambda, c, h, L);
       mu1 = StrangSplitter1.Evolution(cap, u0);
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu1);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu1);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          0, 4);
-      mu1_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu1_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
     }
 
     if (l == 1) {
       StrangSplit StrangSplitter2(fe_space, T, m(1), lambda, c, h, L);
       mu2 = StrangSplitter2.Evolution(cap, u0);
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu2);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu2);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          1, 4);
-      mu2_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu2_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
     }
     if (l == 2) {
       StrangSplit StrangSplitter3(fe_space, T, m(2), lambda, c, h, L);
       mu3 = StrangSplitter3.Evolution(cap, u0);
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu3);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu3);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          2, 4);
-      mu3_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu3_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
     }
 
     if (l == 3) {
       StrangSplit StrangSplitter4(fe_space, T, m(3), lambda, c, h, L);
       mu4 = StrangSplitter4.Evolution(cap, u0);
-      const lf::uscalfe::MeshFunctionFE mf_coarse(fe_space, mu4);
+      const lf::fe::MeshFunctionFE mf_coarse(fe_space, mu4);
       const lf::refinement::MeshFunctionTransfer mf_fine(hierarchy, mf_coarse,
                                                          3, 4);
-      mu4_ipol = lf::uscalfe::NodalProjection(*fe_space_fine, mf_fine);
+      mu4_ipol = lf::fe::NodalProjection(*fe_space_fine, mf_fine);
     }
 
     if (l == 4) {
