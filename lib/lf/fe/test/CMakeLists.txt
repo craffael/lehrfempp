@@ -1,7 +1,7 @@
 include(GoogleTest)
 
 set(src
-    fe_space_hp_tests.cc
+    fe_space_hierarchic_tests.cc
 )
 
 add_executable(lf.fe.test ${src})

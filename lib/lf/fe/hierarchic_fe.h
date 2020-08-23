@@ -343,7 +343,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
                       nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
-        qr_dual_(lf::quad::make_QuadRule(RefEl(), degree)),
+        qr_dual_(lf::quad::make_QuadRule(RefEl(), 2 * (degree - 1))),
         rel_orient_(rel_orient) {}
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {

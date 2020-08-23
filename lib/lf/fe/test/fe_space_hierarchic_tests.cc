@@ -18,7 +18,7 @@
 
 namespace lf::fe::test {
 
-TEST(fe_space_hierarchic, legendre_orthogonality) {
+ TEST(fe_space_hierarchic, legendre_orthogonality) {
   // Maximum degrees of Legendre polynomials to test
   const int N = 20;
   const int M = 20;
@@ -43,7 +43,7 @@ TEST(fe_space_hierarchic, legendre_orthogonality) {
   }
 }
 
-TEST(fe_space_hierarchic, legendre_integral) {
+ TEST(fe_space_hierarchic, legendre_integral) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
@@ -67,7 +67,7 @@ TEST(fe_space_hierarchic, legendre_integral) {
   }
 }
 
-TEST(fe_space_hierarchic, legendre_derivative) {
+ TEST(fe_space_hierarchic, legendre_derivative) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
@@ -95,7 +95,7 @@ TEST(fe_space_hierarchic, legendre_derivative) {
   }
 }
 
-TEST(fe_space_hierarchic, jacobi_integral) {
+ TEST(fe_space_hierarchic, jacobi_integral) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
@@ -123,11 +123,12 @@ TEST(fe_space_hierarchic, jacobi_integral) {
   }
 }
 
-TEST(fe_space_hierarchic, continuity) {
+ TEST(fe_space_hierarchic, continuity) {
   for (int selector = 0; selector <= 8; ++selector) {
     // Get a hybrid test mesh on [0, 3]^2
-    const auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
-    for (unsigned p = 1; p <= 20; ++p) {
+    const auto mesh =
+    lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector); for (unsigned p
+    = 1; p <= 20; ++p) {
       // Generate a FeSpaceHierarchic with order p on the mesh
       const auto fe_space =
           std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, p);
@@ -167,14 +168,15 @@ TEST(fe_space_hierarchic, continuity) {
               << " cell=" << mesh->Index(*cell) << " edge=" << i << std::endl;
           for (int rsf_idx = 0; rsf_idx < sfl_edge->NumRefShapeFunctions(0);
                ++rsf_idx) {
-            const Eigen::RowVectorXd rsf_edge_eval = rsf_edge.row(2 + rsf_idx);
-            Eigen::RowVectorXd rsf_cell_eval;
-            if (orient[i] == lf::mesh::Orientation::positive) {
+            const Eigen::RowVectorXd rsf_edge_eval = rsf_edge.row(2 +
+            rsf_idx); Eigen::RowVectorXd rsf_cell_eval; if (orient[i] ==
+            lf::mesh::Orientation::positive) {
               rsf_cell_eval =
                   rsf_cell.row(cell_num_nodes + (p - 1) * i + rsf_idx);
             } else {
               rsf_cell_eval =
-                  rsf_cell.row(cell_num_nodes + (p - 1) * (i + 1) - rsf_idx - 1)
+                  rsf_cell.row(cell_num_nodes + (p - 1) * (i + 1) - rsf_idx -
+                  1)
                       .reverse();
             }
             const double max_diff =
@@ -183,7 +185,8 @@ TEST(fe_space_hierarchic, continuity) {
                 << "selector=" << selector << " p=" << p
                 << " cell=" << mesh->Index(*cell) << " edge=" << i
                 << " rsf_idx=" << rsf_idx << "\nrsf_edge_eval=["
-                << rsf_edge_eval << "]\nrsf_cell_eval=[" << rsf_cell_eval << "]"
+                << rsf_edge_eval << "]\nrsf_cell_eval=[" << rsf_cell_eval <<
+                "]"
                 << std::endl;
           }
         }
