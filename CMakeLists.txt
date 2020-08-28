@@ -3,8 +3,8 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.225.tar.gz"
-    SHA1 "4b018ec7b673817475c1fb9f0bd4dfb7c5e7f343"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.269.tar.gz"
+    SHA1 "64024b7b95b4c86d50ae05b926814448c93a70a0"
     LOCAL # use cmake/Hunter/config.cmake
 )
 
