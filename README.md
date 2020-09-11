@@ -14,3 +14,16 @@ Guide](https://google.github.io/styleguide/cppguide.html#Naming).
   guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
 * [Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
 * [Getting Started Guide](https://craffael.github.io/lehrfempp/getting_started.html)
+
+
+## Contributors
+- Raffael Casagrande (core developer)
+- Ralf Hiptmair (core developer)
+- Tobias Rohner (`projects/ipdg_stokes`, hp-fem in `lf::fe`)
+- Anian Ruoss (Second order Geometry, Mesh Generators)
+- Philippe Peter (`projects/dpg`)
+- Amélie Justine Loher (`projects/FisherKPP`)
+- Gina Magnussen (TIKZ output)
+- Julien Gacon (`lf::base::comm`)
+- Simon Meierhans
+
