@@ -16,9 +16,12 @@
 
 namespace lf::mesh::utils {
 namespace internal {
+
+// TODO(craffael): Replace this with std::invoke_result_t once issue in msvc is
+// fixed: https://github.com/microsoft/STL/issues/1288
 template <class T>
-using MeshFunctionReturnType_t =
-    std::invoke_result_t<T, const lf::mesh::Entity, const Eigen::MatrixXd>;
+using MeshFunctionReturnType_t = decltype(std::declval<T>()(
+    std::declval<const Entity>(), std::declval<const Eigen::MatrixXd>()));
 
 template <typename>
 struct VectorElementType {
