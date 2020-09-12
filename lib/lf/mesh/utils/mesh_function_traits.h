@@ -16,20 +16,25 @@
 
 namespace lf::mesh::utils {
 namespace internal {
+
+// TODO(craffael): Replace this with std::invoke_result_t once issue in msvc is
+// fixed: https://github.com/microsoft/STL/issues/1288
 template <class T>
-using MeshFunctionReturnType_t =
-    std::invoke_result_t<T, const lf::mesh::Entity, const Eigen::MatrixXd>;
+using MeshFunctionReturnType_t = decltype(std::declval<T>()(
+    std::declval<const Entity>(), std::declval<const Eigen::MatrixXd>()));
+
+template <typename>
+struct VectorElementType {
+  using type = void;
+};
+
+template <typename T, typename A>
+struct VectorElementType<std::vector<T, A>> {
+  using type = T;
+};
 
 template <class T>
-auto getVectorType(const std::vector<T>& a, int /*unused*/) -> T {
-  return a[0];
-}
-
-template <class T>
-void getVectorType(const T& /*unused*/, long /*unused*/) {}
-
-template <class T>
-using VectorElement_t = decltype(getVectorType(std::declval<T>(), 0));
+using VectorElement_t = typename VectorElementType<T>::type;
 
 template <class T, class RETURN_TYPE,
           class = typename std::enable_if<!std::is_same_v<

@@ -39,9 +39,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study2
   lf.uscalfe
   projects.dpg
   )
-  if(WIN32)
-    target_compile_options(projects.dpg.convergence_studies.convergence_study2 PRIVATE /bigobj)
-  endif()
+
 target_link_libraries(projects.dpg.convergence_studies.convergence_study3
   PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
   lf.mesh
@@ -90,3 +88,11 @@ target_compile_features(projects.dpg.convergence_studies.convergence_study2 PUBL
 target_compile_features(projects.dpg.convergence_studies.convergence_study3 PUBLIC cxx_std_17)
 target_compile_features(projects.dpg.convergence_studies.convergence_study4 PUBLIC cxx_std_17)
 target_compile_features(projects.dpg.convergence_studies.convergence_study5 PUBLIC cxx_std_17)
+
+if(WIN32)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study1 PRIVATE /bigobj)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study2 PRIVATE /bigobj)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study3 PRIVATE /bigobj)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study4 PRIVATE /bigobj)
+    target_compile_options(projects.dpg.convergence_studies.convergence_study5 PRIVATE /bigobj)
+  endif()
