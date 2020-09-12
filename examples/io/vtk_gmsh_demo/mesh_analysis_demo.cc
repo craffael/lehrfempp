@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
-    filename_tikz << filename.substr(0, filename.find_last_of(".")) << ".tex";
+    filename_tikz << filename.substr(0, filename.find_last_of('.')) << ".tex";
     lf::io::writeTikZ(*mesh_p, filename_tikz.str(),
                       TikzOutputCtrl::WithPreamble);
   }
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
   {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
-    filename_tikz << filename.substr(0, filename.find_last_of("."))
+    filename_tikz << filename.substr(0, filename.find_last_of('.'))
                   << "_full.tex";
     lf::io::writeTikZ(
         *mesh_p, filename_tikz.str(),
