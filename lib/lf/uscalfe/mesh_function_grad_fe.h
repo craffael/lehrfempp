@@ -110,11 +110,11 @@ class MeshFunctionGradFE {
     }
     // gradients w.r.t. reference element coordinates \hat{x}
     auto local_grads = (local_dofs * grad_sf_eval).eval();
-    // Transform to Cartesian coordinates 
+    // Transform to Cartesian coordinates
     auto jac_t = e.Geometry()->JacobianInverseGramian(local);
     auto dim_local = e.RefEl().Dimension();
     std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> result(local.cols());
-    // Transform all the local gradients in the evaluation points 
+    // Transform all the local gradients in the evaluation points
     for (std::size_t i = 0; i < result.size(); ++i) {
       result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *
                   local_grads.block(0, i * dim_local, 1, dim_local).transpose();

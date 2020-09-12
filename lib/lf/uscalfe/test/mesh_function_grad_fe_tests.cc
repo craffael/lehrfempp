@@ -41,7 +41,7 @@ TEST(meshFunctionGradFE, ProjectionTestQuad) {
   auto mf_quad = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return x[0] * x[1] + 2 * x[1]; });
   auto mf_grad = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
-    return Eigen::VectorXd(Eigen::Vector2d(x[1], x[0]+2.0));
+    return Eigen::VectorXd(Eigen::Vector2d(x[1], x[0] + 2.0));
   });
 
   auto fespaceO2 = std::make_shared<FeSpaceLagrangeO2<double>>(mesh);

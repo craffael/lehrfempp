@@ -1450,8 +1450,7 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
    *
    * @sa ScalarReferenceFiniteElement::EvaluationNodes()
    */
-  [[nodiscard]] Eigen::MatrixXd
-  EvaluationNodes() const override {
+  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 2, 10> nodes;
     Eigen::Matrix<double, 2, 3> vertices;
     Eigen::Matrix<double, 2, 6> edges;
@@ -1603,8 +1602,8 @@ class FeLagrangeO3Segment final : public ScalarReferenceFiniteElement<SCALAR> {
  * nodes \f$ x_j \f$ and \f$ y_l \f$, see @lref{tplfedof}.
  *
  * The first four shape functions are associated with the vertices,
- * the next eight = 4*2 with edges of the quadrilateral. The last four shape functions
- * are interior shape functions.
+ * the next eight = 4*2 with edges of the quadrilateral. The last four shape
+ * functions are interior shape functions.
  *
  * @see ScalarReferenceFiniteElement
  */
