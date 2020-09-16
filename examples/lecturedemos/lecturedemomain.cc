@@ -16,10 +16,10 @@
 #include "lecturedemoassemble.h"
 #include "lecturedemodof.h"
 #include "lecturedemomesh.h"
+#include "lecturedemomeshfunction.h"
 #include "lecturedemoquad.h"
 #include "lecturedemorefine.h"
 #include "lecturedemotwonorm.h"
-#include "lecturedemomeshfunction.h"
 
 int main(int argc, char **argv) {
   // We rely on Boost's program_option library for parsing command line
@@ -76,6 +76,5 @@ int main(int argc, char **argv) {
       lecturedemo::lecturedemomeshfunction();
     }
   }
-
   return 0L;
 }

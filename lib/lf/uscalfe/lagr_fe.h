@@ -1296,8 +1296,6 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeLagrangeO3Tria() = default;
   ~FeLagrangeO3Tria() override = default;
 
-  /** @copydoc ScalarReferenceFiniteElement::RefEl()
-   */
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kTria();
   }

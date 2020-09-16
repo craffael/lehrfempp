@@ -49,12 +49,17 @@ double integrateCoeffgradUhVf(
   // Mesh function representing the integrand
   const auto mf_itg{lf::mesh::utils::transpose(mf_coefficient * mf_grad) *
                     mf_vectorfield};
+  // For the sake of efficiency fetch quadrature rule beforehand
+  std::array<lf::quad::QuadRule, 5> qrs{};
+  for (auto ref_el : {lf::base::RefEl::kTria(), lf::base::RefEl::kQuad()}) {
+    qrs[ref_el.Id()] = lf::quad::make_QuadRule(ref_el, 2);
+  }
+  // Apply composite mesh-based quadrature to a mesh function
   const double s = lf::uscalfe::IntegrateMeshFunction(
-      *mesh_p, mf_itg, [](const lf::mesh::Entity& e) {
-        return lf::quad::make_QuadRule(e.RefEl(), 2);
-      })(0, 0);
+      *mesh_p, mf_itg,
+      [&qrs](const lf::mesh::Entity& e) { return qrs[e.RefEl().Id()]; })(0, 0);
   return s;
-}  // end stabFlux
+}  // end integrateCoeffgradUhVf
 /* SAM_LISTING_END_1 */
 
 void lecturedemomeshfunction();
