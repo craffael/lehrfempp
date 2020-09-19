@@ -31,4 +31,24 @@ TEST(meshFunctionGradFE, ProjectionTest) {
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_grad, mf_grad_projected);
 }
 
+TEST(meshFunctionGradFE, ProjectionTestQuad) {
+  // This test projects a linear mesh function onto a quadratic Lagrangian FE
+  // space and compares the MeshFunctionFE with the original mesh function.
+
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  // A two-variate polynomials of degree 2
+  // This function can exactly be represented in the FE space
+  auto mf_quad = mesh::utils::MeshFunctionGlobal(
+      [](const Eigen::Vector2d& x) { return x[0] * x[1] + 2 * x[1]; });
+  auto mf_grad = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+    return Eigen::VectorXd(Eigen::Vector2d(x[1], x[0] + 2.0));
+  });
+
+  auto fespaceO2 = std::make_shared<FeSpaceLagrangeO2<double>>(mesh);
+
+  auto projected = NodalProjection(*fespaceO2, mf_quad);
+  auto mf_grad_projected = MeshFunctionGradFE(fespaceO2, projected);
+  mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_grad, mf_grad_projected);
+}
+
 }  // namespace lf::uscalfe::test
