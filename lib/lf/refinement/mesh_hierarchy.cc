@@ -23,9 +23,6 @@ bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
 ADDOPTION(MeshHierarchy::output_ctrl_, MeshHierarchy_output_ctrl,
           "Diagnostics control for MeshHierarchy");
 
-ADDOPTION(MeshHierarchy::ctrl_, MeshHierarchy_ctrl,
-          "Output control for MeshHierarchy");
-
 // Implementation of MeshHierarchy
 MeshHierarchy::MeshHierarchy(const std::shared_ptr<mesh::Mesh> &base_mesh,
                              std::unique_ptr<mesh::MeshFactory> mesh_factory)
@@ -1967,12 +1964,12 @@ const lf::mesh::Entity *MeshHierarchy::ParentEntity(
   return e_parent_info.parent_ptr;
 }
 
-std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
+std::ostream &MeshHierarchy::PrintInfo(std::ostream &o, unsigned ctrl) const {
   o << "MeshHierarchy, " << NumLevels() << " levels: " << std::endl;
   for (unsigned level = 0; level < NumLevels(); ++level) {
     const lf::mesh::Mesh &mesh{*getMesh(level)};
     o << "l=" << level << ": ";
-    if ((ctrl_ & kout_meshinfo) != 0) {
+    if ((ctrl & kout_meshinfo) != 0) {
       lf::mesh::utils::PrintInfo(o, mesh);
     } else {
       o << static_cast<int>(mesh.DimMesh()) << "D -> "
