@@ -374,7 +374,7 @@ class MeshHierarchy {
    * This is a rudimentary implementation and should be extended.
    *
    */
-  virtual std::ostream &PrintInfo(std::ostream &o, unsigned ctrl = 0) const;
+  std::ostream &PrintInfo(std::ostream &o, unsigned ctrl = 0) const;
 
   virtual ~MeshHierarchy() = default;
 
