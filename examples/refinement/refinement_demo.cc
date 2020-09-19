@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   // Output information about the mesh
   std::cout << "########################################" << std::endl;
   std::cout << "Output of PrintInfo() for test mesh" << std::endl;
-  lf::mesh::utils::PrintInfo(mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, mesh);
 
   // Build mesh hierarchy
   std::cout << "########################################" << std::endl;

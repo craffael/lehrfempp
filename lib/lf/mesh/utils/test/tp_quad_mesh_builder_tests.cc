@@ -45,7 +45,7 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Printing mesh information" << std::endl;
-  utils::PrintInfo(*mesh_p, std::cout);
+  utils::PrintInfo(std::cout, *mesh_p);
 }
 
 }  // namespace lf::mesh::test

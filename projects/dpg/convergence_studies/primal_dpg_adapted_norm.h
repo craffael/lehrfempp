@@ -103,7 +103,7 @@ TestConververgencePrimalDPGAdaptedNormConvectionDiffusionDirichletBVP(
       lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(top_mesh,
                                                               reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
-  std::cout << multi_mesh;
+  multi_mesh.PrintInfo(std::cout);
 
   // get number of levels:
   size_type L = multi_mesh.NumLevels();

@@ -84,7 +84,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   io::writeMatlab(*mesh_p, "tp_triag_test.m");
 
   // Printing mesh information
-  utils::PrintInfo(*mesh_p, std::cout);
+  utils::PrintInfo(std::cout, *mesh_p);
 }
 
 }  // namespace lf::mesh::test

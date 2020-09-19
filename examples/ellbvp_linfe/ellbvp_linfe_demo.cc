@@ -194,7 +194,8 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
 
   // Print information about the coarsest mesh
-  std::cout << "\t Coarsest mesh for demonstration run\n" << *mesh_p;
+  std::cout << "\t Coarsest mesh for demonstration run\n";
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
   // ======================================================================
   // Stage II: Ask LehrFEM++ to create a hierarchy of nested meshes
@@ -207,7 +208,8 @@ int main(int /*argc*/, const char** /*argv*/) {
                                                               reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
   // Ouput information about hierarchy of nested meshes
-  std::cout << "\t Sequence of nested meshes used in demo code\n" << multi_mesh;
+  std::cout << "\t Sequence of nested meshes used in demo code\n";
+  multi_mesh.PrintInfo(std::cout);
   // Number of levels
   size_type L = multi_mesh.NumLevels();
 

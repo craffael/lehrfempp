@@ -14,7 +14,10 @@ set(sources
 )
 
 lf_add_library(lf.base ${sources})
-target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options)
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options spdlog::spdlog)
+
+# enable SPDLOG_DEBUG and SPDLOG_TRACE statements in debug mode:
+target_compile_definitions(lf.base PUBLIC $<$<CONFIG:Debug>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>)
 
 if(MSVC)
   if(${MSVC_VERSION} GREATER_EQUAL 1915) 

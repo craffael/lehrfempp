@@ -1973,9 +1973,7 @@ std::ostream &MeshHierarchy::PrintInfo(std::ostream &o) const {
     const lf::mesh::Mesh &mesh{*getMesh(level)};
     o << "l=" << level << ": ";
     if ((ctrl_ & kout_meshinfo) != 0) {
-      LF_ASSERT_MSG(false, "Not yet implemented");
-      // TODO(raffael), when output for lf::mesh::Mesh has been fixed
-      o << mesh << std::endl;
+      lf::mesh::utils::PrintInfo(o, mesh);
     } else {
       o << static_cast<int>(mesh.DimMesh()) << "D -> "
         << static_cast<int>(mesh.DimWorld()) << "D, " << mesh.NumEntities(0)

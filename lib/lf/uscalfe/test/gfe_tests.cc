@@ -289,7 +289,7 @@ TEST(lf_gfe, lf_gfe_intperrcvg) {
   lf::refinement::MeshHierarchy &multi_mesh{*multi_mesh_p};
 
   // output of mesh hierarchy
-  std::cout << multi_mesh;
+  multi_mesh.PrintInfo(std::cout);
 
   // Function
   auto f = mesh::utils::MeshFunctionGlobal(

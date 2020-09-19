@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
   lf::mesh::test_utils::checkMeshCompleteness(*mesh_p);
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
   // Matlab output of mesh
   lf::io::writeMatlab(*mesh_p, "lf_tptriagmesh.m");

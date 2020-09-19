@@ -450,14 +450,6 @@ class MeshHierarchy {
   static const unsigned int kout_meshinfo = 2;
 };
 
-/**
- * @brief output operator for MeshHierarchy
- */
-inline std::ostream &operator<<(std::ostream &o,
-                                const MeshHierarchy &multimesh) {
-  return multimesh.PrintInfo(o);
-}
-
 template <typename Marker>
 void MeshHierarchy::MarkEdges(Marker &&marker) {
   // Retrieve the finest mesh in the hierarchy

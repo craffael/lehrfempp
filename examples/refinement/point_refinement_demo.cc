@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 
   // output mesh information
   const lf::mesh::Mesh &mesh = *mesh_ptr;
-  lf::mesh::utils::PrintInfo(mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, mesh);
   std::cout << std::endl;
 
   // build mesh hierarchy

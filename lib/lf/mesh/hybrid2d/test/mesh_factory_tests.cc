@@ -56,8 +56,7 @@ bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
 
   // Printing mesh information
   lf::geometry::Geometry::output_ctrl_ = 20;
-  lf::mesh::utils::printinfo_ctrl = 100;
-  utils::PrintInfo(mesh, std::cout);
+  utils::PrintInfo(std::cout, mesh);
   return true;
 }
 

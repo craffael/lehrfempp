@@ -2,10 +2,6 @@
 #include "lf/mesh/utils/utils.h"
 
 namespace lf::mesh {
-// Introduce output_ctrl_
-
-ADDOPTION(Entity::output_ctrl_, Entity_ctrl,
-          "Diagnostics control for Mesh/Entity");
 
 int to_sign(Orientation o) { return static_cast<int>(o); }
 char to_char(Orientation o) {
@@ -21,11 +17,7 @@ char to_char(Orientation o) {
 }
 
 std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity) {
-  if (Entity::output_ctrl_ == 0) {
-    return stream << entity.RefEl();
-  }
-  utils::PrintInfo(entity, stream);
-  return stream;
+  return stream << entity.RefEl();
 }  // end output  operator <<
 
 }  // namespace lf::mesh

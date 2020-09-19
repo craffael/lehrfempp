@@ -38,6 +38,9 @@ find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_option
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
 
+# Get SPDLog
+hunter_add_package(spdlog)
+find_package(spdlog CONFIG REQUIRED)
 
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)

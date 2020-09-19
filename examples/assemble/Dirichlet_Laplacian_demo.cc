@@ -149,7 +149,7 @@ double L2ErrorLinearFEDirichletLaplacian(
       dbg_ctrl, dbg_mesh,
       const int tmp_mesh_ctrl = lf::mesh::hybrid2d::Mesh::output_ctrl_;
       lf::mesh::hybrid2d::Mesh::output_ctrl_ = 100;
-      lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+      lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
       lf::mesh::hybrid2d::Mesh::output_ctrl_ = tmp_mesh_ctrl);
   // Initialize objects for local computations
   lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
   bool verbose = false;
   namespace po = boost::program_options;
   // clang-format off
-  ci::Add()
+   ci::Add()
   ("help,h", "-h -v -f <filename> -s <selection>")
   ("filename,f", "File to load coarse mesh from ")
   ("selector,s", po::value<int>()->default_value(0), "Selection of test mesh")
@@ -308,7 +308,15 @@ int main(int argc, char **argv) {
   if (ci::Help()) {
     // Nothing to be done!
   } else {
-    std::cout << "ass_mat_dbg_ctrl " << lf::assemble::ass_mat_dbg_ctrl << "\n";
+    // set the level of assemble_matrix_logger to trace
+    // A soon as spdlog 1.8.0 is available via hunter
+    // (https://github.com/cpp-pm/hunter/pull/260) this can be achieved by
+    // setting the environment variable `SPDLOG_LEVEL=trace` or
+    // `SPDLOG_LEVEL="info,lf::assemble::assemble_matrix_logger=trace"`
+    lf::assemble::assemble_matrix_logger->set_level(spdlog::level::trace);
+
+    std::cout << "assemble_matrix_logger level "
+              << lf::assemble::assemble_matrix_logger->level() << "\n";
     std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
               << std::endl;
     // Retrieve number of degrees of freedom for each entity type from
