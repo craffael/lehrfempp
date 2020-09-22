@@ -95,6 +95,25 @@ TEST(fe_space_hierarchic, legendre_derivative) {
   }
 }
 
+TEST(fe_space_hierarchic, jacobi_general) {
+  const unsigned N = 1000;
+  for (unsigned p = 0; p < 20; ++p) {
+    for (unsigned alpha = 1; alpha < 10; ++alpha) {
+      for (unsigned i = 0; i <= N; ++i) {
+        const double x = static_cast<double>(i) / N;
+        // Compute the jacobi polynomial at x using the accurate scheme
+        const double accurate = lf::fe::JacobiPoly<double>::eval(p, alpha, x);
+        // Compute the jacobi polynomial at x using the general scheme
+        const double general =
+            lf::fe::JacobiPoly<double>::eval_general(p, alpha, 0, x);
+        // Compare the two values
+        ASSERT_NEAR(accurate, general, 1e-5)
+            << "P=" << p << " alpha=" << alpha << " x=" << x;
+      }
+    }
+  }
+}
+
 TEST(fe_space_hierarchic, jacobi_integral) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
@@ -117,6 +136,37 @@ TEST(fe_space_hierarchic, jacobi_integral) {
         } else {
           ASSERT_NEAR(approx / exact, 1, 1e-5)
               << "p=" << p << " alpha=" << alpha << " x=" << x;
+        }
+      }
+    }
+  }
+}
+
+TEST(fe_space_hierarchic, jacobi_derivative) {
+  const unsigned N = 1000;
+  const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
+  for (unsigned p = 0; p < 10; ++p) {
+    for (unsigned alpha = 1; alpha < 10; ++alpha) {
+      for (unsigned i = 0; i <= N; ++i) {
+        const double x = static_cast<double>(i) / N;
+        // Compute the differentiated jacobi polynomial at x
+        const double exact =
+            lf::fe::JacobiPoly<double>::derivative(p, alpha, x);
+        // Differentiate the polynomial using central differences
+        const double evalp =
+            lf::fe::JacobiPoly<double>::eval(p + 1, alpha, x + eps / 2);
+        const double evalm =
+            lf::fe::JacobiPoly<double>::eval(p + 1, alpha, x - eps / 2);
+        const double approx = (evalp - evalm) / eps;
+        // Compare the two values
+        if (std::fabs(exact) < 100) {
+          ASSERT_NEAR(approx, exact, 1e-5)
+              << "p=" << p << " alpha=" << alpha << " x=" << x
+              << " exact=" << exact << " approx=" << approx;
+        } else {
+          ASSERT_NEAR(approx / exact, 1, 1e-5)
+              << "p=" << p << " alpha=" << alpha << " x=" << x
+              << " exact=" << exact << " approx=" << approx;
         }
       }
     }

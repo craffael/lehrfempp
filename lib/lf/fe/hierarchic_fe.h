@@ -265,6 +265,69 @@ struct JacobiPoly {
     const double cnL = (n - 1) / ((2 * n + alpha - 2) * (2 * n + alpha - 1));
     return anL * Pj + bnL * Pjm1 - cnL * Pjm2;
   }
+
+  /**
+   * @brief Computes the derivative of the (n+1)-th degree Jacobi Polynomial
+   * @param n The degree of the differentiated polynomial
+   * @param alpha The \f$ \alpha \f$ parameter of the Jacobi Polynomial
+   * @param x The evaluation coordinate in [0, 1]
+   *
+   * The derivative is evaluated using
+   * \f[
+   *	P^{(\alpha,0)}_n'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
+   * \f]
+   */
+  static SCALAR derivative(unsigned n, double alpha, double x) {
+    return eval_general(n, alpha + 1, 1, x) * (alpha + n + 2);
+  }
+
+  /**
+   * @brief Evaluate the n-th degree Jacobi polynomial
+   * @param n The degree of the polynomial
+   * @param alpha The \f$ \alpha \f$ parameter to the Jacobi polynomial
+   * @param beta The \f$ \beta \f$ parameter to the Jacobi polynomial
+   * @param x The evaluation point in [0, 1]
+   *
+   * This method might be more unstable than the `JacobiPoly<SCALAR>::eval`
+   * function which is specialized for \f$ \beta = 0 \f$.
+   */
+  static SCALAR eval_general(unsigned n, double alpha, double beta, double x) {
+    x = 2 * x - 1;
+    if (n == 0) {
+      return 1;
+    }
+    if (n == 1) {
+      return 0.5 * (alpha - beta + x * (alpha + beta + 2));
+    }
+    double p0 = 1;
+    double p1 = 0.5 * (alpha - beta + x * (alpha + beta + 2));
+    double p2 = 0;
+    for (unsigned j = 1; j < n; ++j) {
+      const double alpha1 =
+          2 * (j + 1) * (j + alpha + beta + 1) * (2 * j + alpha + beta);
+      const double alpha2 =
+          (2 * j + alpha + beta + 1) * (alpha * alpha - beta * beta);
+      const double alpha3 = (2 * j + alpha + beta) *
+                            (2 * j + alpha + beta + 1) *
+                            (2 * j + alpha + beta + 2);
+      const double alpha4 =
+          2 * (j + alpha) * (j + beta) * (2 * j + alpha + beta + 2);
+      p2 = 1. / alpha1 * ((alpha2 + alpha3 * x) * p1 - alpha4 * p0);
+      p0 = p1;
+      p1 = p2;
+    }
+    /*
+    for (unsigned j = 2 ; j <= n ; ++j) {
+        const double c1 = 2 * j * (j + alpha + beta) * (2 * j - 2 +alpha +
+    beta); const double c2 = (2 * j - 1 + alpha + beta) * (2 * j + alpha + beta)
+    * (2 * j - 2 + alpha + beta); const double c3 = (2 * j - 1 + alpha + beta) *
+    (alpha + beta) * (alpha - beta); const double c4 = -2 * (j - 1 + alpha) * (j
+    - 1 + beta) * (2 * j + alpha + beta); p2 = ((c3 + c2 * x) * p1 + c4 * p0) /
+    c1; p0 = p1; p1 = p2;
+    }
+    */
+    return p2;
+  }
 };
 
 /**
