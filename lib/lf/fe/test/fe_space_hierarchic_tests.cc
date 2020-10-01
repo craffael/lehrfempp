@@ -270,6 +270,42 @@ TEST(fe_space_hierarchic, segment_dual) {
   }
 }
 
+TEST(fe_space_hierarchic, tria_dual) {
+  // Test the nodal values to dofs function of all segments
+  // with degree up to 10
+  for (unsigned p = 1; p <= 10; ++p) {
+    // Test for all possible combinations of orientations
+    for (const auto o0 :
+         {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
+      for (const auto o1 :
+           {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
+        for (const auto o2 : {lf::mesh::Orientation::positive,
+                              lf::mesh::Orientation::negative}) {
+          const lf::mesh::Orientation orientations[] = {o0, o1, o2};
+          const lf::fe::FeHierarchicTria<double> sfl(p, orientations);
+          // Get the evaluation nodes for the quad
+          const auto eval_nodes = sfl.EvaluationNodes();
+          // Evaluate the basis functions at the evaluation nodes
+          const Eigen::MatrixXd basis =
+              sfl.EvalReferenceShapeFunctions(eval_nodes);
+          // Interpolate all basis functions
+          for (unsigned i = 0; i < basis.rows(); ++i) {
+            // Compute the basis function coefficients
+            const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
+            // Only the i-th entry should be 1, all others 0
+            for (long j = 0; j < dofs.size(); ++j) {
+              EXPECT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+                  << "o=" << to_char(o0) << to_char(o1) << to_char(o2)
+                  << " p=" << p << " i=" << i << " j=" << j << "\ndofs=["
+                  << dofs << "]";
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 TEST(fe_space_hierarchic, quad_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 10
