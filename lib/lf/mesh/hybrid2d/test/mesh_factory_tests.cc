@@ -55,8 +55,7 @@ bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
   io::writeMatlab(mesh, "test_mesh.m");
 
   // Printing mesh information
-  lf::geometry::Geometry::output_ctrl_ = 20;
-  utils::PrintInfo(std::cout, mesh);
+  utils::PrintInfo(std::cout, mesh, 20);
   return true;
 }
 
