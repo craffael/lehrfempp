@@ -2,21 +2,22 @@
 
 set(sources
   assembler.cc
+  coomatrix.cpp
+  dofhandleruse.cc
+  entityuse.cc
   fe_tools.cc
   fe_space_lagrange_o1.cc
+  geometryuse.cc
   gmsh_reader.cc
   lambda_mesh_data_set.cc
+  line_feed_formatter.cc
   mesh_function_binary.cc
   mesh_utils.cc
-  ref_el.cc
-  vtk_writer.cc
-  coomatrix.cpp
   meshhierarchy.cc
   meshuse.cc
-  entityuse.cc
-  geometryuse.cc
-  dofhandleruse.cc
   quadruleuse.cc
+  ref_el.cc
+  vtk_writer.cc
 )
 
 add_library(docsnippets ${sources})

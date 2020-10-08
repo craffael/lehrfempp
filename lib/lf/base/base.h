@@ -45,5 +45,6 @@ constexpr double kPi = 3.14159265358979323846;
 #include "predicate_true.h"
 #include "ref_el.h"
 #include "span.h"
+#include "spdlog_utils.h"
 
 #endif  // __986f32316282425d9be137cb399482f3

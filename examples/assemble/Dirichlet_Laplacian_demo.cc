@@ -145,12 +145,10 @@ double L2ErrorLinearFEDirichletLaplacian(
                 << mesh_p->NumEntities(0) << " cells, "
                 << mesh_p->NumEntities(1) << " edges, "
                 << mesh_p->NumEntities(2) << " nodes" << std::endl;)
-  SWITCHEDSTATEMENT(
-      dbg_ctrl, dbg_mesh,
-      const int tmp_mesh_ctrl = lf::mesh::hybrid2d::Mesh::output_ctrl_;
-      lf::mesh::hybrid2d::Mesh::output_ctrl_ = 100;
-      lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
-      lf::mesh::hybrid2d::Mesh::output_ctrl_ = tmp_mesh_ctrl);
+  if (dbg_ctrl & dbg_mesh) {
+    lf::mesh::utils::PrintInfo(std::cout, *mesh_p, 100);
+  }
+
   // Initialize objects for local computations
   lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
   lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);

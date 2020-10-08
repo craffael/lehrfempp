@@ -10,6 +10,8 @@
 #define __62731052ee4a4a2d9f256c2caac43835
 
 #include <lf/mesh/mesh.h>
+#include <spdlog/logger.h>
+
 #include "lf/base/base.h"
 #include "lf/mesh/utils/print_info.h"
 #include "point.h"
@@ -132,6 +134,10 @@ class Mesh : public mesh::Mesh {
  public:
   /** @brief Diagnostics control variable */
   static unsigned int output_ctrl_;
+
+  /// logger, used by methods of Mesh to log additional information.
+  static inline std::shared_ptr<spdlog::logger> logger =
+      base::InitLogger("lf::mesh::hybrid2d::Mesh::logger");
 };
 
 }  // namespace lf::mesh::hybrid2d
