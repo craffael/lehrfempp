@@ -3,7 +3,7 @@
 
 #include "lf/mesh/mesh_factory.h"
 
-namespace lf::mesh::hybrid2d {
+namespace lf::mesh::utils {
 
 /**
  * @ brief Builder interface for creating structured meshes on rectangular
@@ -82,6 +82,6 @@ class StructuredMeshBuilder {
   size_type num_of_x_cells_{0}, num_of_y_cells_{0};  // NOLINT
 };  // end class definition StructuredMeshBuilder
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils
 
 #endif /* STRUCTURED_MESH_BUILDER_H */

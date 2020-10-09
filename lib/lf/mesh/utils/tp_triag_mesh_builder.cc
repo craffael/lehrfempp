@@ -4,10 +4,12 @@
 #include "lf/mesh/mesh_interface.h"
 #include "tp_triag_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+#include <spdlog/spdlog.h>
 
-ADDOPTION(TPTriagMeshBuilder::output_ctrl_, tpquad_ctrl,
-          "Diagnostics control for TPTriagMeshBuilder");
+namespace lf::mesh::utils {
+
+std::shared_ptr<spdlog::logger> TPTriagMeshBuilder::logger =
+    base::InitLogger("lf::mesh::utils::TPTriagMeshBuilder::logger");
 
 std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
@@ -19,10 +21,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   const unsigned no_of_edges = nx * ny + (nx + 1) * ny + nx * (ny + 1);
   const unsigned no_of_vertices = (nx + 1) * (ny + 1);
   // Diagnostics
-  if (output_ctrl_ != 0) {
-    std::cout << "TPmesh: " << no_of_cells << " cells, " << no_of_edges
-              << " edges " << no_of_vertices << " vertices" << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(logger, "TPmesh: {} cells, {} edges, {} vertices",
+                      no_of_cells, no_of_edges, no_of_vertices);
+
   // No mesh to build
   if (no_of_cells == 0) {
     return nullptr;
@@ -47,10 +48,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       node_coord << bottom_left_corner_[0] + i * hx,
           bottom_left_corner_[1] + j * hy;
       // Diagnostics
-      if (output_ctrl_ != 0) {
-        std::cout << "Adding vertex " << node_cnt << ": " << node_coord
-                  << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+                          node_coord.transpose());
+
       // Enlist vertex
       v_idx[node_cnt] = mesh_factory_->AddPoint(node_coord);
     }
@@ -67,11 +67,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       auto first_endpoint_idx = v_idx[VertexIndex(i, j)];
       auto second_endpoint_idx = v_idx[VertexIndex(i + 1, j)];
       // Diagnostics
-      if (output_ctrl_ != 0) {
-        std::cout << "horizontal edge " << edge_cnt << ": "
-                  << first_endpoint_idx << " <-> " << second_endpoint_idx
-                  << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "horizontal edge {}: {} <-> {}", edge_cnt,
+                          first_endpoint_idx, second_endpoint_idx);
+
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
                                               second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
@@ -91,10 +89,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i, j + 1)];
       // Diagnostics
-      if (output_ctrl_ != 0) {
-        std::cout << "vertical edge " << edge_cnt << ": " << first_endpoint_idx
-                  << " <-> " << second_endpoint_idx << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "vertical edge {}: {} <-> {}", edge_cnt,
+                          first_endpoint_idx, second_endpoint_idx);
+
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
                                               second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
@@ -114,10 +111,9 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i + 1, j + 1)];
       // Diagnostics
-      if (output_ctrl_ != 0) {
-        std::cout << "diagonal edge " << edge_cnt << ": " << first_endpoint_idx
-                  << " <-> " << second_endpoint_idx << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "diagonal edge {}: {} <-> {}", edge_cnt,
+                          first_endpoint_idx, second_endpoint_idx);
+
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
                                               second_endpoint_idx};
       // Coordinates of endpoints a columns of a 2x2 matrix
@@ -177,4 +173,4 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   return mesh_factory_->Build();
 }  // end Build()
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils

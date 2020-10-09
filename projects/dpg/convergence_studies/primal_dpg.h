@@ -73,8 +73,7 @@ energy_vector TestConververgencePrimalDPGConvectionDiffusionDirichletBVP(
   switch (ref_el) {
     case lf::base::RefEl::kTria(): {
       // construct a triangular tensor product mesh
-      lf::mesh::hybrid2d::TPTriagMeshBuilder builder(
-          std::move(mesh_factory_ptr));
+      lf::mesh::utils::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
           .setNumXCells(2)
@@ -84,8 +83,7 @@ energy_vector TestConververgencePrimalDPGConvectionDiffusionDirichletBVP(
     }
 
     case lf::base::RefEl::kQuad(): {
-      lf::mesh::hybrid2d::TPQuadMeshBuilder builder(
-          std::move(mesh_factory_ptr));
+      lf::mesh::utils::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
       builder.setBottomLeftCorner(Eigen::Vector2d{0.0, 0.0})
           .setTopRightCorner(Eigen::Vector2d{1.0, 1.0})
           .setNumXCells(2)

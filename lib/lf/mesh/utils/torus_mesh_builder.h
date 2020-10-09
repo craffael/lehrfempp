@@ -12,7 +12,7 @@
 #include "lf/mesh/mesh_factory.h"
 #include "structured_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+namespace lf::mesh::utils {
 
 /**
  * @brief Implements a MeshBuilder for a tensor product grid of a torus
@@ -50,10 +50,12 @@ class TorusMeshBuilder : public StructuredMeshBuilder {
   }
 
  public:
-  /** Diagnostics control variable */
-  static unsigned int output_ctrl_;
+  /**
+   * @brief logger that is used by Build() to provide additional debug info.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };  // end class definition TorusMeshBuilder
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils
 
 #endif /* TORUS_MESH_BUILDER_H */

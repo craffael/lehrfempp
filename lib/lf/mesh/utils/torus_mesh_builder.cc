@@ -15,10 +15,12 @@
 #include "lf/mesh/mesh_interface.h"
 #include "torus_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+#include <spdlog/spdlog.h>
 
-ADDOPTION(TorusMeshBuilder::output_ctrl_, torus_ctrl,
-          "Diagnostics control for TorusMeshBuilder");
+namespace lf::mesh::utils {
+
+std::shared_ptr<spdlog::logger> TorusMeshBuilder::logger =
+    base::InitLogger("lf::mesh::utils::TorusMeshBuilder::logger");
 
 std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   using coord_t = Eigen::Vector3d;
@@ -52,11 +54,10 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   auto theta = [r, hx](double i) -> double { return (i * hx) / r; };
   auto phi = [R, hy](double j) -> double { return (j * hy) / R; };
 
-  if (output_ctrl_ > 0) {
-    std::cout << "TorusMesh: " << no_of_cells << " cells, " << no_of_edges
-              << " edges " << no_of_vertices << " vertices, "
-              << "mesh widths hx/hy = " << hx << "/" << hy << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(
+      logger,
+      "TorusMesh: {} cells, {} edges, {} vertices, mesh widths hx/hy = {}/{}",
+      no_of_cells, no_of_edges, no_of_vertices, hx, hy);
 
   // compute vertices of mesh on torus with lexicographic numbering
   std::vector<size_type> v_idx(no_of_vertices);
@@ -70,10 +71,8 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
           (R + r * std::cos(theta(i))) * std::sin(phi(j)),
           r * std::sin(theta(i));
 
-      if (output_ctrl_ > 0) {
-        std::cout << "Adding vertex " << node_cnt << ": "
-                  << node_coord.transpose() << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+                          node_coord.transpose());
       // register vertex
       v_idx[node_cnt] = mesh_factory_->AddPoint(node_coord);
     }
@@ -103,10 +102,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
           r * std::sin(theta(i)), r * std::sin(theta(i + 1)),
           r * std::sin(theta(i + 1)), r * std::sin(theta(i));
 
-      if (output_ctrl_ > 0) {
-        std::cout << "Adding quad " << quad_cnt << ": " << quad_geo
-                  << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Adding quad {}:\n{}", quad_cnt, quad_geo);
 
       // request cell production from MeshFactory (straight edges will be
       // created as needed)
@@ -119,4 +115,4 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   return mesh_factory_->Build();
 }  // TorusMeshBuilder::Build()
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils

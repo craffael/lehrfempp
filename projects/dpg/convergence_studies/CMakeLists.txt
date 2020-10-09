@@ -1,7 +1,7 @@
 
 
 add_executable(projects.dpg.convergence_studies.convergence_study1
-	       convergence_study1.cc)
+	       convergence_study1.cc primal_dpg.h primal_dpg_adapted_norm.h ultraweak_dpg.h )
 add_executable(projects.dpg.convergence_studies.convergence_study2
 	       convergence_study2.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study3
