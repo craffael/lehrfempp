@@ -34,7 +34,7 @@ TEST(RegRefTest, RegRef) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -90,7 +90,7 @@ TEST(RegRefTest, BarycentricRef) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -150,7 +150,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -214,7 +214,7 @@ TEST(LocRefTest, LocalRefinement) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -277,7 +277,7 @@ TEST(LocRefTest, LocalRefinement) {
 
 TEST(LocRefTest, MultipleRefinement) {
   lf::refinement::MeshHierarchy::output_ctrl_ = 0;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
 
   const size_type Nrefs = 4;
   std::cout << "TEST: Multiple refinement with Marked edges in a square"
@@ -372,7 +372,7 @@ void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
 // meshes provided by lf::mesh::test_utils::GenerateHybriod2DTestMesh()
 void test_hybrid_2d_meshes(int selector) {
   // Setting appropriate output controls
-  lf::mesh::test_utils::watertight_mesh_ctrl = 0;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   lf::refinement::MeshHierarchy::output_ctrl_ = 0;
 
   LF_VERIFY_MSG(

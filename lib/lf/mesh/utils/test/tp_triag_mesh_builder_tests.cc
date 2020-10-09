@@ -69,7 +69,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
   if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
