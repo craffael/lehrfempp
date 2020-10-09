@@ -1,12 +1,14 @@
 #include "mesh_factory.h"
 #include "hybrid2d.h"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
+#include "lf/base/base.h"
 
 namespace lf::mesh::hybrid2d {
 
-ADDOPTION(MeshFactory::output_ctrl_, hybrid2dmf_output_ctrl,
-          "Enables printing of internal lists for MeshFactory");
+std::shared_ptr<spdlog::logger> MeshFactory::logger =
+    lf::base::InitLogger("lf::mesh::hybrid2d::MeshFactory::logger");
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(coord.rows() == dim_world_,
@@ -97,8 +99,10 @@ MeshFactory::size_type MeshFactory::AddEntity(
 
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   // DIAGNOSTICS
-  if (output_ctrl_ > 0) {
-    PrintLists();
+  if (logger->should_log(spdlog::level::trace)) {
+    std::stringstream ss;
+    PrintLists(ss);
+    SPDLOG_LOGGER_TRACE(logger, ss.str());
   }
 
   // Obtain points to new mesh object; the actual construction of the
