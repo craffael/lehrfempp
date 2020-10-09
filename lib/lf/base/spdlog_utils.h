@@ -43,7 +43,7 @@ namespace lf::base {
  * @note So far a call to this method is essentially forwarded to
  * spdlog::stdout_color_mt() and the formatter is set to a LineFeedFormatter.
  */
-std::shared_ptr<spdlog::logger> InitLogger(std::string name);
+std::shared_ptr<spdlog::logger> InitLogger(const std::string& name);
 
 // clang-format off
 /**
