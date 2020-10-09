@@ -17,6 +17,6 @@
 namespace lf::assemble {
 // Initialize assemble_matrix_logger
 std::shared_ptr<spdlog::logger> assemble_matrix_logger =
-    spdlog::stdout_color_mt("lf::assemble::assemble_matrix_logger");
+    base::InitLogger("lf::assemble::assemble_matrix_logger");
 
 }  // namespace lf::assemble

@@ -118,7 +118,7 @@ TEST(RegRefTest, BarycentricRef) {
 }
 
 TEST(RegRefTest, AllMarkedRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
   std::cout << "TEST: All edges marked" << std::endl;
 
   // Generate test mesh
@@ -178,7 +178,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
 }
 
 TEST(LocRefTest, LocalRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
   std::cout << "TEST: Marked edges in the unit square" << std::endl;
 
   // Generate test mesh
@@ -276,8 +276,8 @@ TEST(LocRefTest, LocalRefinement) {
 */
 
 TEST(LocRefTest, MultipleRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
-  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::info);
 
   const size_type Nrefs = 4;
   std::cout << "TEST: Multiple refinement with Marked edges in a square"
@@ -372,8 +372,8 @@ void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
 // meshes provided by lf::mesh::test_utils::GenerateHybriod2DTestMesh()
 void test_hybrid_2d_meshes(int selector) {
   // Setting appropriate output controls
-  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::info);
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
 
   LF_VERIFY_MSG(
       (selector >= 0) &&

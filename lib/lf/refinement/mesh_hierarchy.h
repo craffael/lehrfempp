@@ -443,10 +443,11 @@ class MeshHierarchy {
   [[nodiscard]] sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 
  public:
-  /** @brief diagnostics control variable */
-  static unsigned int output_ctrl_;
-  /** @brief Output control variable */
-  static const unsigned int kout_meshinfo = 2;
+  /**
+   * @brief Is used by MeshHierarchy to log additional information for debugging
+   * purposes.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };
 
 template <typename Marker>
