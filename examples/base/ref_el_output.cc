@@ -5,7 +5,7 @@
 #include <iostream>
 #include "lf/base/base.h"
 
-int main(int argc, char** argv) {
+int main() {
   // Node
   auto re_node = lf::base::RefEl::kPoint();
   std::cout << "Information about node: \n" << re_node << std::endl;

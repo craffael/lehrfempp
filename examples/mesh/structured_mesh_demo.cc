@@ -32,11 +32,11 @@ int main(int argc, char** argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   try {
     po::store(po::parse_config_file<char>("setup.vars", desc), vm);
-  } catch(po::reading_file error) {
+  } catch(const po::reading_file& error) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
 
-  if(vm.count("help")) {
+  if(vm.count("help") > 0) {
     std::cout << desc << std::endl;
     return 1;
   }

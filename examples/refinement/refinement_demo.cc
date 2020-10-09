@@ -48,14 +48,14 @@ int main(int argc, char **argv) {
   po::variables_map vm;
   try {
     po::store(po::parse_config_file<char>("setup.vars", desc), vm);
-  } catch (po::reading_file) {
+  } catch (const po::reading_file &) {
     std::cout << "No file `setup.vars` specifying control variables"
               << std::endl;
   }
   po::store(po::parse_command_line(argc, argv, desc), vm);
 
   // check for the help option (-h or --help)
-  if (vm.count("help")) {
+  if (vm.count("help") > 0) {
     std::cout << desc << std::endl;
     return 1;
   }

@@ -12,7 +12,7 @@
 
 namespace lf::base {
 
-std::shared_ptr<spdlog::logger> InitLogger(std::string name) {
+std::shared_ptr<spdlog::logger> InitLogger(const std::string& name) {
   auto result = spdlog::stdout_color_mt(name);
   result->set_formatter(std::make_unique<LineFeedFormatter>(
       std::make_unique<spdlog::pattern_formatter>()));
@@ -40,7 +40,7 @@ void LineFeedFormatter::format(const spdlog::details::log_msg& msg,
                                            msg.logger_name, msg.level,
                                            spdlog::string_view_t());
         wrapped_formatter_->format(empty_msg, temp_dest);
-        offset = temp_dest.size() - 1;
+        offset = static_cast<int>(temp_dest.size() - 1);
       }
 
       spdlog::details::log_msg part(msg.time, msg.source, msg.logger_name,

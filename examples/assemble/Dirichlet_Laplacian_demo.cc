@@ -56,7 +56,7 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     const lf::mesh::Entity &dof_entity{dofh.Entity(dofnum)};
     tmp_bd_flags[dofnum] = bd_flags(dof_entity);
-    if (dbg_ctrl & dbg_bdf) {
+    if ((dbg_ctrl & dbg_bdf) > 0) {
       std::cout << "FBD: dof " << dofnum << "@ " << dof_entity << " ["
                 << dofh.Mesh()->Index(dof_entity) << "] ";
       if (tmp_bd_flags[dofnum]) {
@@ -82,7 +82,7 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
   auto new_last = std::remove_if(
       A->triplets().begin(), A->triplets().end(),
       [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
-        if (dbg_ctrl & dbg_elim) {
+        if ((dbg_ctrl & dbg_elim) > 0) {
           if (tmp_bd_flags[triplet.row()]) {
             std::cout << "EBD: removing " << triplet.row() << ','
                       << triplet.col() << "[" << triplet.value() << "]"
@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
 
-  if (vm.count("help")) {
+  if (vm.count("help") > 0) {
     std::cout << desc << std::endl;
     return 1;
   }
@@ -334,7 +334,7 @@ int main(int argc, char **argv) {
             << std::endl;
   // Retrieve number of degrees of freedom for each entity type from
   // command line arguments
-  if (vm.count("filename")) {
+  if (vm.count("filename") > 0) {
     // A filename was specified
     std::string filename{vm["filename"].as<std::string>()};
     if (filename.length() > 0) {
@@ -349,7 +349,7 @@ int main(int argc, char **argv) {
   } else {
     std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
               << std::endl;
-    if (vm.count("selector")) {
+    if (vm.count("selector") > 0) {
       auto selector = vm["selector"].as<int>();
       std::cout << "Using test mesh no " << selector << std::endl;
       if ((selector >= 0) && (selector <= 4)) {

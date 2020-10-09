@@ -73,14 +73,19 @@ world
 // clang-format on
 class LineFeedFormatter final : public spdlog::formatter {
  public:
-  LineFeedFormatter(std::unique_ptr<spdlog::formatter> wrapped_formatter);
+  explicit LineFeedFormatter(
+      std::unique_ptr<spdlog::formatter> wrapped_formatter);
 
-  virtual ~LineFeedFormatter() = default;
+  LineFeedFormatter(const LineFeedFormatter&) = delete;
+  LineFeedFormatter(LineFeedFormatter&&) = default;
+  LineFeedFormatter& operator=(const LineFeedFormatter&) = delete;
+  LineFeedFormatter& operator=(LineFeedFormatter&&) = default;
+  ~LineFeedFormatter() override = default;
 
   void format(const spdlog::details::log_msg& msg,
               spdlog::memory_buf_t& dest) override;
 
-  std::unique_ptr<formatter> clone() const override;
+  [[nodiscard]] std::unique_ptr<formatter> clone() const override;
 
  private:
   std::unique_ptr<spdlog::formatter> wrapped_formatter_;
@@ -109,8 +114,9 @@ struct fmt::is_range<lf::base::internal::enable_if_eigen<MATRIX>, char> {
  */
 template <class MATRIX>
 struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
-  constexpr auto parse(format_parse_context& ctx) {
-    auto it = ctx.begin(), end = ctx.end();
+  constexpr auto parse(const format_parse_context& ctx) {
+    auto it = ctx.begin();
+    auto end = ctx.end();
 
     if (it != end && *it != '}') {
       throw format_error("invalid format");
