@@ -578,7 +578,6 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
 
   // Set debugging flags
   loc_comp_t::ctrl_ = 0;                                       // 255;
-  lf::quad::QuadRule::out_ctrl_ = 0;                           // 1;
   LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;  // 3;
 
   // Instantiate object for local computations
