@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <boost/program_options.hpp>
 #include "lf/base/base.h"
 #include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
@@ -11,28 +12,42 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-ADDOPTION(Nx, Nx_cells, "No of cells in X direction, must be > 0");
-ADDOPTION(Ny, Ny_cells, "No of cells in Y direction, must be > 0");
-
 int main(int argc, char** argv) {
   using size_type = lf::base::size_type;
 
-  std::cout
-      << "LehrFEM++ demo: construction of tensor producy triangular mesh\n"
-      << "Use the option `-h` to display the control variables.\n";
+  namespace po = boost::program_options;
+
+  // clang-format off
+  po::options_description desc("LehrFEM++ demo: construction of tensor producy triangular mesh\nUse the option `-h` to display the control variables.");
+  desc.add_options()
+    ("help,h", "Display help")
+    ("Nx_cells", po::value<int>()->required(), "No of cells in X direction, must be > 0")
+    ("Ny_cells", po::value<int>()->required(), "No of cells in Y direction, must be > 0")
+  ;
+  //clang-format on
 
   // Set control variables from command line or file "setup vars"
-  lf::base::ci::Add("help,h", "Display help");
   // check for file with options
-  if (!lf::base::ci::ParseFile("setup.vars")) {
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  try {
+    po::store(po::parse_config_file<char>("setup.vars", desc), vm);
+  } catch(po::reading_file error) {
     std::cout << "No file `setup.vars` specifying control variables\n";
   }
-  lf::base::ci::ParseCommandLine(argc, argv);
-  if (lf::base::ci::Help()) {
-    return 0;
+
+  if(vm.count("help")) {
+    std::cout << desc << std::endl;
+    return 1;
   }
 
+  po::notify(vm);
+
+  
+
   // number of cells cannot be 0, that would result in segfault!
+  int Nx = vm["Nx_cells"].as<int>();
+  int Ny = vm["Ny_cells"].as<int>();
   if (Nx == 0 || Ny == 0) {
     std::cout << "Nx and Ny must not be zero, set using options --Nx_cells and "
                  "--Ny_cells\n";
