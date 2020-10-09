@@ -124,6 +124,8 @@ class MeshFunctionL2NormDifference {
   static const unsigned int kout_comp = 16;
 };
 
+extern std::shared_ptr<spdlog::logger> mesh_function_l2_norm_difference_logger;
+
 // Initialization of control variable
 template <typename FUNCTOR>
 unsigned int MeshFunctionL2NormDifference<FUNCTOR>::ctrl_ = 0;
@@ -152,22 +154,17 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
   const size_type num_LSF = fe.NumRefShapeFunctions();
   const auto &rsf_QuadPts{fe.PrecompReferenceShapeFunctions()};
 
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << ref_el << ", (Nlsf = " << num_LSF
-                              << ", Nqr = " << qr_NumPts << ") shape = \n"
-                              << geo_ptr->Global(ref_el.NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "{}, (Nlsf = {}, Nqr = {}) shape =\n{}", ref_el, num_LSF,
+                      qr_NumPts, geo_ptr->Global(ref_el.NodeCoords()));
 
   // World coordinates of quadrature points
   const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_Points));
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr_Points));
-  SWITCHEDSTATEMENT(
-      ctrl_, kout_comp, std::cout << "\t dofs = "; for (auto x
-                                                        : dofs) {
-        std::cout << x << " ";
-      } std::cout << "\t dets "
-                  << determinants.transpose() << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "\t dofs = {} \t dets {}", dofs,
+                      determinants.transpose());
 
   double sum = 0.0;  // summation variable
 
@@ -186,13 +183,12 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
     uh_val -= uvals[k];
     // sum the quared modulus weighted with quadrature weight and metric factor
     sum += qr_Weights[k] * determinants[k] * std::fabs(uh_val * uh_val);
-    SWITCHEDSTATEMENT(ctrl_, kout_comp,
-                      std::cout << "\t @ " << (mapped_qpts.col(k)).transpose()
-                                << ": uh = " << uh_val << ", u = " << uvals[k]
-                                << std::endl);
+    SPDLOG_LOGGER_DEBUG(mesh_function_l2_norm_difference_logger,
+                        "\t @ {}: uh = {}, u = {}",
+                        mapped_qpts.col(k).transpose(), uh_val, uvals[k]);
   }
-  SWITCHEDSTATEMENT(ctrl_, kout_comp,
-                    std::cout << "\t loc norm^2 = " << sum << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "\t loc norm^2 = {}", sum);
   return sum;
 }
 
@@ -305,6 +301,9 @@ class MeshFunctionL2GradientDifference {
   static const unsigned int kout_comp = 16;
 };
 
+extern std::shared_ptr<spdlog::logger>
+    mesh_function_l2_gradient_difference_logger;
+
 // Initialization of control variable
 template <typename VEC_FUNC>
 unsigned int MeshFunctionL2GradientDifference<VEC_FUNC>::ctrl_ = 0;
@@ -336,11 +335,9 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   size_type num_LSF = pfe.NumRefShapeFunctions();
   auto gradrsf_QuadPts = pfe.PrecompGradientsReferenceShapeFunctions();
 
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << ref_el << ", (Nlsf = " << num_LSF
-                              << ", Nqr = " << qr_NumPts << ") shape = \n"
-                              << geo_ptr->Global(ref_el.NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "{}, (Nslf = {}, Nqr = {}) shape = \n{}", ref_el, num_LSF,
+                      qr_NumPts, geo_ptr->Global(ref_el.NodeCoords()));
 
   // World coordinates of quadrature points
   const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr_Points));
@@ -349,12 +346,9 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
   // Fetch the transformation matrices for gradients
   const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(qr_Points));
 
-  SWITCHEDSTATEMENT(
-      ctrl_, kout_comp, std::cout << "\t dofs = "; for (auto x
-                                                        : dofs) {
-        std::cout << x << " ";
-      } std::cout << "\t dets "
-                  << determinants.transpose() << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "\t dofs = {} \t dets {}", dofs,
+                      determinants.transpose());
 
   double sum = 0.0;  // summation variable
 
@@ -380,16 +374,14 @@ double MeshFunctionL2GradientDifference<VEC_FUNC>::operator()(
     }
     // sum the quared modulus weighted with quadrature weight and metric factor
     sum += qr_Weights[k] * determinants[k] * grad_uh_val.squaredNorm();
-    // clang-format on
-    SWITCHEDSTATEMENT(ctrl_, kout_comp,
-                      std::cout << "\t @ " << (mapped_qpts.col(k)).transpose()
-                                << ": grad uh = [" << grad_uh_val.transpose()
-                                << "[, vf = [" << vfval[k][0] << ' '
-                                << vfval[k][1] << "]" << std::endl);
-    // clang-format on
+
+    SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                        "\t @ {}: grad uh = {}, vf = [{},{}]",
+                        mapped_qpts.col(k).transpose(), grad_uh_val.transpose(),
+                        vfval[k][0], vfval[k][1]);
   }
-  SWITCHEDSTATEMENT(ctrl_, kout_comp,
-                    std::cout << "\t loc norm^2 = " << sum << std::endl);
+  SPDLOG_LOGGER_TRACE(mesh_function_l2_norm_difference_logger,
+                      "\t loc norm^2 = {}", sum);
   return sum;
 }
 

@@ -7,7 +7,8 @@
  */
 
 #include <lf/base/base.h>
-namespace ci = lf::base::ci;  // avoid typing lf::base all the time
+
+#include <boost/program_options.hpp>
 
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
@@ -18,67 +19,56 @@ namespace ci = lf::base::ci;  // avoid typing lf::base all the time
 
 int main(int argc, char** argv) {
   // Add options
-  ci::Add("help,h",
-          "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad <N>");
-  ci::Add<int>("ndof_node,n", "No of dofs on nodes", 1);  // Default value 1
-  ci::Add<int>("ndof_edge,e", "No of dofs on edges", 2);
-  ci::Add<int>("ndof_tria,t", "No of dofs on triangles", 1);
-  ci::Add<int>("ndof_quad,q", "Mp of dofs on quadrilaterals", 4);
-  // Alternatively:
-  // namespace po = boost::program_options;
-  // ci::Add()
-  //("help,h", "--ndof_node <N> --ndof_edge <N> --ndof_tria <N> --ndof_quad
-  //<N>")
-  //("ndof_node,n", po::value<int>()->default_value(1), "No of dofs on nodes")
-  //("ndof_edge,e", po::value<int>()->default_value(2), "No of dofs on edges")
-  //("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on
-  // triangles")
-  //("ndof_quad,q", po::value<int>()->default_value(4), "Mp of dofs on
-  // quadrilaterals");
+  namespace po = boost::program_options;
+
+  po::options_description desc;
+
+  // clang-format off
+  desc.add_options()
+    ("help,h", "Display this help message")
+    ("ndof_node,n", po::value<int>()->default_value(1), "No of dofs on nodes")
+    ("ndof_edge,e", po::value<int>()->default_value(2), "No of dofs on edges")
+    ("ndof_tria,t", po::value<int>()->default_value(1), "No of dofs on triangles")
+    ("ndof_quad,q", po::value<int>()->default_value(4), "No of dofs on quadrilaterals");
   // clang-format on
-  ci::ParseCommandLine(argc, argv);
-  if (ci::Help()) {
-    // do nothing
-  } else {
-    // Retrieve number of degrees of freedom for each entity type from command
-    // line arguments
-    // Instead of:
-    // lf::base::size_type ndof_node = 1;
-    // if (vm.count("ndof_node") > 0) {
-    //  ndof_node = vm["ndof_node"].as<int>();
-    //}
-    // Simply use the following. Note that the default value has already been
-    // set.
-    lf::base::size_type ndof_node =
-        ci::Get<int>("ndof_node");  // does this int to size_type cast work??
-    // If we wouldn't have set a default value we could call it like this:
-    // ndof_node = ci::Get<lf::base::size_type>("ndof_node", 1);
-    lf::base::size_type ndof_edge = ci::Get<int>("ndof_edge");
-    lf::base::size_type ndof_tria = ci::Get<int>("ndof_tria");
-    lf::base::size_type ndof_quad = ci::Get<int>("ndof_quad");
-    std::cout << "LehrFEM++ demo: assignment of global shape functions"
-              << std::endl;
-    std::cout << "#dof/vertex = " << ndof_node << std::endl;
-    std::cout << "#dof/edge = " << ndof_edge << std::endl;
-    std::cout << "#dof/triangle = " << ndof_tria << std::endl;
-    std::cout << "#dof/quadrilateral = " << ndof_quad << std::endl;
 
-    // Build a mesh comprising two cells
-    std::shared_ptr<lf::mesh::Mesh> mesh_p =
-        lf::mesh::test_utils::GenerateHybrid2DTestMesh(2);
-    // Output information about the mesh
-    lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
 
-    // Create a dof handler object describing a uniform distribution
-    // of shape functions
-    lf::assemble::UniformFEDofHandler dof_handler(
-        mesh_p, {{lf::base::RefEl::kPoint(), ndof_node},
-                 {lf::base::RefEl::kSegment(), ndof_edge},
-                 {lf::base::RefEl::kTria(), ndof_tria},
-                 {lf::base::RefEl::kQuad(), ndof_quad}});
-    lf::assemble::DofHandler::output_ctrl_ = 30;
-    std::cout << dof_handler << std::endl;
+  if (vm.count("help")) {
+    std::cout << desc << std::endl;
+    return 1;
   }
+  vm.notify();
+
+  // Retrieve number of degrees of freedom for each entity type from command
+  // line arguments
+  lf::base::size_type ndof_node = vm["ndof_node"].as<int>();
+  lf::base::size_type ndof_edge = vm["ndof_edge"].as<int>();
+  lf::base::size_type ndof_tria = vm["ndof_tria"].as<int>();
+  lf::base::size_type ndof_quad = vm["ndof_quad"].as<int>();
+  std::cout << "LehrFEM++ demo: assignment of global shape functions"
+            << std::endl;
+  std::cout << "#dof/vertex = " << ndof_node << std::endl;
+  std::cout << "#dof/edge = " << ndof_edge << std::endl;
+  std::cout << "#dof/triangle = " << ndof_tria << std::endl;
+  std::cout << "#dof/quadrilateral = " << ndof_quad << std::endl;
+
+  // Build a mesh comprising two cells
+  std::shared_ptr<lf::mesh::Mesh> mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(2);
+  // Output information about the mesh
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
+
+  // Create a dof handler object describing a uniform distribution
+  // of shape functions
+  lf::assemble::UniformFEDofHandler dof_handler(
+      mesh_p, {{lf::base::RefEl::kPoint(), ndof_node},
+               {lf::base::RefEl::kSegment(), ndof_edge},
+               {lf::base::RefEl::kTria(), ndof_tria},
+               {lf::base::RefEl::kQuad(), ndof_quad}});
+  lf::assemble::DofHandler::output_ctrl_ = 30;
+  std::cout << dof_handler << std::endl;
 
   return 0;
 }  // end main

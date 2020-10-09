@@ -14,4 +14,13 @@
 
 #include "loc_comp_norms.h"
 
-namespace lf::uscalfe {}
+namespace lf::uscalfe {
+
+std::shared_ptr<spdlog::logger> mesh_function_l2_norm_difference_logger =
+    base::InitLogger("lf::uscalfe::mesh_function_l2_norm_difference_logger");
+
+std::shared_ptr<spdlog::logger> mesh_function_l2_gradient_difference_logger =
+    base::InitLogger(
+        "lf::uscalfe::mesh_function_l2_gradient_difference_logger");
+
+}  // namespace lf::uscalfe

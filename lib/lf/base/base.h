@@ -37,7 +37,6 @@ constexpr double kPi = 3.14159265358979323846;
 }  // namespace lf::base
 
 // public header files that make up the base library:
-#include "comm.h"
 #include "eigen_tools.h"
 #include "invalid_type_exception.h"
 #include "lf_assert.h"

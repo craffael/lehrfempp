@@ -21,7 +21,6 @@
 
 namespace lf::mesh::hybrid2d {
 
-namespace ci = lf::base::ci;
 using size_type = lf::base::size_type;
 using dim_t = lf::base::dim_t;
 using sub_idx_t = lf::base::sub_idx_t;

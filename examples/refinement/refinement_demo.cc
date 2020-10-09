@@ -8,6 +8,7 @@
  * is stored in the form of MATLAB functions.
  */
 
+#include <boost/program_options.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -29,30 +30,39 @@
 int main(int argc, char **argv) {
   using size_type = lf::base::size_type;
   using lf::io::TikzOutputCtrl;
+  namespace po = boost::program_options;
 
-  std::cout << "LehrFEM++ demo of mesh construction and refinement"
-            << std::endl;
+  // setup boost program options:
+  po::options_description desc(
+      "LehrFEM++ demo of mesh construction and refinement");
 
-  // Add help and variable refselector
-  lf::base::ci::Add("help,h", "Display help");
-  lf::base::ci::Add<int>(
-      "refselector", "Selector for refinement method (0 [default] to 3)", 0);
-  lf::base::ci::Add<int>("refsteps", "Number of refinementsteps", 3);
-  lf::base::ci::Add<std::string>("basename",
-                                 "Matlab basename for the output files", "out");
+  // clang-format off
+  desc.add_options()
+    ("help,h", "Display this help message")
+    ("refselector", po::value<int>()->default_value(0), "Selector for refinement method (0 [default] to 3)")
+    ("refsteps", po::value<int>()->default_value(3), "Number of refinement steps")
+    ("basename", po::value<std::string>()->default_value("out"), "Matlab basename for the output files")
+  ;
+  // clang-format on
 
-  // Set control variables from command line or file "setup.vars"
-  if (!lf::base::ci::ParseFile("setup.vars")) {
-    std::cout << "No file `setup.vars` specifying control variables\n";
+  po::variables_map vm;
+  try {
+    po::store(po::parse_config_file<char>("setup.vars", desc), vm);
+  } catch (po::reading_file) {
+    std::cout << "No file `setup.vars` specifying control variables"
+              << std::endl;
   }
-  lf::base::ci::ParseCommandLine(argc, argv);
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+
   // check for the help option (-h or --help)
-  if (lf::base::ci::Help()) {
-    return 0;
+  if (vm.count("help")) {
+    std::cout << desc << std::endl;
+    return 1;
   }
+
   // get the value for refselector
-  auto refselector = lf::base::ci::Get<int>("refselector");
-  auto refsteps = lf::base::ci::Get<int>("refsteps");
+  auto refselector = vm["refselector"].as<int>();
+  auto refsteps = vm["refsteps"].as<int>();
 
   // Generate hybrid test mesh and obtain a pointer to it
   std::shared_ptr<lf::mesh::Mesh> mesh_ptr =
@@ -154,7 +164,7 @@ int main(int argc, char **argv) {
 
   // Generate  MATLAB functions that provide a description of all
   // levels of the mesh hierarchy
-  auto basename = lf::base::ci::Get<std::string>("basename");
+  auto basename = vm["basename"].as<std::string>();
   lf::refinement::WriteMatlab(multi_mesh, basename);
 
   return 0;

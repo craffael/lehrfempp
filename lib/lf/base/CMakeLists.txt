@@ -1,7 +1,5 @@
 set(sources
   base.h
-  comm.h
-  comm.cc
   eigen_tools.h
   invalid_type_exception.h
   lf_assert.cc
