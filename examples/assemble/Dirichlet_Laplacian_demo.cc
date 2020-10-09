@@ -57,12 +57,14 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     const lf::mesh::Entity &dof_entity{dofh.Entity(dofnum)};
     tmp_bd_flags[dofnum] = bd_flags(dof_entity);
-    SWITCHEDSTATEMENT(
-        dbg_ctrl, dbg_bdf,
-        std::cout << "FBD: dof " << dofnum << "@ " << dof_entity << " ["
-                  << dofh.Mesh()->Index(dof_entity) << "] ";
-        if (tmp_bd_flags[dofnum]) { std::cout << "ON BOUNDARY"; } std::cout
-        << std::endl);
+    if (dbg_ctrl & dbg_bdf) {
+      std::cout << "FBD: dof " << dofnum << "@ " << dof_entity << " ["
+                << dofh.Mesh()->Index(dof_entity) << "] ";
+      if (tmp_bd_flags[dofnum]) {
+        std::cout << "ON BOUNDARY";
+      }
+      std::cout << std::endl;
+    }
   }
   return tmp_bd_flags;
 }
@@ -81,12 +83,13 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
   auto new_last = std::remove_if(
       A->triplets().begin(), A->triplets().end(),
       [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
-        SWITCHEDSTATEMENT(
-            dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
-              std::cout << "EBD: removing " << triplet.row() << ','
-                        << triplet.col() << "[" << triplet.value() << "]"
-                        << std::endl;
-            });
+        if (dbg_ctrl & dbg_elim) {
+          if (tmp_bd_flags[triplet.row()]) {
+            std::cout << "EBD: removing " << triplet.row() << ','
+                      << triplet.col() << "[" << triplet.value() << "]"
+                      << std::endl;
+          }
+        }
         return tmp_bd_flags[triplet.row()];
       });
   A->triplets().erase(new_last, A->triplets().end());
@@ -139,12 +142,11 @@ double L2ErrorLinearFEDirichletLaplacian(
   LF_ASSERT_MSG((mesh_p->DimMesh() == 2) && (mesh_p->DimWorld() == 2),
                 "For 2D planar meshes only!");
   // Debugging output
-  SWITCHEDSTATEMENT(
-      dbg_ctrl, dbg_basic,
-      std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
-                << mesh_p->NumEntities(0) << " cells, "
-                << mesh_p->NumEntities(1) << " edges, "
-                << mesh_p->NumEntities(2) << " nodes" << std::endl;)
+  if (dbg_ctrl & dbg_basic) {
+    std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
+              << mesh_p->NumEntities(0) << " cells, " << mesh_p->NumEntities(1)
+              << " edges, " << mesh_p->NumEntities(2) << " nodes" << std::endl;
+  }
   if (dbg_ctrl & dbg_mesh) {
     lf::mesh::utils::PrintInfo(std::cout, *mesh_p, 100);
   }
@@ -155,8 +157,10 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_dofh,
-                    std::cout << loc_glob_map << std::endl;);
+  if (dbg_ctrl & dbg_dofh) {
+    std::cout << loc_glob_map << std::endl;
+  }
+
   // Dimension of finite element space
   const lf::assemble::size_type N_dofs(loc_glob_map.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
@@ -166,12 +170,14 @@ double L2ErrorLinearFEDirichletLaplacian(
   mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
       0, loc_glob_map, loc_mat_laplace);
   // Debugging output
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_trp, mat.PrintInfo(std::cout));
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
-                    std::cout << "Full " << mat.rows() << 'x' << mat.cols()
-                              << " stiffness matrix, " << mat.triplets().size()
-                              << " tripets:\n"
-                              << mat.makeDense() << std::endl);
+  if (dbg_ctrl & dbg_trp) {
+    mat.PrintInfo(std::cout);
+  }
+  if (dbg_ctrl & dbg_mat) {
+    std::cout << "Full " << mat.rows() << 'x' << mat.cols()
+              << " stiffness matrix, " << mat.triplets().size() << " tripets:\n"
+              << mat.makeDense() << std::endl;
+  }
 
   // Filling the right-hand-side vector
   auto rhsvec = lf::assemble::AssembleVectorLocally<Eigen::VectorXd>(
@@ -213,11 +219,12 @@ double L2ErrorLinearFEDirichletLaplacian(
   //   tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
-                    std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
-                              << " stiffness matrix, " << mat.triplets().size()
-                              << " triplets:\n"
-                              << mat.makeDense() << std::endl);
+  if (dbg_ctrl & dbg_mat) {
+    std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
+              << " stiffness matrix, " << mat.triplets().size()
+              << " triplets:\n"
+              << mat.makeDense() << std::endl;
+  }
 
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
@@ -386,10 +393,12 @@ int main(int argc, char **argv) {
     }
 
     // Set debugging switches
-    lf::uscalfe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
+    lf::uscalfe::LinearFELaplaceElementMatrix::logger->set_level(
+        spdlog::level::info);
     // LinearFELaplaceElementMatrix::dbg_geo |
     // LinearFELaplaceElementMatrix::dbg_locmat;
-    lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;
+    lf::uscalfe::linear_fe_local_load_vector_logger->set_level(
+        spdlog::level::info);
     lf::assemble::DofHandler::output_ctrl_ = 6;
     dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
     // lf::assemble::ass_mat_dbg_ctrl = 255;

@@ -339,54 +339,6 @@ namespace cv = comm::variables;
 }  // namespace lf::base
 
 /**
- * @brief Create a new element of type lf::base::Track<unsigned>
- *        with the given variable, name and description.
- *        This will later be used to add a command line option called
- *        "name" for setting the variable "uintvar" with the
- *        description "comment".
- * @param uintvar The variable we can set from command line.
- * @param name What the option will be called (--<name>)
- * @param comment The description of the option.
- */
-#define ADDOPTION(uintvar, name, comment)                         \
-  inline unsigned int uintvar = 0;                                \
-  inline lf::base::ci::Track<unsigned int> ____comm_##name##____( \
-      #name, uintvar, comment)
-
-/**
- * @brief Create a new element of type lf::base::Track<unsigned>
- *        with the given variable, name and description.
- *        This will later be used to add a command line option called
- *        "name" for setting the variable "uintvar" with the
- *        description "comment".
- * @param uintvar The variable we can set from command line.
- * @param default The default value for the variable.
- * @param name What the option will be called (--<name>)
- * @param comment The description of the option.
- */
-#define ADDOPTION_DEFAULT(uintvar, default, name, comment)          \
-  inline unsigned int uintvar = 0; /* could also set it =default */ \
-  inline lf::base::ci::Track<unsigned int> ____comm_##name##____(   \
-      #name, uintvar, default, comment)
-
-/**
- * @brief Macro for threshold-conditional output
- * @param ctrlvar integer control variable
- * @param level control level
- * @statement code to be executed
- *
- * The code passed in statement is executed if the value of the
- * control variable is larger than the value passed in level
- *
- * @note The executable code must not involve a comma operator.
- * Commas inside strings are ok.
- */
-#define CONTROLLEDSTATEMENT(ctrlvar, level, statement) \
-  if ((ctrlvar) >= (level)) {                          \
-    statement;                                         \
-  }
-
-/**
  * @brief Macro for bit-flag-conditional output
  * @param ctrlvar integer control variable
  * @param flagpat selection bit pattern for flags

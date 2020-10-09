@@ -74,6 +74,8 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * A revised implementation should directly pass this information to the
  * constructor.
  *
+ * @note This class logs to reaction_diffusion_element_matrix_provider_logger .
+ *
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class ReactionDiffusionElementMatrixProvider {
@@ -176,17 +178,13 @@ class ReactionDiffusionElementMatrixProvider {
 
   // fe_precomp_[i] contains precomputed reference finite element for ref_el i.
   std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_cell = 8;
-  static const unsigned int kout_locmat = 16;
 };
 
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-unsigned int ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
-                                                    REACTION_COEFF>::ctrl_ = 0;
+/**
+ * @brief logger for ReactionDiffusionElementMatrixProvider
+ */
+extern std::shared_ptr<spdlog::logger>
+    reaction_diffusion_element_matrix_provider_logger;
 
 template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
@@ -283,10 +281,10 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << ref_el << ", shape = \n"
-                              << geo_ptr->Global(ref_el.NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(reaction_diffusion_element_matrix_provider_logger,
+                      "{}, shape = \n{}", ref_el,
+                      geo_ptr->Global(ref_el.NodeCoords()));
+
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
   // Gram determinant at quadrature points
@@ -346,6 +344,9 @@ ReactionDiffusionElementMatrixProvider<
  * @f]
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
+ *
+ *
+ * @note This class logs to the logger mass_edge_matrix_provider_logger .
  *
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
@@ -445,12 +446,16 @@ class MassEdgeMatrixProvider {
   virtual ~MassEdgeMatrixProvider() = default;
 
  private:
-  COEFF gamma_;               // functor for coefficient
-  EDGESELECTOR edge_sel_;     // Defines the active edges
-  static unsigned int ctrl_;  // output control variable
+  COEFF gamma_;            // functor for coefficient
+  EDGESELECTOR edge_sel_;  // Defines the active edges
   // Precomputed quantities at quadrature points
   PrecomputedScalarReferenceFiniteElement<SCALAR> fe_precomp_;
 };
+
+/**
+ * @brief logger for MassEdgeMatrixProvider
+ */
+extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
 
 // deduction guide:
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
@@ -458,9 +463,6 @@ MassEdgeMatrixProvider(PTR, COEFF coeff,
                        EDGESELECTOR edge_predicate = base::PredicateTrue{})
     ->MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
                              EDGESELECTOR>;
-
-template <class SCALAR, class COEFF, class EDGESELECTOR>
-unsigned int MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -529,6 +531,9 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ *
+ * @note This class logs additional information to
+ `scalar_load_element_vector_provider_logger`
  */
 template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
@@ -589,21 +594,13 @@ class ScalarLoadElementVectorProvider {
   MESH_FUNCTION f_;
 
   std::array<PrecomputedScalarReferenceFiniteElement<SCALAR>, 5> fe_precomp_;
-
- public:
-  /*
-   * @brief static variable for controlling (debugging) output
-   */
-  static unsigned int ctrl_;
-  static const unsigned int kout_cell = 8;
-  static const unsigned int kout_locvec = 16;
-  static const unsigned int kout_dets = 32;
-  static const unsigned int kout_loop = 64;
-  static const unsigned int kout_qpts = 128;
 };
 
-template <typename SCALAR, typename FUNCTOR>
-unsigned int ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::ctrl_ = 0;
+/**
+ * @brief logger used by ScalarLoadElementVectorProvider
+ */
+extern std::shared_ptr<spdlog::logger>
+    scalar_load_element_vector_provider_logger;
 
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
@@ -685,10 +682,9 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << ref_el << ", shape = \n"
-                              << geo_ptr->Global(ref_el.NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "{}, shape = \n{}", ref_el,
+                      geo_ptr->Global(ref_el.NodeCoords()));
 
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(
@@ -696,9 +692,10 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(
       determinants.size() == pfe.Qr().NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << pfe.Qr().NumPoints());
-  SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                    std::cout << "LOCVEC(" << ref_el << "): Metric factors :\n "
-                              << determinants.transpose() << std::endl);
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "LOCVEC({}): Metric factors :\n{}", ref_el,
+                      determinants.transpose());
+
   // Element vector
   ElemVec vec(pfe.NumRefShapeFunctions());
   vec.setZero();
@@ -707,17 +704,17 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SWITCHEDSTATEMENT(
-        ctrl_, kout_loop,
-        std::cout << "LOCVEC: [" << pfe.Qr().Points().transpose() << "] -> ["
-                  << "weight = " << pfe.Qr().Weights()[k] << std::endl);
+    SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                        "LOCVEC: [{}] -> [weight = {}]",
+                        pfe.Qr().Points().transpose(), pfe.Qr().Weights()[k]);
     // Contribution of current quadrature point
     vec += (pfe.Qr().Weights()[k] * determinants[k] * fval[k]) *
            pfe.PrecompReferenceShapeFunctions().col(k);
   }
-  SWITCHEDSTATEMENT(ctrl_, kout_locvec,
-                    std::cout << "LOCVEC = \n"
-                              << vec.transpose() << std::endl);
+
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "LOCVEC = \n{}", vec.transpose());
+
   return vec;
 }
 
@@ -742,6 +739,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ *
+ * @note This class logs to scalar_load_edge_vector_provider_logger .
  *
  * ### Type requirements
  *
@@ -828,28 +827,18 @@ class ScalarLoadEdgeVectorProvider {
   FUNCTOR g_;              // source function
   EDGESELECTOR edge_sel_;  // selects edges
   PrecomputedScalarReferenceFiniteElement<SCALAR> pfe_;
-
- public:
-  /*
-   * @brief static variable for controlling (debugging) output
-   */
-  static unsigned int ctrl_;
-  static const unsigned int kout_cell = 8;
-  static const unsigned int kout_locvec = 16;
-  static const unsigned int kout_dets = 32;
-  static const unsigned int kout_loop = 64;
-  static const unsigned int kout_qpts = 128;
 };
+
+/**
+ * @brief logger for ScalarLoadEdgeVectorProvider class template.
+ */
+extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
 
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
     ->ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
                                    EDGESELECTOR>;
-
-template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
-unsigned int
-    ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ctrl_ = 0;
 
 // Eval() method
 // TODO(craffael) remove const once

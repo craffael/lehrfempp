@@ -88,13 +88,9 @@ class LinearFELaplaceElementMatrix {
 
  public:
   /**
-   * @brief static variable for controling debugging output
+   * @brief Used by LinearFELaplaceElementMatrix to log additional (debug) info.
    */
-  static unsigned int dbg_ctrl;
-  static const unsigned int dbg_det = 1;
-  static const unsigned int dbg_locmat = 2;
-  static const unsigned int dbg_J = 4;
-  static const unsigned int dbg_geo = 8;
+  static std::shared_ptr<spdlog::logger> logger;
 };
 
 /**
@@ -119,6 +115,9 @@ class LinearFELaplaceElementMatrix {
  * `ENTITY_VECTOR_PROVIDER` of the function AssembleVectorLocally().
  *
  * TODO: Adjust size of vector returned.
+ *
+ * @note This method logs debug information to
+ * linear_fe_local_load_vector_logger .
  */
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {
@@ -146,18 +145,13 @@ class LinearFELocalLoadVector {
   /** `f_(x)` where `x` is a 2D vector provides the evaluation of the source
    * function */
   FUNCTOR f_;
-
- public:
-  /**
-   * @brief static variable for controling debugging output
-   */
-  static unsigned int dbg_ctrl;
-  static const unsigned int dbg_locvec = 1;
-  static const unsigned int dbg_geo = 2;
 };
 
-template <typename SCALAR, typename FUNCTOR>
-unsigned int LinearFELocalLoadVector<SCALAR, FUNCTOR>::dbg_ctrl = 0;
+/**
+ * @brief Used by LinearFELocalLoadVector to log additional (debug) information
+ * during vector assembly.
+ */
+extern std::shared_ptr<spdlog::logger> linear_fe_local_load_vector_logger;
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
@@ -180,10 +174,9 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
   // World coordinates of vertices
   // const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
   // Debugging output
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_geo,
-                    std::cout << ref_el << ", shape = \n"
-                              << (geo_ptr->Global(ref_el_corners))
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(linear_fe_local_load_vector_logger, "{}, shape = \n{}",
+                      ref_el, geo_ptr->Global(ref_el_corners));
+
   // Midpoints of edges in the reference cell
   Eigen::MatrixXd ref_mp(2, 4);
   switch (ref_el) {
@@ -219,10 +212,9 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
     elem_vec[k] += 0.5 * fvals[k];
     elem_vec[(k + 1) % num_nodes] += 0.5 * fvals[k];
   }
-  SWITCHEDSTATEMENT(
-      dbg_ctrl, dbg_locvec,
-      std::cout << "element vector = " << elem_vec.head(num_nodes).transpose()
-                << std::endl);
+  SPDLOG_LOGGER_TRACE(linear_fe_local_load_vector_logger, "element vector = {}",
+                      elem_vec.head(num_nodes).transpose());
+
   return (area / num_nodes) * elem_vec;
 }
 
