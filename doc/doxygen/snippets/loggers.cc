@@ -31,4 +31,3 @@ void ChangeLogLevel() {
   //! [ChangeLogLevelAll]
 }
 }  // namespace lf
-}  // namespace lf
