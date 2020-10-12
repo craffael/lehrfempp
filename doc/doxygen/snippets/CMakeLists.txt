@@ -11,6 +11,7 @@ set(sources
   gmsh_reader.cc
   lambda_mesh_data_set.cc
   line_feed_formatter.cc
+  loggers.cc
   mesh_function_binary.cc
   mesh_utils.cc
   meshhierarchy.cc

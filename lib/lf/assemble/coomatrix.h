@@ -195,9 +195,10 @@ class COOMatrix {
     return mat;
   }
 
-  /** @brief Ouput of triplet list describing COO matrix
+  /**
+   * @brief Ouput of triplet list describing COO matrix
    *
-   * @parm o output stream
+   * @param o output stream
    */
   void PrintInfo(std::ostream &o) const {
     o << rows_ << " x " << cols_ << " COO matrix" << std::endl;

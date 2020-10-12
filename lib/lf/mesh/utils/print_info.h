@@ -23,11 +23,11 @@ namespace lf::mesh::utils {
  * - > 10: also output entity information
  * - > 90: also output subentity information
  */
-void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 100);
+void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 11);
 
 // Print function for Entity object
 /**
- * @brief Diagnostic output operator. Prints info about an entity.
+ * @brief Prints info about an entity.
  *
  * @param e The entity to print info about
  * @param stream The stream to which this function should output

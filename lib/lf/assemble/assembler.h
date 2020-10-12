@@ -43,10 +43,10 @@ extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
 /**
  * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
  * @brief Based on helper objects that provide element matrices these functions
- * rely on the distribute assembly policy to set the entries of global Galerk9in
+ * rely on the distribute assembly policy to set the entries of global Galerkin
  * matrices.
  *
- * All the function have the name `AssembleMatrixLocally`, but they difer in
+ * All the functions have the name `AssembleMatrixLocally`, but they differ in
  * their arguments. What they have in common is that they are all templated with
  * two types:
  * - ENTITY_MATRIX_PROVIDER is a @ref entity_matrix_provider
