@@ -59,7 +59,14 @@ class PrecomputedScalarReferenceFiniteElement
 
   PrecomputedScalarReferenceFiniteElement& operator=(
       PrecomputedScalarReferenceFiniteElement&&) noexcept = default;
-
+  /**
+   * @brief Main constructor performing precomputations
+   *
+   * @param fe definition of reference finite element
+   * @param qr quadrature rule (nodes and weights on reference element)
+   *
+   * Initialization of local data members.
+   */
   PrecomputedScalarReferenceFiniteElement(
       std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe,
       quad::QuadRule qr)
@@ -150,7 +157,7 @@ class PrecomputedScalarReferenceFiniteElement
   }
 
   /**
-   * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Weights())`
+   * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Points())`
    *
    * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
    * for the packed format in which the gradients are returned.

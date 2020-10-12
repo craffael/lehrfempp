@@ -142,30 +142,30 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-5.0'
+    - COMPILER='clang++-7'
     - BUILD_TYPE='Debug'
     addons:
       apt:
         sources:
-        - llvm-toolchain-xenial-5.0
+        - llvm-toolchain-xenial-7
         - ubuntu-toolchain-r-test
         packages:
-        - clang-5.0
+        - clang-7
         - g++-7
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-5.0'
+    - COMPILER='clang++-7'
     - BUILD_TYPE='Debug'
     addons:
       apt:
         sources:
-        - llvm-toolchain-xenial-5.0
+        - llvm-toolchain-xenial-7
         - ubuntu-toolchain-r-test
         packages:
-        - clang-5.0
+        - clang-7
         - g++-7
     script: "./travis/compile_test.sh"
   # clang release
@@ -173,30 +173,30 @@ jobs:
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-5.0'
+    - COMPILER='clang++-7'
     - BUILD_TYPE='Release'
     addons:
       apt:
         sources:
-        - llvm-toolchain-xenial-5.0
+        - llvm-toolchain-xenial-7
         - ubuntu-toolchain-r-test
         packages:
-        - clang-5.0
+        - clang-7
         - g++-7
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: clang
     env:
-    - COMPILER='clang++-5.0'
+    - COMPILER='clang++-7'
     - BUILD_TYPE='Release'
     addons:
       apt:
         sources:
-        - llvm-toolchain-xenial-5.0
+        - llvm-toolchain-xenial-7
         - ubuntu-toolchain-r-test
         packages:
-        - clang-5.0
+        - clang-7
         - g++-7
     script: "./travis/compile_test.sh"
   # clang debug osx
