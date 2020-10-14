@@ -216,24 +216,27 @@ class DofHandler {
    * All entities passed to the DofHandler object must belong to that mesh.
    */
   [[nodiscard]] virtual std::shared_ptr<const lf::mesh::Mesh> Mesh() const = 0;
-
-  /** @brief output control variable
-   *
-   * This variable is used by the output operator for DofHandler objects.
-   *
-   * Initialized with 0
-   *
-   * The following output levels are supported
-   * - if = 0: minimal out: just prints global no of dofs
-   * - if > 0 and divisible by 2: print dofs associated with all entities
-   * - if > 0 and divisible by 3: print entities belonging to dofs
-   * - if > 0 and divisible by 10: also print interior dof indices
-   */
-  static unsigned int output_ctrl_;
 };
 
 /** @brief output operator for DofHandler objects */
 std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler);
+
+/**
+ * @brief Output information about the given dof handler to the given stream
+ * object.
+ * @param stream The stream to which we should print
+ * @param dof_handler The dof handler that should be printed
+ * @param ctrl controls the level of detail of the printed output (see below)
+ *
+ * The following output levels are supported
+ * - if = 0: minimal out: just prints global no of dofs
+ * - if > 0 and divisible by 2: print dofs associated with all entities
+ * - if > 0 and divisible by 3: print entities belonging to dofs
+ * - if > 0 and divisible by 10: also print interior dof indices
+ *
+ */
+void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
+               unsigned int ctrl = 0);
 
 /* ====================================================================== */
 

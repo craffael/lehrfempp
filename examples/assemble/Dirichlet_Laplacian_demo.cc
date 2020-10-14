@@ -156,8 +156,9 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
+
   if (dbg_ctrl & dbg_dofh) {
-    std::cout << loc_glob_map << std::endl;
+    PrintInfo(std::cout, loc_glob_map, 6);
   }
 
   // Dimension of finite element space
@@ -406,7 +407,7 @@ int main(int argc, char **argv) {
   // LinearFELaplaceElementMatrix::dbg_locmat;
   lf::uscalfe::linear_fe_local_load_vector_logger->set_level(
       spdlog::level::info);
-  lf::assemble::DofHandler::output_ctrl_ = 6;
+
   dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
   // lf::assemble::ass_mat_dbg_ctrl = 255;
 

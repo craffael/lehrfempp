@@ -73,8 +73,7 @@ int main(int argc, char **argv) {
                  {lf::base::RefEl::kTria(), ndof_tria},
                  {lf::base::RefEl::kQuad(), ndof_quad}});
     // Copious output of information about dof handler
-    lf::assemble::DofHandler::output_ctrl_ = 30;
-    std::cout << dof_handler << std::endl;
+    PrintInfo(std::cout, dof_handler, 30);
   }
   return 0L;
 }  // end main
