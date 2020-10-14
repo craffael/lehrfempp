@@ -326,6 +326,7 @@ class ScalarReferenceFiniteElement {
    * @brief output function
    *
    * @param o stream to which output is to be sent
+   * @param ctrl controls the level of detail that is printed (see below)
    * @return reference to the same stream
    *
    * Default implementation just prints degree, and the numbers of evaluation

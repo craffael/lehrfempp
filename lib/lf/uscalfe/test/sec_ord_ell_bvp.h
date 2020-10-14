@@ -144,8 +144,10 @@ inline std::shared_ptr<spdlog::logger> SecOrdEllBVPLagrFELinSys_logger =
  * - lf::uscalfe::LagrFEVolumeRightHandSideVector()
  * - lf::uscalfe::LagrFEBoundaryRightHandSideVector()
  *
- * @note This method will log additional information to
- * lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger
+ * #### Logger
+ * This function logs additional information to
+ * lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger. See \ref loggers for more
+ * information.
  */
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>

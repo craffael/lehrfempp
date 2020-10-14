@@ -40,6 +40,11 @@ namespace lf::uscalfe {
  *   MeshFunctionL2NormDifference loc_comp(
  *     fe_space,[](auto x) { return (x[0] * (1.0 - x[1])); }, quad_order);
  * ~~~
+ *
+ * ### Logger
+ * This class logs additional information to
+ * \ref mesh_function_l2_norm_difference_logger.
+ * See \ref loggers for more information.
  */
 template <typename FUNCTOR>
 class MeshFunctionL2NormDifference {
@@ -118,6 +123,9 @@ class MeshFunctionL2NormDifference {
   std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
 };
 
+/**
+ * @brief Logger that is used by MeshFunctionL2NormDifferenceLogger
+ */
 extern std::shared_ptr<spdlog::logger> mesh_function_l2_norm_difference_logger;
 
 template <typename FUNCTOR>
@@ -209,6 +217,11 @@ double MeshFunctionL2NormDifference<FUNCTOR>::operator()(
  * MeshFunctionL2GradientDifference lc_H1(fe_space,
  *    [](auto x) { return Eigen::Vector2d(-x[1],x[0]); },2)
  * ~~~
+ *
+ * ### Logger
+ * This class logs additional information to
+ * \ref mesh_function_l2_gradient_difference_logger.
+ * See \ref loggers for more information.
  */
 template <typename VEC_FUNC>
 class MeshFunctionL2GradientDifference {

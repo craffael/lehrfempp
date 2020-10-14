@@ -27,12 +27,6 @@
 namespace lf::assemble {
 
 /**
- * @brief The logger that is used by AssembleMatrixLocally() to log additional
- * information. (for logging levels trace + debug)
- */
-extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
-
-/**
  * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
  * @brief Based on helper objects that provide element matrices these functions
  * rely on the distribute assembly policy to set the entries of global Galerkin
@@ -56,6 +50,12 @@ extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
  *
  *  @{
  */
+
+/**
+ * @brief The logger that is used by AssembleMatrixLocally() to log additional
+ * information. (for logging levels trace + debug)
+ */
+extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -87,6 +87,10 @@ extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
  * This method performs cell-oriented assembly controlled by a local-to-global
  * index map ("dof handler").
  *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
+ *
  * #### type requirements of template arguments
  *
  * - TMPMATRIX is a rudimentary matrix type and must
@@ -102,6 +106,7 @@ extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
  *
  * #### Example Usage
  * @snippet assembler.cc matrix_usage
+ *
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
@@ -193,6 +198,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  *       provide the method `setZero()` for setting all entries of the
  *       matrix to zero. It must also possess a constructor that takes
  *       row and column numbers and creates an (empty) matrix of that size.
+ *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(
@@ -223,6 +232,9 @@ TMPMATRIX AssembleMatrixLocally(
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider,
  * TMPMATRIX &matrix)
  *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
  */
 
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>

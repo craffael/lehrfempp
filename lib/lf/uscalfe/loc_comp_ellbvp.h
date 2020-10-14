@@ -74,8 +74,11 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * A revised implementation should directly pass this information to the
  * constructor.
  *
- * @note This class logs to reaction_diffusion_element_matrix_provider_logger .
  *
+ * ## Logger
+ * This class logs additional information to
+ * \ref reaction_diffusion_element_matrix_provider_logger.
+ * See \ref loggers for more information.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
 class ReactionDiffusionElementMatrixProvider {
@@ -345,8 +348,10 @@ ReactionDiffusionElementMatrixProvider<
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
- *
- * @note This class logs to the logger mass_edge_matrix_provider_logger .
+ * #### Logger
+ * This class logs additional information to
+ * \ref mass_edge_matrix_provider_logger.
+ * See \ref loggers for more information.
  *
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
@@ -532,8 +537,11 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  *
- * @note This class logs additional information to
- `scalar_load_element_vector_provider_logger`
+ * #### Logger
+ * This class logs additional information to
+ * \ref scalar_load_element_vector_provider_logger.
+ * See \ref loggers for more information.
+ *
  */
 template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
@@ -740,7 +748,10 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
  *
- * @note This class logs to scalar_load_edge_vector_provider_logger .
+ * ### Logger
+ * This class logs additional information to
+ * \ref scalar_load_edge_vector_provider_logger.
+ * See \ref loggers for more information.
  *
  * ### Type requirements
  *

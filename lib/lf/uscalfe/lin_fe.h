@@ -116,8 +116,10 @@ class LinearFELaplaceElementMatrix {
  *
  * TODO: Adjust size of vector returned.
  *
- * @note This method logs debug information to
- * linear_fe_local_load_vector_logger .
+ * #### Logger
+ * This class logs additional information to \ref
+ * linear_fe_local_load_vector_logger.
+ * See \ref loggers for more information.
  */
 template <typename SCALAR, typename FUNCTOR>
 class LinearFELocalLoadVector {

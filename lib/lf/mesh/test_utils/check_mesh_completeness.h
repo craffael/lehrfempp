@@ -25,7 +25,9 @@ bool checkMeshCompleteness(const Mesh& mesh);
  * @note For special geometries the exact matching of cell and edge
  *       shapes may not be intended
  *
- * Additional information is logged to lf::mesh::test_utils::watertight_logger.
+ * #### Logger
+ * This function logs additional information to \ref watertight_logger. See
+ * \ref loggers for more information.
  */
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only = true);
