@@ -63,7 +63,10 @@ namespace lf {
  @attention In Release mode, all log statements with level *Debug* or *Trace* are removed at compile time.
             If you want to see these log statements, you have to set the log level of the corresponding logger *and* define the preprocessor macro
             [SPDLOG_ACTIVE_LEVEL](https://github.com/gabime/spdlog/wiki/0.-FAQ#how-to-remove-all-debug-statements-at-compile-time-).
-   
+ 
+ #### Example
+ The example `examples/loggers/mesh_hierarchy_demo.cc` shows how one can set the log levels of individual loggers via command-line and environment variables and some other advanced techniques.
+ 
  ### Contributors:
  Please check the [contribution guide](https://github.com/craffael/lehrfempp/wiki/Contribute#3-logging--debug-output). 
  
