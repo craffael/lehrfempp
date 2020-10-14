@@ -111,7 +111,7 @@ Other available command line options)foo");
   }
 
   // generate a test mesh and refine it once:
-  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(7);
   lf::refinement::MeshHierarchy mh(
       mesh, std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
   mh.RefineRegular();
