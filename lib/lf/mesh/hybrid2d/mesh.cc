@@ -240,7 +240,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     LF_ASSERT_MSG(
         (end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
         "Illegal edge node numbers " << end_nodes[0] << ", " << end_nodes[1]);
-    SPDLOG_LOGGER_DEBUG(logger, "Register edge: {} <-> {}", end_nodes[0],
+    SPDLOG_LOGGER_TRACE(logger, "Register edge: {} <-> {}", end_nodes[0],
                         end_nodes[1]);
 
     // If one of the endpoints of a edge does not have a geometry, supply it
