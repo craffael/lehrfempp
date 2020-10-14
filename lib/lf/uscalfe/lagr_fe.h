@@ -843,7 +843,7 @@ class FeLagrangeO2Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     // reshape into a 12xn_pts matrix.
     Eigen::Map<Eigen::Array<SCALAR, Eigen::Dynamic, Eigen::Dynamic>,
                Eigen::AutoAlign>
-        temp(&result(0, 0), 12, n_pts);
+        temp(result.data(), 12, n_pts);
     // Convert to array type for componentwise operations
     auto x0 = refcoords.row(0).array();
     auto x1 = refcoords.row(1).array();
@@ -1279,12 +1279,13 @@ const Eigen::Matrix<int, 9, 2>
  * This is a specialization of ScalarReferenceFiniteElement.
  * Refer to its documentation.
  *
- * The reference shape functions are combinations of the barycentric coordinate
- * functions on the reference triangle.
+ * The 10 reference shape functions are combinations of the barycentric
+ * coordinate functions on the reference triangle.
  *
  * The first three shape functions are associated with vertices,
  * the next six with edges of the triangle. The last shape function is an
- * interior shape function.
+ * interior shape function, see @lref{ex:inlagfe} for the location of
+ * interpolation nodes.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -1302,8 +1303,16 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     return base::RefEl::kTria();
   }
 
+  /**  @brief Quadratic Lagrangian finite elements rely on polynomials of degree
+   * 3
+   */
   [[nodiscard]] unsigned Degree() const override { return 3; }
 
+  /** @brief Ten local shape functions are associated with a triangular cell in
+   *         the case of cubic Lagrangian finite elements.
+   *
+   * @sa ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 10; }
 
   /**
@@ -1330,37 +1339,55 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     return (codim == 1) ? 2 : 1;
   }
 
+  /** @brief Point evaluation of reference shape functions
+   *
+   * The reference shape function are cardinal basis functions of the space of
+   * cubic polynomials with respect to the ten interpolation nodes supplied by
+   * the lattive drawn in @lref{lfedof3}.
+   *
+   * @sa ScalarReferenceFiniteElement::EvalReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-
+    // number of points for which evaluation is desired
     const size_type n_pts(refcoords.cols());
+    // Matrix for returning the values of the reference shape functions at the
+    // specified nodes. Each row corresponds to a reference shape function
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(10, n_pts);
 
     // evaluation of the barycentric coordinate functions
     Eigen::Array<double, 1, Eigen::Dynamic> lambda0 =
         1 - refcoords.row(0).array() - refcoords.row(1).array();
-    auto lambda1 = refcoords.row(0).array();
-    auto lambda2 = refcoords.row(1).array();
+    Eigen::Array<double, 1, Eigen::Dynamic> lambda1 = refcoords.row(0).array();
+    Eigen::Array<double, 1, Eigen::Dynamic> lambda2 = refcoords.row(1).array();
 
     // evaluation of the shape functions
+    // The LSF associated with vertices
     result.row(0) = 4.5 * lambda0 * (lambda0 - 1 / 3.0) * (lambda0 - 2 / 3.0);
     result.row(1) = 4.5 * lambda1 * (lambda1 - 1 / 3.0) * (lambda1 - 2 / 3.0);
     result.row(2) = 4.5 * lambda2 * (lambda2 - 1 / 3.0) * (lambda2 - 2 / 3.0);
-
+    // Six LSF are attached to edges
     result.row(3) = 13.5 * lambda0 * lambda1 * (lambda0 - 1 / 3.0);
     result.row(4) = 13.5 * lambda0 * lambda1 * (lambda1 - 1 / 3.0);
     result.row(5) = 13.5 * lambda1 * lambda2 * (lambda1 - 1 / 3.0);
     result.row(6) = 13.5 * lambda1 * lambda2 * (lambda2 - 1 / 3.0);
     result.row(7) = 13.5 * lambda2 * lambda0 * (lambda2 - 1 / 3.0);
     result.row(8) = 13.5 * lambda2 * lambda0 * (lambda0 - 1 / 3.0);
-
+    // LSF associated with the cell: cubic bubble function
     result.row(9) = 27.0 * lambda0 * lambda1 * lambda2;
 
     return result;
   }
 
+  /** @brief Point evaluations of gradients of reference shape functions
+   *
+   *  Compute values of gradients of reference shape functions at specified
+   * nodes
+   *
+   * @sa ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions()
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& refcoords) const override {
@@ -1381,7 +1408,7 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     auto l1 = refcoords.row(0).array();
     auto l2 = refcoords.row(1).array();
 
-    // vertices
+    // vertex-associated LSF: numbers 0,1,2
     temp.row(0) = -4.5 * ((l0 - 1 / 3.0) * (l0 - 2 / 3.0) +
                           l0 * (l0 - 2 / 3.0) + l0 * (l0 - 1 / 3.0));
     temp.row(10) = -4.5 * ((l0 - 1 / 3.0) * (l0 - 2 / 3.0) +
@@ -1392,8 +1419,7 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     temp.row(2) = 0.0;
     temp.row(12) = 4.5 * ((l2 - 1 / 3.0) * (l2 - 2 / 3.0) +
                           l2 * (l2 - 2 / 3.0) + l2 * (l2 - 1 / 3.0));
-
-    // edges
+    // edge-associated basis functions
     temp.row(3) = 13.5 * (-l1 * (l0 - 1 / 3.0) + l0 * (l0 - 1 / 3.0) - l0 * l1);
     temp.row(13) = -13.5 * (l1 * (l0 - 1 / 3.0) + l0 * l1);
     temp.row(4) = 13.5 * (-l1 * (l1 - 1 / 3.0) + l0 * (l1 - 1 / 3.0) + l0 * l1);
@@ -1406,14 +1432,25 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
     temp.row(17) = 13.5 * (l0 * (l2 - 1 / 3.0) - l2 * (l2 - 1 / 3.0) + l0 * l2);
     temp.row(8) = -13.5 * (l2 * (l0 - 1 / 3.0) + l2 * l0);
     temp.row(18) = 13.5 * (l0 * (l0 - 1 / 3.0) - l2 * (l0 - 1 / 3.0) - l2 * l0);
-
-    // center:
+    // cell-associated LSF
     temp.row(9) = 27.0 * (-l1 * l2 + l0 * l2);
     temp.row(19) = 27.0 * (-l1 * l2 + l0 * l1);
 
     return result;
   }
 
+  /** @brief Evaluation nodes are the three vertices of the triangle, two
+   * equispaced interio nodes for each edge, a the barycentre
+   *
+   * The reference shape functions as implemented by this class are a _cardinal
+   * basis_ of the space of cubic two-variate polynomials  with respect to
+   * these evaluation nodes.
+   *
+   * The numbering of evluation nodes is fixed by the numbering of the local
+   * shape functions.
+   *
+   * @sa ScalarReferenceFiniteElement::EvaluationNodes()
+   */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 2, 10> nodes;
     Eigen::Matrix<double, 2, 3> vertices;
@@ -1445,7 +1482,7 @@ class FeLagrangeO3Tria final : public ScalarReferenceFiniteElement<SCALAR> {
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Cubic Lagrangian finite element on a line segment
  *
- * This is a specialization of ScalarReferenceFiniteElement
+ * This is a specialization of ScalarReferenceFiniteElement.
  * Refer to its documentation.
  *
  * The first two shape functins are associated with vertices of the segment.
@@ -1563,12 +1600,11 @@ class FeLagrangeO3Segment final : public ScalarReferenceFiniteElement<SCALAR> {
  *
  * Where \f$ \hat{b}^j\f$ and \f$ \hat{b}^l \f$ are the cubic Lagrangian
  * shape functions on the reference line segment associated to the interpolation
- * nodes \f$ x_j \f$ and \f$ y_l \f$.
- *
+ * nodes \f$ x_j \f$ and \f$ y_l \f$, see @lref{tplfedof}.
  *
  * The first four shape functions are associated with the vertices,
- * the next eight with edges of the quadrilateral. The last four shape functions
- * are interior shape functions.
+ * the next eight = 4*2 with edges of the quadrilateral. The last four shape
+ * functions are interior shape functions.
  *
  * @see ScalarReferenceFiniteElement
  */
