@@ -32,14 +32,6 @@ namespace lf::assemble {
  */
 extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
 
-// The following macro implements:
-// extern int ass_mat_dbg_ctrl;
-// static lf::base::StaticVar ctrlvarass_mat_dbg_ctrl(
-//     "Assembly_ctrl", ass_mat_dbg_ctrl, lf::base::ctrl_root,
-//     "Debugging output control for AssembleMatrixLocally()");
-// EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
-//                  "Debugging output control for AssembleMatrixLocally()");
-
 /**
  * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
  * @brief Based on helper objects that provide element matrices these functions

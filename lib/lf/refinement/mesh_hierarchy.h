@@ -367,7 +367,7 @@ class MeshHierarchy {
    * @param o output stream, can be `std::cout` or similar
    * @return output stream
    *
-   * The type of output is controlled by the `ctrl_` static control
+   * The type of output is controlled by the `ctrl` static control
    * variable. If its second bit is set, the output function of the
    * mesh class is used.
    *

@@ -127,9 +127,9 @@ class PrecomputedScalarReferenceFiniteElement
     return fe_->NodalValuesToDofs(nodvals);
   }
 
-  std::ostream& print(std::ostream& o) const override {
+  std::ostream& PrintInfo(std::ostream& o, unsigned int ctrl) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
-    return fe_->print(o);
+    return fe_->PrintInfo(o, ctrl);
   }
 
   /**

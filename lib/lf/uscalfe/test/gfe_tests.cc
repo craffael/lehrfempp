@@ -24,7 +24,6 @@
 namespace lf::uscalfe::test {
 
 TEST(lf_gfe, lf_gfe_l2norm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
   std::cout << "### TEST Computation of L2 norm" << std::endl;
   // This test computes an approximation of the L2 norm of a function
   // by local quadrature on a finite element mesh, using the facilities
@@ -44,7 +43,6 @@ TEST(lf_gfe, lf_gfe_l2norm) {
 }
 
 TEST(lf_gfe, lf_gfe_L2assnorm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
   std::cout << "### TEST Compute L2 norm in two different ways" << std::endl;
   // This test computes the L2 norm of a FE function in two ways
 
@@ -92,7 +90,6 @@ TEST(lf_gfe, lf_gfe_L2assnorm) {
 }
 
 TEST(lf_gfe, lf_gfe_H1assnorm) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
   std::cout << "### TEST Compute H1 seminorm in two different ways"
             << std::endl;
   // This test computes the H1 seminorm of a FE function in two ways
@@ -140,7 +137,6 @@ TEST(lf_gfe, lf_gfe_H1assnorm) {
 }
 
 TEST(lf_gfe, lf_gfe_l2norm_vf) {
-  // LocCompLagrFEPreprocessor::ctrl_ = 255;
   std::cout << "### TEST Computation of L2 norm of vectorfield" << std::endl;
   // This test computes an approximation of the L2 norm of a function
   // by local quadrature on a finite element mesh, using the facilities

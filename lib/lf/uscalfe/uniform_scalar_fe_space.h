@@ -132,6 +132,20 @@ class UniformScalarFESpace {
   [[nodiscard]] size_type NumRefShapeFunctions(
       lf::base::RefEl ref_el_type) const;
 
+  /**
+   * @brief Print information about this UniformScalarFESpace to the given
+   * stream object.
+   * @param o The stream to which we should print
+   * @param ctrl Controls the level of output:
+   *
+   * #### Level of output:
+   * - if `ctrl & kout_mesh`, mesh information will be printed.
+   * - if `ctrl & kout_dofh`, information about the dof handler will be printed.
+   * - if `ctrl & kout_rsfs`, information about the reference shape functions
+   * will be printed.
+   */
+  virtual void PrintInfo(std::ostream &o, unsigned int ctrl = 0);
+
   /** @brief No special destructor */
   virtual ~UniformScalarFESpace() = default;
 
@@ -166,7 +180,6 @@ class UniformScalarFESpace {
 
  public:
   /** Output control variable */
-  static unsigned int ctrl_;
   static const unsigned int kout_mesh = 1;
   static const unsigned int kout_dofh = 2;
   static const unsigned int kout_rsfs = 4;
@@ -176,10 +189,6 @@ class UniformScalarFESpace {
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes);
-
-// Output control variable
-template <typename SCALAR>
-unsigned int UniformScalarFESpace<SCALAR>::ctrl_ = 0;
 
 // Initialization methods
 template <typename SCALAR>
@@ -344,31 +353,33 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
   return 0;
 }
 
+template <typename SCALAR>
+void UniformScalarFESpace<SCALAR>::PrintInfo(std::ostream &o, unsigned ctrl) {
+  o << "Uniform scalar FE space, dim = " << LocGlobMap().NumDofs() << std::endl;
+
+  if (ctrl & kout_mesh) {
+    o << Mesh() << std::endl;
+  }
+  if (ctrl & kout_dofh) {
+    o << LocGlobMap() << std::endl;
+  }
+  if (ctrl & kout_rsfs) {
+    o << NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
+      << std::endl;
+    o << NumRefShapeFunctions(lf::base::RefEl::kSegment()) << " rsfs @ edges"
+      << std::endl;
+    o << NumRefShapeFunctions(lf::base::RefEl::kTria()) << " rsfs @ triangles"
+      << std::endl;
+    o << NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
+      << std::endl;
+  }
+}
+
 /** output operator for scalar parametric finite element space */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes) {
-  o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
-    << std::endl;
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_mesh) {
-    o << fes.Mesh() << std::endl;
-  }
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_dofh) {
-    o << fes.LocGlobMap() << std::endl;
-  }
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_rsfs) {
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
-      << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())
-      << " rsfs @ edges" << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kTria())
-      << " rsfs @ triangles" << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
-      << std::endl;
-  }
+  fes.PrintInfo(std::cout, 0);
   return o;
 }
 

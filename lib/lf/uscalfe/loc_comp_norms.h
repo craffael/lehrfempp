@@ -116,19 +116,9 @@ class MeshFunctionL2NormDifference {
 
   /** @brief cell-type dependent but cell-independent information */
   std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_cell = 8;
-  static const unsigned int kout_comp = 16;
 };
 
 extern std::shared_ptr<spdlog::logger> mesh_function_l2_norm_difference_logger;
-
-// Initialization of control variable
-template <typename FUNCTOR>
-unsigned int MeshFunctionL2NormDifference<FUNCTOR>::ctrl_ = 0;
 
 template <typename FUNCTOR>
 template <typename DOFVECTOR>
@@ -293,20 +283,10 @@ class MeshFunctionL2GradientDifference {
   VEC_FUNC vecfield_;
 
   std::array<PrecomputedScalarReferenceFiniteElement<double>, 5> fe_precomp_;
-
- public:
-  /** @brief output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_cell = 8;
-  static const unsigned int kout_comp = 16;
 };
 
 extern std::shared_ptr<spdlog::logger>
     mesh_function_l2_gradient_difference_logger;
-
-// Initialization of control variable
-template <typename VEC_FUNC>
-unsigned int MeshFunctionL2GradientDifference<VEC_FUNC>::ctrl_ = 0;
 
 template <typename VEC_FUNC>
 template <typename DOFVECTOR>

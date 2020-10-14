@@ -157,7 +157,7 @@ class QuadRule {
   [[nodiscard]] base::size_type NumPoints() const { return points_.cols(); }
 
   /**
-   * @brief Output function controlled by variable out_ctrl_;
+   * @brief Output function controlled by variable out_ctrl;
    * @param out_ctrl Determines the level of detail of the printed info (see
    * below).
    *

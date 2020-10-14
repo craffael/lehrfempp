@@ -167,13 +167,6 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
 
 // ******************************************************************************
 
-// Output control for nodal projection
-// TODO(ralfh) putting this in a header file leads to multiple symbols with
-// the name ctrl_l2 CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
-//                    "Output control for  NodalProjection()");
-static const unsigned int kout_prj_cell = 1;
-static const unsigned int kout_prj_vals = 2;
-
 /**
  * @brief Computes nodal projection of a mesh function and returns the
  * finite element basis expansion coefficients of the result
@@ -227,12 +220,6 @@ auto NodalProjection(const UniformScalarFESpace<SCALAR> &fe_space, MF &&u,
     }
     // Topological type of the cell
     const lf::base::RefEl ref_el{cell->RefEl()};
-
-    // TODO(ralfh) uncommend when ctrl_prj is well-defined.
-    // SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
-    //                   std::cout << ref_el << ", shape = \n"
-    //                             << geo_ptr->Global(ref_el.NodeCoords())
-    //                             << std::endl);
 
     // Information about local shape functions on reference element
     auto ref_shape_fns = fe_space.ShapeFunctionLayout(ref_el);

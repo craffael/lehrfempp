@@ -330,12 +330,19 @@ class ScalarReferenceFiniteElement {
    *
    * Default implementation just prints degree, and the numbers of evaluation
    * nodes and local shape functions
+   *
+   * #### Level of output:
+   * - ctrl = 0: Only the type of the FiniteElementSpace, degree and number of
+   * ShapeFunctions/Evaluation nodes are printed
+   * - ctrl & kout_evln != 0: Also the coordinates of the evaluation nodes are
+   * printed.
    */
-  virtual std::ostream& print(std::ostream& o) const {
+  virtual std::ostream& PrintInfo(std::ostream& o,
+                                  unsigned int ctrl = 0) const {
     o << typeid(*this).name() << ", degree = " << Degree()
       << ", n_rsf = " << NumRefShapeFunctions()
       << ", n_evln = " << NumEvaluationNodes();
-    if ((ctrl_ & kout_evln) != 0) {
+    if ((ctrl & kout_evln) != 0) {
       o << "\n evl nodes = " << EvaluationNodes();
     }
     return o;
@@ -343,13 +350,8 @@ class ScalarReferenceFiniteElement {
 
  public:
   /** @brief output control variable */
-  static unsigned int ctrl_;
   static const unsigned int kout_evln = 1;
 };
-
-// Definition of output control variable
-template <typename SCALAR>
-unsigned int ScalarReferenceFiniteElement<SCALAR>::ctrl_ = 0;
 
 /** @brief Stream output operator: just calls the
  * ScalarReferenceFiniteElement::print() method
@@ -358,7 +360,7 @@ unsigned int ScalarReferenceFiniteElement<SCALAR>::ctrl_ = 0;
 template <typename SCALAR>
 std::ostream& operator<<(std::ostream& o,
                          const ScalarReferenceFiniteElement<SCALAR>& fe_desc) {
-  return fe_desc.print(o);
+  return fe_desc.PrintInfo(o, 0);
 }
 
 /**

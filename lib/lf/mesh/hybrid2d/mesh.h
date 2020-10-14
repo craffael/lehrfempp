@@ -131,9 +131,6 @@ class Mesh : public mesh::Mesh {
   friend class MeshFactory;
 
  public:
-  /** @brief Diagnostics control variable */
-  static unsigned int output_ctrl_;
-
   /// logger, used by methods of Mesh to log additional information.
   static inline std::shared_ptr<spdlog::logger> logger =
       base::InitLogger("lf::mesh::hybrid2d::Mesh::logger");

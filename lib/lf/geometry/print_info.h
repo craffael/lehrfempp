@@ -13,10 +13,10 @@ namespace lf::geometry {
  * below)
  *
  * #### Output levels
- * - Geometry::output_ctrl_ == 0: Reference element type of geometry is printed
- * - Geometry::output_ctrl_ > 10: The above and global and local dimension and
+ * - output_ctrl == 0: Reference element type of geometry is printed
+ * - output_ctrl > 10: The above and global and local dimension and
  * derived type of reference element is printed.
- * - Geometry::output_ctrl_ > 90: The above and coordinates og the geometry is
+ * - output_ctrl > 90: The above and coordinates og the geometry is
  * printed.
  *
  */
