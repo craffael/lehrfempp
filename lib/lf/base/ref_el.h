@@ -517,7 +517,7 @@ class RefEl {
  * - `output_ctrl` > 20: The above and coordinates of the points of the
  * reference element
  *
- *
+ * @relates RefEl
  */
 void PrintInfo(std::ostream& o, const RefEl& ref_el, int output_ctrl = 0);
 

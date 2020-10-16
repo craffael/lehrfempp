@@ -234,6 +234,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler);
  * - if > 0 and divisible by 3: print entities belonging to dofs
  * - if > 0 and divisible by 10: also print interior dof indices
  *
+ * @relates DofHandler
  */
 void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
                unsigned int ctrl = 0);

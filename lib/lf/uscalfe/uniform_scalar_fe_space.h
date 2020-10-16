@@ -132,20 +132,6 @@ class UniformScalarFESpace {
   [[nodiscard]] size_type NumRefShapeFunctions(
       lf::base::RefEl ref_el_type) const;
 
-  /**
-   * @brief Print information about this UniformScalarFESpace to the given
-   * stream object.
-   * @param o The stream to which we should print
-   * @param ctrl Controls the level of output:
-   *
-   * #### Level of output:
-   * - if `ctrl & kout_mesh`, mesh information will be printed.
-   * - if `ctrl & kout_dofh`, information about the dof handler will be printed.
-   * - if `ctrl & kout_rsfs`, information about the reference shape functions
-   * will be printed.
-   */
-  virtual void PrintInfo(std::ostream &o, unsigned int ctrl = 0);
-
   /** @brief No special destructor */
   virtual ~UniformScalarFESpace() = default;
 
@@ -178,14 +164,59 @@ class UniformScalarFESpace {
     return true;
   }
 
- public:
-  /** Output control variable */
-  static const unsigned int kout_mesh = 1;
-  static const unsigned int kout_dofh = 2;
-  static const unsigned int kout_rsfs = 4;
 };  // end class definition UniformScalarFESpace
 
-/** @brief output operator for scalar parametric finite element space */
+/** Output control variables for PrintInfo: */
+
+/**
+ * @brief mesh information will be printed
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutMesh = 1;
+
+/**
+ * @brief information about the dof handler will be printed.
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutDofh = 2;
+
+/**
+ * @brief information about the reference shape functions will be printed
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutRsfs = 4;
+
+/**
+ * @brief Print information about a UniformScalarFESpace to the given
+ * stream object.
+ * @param o The stream to which we should print
+ * @param fes The UniformScalarFESpace that should be printed.
+ * @param ctrl Controls the level of output:
+ *
+ * #### Level of output:
+ * - if `ctrl & kUniformScalarFESpaceOutMesh`, mesh information will be printed.
+ * - if `ctrl & kUniformScalarFESpaceOutDofh`, information about the dof handler
+ * will be printed.
+ * - if `ctrl & kUniformScalarFESpaceOutRsfs`, information about the reference
+ * shape functions will be printed.
+ *
+ * @relates UniformScalarFESpace
+ */
+template <class SCALAR>
+void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
+               unsigned int ctrl = 0);
+
+/**
+ * @brief output operator for scalar parametric finite element space
+ *
+ * @relates UniformScalarFESpace
+ */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes);
@@ -354,23 +385,25 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
 }
 
 template <typename SCALAR>
-void UniformScalarFESpace<SCALAR>::PrintInfo(std::ostream &o, unsigned ctrl) {
-  o << "Uniform scalar FE space, dim = " << LocGlobMap().NumDofs() << std::endl;
+void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
+               unsigned ctrl) {
+  o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
+    << std::endl;
 
-  if (ctrl & kout_mesh) {
-    o << Mesh() << std::endl;
+  if ((ctrl & kUniformScalarFESpaceOutMesh) != 0) {
+    o << *fes.Mesh() << std::endl;
   }
-  if (ctrl & kout_dofh) {
-    o << LocGlobMap() << std::endl;
+  if ((ctrl & kUniformScalarFESpaceOutDofh) != 0) {
+    o << fes.LocGlobMap() << std::endl;
   }
-  if (ctrl & kout_rsfs) {
-    o << NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
+  if ((ctrl & kUniformScalarFESpaceOutRsfs) != 0) {
+    o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
       << std::endl;
-    o << NumRefShapeFunctions(lf::base::RefEl::kSegment()) << " rsfs @ edges"
-      << std::endl;
-    o << NumRefShapeFunctions(lf::base::RefEl::kTria()) << " rsfs @ triangles"
-      << std::endl;
-    o << NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
+    o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())
+      << " rsfs @ edges" << std::endl;
+    o << fes.NumRefShapeFunctions(lf::base::RefEl::kTria())
+      << " rsfs @ triangles" << std::endl;
+    o << fes.NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
       << std::endl;
   }
 }

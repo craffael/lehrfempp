@@ -19,6 +19,7 @@ namespace lf::geometry {
  * - output_ctrl > 90: The above and coordinates og the geometry is
  * printed.
  *
+ * @relates Geometry
  */
 void PrintInfo(std::ostream& o, const Geometry& geom, int output_ctrl = 0);
 
@@ -32,6 +33,7 @@ void PrintInfo(std::ostream& o, const Geometry& geom, int output_ctrl = 0);
  * @note At the moment this will just write the type of the reference element to
  * the stream.
  *
+ * @relates Geometry
  */
 std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
 

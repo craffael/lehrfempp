@@ -22,6 +22,8 @@ namespace lf::mesh::utils {
  * #### Output levels
  * - > 10: also output entity information
  * - > 90: also output subentity information
+ *
+ * @relates lf::mesh::Mesh
  */
 void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 11);
 
@@ -37,6 +39,8 @@ void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 11);
  * - output_ctrl > 10: The above and information of codimensions
  * - output_ctrl > 50: The above and information about subentities
  * - output_ctrl > 90: The above and coordinates
+ *
+ * @relates lf::mesh::Entity
  */
 void PrintInfo(std::ostream& stream, const lf::mesh::Entity& e,
                int output_ctrl = 0);

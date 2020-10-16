@@ -134,11 +134,6 @@ class PrecomputedScalarReferenceFiniteElement
     return fe_->NodalValuesToDofs(nodvals);
   }
 
-  std::ostream& PrintInfo(std::ostream& o, unsigned int ctrl) const override {
-    LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
-    return fe_->PrintInfo(o, ctrl);
-  }
-
   /**
    * @brief Return the Quadrature rule at which the shape functions (and their
    * gradients) have been precomputed.

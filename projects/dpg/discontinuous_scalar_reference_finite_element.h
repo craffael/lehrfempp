@@ -128,13 +128,6 @@ class DiscontinuousScalarReferenceFiniteElement
     return cfe_->NodalValuesToDofs(nodvals);
   }
 
-  std::ostream& PrintInfo(std::ostream& o, unsigned int ctrl) const override {
-    LF_ASSERT_MSG(isInitialized(), "Not initialized");
-    o << typeid(*this).name() << "Discontinuous wrapper around \n";
-    cfe_->PrintInfo(o);
-    return o;
-  }
-
   /** virtual destructor*/
   ~DiscontinuousScalarReferenceFiniteElement() override = default;
 
