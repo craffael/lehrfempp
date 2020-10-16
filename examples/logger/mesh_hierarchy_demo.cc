@@ -69,13 +69,15 @@ Other available command line options)foo");
   // load log levels from command line arguments:
   spdlog::cfg::load_argv_levels(argc, argv);
 
-  if (vm.count("list-loggers")) {
+  if (vm.count("list-loggers") > 0) {
     // go through all registered loggers and print them with their log level:
     std::cout << "The following loggers are known (with their log level):"
               << std::endl;
 
-    spdlog::apply_all([&](std::shared_ptr<spdlog::logger> logger) {
-      if (logger->name() == "") return;  // ignore default logger
+    spdlog::apply_all([&](const std::shared_ptr<spdlog::logger>& logger) {
+      if (logger->name().empty()) {
+        return;  // ignore default logger
+      }
       std::cout << logger->name() << ": " << logger->level() << std::endl;
     });
 
