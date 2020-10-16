@@ -21,7 +21,6 @@
 #include "fe_tools.h"
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
-#include "loc_comp_norms.h"
 #include "mesh_function_fe.h"
 #include "mesh_function_grad_fe.h"
 #include "uniform_scalar_fe_space.h"
