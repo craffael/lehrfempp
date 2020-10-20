@@ -316,16 +316,6 @@ struct JacobiPoly {
       p0 = p1;
       p1 = p2;
     }
-    /*
-    for (unsigned j = 2 ; j <= n ; ++j) {
-        const double c1 = 2 * j * (j + alpha + beta) * (2 * j - 2 +alpha +
-    beta); const double c2 = (2 * j - 1 + alpha + beta) * (2 * j + alpha + beta)
-    * (2 * j - 2 + alpha + beta); const double c3 = (2 * j - 1 + alpha + beta) *
-    (alpha + beta) * (alpha - beta); const double c4 = -2 * (j - 1 + alpha) * (j
-    - 1 + beta) * (2 * j + alpha + beta); p2 = ((c3 + c2 * x) * p1 + c4 * p0) /
-    c1; p0 = p1; p1 = p2;
-    }
-    */
     return p2;
   }
 };
@@ -1008,12 +998,47 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
     Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(NumRefShapeFunctions());
-    const lf::base::size_type Ns = qr_dual_segment_.NumPoints();
-    const lf::base::size_type Nt = qr_dual_tria_.NumPoints();
     // Compute the basis function coefficients of the vertex basis functions
+    dofs.segment(0, 3) = NodalValuesToVertexDofs(nodevals);
+    // Compute the basis function coefficients on the edges
+    dofs.segment(3, 3 * (Degree() - 1)) = NodalValuesToEdgeDofs(nodevals);
+    // Compute the basis function coefficients for the face bubbles
+    dofs.segment(3 * Degree(), NumRefShapeFunctions(0)) =
+        NodalValuesToFaceDofs(nodevals);
+    // We need to orthogonalize the face bubble dual basis w.r.t. the
+    // dual basis on the vertices and edges
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+        basis_functions = EvalReferenceShapeFunctions(EvaluationNodes());
+    const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> boundary_function =
+        dofs.segment(0, 3 * Degree()) *
+        basis_functions.block(0, 0, 3 * Degree(), basis_functions.cols());
+    const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> boundary_face_dofs =
+        NodalValuesToFaceDofs(boundary_function);
+    dofs.segment(3 * Degree(), NumRefShapeFunctions(0)) -= boundary_face_dofs;
+    return dofs;
+  }
+
+ private:
+  unsigned degree_;
+  lf::quad::QuadRule qr_dual_segment_;
+  lf::quad::QuadRule qr_dual_tria_;
+  nonstd::span<const lf::mesh::Orientation> rel_orient_;
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>
+  NodalValuesToVertexDofs(
+      const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
+    Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(3);
     dofs[0] = nodevals[0];
     dofs[1] = nodevals[1];
     dofs[2] = nodevals[2];
+    return dofs;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToEdgeDofs(
+      const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
+    const lf::base::size_type Ns = qr_dual_segment_.NumPoints();
+    const lf::base::size_type Nt = qr_dual_tria_.NumPoints();
+    Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(3 * (Degree() - 1));
     // Compute the basis function coefficients on the edges
     // by applying the dual basis of the segment
     for (lf::base::size_type i = 2; i < Degree() + 1; ++i) {
@@ -1028,10 +1053,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                              psidd.array() * nodevals.segment(3, Ns).array())
                                 .sum();
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-        dofs[1 + i] =
+        dofs[1 + i - 3] =
             (P1 * nodevals[1] - P0 * nodevals[0] - integ1) * (2 * i - 1);
       } else {
-        dofs[4 - i + (Degree() - 1)] =
+        dofs[4 - i + (Degree() - 1) - 3] =
             (P1 * nodevals[0] - P0 * nodevals[1] - integ1) * (2 * i - 1);
       }
       // Compute the basis function coefficients for the second edge
@@ -1040,10 +1065,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
            nodevals.segment(3 + Ns, Ns).array())
               .sum();
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-        dofs[1 + i + (Degree() - 1)] =
+        dofs[1 + i + (Degree() - 1) - 3] =
             (P1 * nodevals[2] - P0 * nodevals[1] - integ2) * (2 * i - 1);
       } else {
-        dofs[4 - i + 2 * (Degree() - 1)] =
+        dofs[4 - i + 2 * (Degree() - 1) - 3] =
             (P1 * nodevals[1] - P0 * nodevals[2] - integ2) * (2 * i - 1);
       }
       // Compute the basis function coefficients for the third edge
@@ -1052,27 +1077,34 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
            nodevals.segment(3 + 2 * Ns, Ns).array())
               .sum();
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-        dofs[1 + i + 2 * (Degree() - 1)] =
+        dofs[1 + i + 2 * (Degree() - 1) - 3] =
             (P1 * nodevals[0] - P0 * nodevals[2] - integ3) * (2 * i - 1);
       } else {
-        dofs[4 - i + 3 * (Degree() - 1)] =
+        dofs[4 - i + 3 * (Degree() - 1) - 3] =
             (P1 * nodevals[2] - P0 * nodevals[0] - integ3) * (2 * i - 1);
       }
     }
-    // Compute the basis function coefficients for the face bubbles
+    return dofs;
+  }
+
+  [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToFaceDofs(
+      const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
+    const lf::base::size_type Ns = qr_dual_segment_.NumPoints();
+    const lf::base::size_type Nt = qr_dual_tria_.NumPoints();
+    Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(NumRefShapeFunctions(0));
     if (Degree() > 2) {
-      unsigned idx = 3 * Degree();
+      unsigned idx = 0;
       const Eigen::Matrix<double, 1, Eigen::Dynamic> xnorm =
           (qr_dual_tria_.Points().row(0).array() /
            qr_dual_tria_.Points().row(1).array().unaryExpr([&](double y) {
              return 1 - y;
            })).matrix();
+      const Eigen::Matrix<double, 1, Eigen::Dynamic> y =
+          qr_dual_tria_.Points().row(1);
       // i is the degree of the edge function
       for (unsigned i = 0; i < Degree() - 2; ++i) {
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> ypow =
-            qr_dual_tria_.Points()
-                .row(1)
-                .array()
+            y.array()
                 .unaryExpr(
                     [&](double y) -> SCALAR { return std::pow(1 - y, i + 1); })
                 .matrix();
@@ -1082,28 +1114,34 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
             });
         // j is the degree of the blending Jacobi polynomial
         for (unsigned j = 0; j < Degree() - i - 2; ++j) {
+          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
+              qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
+                return JacobiPoly<SCALAR>::eval(j, 2 * i + 4, y);
+              });
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
                 return j == 0 ? SCALAR(0)
                               : JacobiPoly<SCALAR>::derivative(j - 1, 2 * i + 4,
                                                                y);
               });
-          dofs[idx] = (qr_dual_tria_.Weights().transpose().array() *
-                       nodevals.block(0, 3 + 3 * Ns, 1, Nt).array() *
-                       ypow.array() * psidd.array() * jacdd.array())
-                          .sum();
+          dofs[idx] =
+              (qr_dual_tria_.Weights().transpose().array() *
+               nodevals.block(0, 3 + 3 * Ns, 1, Nt).array() * psidd.array() *
+               (ypow.array() * jacd.array() - (2 * i + 4) * jacdd.array()))
+                  .sum();
+          dofs[idx] *=
+              2 * i + 3;  // Normalization factor for the Legendre polynomial
+          dofs[idx] *=
+              (2 * j + 2 * i + 3) /
+              std::pow(
+                  2,
+                  2 * i + 2);  // Normalization factor for the Jacobi Polynomial
           ++idx;
         }
       }
     }
     return dofs;
   }
-
- private:
-  unsigned degree_;
-  lf::quad::QuadRule qr_dual_segment_;
-  lf::quad::QuadRule qr_dual_tria_;
-  nonstd::span<const lf::mesh::Orientation> rel_orient_;
 };
 
 /**
