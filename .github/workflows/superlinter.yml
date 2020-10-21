@@ -33,7 +33,7 @@ jobs:
           cd build
           cd C:\.hunter
           dir
-          echo "hello cache" > C:\.hunter\hello3.txt
+          echo "hello cache" > C:\.hunter\hello4.txt
         #  dir
         #  type C:\hunter\hello.txt
         #  echo "hello cache" > C:\.hunter\hello.txt
