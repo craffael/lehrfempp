@@ -19,6 +19,9 @@ jobs:
       
       # Note that windows has a recent version cmake installed
       - name: Build dependencies
-        run: cmake -H. -BBuild -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug
+        run: |
+          mkdir build
+          cd build
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
     
         
