@@ -27,6 +27,7 @@ jobs:
       
       # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
+      # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
       - name: Hunter dependencies
         run: |
           mkdir build > $null
