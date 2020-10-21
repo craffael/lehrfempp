@@ -35,7 +35,10 @@ jobs:
           cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
           
       - name: compile
-        run: cmake --build . -- config Debug
+        run: |
+          pwd
+          cd build
+          cmake --build . -- config Debug
           
     
         
