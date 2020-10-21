@@ -27,10 +27,15 @@ jobs:
             ${{ runner.os }}-hunter-
       
       # Note that windows has a recent version cmake installed
-      - name: Build dependencies
+      
+      - name: Hunter dependencies
         run: |
           mkdir build > $null
           cd build
           cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
+          
+      - name: compile
+        run: cmake --build . -- config Debug
+          
     
         
