@@ -22,9 +22,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: C:\.hunter
-          key:  ${{ runner.os }}-hunter-${{ github.run_id }}
+          key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-hunter-
+            ${{ runner.os }}-hunter-debug-
       
       # Note that windows has a recent version cmake installed
       
