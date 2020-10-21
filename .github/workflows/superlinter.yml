@@ -19,4 +19,8 @@ jobs:
       
       - name: Install cmake
         run: ./travis/install_cmake.sh
+      
+      - name: show cmake version
+        run: cmake --version
+    
         
