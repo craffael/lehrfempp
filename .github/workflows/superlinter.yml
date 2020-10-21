@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-hunter-debug-
             ${{ runner.os }}-hunter-
       
-      # Note that windows has a recent version cmake installed
+      # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
       - name: Hunter dependencies
         run: |
@@ -36,8 +36,12 @@ jobs:
           cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
           
       - name: compile
+        run: cmake --build ./build --config Debug --target ALL_BUILD
+          
+      - name: test
         run: |
-          cmake --build ./build --config Debug --target ALL_BUILD
+          cd build
+          ctest -j 2 -c Debug
           
     
         
