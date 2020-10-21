@@ -21,7 +21,7 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v2
         with:
-          path: 'C:\.hunter\'
+          path: C:/.hunter/
           key:  ${{ runner.os }}-build
       
       # Note that windows has a recent version cmake installed
@@ -30,7 +30,7 @@ jobs:
           mkdir build
           cd build
           mkdir C:\.hunter
-          type  C:\hunter\hello.txt
+        #  type  C:\hunter\hello.txt
           echo "hello cache" > C:\.hunter\hello.txt
         # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
     
