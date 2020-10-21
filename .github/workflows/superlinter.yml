@@ -17,10 +17,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Install cmake
-        run: ./travis/install_cmake.sh
-      
-      - name: show cmake version
-        run: cmake --version
+      # Note that windows has a recent version cmake installed
+      - name: Build dependencies
+        run: cmake -H. -BBuild -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug
     
         
