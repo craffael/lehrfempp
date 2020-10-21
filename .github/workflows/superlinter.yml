@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir build
           cd build
+          mkdir C:\.hunter
           echo "hello cache" > C:\.hunter\hello.txt
         # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
     
