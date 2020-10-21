@@ -30,7 +30,8 @@ jobs:
           mkdir build
           cd build
           cd C:\hunter
-          dir
+          echo "hello cache" > C:\.hunter\hello.txt
+        #  dir
         #  type C:\hunter\hello.txt
         #  echo "hello cache" > C:\.hunter\hello.txt
            
