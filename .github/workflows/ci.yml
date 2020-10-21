@@ -31,10 +31,11 @@ jobs:
         run: |
           mkdir build > $null
           cd build
-          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug -D CMAKE_CXX_FLAGS="/p:DebugSymbols=false /p:DebugType=None" ..
           
       - name: compile
-        run: cmake --build ./build --config Debug --target ALL_BUILD
+        run: |
+          cmake --build ./build --config Debug --target ALL_BUILD
           
       - name: test
         run: |
@@ -42,39 +43,39 @@ jobs:
           ctest -j 2 -c Debug
           
     
-  windows-release:
-    # Name the Job
-    name: Windows Release x64
-    # Set the type of machine to run on
-    runs-on: windows-latest
-
-    steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      # Restore cache:
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: C:\.hunter
-          key:  ${{ runner.os }}-hunter-release-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-hunter-release-
-            ${{ runner.os }}-hunter-
-      
-      # Note that windows has a recent version of cmake installed -> we don't need to install it here.
-      
-      - name: Hunter dependencies
-        run: |
-          mkdir build > $null
-          cd build
-          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Release ..
-          
-      - name: compile
-        run: cmake --build ./build --config Release --target ALL_BUILD
-          
-      - name: test
-        run: |
-          cd build
-          ctest -j 2 -c Release     
+ # windows-release:
+ #   # Name the Job
+ #   name: Windows Release x64
+ #   # Set the type of machine to run on
+ #   runs-on: windows-latest
+ #
+ #   steps:
+ #     # Checks out a copy of your repository on the ubuntu-latest machine
+ #     - name: Checkout code
+ #       uses: actions/checkout@v2
+ #     
+ #     # Restore cache:
+ #     - name: Restore cache
+ #       uses: actions/cache@v2
+ #       with:
+ #         path: C:\.hunter
+ #         key:  ${{ runner.os }}-hunter-release-${{ github.run_id }}
+ #         restore-keys: |
+ #           ${{ runner.os }}-hunter-release-
+ #           ${{ runner.os }}-hunter-
+ #     
+ #     # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+ #     
+ #     - name: Hunter dependencies
+ #       run: |
+ #         mkdir build > $null
+ #         cd build
+ #         cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Release ..
+ #         
+ #     - name: compile
+ #       run: cmake --build ./build --config Release --target ALL_BUILD
+ #         
+ #     - name: test
+ #       run: |
+ #         cd build
+ #         ctest -j 2 -c Release     
