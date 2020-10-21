@@ -443,55 +443,6 @@ double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
   return SumCellFEContrib(dofh, loc_comp, uh, base::PredicateTrue{});
 }
 
-/**
- * @brief Computation of an inner product norm of the difference of a finite
- * element function and a general functions.
- *
- * @tparam LOC_NORM_COMP helper type like
- * lf::uscalfe::MeshFunctionL2NormDifference
- * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
- * @tparam SELECTOR a predicate for selecting cells
- *
- * ### type requirements
- *
- * - The type LOC_NORM_COMP must feature an `isActive()` method for the
- *   selection of cells to be visited, must provide a type `dofvector_t`
- *   for passing coefficients of local shape functions and a method
- * ~~~
- * double operator () (const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
- * ~~~
- *   that performs the local computations and returns the **square** of
- *   the local norm of the difference function
- * - The type COEFFVECTOR must provide component access through `[]`,
- *   a `size()` method telling the vector length, and `value_type` typedef
- *   telling the  component type.
- * - The type functor must provide an evaluation operator `()` taking
- *   a point coordinate vector `Eigen::Vector2d` as an argument.
- *
- * @param dofh Local-to-global index mapping belonging to a finite element space
- * @param loc_comp reference to helper object for local computations
- *        This object must be aware of the shape functions!
- * @param uh coefficient vector of finite element function
- *
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR, typename SELECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh,
-                        SELECTOR &&pred) {
-  const double norm_sq = SumCellFEContrib(dofh, loc_comp, uh, pred);
-  return std::sqrt(norm_sq);
-}
-
-/** @brief Computation of difference of norms for _all_ cells
- *
- * @sa NormOfDifference()
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
-}
-
 }  // namespace lf::uscalfe
 
 #endif
