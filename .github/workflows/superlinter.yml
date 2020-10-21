@@ -31,7 +31,6 @@ jobs:
         run: |
           mkdir build
           cd build
-          mkdir C:\.hunter
           cd C:\.hunter
           dir
           echo "hello cache" > C:\.hunter\hello2.txt
