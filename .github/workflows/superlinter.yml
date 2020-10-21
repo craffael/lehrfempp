@@ -25,6 +25,7 @@ jobs:
           key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-hunter-debug-
+            ${{ runner.os }}-hunter-
       
       # Note that windows has a recent version cmake installed
       
@@ -36,9 +37,7 @@ jobs:
           
       - name: compile
         run: |
-          pwd
-          cd build
-          cmake --build . -- config Debug
+          cmake --build ./build --config Debug --target ALL_BUILD
           
     
         
