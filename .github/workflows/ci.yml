@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir build > $null
           cd build
-          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug -D CMAKE_CXX_FLAGS="/p:DebugSymbols=false /p:DebugType=None" ..
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
           
       - name: compile
         run: |
