@@ -22,23 +22,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: C:\.hunter
-          key:  ${{ runner.os }}-build4-${{ github.sha }}
+          key:  ${{ runner.os }}-hunter-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-build4-
+            ${{ runner.os }}-hunter-
       
       # Note that windows has a recent version cmake installed
       - name: Build dependencies
         run: |
-          mkdir build
+          mkdir build > $null
           cd build
-          cd C:\.hunter
-          dir
-          echo "hello cache" > C:\.hunter\hello4.txt
-        #  dir
-        #  type C:\hunter\hello.txt
-        #  echo "hello cache" > C:\.hunter\hello.txt
-           
-          
-        # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug ..
     
         
