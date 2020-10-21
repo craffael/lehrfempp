@@ -31,10 +31,9 @@ jobs:
         run: |
           mkdir build
           cd build
-          mkdir C:\.hunter
           cd C:\.hunter
           dir
-          echo "hello cache" > C:\.hunter\hello2.txt
+          echo "hello cache" > C:\.hunter\hello3.txt
         #  dir
         #  type C:\hunter\hello.txt
         #  echo "hello cache" > C:\.hunter\hello.txt
