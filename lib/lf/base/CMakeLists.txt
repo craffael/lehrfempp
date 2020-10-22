@@ -1,3 +1,5 @@
+include(git_info.cmake)
+
 set(sources
   base.h
   comm.h
@@ -27,3 +29,5 @@ endif()
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)
 endif()
+
+
