@@ -350,6 +350,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
+    // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
@@ -357,16 +358,17 @@ int main(int /*argc*/, const char** /*argv*/) {
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
-    /* SAM_LISTING_BEGIN_7 */
     // create mesh functions representing solution / gradient of solution
-    auto mf_sol = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
-    auto mf_grad_sol = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
-    // compute errors with 10-th order quadrature rules
+    const lf::uscalfe::MeshFunctionFE mf_sol(fe_space, sol_vec);
+    const lf::uscalfe::MeshFunctionGradFE mf_grad_sol(fe_space, sol_vec);
+    // compute errors with 3rd order quadrature rules, which is sufficient for
+    // piecewise linear finite elements
     double L2err =  // NOLINT
-        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
+        std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+            mesh, lf::mesh::utils::squaredNorm(mf_sol - mf_u), 2));
     double H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(  // NOLINT
-        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
-    /* SAM_LISTING_END_7 */
+        mesh, lf::mesh::utils::squaredNorm(mf_grad_sol - mf_grad_u), 2));
+    /* SAM_LISTING_END_2 */
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 
