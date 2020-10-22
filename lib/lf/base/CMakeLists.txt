@@ -1,4 +1,4 @@
-include(git_info.cmake)
+include(get_version.cmake)
 
 set(sources
   base.h
