@@ -1,7 +1,8 @@
+# Functionality for lf::base::LehrFemInfo:
 include(get_version.cmake)
-
 configure_file(lehrfem_info.cc ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc)
 
+# Define sources that make up this Library:
 set(sources
   base.h
   comm.h
@@ -9,7 +10,7 @@ set(sources
   eigen_tools.h
   invalid_type_exception.h
   lehrfem_info.h
-  lehrfem_info.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc
   lf_assert.cc
   lf_assert.h
   lf_exception.h
