@@ -39,6 +39,10 @@ hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
 
 
+# Get fmt
+hunter_add_package(fmt)
+find_package(fmt CONFIG REQUIRED)
+
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)

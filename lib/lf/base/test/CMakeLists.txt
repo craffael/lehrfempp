@@ -3,6 +3,7 @@ include(GoogleTest)
 
 set(sources
   eigen_tools_tests.cc
+  lehrfem_info_tests.cc
   ref_el_tests.cc
 )
 

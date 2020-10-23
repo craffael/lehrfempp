@@ -40,6 +40,7 @@ constexpr double kPi = 3.14159265358979323846;
 #include "comm.h"
 #include "eigen_tools.h"
 #include "invalid_type_exception.h"
+#include "lehrfem_info.h"
 #include "lf_assert.h"
 #include "lf_exception.h"
 #include "predicate_true.h"

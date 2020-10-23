@@ -1,11 +1,15 @@
 include(get_version.cmake)
 
+configure_file(lehrfem_info.cc ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc)
+
 set(sources
   base.h
   comm.h
   comm.cc
   eigen_tools.h
   invalid_type_exception.h
+  lehrfem_info.h
+  lehrfem_info.cc
   lf_assert.cc
   lf_assert.h
   lf_exception.h
