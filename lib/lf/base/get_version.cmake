@@ -1,4 +1,4 @@
-# Functionality for lf::base::LehrfemppVersion()
+# Functionality for lf::base::LehrFemInfo class
 #
 # The code in this file tries to determine three pieces of information about the current code:
 # - version_sha -> the git sha value that identifies the (last) commit
@@ -61,7 +61,7 @@ if(Git_FOUND)
                  )
   if(git_result) 
     # non-zero return code:
-    message(WARNING "Error while running git status --porcelain=v2 --branch from ${CMAKE_CURRENT_LIST_DIR}. lf::base::LehrfemVersion() will not return any information.")
+    message(WARNING "Error while running git status --porcelain=v2 --branch from ${CMAKE_CURRENT_LIST_DIR}. lf::base::LehrFemInfo will not return any commit information.")
   else()
     # Retrieve branch.oid: sha of the current commit
     if(git_out MATCHES "# branch.oid ([a-z0-9]+)")
@@ -77,7 +77,7 @@ if(Git_FOUND)
                  
     if(git_result)
       # non-zero return code:
-      message(WARNING "Error while running git show --no-patch --no-notes --pretty='%cI' ${version_sha} from ${CMAKE_CURRENT_LIST_DIR}. lf::base::LehrfemVersion() will not return any information.")
+      message(WARNING "Error while running git show --no-patch --no-notes --pretty='%cI' ${version_sha} from ${CMAKE_CURRENT_LIST_DIR}. lf::base::LehrFemInfo will not return any commit information.")
     else()
       string (STRIP ${git_out} version_datetime)
     endif()    
@@ -126,7 +126,7 @@ if(NOT version_sha)
 endif()
 
 if(NOT version_sha)
-  message(WARNING "Could not determine version of this code. lf::base::LehrFemVersion() will not return any information.")
+  message(WARNING "Could not determine version of this code. lf::base::LehrFemInfo will not return any commit information.")
 endif()
 
 
