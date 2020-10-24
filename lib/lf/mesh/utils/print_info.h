@@ -15,60 +15,36 @@
 namespace lf::mesh::utils {
 
 /**
- * @brief output control variable for mesh output
- *
- * - > 10: also output entity information
- * - > 90: also output subentity information
- *
- * @note: this static variable is intialized to the value 100
- */
-extern unsigned int printinfo_ctrl;
-
-/**
  * @brief Diagnostic output operator. Prints info about a mesh.
  * @param &mesh The mesh to print info about
  * @param &o The stream to which this function should output
  *
  * #### Output levels
- * See extern int printinfo_ctrl
+ * - > 10: also output entity information
+ * - > 90: also output subentity information
+ *
+ * @relates lf::mesh::Mesh
  */
-void PrintInfo(const lf::mesh::Mesh& mesh, std::ostream& o);
+void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 11);
 
 // Print function for Entity object
 /**
- * @brief Diagnostic output operator. Prints info about an entity.
+ * @brief Prints info about an entity.
  *
  * @param e The entity to print info about
  * @param stream The stream to which this function should output
  *
  * #### Output levels
- * - Entity::output_ctrl_ == 0: Entity type is printed
- * - Entity::output_ctrl_ > 10: The above and information of codimensions
- * - Entity::output_ctrl_ > 50: The above and information about subentities
- * - Entity::output_ctrl_ > 90: The above and coordinates
+ * - output_ctrl == 0: Entity type is printed
+ * - output_ctrl > 10: The above and information of codimensions
+ * - output_ctrl > 50: The above and information about subentities
+ * - output_ctrl > 90: The above and coordinates
+ *
+ * @relates lf::mesh::Entity
  */
-void PrintInfo(const lf::mesh::Entity& e, std::ostream& stream);
+void PrintInfo(std::ostream& stream, const lf::mesh::Entity& e,
+               int output_ctrl = 0);
 
 }  // namespace lf::mesh::utils
-
-// Put the overloaded operators into lf::mesh so they are found when needed
-// https://de.wikipedia.org/wiki/Argument_dependent_name_lookup
-namespace lf::mesh {
-
-/**
- * @brief Operator overload to print a `Mesh` to a stream, such as `std::cout`.
- *
- * This method just calls `PrintInfo(const Mesh&, std::ostream&)`
- *
- * @param stream The stream to which this function should output
- * @param mesh The mesh to write to `stream`.
- * @return The stream itself.
- */
-inline std::ostream& operator<<(std::ostream& stream, const Mesh& mesh) {
-  lf::mesh::utils::PrintInfo(mesh, stream);
-  return stream;
-}
-
-}  // namespace lf::mesh
 
 #endif  // __a0ec4da7c53444cbb215ff2415c2b3c5

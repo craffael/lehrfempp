@@ -157,14 +157,16 @@ class QuadRule {
   [[nodiscard]] base::size_type NumPoints() const { return points_.cols(); }
 
   /**
-   * @brief Output function controlled by variable out_ctrl_;
+   * @brief Output function controlled by variable out_ctrl;
+   * @param out_ctrl Determines the level of detail of the printed info (see
+   * below).
    *
-   * If the lsb of out_ctrl_ is set also print weights and nodes, otherwise
-   * just output the number of nodes.
+   * If out_ctrl > 0 weights and nodes are printed, otherwise
+   * just the number of nodes are output.
    */
-  void PrintInfo(std::ostream& o) const {
+  void PrintInfo(std::ostream& o, int out_ctrl = 0) const {
     o << weights_.size() << "-point QR";
-    if ((out_ctrl_ & kout_ext) != 0) {
+    if (out_ctrl > 0) {
       o << ", weights = " << weights_.transpose() << ", nodes = \n" << points_;
     }
   }
@@ -176,9 +178,6 @@ class QuadRule {
   Eigen::VectorXd weights_;
 
  public:
-  /** @brief Output control variable */
-  static unsigned int out_ctrl_;
-  static const unsigned int kout_ext = 1;
 };
 
 /**

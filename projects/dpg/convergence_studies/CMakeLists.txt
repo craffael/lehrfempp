@@ -1,7 +1,7 @@
 
 
 add_executable(projects.dpg.convergence_studies.convergence_study1
-	       convergence_study1.cc)
+	       convergence_study1.cc primal_dpg.h primal_dpg_adapted_norm.h ultraweak_dpg.h )
 add_executable(projects.dpg.convergence_studies.convergence_study2
 	       convergence_study2.cc)
 add_executable(projects.dpg.convergence_studies.convergence_study3
@@ -95,4 +95,4 @@ if(WIN32)
     target_compile_options(projects.dpg.convergence_studies.convergence_study3 PRIVATE /bigobj)
     target_compile_options(projects.dpg.convergence_studies.convergence_study4 PRIVATE /bigobj)
     target_compile_options(projects.dpg.convergence_studies.convergence_study5 PRIVATE /bigobj)
-  endif()
+endif()

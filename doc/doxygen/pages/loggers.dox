@@ -1,0 +1,75 @@
+namespace lf {
+
+/**
+ @page loggers Loggers and Debug output
+ 
+ LehrFEM++ can give you additional debug output in two ways:
+ 1. You can explictly call a `PrintInfo()` method to output e.g. information about a mesh to `std::cout`, or
+ 2. You change the log level of a logger that is used by a routine (such as `mesh::MeshFactory::Build()`).
+ 
+
+ ------------------------
+ ### Case 1) `PrintInfo()` methods
+ There are a number of member/free `PrintInfo()` functions which accept 
+ - a `std::ostream` (such as `std::cout`), 
+ - an object that should be printed, and
+ - an `int ctrl` argument that specifies the level of detail 
+   (0 = only the absolutely necessary information, 100 = highest level of detail).
+ 
+ For example, if we want to print information about a mesh::Mesh to standard output, we could write:
+ \snippet loggers.cc PrintInfoMesh
+ 
+ ------------------------
+ ### Case 2) Loggers
+ 
+ LehrFEM++ uses the excellent [spdlog](https://github.com/gabime/spdlog) library to output additional (debug) information.
+ spdlog introduces the class `spdlog::logger` with which LehrFEM++ logs data to one or more "sinks" (such as `std::cout` or a file).
+ There are six log levels which are used as follows in LehrFEM++:
+ 
+ level     | description
+--------|---------------------------------------
+<b>Critical</b>  | Coarsest level, is used for logging additional information just before the program aborts. (e.g. before an assert fails)
+<b>Error</b>    | For logging information related to a recoverable error. E.g. when an exception is thrown.
+<b>Warn</b>   | Warn the user when something may not work as expected.
+<b>Info</b>    | Inform the user about something important.
+<b>Debug</b> | Additional information that helps in debugging a problem.
+<b>Trace</b>   | Even more extensive information for debugging a problem.
+ 
+ By default all loggers in LehrFEM++ are initialized such that they
+ - only output log messages with level <b>Info</b> or higher,
+ - have a single sink (`spdlog::stdout_color_mt`) which writes to std::cout,
+ - are all registered with the [spdlog logger registry](https://github.com/gabime/spdlog/wiki/5.-Logger-registry).
+ 
+ Virtually 99% of the logging statements in LehrFEM++ have log level *Debug* or *Trace*.
+ Therefore, LehrFEM++ will by default not output anything to the standard output.
+ If you want to show these log statements, you have to change the log level of the associated loggers.
+ 
+ In LehrFEM++ every class or free function, which wants to log something, decalares a `spdlog::logger`.
+ - For classes, these loggers are public static fields of the corresponding class (e.g. \ref lf::mesh::hybrid2d::Mesh::logger "Mesh::logger").
+ - For free functions, there is a corresponding logger in the same namespace as the free function (e.g. lf::assemble::assemble_matrix_logger for \ref lf::assemble::AssembleMatrixLocally)
+ 
+  
+ 
+ #### Change the log level
+ If you want to see *Debug* log message of \ref assemble::AssembleMatrixLocally "AssembleMatrixLocally" you can just write
+ @snippet loggers.cc ChangeLogLevel
+ 
+ Or if you want to see all log messages (level *Trace* or higher) of the class \ref mesh::hybrid2d::Mesh "hybrid2d::Mesh": 
+ @snippet loggers.cc ChangeLogLevel2
+ 
+ Change the log level for all registered logggers in the registry to *Debug* (not recommended):
+ @snippet loggers.cc ChangeLogLevelAll
+ 
+ @attention In Release mode, all log statements with level *Debug* or *Trace* are removed at compile time.
+            If you want to see these log statements, you have to set the log level of the corresponding logger *and* define the preprocessor macro
+            [SPDLOG_ACTIVE_LEVEL](https://github.com/gabime/spdlog/wiki/0.-FAQ#how-to-remove-all-debug-statements-at-compile-time-).
+ 
+ #### Example
+ The example `examples/loggers/mesh_hierarchy_demo.cc` shows how one can set the log levels of individual loggers via command-line and environment variables and some other advanced techniques.
+ 
+ ### Contributors:
+ Please check the [contribution guide](https://github.com/craffael/lehrfempp/wiki/Contribute#3-logging--debug-output). 
+ 
+*/
+
+}

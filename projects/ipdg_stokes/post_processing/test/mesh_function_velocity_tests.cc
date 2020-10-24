@@ -16,7 +16,7 @@ static std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<double>>
 initFESpace() {
   // Build a very simple triangular mesh
   auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  lf::mesh::hybrid2d::TPTriagMeshBuilder builder(std::move(factory));
+  lf::mesh::utils::TPTriagMeshBuilder builder(std::move(factory));
   builder.setBottomLeftCorner(0, 0);
   builder.setTopRightCorner(1, 1);
   builder.setNumXCells(1);

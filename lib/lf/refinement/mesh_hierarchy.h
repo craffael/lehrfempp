@@ -367,14 +367,14 @@ class MeshHierarchy {
    * @param o output stream, can be `std::cout` or similar
    * @return output stream
    *
-   * The type of output is controlled by the `ctrl_` static control
+   * The type of output is controlled by the `ctrl` static control
    * variable. If its second bit is set, the output function of the
    * mesh class is used.
    *
    * This is a rudimentary implementation and should be extended.
    *
    */
-  virtual std::ostream &PrintInfo(std::ostream &o) const;
+  std::ostream &PrintInfo(std::ostream &o, unsigned ctrl = 0) const;
 
   virtual ~MeshHierarchy() = default;
 
@@ -443,20 +443,12 @@ class MeshHierarchy {
   [[nodiscard]] sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
 
  public:
-  /** @brief diagnostics control variable */
-  static unsigned int output_ctrl_;
-  /** @brief Output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_meshinfo = 2;
+  /**
+   * @brief Is used by MeshHierarchy to log additional information for debugging
+   * purposes.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };
-
-/**
- * @brief output operator for MeshHierarchy
- */
-inline std::ostream &operator<<(std::ostream &o,
-                                const MeshHierarchy &multimesh) {
-  return multimesh.PrintInfo(o);
-}
 
 template <typename Marker>
 void MeshHierarchy::MarkEdges(Marker &&marker) {

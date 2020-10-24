@@ -3,8 +3,9 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
-    <tab type="pages" visible="yes" title="Manual" intro=""/>
-    <tab type="modules" visible="yes" title="Concepts" intro=""/>
+    <!-- <tab type="pages" visible="yes" title="Manual" intro=""/> -->
+    <!-- <tab type="modules" visible="yes" title="Concepts" intro="blabla"/> -->
+    <tab type="user" url="@ref concepts" visible="yes" title="Concepts"/>
     <tab type="namespacelist" visible="yes" title="Namespaces" intro="" />
     <!-- <tab type="namespaces" visible="yes" title=""> -->
       <!-- <tab type="namespacelist" visible="yes" title="" intro=""/> -->

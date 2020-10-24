@@ -12,7 +12,7 @@
 namespace lf::refinement::test {
 
 TEST(lf_refinement, FatherChildRelations) {
-  MeshHierarchy::output_ctrl_ = 100;
+  MeshHierarchy::logger->set_level(spdlog::level::trace);
 
   auto gmsh_reader =
       io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);

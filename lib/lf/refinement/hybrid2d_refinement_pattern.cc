@@ -10,49 +10,9 @@ namespace lf::refinement {
 
 std::ostream &operator<<(std::ostream &o, const RefPat &refpat) {
   switch (refpat) {
-  rp_nil : {
-    o << "rp_NIL";
-    break;
-  }
-  rp_copy : {
-    o << "rp_COPY";
-    break;
-  }
-  rp_split : {
-    o << "rp_SPLIT";
-    break;
-  }
-  rp_bisect : {
-    o << "rp_BISECT";
-    break;
-  }
-  rp_trisect : {
-    o << "rp_TRISECT";
-    break;
-  }
-  rp_trisect_left : {
-    o << "rp_TRISECT_LEFT";
-    break;
-  }
-  rp_quadsect : {
-    o << "rp_QUADSECT";
-    break;
-  }
-  rp_threeedge : {
-    o << "rp_THREEEDGE";
-    break;
-  }
-  rp_regular : {
-    o << "rp_REGULAR";
-    break;
-  }
-  rp_barycentric : {
-    o << "rp_BARYCENTRIC";
-    break;
-  }
-  case rp_nil:
-    o << "rp_nil";
-    break;
+    case rp_nil:
+      o << "rp_nil";
+      break;
     case rp_copy:
       o << "rp_copy";
       break;
