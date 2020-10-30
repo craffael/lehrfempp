@@ -164,22 +164,62 @@ class UniformScalarFESpace {
     return true;
   }
 
- public:
-  /** Output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_mesh = 1;
-  static const unsigned int kout_dofh = 2;
-  static const unsigned int kout_rsfs = 4;
 };  // end class definition UniformScalarFESpace
 
-/** @brief output operator for scalar parametric finite element space */
+/** Output control variables for PrintInfo: */
+
+/**
+ * @brief mesh information will be printed
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutMesh = 1;
+
+/**
+ * @brief information about the dof handler will be printed.
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutDofh = 2;
+
+/**
+ * @brief information about the reference shape functions will be printed
+ *
+ * To be used with
+ * PrintInfo(std::ostream&, const UniformScalarFESpace<SCALAR>&, unsigned int)
+ */
+const unsigned int kUniformScalarFESpaceOutRsfs = 4;
+
+/**
+ * @brief Print information about a UniformScalarFESpace to the given
+ * stream object.
+ * @param o The stream to which we should print
+ * @param fes The UniformScalarFESpace that should be printed.
+ * @param ctrl Controls the level of output:
+ *
+ * #### Level of output:
+ * - if `ctrl & kUniformScalarFESpaceOutMesh`, mesh information will be printed.
+ * - if `ctrl & kUniformScalarFESpaceOutDofh`, information about the dof handler
+ * will be printed.
+ * - if `ctrl & kUniformScalarFESpaceOutRsfs`, information about the reference
+ * shape functions will be printed.
+ *
+ * @relates UniformScalarFESpace
+ */
+template <class SCALAR>
+void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
+               unsigned int ctrl = 0);
+
+/**
+ * @brief output operator for scalar parametric finite element space
+ *
+ * @relates UniformScalarFESpace
+ */
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes);
-
-// Output control variable
-template <typename SCALAR>
-unsigned int UniformScalarFESpace<SCALAR>::ctrl_ = 0;
 
 // Initialization methods
 template <typename SCALAR>
@@ -344,22 +384,19 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
   return 0;
 }
 
-/** output operator for scalar parametric finite element space */
 template <typename SCALAR>
-std::ostream &operator<<(std::ostream &o,
-                         const UniformScalarFESpace<SCALAR> &fes) {
+void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
+               unsigned ctrl) {
   o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
     << std::endl;
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_mesh) {
-    o << fes.Mesh() << std::endl;
+
+  if ((ctrl & kUniformScalarFESpaceOutMesh) != 0) {
+    o << *fes.Mesh() << std::endl;
   }
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_dofh) {
+  if ((ctrl & kUniformScalarFESpaceOutDofh) != 0) {
     o << fes.LocGlobMap() << std::endl;
   }
-  if (UniformScalarFESpace<SCALAR>::ctrl_ &
-      UniformScalarFESpace<SCALAR>::kout_rsfs) {
+  if ((ctrl & kUniformScalarFESpaceOutRsfs) != 0) {
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
       << std::endl;
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())
@@ -369,6 +406,13 @@ std::ostream &operator<<(std::ostream &o,
     o << fes.NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
       << std::endl;
   }
+}
+
+/** output operator for scalar parametric finite element space */
+template <typename SCALAR>
+std::ostream &operator<<(std::ostream &o,
+                         const UniformScalarFESpace<SCALAR> &fes) {
+  fes.PrintInfo(std::cout, 0);
   return o;
 }
 

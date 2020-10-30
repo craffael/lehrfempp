@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/craffael/lehrfempp.svg?branch=master)](https://travis-ci.com/craffael/lehrfempp)
-[![Build status](https://ci.appveyor.com/api/projects/status/wfr8sb13ivp3595w/branch/master?svg=true)](https://ci.appveyor.com/project/craffael/lehrfempp/branch/master)
+[![Build Status](https://github.com/craffael/lehrfempp/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/craffael/lehrfempp/actions)
 
 # LehrFEM++
 Simplistic Finite Element Framework for research and eduction optimzed for clarity and
@@ -14,7 +14,6 @@ Guide](https://google.github.io/styleguide/cppguide.html#Naming).
   guidelines](https://github.com/craffael/lehrfempp/wiki/Contribute).
 * [Doxygen Class Documentation](https://craffael.github.io/lehrfempp)
 * [Getting Started Guide](https://craffael.github.io/lehrfempp/getting_started.html)
-
 
 ## Contributors
 - Raffael Casagrande (core developer)

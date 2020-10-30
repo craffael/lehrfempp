@@ -4,10 +4,12 @@
 #include "lf/mesh/mesh_interface.h"
 #include "tp_quad_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+#include <spdlog/spdlog.h>
 
-ADDOPTION(TPQuadMeshBuilder::output_ctrl_, tpquad_ctrl,
-          "Diagnostics control for TPQuadMeshBuilder");
+namespace lf::mesh::utils {
+
+std::shared_ptr<spdlog::logger> TPQuadMeshBuilder::logger =
+    base::InitLogger("lf::mesh::utils::TPQuadMeshBuilder::logger");
 
 std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
@@ -32,11 +34,10 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   const double hx = x_size / nx;
   const double hy = y_size / ny;
 
-  if (output_ctrl_ > 0) {
-    std::cout << "TPQuadmesh: " << no_of_cells << " cells, " << no_of_edges
-              << " edges " << no_of_vertices << " vertices, "
-              << "meshwidths hx/hy = " << hx << "/" << hy << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(
+      logger,
+      "TPQuadmesh: {} cells, {} edges, {} vertices, meshwidths hx/hy = {}/{}",
+      no_of_cells, no_of_edges, no_of_vertices, hx, hy);
 
   // Initialize vertices
   std::vector<size_type> v_idx(no_of_vertices);
@@ -48,10 +49,9 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
       node_coord << bottom_left_corner_[0] + i * hx,
           bottom_left_corner_[1] + j * hy;
       // Diagnostics
-      if (output_ctrl_ > 0) {
-        std::cout << "Adding vertex " << node_cnt << ": "
-                  << node_coord.transpose() << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+                          node_coord.transpose());
+
       // Register vertex
       v_idx[node_cnt] = mesh_factory_->AddPoint(node_coord);
     }
@@ -77,10 +77,7 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
           bottom_left_corner_[1] + (j + 1) * hy,
           bottom_left_corner_[1] + (j + 1) * hy;
       // Diagnostics
-      if (output_ctrl_ > 0) {
-        std::cout << "Adding quad " << quad_cnt << ": " << quad_geo
-                  << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Adding quad {}:\n{}", quad_cnt, quad_geo);
 
       // Request production of the cell from the MeshFactory
       // Straight edges will be created as needed
@@ -92,4 +89,4 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   return mesh_factory_->Build();
 }
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils

@@ -1,7 +1,12 @@
+#include "check_mesh_completeness.h"
+
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
 #include <iostream>
 #include "lf/mesh/hybrid2d/mesh.h"
+
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
 
 namespace lf::mesh::test_utils {
 bool checkMeshCompleteness(const Mesh& mesh) {
@@ -71,7 +76,8 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   return status;
 }  // end checkMeshCompleteness
 
-ADDOPTION(watertight_mesh_ctrl, watertight_mesh, "");
+std::shared_ptr<spdlog::logger> watertight_logger =
+    base::InitLogger("lf::mesh::test_utils::watertight_logger");
 
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only) {
@@ -101,10 +107,11 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
         if ((vertex_coords.col(j) - node_coords).squaredNorm() >
             1.0E-8 * approx_area) {
           ret_vals.emplace_back(e_refel, mesh.Index(*e));
-          if (watertight_mesh_ctrl > 0) {
-            std::cout << "Node " << j << " of " << e_refel.ToString() << "("
-                      << mesh.Index(*e) << "): position  mismatch" << std::endl;
-          }
+
+          SPDLOG_LOGGER_TRACE(watertight_logger,
+                              "Node {} of {} ({}): position mismatch", j,
+                              e_refel, mesh.Index(*e));
+
         }  // end geometry test
       }    // end loop over nodes
     }      // end loop over entities
@@ -117,6 +124,6 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
   }
 
   return ret_vals;
-}
+}  // namespace lf::mesh::test_utils
 
 }  // namespace lf::mesh::test_utils

@@ -223,10 +223,6 @@ class Geometry {
    */
   virtual ~Geometry() = default;
 
-  // Output control variable
-  /** @brief Output control variable */
-  static unsigned int output_ctrl_;
-
 };  // class Geometry
 
 /**

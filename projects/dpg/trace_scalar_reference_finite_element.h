@@ -140,13 +140,6 @@ class TraceScalarReferenceFiniteElement
         .leftCols(NumRefShapeFunctions());
   }
 
-  std::ostream& print(std::ostream& o) const override {
-    LF_ASSERT_MSG(isInitialized(), "Not initialized");
-    o << typeid(*this).name() << "trace wrapper around \n";
-    cfe_->print(o);
-    return o;
-  }
-
   /** virtual destructor*/
   ~TraceScalarReferenceFiniteElement() override = default;
 

@@ -4,7 +4,7 @@
 #include "lf/mesh/mesh_factory.h"
 #include "structured_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+namespace lf::mesh::utils {
 
 /**
  * @brief Implements a Builder for a tensor product grid (with rectangular
@@ -43,10 +43,12 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
   }
 
  public:
-  /** Diagnostics control variable */
-  static unsigned int output_ctrl_;
+  /**
+   * @brief is used by the Build() method to output additional information.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };  // end class definition TPQuadMeshBuilder
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils
 
 #endif /* TP_QUAD_MESH_BUILDER_H */

@@ -44,10 +44,8 @@ int main() {
 
   // Output information on mesh
   std::cout << "##### Mesh information ######" << std::endl;
-  lf::mesh::utils::PrintInfo(*mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh);
   std::cout << "#####                   #####" << std::endl;
-
-  lf::mesh::Entity::output_ctrl_ = 100;
 
   std::cout << "****** Output of mesh entities *******" << std::endl;
   // Loop over entities and print associated information
@@ -55,7 +53,7 @@ int main() {
     std::cout << "******* Entities of codimension " << static_cast<int>(codim)
               << " ******* " << std::endl;
     for (const lf::mesh::Entity* entity : mesh->Entities(codim)) {
-      std::cout << *entity << std::endl;
+      lf::mesh::utils::PrintInfo(std::cout, *entity, 100);
     }
   }
 

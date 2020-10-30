@@ -72,7 +72,7 @@ int main() {
         lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     // Output of mesh information
     std::cout << "#### Test mesh " << selector << " ####" << std::endl;
-    std::cout << *mesh_p << std::endl;
+    lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     std::stringstream filename;
     filename << "test_mesh_" << selector;
@@ -81,7 +81,7 @@ int main() {
 
   {
     // Initialize builder object
-    lf::mesh::hybrid2d::TPTriagMeshBuilder builder(
+    lf::mesh::utils::TPTriagMeshBuilder builder(
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
     // Set mesh parameters following the Builder pattern
     // Domain is the unit square, two cells in every direction
@@ -92,7 +92,7 @@ int main() {
     std::shared_ptr<const lf::mesh::Mesh> mesh_p = builder.Build();
     // Output of mesh information
     std::cout << "#### Triangular tensor product 2x2 mesh #####" << std::endl;
-    std::cout << *mesh_p << std::endl;
+    lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     writeMeshRenderingData(mesh_p, "tp_tria_mesh");
   }

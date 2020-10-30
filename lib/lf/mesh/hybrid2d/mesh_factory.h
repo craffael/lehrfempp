@@ -73,9 +73,11 @@ class MeshFactory : public mesh::MeshFactory {
   bool check_completeness_;
 
  public:
-  // Switch for verbosity level of output
-  /** @brief Diagnostics control variable */
-  static unsigned int output_ctrl_;
+  /**
+   * @brief logger that is used by the build method to output additional
+   * information to the command line.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };
 
 inline std::ostream& operator<<(std::ostream& stream,

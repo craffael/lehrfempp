@@ -3,8 +3,8 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.269.tar.gz"
-    SHA1 "64024b7b95b4c86d50ae05b926814448c93a70a0"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.273.tar.gz"
+    SHA1 "43ffd06cf0352babdbe28d333adb15379ab59681"
     LOCAL # use cmake/Hunter/config.cmake
 )
 
@@ -38,6 +38,9 @@ find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_option
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
 
+# Get SPDLog
+hunter_add_package(spdlog)
+find_package(spdlog CONFIG REQUIRED)
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)

@@ -16,42 +16,23 @@
 #ifndef _LF_ASSEMBLE_H
 #define _LF_ASSEMBLE_H
 
+#include <fmt/ranges.h>
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 #include "dofhandler.h"
 
 namespace lf::assemble {
 
-/** @brief debugging output control for matrix assembly function
- *
- * Supported debugging output:
- * - bit 1: prints information about the entity (`amd_entity`)
- * - bit 2: prints information about size of element matrix (`amd_lmdim`)
- * - bit 3: prints element matrix (`md_locmat`)
- * - bit 4: prints global indices of local shape functions (`amd_gdof`)
- */
-extern unsigned int ass_mat_dbg_ctrl;
-const unsigned int amd_entity = 1;
-const unsigned int amd_lmdim = 2;
-const unsigned int amd_locmat = 4;
-const unsigned int amd_gdof = 8;
-const unsigned int amd_lass = 16;
-
-// The following macro implements:
-// extern int ass_mat_dbg_ctrl;
-// static lf::base::StaticVar ctrlvarass_mat_dbg_ctrl(
-//     "Assembly_ctrl", ass_mat_dbg_ctrl, lf::base::ctrl_root,
-//     "Debugging output control for AssembleMatrixLocally()");
-// EXTERNDECLAREINFO(ass_mat_dbg_ctrl, "Assembly_ctrl",
-//                  "Debugging output control for AssembleMatrixLocally()");
-
 /**
  * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
  * @brief Based on helper objects that provide element matrices these functions
- * rely on the distribute assembly policy to set the entries of global Galerk9in
+ * rely on the distribute assembly policy to set the entries of global Galerkin
  * matrices.
  *
- * All the function have the name `AssembleMatrixLocally`, but they difer in
+ * All the functions have the name `AssembleMatrixLocally`, but they differ in
  * their arguments. What they have in common is that they are all templated with
  * two types:
  * - ENTITY_MATRIX_PROVIDER is a @ref entity_matrix_provider
@@ -69,6 +50,12 @@ const unsigned int amd_lass = 16;
  *
  *  @{
  */
+
+/**
+ * @brief The logger that is used by AssembleMatrixLocally() to log additional
+ * information. (for logging levels trace + debug)
+ */
+extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -100,6 +87,10 @@ const unsigned int amd_lass = 16;
  * This method performs cell-oriented assembly controlled by a local-to-global
  * index map ("dof handler").
  *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
+ *
  * #### type requirements of template arguments
  *
  * - TMPMATRIX is a rudimentary matrix type and must
@@ -115,6 +106,7 @@ const unsigned int amd_lass = 16;
  *
  * #### Example Usage
  * @snippet assembler.cc matrix_usage
+ *
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
@@ -130,9 +122,9 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
   for (const lf::mesh::Entity *entity : mesh->Entities(codim)) {
     // Some entities may be skipped
     if (entity_matrix_provider.isActive(*entity)) {
-      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_entity,
-                        std::cout << "ASM: " << *entity << '('
-                                  << mesh->Index(*entity) << ')' << std::endl);
+      // log the entity reference element + it's global index on level Debug
+      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "Entity {} ({})", *entity,
+                          mesh->Index(*entity));
       // Size, aka number of rows and columns, of element matrix
       const size_type nrows_loc = dof_handler_test.NumLocalDofs(*entity);
       const size_type ncols_loc = dof_handler_trial.NumLocalDofs(*entity);
@@ -151,42 +143,41 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       LF_ASSERT_MSG(elem_mat.cols() >= ncols_loc,
                     "ncols mismatch " << elem_mat.cols() << " <-> " << nrows_loc
                                       << ", entity " << mesh->Index(*entity));
-      // clang-format off
-      SWITCHEDSTATEMENT(
-          ass_mat_dbg_ctrl, amd_gdof,
-	  std::cout << "ASM: row_idx = ";
-          for (auto gdof_idx: row_idx) {
-	    std::cout << gdof_idx << ' ';
-	  }
-	  std::cout << std::endl << "ASM: col_idx = ";
-	  for (auto gdof_idx : col_idx) {
-            std::cout << gdof_idx << ' ';
-          }
-	  std::cout << std::endl);
-      // clang-format on
-      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lmdim,
-                        std::cout << "ASM: " << nrows_loc << " x " << ncols_loc
-                                  << " element matrix" << std::endl);
-      SWITCHEDSTATEMENT(
-          ass_mat_dbg_ctrl, amd_locmat, for (int i = 0; i < nrows_loc; i++) {
-            std::cout << "[ ";
-            for (int j = 0; j < ncols_loc; j++) {
-              std::cout << elem_mat(i, j) << ' ';
-            }
-            std::cout << "]" << std::endl;
-          });
+
+      // Log global row and column indices on level debug
+      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "row_idx = {}, col_idx = {}",
+                          row_idx, col_idx);
+
+      // Log shape of element matrix on level debug
+      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "{} x {} element matrix",
+                          nrows_loc, ncols_loc);
+
+      // Log element matrix itself on level trace
+      // TODO(craffael): Doesn't work yet because of fmt issue:
+      // https://github.com/fmtlib/fmt/issues/1885
+      // SPDLOG_LOGGER_TRACE(assemble_matrix_logger, elem_mat);
+
       // Assembly double loop
+      std::stringstream ss;  // used to log all triplets on one line.
+
       for (int i = 0; i < nrows_loc; i++) {
         for (int j = 0; j < ncols_loc; j++) {
           // Add the element at position (i,j) of the local matrix
           // to the entry at (row_idx[i], col_idx[j]) of the global matrix
           matrix.AddToEntry(row_idx[i], col_idx[j], elem_mat(i, j));
-          SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lass,
-                            std::cout << "(" << row_idx[i] << ',' << col_idx[j]
-                                      << ")+= " << elem_mat(i, j) << ", ";);
+
+          // log the added "triplet" on level trace:
+          if (assemble_matrix_logger->should_log(spdlog::level::trace)) {
+            // if we are on level trace, build string of all triplets:
+            ss << "(" << row_idx[i] << ',' << col_idx[j]
+               << ")+= " << elem_mat(i, j) << ", ";
+          }
         }
       }  // end assembly local double loop
-      SWITCHEDSTATEMENT(ass_mat_dbg_ctrl, amd_lass, std::cout << std::endl;);
+
+      // log all the triplets on one line on level trace:
+      SPDLOG_LOGGER_TRACE(assemble_matrix_logger, ss.str());
+
     }  // end if(isActive() )
   }    // end main assembly loop
 }  // end AssembleMatrixLocally
@@ -207,6 +198,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  *       provide the method `setZero()` for setting all entries of the
  *       matrix to zero. It must also possess a constructor that takes
  *       row and column numbers and creates an (empty) matrix of that size.
+ *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(
@@ -237,6 +232,9 @@ TMPMATRIX AssembleMatrixLocally(
  * DofHandler &dof_handler_test,ENTITY_MATRIX_PROVIDER &element_matrix_provider,
  * TMPMATRIX &matrix)
  *
+ * #### Logger
+ * This function logs additional information to \ref assemble_matrix_logger. See
+ * \ref loggers for more information.
  */
 
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>

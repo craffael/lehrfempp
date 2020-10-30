@@ -5,8 +5,6 @@ configure_file(lehrfem_info.cc ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc)
 # Define sources that make up this Library:
 set(sources
   base.h
-  comm.h
-  comm.cc
   eigen_tools.h
   invalid_type_exception.h
   lehrfem_info.h
@@ -18,10 +16,15 @@ set(sources
   ref_el.cc
   ref_el.h
   span.h
+  spdlog_utils.h
+  spdlog_utils.cc
 )
 
 lf_add_library(lf.base ${sources})
-target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options)
+target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost Boost::program_options spdlog::spdlog)
+
+# enable SPDLOG_DEBUG and SPDLOG_TRACE statements in all modes except release::
+target_compile_definitions(lf.base PUBLIC $<IF:$<CONFIG:Release>,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>)
 
 if(MSVC)
   if(${MSVC_VERSION} GREATER_EQUAL 1915) 

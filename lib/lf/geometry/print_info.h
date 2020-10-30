@@ -7,18 +7,21 @@ namespace lf::geometry {
 
 /**
  * @brief Diagnostic output operator for Geometry
- * @param &geom The geometry to print info about
- * @param &o The stream to which this function should output
+ * @param geom The geometry to print info about
+ * @param o The stream to which this function should output
+ * @param output_ctrl Controls the level of detail of the written output (see
+ * below)
  *
  * #### Output levels
- * - Geometry::output_ctrl_ == 0: Reference element type of geometry is printed
- * - Geometry::output_ctrl_ > 10: The above and global and local dimension and
+ * - output_ctrl == 0: Reference element type of geometry is printed
+ * - output_ctrl > 10: The above and global and local dimension and
  * derived type of reference element is printed.
- * - Geometry::output_ctrl_ > 90: The above and coordinates og the geometry is
+ * - output_ctrl > 90: The above and coordinates og the geometry is
  * printed.
  *
+ * @relates Geometry
  */
-void PrintInfo(const Geometry& geom, std::ostream& o);
+void PrintInfo(std::ostream& o, const Geometry& geom, int output_ctrl = 0);
 
 /**
  * @brief Operator overload to print a `Geometry` to a stream, such as
@@ -27,11 +30,10 @@ void PrintInfo(const Geometry& geom, std::ostream& o);
  * @param geom The geometry to write to `stream`.
  * @return The stream itself.
  *
- * - If Geometry::output_ctrl_ == 0, type reference element of geometry is sent
- * as output to stream
- * - If Geometry::output_ctrl_ > 0, then lf::geometry::PrintInfo(const Geometry
- * &geom, std::ostream &o) is called.
+ * @note At the moment this will just write the type of the reference element to
+ * the stream.
  *
+ * @relates Geometry
  */
 std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
 

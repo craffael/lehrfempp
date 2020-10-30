@@ -19,8 +19,7 @@ namespace lf::mesh::test {
 // Test for index-based implementation
 TEST(lf_mesh, buildStructuredMesh) {
   // Construct a structured mesh with 8 triangles
-  hybrid2d::TPTriagMeshBuilder builder(
-      std::make_unique<hybrid2d::MeshFactory>(2));
+  utils::TPTriagMeshBuilder builder(std::make_unique<hybrid2d::MeshFactory>(2));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
@@ -48,7 +47,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   // Construct a structured mesh with 8 triangles
   std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<hybrid2d::MeshFactory>(2);
-  hybrid2d::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
+  utils::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
@@ -69,7 +68,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
   if (fails.empty()) {
     std::cout << "consistent!" << std::endl;
@@ -84,7 +83,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   io::writeMatlab(*mesh_p, "tp_triag_test.m");
 
   // Printing mesh information
-  utils::PrintInfo(*mesh_p, std::cout);
+  utils::PrintInfo(std::cout, *mesh_p);
 }
 
 }  // namespace lf::mesh::test

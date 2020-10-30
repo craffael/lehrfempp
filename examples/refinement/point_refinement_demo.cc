@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
 
   // build single-cell tensor product mesh on unit square
-  lf::mesh::hybrid2d::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
+  lf::mesh::utils::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0});
   builder.setTopRightCorner(Eigen::Vector2d{1, 1});
   builder.setNumXCells(1);
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 
   // output mesh information
   const lf::mesh::Mesh &mesh = *mesh_ptr;
-  lf::mesh::utils::PrintInfo(mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, mesh);
   std::cout << std::endl;
 
   // build mesh hierarchy

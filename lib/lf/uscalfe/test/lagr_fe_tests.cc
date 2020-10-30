@@ -504,9 +504,6 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
   ReactionDiffusionElementMatrixProvider<double, decltype(alpha),
                                          decltype(gamma)>
       comp_elem_mat{fe_space, alpha, gamma};
-  // Set debugging flags
-  // comp_elem_mat.ctrl_ = 255;
-  // lf::quad::QuadRule::out_ctrl_ = 1;
 
   // For comparison
   LinearFELaplaceElementMatrix lfe_elem_mat{};
@@ -541,9 +538,6 @@ TEST(lf_fe_linear, lf_fe_edgemass) {
   // Set up objects taking care of local computations
   auto gamma = lf::mesh::utils::MeshFunctionConstant(1.0);
   MassEdgeMatrixProvider comp_elem_mat(fe_space, gamma);
-  // Set debugging flags
-  // comp_elem_mat.ctrl_ = 255;
-  // lf::quad::QuadRule::out_ctrl_ = 1;
 
   // Reference mass matrix
   Eigen::Matrix2d RefM(
@@ -577,9 +571,8 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
   using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
   // Set debugging flags
-  loc_comp_t::ctrl_ = 0;                                       // 255;
-  lf::quad::QuadRule::out_ctrl_ = 0;                           // 1;
-  LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;  // 3;
+  scalar_load_element_vector_provider_logger->set_level(spdlog::level::info);
+  linear_fe_local_load_vector_logger->set_level(spdlog::level::info);  // 3;
 
   // Instantiate object for local computations
   loc_comp_t comp_elem_vec(fe_space, f);
@@ -615,9 +608,6 @@ TEST(lf_fe_linear, lf_fe_edgeload) {
   // Set up objects taking care of local computations
   auto g = lf::mesh::utils::MeshFunctionConstant(1.0);
   ScalarLoadEdgeVectorProvider comp_elem_vec{fe_space, g};
-  // Set debugging flags
-  // comp_elem_mat.ctrl_ = 255;
-  // lf::quad::QuadRule::out_ctrl_ = 1;
 
   Eigen::Vector2d Ref_vec(2);
   Ref_vec[0] = Ref_vec[1] = 0.5;
