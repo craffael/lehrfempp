@@ -12,25 +12,25 @@ branches:
   except:
   - gh-pages
 stages:
-- clang-format
+# - clang-format
 - hunter_dependencies
 - clang-tidy
 - compile_test
 - doxygen
 jobs:
   include:
-  - stage: clang-format
-    os: linux
-    addons:
-      apt:
-        update: true
-        sources:
-        - llvm-toolchain-xenial-8
-        - ubuntu-toolchain-r-test
-        packages:
-        - clang-format-8
-    script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
-      --color always ./lib/"
+  # - stage: clang-format
+    # os: linux
+    # addons:
+      # apt:
+        # update: true
+        # sources:
+        # - llvm-toolchain-xenial-8
+        # - ubuntu-toolchain-r-test
+        # packages:
+        # - clang-format-8
+    # script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
+      # --color always ./lib/"
   # Clang-tidy
   - stage: hunter_dependencies
     os: linux
@@ -84,7 +84,7 @@ jobs:
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Debug'
     addons:
       apt:
@@ -92,13 +92,13 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Debug'
     addons:
       apt:
@@ -106,14 +106,14 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # gcc Release
   - stage: hunter_dependencies
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Release'
     addons:
       apt:
@@ -121,13 +121,13 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Release'
     addons:
       apt:
@@ -135,7 +135,7 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang debug
   - stage: hunter_dependencies
@@ -151,7 +151,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
@@ -166,7 +166,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang release
   - stage: hunter_dependencies
@@ -182,7 +182,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
@@ -197,7 +197,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang debug osx
   - stage: hunter_dependencies
