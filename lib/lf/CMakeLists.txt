@@ -7,3 +7,7 @@ add_subdirectory(quad)
 add_subdirectory(refinement)
 add_subdirectory(uscalfe)
 
+if(LF_BUILD_NURBS)
+  add_subdirectory(nurbs)
+endif()
+

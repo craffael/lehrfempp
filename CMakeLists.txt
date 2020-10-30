@@ -25,6 +25,7 @@ endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" ON)
 
+option(LF_BUILD_NURBS "Whether the lf.nurbs projects should be built." OFF)
 
 
 # Get Dependencies
