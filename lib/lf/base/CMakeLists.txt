@@ -11,6 +11,8 @@ set(sources
   span.h
   spdlog_utils.h
   spdlog_utils.cc
+  timer.h
+  timer.cc
 )
 
 lf_add_library(lf.base ${sources})

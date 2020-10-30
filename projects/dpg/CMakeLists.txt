@@ -21,7 +21,7 @@ set(src
 
 add_library(projects.dpg ${src})
 target_link_libraries(projects.dpg  
-  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils

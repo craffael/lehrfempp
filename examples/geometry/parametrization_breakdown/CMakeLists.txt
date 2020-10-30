@@ -4,7 +4,6 @@ add_executable(
 )
 target_link_libraries(examples.geometry.parametrization_breakdown PUBLIC
         Eigen3::Eigen
-        Boost::system
         lf.geometry lf.quad lf.refinement lf.mesh.hybrid2d
 )
 add_custom_target(examples.geometry.parametrization_breakdown_run COMMAND examples.geometry.parametrization_breakdown)

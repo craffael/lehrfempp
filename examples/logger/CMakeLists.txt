@@ -2,7 +2,7 @@
 
 add_executable(examples.logger.mesh_hierarchy_demo mesh_hierarchy_demo.cc)
 target_link_libraries(examples.logger.mesh_hierarchy_demo
-  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::program_options
   lf.mesh
   lf.mesh.test_utils
   lf.mesh.hybrid2d

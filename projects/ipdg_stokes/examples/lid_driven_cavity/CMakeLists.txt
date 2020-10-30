@@ -5,7 +5,7 @@ target_link_libraries(${PROJECT_NAME}.convergence PUBLIC Eigen3::Eigen lf.base l
 target_compile_features(${PROJECT_NAME}.convergence PUBLIC cxx_std_17)
 
 add_executable(${PROJECT_NAME}.vortex vortex.cc)
-target_link_libraries(${PROJECT_NAME}.vortex PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.hybrid2d lf.quad lf.refinement lf.io projects.ipdg_stokes.assemble projects.ipdg_stokes.mesh projects.ipdg_stokes.post_processing ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(${PROJECT_NAME}.vortex PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.hybrid2d lf.quad lf.refinement lf.io projects.ipdg_stokes.assemble projects.ipdg_stokes.mesh projects.ipdg_stokes.post_processing)
 target_compile_features(${PROJECT_NAME}.vortex PUBLIC cxx_std_17)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output.dat
