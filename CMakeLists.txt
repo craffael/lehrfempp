@@ -31,8 +31,8 @@ option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" 
 # (don't forget to update cmake/Config.cmake.in !
 ###############################################################################
 # Get boost
-hunter_add_package(Boost COMPONENTS chrono timer system filesystem program_options)
-find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_options)
+hunter_add_package(Boost COMPONENTS chrono timer system program_options)
+find_package(Boost CONFIG REQUIRED chrono timer system program_options)
 
 # Get Eigen
 hunter_add_package(Eigen)

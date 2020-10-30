@@ -5,7 +5,7 @@ set (ellbvp_linfe_demo ellbvp_linfe_demo.cc)
 add_executable(examples.ellbvp_linfe.ellbvp_linfe_demo ${ellbvp_linfe_demo})
 
 target_link_libraries(examples.ellbvp_linfe.ellbvp_linfe_demo
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils

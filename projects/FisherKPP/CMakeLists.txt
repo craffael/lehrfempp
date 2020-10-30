@@ -15,7 +15,7 @@ add_executable(convergenceLinked convergence_linked_main.cc  ${SOURCES})
 # link executable with required modules
 
 target_link_libraries(splitting
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -29,7 +29,7 @@ target_link_libraries(splitting
   )
 
 target_link_libraries(testIsland
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -43,7 +43,7 @@ target_link_libraries(testIsland
   )
 
 target_link_libraries(testCircle
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -57,7 +57,7 @@ target_link_libraries(testCircle
   )
 
 target_link_libraries(test3Circles
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -71,7 +71,7 @@ target_link_libraries(test3Circles
   )
 
 target_link_libraries(convergenceH
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -85,7 +85,7 @@ target_link_libraries(convergenceH
   )
 
 target_link_libraries(convergenceTau
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry
@@ -99,7 +99,7 @@ target_link_libraries(convergenceTau
   )
 
 target_link_libraries(convergenceLinked
-  PUBLIC Boost::filesystem  Boost::program_options  Boost::system  Eigen3::Eigen
+  PUBLIC Boost::program_options  Boost::system  Eigen3::Eigen
   lf.assemble
   lf.base
   lf.geometry

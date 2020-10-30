@@ -6,18 +6,19 @@
  * @copyright MIT License
  */
 
+#include <filesystem>
+
 #include <lf/base/base.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <boost/filesystem.hpp>
 #include <iostream>
 
 using lf::io::TikzOutputCtrl;
 
 int main() {
-  boost::filesystem::path file_path = __FILE__;
+  std::filesystem::path file_path = __FILE__;
 
   for (const std::string& mesh_name :
        {"square_quads.msh", "square_trias.msh"}) {

@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <lf/assemble/assemble.h>
@@ -21,6 +20,8 @@
 #include <lf/uscalfe/uscalfe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
+
+#include <filesystem>
 
 static unsigned int dbg_ctrl = 0;
 const unsigned int dbg_dofh = 1;
@@ -340,8 +341,8 @@ int main(int argc, char **argv) {
     std::string filename{vm["filename"].as<std::string>()};
     if (filename.length() > 0) {
       std::cout << "Reading mesh from file " << filename << std::endl;
-      boost::filesystem::path here = __FILE__;
-      auto mesh_file_path = here.parent_path() / filename.c_str();
+      std::filesystem::path here = __FILE__;
+      auto mesh_file_path = here.remove_filename() / filename.c_str();
       auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
       lf::io::GmshReader reader(std::move(mesh_factory),
                                 mesh_file_path.string());

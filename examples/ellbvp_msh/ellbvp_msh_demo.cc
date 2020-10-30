@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <filesystem>
 
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
@@ -18,8 +19,6 @@
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
 
-#include <boost/filesystem.hpp>
-
 int main() {
   // abbreviations for types
   using size_type = lf::base::size_type;
@@ -27,8 +26,8 @@ int main() {
   using coord_t = Eigen::Vector2d;
 
   // find path to mesh
-  boost::filesystem::path here = __FILE__;
-  auto mesh_path = here.parent_path() / "meshes/square.msh";
+  std::filesystem::path here = __FILE__;
+  auto mesh_path = here.remove_filename() / "meshes/square.msh";
 
   // load mesh of square computational domain
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);

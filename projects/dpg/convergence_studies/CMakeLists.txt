@@ -13,7 +13,7 @@ add_executable(projects.dpg.convergence_studies.convergence_study5
 
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study1
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
@@ -27,7 +27,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study1
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study2
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
@@ -41,7 +41,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study2
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study3
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
@@ -55,7 +55,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study3
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study4
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
@@ -69,7 +69,7 @@ target_link_libraries(projects.dpg.convergence_studies.convergence_study4
   )
 
 target_link_libraries(projects.dpg.convergence_studies.convergence_study5
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils

@@ -5,7 +5,7 @@ set (ellbvp_msh_demo ellbvp_msh_demo.cc)
 add_executable(examples.ellbvp_msh.ellbvp_msh_demo ${ellbvp_msh_demo})
 
 target_link_libraries(examples.ellbvp_msh.ellbvp_msh_demo
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::system Boost::program_options
   lf.mesh
   lf.mesh.utils
   lf.mesh.test_utils
