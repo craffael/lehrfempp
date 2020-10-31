@@ -76,7 +76,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-tidy-8
-        - g++-7
+        - g++-8
     script: 
       - "./travis/run_clang_tidy.sh '^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     # # gcc Debug
