@@ -14,7 +14,7 @@
  You only need a recent version of [CMake](https://cmake.org/download/) (>= 3.10) and one of the supported compilers:
  - **Linux:**
    - Clang Version >= 7 (tests run with clang-7)
-   - GCC Version >= 7 (tests run with g++-7)
+   - GCC Version >= 8 (tests run with g++-8)
  - **OSX:**
    - XCode >= 9.4 (tests run with XCode 9.4)
  - **Windows:**

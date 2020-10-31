@@ -20,5 +20,5 @@ source $(dirname $0)/build_dependencies.sh
 cd Build
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On .
 # Run clang-tidy
-#../run_clang_tidy.sh --files $1
-clang-tidy-8 -p . ../projects/ipdg_stokes/examples/nested_cylinders/nested_cylinders.cc
+../run_clang_tidy.sh --files $1
+
