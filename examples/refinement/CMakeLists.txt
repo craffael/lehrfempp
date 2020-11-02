@@ -5,7 +5,7 @@ set(refinement_demo refinement_demo.cc)
 add_executable(examples.refinement.refinement_demo ${refinement_demo})
 
 target_link_libraries(examples.refinement.refinement_demo
-        PUBLIC Eigen3::Eigen Boost::boost
+        PUBLIC Eigen3::Eigen Boost::boost Boost::program_options
         lf.mesh
         lf.mesh.test_utils
         lf.mesh.utils
