@@ -23,7 +23,7 @@ if(LF_ENABLE_TESTING)
   enable_testing()
 endif()
 
-option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" ON)
+option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
 
 
 
@@ -31,8 +31,13 @@ option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" 
 # (don't forget to update cmake/Config.cmake.in !
 ###############################################################################
 # Get boost
-hunter_add_package(Boost COMPONENTS program_options)
-find_package(Boost CONFIG REQUIRED program_options)
+if(LF_BUILD_EXAMPLES)
+  hunter_add_package(Boost COMPONENTS program_options)
+  find_package(Boost CONFIG REQUIRED program_options)
+else()
+  hunter_add_package(Boost)
+  find_package(Boost)
+endif()
 
 # Get Eigen
 hunter_add_package(Eigen)
