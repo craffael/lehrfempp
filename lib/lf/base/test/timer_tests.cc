@@ -50,7 +50,7 @@ TEST(lf_base_timer, TimerSingleThread) {
   EXPECT_GT(elapsed2.system, elapsed.system);
   EXPECT_GE(elapsed2.user, elapsed.user);
 
-#ifdef WIN32
+#ifndef WIN32
   // The following often doesn't hold on windows in debug mode:
   EXPECT_GT(elapsed2.system, elapsed2.user);
 #endif
