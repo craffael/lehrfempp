@@ -50,10 +50,9 @@ TEST(lf_base_timer, TimerSingleThread) {
   EXPECT_GT(elapsed2.system, elapsed.system);
   EXPECT_GE(elapsed2.user, elapsed.user);
 
-#ifndef WIN32
-  // The following often doesn't hold on windows in debug mode:
+  // The following in principle makes sense, but is often not true on
+  // travis/github actions:
   EXPECT_GT(elapsed2.system, elapsed2.user);
-#endif
 
   t.Start();
   EXPECT_LT(t.Elapsed().wall, 1ms);
