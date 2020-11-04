@@ -92,7 +92,7 @@ TEST(lf_base_timer, TimerMultiThread) {
   t.Stop();
   std::cout << t.Format() << std::endl;
   elapsed = t.Elapsed();
-  EXPECT_GT(elapsed.system + elapsed.user, 1.5 * elapsed.wall);
+  EXPECT_GT(elapsed.system + elapsed.user, 1.1 * elapsed.wall);
 }
 
 TEST(lf_base_timer, AutoTimerSS) {
