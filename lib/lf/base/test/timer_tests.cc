@@ -25,7 +25,7 @@ TEST(lf_base_timer, TimerSingleThread) {
   EXPECT_TRUE(t.IsStopped());
   auto elapsed = t.Elapsed();
   std::cout << t.Format() << std::endl;
-  EXPECT_TRUE(abs(elapsed.wall - 1s) < 0.1s);
+  EXPECT_TRUE(abs(elapsed.wall - 1s) < 0.2s);
   EXPECT_EQ(elapsed.system, 0ns);
   EXPECT_EQ(elapsed.user, 0ns);
 

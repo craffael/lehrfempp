@@ -16,9 +16,9 @@
    - Clang Version >= 7 (tests run with clang-7)
    - GCC Version >= 8 (tests run with g++-8)
  - **OSX:**
-   - XCode >= 9.4 (tests run with XCode 9.4)
+   - XCode >= 11.4, respectively macos 10.15.4 (tests run with XCode 11.4)
  - **Windows:**
-   - Visual Studio 2017 or later is required (tests run with VS2019), only x64 is supported!
+   - Visual Studio 2019 or later is required (tests run with VS2019), only x64 is supported!
  
  
  ### 2. Create a new CMake project
