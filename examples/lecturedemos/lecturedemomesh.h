@@ -8,10 +8,11 @@
  * @copyright MIT License
  */
 
+#include <filesystem>
+
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include <boost/filesystem.hpp>
 #include "lecturedemo.h"
 #include "lf/mesh/utils/lambda_mesh_data_set.h"
 

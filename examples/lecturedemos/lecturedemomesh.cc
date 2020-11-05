@@ -119,7 +119,7 @@ void lecturedemomesh() {
   std::cout << "LehrFEM++ DEMO: mesh capabilities and functionality"
             << std::endl;
   // Set complete file path to the sample mesh in Gmsh format
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
   auto mesh_file = here.parent_path() / "lecturedemomesh.msh";
 
   // clang-format off

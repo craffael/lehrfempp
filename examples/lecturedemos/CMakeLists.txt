@@ -14,8 +14,6 @@ add_executable(examples.lecturedemo ${lecturedemo})
 
 target_link_libraries(examples.lecturedemo
   PUBLIC Eigen3::Eigen
-  Boost::filesystem
-  Boost::system
   Boost::program_options
   lf.mesh
   lf.mesh.test_utils

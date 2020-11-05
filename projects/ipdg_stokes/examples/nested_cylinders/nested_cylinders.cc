@@ -4,8 +4,8 @@
  */
 
 #include <algorithm>
-#include <boost/filesystem.hpp>
 #include <cstring>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
   std::vector<std::shared_ptr<lf::mesh::Mesh>> meshes;
   if (mesh_selection == "files") {
     // Read the mesh from the gmsh file
-    boost::filesystem::path meshpath = __FILE__;
+    std::filesystem::path meshpath = __FILE__;
     meshpath = meshpath.parent_path();
     for (int i = 0; i <= 4; ++i) {
       const auto meshfile = meshpath / concat("annulus", std::setw(2),
@@ -296,7 +296,7 @@ int main(int argc, char *argv[]) {
       meshes.push_back(builder.Build());
     }
   } else if (mesh_selection == "irregular") {
-    boost::filesystem::path meshpath = __FILE__;
+    std::filesystem::path meshpath = __FILE__;
     const auto mesh_irregular_path =
         meshpath.parent_path() / "annulus_irregular.msh";
     const auto mesh_irregular_inverted_path =

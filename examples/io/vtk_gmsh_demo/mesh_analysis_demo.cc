@@ -4,11 +4,11 @@
  * @date July 2020
  * @copyright MIT License
  */
+#include <filesystem>
 
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include <boost/filesystem.hpp>
 #include <sstream>
 
 int main(int argc, char **argv) {
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   }  // end switch
 
   // Mesh file is supposed to reside in the same directory as source file
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
   auto mesh_path = here.parent_path() / filename.c_str();
 
   // load the mesh

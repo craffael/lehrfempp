@@ -4,6 +4,7 @@ include(GoogleTest)
 set(sources
   eigen_tools_tests.cc
   ref_el_tests.cc
+  timer_tests.cc
 )
 
 add_executable(lf.base.test ${sources})
