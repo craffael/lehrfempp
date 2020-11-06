@@ -1116,19 +1116,20 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         for (unsigned j = 0; j < Degree() - i - 2; ++j) {
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
-                return JacobiPoly<SCALAR>::eval(j, 2 * i + 4, y);
-              });
-          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
-              qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
                 return j == 0 ? SCALAR(0)
                               : JacobiPoly<SCALAR>::derivative(j - 1, 2 * i + 4,
                                                                y);
+              });
+          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
+              qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
+                return JacobiPoly<SCALAR>::eval(j, 2 * i + 4, y);
               });
           dofs[idx] =
               (qr_dual_tria_.Weights().transpose().array() *
                nodevals.block(0, 3 + 3 * Ns, 1, Nt).array() * psidd.array() *
                (ypow.array() * jacd.array() - (2 * i + 4) * jacdd.array()))
                   .sum();
+	  /*
           dofs[idx] *=
               2 * i + 3;  // Normalization factor for the Legendre polynomial
           dofs[idx] *=
@@ -1136,6 +1137,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
               std::pow(
                   2,
                   2 * i + 2);  // Normalization factor for the Jacobi Polynomial
+	  */
           ++idx;
         }
       }
