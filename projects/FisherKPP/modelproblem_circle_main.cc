@@ -7,8 +7,8 @@
 
 #include <lf/io/io.h>
 
-#include <boost/filesystem.hpp>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -21,7 +21,7 @@ using FisherKPP::StrangSplit;
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
 
   /* In case of one circle: Mesh 1. */
   auto mesh_file = (here.parent_path() / "/meshes/circle.msh").string();

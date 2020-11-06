@@ -6,8 +6,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include <boost/filesystem.hpp>
 #include <cassert>
+#include <filesystem>
 
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
@@ -72,7 +72,7 @@ int main() {
   const double rho = 1;
 
   // Load the mesh
-  boost::filesystem::path meshpath = __FILE__;
+  std::filesystem::path meshpath = __FILE__;
   meshpath = meshpath.parent_path() / "mesh.msh";
   std::unique_ptr<lf::mesh::MeshFactory> factory =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);

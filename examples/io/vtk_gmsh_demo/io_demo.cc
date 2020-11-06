@@ -6,15 +6,16 @@
  * @copyright MIT License
  */
 
+#include <filesystem>
+
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include <boost/filesystem.hpp>
 #include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 int main() {
   // Find path to the smiley mesh
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
   auto smiley_path = here.parent_path() / "smiley.msh";
 
   // load the smiley mesh

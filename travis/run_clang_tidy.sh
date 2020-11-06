@@ -21,3 +21,4 @@ cd Build
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On .
 # Run clang-tidy
 ../run_clang_tidy.sh --files $1
+

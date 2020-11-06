@@ -7,8 +7,9 @@
 
 #include <lf/io/io.h>
 
-#include <boost/filesystem.hpp>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -41,7 +42,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
   auto mesh_file = (here.parent_path() / "/meshes/test4.msh").string();
   lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
   std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();

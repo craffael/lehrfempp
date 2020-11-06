@@ -56,7 +56,7 @@ class COOMatrix {
 
   /** Set up zero matrix of a given size */
   COOMatrix(size_type num_rows, size_type num_cols)
-      : rows_(num_rows), cols_(num_cols) {}
+      : rows_(num_rows), cols_(num_cols), triplets_() {}
 
   COOMatrix(const COOMatrix &) = default;
   COOMatrix(COOMatrix &&) noexcept = default;
