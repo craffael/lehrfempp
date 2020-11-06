@@ -31,7 +31,7 @@ jobs:
         - clang-format-8
     script: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
       --color always ./lib/"
-  # Clang-tidy
+    # Clang-tidy
   - stage: hunter_dependencies
     os: linux
     env: 
@@ -45,7 +45,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-tidy-8
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: clang-tidy
     os: linux
@@ -60,7 +60,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-tidy-8
-        - g++-7
+        - g++-8
     script: 
       - "./travis/run_clang_tidy.sh '^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
   - stage: clang-tidy
@@ -76,7 +76,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-tidy-8
-        - g++-7
+        - g++-8
     script: 
       - "./travis/run_clang_tidy.sh '^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     # gcc Debug
@@ -84,7 +84,7 @@ jobs:
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Debug'
     addons:
       apt:
@@ -92,13 +92,13 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Debug'
     addons:
       apt:
@@ -106,14 +106,14 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # gcc Release
   - stage: hunter_dependencies
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Release'
     addons:
       apt:
@@ -121,13 +121,13 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
     compiler: gcc
     env:
-    - COMPILER=g++-7
+    - COMPILER=g++-8
     - BUILD_TYPE='Release'
     addons:
       apt:
@@ -135,7 +135,7 @@ jobs:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang debug
   - stage: hunter_dependencies
@@ -151,7 +151,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
@@ -166,7 +166,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang release
   - stage: hunter_dependencies
@@ -182,7 +182,7 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: linux
@@ -197,31 +197,31 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - clang-7
-        - g++-7
+        - g++-8
     script: "./travis/compile_test.sh"
   # clang debug osx
   - stage: hunter_dependencies
     os: osx
-    osx_image: xcode10.2
+    osx_image: xcode11.4
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode10.2
+    osx_image: xcode11.4
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Debug'
     script: "./travis/compile_test.sh"
- # clang release osx
+  # clang release osx
   - stage: hunter_dependencies
     os: osx
-    osx_image: xcode10.2
+    osx_image: xcode11.4
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/build_dependencies.sh"
   - stage: compile_test
     os: osx
-    osx_image: xcode10.2
+    osx_image: xcode11.4
     compiler: clang
     env: COMPILER='clang++' BUILD_TYPE='Release'
     script: "./travis/compile_test.sh"

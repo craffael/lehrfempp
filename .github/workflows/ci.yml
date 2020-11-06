@@ -41,7 +41,7 @@ jobs:
       - name: test
         run: |
           cd build
-          ctest -j 2 -c Debug
+          ctest -j 2 -c Debug --output-on-failure
           
     
   windows-release:
@@ -79,4 +79,4 @@ jobs:
       - name: test
         run: |
           cd build
-          ctest -j 2 -c Release     
+          ctest -j 2 -c Release --output-on-failure

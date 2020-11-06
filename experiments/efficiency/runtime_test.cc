@@ -2,7 +2,6 @@
  *  @brief Some tests for runtime behavior of certain C++ constructs
  */
 
-#include <boost/timer/timer.hpp>
 #include <iostream>
 #include "lf/base/base.h"
 
@@ -39,7 +38,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
 
   std::cout << "I. Returning std::vector's" << std::endl;
   {
-    boost::timer::auto_cpu_timer t;
+    lf::base::AutoTimer t;
     for (long int i = 0; i < reps; i++) {
       auto res = getData_VEC(static_cast<double>(i));
       double s = 0.0;
@@ -51,7 +50,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
 
   std::cout << "II. Returning result through reference" << std::endl;
   {
-    boost::timer::auto_cpu_timer t;
+    lf::base::AutoTimer t;
     std::vector<double> res(N);
     for (long int i = 0; i < reps; i++) {
       getData_REF(static_cast<double>(i), res);
@@ -64,7 +63,7 @@ int main(int /*argc*/, const char * /*unused*/[]) {
 
   std::cout << "III. Returning result through span" << std::endl;
   {
-    boost::timer::auto_cpu_timer t;
+    lf::base::AutoTimer t;
     for (long int i = 0; i < reps; i++) {
       auto res = getData_SPAN(static_cast<double>(i));
       double s = 0.0;

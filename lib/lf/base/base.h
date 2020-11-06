@@ -46,5 +46,6 @@ constexpr double kPi = 3.14159265358979323846;
 #include "ref_el.h"
 #include "span.h"
 #include "spdlog_utils.h"
+#include "timer.h"
 
 #endif  // __986f32316282425d9be137cb399482f3

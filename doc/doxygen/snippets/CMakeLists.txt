@@ -18,6 +18,7 @@ set(sources
   meshuse.cc
   quadruleuse.cc
   ref_el.cc
+  timer.cc
   vtk_writer.cc
 )
 
