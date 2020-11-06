@@ -13,6 +13,7 @@ set(sources
 lf_add_library(lf.assemble ${sources})
 target_link_libraries(lf.assemble PUBLIC
                       Eigen3::Eigen lf.mesh lf.base lf.geometry lf.mesh.utils)
+set_target_properties(lf.assemble PROPERTIES FOLDER "lib")
 
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)

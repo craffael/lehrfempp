@@ -34,6 +34,7 @@ if(DOXYGEN_FOUND)
     set(CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_CXX_FLAGS_RELEASE})
     add_executable(doxygen_filter filter.cpp)
     target_link_libraries(doxygen_filter PUBLIC Boost::boost) 
+    set_target_properties(doxygen_filter PROPERTIES FOLDER "doc")
     set_target_properties(doxygen_filter PROPERTIES 
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}$<0:hello>"
       RUNTIME_OUTPUT_NAME "doxygen_filter"
@@ -57,6 +58,7 @@ if(DOXYGEN_FOUND)
     COMMENT "Generating API Documentation with Doxygen"
     VERBATIM
     )
+  set_target_properties(doxygen PROPERTIES FOLDER "doc")
   if(LF_DOX_ENABLE_LREF)
     add_dependencies(doxygen doxygen_filter)
   endif()

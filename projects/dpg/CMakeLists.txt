@@ -33,6 +33,8 @@ target_link_libraries(projects.dpg
   lf.uscalfe
   )
 
+set_target_properties(projects.dpg PROPERTIES FOLDER "projects/dpg")
+
 target_include_directories(projects.dpg PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(projects.dpg PUBLIC cxx_std_17)
 

@@ -11,9 +11,10 @@ target_link_libraries(examples.assemble.dof_demo
   lf.mesh.hybrid2d
   lf.assemble
   )
+set_target_properties(examples.assemble.dof_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.assemble.dof_demo_run COMMAND examples.assemble.dof_demo)
 add_dependencies(examples_run examples.assemble.dof_demo_run)
-
+set_target_properties(examples.assemble.dof_demo_run PROPERTIES FOLDER "examples")
 
 
 set (Dirichlet_Laplacian_demo Dirichlet_Laplacian_demo.cc)
@@ -29,7 +30,8 @@ target_link_libraries(examples.assemble.Dirichlet_Laplacian_demo
   lf.io
   lf.uscalfe
   )
+set_target_properties(examples.assemble.Dirichlet_Laplacian_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.assemble.Dirichlet_Laplacian_demo_run COMMAND examples.assemble.Dirichlet_Laplacian_demo)
 add_dependencies(examples_run examples.assemble.Dirichlet_Laplacian_demo_run)
-
+set_target_properties(examples.assemble.Dirichlet_Laplacian_demo_run PROPERTIES FOLDER "examples")
 
