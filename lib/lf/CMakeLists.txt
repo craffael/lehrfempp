@@ -1,5 +1,6 @@
 add_subdirectory(assemble)
 add_subdirectory(base)
+add_subdirectory(brep)
 add_subdirectory(geometry)
 add_subdirectory(io)
 add_subdirectory(mesh)
@@ -7,7 +8,7 @@ add_subdirectory(quad)
 add_subdirectory(refinement)
 add_subdirectory(uscalfe)
 
-if(LF_BUILD_NURBS)
-  add_subdirectory(nurbs)
-endif()
+
+
+
 

@@ -25,7 +25,7 @@ endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
 
-option(LF_BUILD_NURBS "Whether the lf.nurbs projects should be built." OFF)
+option(LF_BUILD_OCCT "Whether the lf.brep.occt project should be built. This will include OpenCascade via hunter (long compilation)" OFF)
 
 
 # Group targets in folders in Visual Studio/Xcode

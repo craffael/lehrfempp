@@ -148,7 +148,7 @@ class Geometry {
        g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
    * \f]
    *
-   * More information also related to the use of lovcal quadrature rules is
+   * More information also related to the use of local quadrature rules is
    * given in [Lecture
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{par:tranquil}.
