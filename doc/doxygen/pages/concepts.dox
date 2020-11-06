@@ -7,9 +7,12 @@
  useful in the declaration/definition of templates where they can be used to place
  additional restrictions on the template type parameters.
  
- So far concepts are mostly enforced through documentation, see e.g. the documentation of
- lf::assemble::AssembleMatrixLocally().  For some concepts there are helper variable
- templates that can be used to determine if a type fulfills a concept.
+ In C++20, concepts [became part of the core language](https://en.cppreference.com/w/cpp/language/constraints),
+ but since LehrFEM++ still relies on C++17, concepts are mostly
+ implemented as [type_traits](https://en.cppreference.com/w/cpp/header/type_traits)
+ (e.g. `lf::mesh::utils::isMeshFunction`) and documentation (e.g. see documentation of  lf::assemble::AssembleMatrixLocally()).
+ 
+ You can find all Concepts of LehrFEM++ in the following list:
  
  @{
  @defgroup entity_matrix_provider EntityMatrixProvider

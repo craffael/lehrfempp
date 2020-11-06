@@ -27,7 +27,7 @@ bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
   test_utils::checkMeshCompleteness(mesh);
 
   std::cout << "Mesh sanity: Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.size() == 0) {
@@ -55,9 +55,7 @@ bool mesh_sanity_check(const lf::mesh::Mesh& mesh) {
   io::writeMatlab(mesh, "test_mesh.m");
 
   // Printing mesh information
-  lf::geometry::Geometry::output_ctrl_ = 20;
-  lf::mesh::utils::printinfo_ctrl = 100;
-  utils::PrintInfo(mesh, std::cout);
+  utils::PrintInfo(std::cout, mesh, 20);
   return true;
 }
 

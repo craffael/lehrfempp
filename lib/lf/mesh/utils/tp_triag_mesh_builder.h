@@ -4,7 +4,7 @@
 #include "lf/mesh/mesh_factory.h"
 #include "structured_mesh_builder.h"
 
-namespace lf::mesh::hybrid2d {
+namespace lf::mesh::utils {
 
 /**
  * @brief Implements a `MeshBuilder` that generates a triangular structured mesh
@@ -50,10 +50,12 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
   }
 
  public:
-  /** Diagnostics control variable */
-  static unsigned int output_ctrl_;
+  /**
+   * @brief Used by Build() method to output additional debug info.
+   */
+  static std::shared_ptr<spdlog::logger> logger;
 };  // end class definition TPTriagMeshBuilder
 
-}  // namespace lf::mesh::hybrid2d
+}  // namespace lf::mesh::utils
 
 #endif /* TP_TRIAG_MESH_BUILDER_H */

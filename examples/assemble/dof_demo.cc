@@ -63,9 +63,7 @@ int main(int argc, char **argv) {
     std::shared_ptr<lf::mesh::Mesh> mesh_p =
         lf::mesh::test_utils::GenerateHybrid2DTestMesh(2);
     // Output information about the mesh
-    lf::mesh::utils::printinfo_ctrl = 100;
-    lf::mesh::Entity::output_ctrl_ = 0;
-    lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+    lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     // Create a dof handler object describing a uniform distribution
     // of shape functions
@@ -75,8 +73,7 @@ int main(int argc, char **argv) {
                  {lf::base::RefEl::kTria(), ndof_tria},
                  {lf::base::RefEl::kQuad(), ndof_quad}});
     // Copious output of information about dof handler
-    lf::assemble::DofHandler::output_ctrl_ = 30;
-    std::cout << dof_handler << std::endl;
+    PrintInfo(std::cout, dof_handler, 30);
   }
   return 0L;
 }  // end main

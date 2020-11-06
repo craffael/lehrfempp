@@ -76,7 +76,7 @@ std::vector<std::pair<double, double>> TestConvergenceEllBVPFESol(
           lf::mesh::test_utils::GenerateHybrid2DTestMesh(meshsel, scal),
           reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
-  std::cout << multi_mesh;
+  multi_mesh.PrintInfo(std::cout);
   // Number of levels
   size_type L = multi_mesh.NumLevels();
 

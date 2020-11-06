@@ -16,21 +16,24 @@
 
 namespace lf::assemble {
 
-// Default output flag
-unsigned int DofHandler::output_ctrl_ = 0;
-
 // Implementation of output operator for interface class
 std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
+  PrintInfo(o, dof_handler, 0);
+  return o;
+}
+
+void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
+               unsigned ctrl) {
   // Obtain pointer to the underlying mesh
   auto mesh = dof_handler.Mesh();
   // Number of degrees of freedom managed by the DofHandler object
   const lf::assemble::size_type N_dofs(dof_handler.NumDofs());
 
-  o << "DofHandler(" << dof_handler.NumDofs() << " dofs)";
-  if (DofHandler::output_ctrl_ > 0) {
+  stream << "DofHandler(" << dof_handler.NumDofs() << " dofs)";
+  if (ctrl > 0) {
     // More detailed output
-    o << std::endl;
-    if (DofHandler::output_ctrl_ % 2 == 0) {
+    stream << std::endl;
+    if (ctrl % 2 == 0) {
       for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
         // Visit all entities of a specific codimension
         for (const lf::mesh::Entity *e : mesh->Entities(codim)) {
@@ -42,36 +45,35 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
           nonstd::span<const gdof_idx_t> doflist(
               dof_handler.GlobalDofIndices(*e));
           // and print them
-          o << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
+          stream << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
           for (const lf::assemble::gdof_idx_t &dof : doflist) {
-            o << dof << ' ';
+            stream << dof << ' ';
           }
-          o << ']';
-          if (DofHandler::output_ctrl_ % 5 == 0) {
+          stream << ']';
+          if (ctrl % 5 == 0) {
             // Also output indices of interior shape functions
             nonstd::span<const gdof_idx_t> intdoflist(
                 dof_handler.InteriorGlobalDofIndices(*e));
-            o << " int = [";
+            stream << " int = [";
             for (lf::assemble::gdof_idx_t int_dof : intdoflist) {
-              o << int_dof << ' ';
+              stream << int_dof << ' ';
             }
-            o << ']';
+            stream << ']';
           }
-          o << std::endl;
+          stream << std::endl;
         }
       }
     }
-    if (DofHandler::output_ctrl_ % 3 == 0) {
+    if (ctrl % 3 == 0) {
       // List entities associated wit the dofs managed by the current
       // DofHandler object
       for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
         const lf::mesh::Entity &e(dof_handler.Entity(dof_idx));
-        o << "dof " << dof_idx << " -> " << e << " " << mesh->Index(e)
-          << std::endl;
+        stream << "dof " << dof_idx << " -> " << e << " " << mesh->Index(e)
+               << std::endl;
       }
     }
   }
-  return o;
 }
 
 // ----------------------------------------------------------------------

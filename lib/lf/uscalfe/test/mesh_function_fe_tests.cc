@@ -30,4 +30,37 @@ TEST(meshFunctionFE, Projection) {
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_linear, mf_projected);
 }
 
+TEST(meshFunctionFE, ProjectionQuad) {
+  // This test projects a quadratic mesh function onto a fe space and compares
+  // the MeshFunctionFE with the original mesh function.
+
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  // A quadratic polynomial that can exactly be represented in the FE space
+  auto mf_quad = mesh::utils::MeshFunctionGlobal(
+      [](const Eigen::Vector2d& x) { return x[0] * x[1] + 2 * x[1]; });
+
+  auto fespaceO2 = std::make_shared<FeSpaceLagrangeO2<double>>(mesh);
+
+  auto projected = NodalProjection(*fespaceO2, mf_quad);
+  auto mf_projected = lf::fe::MeshFunctionFE(fespaceO2, projected);
+  mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_quad, mf_projected);
+}
+
+TEST(meshFunctionFE, ProjectionCubic) {
+  // This test projects a quadratic mesh function onto a fe space and compares
+  // the MeshFunctionFE with the original mesh function.
+
+  auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  // A cubic polynomial that can exactly be represented in the FE space
+  auto mf_cubic = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+    return x[0] * x[1] * x[1] + x[0] * x[0] + 2 * x[1];
+  });
+
+  auto fespaceO3 = std::make_shared<FeSpaceLagrangeO3<double>>(mesh);
+
+  auto projected = NodalProjection(*fespaceO3, mf_cubic);
+  auto mf_projected = lf::fe::MeshFunctionFE(fespaceO3, projected);
+  mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_cubic, mf_projected);
+}
+
 }  // namespace lf::uscalfe::test

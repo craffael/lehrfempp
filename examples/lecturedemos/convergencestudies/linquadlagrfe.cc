@@ -20,10 +20,10 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <cmath>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -120,8 +120,8 @@ int main(int argc, char *argv[]) {
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
 
-  const boost::filesystem::path here = __FILE__;
-  const boost::filesystem::path mesh_folder = here.parent_path() / "meshes";
+  const std::filesystem::path here = __FILE__;
+  const std::filesystem::path mesh_folder = here.parent_path() / "meshes";
   Eigen::MatrixXd results(num_meshes, 7);
   for (int mesh_idx = 0; mesh_idx < num_meshes; ++mesh_idx) {
     std::cout << "> Mesh Nr. " << mesh_idx << std::endl;
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
     std::cout << "\t> Loading Mesh" << std::endl;
     const std::string mesh_name =
         "unitsquare" + std::to_string(mesh_idx) + ".msh";
-    const boost::filesystem::path mesh_file = mesh_folder / mesh_name;
+    const std::filesystem::path mesh_file = mesh_folder / mesh_name;
     auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
     const lf::io::GmshReader reader(std::move(factory), mesh_file.string());
     const auto mesh = reader.mesh();

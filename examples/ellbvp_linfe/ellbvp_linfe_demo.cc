@@ -195,7 +195,8 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
 
   // Print information about the coarsest mesh
-  std::cout << "\t Coarsest mesh for demonstration run\n" << *mesh_p;
+  std::cout << "\t Coarsest mesh for demonstration run\n";
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
   // ======================================================================
   // Stage II: Ask LehrFEM++ to create a hierarchy of nested meshes
@@ -208,7 +209,8 @@ int main(int /*argc*/, const char** /*argv*/) {
                                                               reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
   // Ouput information about hierarchy of nested meshes
-  std::cout << "\t Sequence of nested meshes used in demo code\n" << multi_mesh;
+  std::cout << "\t Sequence of nested meshes used in demo code\n";
+  multi_mesh.PrintInfo(std::cout);
   // Number of levels
   size_type L = multi_mesh.NumLevels();
 
@@ -351,6 +353,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
+    // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
@@ -358,26 +361,17 @@ int main(int /*argc*/, const char** /*argv*/) {
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
-    // Helper class for L2 error computation
-    lf::uscalfe::MeshFunctionL2NormDifference lc_L2(fe_space, mf_u, 2);
-    // Helper class for H1 semi norm
-    lf::uscalfe::MeshFunctionL2GradientDifference lc_H1(fe_space, mf_grad_u, 2);
-
-    double L2err = lf::fe::NormOfDifference(dofh, lc_L2, sol_vec);
-    double H1serr = lf::fe::NormOfDifference(dofh, lc_H1, sol_vec);
-    /* SAM_LISTING_END_2 */
-
-    // An alternative more elegant way to compute the error norms:
-    /* SAM_LISTING_BEGIN_7 */
     // create mesh functions representing solution / gradient of solution
-    auto mf_sol = lf::fe::MeshFunctionFE(fe_space, sol_vec);
-    auto mf_grad_sol = lf::fe::MeshFunctionGradFE(fe_space, sol_vec);
-    // compute errors with 10-th order quadrature rules
-    double L2err_2 =  // NOLINT
-        std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));
-    double H1serr_2 = std::sqrt(lf::fe::IntegrateMeshFunction(  // NOLINT
-        mesh, squaredNorm(mf_grad_sol - mf_grad_u), 2));
-    /* SAM_LISTING_END_7 */
+    const lf::fe::MeshFunctionFE mf_sol(fe_space, sol_vec);
+    const lf::fe::MeshFunctionGradFE mf_grad_sol(fe_space, sol_vec);
+    // compute errors with 3rd order quadrature rules, which is sufficient for
+    // piecewise linear finite elements
+    double L2err =  // NOLINT
+        std::sqrt(lf::fe::IntegrateMeshFunction(
+            mesh, lf::mesh::utils::squaredNorm(mf_sol - mf_u), 2));
+    double H1serr = std::sqrt(lf::fe::IntegrateMeshFunction(  // NOLINT
+        mesh, lf::mesh::utils::squaredNorm(mf_grad_sol - mf_grad_u), 2));
+    /* SAM_LISTING_END_2 */
     errs.emplace_back(N_dofs, L2err, H1serr);
   }
 

@@ -19,7 +19,7 @@ TEST(RegRefTest, RegRef) {
   auto mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -34,7 +34,7 @@ TEST(RegRefTest, RegRef) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -58,7 +58,7 @@ TEST(RegRefTest, RegRef) {
   WriteMatlabLevel(multi_mesh, 1, "fine_mesh_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *fine_mesh);
 
   // Output mesh geometry in TikZ format
   // Enable, once function is available in master branch
@@ -76,7 +76,7 @@ TEST(RegRefTest, BarycentricRef) {
   auto mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -90,7 +90,7 @@ TEST(RegRefTest, BarycentricRef) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -114,18 +114,18 @@ TEST(RegRefTest, BarycentricRef) {
   WriteMatlabLevel(multi_mesh, 1, "barycentric_ref_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *fine_mesh);
 }
 
 TEST(RegRefTest, AllMarkedRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
   std::cout << "TEST: All edges marked" << std::endl;
 
   // Generate test mesh
   auto mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -150,7 +150,7 @@ TEST(RegRefTest, AllMarkedRefinement) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -174,18 +174,18 @@ TEST(RegRefTest, AllMarkedRefinement) {
   WriteMatlabLevel(multi_mesh, 1, "allref_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *fine_mesh);
 }
 
 TEST(LocRefTest, LocalRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
   std::cout << "TEST: Marked edges in the unit square" << std::endl;
 
   // Generate test mesh
   std::shared_ptr<lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -214,7 +214,7 @@ TEST(LocRefTest, LocalRefinement) {
   lf::mesh::test_utils::checkMeshCompleteness(*fine_mesh);
 
   std::cout << "Checking geometry compatibulity: " << std::flush;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*fine_mesh, false);
   EXPECT_EQ(fails.size(), 0) << "Inconsistent geometry!";
   if (fails.empty()) {
@@ -238,7 +238,7 @@ TEST(LocRefTest, LocalRefinement) {
   WriteMatlabLevel(multi_mesh, 1, "locref_pi.m");
 
   // Printing mesh information
-  lf::mesh::utils::PrintInfo(*fine_mesh, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *fine_mesh);
 }
 
 /* MATLAB script for visualizing the output of the next test
@@ -276,8 +276,8 @@ TEST(LocRefTest, LocalRefinement) {
 */
 
 TEST(LocRefTest, MultipleRefinement) {
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
-  lf::mesh::test_utils::watertight_mesh_ctrl = 100;
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::info);
 
   const size_type Nrefs = 4;
   std::cout << "TEST: Multiple refinement with Marked edges in a square"
@@ -287,7 +287,7 @@ TEST(LocRefTest, MultipleRefinement) {
   auto mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(testmesh_selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -338,7 +338,7 @@ TEST(LocRefTest, MultipleRefinement) {
     }
 
     // Printing mesh information
-    lf::mesh::utils::PrintInfo(*mesh, std::cout);
+    lf::mesh::utils::PrintInfo(std::cout, *mesh);
   }
   WriteMatlab(multi_mesh, "multiref");
 }
@@ -372,8 +372,8 @@ void refine_for_testing(lf::refinement::MeshHierarchy &multi_mesh) {
 // meshes provided by lf::mesh::test_utils::GenerateHybriod2DTestMesh()
 void test_hybrid_2d_meshes(int selector) {
   // Setting appropriate output controls
-  lf::mesh::test_utils::watertight_mesh_ctrl = 0;
-  lf::refinement::MeshHierarchy::output_ctrl_ = 0;
+  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::info);
+  lf::refinement::MeshHierarchy::logger->set_level(spdlog::level::info);
 
   LF_VERIFY_MSG(
       (selector >= 0) &&
@@ -385,7 +385,7 @@ void test_hybrid_2d_meshes(int selector) {
   // Generate one of the standard 2D hybrid test meshes
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
   // Output mesh information
-  lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -459,13 +459,13 @@ TEST(LocRefTest, mixed_ref_5) {
 }  // end mixed refinement test 5
 
 TEST(LocRefTest, AffMeshRef) {
-  lf::mesh::Entity::output_ctrl_ = 1;
   std::cout << "TEST: Refinement of an affine mesh" << std::endl;
   // Generate an hybriod mesh of [0,3]^2, comprising only affine cells
   // (selector = 5)
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(5);
   // Output mesh information
-  std::cout << *mesh_p << std::endl;
+  lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
+
   // Build mesh hierarchy
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);

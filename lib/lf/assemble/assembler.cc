@@ -15,8 +15,8 @@
 #include "assembler.h"
 
 namespace lf::assemble {
-// Debugging output control variable, switched off by default
-ADDOPTION(ass_mat_dbg_ctrl, Assembly_ctrl,
-          "Debugging output control for AssembleMatrixLocally()");
+// Initialize assemble_matrix_logger
+std::shared_ptr<spdlog::logger> assemble_matrix_logger =
+    base::InitLogger("lf::assemble::assemble_matrix_logger");
 
 }  // namespace lf::assemble

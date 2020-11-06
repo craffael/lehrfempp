@@ -25,13 +25,18 @@ bool checkMeshCompleteness(const Mesh& mesh);
  * @note For special geometries the exact matching of cell and edge
  *       shapes may not be intended
  *
- * Optional output of this function is controlled by the
- * control variable watertight_mesh_ctrl
+ * #### Logger
+ * This function logs additional information to \ref watertight_logger. See
+ * \ref loggers for more information.
  */
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only = true);
 
-extern unsigned int watertight_mesh_ctrl;
+/**
+ * @brief Logger that is used by isWatertightMesh() to output additional
+ * information.
+ */
+extern std::shared_ptr<spdlog::logger> watertight_logger;
 
 }  // namespace lf::mesh::test_utils
 

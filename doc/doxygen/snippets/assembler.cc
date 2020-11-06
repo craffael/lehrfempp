@@ -40,6 +40,9 @@ void matrix() {
   // setup a COOMatrix into which the global matrix will be assembled:
   assemble::COOMatrix<double> lhs(dofh.NumDofs(), dofh.NumDofs());
 
+  // increase logging level for AssembleMatrixLocally():
+  assemble::assemble_matrix_logger->set_level(spdlog::level::debug);
+
   // assemble the global Laplace matrix (iterate over all entities with
   // codim=2):
   assemble::AssembleMatrixLocally<assemble::COOMatrix<double>>(

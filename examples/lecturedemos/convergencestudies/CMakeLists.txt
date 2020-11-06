@@ -15,8 +15,6 @@ add_dependencies(examples_run examples.lecturedemos.convergencestudies.twopointb
 add_executable(examples.lecturedemos.convergencestudies.linquadlagrfe linquadlagrfe.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.linquadlagrfe
     PUBLIC Eigen3::Eigen
-    Boost::filesystem
-    Boost::system
     Boost::program_options
     lf.base
     lf.uscalfe
@@ -37,8 +35,6 @@ add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadla
 add_executable(examples.lecturedemos.convergencestudies.linquadfelshaped linquadfelshaped.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.linquadfelshaped
     PUBLIC Eigen3::Eigen
-    Boost::filesystem
-    Boost::system
     Boost::program_options
     lf.base
     lf.uscalfe
@@ -58,8 +54,6 @@ add_dependencies(examples_run examples.lecturedemos.convergencestudies.linquadfe
 add_executable(examples.lecturedemos.convergencestudies.prefinement prefinement.cc)
 target_link_libraries(examples.lecturedemos.convergencestudies.prefinement
     PUBLIC Eigen3::Eigen
-    Boost::filesystem
-    Boost::system
     Boost::program_options
     lf.base
     lf.uscalfe

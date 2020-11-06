@@ -29,7 +29,7 @@ namespace lecturedemo {
     Eigen::Matrix<double, 3, 3> X;  // temporary matrix
     X.block<3, 1>(0, 0) = Eigen::Vector3d::Ones();
     X.block<3, 2>(0, 1) = vertices.transpose();
-    // The determinant of the auxliriary matrix also supplies the determinant
+    // The determinant of the auxiliary matrix also supplies the determinant
     const double area = 0.5 * std::abs(X.determinant());
     // Compute the gradients of the barycentric coordinate functions
     // and store them in the columns of a 2x3 matrix grad\_bary\_coords

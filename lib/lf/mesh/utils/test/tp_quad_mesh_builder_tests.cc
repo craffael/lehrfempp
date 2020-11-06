@@ -19,12 +19,12 @@ namespace lf::mesh::test {
 // Test for pointer-based implementation and creation of tensor product grid
 TEST(lf_mesh_p, buildTPQuadMesh) {
   // Enable copious output
-  hybrid2d::TPQuadMeshBuilder::output_ctrl_ = 100;
+  utils::TPQuadMeshBuilder::logger->set_level(spdlog::level::trace);
   // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
   std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<hybrid2d::MeshFactory>(2);
-  hybrid2d::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
+  utils::TPQuadMeshBuilder builder(std::move(mesh_factory_ptr));
   // Set mesh parameters following the Builder pattern
   // Domain is the unit square
   builder.setBottomLeftCorner(Eigen::Vector2d{0, 0})
@@ -45,7 +45,7 @@ TEST(lf_mesh_p, buildTPQuadMesh) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Printing mesh information" << std::endl;
-  utils::PrintInfo(*mesh_p, std::cout);
+  utils::PrintInfo(std::cout, *mesh_p);
 }
 
 }  // namespace lf::mesh::test

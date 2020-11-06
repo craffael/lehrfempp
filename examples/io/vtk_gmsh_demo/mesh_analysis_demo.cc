@@ -4,11 +4,11 @@
  * @date July 2020
  * @copyright MIT License
  */
+#include <filesystem>
 
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include <boost/filesystem.hpp>
 #include <sstream>
 
 int main(int argc, char **argv) {
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   }  // end switch
 
   // Mesh file is supposed to reside in the same directory as source file
-  boost::filesystem::path here = __FILE__;
+  std::filesystem::path here = __FILE__;
   auto mesh_path = here.parent_path() / filename.c_str();
 
   // load the mesh
@@ -74,11 +74,20 @@ int main(int argc, char **argv) {
     }
   }
 
-  // Finally output (small) mesh in TikZ format
-  if (mesh.NumEntities(0) < 100) {
+  // Finally output (small) mesh in TikZ format: basic information
+  {
     using lf::io::TikzOutputCtrl;
     std::stringstream filename_tikz;
     filename_tikz << filename.substr(0, filename.find_last_of('.')) << ".tex";
+    lf::io::writeTikZ(*mesh_p, filename_tikz.str(),
+                      TikzOutputCtrl::WithPreamble);
+  }
+  // Finally output (small) mesh in TikZ format: full information
+  {
+    using lf::io::TikzOutputCtrl;
+    std::stringstream filename_tikz;
+    filename_tikz << filename.substr(0, filename.find_last_of('.'))
+                  << "_full.tex";
     lf::io::writeTikZ(
         *mesh_p, filename_tikz.str(),
         TikzOutputCtrl::RenderCells | TikzOutputCtrl::VerticeNumbering |

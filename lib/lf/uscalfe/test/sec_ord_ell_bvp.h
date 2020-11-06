@@ -120,10 +120,11 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
   FUNCTOR_H h_;
 };
 
-/** @brief output control variable for function SecOrdEllBVPLagrFELinSys() */
-ADDOPTION(LFELinSys_ctrl, LFELinSys_control,
-          "Output control variable for function SecOrdEllBVPLagrFELinSys()");
-static const unsigned int kLFELinSys_bdinfo = 2;
+/**
+ * @brief used by SecOrdEllBVPLagrFELinSys() to log additional information.
+ */
+inline std::shared_ptr<spdlog::logger> SecOrdEllBVPLagrFELinSys_logger =
+    base::InitLogger("lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger");
 
 /**
  * @brief Builds finite element linear system of equations for a second-order
@@ -143,6 +144,11 @@ static const unsigned int kLFELinSys_bdinfo = 2;
  * - lf::uscalfe::SecOrdBVPLagrFEBoundaryGalMat()
  * - lf::uscalfe::LagrFEVolumeRightHandSideVector()
  * - lf::uscalfe::LagrFEBoundaryRightHandSideVector()
+ *
+ * #### Logger
+ * This function logs additional information to
+ * lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger. See \ref loggers for more
+ * information.
  */
 template <typename SCALAR>
 std::pair<Eigen::SparseMatrix<SCALAR>, Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
@@ -173,11 +179,9 @@ SecOrdEllBVPLagrFELinSys(
     }
   }
 
-  SWITCHEDSTATEMENT(LFELinSys_ctrl, kLFELinSys_bdinfo,
-                    std::cout << "B.c.: " << no_Dirichlet_edges
-                              << " Dirichlet edges, " << no_Neumann_edges
-                              << " Neumann edges, " << no_impedance_edges
-                              << " impedance edges" << std::endl);
+  SPDLOG_LOGGER_DEBUG(
+      SecOrdEllBVPLagrFELinSys_logger,
+      "B.c.: {} Dirichlet edges, {} Neumann edges, {} impedance edges");
 
   // Dimension of finite element space`
   const lf::assemble::size_type N_dofs(dofh.NumDofs());

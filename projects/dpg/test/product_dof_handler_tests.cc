@@ -181,8 +181,7 @@ TEST(product_dof_handler, mat_assembly_test) {
   ProductUniformFEDofHandler dof_handler(mesh_p,
                                          {{{lf::base::RefEl::kPoint(), 1}}});
 
-  lf::assemble::DofHandler::output_ctrl_ = 30;
-  std::cout << dof_handler << std::endl;
+  PrintInfo(std::cout, dof_handler, 30);
   lf::assemble::test::linfe_mat_assembly(*mesh_p, dof_handler);
 }
 
@@ -195,8 +194,7 @@ TEST(product_dof_handler, edge_dof_static_test) {
   ProductUniformFEDofHandler dof_handler1(mesh_p,
                                           {{{lf::base::RefEl::kSegment(), 2}}});
 
-  lf::assemble::DofHandler::output_ctrl_ = 30;
-  std::cout << dof_handler1 << std::endl;
+  PrintInfo(std::cout, dof_handler1, 30);
   lf::assemble::test::edge_dof_assembly_test(*mesh_p, dof_handler1);
 }
 
@@ -220,9 +218,7 @@ TEST(product_dof_handler, mat_vec_mult_test) {
   // Construct dofhandler using a map for local dof layout
   ProductUniformFEDofHandler dof_handler(mesh_p,
                                          {{{lf::base::RefEl::kPoint(), 1}}});
-
-  lf::assemble::DofHandler::output_ctrl_ = 30;
-  std::cout << dof_handler << std::endl;
+  PrintInfo(std::cout, dof_handler, 30);
   std::cout << " s= "
             << lf::assemble::test::test_vec_lr_mult(*mesh_p, dof_handler)
             << std::endl;

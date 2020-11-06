@@ -189,10 +189,9 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << cell.RefEl() << ", shape = \n"
-                              << geo_ptr->Global(cell.RefEl().NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(reaction_diffusion_element_matrix_provider_logger,
+                      "{}, shape = \n{}", ref_el,
+                      geo_ptr->Global(ref_el.NodeCoords()));
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
 
@@ -500,20 +499,18 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SWITCHEDSTATEMENT(ctrl_, kout_cell,
-                    std::cout << cell.RefEl() << ", shape = \n"
-                              << geo_ptr->Global(cell.RefEl().NodeCoords())
-                              << std::endl);
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "{}, shape = \n{}", ref_el,
+                      geo_ptr->Global(ref_el.NodeCoords()));
 
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
-  SWITCHEDSTATEMENT(ctrl_, kout_dets,
-                    std::cout << "LOCVEC(" << cell.RefEl()
-                              << "): Metric factors :\n "
-                              << determinants.transpose() << std::endl);
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "LOCVEC({}): Metric factors :\n{}", ref_el,
+                      determinants.transpose());
   // Element vector
   ElemVec vec(sfl->NumRefShapeFunctions());
   vec.setZero();
@@ -525,16 +522,15 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SWITCHEDSTATEMENT(ctrl_, kout_loop,
-                      std::cout << "LOCVEC: [" << qr.Points().transpose()
-                                << "] -> ["
-                                << "weight = " << qr.Weights()[k] << std::endl);
+    SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                        "LOCVEC: [{}] -> [weight = {}]",
+                        pfe.Qr().Points().transpose(), pfe.Qr().Weights()[k]);
     // Contribution of current quadrature point
     vec += (qr.Weights()[k] * determinants[k] * fval[k]) * rsf.col(k);
   }
-  SWITCHEDSTATEMENT(ctrl_, kout_locvec,
-                    std::cout << "LOCVEC = \n"
-                              << vec.transpose() << std::endl);
+
+  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+                      "LOCVEC = \n{}", vec.transpose());
   return vec;
 }
 

@@ -5,7 +5,7 @@ set(quad_demo quad_demo.cc)
 add_executable(examples.quad.quad_demo ${quad_demo})
 
 target_link_libraries(examples.quad.quad_demo
-  PUBLIC Eigen3::Eigen Boost::filesystem Boost::system Boost::program_options
+  PUBLIC Eigen3::Eigen Boost::program_options
   lf.mesh
   lf.mesh.test_utils
   lf.mesh.utils

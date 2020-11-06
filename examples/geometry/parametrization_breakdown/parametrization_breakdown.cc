@@ -9,7 +9,7 @@
 #include <lf/geometry/geometry.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -104,7 +104,7 @@ double computeGeometryVolume(const lf::geometry::Geometry& geom) {
 int main() {
   // create a directory to store results
   const std::string results_dir = "results/";
-  boost::filesystem::create_directories(results_dir);
+  std::filesystem::create_directory(results_dir);
 
   // define second-order geometry elements
   lf::geometry::TriaO2 tria(

@@ -13,17 +13,7 @@
 
 namespace lf::mesh::utils {
 
-// Output control variable, maximum verbosity is default
-/*unsigned int printinfo_ctrl = 100;
-static lf::base::StaticVar ctrlvar_printinfo_ctrl("PrintInfo_ctrl",
-                                                  printinfo_ctrl,
-                                                  lf::base::ctrl_root,
-                                                  "Output control for Mesh");
-*/
-ADDOPTION_DEFAULT(printinfo_ctrl, 100, PrintInfo_ctrl,
-                  "Output control for Mesh");
-
-void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
+void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
   using dim_t = lf::base::dim_t;
   using size_type = lf::base::size_type;
 
@@ -32,7 +22,7 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
   o << "Mesh of dimension " << static_cast<int>(dim_mesh)
     << ", ambient dimension " << static_cast<int>(dim_world) << std::endl;
 
-  if (printinfo_ctrl > 10) {
+  if (ctrl > 10) {
     // Loop over codimensions
 
     for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
@@ -59,7 +49,7 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
         o << "entity " << e_idx << " (" << e_refel << "): ";
 
         // Loop over local co-dimensions
-        if (printinfo_ctrl > 90) {
+        if (ctrl > 90) {
           for (int l = 1; l <= dim_mesh - co_dim; l++) {
             o << "rel codim-" << l << " subent: [";
             // Fetch subentities of co-dimension l
@@ -70,7 +60,7 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
             o << "]";
           }
         }
-        if (printinfo_ctrl > 50) {
+        if (ctrl > 50) {
           o << std::endl << e_geo_ptr->Global(ref_el_corners);
         }
         o << std::endl;
@@ -80,7 +70,8 @@ void PrintInfo(const lf::mesh::Mesh &mesh, std::ostream &o) {
 }  // end function PrintInfo
 
 // Print function for Entity object
-void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
+void PrintInfo(std::ostream &stream, const lf::mesh::Entity &e,
+               int output_ctrl) {
   // Topological type of entity
   lf::base::RefEl e_ref_el = e.RefEl();
   int dim_ref_el = e_ref_el.Dimension();
@@ -91,7 +82,7 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
   stream << "Entity " << e_ref_el << "/" << typeid(*e_geo_ptr).name()
          << std::endl;
 
-  if (Entity::output_ctrl_ > 10) {
+  if (output_ctrl > 10) {
     stream << "Dimension: " << dim_ref_el << std::endl;
 
     const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
@@ -103,7 +94,7 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
              << "Codimension " << co_dim << ": " << num_sub_ent
              << " sub-entities" << std::endl;
 
-      if (Entity::output_ctrl_ > 50) {
+      if (output_ctrl > 50) {
         int sub_ent_num = 0;
         // Loop over subentities
         for (const Entity *sub_ent : e.SubEntities(co_dim)) {
@@ -111,7 +102,7 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
           stream << "* Subentity " << sub_ent_num << " (" << sub_ent_refel
                  << ")" << std::endl;
 
-          if (Entity::output_ctrl_ > 90) {
+          if (output_ctrl > 90) {
             // Print coordinates
             stream << e_geo_ptr->Global(ref_el_corners).col(sub_ent_num)
                    << std::endl;
@@ -123,7 +114,7 @@ void PrintInfo(const lf::mesh::Entity &e, std::ostream &stream) {
       }    // if output ctrl
     }      // loop codim
 
-    if (e_ref_el == lf::base::RefEl::kPoint() && Entity::output_ctrl_ > 90) {
+    if (e_ref_el == lf::base::RefEl::kPoint() && output_ctrl > 90) {
       stream << e_geo_ptr->Global(ref_el_corners) << std::endl;
     }
 

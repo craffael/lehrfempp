@@ -224,7 +224,7 @@ std::shared_ptr<lf::mesh::Mesh> GenerateHybrid2DTestMesh(int selector,
     case 4: {
       // Triangular tensor product mesh
       // Construct a structured mesh with 18 triangles
-      hybrid2d::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
+      utils::TPTriagMeshBuilder builder(std::move(mesh_factory_ptr));
       // Set mesh parameters following the Builder pattern
       // Domain is the unit square
       builder.setBottomLeftCorner(Eigen::Vector2d{0 * scale, 0 * scale})

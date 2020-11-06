@@ -7,15 +7,12 @@
  */
 
 #include "mesh.h"
+#include <fmt/ranges.h>
+#include <spdlog/spdlog.h>
 #include <iostream>
 #include <numeric>
 
 namespace lf::mesh::hybrid2d {
-
-// CONTROLDECLARECOMMENT(Mesh, output_ctrl_, "hybrid2d_mesh_output_ctrl",
-//                      "Diagnostics control for hybrid2d::Mesh");
-ADDOPTION(Mesh::output_ctrl_, hybrid2d_mesh_output_ctrl,
-          "Diagnostics control for hybrid2d::Mesh");
 
 nonstd::span<const Entity *const> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");
@@ -224,18 +221,15 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // ASSUMPTION: The length of the nodes vector gives the number of nodes
 
   const size_type no_of_nodes(nodes.size());
-  if (output_ctrl_ > 0) {
-    std::cout << "Constructing mesh: " << no_of_nodes << " nodes" << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(logger, "Constructing mesh: {} nodes", no_of_nodes);
 
   // ======================================================================
   // STEP I: Initialize array of edges using pointers to
   //          entries of the array of nodes
 
   // Register supplied edges in auxiliary map data structure
-  if (output_ctrl_ > 0) {
-    std::cout << "Initializing edge map" << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(logger, "Initializing edge map");
+
   EdgeMap edge_map;
   glb_idx_t edge_index = 0;  // position in the array gives index of edge
 
@@ -246,10 +240,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     LF_ASSERT_MSG(
         (end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
         "Illegal edge node numbers " << end_nodes[0] << ", " << end_nodes[1]);
-    if (output_ctrl_ > 0) {
-      std::cout << "Register edge: " << end_nodes[0] << " <-> " << end_nodes[1]
-                << std::endl;
-    }
+    SPDLOG_LOGGER_TRACE(logger, "Register edge: {} <-> {}", end_nodes[0],
+                        end_nodes[1]);
 
     // If one of the endpoints of a edge does not have a geometry, supply it
     // with one inherited from the edge.
@@ -287,19 +279,19 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // supplied geometry. The indexing of all extra edges created below must start
   // from this offset.
 
-  if (output_ctrl_ > 10) {
-    std::cout << "Edge map after edge registration" << std::endl;
+  if (logger->should_log(spdlog::level::trace)) {
+    std::stringstream ss;
+    ss << "Edge map after edge registration" << std::endl;
     for (auto &edge_info : edge_map) {
       const EndpointIndexPair &eip(edge_info.first);
       const EdgeData &edat(edge_info.second);
-      std::cout << "Edge " << eip.first_node() << " <-> " << eip.second_node()
-                << ": ";
+      ss << "Edge " << eip.first_node() << " <-> " << eip.second_node() << ": ";
       const AdjCellsList &acl(edat.adj_cells_list);
       const GeometryPtr &gptr(edat.geo_uptr);
       for (auto &i : acl) {
-        std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+        ss << "[" << i.cell_idx << "," << i.edge_idx << "] ";
       }
-      std::cout << std::endl;
+      SPDLOG_LOGGER_TRACE(logger, ss.str());
     }
   }
 
@@ -310,9 +302,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   size_type no_of_trilaterals = 0;
   size_type no_of_quadrilaterals = 0;
   // Diagnostics
-  if (output_ctrl_ > 0) {
-    std::cout << "Scanning list of cells" << std::endl;
-  }
+  SPDLOG_LOGGER_DEBUG(logger, "Scanning list of cells");
 
   for (const auto &c : cells) {
     // node indices of corners of cell c
@@ -336,12 +326,13 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         (no_of_vertices == 3) ? base::RefEl::kTria() : base::RefEl::kQuad();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    if (output_ctrl_ > 10) {
-      std::cout << "Cell " << cell_index;
+    std::stringstream ss_log_line;
+    if (logger->should_log(spdlog::level::trace)) {
+      ss_log_line << "Cell " << cell_index;
       if (no_of_vertices == 3) {
-        std::cout << ", tria " << no_of_trilaterals << ": ";
+        ss_log_line << ", tria " << no_of_trilaterals << ": ";
       } else {
-        std::cout << ", quad " << no_of_quadrilaterals << ": ";
+        ss_log_line << ", quad " << no_of_quadrilaterals << ": ";
       }
     }
 
@@ -383,11 +374,11 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
                                               cell_node_list[p1_local_index]);
 
-      if (output_ctrl_ > 10) {
-        std::cout << "e(" << j << ") = local " << p0_local_index << " <-> "
-                  << p1_local_index << ", global "
-                  << c_edge_vertex_indices.first_node() << " <-> "
-                  << c_edge_vertex_indices.second_node() << " # ";
+      if (logger->should_log(spdlog::level::trace)) {
+        ss_log_line << "e(" << j << ") = local " << p0_local_index << " <-> "
+                    << p1_local_index << ", global "
+                    << c_edge_vertex_indices.first_node() << " <-> "
+                    << c_edge_vertex_indices.second_node() << " # ";
       }
       // Store number of cell and the local index j of the edge
       AdjCellInfo edge_cell_info(cell_index, j);
@@ -437,46 +428,49 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     cell_index++;
 
     // Diagnostics
-    if (output_ctrl_ > 10) {
-      std::cout << std::endl;
-    }
+    SPDLOG_LOGGER_TRACE(logger, ss_log_line.str());
   }  // end loop over cells
 
   // DIAGNOSTICS
   {
-    if (output_ctrl_ > 0) {
-      std::cout << "=============================================" << std::endl;
-    }
-    if (output_ctrl_ > 10) {
-      std::cout << "Edge map after cell scan" << std::endl;
+    SPDLOG_LOGGER_DEBUG(logger,
+                        "=============================================");
+
+    if (logger->should_log(spdlog::level::trace)) {
+      SPDLOG_LOGGER_TRACE(logger, "Edge map after cell scan");
+
       size_type edge_cnt = 0;
       for (auto &edge_info : edge_map) {
+        std::stringstream ss_log_line;
+
         const EndpointIndexPair &eip(edge_info.first);
         const EdgeData &edat(edge_info.second);
-        std::cout << "Edge " << edge_cnt << ": " << eip.first_node() << " <-> "
-                  << eip.second_node();
+        ss_log_line << "Edge " << edge_cnt << ": " << eip.first_node()
+                    << " <-> " << eip.second_node();
         if (edat.edge_global_index == -1) {
-          std::cout << " no index : ";
+          ss_log_line << " no index : ";
         } else {
-          std::cout << ": index = " << edat.edge_global_index << ": ";
+          ss_log_line << ": index = " << edat.edge_global_index << ": ";
         }
         const AdjCellsList &acl(edat.adj_cells_list);
         const GeometryPtr &gptr(edat.geo_uptr);
         for (auto &i : acl) {
-          std::cout << "[" << i.cell_idx << "," << i.edge_idx << "] ";
+          ss_log_line << "[" << i.cell_idx << "," << i.edge_idx << "] ";
         }
-        std::cout << " geo = " << std::endl;
+        ss_log_line << " geo = " << std::endl;
         if (gptr) {
           Eigen::MatrixXd edp_c(
               gptr->Global(base::RefEl::kSegment().NodeCoords()));
-          std::cout << edp_c << std::endl;
+          ss_log_line << edp_c;
         } else {
-          std::cout << "NO GEOMETRY" << std::endl;
+          ss_log_line << "NO GEOMETRY";
         }
         edge_cnt++;
+        SPDLOG_LOGGER_TRACE(logger, ss_log_line.str());
       }
-      std::cout << "=============================================" << std::endl;
-    }  // end if(output_ctrl > 10)
+      SPDLOG_LOGGER_TRACE(logger,
+                          "=============================================");
+    }
   }
 
   // ======================================================================
@@ -492,12 +486,10 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     // = std::make_unique<geometry::Point>(node_coordinates);
     LF_VERIFY_MSG(pt_geo_ptr != nullptr,
                   "Missing geometry for node " << node_index);
-    if (output_ctrl_ > 10) {
-      std::cout
-          << "-> Adding node " << node_index << " at "
-          << (pt_geo_ptr->Global(Eigen::Matrix<double, 0, 1>())).transpose()
-          << std::endl;
-    }
+    SPDLOG_LOGGER_TRACE(
+        logger, "-> Adding node {} at {}", node_index,
+        (pt_geo_ptr->Global(Eigen::Matrix<double, 0, 1>())).transpose());
+
     points_.emplace_back(node_index, std::move(pt_geo_ptr));
     node_index++;
   }
@@ -578,10 +570,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     }
 
     // Diagnostics
-    if (output_ctrl_ > 10) {
-      std::cout << "Registering edge " << edge.second.edge_global_index << ": "
-                << p0 << " <-> " << p1 << std::endl;
-    }
+    SPDLOG_LOGGER_TRACE(logger, "Registering edge {}: {} <-> {}",
+                        edge.second.edge_global_index, p0, p1);
     // Building edge by adding another element to the edge vector.
     segments_.emplace_back(edge.second.edge_global_index,
                            std::move(edge_geo_ptr), p0_ptr, p1_ptr);
@@ -624,10 +614,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   }
 
   // Diagnostics
-  if (output_ctrl_ > 10) {
-    std::cout << "########################################" << std::endl;
-    std::cout << "Edge array indices for cells " << std::endl;
-  }
+  SPDLOG_LOGGER_TRACE(logger, "########################################");
+  SPDLOG_LOGGER_TRACE(logger, "Edge array indices for cells ");
 
   // Now complete information is available for the construction
   // of cells = entities of co-dimension 0
@@ -667,13 +655,11 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       // Case of a trilateral
 
       // Diagnostics
-      if (output_ctrl_ > 10) {
-        std::cout << "Triangular cell " << cell_index << ": nodes "
-                  << c_node_indices[0] << ", " << c_node_indices[1] << ", "
-                  << c_node_indices[2] << ", edges " << c_edge_indices[0]
-                  << ", " << c_edge_indices[1] << ", " << c_edge_indices[2]
-                  << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(
+          logger, "Triangular cell {}: nodes {}, {}, {}, edges {}, {}, {}",
+          cell_index, c_node_indices[0], c_node_indices[1], c_node_indices[2],
+          c_edge_indices[0], c_edge_indices[1], c_edge_indices[2]);
+
       /*
         Add a trilateral entity to the vector of trilaterals
         Use information in c_node_indices, c_edge_indices to
@@ -702,10 +688,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
             corner2->Geometry()->Global(zero_point);
 
         // Diagnostics
-        if (output_ctrl_ > 10) {
-          std::cout << "Creating triangle with geometry " << std::endl
-                    << triag_corner_coords << std::endl;
-        }
+        SPDLOG_LOGGER_TRACE(logger, "Creating triangle with geometry \n{}",
+                            triag_corner_coords);
 
         // Then create geometry of an affine triangle
         c_geo_ptr = std::make_unique<geometry::TriaO1>(triag_corner_coords);
@@ -719,14 +703,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       // Case of a quadrilateral
 
       // Diagnostics
-      if (output_ctrl_ > 10) {
-        std::cout << "Quadrilateral cell " << cell_index << ": nodes "
-                  << c_node_indices[0] << ", " << c_node_indices[1] << ", "
-                  << c_node_indices[2] << ", " << c_node_indices[3]
-                  << ", edges " << c_edge_indices[0] << ", "
-                  << c_edge_indices[1] << ", " << c_edge_indices[2] << ", "
-                  << c_edge_indices[3] << std::endl;
-      }
+      SPDLOG_LOGGER_TRACE(logger, "Quadrilateral cell {}: nodes {}, edges {}",
+                          cell_index, c_node_indices, c_edge_indices);
+
       /*
         Add a quadrilateral entity to the vector of quadrilaterals
         Use information in c_node_indices, c_edge_indices to
@@ -761,10 +740,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         // Then create geometry of an affine triangle
 
         // Diagnostics
-        if (output_ctrl_ > 0) {
-          std::cout << "Creating quadrilateral with geometry " << std::endl
-                    << quad_corner_coords << std::endl;
-        }
+        SPDLOG_LOGGER_TRACE(logger, "Creating quadrilateral with geometry\n{}",
+                            quad_corner_coords);
 
         c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);
       }
@@ -824,6 +801,6 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     entity_pointers_[1][s.index()] = &s;
   }
 
-}  // end of constructor
+}  // namespace lf::mesh::hybrid2d
 
 }  // namespace lf::mesh::hybrid2d

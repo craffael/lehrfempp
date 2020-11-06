@@ -9,12 +9,10 @@
 
 #include <cmath>
 
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
-#include <lf/base/base.h>
-namespace ci = lf::base::ci;
 #include <lf/assemble/assemble.h>
+#include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
@@ -22,6 +20,8 @@ namespace ci = lf::base::ci;
 #include <lf/uscalfe/uscalfe.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
+
+#include <filesystem>
 
 static unsigned int dbg_ctrl = 0;
 const unsigned int dbg_dofh = 1;
@@ -57,12 +57,14 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
   for (lf::assemble::gdof_idx_t dofnum = 0; dofnum < N; ++dofnum) {
     const lf::mesh::Entity &dof_entity{dofh.Entity(dofnum)};
     tmp_bd_flags[dofnum] = bd_flags(dof_entity);
-    SWITCHEDSTATEMENT(
-        dbg_ctrl, dbg_bdf,
-        std::cout << "FBD: dof " << dofnum << "@ " << dof_entity << " ["
-                  << dofh.Mesh()->Index(dof_entity) << "] ";
-        if (tmp_bd_flags[dofnum]) { std::cout << "ON BOUNDARY"; } std::cout
-        << std::endl);
+    if ((dbg_ctrl & dbg_bdf) > 0) {
+      std::cout << "FBD: dof " << dofnum << "@ " << dof_entity << " ["
+                << dofh.Mesh()->Index(dof_entity) << "] ";
+      if (tmp_bd_flags[dofnum]) {
+        std::cout << "ON BOUNDARY";
+      }
+      std::cout << std::endl;
+    }
   }
   return tmp_bd_flags;
 }
@@ -81,12 +83,13 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
   auto new_last = std::remove_if(
       A->triplets().begin(), A->triplets().end(),
       [&tmp_bd_flags](lf::assemble::COOMatrix<double>::Triplet &triplet) {
-        SWITCHEDSTATEMENT(
-            dbg_ctrl, dbg_elim, if (tmp_bd_flags[triplet.row()]) {
-              std::cout << "EBD: removing " << triplet.row() << ','
-                        << triplet.col() << "[" << triplet.value() << "]"
-                        << std::endl;
-            });
+        if ((dbg_ctrl & dbg_elim) > 0) {
+          if (tmp_bd_flags[triplet.row()]) {
+            std::cout << "EBD: removing " << triplet.row() << ','
+                      << triplet.col() << "[" << triplet.value() << "]"
+                      << std::endl;
+          }
+        }
         return tmp_bd_flags[triplet.row()];
       });
   A->triplets().erase(new_last, A->triplets().end());
@@ -139,26 +142,26 @@ double L2ErrorLinearFEDirichletLaplacian(
   LF_ASSERT_MSG((mesh_p->DimMesh() == 2) && (mesh_p->DimWorld() == 2),
                 "For 2D planar meshes only!");
   // Debugging output
-  SWITCHEDSTATEMENT(
-      dbg_ctrl, dbg_basic,
-      std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
-                << mesh_p->NumEntities(0) << " cells, "
-                << mesh_p->NumEntities(1) << " edges, "
-                << mesh_p->NumEntities(2) << " nodes" << std::endl;)
-  SWITCHEDSTATEMENT(
-      dbg_ctrl, dbg_mesh,
-      const int tmp_mesh_ctrl = lf::mesh::hybrid2d::Mesh::output_ctrl_;
-      lf::mesh::hybrid2d::Mesh::output_ctrl_ = 100;
-      lf::mesh::utils::PrintInfo(*mesh_p, std::cout);
-      lf::mesh::hybrid2d::Mesh::output_ctrl_ = tmp_mesh_ctrl);
+  if (dbg_ctrl & dbg_basic) {
+    std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
+              << mesh_p->NumEntities(0) << " cells, " << mesh_p->NumEntities(1)
+              << " edges, " << mesh_p->NumEntities(2) << " nodes" << std::endl;
+  }
+  if (dbg_ctrl & dbg_mesh) {
+    lf::mesh::utils::PrintInfo(std::cout, *mesh_p, 100);
+  }
+
   // Initialize objects for local computations
   lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
   lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
   // Initialization of index mapping for linear finite elements
   lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_dofh,
-                    std::cout << loc_glob_map << std::endl;);
+
+  if (dbg_ctrl & dbg_dofh) {
+    PrintInfo(std::cout, loc_glob_map, 6);
+  }
+
   // Dimension of finite element space
   const lf::assemble::size_type N_dofs(loc_glob_map.NumDofs());
   // Matrix in triplet format holding Galerkin matrix
@@ -168,12 +171,14 @@ double L2ErrorLinearFEDirichletLaplacian(
   mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
       0, loc_glob_map, loc_mat_laplace);
   // Debugging output
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_trp, mat.PrintInfo(std::cout));
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
-                    std::cout << "Full " << mat.rows() << 'x' << mat.cols()
-                              << " stiffness matrix, " << mat.triplets().size()
-                              << " tripets:\n"
-                              << mat.makeDense() << std::endl);
+  if (dbg_ctrl & dbg_trp) {
+    mat.PrintInfo(std::cout);
+  }
+  if (dbg_ctrl & dbg_mat) {
+    std::cout << "Full " << mat.rows() << 'x' << mat.cols()
+              << " stiffness matrix, " << mat.triplets().size() << " tripets:\n"
+              << mat.makeDense() << std::endl;
+  }
 
   // Filling the right-hand-side vector
   auto rhsvec = lf::assemble::AssembleVectorLocally<Eigen::VectorXd>(
@@ -215,11 +220,12 @@ double L2ErrorLinearFEDirichletLaplacian(
   //   tmp_bd_flags, dirichlet_data, mat, rhsvec);
   // >>
   // Debugging output
-  SWITCHEDSTATEMENT(dbg_ctrl, dbg_mat,
-                    std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
-                              << " stiffness matrix, " << mat.triplets().size()
-                              << " triplets:\n"
-                              << mat.makeDense() << std::endl);
+  if (dbg_ctrl & dbg_mat) {
+    std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
+              << " stiffness matrix, " << mat.triplets().size()
+              << " triplets:\n"
+              << mat.makeDense() << std::endl;
+  }
 
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
@@ -294,8 +300,11 @@ int main(int argc, char **argv) {
   // Processing command line arguments
   bool verbose = false;
   namespace po = boost::program_options;
+
+  po::options_description desc;
+
   // clang-format off
-  ci::Add()
+   desc.add_options()
   ("help,h", "-h -v -f <filename> -s <selection>")
   ("filename,f", "File to load coarse mesh from ")
   ("selector,s", po::value<int>()->default_value(0), "Selection of test mesh")
@@ -304,98 +313,111 @@ int main(int argc, char **argv) {
    "Selector for Dirichlet data and rhs function")
   ("verbose,v", po::bool_switch(&verbose),"Enable verbose mode");
   // clang-format on
-  ci::ParseCommandLine(argc, argv);
-  if (ci::Help()) {
-    // Nothing to be done!
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+
+  if (vm.count("help") > 0) {
+    std::cout << desc << std::endl;
+    return 1;
+  }
+
+  vm.notify();
+
+  // set the level of assemble_matrix_logger to trace
+  // A soon as spdlog 1.8.0 is available via hunter
+  // (https://github.com/cpp-pm/hunter/pull/260) this can be achieved by
+  // setting the environment variable `SPDLOG_LEVEL=trace` or
+  // `SPDLOG_LEVEL="info,lf::assemble::assemble_matrix_logger=trace"`
+  lf::assemble::assemble_matrix_logger->set_level(spdlog::level::trace);
+
+  std::cout << "assemble_matrix_logger level "
+            << lf::assemble::assemble_matrix_logger->level() << "\n";
+  std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
+            << std::endl;
+  // Retrieve number of degrees of freedom for each entity type from
+  // command line arguments
+  if (vm.count("filename") > 0) {
+    // A filename was specified
+    std::string filename{vm["filename"].as<std::string>()};
+    if (filename.length() > 0) {
+      std::cout << "Reading mesh from file " << filename << std::endl;
+      std::filesystem::path here = __FILE__;
+      auto mesh_file_path = here.remove_filename() / filename.c_str();
+      auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+      lf::io::GmshReader reader(std::move(mesh_factory),
+                                mesh_file_path.string());
+      mesh_p = reader.mesh();
+    }
   } else {
-    std::cout << "ass_mat_dbg_ctrl " << lf::assemble::ass_mat_dbg_ctrl << "\n";
-    std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
+    std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
               << std::endl;
-    // Retrieve number of degrees of freedom for each entity type from
-    // command line arguments
-    if (ci::IsSet("filename")) {
-      // A filename was specified
-      std::string filename{ci::Get<std::string>("filename")};
-      if (filename.length() > 0) {
-        std::cout << "Reading mesh from file " << filename << std::endl;
-        boost::filesystem::path here = __FILE__;
-        auto mesh_file_path = here.parent_path() / filename.c_str();
-        auto mesh_factory =
-            std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-        lf::io::GmshReader reader(std::move(mesh_factory),
-                                  mesh_file_path.string());
-        mesh_p = reader.mesh();
+    if (vm.count("selector") > 0) {
+      auto selector = vm["selector"].as<int>();
+      std::cout << "Using test mesh no " << selector << std::endl;
+      if ((selector >= 0) && (selector <= 4)) {
+        mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
       }
-    } else {
-      std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
-                << std::endl;
-      if (ci::IsSet("selector")) {
-        auto selector = ci::Get<int>("selector");
-        std::cout << "Using test mesh no " << selector << std::endl;
-        if ((selector >= 0) && (selector <= 4)) {
-          mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
-        }
-      }
-    }
-    // Set number of refinement levels
-    unsigned int reflevels = ci::Get<int>("reflevels", 2);  // default value: 2
-    unsigned int bvpsel = ci::Get<int>("bvpsel", 0);
-    if (mesh_p == nullptr) {
-      // Default mesh
-      std::cout << "Using default mesh; test mesh 0" << std::endl;
-      mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
-    }
-    // At this point a pointer to the mesh is stored in mesh_p
-    // Output summary information about the coarsest mesh
-    std::cout << "Coarse mesh: " << mesh_p->NumEntities(0) << " cells, "
-              << mesh_p->NumEntities(1) << " edges, " << mesh_p->NumEntities(2)
-              << " vertices" << std::endl;
-    std::cout << reflevels << " refinement levels requested" << std::endl;
-
-    // Problem data provided by function pointers
-    std::function<double(const Eigen::Vector2d &)> u;
-    std::function<double(const Eigen::Vector2d &)> f;
-
-    // Initialize the problem data
-    std::cout << "Problem setting " << bvpsel << " selected" << std::endl;
-    switch (bvpsel) {
-      case 0: {
-        // A linear solution, no error, if contained in FE space
-        f = [](const Eigen::Vector2d & /*unused*/) { return 0.0; };
-        u = [](const Eigen::Vector2d &x) { return (x[0] + 2.0 * x[1]); };
-        break;
-      }
-      case 1: {
-        // Quadratic polynomial solution
-        f = [](const Eigen::Vector2d & /*unused*/) { return -4.0; };
-        u = [](const Eigen::Vector2d &x) {
-          return (std::pow(x[0], 2) + std::pow(x[1], 2));
-        };
-        break;
-      }
-      default: {
-        LF_VERIFY_MSG(false, "Illegal problem number");
-        break;
-      }
-    }
-
-    // Set debugging switches
-    lf::uscalfe::LinearFELaplaceElementMatrix::dbg_ctrl = 0;
-    // LinearFELaplaceElementMatrix::dbg_geo |
-    // LinearFELaplaceElementMatrix::dbg_locmat;
-    lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)>::dbg_ctrl = 0;
-    lf::assemble::DofHandler::output_ctrl_ = 6;
-    dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
-    // lf::assemble::ass_mat_dbg_ctrl = 255;
-
-    // Compute finite element solution and error
-    auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u,
-                                      lf::mesh::utils::MeshFunctionGlobal(f));
-    int level = 0;
-    for (auto &err : L2errs) {
-      std::cout << "L2 error on level " << level << " = " << err << std::endl;
-      level++;
     }
   }
-  return 0;
+  // Set number of refinement levels
+  unsigned int reflevels = vm["reflevels"].as<int>();  // default value: 2
+  unsigned int bvpsel = vm["bvpsel"].as<int>();
+  if (mesh_p == nullptr) {
+    // Default mesh
+    std::cout << "Using default mesh; test mesh 0" << std::endl;
+    mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  }
+  // At this point a pointer to the mesh is stored in mesh_p
+  // Output summary information about the coarsest mesh
+  std::cout << "Coarse mesh: " << mesh_p->NumEntities(0) << " cells, "
+            << mesh_p->NumEntities(1) << " edges, " << mesh_p->NumEntities(2)
+            << " vertices" << std::endl;
+  std::cout << reflevels << " refinement levels requested" << std::endl;
+
+  // Problem data provided by function pointers
+  std::function<double(const Eigen::Vector2d &)> u;
+  std::function<double(const Eigen::Vector2d &)> f;
+
+  // Initialize the problem data
+  std::cout << "Problem setting " << bvpsel << " selected" << std::endl;
+  switch (bvpsel) {
+    case 0: {
+      // A linear solution, no error, if contained in FE space
+      f = [](const Eigen::Vector2d & /*unused*/) { return 0.0; };
+      u = [](const Eigen::Vector2d &x) { return (x[0] + 2.0 * x[1]); };
+      break;
+    }
+    case 1: {
+      // Quadratic polynomial solution
+      f = [](const Eigen::Vector2d & /*unused*/) { return -4.0; };
+      u = [](const Eigen::Vector2d &x) {
+        return (std::pow(x[0], 2) + std::pow(x[1], 2));
+      };
+      break;
+    }
+    default: {
+      LF_VERIFY_MSG(false, "Illegal problem number");
+      break;
+    }
+  }
+
+  // Set debugging switches
+  lf::uscalfe::LinearFELaplaceElementMatrix::logger->set_level(
+      spdlog::level::info);
+  // LinearFELaplaceElementMatrix::dbg_geo |
+  // LinearFELaplaceElementMatrix::dbg_locmat;
+  lf::uscalfe::linear_fe_local_load_vector_logger->set_level(
+      spdlog::level::info);
+
+  dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
+  // lf::assemble::ass_mat_dbg_ctrl = 255;
+
+  // Compute finite element solution and error
+  auto L2errs = SolveDirLaplSeqMesh(mesh_p, reflevels, u,
+                                    lf::mesh::utils::MeshFunctionGlobal(f));
+  int level = 0;
+  for (auto &err : L2errs) {
+    std::cout << "L2 error on level " << level << " = " << err << std::endl;
+    level++;
+  }
 }

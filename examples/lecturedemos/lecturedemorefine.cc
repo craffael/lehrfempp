@@ -20,7 +20,8 @@ void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
 
   // Ouput summary information about hierarchy of nested meshes
-  std::cout << "\t Sequence of nested meshes created\n" << multi_mesh;
+  std::cout << "\t Sequence of nested meshes created\n";
+  multi_mesh.PrintInfo(std::cout);
   // Number of levels
   size_type L = multi_mesh.NumLevels();
 

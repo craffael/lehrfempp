@@ -8,8 +8,6 @@ lin_fe.h
 lin_fe.cc
 loc_comp_ellbvp.h
 loc_comp_ellbvp.cc
-loc_comp_norms.h
-loc_comp_norms.cc
 precomputed_scalar_reference_finite_element.h				
 uniform_scalar_fe_space.h
 uniform_scalar_fe_space.cc

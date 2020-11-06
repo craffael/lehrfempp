@@ -24,3 +24,7 @@ target_link_libraries(lf.uscalfe.test PUBLIC
 target_compile_features(lf.uscalfe.test PUBLIC cxx_std_17)
 gtest_discover_tests(lf.uscalfe.test)
 
+if(WIN32)
+    target_compile_options(lf.uscalfe.test PRIVATE /bigobj)
+endif()
+

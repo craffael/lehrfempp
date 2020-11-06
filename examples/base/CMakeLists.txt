@@ -8,5 +8,3 @@ target_link_libraries(examples.base.ref_el_output PUBLIC Eigen3::Eigen Boost::bo
 
 add_custom_target(examples.base.ref_el_output_run COMMAND examples.base.ref_el_output)
 add_dependencies(examples_run examples.base.ref_el_output_run)
-
-add_subdirectory(comm)

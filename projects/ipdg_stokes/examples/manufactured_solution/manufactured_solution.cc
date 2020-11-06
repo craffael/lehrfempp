@@ -3,10 +3,7 @@
  * @brief Determines the h-convergence of the manufactured solution
  */
 
-#define _USE_MATH_DEFINES
-
-#include <boost/filesystem.hpp>
-#include <cmath>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
@@ -130,7 +127,7 @@ int main() {
   // Compute the solution for each mesh
   std::vector<ProblemSolution> solutions(mesh_count);
   for (lf::base::size_type lvl = 0; lvl < mesh_count; ++lvl) {
-    boost::filesystem::path meshpath = __FILE__;
+    std::filesystem::path meshpath = __FILE__;
     meshpath = meshpath.parent_path() / concat("disk", lvl, ".msh");
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);

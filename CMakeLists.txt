@@ -3,8 +3,8 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.225.tar.gz"
-    SHA1 "4b018ec7b673817475c1fb9f0bd4dfb7c5e7f343"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.273.tar.gz"
+    SHA1 "43ffd06cf0352babdbe28d333adb15379ab59681"
     LOCAL # use cmake/Hunter/config.cmake
 )
 
@@ -23,7 +23,7 @@ if(LF_ENABLE_TESTING)
   enable_testing()
 endif()
 
-option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" ON)
+option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
 
 
 
@@ -31,13 +31,21 @@ option(LF_BUILD_EXAMPLES "Whether the examples and experiments should be built" 
 # (don't forget to update cmake/Config.cmake.in !
 ###############################################################################
 # Get boost
-hunter_add_package(Boost COMPONENTS chrono timer system filesystem program_options)
-find_package(Boost CONFIG REQUIRED chrono timer system filesystem program_options)
+if(LF_BUILD_EXAMPLES)
+  hunter_add_package(Boost COMPONENTS program_options)
+  find_package(Boost CONFIG REQUIRED program_options)
+else()
+  hunter_add_package(Boost)
+  find_package(Boost)
+endif()
 
 # Get Eigen
 hunter_add_package(Eigen)
 find_package(Eigen3 CONFIG REQUIRED)
 
+# Get SPDLog
+hunter_add_package(spdlog)
+find_package(spdlog CONFIG REQUIRED)
 
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)

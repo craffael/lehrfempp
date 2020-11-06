@@ -167,13 +167,6 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
 
 // ******************************************************************************
 
-// Output control for nodal projection
-// TODO(ralfh) putting this in a header file leads to multiple symbols with
-// the name ctrl_l2 CONTROLDECLAREINFO(ctrl_prj, "ctrl_prj",
-//                    "Output control for  NodalProjection()");
-static const unsigned int kout_prj_cell = 1;
-static const unsigned int kout_prj_vals = 2;
-
 /**
  * @brief Computes nodal projection of a mesh function and returns the
  * finite element basis expansion coefficients of the result
@@ -227,12 +220,6 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
     }
     // Topological type of the cell
     const lf::base::RefEl ref_el{cell->RefEl()};
-
-    // TODO(ralfh) uncommend when ctrl_prj is well-defined.
-    // SWITCHEDSTATEMENT(ctrl_prj, kout_prj_cell,
-    //                   std::cout << ref_el << ", shape = \n"
-    //                             << geo_ptr->Global(ref_el.NodeCoords())
-    //                             << std::endl);
 
     // Information about local shape functions on reference element
     auto ref_shape_fns = fe_space.ShapeFunctionLayout(*cell);
@@ -441,55 +428,6 @@ template <typename LOC_COMP, typename COEFFVECTOR>
 double SumCellFEContrib(const lf::assemble::DofHandler &dofh,
                         LOC_COMP &loc_comp, const COEFFVECTOR &uh) {
   return SumCellFEContrib(dofh, loc_comp, uh, base::PredicateTrue{});
-}
-
-/**
- * @brief Computation of an inner product norm of the difference of a finite
- * element function and a general functions.
- *
- * @tparam LOC_NORM_COMP helper type like
- * lf::uscalfe::MeshFunctionL2NormDifference
- * @tparam COEFFVECTOR a vanilla vector type, `std::vector<SCALAR>`
- * @tparam SELECTOR a predicate for selecting cells
- *
- * ### type requirements
- *
- * - The type LOC_NORM_COMP must feature an `isActive()` method for the
- *   selection of cells to be visited, must provide a type `dofvector_t`
- *   for passing coefficients of local shape functions and a method
- * ~~~
- * double operator () (const lf::mesh::Entity &cell, const DOFVECTOR &dofs);
- * ~~~
- *   that performs the local computations and returns the **square** of
- *   the local norm of the difference function
- * - The type COEFFVECTOR must provide component access through `[]`,
- *   a `size()` method telling the vector length, and `value_type` typedef
- *   telling the  component type.
- * - The type functor must provide an evaluation operator `()` taking
- *   a point coordinate vector `Eigen::Vector2d` as an argument.
- *
- * @param dofh Local-to-global index mapping belonging to a finite element space
- * @param loc_comp reference to helper object for local computations
- *        This object must be aware of the shape functions!
- * @param uh coefficient vector of finite element function
- *
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR, typename SELECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh,
-                        SELECTOR &&pred) {
-  const double norm_sq = SumCellFEContrib(dofh, loc_comp, uh, pred);
-  return std::sqrt(norm_sq);
-}
-
-/** @brief Computation of difference of norms for _all_ cells
- *
- * @sa NormOfDifference()
- */
-template <typename LOC_NORM_COMP, typename COEFFVECTOR>
-double NormOfDifference(const lf::assemble::DofHandler &dofh,
-                        LOC_NORM_COMP &loc_comp, const COEFFVECTOR &uh) {
-  return NormOfDifference(dofh, loc_comp, uh, base::PredicateTrue{});
 }
 
 }  // namespace lf::fe
