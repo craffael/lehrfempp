@@ -17,6 +17,7 @@ set(sources
 
 lf_add_library(lf.base ${sources})
 target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost spdlog::spdlog)
+set_target_properties(lf.base PROPERTIES FOLDER "lib")
 
 # enable SPDLOG_DEBUG and SPDLOG_TRACE statements in all modes except release::
 target_compile_definitions(lf.base PUBLIC $<IF:$<CONFIG:Release>,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>)

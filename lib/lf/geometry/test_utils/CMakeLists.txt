@@ -21,3 +21,4 @@ target_link_libraries(lf.geometry.test_utils PUBLIC
   lf.quad
   lf.refinement
 )
+set_target_properties(lf.geometry.test_utils PROPERTIES FOLDER "lib")

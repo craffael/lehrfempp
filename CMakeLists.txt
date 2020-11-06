@@ -28,6 +28,9 @@ option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should 
 option(LF_BUILD_NURBS "Whether the lf.nurbs projects should be built." OFF)
 
 
+# Group targets in folders in Visual Studio/Xcode
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # Get Dependencies
 # (don't forget to update cmake/Config.cmake.in !
 ###############################################################################
@@ -76,6 +79,7 @@ add_subdirectory(doc/doxygen)
 if(LF_BUILD_EXAMPLES)
   # Add custom target which will run all examples
   add_custom_target(examples_run)
+  set_target_properties(examples_run PROPERTIES FOLDER "examples")
   
   add_subdirectory(examples)
   add_subdirectory(experiments)

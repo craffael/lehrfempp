@@ -10,6 +10,7 @@ set(sources
 
 lf_add_library(lf.mesh ${sources})
 target_link_libraries(lf.mesh PUBLIC Eigen3::Eigen lf.base lf.geometry lf.mesh.utils)
+set_target_properties(lf.mesh PROPERTIES FOLDER "lib")
 
 add_subdirectory(hybrid2d)
 add_subdirectory(utils)

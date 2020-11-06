@@ -13,9 +13,11 @@ target_link_libraries(examples.io.vtk_gmsh_demo
   lf.refinement
   lf.io
   )
+set_target_properties(examples.io.vtk_gmsh_demo PROPERTIES FOLDER "examples")
   
 add_custom_target(examples.io.vtk_gmsh_demo_run COMMAND examples.io.vtk_gmsh_demo)
 add_dependencies(examples_run examples.io.vtk_gmsh_demo_run)
+set_target_properties(examples.io.vtk_gmsh_demo_run PROPERTIES FOLDER "examples")
 
 set(mesh_analysis_demo mesh_analysis_demo.cc)
 add_executable(examples.io.mesh_analysis_demo ${mesh_analysis_demo})
@@ -28,5 +30,5 @@ target_link_libraries(examples.io.mesh_analysis_demo
   lf.refinement
   lf.io
   )
-
+set_target_properties(examples.io.mesh_analysis_demo PROPERTIES FOLDER "examples")
 

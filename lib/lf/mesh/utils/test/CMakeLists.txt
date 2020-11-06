@@ -22,4 +22,5 @@ target_link_libraries(lf.mesh.utils.test
   lf.mesh.test_utils
   lf.quad
 )
+set_target_properties(lf.mesh.utils.test PROPERTIES FOLDER "lib")
 gtest_discover_tests(lf.mesh.utils.test)

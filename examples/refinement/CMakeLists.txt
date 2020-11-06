@@ -13,9 +13,10 @@ target_link_libraries(examples.refinement.refinement_demo
         lf.refinement
         lf.io
         )
+set_target_properties(examples.refinement.refinement_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.refinement.refinement_demo_run COMMAND examples.refinement.refinement_demo)
 add_dependencies(examples_run examples.refinement.refinement_demo_run)
-
+set_target_properties(examples.refinement.refinement_demo_run PROPERTIES FOLDER "examples")
 
 
 set(point_refinement_demo point_refinement_demo.cc)
@@ -30,9 +31,10 @@ target_link_libraries(examples.refinement.point_refinement_demo
         lf.mesh.hybrid2d
         lf.refinement
         )
+set_target_properties(examples.refinement.point_refinement_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.refinement.point_refinement_demo_run COMMAND examples.refinement.point_refinement_demo)
 add_dependencies(examples_run examples.refinement.point_refinement_demo_run)
-
+set_target_properties(examples.refinement.point_refinement_demo_run PROPERTIES FOLDER "examples")
 
 
 
@@ -47,9 +49,10 @@ target_link_libraries(examples.refinement.torus_refinement_demo
         lf.mesh.hybrid2d
         lf.refinement
         )
+set_target_properties(examples.refinement.torus_refinement_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.refinement.torus_refinement_demo_run COMMAND examples.refinement.torus_refinement_demo)
 add_dependencies(examples_run examples.refinement.torus_refinement_demo_run)
-
+set_target_properties(examples.refinement.torus_refinement_demo_run PROPERTIES FOLDER "examples")
 
 
 
@@ -62,5 +65,7 @@ target_link_libraries(examples.refinement.second_order_demo
         lf.mesh.hybrid2d
         lf.refinement
         )
+set_target_properties(examples.refinement.second_order_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.refinement.second_order_demo_run COMMAND examples.refinement.second_order_demo)
 add_dependencies(examples_run examples.refinement.second_order_demo_run)
+set_target_properties(examples.refinement.second_order_demo_run PROPERTIES FOLDER "examples")

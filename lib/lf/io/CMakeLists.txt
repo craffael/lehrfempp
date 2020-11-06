@@ -21,6 +21,7 @@ set(sources
 
 lf_add_library(lf.io ${sources})
 target_link_libraries(lf.io PUBLIC Eigen3::Eigen lf.base lf.mesh lf.mesh.utils)
+set_target_properties(lf.io PROPERTIES FOLDER "lib")
 if(WIN32 AND NOT MINGW) 
   target_compile_options(lf.io PRIVATE "/bigobj")
 endif()

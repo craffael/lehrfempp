@@ -17,5 +17,6 @@ target_link_libraries(lf.geometry.test
   lf.quad
   lf.refinement
 )
+set_target_properties(lf.geometry.test PROPERTIES FOLDER "lib")
 
 gtest_discover_tests(lf.geometry.test)

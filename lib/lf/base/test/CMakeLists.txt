@@ -9,4 +9,5 @@ set(sources
 
 add_executable(lf.base.test ${sources})
 target_link_libraries(lf.base.test PUBLIC Eigen3::Eigen Boost::boost GTest::gtest_main lf.base)
+set_target_properties(lf.base.test PROPERTIES FOLDER "lib")
 gtest_discover_tests(lf.base.test)

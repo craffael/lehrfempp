@@ -9,8 +9,10 @@ target_link_libraries(examples.logger.mesh_hierarchy_demo
   lf.refinement
   lf.io
   )
+set_target_properties(examples.logger.mesh_hierarchy_demo PROPERTIES FOLDER "examples")
 add_custom_target(examples.logger.mesh_hierarchy_demo_run COMMAND examples.assemble.dof_demo)
 add_dependencies(examples_run examples.logger.mesh_hierarchy_demo_run)
+set_target_properties(examples.logger.mesh_hierarchy_demo_run PROPERTIES FOLDER "examples")
 
 
 
