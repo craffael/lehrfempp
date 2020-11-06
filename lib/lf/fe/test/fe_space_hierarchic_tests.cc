@@ -294,7 +294,7 @@ TEST(fe_space_hierarchic, tria_dual) {
             const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
             // Only the i-th entry should be 1, all others 0
             for (long j = 0; j < dofs.size(); ++j) {
-              ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+              EXPECT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
                   << "o=" << to_char(o0) << to_char(o1) << to_char(o2)
                   << " p=" << p << " i=" << i << " j=" << j << "\ndofs=["
                   << dofs << "]";

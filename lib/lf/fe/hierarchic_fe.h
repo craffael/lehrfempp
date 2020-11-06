@@ -1129,15 +1129,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                nodevals.block(0, 3 + 3 * Ns, 1, Nt).array() * psidd.array() *
                (ypow.array() * jacd.array() - (2 * i + 4) * jacdd.array()))
                   .sum();
-	  /*
           dofs[idx] *=
               2 * i + 3;  // Normalization factor for the Legendre polynomial
-          dofs[idx] *=
-              (2 * j + 2 * i + 3) /
-              std::pow(
-                  2,
-                  2 * i + 2);  // Normalization factor for the Jacobi Polynomial
-	  */
+          dofs[idx] *= 2 * j + 2 * i +
+                       5;  // Normalization factor for the Jacobi Polynomial
           ++idx;
         }
       }
