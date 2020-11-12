@@ -6,7 +6,7 @@
 
 /**
  * @file
- * @brief Implementation of local computations for Lagrange FE for
+ * @brief Implementation of local computations for FE for
  * 2nd-order linear elliptic boundary value problems.
  * @author Ralf Hiptmair
  * @date October 2018
@@ -15,4 +15,19 @@
 
 #include "loc_comp_ellbvp.h"
 
-namespace lf::fe {}  // end namespace lf::fe
+namespace lf::fe {
+
+std::shared_ptr<spdlog::logger>
+    reaction_diffusion_element_matrix_provider_logger = base::InitLogger(
+        "lf::fe::reaction_diffusion_element_matrix_provider_logger");
+
+std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger =
+    base::InitLogger("lf::fe::mass_edge_matrix_provider_logger");
+
+std::shared_ptr<spdlog::logger> scalar_load_element_vector_provider_logger =
+    base::InitLogger("lf::fe::scalar_load_element_vector_provider_logger");
+
+std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger =
+    base::InitLogger("lf::fe::scalar_load_edge_vector_provider_logger");
+
+}  // end namespace lf::fe
