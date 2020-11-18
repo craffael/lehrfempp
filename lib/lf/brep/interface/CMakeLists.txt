@@ -2,6 +2,7 @@
 set(interface_src
   brep_model.h
   brep_geometry.h
+  interface.h
 )
 
 add_library(lf.brep.interface ${interface_src})

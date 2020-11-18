@@ -11,8 +11,9 @@
 
 #include "brep_geometry.h"
 #include "lf/base/base.h"
+#include "lf/mesh/utils/all_codim_mesh_data_set.h"
 
-namespace lf::brep {
+namespace lf::brep::interface {
 
 class BrepModel {
  protected:
@@ -25,11 +26,14 @@ class BrepModel {
   BrepModel& operator=(BrepModel&&) = delete;
   virtual ~BrepModel() = default;
 
-  [[nodiscard]] virtual std::pair<std::shared_ptr<BrepGeometry>,
+  [[nodiscard]] virtual std::pair<std::unique_ptr<interface::BrepGeometry>,
                                   Eigen::MatrixXd>
-  FindGeometry(const Eigen::MatrixXd& global) const = 0;
+  FindGeometry(base::dim_t dim, const Eigen::MatrixXd& global) const = 0;
+
+  [[nodiscard]] virtual base::size_type NumGeometries(
+      base::dim_t dim) const = 0;
 };
 
-}  // namespace lf::brep
+}  // namespace lf::brep::interface
 
 #endif  // __c7d5be9b848449af86de926a04d5d43c

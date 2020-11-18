@@ -1,5 +1,5 @@
 add_subdirectory(interface)
 
-if(LF_BUILD_OCCT)
+if(OpenCASCADE_FOUND)
   add_subdirectory(occt)
 endif()

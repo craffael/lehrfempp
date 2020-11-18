@@ -42,6 +42,7 @@ bin_clang/
 bin_clang5/
 bin_clang7/
 bin_clang8/
+bin_clang10/
 bin_clang_release/
 bin_scanbuild/
 gcc/
@@ -64,4 +65,5 @@ doc/doxygen/filter.cache
 
 #emacs backup files
 *~
+
 

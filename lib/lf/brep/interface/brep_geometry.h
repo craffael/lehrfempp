@@ -11,17 +11,18 @@
 
 #include "lf/base/base.h"
 
-namespace lf::brep {
+namespace lf::brep::interface {
 
 class BrepGeometry {
  protected:
   BrepGeometry() = default;
 
+  BrepGeometry(const BrepGeometry&) = default;
+  BrepGeometry(BrepGeometry&&) = default;
+  BrepGeometry& operator=(const BrepGeometry&) = default;
+  BrepGeometry& operator=(BrepGeometry&&) = default;
+
  public:
-  BrepGeometry(const BrepGeometry&) = delete;
-  BrepGeometry(BrepGeometry&&) = delete;
-  BrepGeometry& operator=(const BrepGeometry&) = delete;
-  BrepGeometry& operator=(BrepGeometry&&) = delete;
   virtual ~BrepGeometry() = default;
 
   [[nodiscard]] virtual base::dim_t DimGlobal() const = 0;
@@ -31,11 +32,13 @@ class BrepGeometry {
   [[nodiscard]] virtual Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const = 0;
   [[nodiscard]] virtual std::pair<Eigen::VectorXd, Eigen::MatrixXd> Project(
-      const Eigen::MatrixXd& local) const = 0;
+      const Eigen::MatrixXd& global) const = 0;
   [[nodiscard]] virtual std::vector<bool> IsInBoundingBox(
       const Eigen::MatrixXd& global) const = 0;
+  [[nodiscard]] virtual std::vector<bool> IsInside(
+      const Eigen::MatrixXd& local) const = 0;
 };
 
-}  // namespace lf::brep
+}  // namespace lf::brep::interface
 
 #endif  // __b67c777b4ad848da8a7a5125cbff9b73

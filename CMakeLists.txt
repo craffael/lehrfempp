@@ -3,12 +3,11 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.273.tar.gz"
-    SHA1 "43ffd06cf0352babdbe28d333adb15379ab59681"
-    LOCAL # use cmake/Hunter/config.cmake
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.282.tar.gz"
+    SHA1 "6811dd3e10eea8cd6b479a422a828115af1a35ba"
 )
 
-project(LehrFEMpp VERSION 1.0.0 LANGUAGES CXX)
+project(LehrFEMpp VERSION 1.0.0)
 
 # Check that this is not an in-source build:
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -24,9 +23,8 @@ if(LF_ENABLE_TESTING)
 endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
-
 option(LF_BUILD_OCCT "Whether the lf.brep.occt project should be built. This will include OpenCascade via hunter (long compilation)" OFF)
-
+option(LF_ENABLE_CLING "if set to true, we will link with libdl so that cling works" OFF)
 
 # Group targets in folders in Visual Studio/Xcode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -55,8 +53,12 @@ find_package(spdlog CONFIG REQUIRED)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
+if(LF_BUILD_OCCT)
+  hunter_add_package(occt)
+endif()
+find_package(OpenCASCADE CONFIG)
+
 # Add cling support
-option(LF_ENABLE_CLING "if set to true, we will link with libdl so that cling works" OFF)
 if("${LF_ENABLE_CLING}")
   find_library (LIBDL_PATH NAMES dl)
   set(CMAKE_CXX_STANDARD_LIBRARIES "${LIBDL_PATH}")
