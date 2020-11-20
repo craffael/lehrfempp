@@ -26,9 +26,9 @@ class BrepModel {
   BrepModel& operator=(BrepModel&&) = delete;
   virtual ~BrepModel() = default;
 
-  [[nodiscard]] virtual std::pair<std::unique_ptr<interface::BrepGeometry>,
-                                  Eigen::MatrixXd>
-  FindGeometry(base::dim_t dim, const Eigen::MatrixXd& global) const = 0;
+  [[nodiscard]] virtual std::vector<
+      std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>>
+  FindGeometries(base::dim_t dim, const Eigen::MatrixXd& global) const = 0;
 
   [[nodiscard]] virtual base::size_type NumGeometries(
       base::dim_t dim) const = 0;

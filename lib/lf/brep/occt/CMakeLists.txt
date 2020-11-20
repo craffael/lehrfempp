@@ -4,6 +4,8 @@ set(occt_src
   occt_brep_model.cc
   occt_curve_geometry.h
   occt_curve_geometry.cc
+  occt_surface_geometry.h
+  occt_surface_geometry.cc
   occt_utils.h
   occt_utils.cc
 )

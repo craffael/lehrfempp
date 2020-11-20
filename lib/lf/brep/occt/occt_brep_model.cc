@@ -15,6 +15,7 @@
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
 
+#include <GeomAPI_ProjectPointOnSurf.hxx>
 #include "occt_curve_geometry.h"
 #include "occt_utils.h"
 
@@ -51,6 +52,13 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
   explorer.Init(shape_, TopAbs_FACE);
   while (explorer.More()) {
     auto face = TopoDS::Face(explorer.Current());
+
+    if (std::any_of(faces_.begin(), faces_.end(),
+                    [&](const auto& f) { return f.second.IsSame(face); })) {
+      explorer.Next();
+      continue;
+    }
+
     Bnd_OBB obb;
     BRepBndLib::AddOBB(face, obb);
     faces_.emplace_back(std::move(obb), std::move(face));
@@ -58,9 +66,10 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
   }
 }
 
-inline std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>
-OcctBrepModel::FindGeometry(base::dim_t dim,
-                            const Eigen::MatrixXd& global) const {
+inline std::vector<
+    std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>>
+OcctBrepModel::FindGeometries(base::dim_t dim,
+                              const Eigen::MatrixXd& global) const {
   LF_VERIFY_MSG(dim > 0 && dim < 3, "dim must be either 1 or 2.");
   LF_ASSERT_MSG(global.cols() > 0, "global must contain at least one column.");
   LF_ASSERT_MSG(global.rows() > 1 && global.rows() <= 3,
@@ -72,8 +81,13 @@ OcctBrepModel::FindGeometry(base::dim_t dim,
     points.emplace_back(detail::ToPoint(global.col(c)));
   }
 
+  std::vector<
+      std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>>
+      result;
+
   if (dim == 1) {
-    Eigen::MatrixXd result_coord(1, global.cols());
+    // user wants a curve
+    Eigen::MatrixXd result_coord;
 
     for (const auto& e : edges_) {
       // 1) Check if all points are inside the bounding box:
@@ -93,18 +107,44 @@ OcctBrepModel::FindGeometry(base::dim_t dim,
         if (proj.NbPoints() == 0 || proj.LowerDistance() > 1e-5) {
           break;
         }
+        if (result_coord.cols() == 0) {
+          result_coord.resize(1, global.cols());
+        }
         result_coord(0, i) = proj.LowerDistanceParameter();
         if (i + 1 == points.size()) {
-          return {std::make_unique<OcctCurveGeometry>(e.first, e.second),
-                  std::move(result_coord)};
+          result.emplace_back(
+              std::make_unique<OcctCurveGeometry>(e.first, e.second),
+              std::move(result_coord));
+          result_coord = Eigen::MatrixXd();
         }
       }
     }
 
-    // if not found, return nullptr:
-    return {nullptr, Eigen::MatrixXd()};
+    return result;
   } else {
-    LF_ASSERT_MSG(false, "not yet implemented.");
+    LF_VERIFY_MSG(false, "not implemented");
+    // user wants a face:
+    Eigen::MatrixXd result_coord(2, global.cols());
+    for (const auto& f : faces_) {
+      // 1) Check if all points are inside the bounding box:
+      if (std::any_of(points.begin(), points.end(),
+                      [&](const auto& p) { return f.first.IsOut(p); })) {
+        continue;
+      }
+
+      // project points onto face and check if it is within bounds:
+      auto surface = BRep_Tool::Surface(f.second);
+      LF_VERIFY_MSG(
+          !surface.IsNull(),
+          "Unexepected: there is no surface associated with this face.")
+      for (unsigned i = 0; i < points.size(); ++i) {
+        GeomAPI_ProjectPointOnSurf proj(points[i], surface);
+        if (proj.NbPoints() == 0 || proj.LowerDistance() > 1e-5) {
+          break;
+        }
+        proj.LowerDistanceParameters(result_coord(0, i), result_coord(1, i));
+      }
+    }
   }
 }
 

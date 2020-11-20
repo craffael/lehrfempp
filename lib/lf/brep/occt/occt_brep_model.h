@@ -27,9 +27,9 @@ class OcctBrepModel : public interface::BrepModel {
  public:
   explicit OcctBrepModel(std::string_view filename);
 
-  [[nodiscard]] std::pair<std::unique_ptr<interface::BrepGeometry>,
-                          Eigen::MatrixXd>
-  FindGeometry(base::dim_t dim, const Eigen::MatrixXd& global) const override;
+  [[nodiscard]] std::vector<
+      std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>>
+  FindGeometries(base::dim_t dim, const Eigen::MatrixXd& global) const override;
 
   [[nodiscard]] base::size_type NumGeometries(base::dim_t dim) const override {
     LF_ASSERT_MSG(dim == 2 || dim == 1,

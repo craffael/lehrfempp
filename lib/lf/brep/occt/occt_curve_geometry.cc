@@ -51,9 +51,8 @@ Eigen::MatrixXd OcctCurveGeometry::Jacobian(
 
 std::pair<Eigen::VectorXd, Eigen::MatrixXd> OcctCurveGeometry::Project(
     const Eigen::MatrixXd &global) const {
-  LF_ASSERT_MSG(global.rows() == 2 || global.rows() == 3,
-                "global must have 2 or 3 rows.")
-  Eigen::VectorXd distance(1, global.cols());
+  LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.")
+  Eigen::VectorXd distance(global.cols());
   Eigen::MatrixXd parameters(1, global.cols());
 
   for (int i = 0; i < global.cols(); ++i) {
@@ -67,8 +66,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> OcctCurveGeometry::Project(
 
 std::vector<bool> OcctCurveGeometry::IsInBoundingBox(
     const Eigen::MatrixXd &global) const {
-  LF_ASSERT_MSG(global.rows() == 2 || global.rows() == 3,
-                "global must have 2 or 3 rows.")
+  LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.")
 
   std::vector<bool> result(global.cols());
   for (int i = 0; i < global.cols(); ++i) {
