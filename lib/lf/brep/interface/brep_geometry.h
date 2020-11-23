@@ -28,11 +28,11 @@ class BrepGeometry {
   [[nodiscard]] virtual base::dim_t DimGlobal() const = 0;
   [[nodiscard]] virtual base::dim_t DimLocal() const = 0;
 
-  [[nodiscard]] virtual Eigen::MatrixXd Global(
+  [[nodiscard]] virtual Eigen::MatrixXd GlobalMulti(
       const Eigen::MatrixXd& local) const = 0;
-  [[nodiscard]] virtual Eigen::MatrixXd Jacobian(
+  [[nodiscard]] virtual Eigen::MatrixXd JacobianMulti(
       const Eigen::MatrixXd& local) const = 0;
-  [[nodiscard]] virtual std::vector<bool> IsInBoundingBox(
+  [[nodiscard]] virtual std::vector<bool> IsInBoundingBoxMulti(
       const Eigen::MatrixXd& global) const = 0;
 };
 

@@ -25,6 +25,24 @@ class BrepCurve : public BrepGeometry {
 
   [[nodiscard]] virtual Eigen::Vector3d GlobalSingle(double local) const = 0;
   [[nodiscard]] virtual Eigen::Vector3d JacobianSingle(double local) const = 0;
+
+  
+  /**
+   * @brief Project a point onto this curve and retrieve the local coordinates.
+   * @param global The (global) coordinates of the point that should be projeted.
+   * @return The distance of the projected point to the original point (first)
+   *         followed by the local coordinate of the point w.r.t. the curve.
+   *
+   * It's important to realize, that Project may return a point that lies on the underlying
+   * curve but that is "outside" the parameter bounds, i.e. `IsInside() == false`.
+   *
+   * If `IsInside(local) == true`, we have the following identity (up to rounding errors):
+   * `Project(Global(local)) == local`.
+   *
+   * @note This does not necessarily hold if `IsInside(local)==false`!
+   *
+   *
+   */
   [[nodiscard]] virtual std::pair<double, double> Project(
       const Eigen::Vector3d& global) const = 0;
   [[nodiscard]] virtual bool IsInBoundingBoxSingle(

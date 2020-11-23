@@ -19,7 +19,7 @@ std::vector<std::pair<interface::BrepCurve const*, Eigen::RowVectorXd>>
 FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindCurvesMulti(global);
   for (auto& [c, param] : all) {
-    EXPECT_TRUE(c->Global(param).isApprox(global));
+    EXPECT_TRUE(c->GlobalMulti(param).isApprox(global));
     CheckGeometry(c, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
@@ -36,7 +36,7 @@ std::vector<std::pair<interface::BrepSurface const*, Eigen::Matrix2Xd>>
 FindSurfaces(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindSurfacesMulti(global);
   for (auto& [s, param] : all) {
-    EXPECT_TRUE(s->Global(param).isApprox(global));
+    EXPECT_TRUE(s->GlobalMulti(param).isApprox(global));
     CheckGeometry(s, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
@@ -49,7 +49,7 @@ FindSurfaces(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   return all;
 }
 
-TEST(occt, fileDoesntExist) {
+TEST(occtDeathTest, fileDoesntExist) {
   EXPECT_DEATH(OcctBrepModel("invalid.brep2"), "Could not open file");
 }
 
@@ -91,7 +91,7 @@ TEST(occt, rotatedCubeTest) {
   EXPECT_EQ(find_surfaces[0].second.rows(), 2);
   EXPECT_EQ(find_surfaces[0].second.cols(), 4);
   EXPECT_TRUE(
-      find_surfaces[0].first->Global(find_surfaces[0].second).isApprox(global));
+      find_surfaces[0].first->GlobalMulti(find_surfaces[0].second).isApprox(global));
 
   // try to retrieve a face that is outside the parameter bounds:
   // clang-format off
@@ -119,21 +119,30 @@ TEST(occt, bSpline2dTest) {
 
   // find the b-spline curve (which is not linear):
   Eigen::Vector3d midpoint = global.rowwise().sum() / 2;
+  interface::BrepCurve const* bspline;
+  Eigen::RowVectorXd bspline_param;
   for (auto& g : find_result) {
     auto [distance, parameter] = g.first->Project(midpoint);
     if (distance > 1e-5) {
       // this is the bspline curve...
-      // -> check what happens if we retrieve the geometry that lies slightly
-      // outside the parameter bounds of the bspline curve:
-      Eigen::MatrixXd local(1, 1);
-      local(0, 0) = g.second(0, 0) - (g.second(0, 1) - g.second(0, 0)) / 100.;
-
-      auto temp = g.first->Global(local);
-      EXPECT_TRUE(g.first->IsInBoundingBox(temp)[0]);
-      auto temp_result = FindCurves(*model, temp);
-      EXPECT_EQ(temp_result.size(), 0);
+      bspline = g.first;
+      bspline_param = g.second;
     }
   }
+  ASSERT_TRUE(bspline);
+  // -> check what happens if we retrieve the geometry that lies slightly
+  // outside the parameter bounds of the bspline curve:
+  Eigen::MatrixXd local(1, 1);
+  local(0, 0) = bspline_param(0, 0) - (bspline_param(0, 1) - bspline_param(0, 0)) / 100.;
+
+  auto temp = bspline->GlobalMulti(local);
+  EXPECT_TRUE(bspline->IsInBoundingBoxMulti(temp)[0]);
+  auto temp_result = FindCurves(*model, temp);
+  EXPECT_EQ(temp_result.size(), 0);
+
+  // find curves which go through (-13,-6,0) + eps:
+  auto find_result_single= model->FindCurves(Eigen::Vector3d(-13 + 1e-7, -6, 0));
+  ASSERT_EQ(find_result_single.size(), 2);
 
   // retrieve the surface:
   auto find_surface = FindSurfaces(*model, global);

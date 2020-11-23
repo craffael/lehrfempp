@@ -28,17 +28,17 @@ class OcctBrepCurve final : public interface::BrepCurve {
 
   [[nodiscard]] base::dim_t DimGlobal() const override { return 3; }
   [[nodiscard]] base::dim_t DimLocal() const override { return 1; }
-  [[nodiscard]] Eigen::MatrixXd Global(
+  [[nodiscard]] Eigen::MatrixXd GlobalMulti(
       const Eigen::MatrixXd &local) const override;
 
   [[nodiscard]] Eigen::Vector3d GlobalSingle(double local) const override;
-  [[nodiscard]] Eigen::MatrixXd Jacobian(
+  [[nodiscard]] Eigen::MatrixXd JacobianMulti(
       const Eigen::MatrixXd &local) const override;
 
   [[nodiscard]] Eigen::Vector3d JacobianSingle(double local) const override;
   [[nodiscard]] std::pair<double, double> Project(
       const Eigen::Vector3d &global) const override;
-  [[nodiscard]] std::vector<bool> IsInBoundingBox(
+  [[nodiscard]] std::vector<bool> IsInBoundingBoxMulti(
       const Eigen::MatrixXd &global) const override;
 
   [[nodiscard]] bool IsInBoundingBoxSingle(

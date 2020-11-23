@@ -28,22 +28,22 @@ class OcctBrepSurface : public interface::BrepSurface {
 
   [[nodiscard]] base::dim_t DimGlobal() const override { return 3; }
   [[nodiscard]] base::dim_t DimLocal() const override { return 2; }
-  [[nodiscard]] Eigen::MatrixXd Global(
+  [[nodiscard]] Eigen::MatrixXd GlobalMulti(
       const Eigen::MatrixXd& local) const override;
 
-  [[nodiscard]] Eigen::Vector3d GlobalSingle(
+  [[nodiscard]] Eigen::Vector3d Global(
       const Eigen::Vector2d& local) const override;
-  [[nodiscard]] Eigen::MatrixXd Jacobian(
+  [[nodiscard]] Eigen::MatrixXd JacobianMulti(
       const Eigen::MatrixXd& local) const override;
 
-  [[nodiscard]] Eigen::Matrix<double, 3, 2> JacobianSingle(
+  [[nodiscard]] Eigen::Matrix<double, 3, 2> Jacobian(
       const Eigen::Vector2d& local) const override;
   [[nodiscard]] std::pair<double, Eigen::Vector2d> Project(
       const Eigen::Vector3d& global) const override;
-  [[nodiscard]] std::vector<bool> IsInBoundingBox(
+  [[nodiscard]] std::vector<bool> IsInBoundingBoxMulti(
       const Eigen::MatrixXd& global) const override;
 
-  [[nodiscard]] bool IsInBoundingBoxSingle(
+  [[nodiscard]] bool IsInBoundingBox(
       const Eigen::Vector3d& global) const override;
   [[nodiscard]] bool IsInside(const Eigen::Vector2d& local) const override;
 

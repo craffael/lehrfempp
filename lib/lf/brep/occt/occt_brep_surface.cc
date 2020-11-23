@@ -26,7 +26,7 @@ OcctBrepSurface::OcctBrepSurface(TopoDS_Face&& face)
                 "Unexpected: there is no surface associated with this face.");
 }
 
-Eigen::MatrixXd OcctBrepSurface::Global(
+Eigen::MatrixXd OcctBrepSurface::GlobalMulti(
     const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(
       local.rows() == 2,
@@ -34,28 +34,32 @@ Eigen::MatrixXd OcctBrepSurface::Global(
   Eigen::MatrixXd result(3, local.cols());
 
   for (int i = 0; i < local.cols(); ++i) {
-    result.col(i) = GlobalSingle(local.col(i));
+    result.col(i) = Global(local.col(i));
   }
   return result;
 }
 
-Eigen::Vector3d OcctBrepSurface::GlobalSingle(
+Eigen::Vector3d OcctBrepSurface::Global(
     const Eigen::Vector2d& local) const {
   return detail::ToVector(surface_->Value(local.x(), local.y()));
 }
 
-Eigen::MatrixXd OcctBrepSurface::Jacobian(
+Eigen::MatrixXd OcctBrepSurface::JacobianMulti(
     const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(3, 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
-    result.block<3, 2>(0, 2 * i) = JacobianSingle(local.col(i));
+    result.block<3, 2>(0, 2 * i) = Jacobian(local.col(i));
   }
   return result;
 }
 
-Eigen::Matrix<double, 3, 2> OcctBrepSurface::JacobianSingle(
+Eigen::Matrix<double, 3, 2> OcctBrepSurface::Jacobian(
     const Eigen::Vector2d& local) const {
-  LF_ASSERT_MSG(false, "not implemented");
+  Eigen::Matrix<double, 3, 2> result;
+  gp_Pnt p;
+  surface_->D1(local(0), local(1), p, *reinterpret_cast<gp_Vec*>(result.data()),
+               *reinterpret_cast<gp_Vec*>(result.data() + 3));
+  return result;
 }
 
 std::pair<double, Eigen::Vector2d> OcctBrepSurface::Project(
@@ -67,7 +71,7 @@ std::pair<double, Eigen::Vector2d> OcctBrepSurface::Project(
   return {proj.LowerDistance(), v};
 }
 
-std::vector<bool> OcctBrepSurface::IsInBoundingBox(
+std::vector<bool> OcctBrepSurface::IsInBoundingBoxMulti(
     const Eigen::MatrixXd& global) const {
   LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.");
 
@@ -78,7 +82,7 @@ std::vector<bool> OcctBrepSurface::IsInBoundingBox(
   return result;
 }
 
-bool OcctBrepSurface::IsInBoundingBoxSingle(
+bool OcctBrepSurface::IsInBoundingBox(
     const Eigen::Vector3d& global) const {
   return !obb_.IsOut(detail::ToPoint(global));
 }

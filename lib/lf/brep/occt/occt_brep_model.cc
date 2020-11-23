@@ -29,10 +29,15 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
                 "expected a compound type");
 
   // retrieve all edges with their bounding boxes and save them:
-
   auto explorer = TopExp_Explorer(shape_, TopAbs_EDGE);
   while (explorer.More()) {
     auto edge = TopoDS::Edge(explorer.Current());
+
+    if (BRep_Tool::Degenerated(edge)) {
+      // This is a degenerated edge (e.g. the pole edge of a sphere) and doesn't have a geometry -> ignore it.
+      explorer.Next();
+      continue;
+    }
 
     // check if a same edge (same TShape, same location) already exists, and if
     // this is the case skip it:
@@ -126,7 +131,7 @@ std::vector<std::pair<interface::BrepSurface const*, Eigen::Vector2d>>
 OcctBrepModel::FindSurfaces(const Eigen::Vector3d& global) const {
   std::vector<std::pair<interface::BrepSurface const*, Eigen::Vector2d>> result;
   for (const auto& f : faces_) {
-    if (!f.IsInBoundingBoxSingle(global)) {
+    if (!f.IsInBoundingBox(global)) {
       continue;
     }
     auto [dist, param] = f.Project(global);
@@ -146,7 +151,7 @@ OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
     // 1) Check if all points are inside the bounding box:
     if ([&]() {
           for (int i = 0; i < global.cols(); ++i) {
-            if (!f.IsInBoundingBoxSingle(global.col(i))) {
+            if (!f.IsInBoundingBox(global.col(i))) {
               return true;
             }
           }

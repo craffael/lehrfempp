@@ -1,9 +1,10 @@
 include(GoogleTest)
 
 set(sources
-  utils.h
+  occt_brep_curve_tests.cc
   occt_brep_model_tests.cc
-  occt_curve_geometry_tests.cc
+  occt_brep_surface_tests.cc
+  utils.h
 )
 
 add_executable(lf.brep.occt.test ${sources})

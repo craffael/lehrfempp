@@ -23,13 +23,13 @@ class BrepSurface : public BrepGeometry {
  public:
   ~BrepSurface() = default;
 
-  [[nodiscard]] virtual Eigen::Vector3d GlobalSingle(
+  [[nodiscard]] virtual Eigen::Vector3d Global(
       const Eigen::Vector2d& local) const = 0;
-  [[nodiscard]] virtual Eigen::Matrix<double, 3, 2> JacobianSingle(
+  [[nodiscard]] virtual Eigen::Matrix<double, 3, 2> Jacobian(
       const Eigen::Vector2d& local) const = 0;
   [[nodiscard]] virtual std::pair<double, Eigen::Vector2d> Project(
       const Eigen::Vector3d& global) const = 0;
-  [[nodiscard]] virtual bool IsInBoundingBoxSingle(
+  [[nodiscard]] virtual bool IsInBoundingBox(
       const Eigen::Vector3d& global) const = 0;
   [[nodiscard]] virtual bool IsInside(const Eigen::Vector2d& local) const = 0;
 };

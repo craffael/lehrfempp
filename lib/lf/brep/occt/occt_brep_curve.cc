@@ -21,11 +21,12 @@ namespace /* anonymous */ {}  // namespace
 OcctBrepCurve::OcctBrepCurve(TopoDS_Edge &&edge) : edge_(edge) {
   BRepBndLib::AddOBB(edge_, obb_);
   curve_ = BRep_Tool::Curve(edge_, umin_, umax_);
+
   LF_VERIFY_MSG(!curve_.IsNull(),
                 "Unexpected: there is no curve associated with this edge.");
 }
 
-Eigen::MatrixXd OcctBrepCurve::Global(const Eigen::MatrixXd &local) const {
+Eigen::MatrixXd OcctBrepCurve::GlobalMulti(const Eigen::MatrixXd &local) const {
   LF_ASSERT_MSG(local.rows() == 1,
                 "local must have exactly one row because this is a curve (1D).")
   Eigen::MatrixXd result(3, local.cols());
@@ -41,7 +42,7 @@ Eigen::Vector3d OcctBrepCurve::GlobalSingle(double local) const {
   return detail::ToVector(p);
 }
 
-Eigen::MatrixXd OcctBrepCurve::Jacobian(
+Eigen::MatrixXd OcctBrepCurve::JacobianMulti(
     const Eigen::MatrixXd &local) const {
   LF_ASSERT_MSG(local.rows() == 1,
                 "local must have exactly one row because this is a curve (1D).")
@@ -61,12 +62,11 @@ Eigen::Vector3d OcctBrepCurve::JacobianSingle(double local) const {
 
 std::pair<double, double> OcctBrepCurve::Project(
     const Eigen::Vector3d &global) const {
-  GeomAPI_ProjectPointOnCurve proj(detail::ToPoint(global), curve_, umin_,
-                                   umax_);
+  GeomAPI_ProjectPointOnCurve proj(detail::ToPoint(global), curve_);
   return {proj.LowerDistance(), proj.LowerDistanceParameter()};
 }
 
-std::vector<bool> OcctBrepCurve::IsInBoundingBox(
+std::vector<bool> OcctBrepCurve::IsInBoundingBoxMulti(
     const Eigen::MatrixXd &global) const {
   LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.")
 
