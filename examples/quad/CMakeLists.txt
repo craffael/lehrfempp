@@ -14,8 +14,10 @@ target_link_libraries(examples.quad.quad_demo
   lf.io
   lf.quad
   )
-  
+set_target_properties(examples.quad.quad_demo PROPERTIES FOLDER "examples") 
+ 
 add_custom_target(examples.quad.quad_demo_run COMMAND examples.quad.quad_demo)
+set_target_properties(examples.quad.quad_demo_run PROPERTIES FOLDER "examples")
 add_dependencies(examples_run examples.quad.quad_demo_run)
     
 

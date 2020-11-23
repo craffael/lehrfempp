@@ -16,6 +16,7 @@ add_executable(projects.dpg.test ${src})
 target_link_libraries(projects.dpg.test PUBLIC
   Eigen3::Eigen Boost::boost GTest::gtest_main lf.mesh lf.refinement lf.assemble lf.quad
   lf.mesh.hybrid2d lf.io lf.io.test_utils lf.mesh.utils lf.mesh.test_utils lf.uscalfe projects.dpg)
+set_target_properties(projects.dpg.test PROPERTIES FOLDER "projects/dpg")
 target_compile_features(projects.dpg.test PUBLIC cxx_std_17)
 gtest_discover_tests(projects.dpg.test)
 

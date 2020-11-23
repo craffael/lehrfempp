@@ -24,4 +24,5 @@ set(sources
 
 add_library(docsnippets ${sources})
 target_link_libraries(docsnippets PUBLIC Eigen3::Eigen lf.base lf.mesh lf.geometry lf.assemble)
+set_target_properties(docsnippets PROPERTIES FOLDER "doc")
 target_compile_features(docsnippets PUBLIC cxx_std_17)

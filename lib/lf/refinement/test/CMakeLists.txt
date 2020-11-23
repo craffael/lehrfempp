@@ -20,6 +20,7 @@ target_link_libraries(lf.refinement.test
   lf.io
   lf.io.test_utils
   )
+set_target_properties(lf.refinement.test PROPERTIES FOLDER "lib")
 
 gtest_discover_tests(lf.refinement.test)
 
@@ -39,5 +40,6 @@ target_link_libraries(lf.refinement.rrt_test
   lf.io
   lf.io.test_utils
   )
+set_target_properties(lf.refinement.rrt_test PROPERTIES FOLDER "lib")
 
 gtest_discover_tests(lf.refinement.rrt_test)

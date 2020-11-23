@@ -24,6 +24,7 @@ set(sources
 
 lf_add_library(lf.mesh.utils ${sources})
 target_link_libraries(lf.mesh.utils PUBLIC Eigen3::Eigen Boost::boost lf.mesh)
+set_target_properties(lf.mesh.utils PROPERTIES FOLDER "lib")
 target_compile_features(lf.mesh.utils PUBLIC cxx_std_17)
 
 if(LF_ENABLE_TESTING)
