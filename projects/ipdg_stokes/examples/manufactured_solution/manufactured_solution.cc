@@ -3,6 +3,8 @@
  * @brief Determines the h-convergence of the manufactured solution
  */
 
+#define _USE_MATH_DEFINES
+
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
