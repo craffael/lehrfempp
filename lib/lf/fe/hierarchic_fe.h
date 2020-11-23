@@ -274,7 +274,7 @@ struct JacobiPoly {
    *
    * The derivative is evaluated using
    * \f[
-   *	P^{(\alpha,0)}_n'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
+   *	{P^{(\alpha,0)}_n}'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
    * \f]
    */
   static SCALAR derivative(unsigned n, double alpha, double x) {
@@ -328,12 +328,12 @@ struct JacobiPoly {
 Eigen::VectorXd chebyshevNodes(unsigned n);
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @brief Linear finite element on a point
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
  * of dimension 0, which is exactly one scalar value. It is an ingredient
- * of all Lagrange type finite element spaces (any degree).
+ * of all hierarchic finite element spaces.
  */
 template <class SCALAR>
 class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
@@ -375,10 +375,39 @@ class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
- * @brief HP Finite Elements of arbitrary degree on segments
+ * @headerfile lf/fe/fe.h
+ * @brief Hierarchic Finite Elements of arbitrary degree on segments
  *
- * The Shape Functions are taken from the following paper:
+ * The shape functions associated with the vertices are given by
+ * \f[
+ *  \begin{align*}
+ *	\widehat{b^\cdot}^1(\widehat{x}) &= 1 - \widehat{x} \\
+ *	\widehat{b^\cdot}^2(\widehat{x}) &= \widehat{x}
+ *  \end{align*}
+ * \f]
+ * and the interior basis functions associated with the segment itself
+ * are given by the integrated shifted Legendre polynomials
+ * \f[
+ *  \widehat{b^-}^i(\widehat{x}) = L_i(\widehat{x}) = \int_0^{\widehat{x}}\!
+ *P_{i-1}(\xi) \,\mathrm{d}\xi \quad\mbox{ for }\quad i= 2, \cdots, p \f] where
+ *\f$P_i : [0, 1] \to \mathbb{R}\f$ is the shifted Legendre polynomial of degree
+ *\f$i\f$.
+ *
+ * To compute the basis function coefficients from point evaluations of a
+ *function, we make use of the dual basis given by \f[ \lambda_i^-[f] =
+ *\begin{cases}
+ *	f(0) &\mbox{ for } i = 0 \\
+ *	f(1) &\mbox{ for } i = 1 \\
+ *	\frac{1}{2i - 1} \left [P_{i-1}(1)f(1) - P_{i-1}(0)f(0) - \int_0^1\!
+ *P_{i-1}'(x)f(x) \,\mathrm{d}x \right] &\mbox{ for } i \geq 2 \end{cases} \f]
+ *
+ * @attention Note that the local coordinate \f$\widehat{x}\f$ may be flipped by
+ *applying an affine transformation \f$\widehat{x} \mapsto 1 - \widehat{x}\f$.
+ * This must be done if the relative orientation of the edge is
+ *`lf::mesh::Orientation::negative` in order to keep a global ordering of DOFs
+ *on the cell interfaces.
+ *
+ * @note The Shape Functions are taken from the following paper:
  * https://arxiv.org/pdf/1504.03025.pdf
  *
  * @see ScalarReferenceFiniteElement
@@ -490,7 +519,6 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /**
-   * @brief p+1 shape functions
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
@@ -504,11 +532,11 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
    * This function computes the basis function coefficients using the dual
    * basis of the basis functions on the segment. It is given by
    * \f[
-   *	\lambda_i^e[f] = \begin{cases}
-   *	    f(0) &\mbox{ for } i = 0 \\
-   *	    f(1) &\mbox{ for } i = 1 \\
-   *	    P_{i-1}(1)f(1) - P_{i-1}(0)f(0) - \int_0^1\! P_{i-1}'(x)f(x)
-   *\,\mathrm{d}x &\mbox{ for } i \geq 2 \end{cases} \f]
+   *  \lambda_i^-[f] = \begin{cases}
+   *	f(0) &\mbox{ for } i = 0 \\
+   *	f(1) &\mbox{ for } i = 1 \\
+   *	\frac{1}{2i - 1} \left [P_{i-1}(1)f(1) - P_{i-1}(0)f(0) - \int_0^1\!
+   *P_{i-1}'(x)f(x) \,\mathrm{d}x \right] &\mbox{ for } i \geq 2 \end{cases} \f]
    */
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
@@ -542,10 +570,76 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
- * @brief HP Finite Elements of arbitrary degree on triangles
+ * @headerfile lf/fe/fe.h
+ * @brief Hierarchic Finite Elements of arbitrary degree on triangles
  *
- * The Shape Functions are taken from the following paper:
+ * The shape functions associated with the vertices are given by the barycentric
+ *coordinates \f[ \begin{align*}
+ *	\widehat{b^{\cdot}}^1(\widehat{x}, \widehat{y}) &= \lambda_1 = 1 -
+ *\widehat{x} - \widehat{y} \\
+ *	\widehat{b^{\cdot}}^2(\widehat{x}, \widehat{y}) &= \lambda_2 =
+ *\widehat{x} \\ \widehat{b^{\cdot}}^3(\widehat{x}, \widehat{y}) &= \lambda_3 =
+ *\widehat{y} \end{align*} \f]
+ *
+ * The basis functions associated with the triangle edges are given by the
+ *homogenized integrated Legendre polynomials \f[ \begin{align*}
+ *	\widehat{b^-}^i(\widehat{x}, \widehat{y}) &= (\lambda_1 + \lambda_2)^i
+ *L_i\left(\frac{\lambda_2}{\lambda_1+\lambda_2}\right) &\mbox{ for edge 1 and }
+ *i = 2, \cdots, p \\
+ *	\widehat{b^-}^i(\widehat{x}, \widehat{y}) &= (\lambda_2 + \lambda_3)^i
+ *L_i\left(\frac{\lambda_3}{\lambda_2+\lambda_3}\right) &\mbox{ for edge 2 and }
+ *i = 2, \cdots, p \\ \widehat{b^-}^i(\widehat{x}, \widehat{y}) &= (\lambda_3 +
+ *\lambda_1)^i L_i\left(\frac{\lambda_1}{\lambda_3+\lambda_1}\right) &\mbox{ for
+ *edge 3 and } i = 2, \cdots, p \end{align*} \f] Note that the basis function on
+ *a specific edge is always zero on the other two edges. This is needed to
+ *guarantee continuity of the function space.
+ *
+ * The basis functions associated with the interior of the triangle are given by
+ *the edge basis functions multiplied with an integrated Jacobi polynomial to
+ *force the value of the basis function to be zero on all edges. \f[
+ *  \widehat{b^{\triangle}}^{ij}(\widehat{x}, \widehat{y}) = (\lambda_1 +
+ *\lambda_2)^i L_i\left(\frac{\lambda_2}{\lambda_1+\lambda_2}\right)
+ *L_j^{2i}(\lambda_3) \quad\mbox{ for } i \geq 2, j \geq 1, i+j = 3, \cdots, p
+ * \f]
+ * where \f$L_i : [0, 1] \to \mathbb{R}\f$ and \f$L_i^{\alpha} : [0, 1] \to
+ *\mathbb{R}\f$ are the integrated shifted Legendre and integrated shifted
+ *Jacobi polynomials respectively: \f[ \begin{align*}
+ *	L_i(x) &= \int_0^x\! P_{i-1}(\xi) \,\mathrm{d}\xi \\
+ *	L_i^{\alpha}(x) &= \int_0^x\! P_{i-1}^{(\alpha, 0)}(\xi) \,\mathrm{d}\xi
+ *  \end{align*}
+ * \f]
+ *
+ * To compute the basis function coefficientsfrom point evaluations of a
+ *function, we make use of the dual basis. For the vertices it is simply given
+ *by \f[ \lambda_i^{\cdot}[f] = \begin{cases}
+ *	f(0, 0) &\mbox{ for } i = 1 \\
+ *	f(1, 0) &\mbox{ for } i = 2 \\
+ *	f(0, 1) &\mbox{ for } i = 3
+ *  \end{cases}
+ * \f]
+ * For the dual basis on the edges, we simply apply the segment dual basis along
+ *the edges of the triangle \f[ \lambda_i^-[f] = \begin{cases}
+ *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(1, 0) - P_{i-1}(0)f(0, 0) - \int_0^1\!
+ *P_{i-1}'(x)f(x, 0) \,\mathrm{d}x \right] &\mbox{ for edge 1} \\
+ *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(0, 1) - P_{i-1}(0)f(1, 0) - \int_0^1\!
+ *P_{i-1}'(x)f(1-x, x) \,\mathrm{d}{x} \right] &\mbox{ for edge 2} \\
+ *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(0, 0) - P_{i-1}(0)f(0, 1) - \int_0^1\!
+ *P_{i-1}'(x)f(0, 1-x) \,\mathrm{d}x \right] &\mbox{ for edge 2} \end{cases} \f]
+ * The dual basis for the interior shape functions is quite a bit more involved.
+ *It is given by \f[ \lambda_{ij}^{\triangle}[f] = \frac{1}{(2i-1)(2i+2j-1)}
+ *\left[ \int_0^1\! \int_0^{1-y}\! f(x, y) \left( (1-y)^{i-1}{L_j^{2i}}''(y) -
+ *2i(1-y)^{i-2}{L_j^{2i}}'(y) \right) L_{j+1}''\left(\frac{x}{1-y}\right)
+ *\,\mathrm{d}x \,\mathrm{d}y \right] \f] and must additionally be
+ *orthogonalized with respect to the dual basis on the vertices and edges of the
+ *triangle by subtracting them accordingly.
+ *
+ * @attention Note that for the basis functions associated with the edges,
+ *depending on the `lf::mesh::Orientation` of the according edge, the local
+ *coordinate may be flipped to ensure continuity of the function space over the
+ *cell interfaces of the mesh. The basis functions and the dual basis must be
+ * adjusted accordingly in this case.
+ *
+ * @note The Shape Functions are taken from the following paper:
  * https://arxiv.org/pdf/1504.03025.pdf
  *
  * @see ScalarReferenceFiniteElement
@@ -939,8 +1033,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /**
-   * @brief Evaluation nodes are the vertices, the Chebyshev nodes of degree p-1
-   * on the edges and the corresponding nodes on the triangle
+   * @brief Evaluation nodes are the vertices, the points of a Gauss
+   * quadrature rule for each edge and the points of a quadrature rule
+   * on the interior of the triangle.
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
@@ -980,13 +1075,12 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     } else {
       nodes.block(1, 3 + 2 * Ns, 1, Ns) = qr_dual_segment_.Points();
     }
-    // Add the quadrature points for the face
+    // Add the quadrature points for the interior
     nodes.block(0, 3 + 3 * Ns, 2, Nt) = qr_dual_tria_.Points();
     return nodes;
   }
 
   /**
-   * @brief (p+1)*(p+2)/2 evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {
@@ -1014,9 +1108,6 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         basis_functions.block(0, 0, 3 * Degree(), basis_functions.cols());
     const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> boundary_face_dofs =
         NodalValuesToFaceDofs(boundary_function);
-    // std::cout << "Uncompensated DOFs = [" << dofs << "]" << std::endl;
-    // std::cout << "Compensation Terms = [" << boundary_face_dofs << "]" <<
-    // std::endl;
     dofs.segment(3 * Degree(), NumRefShapeFunctions(0)) -= boundary_face_dofs;
     return dofs;
   }
@@ -1155,11 +1246,23 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 };
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
- * @brief HP Finite Elements of arbitrary degre
- * e on quadrilaterals
+ * @headerfile lf/fe/fe.h
+ * @brief Hierarchic Finite Elements of arbitrary degree on quadrilaterals
  *
- * The Shape Functions are taken from the following paper:
+ * The basis functions on the quadrilateral has a tensor product structure and
+ * can thus be represented by products of basis functions on segments.
+ * The basis functions are therefore given by
+ * \f[
+ *  \widehat{b^{\square}}^{ij}(\widehat{x}, \widehat{y}) =
+ * \widehat{b}^i(\widehat{x})\widehat{b}^j(\widehat{y}) \f] where
+ * \f$\widehat{b}^i(\widehat{x})\f$ and \f$\widehat{b}^j(\widehat{y})\f$ are the
+ * basis functions on a segment.
+ *
+ * The dual basis is therefore also quite simple, as we can recycle the one from
+ * the segments by first applying the dual basis along the \f$x\f$-axis and then
+ * apply the dual basis to the resulting 1d function.
+ *
+ * @note The Shape Functions are taken from the following paper:
  * https://arxiv.org/pdf/1504.03025.pdf
  *
  * @see ScalarReferenceFiniteElement
@@ -1412,8 +1515,9 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /**
-   * @brief Evaluation nodes are the vertices, the Chebyshev nodes of degree p-1
-   * on the edges and the corresponding nodes on the quadrilateral
+   * @brief Evaluation nodes are the vertices, the points of
+   * a quadrature rule on each edge and the points of a quadrature
+   * rule on the interior of the quadrilateral.
    * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
@@ -1469,7 +1573,6 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   /**
-   * @brief (p+1)^2 evaluation nodes
    * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] lf::base::size_type NumEvaluationNodes() const override {

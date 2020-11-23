@@ -17,6 +17,20 @@ namespace lf::fe {
 
 /**
  * @brief Lagrangian Finite Element Space of arbitrary degree
+ *
+ * @tparam SCALAR underlying scalar type, usually either `double` or
+ * `complex<double>`
+ *
+ * This FE Space contains hierarchic Finite Elements, meaning that
+ * the function spaces of lower polynomial degree are contained
+ * in the higher order function spaces.
+ *
+ * The polynomial degree is constant over the whole mesh meaning
+ * that there is no \f$p\f$-refinement supported.
+ *
+ * @note Some of the pointers may be NULL. For instance, if all computations
+ *       are done on purely triangular meshes then a finite element
+ * specification for quadrilaterals need not be given.
  */
 template <typename SCALAR>
 class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
