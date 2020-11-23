@@ -34,48 +34,6 @@ using glb_idx_t = lf::assemble::glb_idx_t;
 using sub_idx_t = lf::base::sub_idx_t;
 
 /**
- * @brief Print information about a ScalarReferenceFiniteElement to the given
- * stream.
- *
- * @param o stream to which output is to be sent
- * @param srfe The ScalarReferenceFiniteElement that should be printed.
- * @param ctrl controls the level of detail that is printed (see below)
- * @return reference to the same stream
- *
- *
- * #### Level of output:
- * - ctrl = 0: Only the type of the FiniteElementSpace, degree and number of
- * ShapeFunctions/Evaluation nodes are printed
- * - ctrl > 0: Also the coordinates of the evaluation nodes are
- * printed.
- *
- * @relates ScalarReferenceFiniteElement
- */
-template <class SCALAR>
-void PrintInfo(std::ostream& o,
-               const lf::fe::ScalarReferenceFiniteElement<SCALAR>& srfe,
-               unsigned int ctrl = 0) {
-  o << typeid(srfe).name() << ", degree = " << srfe.Degree()
-    << ", n_rsf = " << srfe.NumRefShapeFunctions()
-    << ", n_evln = " << srfe.NumEvaluationNodes();
-  if (ctrl > 0) {
-    o << "\n evl nodes = " << srfe.EvaluationNodes();
-  }
-}
-
-/** @brief Stream output operator: just calls the
- * ScalarReferenceFiniteElement::print() method
- * @relates ScalarReferenceFiniteElement
- */
-template <typename SCALAR>
-std::ostream& operator<<(
-    std::ostream& o,
-    const lf::fe::ScalarReferenceFiniteElement<SCALAR>& fe_desc) {
-  PrintInfo(o, fe_desc, 0);
-  return o;
-}
-
-/**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Linear Lagrange finite element on triangular reference element
  *

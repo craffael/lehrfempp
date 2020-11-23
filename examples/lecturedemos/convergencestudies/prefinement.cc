@@ -355,7 +355,7 @@ int main(int argc, char *argv[]) {
   const std::string output_file = vm["output"].as<std::string>();
   const unsigned max_p = vm["max_p"].as<unsigned>();
 
-  const filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   // Load the unit square mesh
   const auto square_mesh = getSquareDomain();
   lf::io::writeTikZ(*square_mesh, "unitsquare.tikz", lf::io::TikzOutputCtrl(31));
