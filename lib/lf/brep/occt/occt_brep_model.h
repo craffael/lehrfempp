@@ -19,7 +19,8 @@
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 
-#include "lf/mesh/utils/all_codim_mesh_data_set.h"
+#include "occt_brep_curve.h"
+#include "occt_brep_surface.h"
 
 namespace lf::brep::occt {
 
@@ -27,24 +28,32 @@ class OcctBrepModel : public interface::BrepModel {
  public:
   explicit OcctBrepModel(std::string_view filename);
 
-  [[nodiscard]] std::vector<
-      std::pair<std::unique_ptr<interface::BrepGeometry>, Eigen::MatrixXd>>
-  FindGeometries(base::dim_t dim, const Eigen::MatrixXd& global) const override;
+  [[nodiscard]] std::vector<std::pair<interface::BrepCurve const *, double>>
+  FindCurves(const Eigen::Vector3d &global) const override;
 
-  [[nodiscard]] base::size_type NumGeometries(base::dim_t dim) const override {
-    LF_ASSERT_MSG(dim == 2 || dim == 1,
-                  "OcctBRepModel contains only 1d or 2d BrepGeometries");
-    if (dim == 1) {
-      return edges_.size();
-    } else {
-      return faces_.size();
-    }
+  [[nodiscard]] std::vector<
+      std::pair<interface::BrepCurve const *, Eigen::RowVectorXd>>
+  FindCurvesMulti(const Eigen::Matrix3Xd &global) const override;
+
+  [[nodiscard]] std::vector<
+      std::pair<interface::BrepSurface const *, Eigen::Vector2d>>
+  FindSurfaces(const Eigen::Vector3d &global) const override;
+
+  [[nodiscard]] std::vector<
+      std::pair<interface::BrepSurface const *, Eigen::Matrix2Xd>>
+  FindSurfacesMulti(const Eigen::Matrix3Xd &global) const override;
+
+  [[nodiscard]] base::size_type NumCurves() const override {
+    return edges_.size();
+  }
+  [[nodiscard]] base::size_type NumSurfaces() const override {
+    return faces_.size();
   }
 
  private:
   TopoDS_Shape shape_;
-  std::vector<std::pair<Bnd_OBB, TopoDS_Edge>> edges_;
-  std::vector<std::pair<Bnd_OBB, TopoDS_Face>> faces_;
+  std::vector<OcctBrepCurve> edges_;
+  std::vector<OcctBrepSurface> faces_;
 };
 
 }  // namespace lf::brep::occt

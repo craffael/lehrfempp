@@ -17,27 +17,39 @@
 
 namespace lf::brep::occt {
 
-class OcctSurfaceGeometry : public interface::BrepGeometry {
+class OcctBrepSurface : public interface::BrepSurface {
  public:
-  OcctSurfaceGeometry(TopoDS_Face&& face);
-  OcctSurfaceGeometry(const OcctSurfaceGeometry&) = default;
-  OcctSurfaceGeometry(OcctSurfaceGeometry&&) = default;
-  OcctSurfaceGeometry& operator=(const OcctSurfaceGeometry&) = default;
-  OcctSurfaceGeometry& operator=(OcctSurfaceGeometry&&) = default;
-  ~OcctSurfaceGeometry() = default;
+  OcctBrepSurface(TopoDS_Face&& face);
+  OcctBrepSurface(const OcctBrepSurface&) = default;
+  OcctBrepSurface(OcctBrepSurface&&) = default;
+  OcctBrepSurface& operator=(const OcctBrepSurface&) = default;
+  OcctBrepSurface& operator=(OcctBrepSurface&&) = default;
+  ~OcctBrepSurface() = default;
 
   [[nodiscard]] base::dim_t DimGlobal() const override { return 3; }
   [[nodiscard]] base::dim_t DimLocal() const override { return 2; }
   [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override;
+
+  [[nodiscard]] Eigen::Vector3d GlobalSingle(
+      const Eigen::Vector2d& local) const override;
   [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override;
-  [[nodiscard]] std::pair<Eigen::VectorXd, Eigen::MatrixXd> Project(
-      const Eigen::MatrixXd& global) const override;
+
+  [[nodiscard]] Eigen::Matrix<double, 3, 2> JacobianSingle(
+      const Eigen::Vector2d& local) const override;
+  [[nodiscard]] std::pair<double, Eigen::Vector2d> Project(
+      const Eigen::Vector3d& global) const override;
   [[nodiscard]] std::vector<bool> IsInBoundingBox(
       const Eigen::MatrixXd& global) const override;
-  [[nodiscard]] std::vector<bool> IsInside(
-      const Eigen::MatrixXd& local) const override;
+
+  [[nodiscard]] bool IsInBoundingBoxSingle(
+      const Eigen::Vector3d& global) const override;
+  [[nodiscard]] bool IsInside(const Eigen::Vector2d& local) const override;
+
+  // OCCT specific member functions:
+
+  [[nodiscard]] const TopoDS_Face& Face() const { return face_; }
 
  private:
   TopoDS_Face face_;

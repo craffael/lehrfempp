@@ -16,28 +16,38 @@
 
 namespace lf::brep::occt {
 
-class OcctCurveGeometry final : public interface::BrepGeometry {
+class OcctBrepCurve final : public interface::BrepCurve {
  public:
-  explicit OcctCurveGeometry(const Bnd_OBB &obb, const TopoDS_Edge &edge);
+  explicit OcctBrepCurve(TopoDS_Edge &&edge);
 
-  OcctCurveGeometry(const OcctCurveGeometry &) = default;
-  OcctCurveGeometry(OcctCurveGeometry &&) = default;
-  OcctCurveGeometry &operator=(const OcctCurveGeometry &) = default;
-  OcctCurveGeometry &operator=(OcctCurveGeometry &&) = default;
-  virtual ~OcctCurveGeometry() = default;
+  OcctBrepCurve(const OcctBrepCurve &) = default;
+  OcctBrepCurve(OcctBrepCurve &&) = default;
+  OcctBrepCurve &operator=(const OcctBrepCurve &) = default;
+  OcctBrepCurve &operator=(OcctBrepCurve &&) = default;
+  virtual ~OcctBrepCurve() = default;
 
   [[nodiscard]] base::dim_t DimGlobal() const override { return 3; }
   [[nodiscard]] base::dim_t DimLocal() const override { return 1; }
   [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd &local) const override;
+
+  [[nodiscard]] Eigen::Vector3d GlobalSingle(double local) const override;
   [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd &local) const override;
-  [[nodiscard]] std::pair<Eigen::VectorXd, Eigen::MatrixXd> Project(
-      const Eigen::MatrixXd &global) const override;
+
+  [[nodiscard]] Eigen::Vector3d JacobianSingle(double local) const override;
+  [[nodiscard]] std::pair<double, double> Project(
+      const Eigen::Vector3d &global) const override;
   [[nodiscard]] std::vector<bool> IsInBoundingBox(
       const Eigen::MatrixXd &global) const override;
-  [[nodiscard]] std::vector<bool> IsInside(
-      const Eigen::MatrixXd &local) const override;
+
+  [[nodiscard]] bool IsInBoundingBoxSingle(
+      const Eigen::Vector3d &global) const override;
+  [[nodiscard]] bool IsInside(double local) const override;
+
+  // OCCT specific member functions:
+
+  [[nodiscard]] const TopoDS_Edge &Edge() const { return edge_; }
 
  private:
   TopoDS_Edge edge_;

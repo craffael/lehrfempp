@@ -6,7 +6,7 @@
  * @copyright MIT License
  */
 
-#include "occt_utils.h"
+#include "occt_details.h"
 
 namespace lf::brep::occt::detail {
 Eigen::Map<const Eigen::Vector3d> ToVector(const gp_Pnt& p) {

@@ -27,16 +27,13 @@ class BrepGeometry {
 
   [[nodiscard]] virtual base::dim_t DimGlobal() const = 0;
   [[nodiscard]] virtual base::dim_t DimLocal() const = 0;
+
   [[nodiscard]] virtual Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const = 0;
   [[nodiscard]] virtual Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const = 0;
-  [[nodiscard]] virtual std::pair<Eigen::VectorXd, Eigen::MatrixXd> Project(
-      const Eigen::MatrixXd& global) const = 0;
   [[nodiscard]] virtual std::vector<bool> IsInBoundingBox(
       const Eigen::MatrixXd& global) const = 0;
-  [[nodiscard]] virtual std::vector<bool> IsInside(
-      const Eigen::MatrixXd& local) const = 0;
 };
 
 }  // namespace lf::brep::interface

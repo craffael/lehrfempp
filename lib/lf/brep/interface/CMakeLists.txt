@@ -1,7 +1,9 @@
 
 set(interface_src
+  brep_curve.h
   brep_model.h
   brep_geometry.h
+  brep_surface.h
   interface.h
 )
 

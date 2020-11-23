@@ -9,8 +9,10 @@
 #ifndef __bfa1e39a34874cd5b7d0faf0a942160c
 #define __bfa1e39a34874cd5b7d0faf0a942160c
 
+#include "brep_curve.h"
 #include "brep_geometry.h"
 #include "brep_model.h"
+#include "brep_surface.h"
 
 namespace lf::brep::interface {}
 

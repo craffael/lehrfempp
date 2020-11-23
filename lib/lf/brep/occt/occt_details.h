@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Some utility functions to deal with OpenCascade
+ * @brief Some utility functions to deal with OpenCascade, should not be used externally.
  * @author Raffael Casagrande
  * @date   2020-11-11 02:28:28
  * @copyright MIT License

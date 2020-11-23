@@ -12,6 +12,7 @@
 namespace lf::brep::occt {}
 
 #include "occt_brep_model.h"
-#include "occt_curve_geometry.h"
+#include "occt_brep_curve.h"
+#include "occt_brep_surface.h"
 
 #endif  // __464ee7170d534bf9a991e58dc5d05497
