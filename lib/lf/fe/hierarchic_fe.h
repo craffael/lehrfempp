@@ -723,24 +723,24 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the basis functions associated with the interior of the triangle
     if (degree_ > 2) {
       unsigned idx = 3 * degree_;
-      // i is the degree of the ede function
+      // i is the degree of the edge function
       for (unsigned i = 0; i < degree_ - 2; ++i) {
         // j is the degree of the blending polynomial
         for (unsigned j = 0; j < degree_ - i - 2; ++j) {
-          if (rel_orient_[1] == lf::mesh::Orientation::positive) {
+          if (rel_orient_[0] == lf::mesh::Orientation::positive) {
             // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3) *
             // P_{j+1}^{2i+4}(\lambda_1)
             result.row(idx) =
-                (result.row(degree_ + 2 + i).array() *
-                 l1.array().unaryExpr([&](double x) -> SCALAR {
+                (result.row(3 + i).array() *
+                 l3.array().unaryExpr([&](double x) -> SCALAR {
                    return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
                  })).matrix();
           } else {
             // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3) *
             // P_{j+1}^{2i+4}(\lambda_1)
             result.row(idx) =
-                (result.row(2 * degree_ - i).array() *
-                 l1.array().unaryExpr([&](double x) -> SCALAR {
+                (result.row(degree_ + 1 - i).array() *
+                 l3.array().unaryExpr([&](double x) -> SCALAR {
                    return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
                  })).matrix();
           }
@@ -911,25 +911,25 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
           SCALAR edge_eval;
           SCALAR edge_dx;
           SCALAR edge_dy;
-          if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-            edge_eval = std::pow(l2p3, j + 2) *
-                        LegendrePoly<SCALAR>::integral(j + 2, l233n);
-            edge_dx = result(2 + degree_ + j, 2 * i + 0);
-            edge_dy = result(2 + degree_ + j, 2 * i + 1);
+          if (rel_orient_[0] == lf::mesh::Orientation::positive) {
+            edge_eval = std::pow(l1p2, j + 2) *
+                        LegendrePoly<SCALAR>::integral(j + 2, l122n);
+            edge_dx = result(3 + j, 2 * i + 0);
+            edge_dy = result(3 + j, 2 * i + 1);
           } else {
-            edge_eval = std::pow(l2p3, j + 2) *
-                        LegendrePoly<SCALAR>::integral(j + 2, l232n);
-            edge_dx = result(2 * degree_ - j, 2 * i + 0);
-            edge_dy = result(2 * degree_ - j, 2 * i + 1);
+            edge_eval = std::pow(l1p2, j + 2) *
+                        LegendrePoly<SCALAR>::integral(j + 2, l121n);
+            edge_dx = result(degree_ + 1 - j, 2 * i + 0);
+            edge_dy = result(degree_ + 1 - j, 2 * i + 1);
           }
           for (unsigned k = 0; k < degree_ - j - 2; ++k) {
             SCALAR jackinte =
-                JacobiPoly<SCALAR>::integral(k + 1, 2 * j + 4, l1[i]);
-            SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2 * j + 4, l1[i]);
+                JacobiPoly<SCALAR>::integral(k + 1, 2 * j + 4, l3[i]);
+            SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2 * j + 4, l3[i]);
             result(idx, 2 * i + 0) =
-                jackinte * edge_dx + edge_eval * jackeval * l1_dx[i];
+                jackinte * edge_dx + edge_eval * jackeval * l3_dx[i];
             result(idx, 2 * i + 1) =
-                jackinte * edge_dy + edge_eval * jackeval * l1_dy[i];
+                jackinte * edge_dy + edge_eval * jackeval * l3_dy[i];
             ++idx;
           }
         }
@@ -1014,6 +1014,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         basis_functions.block(0, 0, 3 * Degree(), basis_functions.cols());
     const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> boundary_face_dofs =
         NodalValuesToFaceDofs(boundary_function);
+    // std::cout << "Uncompensated DOFs = [" << dofs << "]" << std::endl;
+    // std::cout << "Compensation Terms = [" << boundary_face_dofs << "]" <<
+    // std::endl;
     dofs.segment(3 * Degree(), NumRefShapeFunctions(0)) -= boundary_face_dofs;
     return dofs;
   }
@@ -1099,6 +1102,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
            qr_dual_tria_.Points().row(1).array().unaryExpr([&](double y) {
              return 1 - y;
            })).matrix();
+      const Eigen::Matrix<double, 1, Eigen::Dynamic> xnorm_adj =
+          rel_orient_[0] == lf::mesh::Orientation::positive
+              ? xnorm
+              : Eigen::RowVectorXd::Ones(Nt) - xnorm;
       const Eigen::Matrix<double, 1, Eigen::Dynamic> y =
           qr_dual_tria_.Points().row(1);
       // i is the degree of the edge function
@@ -1106,28 +1113,34 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> ypow =
             y.array()
                 .unaryExpr(
+                    [&](double y) -> SCALAR { return std::pow(1 - y, i); })
+                .matrix();
+        const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> ypowp1 =
+            y.array()
+                .unaryExpr(
                     [&](double y) -> SCALAR { return std::pow(1 - y, i + 1); })
                 .matrix();
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
-            xnorm.unaryExpr([&](double x) -> SCALAR {
+            xnorm_adj.unaryExpr([&](double x) -> SCALAR {
               return LegendrePoly<SCALAR>::derivative(i, x);
             });
         // j is the degree of the blending Jacobi polynomial
         for (unsigned j = 0; j < Degree() - i - 2; ++j) {
-          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
+          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
                 return j == 0 ? SCALAR(0)
                               : JacobiPoly<SCALAR>::derivative(j - 1, 2 * i + 4,
                                                                y);
               });
-          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
+          const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
                 return JacobiPoly<SCALAR>::eval(j, 2 * i + 4, y);
               });
           dofs[idx] =
               (qr_dual_tria_.Weights().transpose().array() *
                nodevals.block(0, 3 + 3 * Ns, 1, Nt).array() * psidd.array() *
-               (ypow.array() * jacd.array() - (2 * i + 4) * jacdd.array()))
+               (ypowp1.array() * jacdd.array() -
+                (2 * i + 4) * ypow.array() * jacd.array()))
                   .sum();
           dofs[idx] *=
               2 * i + 3;  // Normalization factor for the Legendre polynomial
