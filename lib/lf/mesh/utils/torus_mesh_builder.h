@@ -53,7 +53,7 @@ class TorusMeshBuilder : public StructuredMeshBuilder {
   /**
    * @brief logger that is used by Build() to provide additional debug info.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger>& Logger();
 };  // end class definition TorusMeshBuilder
 
 }  // namespace lf::mesh::utils

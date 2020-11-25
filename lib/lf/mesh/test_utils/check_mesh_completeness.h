@@ -26,7 +26,7 @@ bool checkMeshCompleteness(const Mesh& mesh);
  *       shapes may not be intended
  *
  * #### Logger
- * This function logs additional information to \ref watertight_logger. See
+ * This function logs additional information to \ref WatertightLogger(). See
  * \ref loggers for more information.
  */
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
@@ -36,7 +36,7 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
  * @brief Logger that is used by isWatertightMesh() to output additional
  * information.
  */
-extern std::shared_ptr<spdlog::logger> watertight_logger;
+std::shared_ptr<spdlog::logger>& WatertightLogger();
 
 }  // namespace lf::mesh::test_utils
 

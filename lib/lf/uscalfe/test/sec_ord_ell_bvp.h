@@ -122,8 +122,11 @@ class PureNeumannProblemLaplacian : public SecondOrderEllipticBVP<double> {
 /**
  * @brief used by SecOrdEllBVPLagrFELinSys() to log additional information.
  */
-inline std::shared_ptr<spdlog::logger> SecOrdEllBVPLagrFELinSys_logger =
-    base::InitLogger("lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger");
+inline std::shared_ptr<spdlog::logger>& SecOrdEllBVPLagrFELinSys_logger() {
+  static auto logger =
+      base::InitLogger("lf::uscalfe::test::SecOrdEllBVPLagrFELinSys_logger");
+  return logger;
+}
 
 /**
  * @brief Builds finite element linear system of equations for a second-order
@@ -179,7 +182,7 @@ SecOrdEllBVPLagrFELinSys(
   }
 
   SPDLOG_LOGGER_DEBUG(
-      SecOrdEllBVPLagrFELinSys_logger,
+      SecOrdEllBVPLagrFELinSys_logger(),
       "B.c.: {} Dirichlet edges, {} Neumann edges, {} impedance edges");
 
   // Dimension of finite element space`

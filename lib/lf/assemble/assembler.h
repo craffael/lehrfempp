@@ -55,7 +55,7 @@ namespace lf::assemble {
  * @brief The logger that is used by AssembleMatrixLocally() to log additional
  * information. (for logging levels trace + debug)
  */
-extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
+std::shared_ptr<spdlog::logger> &AssembleMatrixLogger();
 
 /**
  * @brief Assembly function for standard assembly of finite element matrices
@@ -88,7 +88,7 @@ extern std::shared_ptr<spdlog::logger> assemble_matrix_logger;
  * index map ("dof handler").
  *
  * #### Logger
- * This function logs additional information to \ref assemble_matrix_logger. See
+ * This function logs additional information to \ref AssembleMatrixLogger(). See
  * \ref loggers for more information.
  *
  * #### type requirements of template arguments
@@ -123,7 +123,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
     // Some entities may be skipped
     if (entity_matrix_provider.isActive(*entity)) {
       // log the entity reference element + it's global index on level Debug
-      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "Entity {} ({})", *entity,
+      SPDLOG_LOGGER_DEBUG(AssembleMatrixLogger(), "Entity {} ({})", *entity,
                           mesh->Index(*entity));
       // Size, aka number of rows and columns, of element matrix
       const size_type nrows_loc = dof_handler_test.NumLocalDofs(*entity);
@@ -145,17 +145,17 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                                       << ", entity " << mesh->Index(*entity));
 
       // Log global row and column indices on level debug
-      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "row_idx = {}, col_idx = {}",
+      SPDLOG_LOGGER_DEBUG(AssembleMatrixLogger(), "row_idx = {}, col_idx = {}",
                           row_idx, col_idx);
 
       // Log shape of element matrix on level debug
-      SPDLOG_LOGGER_DEBUG(assemble_matrix_logger, "{} x {} element matrix",
+      SPDLOG_LOGGER_DEBUG(AssembleMatrixLogger(), "{} x {} element matrix",
                           nrows_loc, ncols_loc);
 
       // Log element matrix itself on level trace
       // TODO(craffael): Doesn't work yet because of fmt issue:
       // https://github.com/fmtlib/fmt/issues/1885
-      // SPDLOG_LOGGER_TRACE(assemble_matrix_logger, elem_mat);
+      // SPDLOG_LOGGER_TRACE(AssembleMatrixLogger, elem_mat);
 
       // Assembly double loop
       std::stringstream ss;  // used to log all triplets on one line.
@@ -167,7 +167,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
           matrix.AddToEntry(row_idx[i], col_idx[j], elem_mat(i, j));
 
           // log the added "triplet" on level trace:
-          if (assemble_matrix_logger->should_log(spdlog::level::trace)) {
+          if (AssembleMatrixLogger()->should_log(spdlog::level::trace)) {
             // if we are on level trace, build string of all triplets:
             ss << "(" << row_idx[i] << ',' << col_idx[j]
                << ")+= " << elem_mat(i, j) << ", ";
@@ -176,7 +176,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       }  // end assembly local double loop
 
       // log all the triplets on one line on level trace:
-      SPDLOG_LOGGER_TRACE(assemble_matrix_logger, ss.str());
+      SPDLOG_LOGGER_TRACE(AssembleMatrixLogger(), ss.str());
 
     }  // end if(isActive() )
   }    // end main assembly loop
@@ -200,7 +200,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  *       row and column numbers and creates an (empty) matrix of that size.
  *
  * #### Logger
- * This function logs additional information to \ref assemble_matrix_logger. See
+ * This function logs additional information to \ref AssembleMatrixLogger(). See
  * \ref loggers for more information.
  */
 template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
@@ -233,7 +233,7 @@ TMPMATRIX AssembleMatrixLocally(
  * TMPMATRIX &matrix)
  *
  * #### Logger
- * This function logs additional information to \ref assemble_matrix_logger. See
+ * This function logs additional information to \ref AssembleMatrixLogger(). See
  * \ref loggers for more information.
  */
 

@@ -8,8 +8,11 @@
 
 namespace lf::mesh::utils {
 
-std::shared_ptr<spdlog::logger> TPTriagMeshBuilder::logger =
-    base::InitLogger("lf::mesh::utils::TPTriagMeshBuilder::logger");
+std::shared_ptr<spdlog::logger>& TPTriagMeshBuilder::Logger() {
+  static auto logger =
+      base::InitLogger("lf::mesh::utils::TPTriagMeshBuilder::Logger");
+  return logger;
+}
 
 std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
@@ -21,7 +24,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
   const unsigned no_of_edges = nx * ny + (nx + 1) * ny + nx * (ny + 1);
   const unsigned no_of_vertices = (nx + 1) * (ny + 1);
   // Diagnostics
-  SPDLOG_LOGGER_DEBUG(logger, "TPmesh: {} cells, {} edges, {} vertices",
+  SPDLOG_LOGGER_DEBUG(Logger(), "TPmesh: {} cells, {} edges, {} vertices",
                       no_of_cells, no_of_edges, no_of_vertices);
 
   // No mesh to build
@@ -48,7 +51,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       node_coord << bottom_left_corner_[0] + i * hx,
           bottom_left_corner_[1] + j * hy;
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "Adding vertex {}: {}", node_cnt,
                           node_coord.transpose());
 
       // Enlist vertex
@@ -67,7 +70,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       auto first_endpoint_idx = v_idx[VertexIndex(i, j)];
       auto second_endpoint_idx = v_idx[VertexIndex(i + 1, j)];
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "horizontal edge {}: {} <-> {}", edge_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "horizontal edge {}: {} <-> {}", edge_cnt,
                           first_endpoint_idx, second_endpoint_idx);
 
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
@@ -89,7 +92,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i, j + 1)];
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "vertical edge {}: {} <-> {}", edge_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "vertical edge {}: {} <-> {}", edge_cnt,
                           first_endpoint_idx, second_endpoint_idx);
 
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
@@ -111,7 +114,7 @@ std::shared_ptr<mesh::Mesh> TPTriagMeshBuilder::Build() {
       const size_type first_endpoint_idx = v_idx[VertexIndex(i, j)];
       const size_type second_endpoint_idx = v_idx[VertexIndex(i + 1, j + 1)];
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "diagonal edge {}: {} <-> {}", edge_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "diagonal edge {}: {} <-> {}", edge_cnt,
                           first_endpoint_idx, second_endpoint_idx);
 
       std::vector<size_type> nodes_index_list{first_endpoint_idx,
