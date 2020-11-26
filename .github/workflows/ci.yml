@@ -154,7 +154,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install packages
-        run: sudo apt-get install graphviz g++-7 flex bison libclang-common-6.0-dev libclang-10-dev lib
+        run: sudo apt-get install graphviz g++-7 flex bison libclang-common-6.0-dev libclang-10-dev 
       - name: Restore cache
         uses: actions/cache@v2
         with:
