@@ -28,8 +28,8 @@ jobs:
           - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
           - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     env:
-      - COMPILER: clang++-8
-      - BUILD_TYPE: DEBUG
+      - COMPILER: "clang++-8"
+      - BUILD_TYPE: "DEBUG"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
