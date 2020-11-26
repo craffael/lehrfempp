@@ -178,9 +178,10 @@ jobs:
           make doxygen
           cd doc/doxygen/html
           mkdir with_projects
-          mv !(with_projects) with_projects
-          cd ../../..
-          cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-          make doxygen
+        # shopt -s extglob
+        # mv !(with_projects) with_projects
+        # cd ../../..
+        # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+        # make doxygen
 
 
