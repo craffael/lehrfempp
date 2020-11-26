@@ -39,8 +39,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: 
-            - HUNTER_ROOT
-            - DEPS_DIR
+            - ${{ env.DEPS_DIR }}
+            - ${{ env.HUNTER_ROOT }}
           key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-hunter-debug-
