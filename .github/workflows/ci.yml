@@ -53,21 +53,32 @@ jobs:
         
   # compilation on linux/osx:
   compile_test:
-    name: Compile and test
+    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
     strategy:
       matrix:
         include:
-          # - os: ubuntu-20.04
-            # compiler: "clang++-7"
-            # packages: "clang++-7 g++-8"
-            # build_type: "Debug"
-          # - os: ubuntu-20.04
-            # compiler: "g++-8"
-            # packages: "g++-8"
-            # build_type: "Debug"
+          - os: ubuntu-20.04
+            compiler: "clang++-7"
+            packages: "clang++-7 g++-8"
+            build_type: "Debug"
+          - os: ubuntu-20.04
+            compiler: "clang++-7"
+            packages: "clang++-7 g++-8"
+            build_type: "Release"
+          - os: ubuntu-20.04
+            compiler: "g++-8"
+            packages: "g++-8"
+            build_type: "Debug"
+          - os: ubuntu-20.04
+            compiler: "g++-8"
+            packages: "g++-8"
+            build_type: "Release"
           - os: macos-10.15
             compiler: "clang++"
             build_type: "Debug"
+          - os: macos-10.15
+            compiler: "clang++"
+            build_type: "Release"
     runs-on: ${{ matrix.os }}
     env:
       COMPILER: ${{ matrix.compiler }}
@@ -93,7 +104,7 @@ jobs:
         run: "./ci/compile_test.sh"
       
   windows:
-    name: Windows Debug x64
+    name: Windows x64 - ${{ matrix.build_type }}
     runs-on: windows-latest
     env:
       HUNTER_ROOT: C:\.hunter
@@ -102,6 +113,8 @@ jobs:
         include:
           - build_type: "Debug"
             compiler: "msvc"
+          - build_type: "Release"
+            compiler: "msvc"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -109,10 +122,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: C:\.hunter
-          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            ${{ runner.os }}-${{ env.COMPILER }}-
+            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            ${{ runner.os }}-msvc-
       
      # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
@@ -131,41 +144,3 @@ jobs:
         run: |
           cd build
           ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
-          
-    
-  # windows-release:
-    # # Name the Job
-    # name: Windows Release x64
-    # # Set the type of machine to run on
-    # runs-on: windows-latest
- 
-    # steps:
-      # # Checks out a copy of your repository on the ubuntu-latest machine
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      
-      # # Restore cache:
-      # - name: Restore cache
-        # uses: actions/cache@v2
-        # with:
-          # path: C:\.hunter
-          # key:  ${{ runner.os }}-hunter-release-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-hunter-release-
-            # ${{ runner.os }}-hunter-
-      
-      # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
-      
-      # - name: Hunter dependencies
-        # run: |
-          # mkdir build > $null
-          # cd build
-          # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Release ..
-          
-      # - name: compile
-        # run: cmake --build ./build --config Release --target ALL_BUILD
-          
-      # - name: test
-        # run: |
-          # cd build
-          # ctest -j 2 -c Release --output-on-failure
