@@ -13,8 +13,9 @@ if [ ! -d "doxygen-Release_1_8_20" ]; then
   cd doxygen-Release_1_8_20
   mkdir build
   cd build
+  export CXX=g++-9
   cmake -Duse_libclang=ON  ..
-  make -j2
+  make VERBOSE=1 -j2
 fi
 export PATH=${DEPS_DIR}/doxygen-Release_1_8_20/build/bin:$PATH
 doxygen --version
