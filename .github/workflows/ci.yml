@@ -38,9 +38,7 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v2
         with:
-          path: 
-            - ${{ env.DEPS_DIR }}
-            - ${{ env.HUNTER_ROOT }}
+          path: ['${{ env.DEPS_DIR }}', '${{ env.HUNTER_ROOT }}']
           key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-hunter-debug-
