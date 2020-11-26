@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-hunter-
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
-      - name: clang-tidy on everything except projects:
+      - name: clang-tidy
         run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
       
   # windows-debug:
