@@ -39,10 +39,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
-          key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-hunter-debug-
-            ${{ runner.os }}-hunter-
+            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-${{ env.COMPILER }}-
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
       - name: clang-tidy
