@@ -13,7 +13,6 @@ if [ ! -d "doxygen-Release_1_8_17" ]; then
   cd doxygen-Release_1_8_17
   mkdir build
   cd build
-  export CXX=g++-7
   cmake -Duse_libclang=ON  ..
   make -j2
 fi
