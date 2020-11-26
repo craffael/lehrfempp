@@ -52,98 +52,129 @@ jobs:
         # run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
         
   # compilation on linux/osx:
-  compile_test:
-    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-20.04
-            compiler: "clang++-7"
-            packages: "clang++-7 g++-8"
-            build_type: "Debug"
-          - os: ubuntu-20.04
-            compiler: "clang++-7"
-            packages: "clang++-7 g++-8"
-            build_type: "Release"
-          - os: ubuntu-20.04
-            compiler: "g++-8"
-            packages: "g++-8"
-            build_type: "Debug"
-          - os: ubuntu-20.04
-            compiler: "g++-8"
-            packages: "g++-8"
-            build_type: "Release"
-          - os: macos-10.15
-            compiler: "clang++"
-            build_type: "Debug"
-          - os: macos-10.15
-            compiler: "clang++"
-            build_type: "Release"
-    runs-on: ${{ matrix.os }}
-    env:
-      COMPILER: ${{ matrix.compiler }}
-      BUILD_TYPE: ${{ matrix.build_type }}
+  # compile_test:
+    # name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
+    # strategy:
+      # matrix:
+        # include:
+          # - os: ubuntu-20.04
+            # compiler: "clang++-7"
+            # packages: "clang++-7 g++-8"
+            # build_type: "Debug"
+          # - os: ubuntu-20.04
+            # compiler: "clang++-7"
+            # packages: "clang++-7 g++-8"
+            # build_type: "Release"
+          # - os: ubuntu-20.04
+            # compiler: "g++-8"
+            # packages: "g++-8"
+            # build_type: "Debug"
+          # - os: ubuntu-20.04
+            # compiler: "g++-8"
+            # packages: "g++-8"
+            # build_type: "Release"
+          # - os: macos-10.15
+            # compiler: "clang++"
+            # build_type: "Debug"
+          # - os: macos-10.15
+            # compiler: "clang++"
+            # build_type: "Release"
+    # runs-on: ${{ matrix.os }}
+    # env:
+      # COMPILER: ${{ matrix.compiler }}
+      # BUILD_TYPE: ${{ matrix.build_type }}
     
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Install packages
+        # if: runner.os == 'Linux'
+        # run: sudo apt-get install ${{ matrix.packages }}
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: |
+            # ${{ env.DEPS_DIR }}
+            # ${{ env.HUNTER_ROOT }}
+          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            # ${{ runner.os }}-${{ env.COMPILER }}-
+      # - name: build_dependencies
+        # run: "./ci/build_dependencies.sh"
+      # - name: compile and test
+        # run: "./ci/compile_test.sh"
+      
+  # windows:
+    # name: Windows x64 - ${{ matrix.build_type }}
+    # runs-on: windows-latest
+    # env:
+      # HUNTER_ROOT: C:\.hunter
+    # strategy:
+      # matrix:
+        # include:
+          # - build_type: "Debug"
+            # compiler: "msvc"
+          # - build_type: "Release"
+            # compiler: "msvc"
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: C:\.hunter
+          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            # ${{ runner.os }}-msvc-
+      
+     # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+      
+     # # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+      # - name: Hunter dependencies
+        # run: |
+          # mkdir build > $null
+          # cd build
+          # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+          
+      # - name: compile
+        # run: |
+          # cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD
+          
+      # - name: test
+        # run: |
+          # cd build
+          # ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
+
+  doxygen:
+    name: doxygen
+    runs_on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install packages
-        if: runner.os == 'Linux'
-        run: sudo apt-get install ${{ matrix.packages }}
+        run: sudo apt-get install graphviz g++-7 flex bison libclang-common-6.0-dev
       - name: Restore cache
         uses: actions/cache@v2
         with:
           path: |
             ${{ env.DEPS_DIR }}
             ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          key:  ${{ runner.os }}-g++7-doxygen-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            ${{ runner.os }}-${{ env.COMPILER }}-
-      - name: build_dependencies
-        run: "./ci/build_dependencies.sh"
-      - name: compile and test
-        run: "./ci/compile_test.sh"
-      
-  windows:
-    name: Windows x64 - ${{ matrix.build_type }}
-    runs-on: windows-latest
-    env:
-      HUNTER_ROOT: C:\.hunter
-    strategy:
-      matrix:
-        include:
-          - build_type: "Debug"
-            compiler: "msvc"
-          - build_type: "Release"
-            compiler: "msvc"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: C:\.hunter
-          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-            ${{ runner.os }}-msvc-
-      
-     # Note that windows has a recent version of cmake installed -> we don't need to install it here.
-      
-     # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
-      - name: Hunter dependencies
-        run: |
-          mkdir build > $null
-          cd build
-          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
-          
-      - name: compile
-        run: |
-          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD
-          
-      - name: test
-        run: |
-          cd build
-          ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
-
+            ${{ runner.os }}-g++7-doxygen-
+      - name: doxygen 
+        script: |
+          . ./ci/install_doxygen.sh
+          cd $GITHUB_WORKSPACE
+          export CXX=g++-7
+          cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON
+          cd Build
+          make doxygen
+          cd doc/doxygen/html
+          mkdir with_projects
+          mv !(with_projects) with_projects
+          cd ../../..
+          cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+          make doxygen
