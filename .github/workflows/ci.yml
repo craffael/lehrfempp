@@ -73,7 +73,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install packages
-        if: runner.os == "Linux"
+        if: runner.os == 'Linux'
         run: sudo apt-get install ${{ matrix.packages }}
       - name: Restore cache
         uses: actions/cache@v2
