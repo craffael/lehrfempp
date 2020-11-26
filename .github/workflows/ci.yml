@@ -19,22 +19,55 @@ jobs:
       # - name: clang-format
         # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
       # --color always ./lib/ ./projects/ ./examples/"
-  clang-tidy:
-    name: clang-tidy-8
-    runs-on: ubuntu-20.04
+  # clang-tidy:
+    # name: clang-tidy-8 
+    # runs-on: ubuntu-20.04
+    # strategy:
+      # matrix:
+        # include:
+          # - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+          # - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+    # env:
+      # COMPILER: "clang++-8"
+      # BUILD_TYPE: "DEBUG"
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Install clang-format
+        # run: sudo apt-get install clang-tidy-8 g++-8
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
+          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            # ${{ runner.os }}-${{ env.COMPILER }}-
+      # - name: build_dependencies
+        # run: "./ci/build_dependencies.sh"
+      # - name: clang-tidy
+        # run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
+        
+  # compilation on linux/osx:
+  compile_test:
+    name: Compile and test
     strategy:
       matrix:
         include:
-          - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-          - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+          - os: ubuntu-20.04
+            compiler: "clang++-8"
+            packages: "clang++-8"
+            build_type: "Debug"
+    runs-on: ${{ matrix.os }}
     env:
-      COMPILER: "clang++-8"
-      BUILD_TYPE: "DEBUG"
+      COMPILER: ${{ matrix.compiler }}
+      BUILD_TYPE: ${{ matrix.build_type }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install clang-format
-        run: sudo apt-get install clang-tidy-8 g++-8
+      - name: Install packages
+        run: sudo apt-get install ${{ matrix.packages }}
       - name: Restore cache
         uses: actions/cache@v2
         with:
@@ -45,8 +78,8 @@ jobs:
             ${{ runner.os }}-${{ env.COMPILER }}-
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
-      - name: clang-tidy
-        run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
+      - name: compile and test
+        run: "./ci/compile_test.sh"
       
   # windows-debug:
     # # Name the Job
