@@ -23,9 +23,10 @@ jobs:
     name: clang-tidy-8
     runs-on: ubuntu-20.04
     strategy:
-      include:
-        - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-        - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+      matrix:
+        include:
+          - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+          - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     env:
       - COMPILER: clang++-8
       - BUILD_TYPE: DEBUG
