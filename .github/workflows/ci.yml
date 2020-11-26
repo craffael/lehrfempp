@@ -13,8 +13,8 @@ jobs:
       - name: Install clang-format
         run: sudo apt-get install clang-format-8
       - name: clang-format
-        run: "./travis/run-clang-format.py -r --clang-format-executable clang-format-8
-      --color always ./lib/"
+        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
+      --color always ./lib/ ./projects/ ./examples/"
   # windows-debug:
     # # Name the Job
     # name: Windows Debug x64

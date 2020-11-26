@@ -7,9 +7,9 @@
  * @copyright MIT License
  */
 
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
-#include <filesystem>
 
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>

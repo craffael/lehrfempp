@@ -36,9 +36,6 @@ enum class RefElType : unsigned char {
   //!< @copydoc RefEl::kQuad()
 };
 
-
-
-
 namespace internal {
 // Some utility methods that are needed to deduce compile time return types:
 constexpr dim_t DimensionImpl(RefElType type) {
