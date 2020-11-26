@@ -28,8 +28,8 @@ jobs:
           - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
           - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     env:
-      - COMPILER: "clang++-8"
-      - BUILD_TYPE: "DEBUG"
+      COMPILER: "clang++-8"
+      BUILD_TYPE: "DEBUG"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v2
         with:
-          path: ['${{ env.DEPS_DIR }}', '${{ env.HUNTER_ROOT }}']
+          path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
           key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-hunter-debug-
