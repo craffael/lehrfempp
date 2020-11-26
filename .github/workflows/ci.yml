@@ -183,5 +183,12 @@ jobs:
           cd ../../..
           cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
           make doxygen
+      - name: deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: "./Build/doc/doxygen/html"
+          CLEAN: true 
 
 
