@@ -4,17 +4,28 @@ name: Continuous Integration
 on: [push, pull_request]
 
 jobs:
-  clang-format:
-    name: Clang Format 8
+  # clang-format:
+    # name: clang-format-8
+    # runs-on: ubuntu-20.04
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Install clang-format
+        # run: sudo apt-get install clang-format-8
+      # - name: clang-format
+        # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
+      # --color always ./lib/ ./projects/ ./examples/"
+  clang-tidy:
+    name: clang-tidy-8
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: sudo apt-get install clang-format-8
-      - name: clang-format
-        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
-      --color always ./lib/ ./projects/ ./examples/"
+        run: sudo apt-get install clang-tidy-8 g++-8
+      - name: clang-tidy
+        run: "./travis/build_dependencies.sh"
+      
   # windows-debug:
     # # Name the Job
     # name: Windows Debug x64
