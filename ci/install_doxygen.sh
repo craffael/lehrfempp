@@ -14,7 +14,7 @@ if [ ! -d "doxygen-Release_1_8_20" ]; then
   mkdir build
   cd build
   cmake -Duse_libclang=ON  ..
-  make VERBOSE -j2
+  make VERBOSE=1 -j2
 fi
 export PATH=${DEPS_DIR}/doxygen-Release_1_8_20/build/bin:$PATH
 doxygen --version
