@@ -61,9 +61,13 @@ jobs:
             # compiler: "clang++-8"
             # packages: "clang++-8"
             # build_type: "Debug"
-          - os: macos-10.15
-            compiler: "clang"
+          - os: ubuntu-20.04
+            compiler: "g++-8"
+            packages: "g++-8"
             build_type: "Debug"
+          # - os: macos-10.15
+            # compiler: "clang"
+            # build_type: "Debug"
     runs-on: ${{ matrix.os }}
     env:
       COMPILER: ${{ matrix.compiler }}
