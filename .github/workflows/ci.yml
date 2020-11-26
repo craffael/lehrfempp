@@ -57,17 +57,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-20.04
-            compiler: "clang++-7"
-            packages: "clang++-7 g++-8"
-            build_type: "Debug"
+          # - os: ubuntu-20.04
+            # compiler: "clang++-7"
+            # packages: "clang++-7 g++-8"
+            # build_type: "Debug"
           # - os: ubuntu-20.04
             # compiler: "g++-8"
             # packages: "g++-8"
             # build_type: "Debug"
-          # - os: macos-10.15
-            # compiler: "clang"
-            # build_type: "Debug"
+          - os: macos-10.15
+            compiler: "clang++"
+            build_type: "Debug"
     runs-on: ${{ matrix.os }}
     env:
       COMPILER: ${{ matrix.compiler }}
@@ -92,18 +92,18 @@ jobs:
       - name: compile and test
         run: "./ci/compile_test.sh"
       
-  # windows-debug:
-    # # Name the Job
+  # windows:
     # name: Windows Debug x64
-    # # Set the type of machine to run on
     # runs-on: windows-latest
-
+    # env:
+      # HUNTER_ROOT: C:\.hunter
+    # strategy:
+      # matrix:
+        # include:
+          # - 
     # steps:
-      # # Checks out a copy of your repository on the ubuntu-latest machine
       # - name: Checkout code
         # uses: actions/checkout@v2
-      
-      # # Restore cache:
       # - name: Restore cache
         # uses: actions/cache@v2
         # with:
@@ -113,9 +113,9 @@ jobs:
             # ${{ runner.os }}-hunter-debug-
             # ${{ runner.os }}-hunter-
       
-      # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+      Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
-      # # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+      we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
       # - name: Hunter dependencies
         # run: |
           # mkdir build > $null
