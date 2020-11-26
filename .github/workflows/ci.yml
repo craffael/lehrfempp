@@ -17,8 +17,7 @@ jobs:
       - name: Install clang-format
         run: sudo apt-get install clang-format-8
       - name: clang-format
-        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
-      --color always ./lib/ ./projects/ ./examples/"
+        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
     name: clang-tidy-8 ${{ matrix.name }}
     needs: clang-format
@@ -52,7 +51,7 @@ jobs:
       - name: clang-tidy
         run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
         
-  compilation on linux/osx:
+  # compilation on linux/osx:
   compile_test:
     name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
     needs: clang-format
