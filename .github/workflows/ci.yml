@@ -164,14 +164,14 @@ jobs:
           path: |
             ${{ env.DEPS_DIR }}
             ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-clang++-7-Doxygen-${{ github.run_id }}
+          key:  ${{ runner.os }}-g++-8-Doxygen-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-clang++-7-Debug-
+            ${{ runner.os }}-g++-8-Debug-
       - name: doxygen 
         run: |
           . ./ci/install_doxygen.sh
           cd $GITHUB_WORKSPACE
-          export CXX=g++-7
+          export CXX=g++-8
           cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
           cd Build
           make doxygen
