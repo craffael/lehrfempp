@@ -149,7 +149,7 @@ jobs:
 
   doxygen:
     name: doxygen
-    runs_on: ubuntu-20.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -165,7 +165,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-g++7-doxygen-
       - name: doxygen 
-        script: |
+        run: |
           . ./ci/install_doxygen.sh
           cd $GITHUB_WORKSPACE
           export CXX=g++-7
