@@ -20,13 +20,16 @@ jobs:
         # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-8
       # --color always ./lib/ ./projects/ ./examples/"
   # clang-tidy:
-    # name: clang-tidy-8 
+    # name: clang-tidy-8 ${{ matrix.name }}
     # runs-on: ubuntu-20.04
     # strategy:
       # matrix:
         # include:
-          # - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-          # - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+        #  - name: without projects
+        #    paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+        #  - name: only projects
+        #    paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+
     # env:
       # COMPILER: "clang++-8"
       # BUILD_TYPE: "DEBUG"
