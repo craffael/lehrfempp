@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['scalar_5fload_5fedge_5fvector_5fprovider_5flogger_1813',['scalar_load_edge_vector_provider_logger',['../namespacelf_1_1uscalfe.html#a2e579375260a7dae69d77f01ac906749',1,'lf::uscalfe']]],
-  ['scalar_5fload_5felement_5fvector_5fprovider_5flogger_1814',['scalar_load_element_vector_provider_logger',['../namespacelf_1_1uscalfe.html#ae5dd181bd5facb3f26afdcaac11dc33d',1,'lf::uscalfe']]],
   ['segment_5fqr_5f_1815',['segment_qr_',['../classprojects_1_1dpg_1_1_trace_element_matrix_provider.html#aa0e237c4ab544b3b005ba87d905df0c2',1,'projects::dpg::TraceElementMatrixProvider']]],
   ['segments_5f_1816',['segments_',['../classlf_1_1mesh_1_1hybrid2d_1_1_mesh.html#a58a4a4cb1efb98f83961dee055f8c3bb',1,'lf::mesh::hybrid2d::Mesh']]],
   ['shap_5ffun_5f_1817',['shap_fun_',['../classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a1550b0ee7b747afd6c58ff024212510c',1,'lf::uscalfe::PrecomputedScalarReferenceFiniteElement']]],

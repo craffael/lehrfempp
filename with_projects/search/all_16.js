@@ -2,7 +2,7 @@ var searchData=
 [
   ['welcome_20to_20lehrfem_2b_2b_854',['Welcome to LehrFEM++',['../index.html',1,'']]],
   ['wall_855',['wall',['../structlf_1_1base_1_1_timer_1_1cpu__times.html#ab8548f9701341695dfc1dff13c254080',1,'lf::base::Timer::cpu_times']]],
-  ['watertight_5flogger_856',['watertight_logger',['../namespacelf_1_1mesh_1_1test__utils.html#a6adf410026cff3d4199d16da58f14672',1,'lf::mesh::test_utils']]],
+  ['watertightlogger_856',['WatertightLogger',['../namespacelf_1_1mesh_1_1test__utils.html#a455dc8f356f7313883c83e573c2a4b07',1,'lf::mesh::test_utils']]],
   ['weights_857',['Weights',['../classlf_1_1quad_1_1_quad_rule.html#aff00eeb15c6926323c9435a8f99b7911',1,'lf::quad::QuadRule']]],
   ['weights_5f_858',['weights_',['../classlf_1_1quad_1_1_quad_rule.html#aa4bde0498fadbb5bf51be76f6e7a01fd',1,'lf::quad::QuadRule']]],
   ['what_859',['what',['../classlf_1_1base_1_1_lf_exception.html#a55546908c7863d895f2b2aee95e32b0c',1,'lf::base::LfException']]],

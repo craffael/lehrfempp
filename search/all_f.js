@@ -41,7 +41,7 @@ var searchData=
   ['pointchildinfos_515',['PointChildInfos',['../classlf_1_1refinement_1_1_mesh_hierarchy.html#ac538ac9d7b9f1128a251ab17dbd125b7',1,'lf::refinement::MeshHierarchy']]],
   ['pointentity_516',['PointEntity',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_point_entity.html',1,'lf::io::GMshFileV4']]],
   ['pointer_517',['pointer',['../classnonstd_1_1span__lite_1_1span.html#ab1f55b463a1066b7a414baa7f5a0d7bd',1,'nonstd::span_lite::span']]],
-  ['points_518',['Points',['../classlf_1_1quad_1_1_quad_rule.html#a83a9d8378655689dc3c7da2a4447ebdb',1,'lf::quad::QuadRule::Points()'],['../classlf_1_1io_1_1_vtk_file_1_1_unstructured_grid.html#a57be9f91eb6a1b679387277019772897',1,'lf::io::VtkFile::UnstructuredGrid::points()']]],
+  ['points_518',['points',['../classlf_1_1io_1_1_vtk_file_1_1_unstructured_grid.html#a57be9f91eb6a1b679387277019772897',1,'lf::io::VtkFile::UnstructuredGrid::points()'],['../classlf_1_1quad_1_1_quad_rule.html#a83a9d8378655689dc3c7da2a4447ebdb',1,'lf::quad::QuadRule::Points()']]],
   ['points_5f_519',['points_',['../classlf_1_1mesh_1_1hybrid2d_1_1_mesh.html#a272e94b1b04e32311d806569b69285b4',1,'lf::mesh::hybrid2d::Mesh::points_()'],['../classlf_1_1quad_1_1_quad_rule.html#a33b80bb34fee4f62a36466fd96c66533',1,'lf::quad::QuadRule::points_()']]],
   ['pos_5fpred_5f_520',['pos_pred_',['../classlf_1_1refinement_1_1_entity_center_position_selector.html#af5a2e0ca7cf96d9841426fad030e8689',1,'lf::refinement::EntityCenterPositionSelector']]],
   ['positive_521',['positive',['../namespacelf_1_1mesh.html#afeb5ab2fc27eb4779bca84a297f4c781a82082716189f80fd070b89ac716570ba',1,'lf::mesh']]],

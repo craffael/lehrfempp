@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['scalar_5fload_5fedge_5fvector_5fprovider_5flogger_1477',['scalar_load_edge_vector_provider_logger',['../namespacelf_1_1uscalfe.html#a2e579375260a7dae69d77f01ac906749',1,'lf::uscalfe']]],
-  ['scalar_5fload_5felement_5fvector_5fprovider_5flogger_1478',['scalar_load_element_vector_provider_logger',['../namespacelf_1_1uscalfe.html#ae5dd181bd5facb3f26afdcaac11dc33d',1,'lf::uscalfe']]],
   ['segments_5f_1479',['segments_',['../classlf_1_1mesh_1_1hybrid2d_1_1_mesh.html#a58a4a4cb1efb98f83961dee055f8c3bb',1,'lf::mesh::hybrid2d::Mesh']]],
   ['shap_5ffun_5f_1480',['shap_fun_',['../classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a1550b0ee7b747afd6c58ff024212510c',1,'lf::uscalfe::PrecomputedScalarReferenceFiniteElement']]],
   ['size_5f_1481',['size_',['../classnonstd_1_1span__lite_1_1span.html#ac3d621526ded70c89538e880ddd24f03',1,'nonstd::span_lite::span']]],

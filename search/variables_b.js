@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['lambda_5f_1378',['lambda_',['../class_variant_visitor.html#a72118ce9b0f14e0c5a87593982d3a13b',1,'VariantVisitor']]],
-  ['lattice_5fconst_5f_1379',['lattice_const_',['../classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643',1,'lf::geometry::RefinementPattern']]],
-  ['level_5fcoarse_5f_1380',['level_coarse_',['../classlf_1_1refinement_1_1_mesh_function_transfer.html#aa83f4b234daf9aea00afaa640b53f4ba',1,'lf::refinement::MeshFunctionTransfer']]],
-  ['level_5ffine_5f_1381',['level_fine_',['../classlf_1_1refinement_1_1_mesh_function_transfer.html#a9c02b054c0b9eb87a86b9e1e235615aa',1,'lf::refinement::MeshFunctionTransfer']]],
-  ['linear_5ffe_5flocal_5fload_5fvector_5flogger_1382',['linear_fe_local_load_vector_logger',['../namespacelf_1_1uscalfe.html#ac3dc6c3bb626c577924b453c3c508f87',1,'lf::uscalfe']]],
-  ['logger_1383',['logger',['../classlf_1_1mesh_1_1hybrid2d_1_1_mesh.html#a1fbd4a388b5e39e8c457d1a6e225394b',1,'lf::mesh::hybrid2d::Mesh::logger()'],['../classlf_1_1mesh_1_1hybrid2d_1_1_mesh_factory.html#a19cc8083d34daf278c66b13e6e3356d0',1,'lf::mesh::hybrid2d::MeshFactory::logger()'],['../classlf_1_1mesh_1_1utils_1_1_torus_mesh_builder.html#a82e51e5006ec626b036f3178759fa928',1,'lf::mesh::utils::TorusMeshBuilder::logger()'],['../classlf_1_1mesh_1_1utils_1_1_t_p_quad_mesh_builder.html#a780be5d5122e508ce58919c39f1ed4c5',1,'lf::mesh::utils::TPQuadMeshBuilder::logger()'],['../classlf_1_1mesh_1_1utils_1_1_t_p_triag_mesh_builder.html#aa400d0b90c8f7a1f7a341b5525e80d6c',1,'lf::mesh::utils::TPTriagMeshBuilder::logger()'],['../classlf_1_1refinement_1_1_mesh_hierarchy.html#ae6a0b928de0c18281aafed35a45d3d34',1,'lf::refinement::MeshHierarchy::logger()'],['../classlf_1_1uscalfe_1_1_linear_f_e_laplace_element_matrix.html#a8a9b83e6fa325531e359b643645bda38',1,'lf::uscalfe::LinearFELaplaceElementMatrix::logger()']]],
-  ['lookup_5ftable_1384',['lookup_table',['../classlf_1_1io_1_1_vtk_file_1_1_scalar_data.html#ab64bd1a1a975843a73091f60ccae95c5',1,'lf::io::VtkFile::ScalarData']]]
+  ['lambda_5f_1384',['lambda_',['../class_variant_visitor.html#a72118ce9b0f14e0c5a87593982d3a13b',1,'VariantVisitor']]],
+  ['lattice_5fconst_5f_1385',['lattice_const_',['../classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643',1,'lf::geometry::RefinementPattern']]],
+  ['level_5fcoarse_5f_1386',['level_coarse_',['../classlf_1_1refinement_1_1_mesh_function_transfer.html#aa83f4b234daf9aea00afaa640b53f4ba',1,'lf::refinement::MeshFunctionTransfer']]],
+  ['level_5ffine_5f_1387',['level_fine_',['../classlf_1_1refinement_1_1_mesh_function_transfer.html#a9c02b054c0b9eb87a86b9e1e235615aa',1,'lf::refinement::MeshFunctionTransfer']]],
+  ['lookup_5ftable_1388',['lookup_table',['../classlf_1_1io_1_1_vtk_file_1_1_scalar_data.html#ab64bd1a1a975843a73091f60ccae95c5',1,'lf::io::VtkFile::ScalarData']]]
 ];
