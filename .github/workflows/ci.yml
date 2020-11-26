@@ -166,6 +166,7 @@ jobs:
             ${{ env.HUNTER_ROOT }}
           key:  ${{ runner.os }}-g++-8-Doxygen-${{ github.run_id }}
           restore-keys: |
+            ${{ runner.os }}-g++-8-Doxygen-
             ${{ runner.os }}-g++-8-Debug-
       - name: doxygen 
         run: |
@@ -181,3 +182,5 @@ jobs:
           cd ../../..
           cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
           make doxygen
+
+
