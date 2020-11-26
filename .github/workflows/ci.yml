@@ -3,6 +3,10 @@ name: Continuous Integration
 # Run this workflow every time a new commit pushed to your repository
 on: [push, pull_request]
 
+env:
+  DEPS_DIR: ${{ github.workspace}}/deps
+  HUNTER_ROOT: ${{ github.workspace}}/hunter
+
 jobs:
   # clang-format:
     # name: clang-format-8
@@ -18,13 +22,32 @@ jobs:
   clang-tidy:
     name: clang-tidy-8
     runs-on: ubuntu-20.04
+    strategy:
+      include:
+        - paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+        - paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+    env:
+      - COMPILER: clang++-8
+      - BUILD_TYPE: DEBUG
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
         run: sudo apt-get install clang-tidy-8 g++-8
-      - name: clang-tidy
-        run: "./travis/build_dependencies.sh"
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: 
+            - HUNTER_ROOT
+            - DEPS_DIR
+          key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-hunter-debug-
+            ${{ runner.os }}-hunter-
+      - name: build_dependencies
+        run: "./ci/build_dependencies.sh"
+      - name: clang-tidy on everything except projects:
+        run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
       
   # windows-debug:
     # # Name the Job
