@@ -92,44 +92,45 @@ jobs:
       - name: compile and test
         run: "./ci/compile_test.sh"
       
-  # windows:
-    # name: Windows Debug x64
-    # runs-on: windows-latest
-    # env:
-      # HUNTER_ROOT: C:\.hunter
-    # strategy:
-      # matrix:
-        # include:
-          # - 
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      # - name: Restore cache
-        # uses: actions/cache@v2
-        # with:
-          # path: C:\.hunter
-          # key:  ${{ runner.os }}-hunter-debug-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-hunter-debug-
-            # ${{ runner.os }}-hunter-
+  windows:
+    name: Windows Debug x64
+    runs-on: windows-latest
+    env:
+      HUNTER_ROOT: C:\.hunter
+    strategy:
+      matrix:
+        include:
+          - build_type: "Debug"
+            compiler: "msvc"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: C:\.hunter
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-${{ env.COMPILER }}-
       
-      Note that windows has a recent version of cmake installed -> we don't need to install it here.
+     # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
-      we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
-      # - name: Hunter dependencies
-        # run: |
-          # mkdir build > $null
-          # cd build
-          # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=Debug -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+     # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+      - name: Hunter dependencies
+        run: |
+          mkdir build > $null
+          cd build
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
           
-      # - name: compile
-        # run: |
-          # cmake --build ./build --config Debug --target ALL_BUILD
+      - name: compile
+        run: |
+          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD
           
-      # - name: test
-        # run: |
-          # cd build
-          # ctest -j 2 -c Debug --output-on-failure
+      - name: test
+        run: |
+          cd build
+          ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
           
     
   # windows-release:
