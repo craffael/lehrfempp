@@ -58,4 +58,4 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-$(dirname $0)/travis/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ $FILES $1
+$(dirname $0)/ci/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ $FILES $1
