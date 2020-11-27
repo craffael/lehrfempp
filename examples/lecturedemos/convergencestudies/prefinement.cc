@@ -359,7 +359,6 @@ int main(int argc, char *argv[]) {
   const std::filesystem::path here = __FILE__;
   // Load the unit square mesh
   const auto square_mesh = getSquareDomain();
-  lf::io::writeTikZ(*square_mesh, "unitsquare.tikz", lf::io::TikzOutputCtrl(31));
   // Load the L-shaped domain mesh
   const auto L_mesh = getLDomain();
 
