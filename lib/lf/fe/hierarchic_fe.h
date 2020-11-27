@@ -61,10 +61,10 @@ struct LegendrePoly {
     double Ljm1 = 1;
     double Lj = x;
     if (n == 0) {
-      return Ljm1;  // * std::sqrt(2 * n + 1);
+      return Ljm1;
     }
     if (n == 1) {
-      return Lj;  // * std::sqrt(2 * n + 1);
+      return Lj;
     }
     // If the degree is > 1, we use the recurrence relation
     for (unsigned j = 1; j < n; ++j) {
@@ -72,7 +72,7 @@ struct LegendrePoly {
       Ljm1 = Lj;
       Lj = Ljp1;
     }
-    return Lj;  // * std::sqrt(2 * n + 1);
+    return Lj;
   }
 
   /**
@@ -94,7 +94,7 @@ struct LegendrePoly {
       return -1;
     }
     if (n == 1) {
-      return x;  // * std::sqrt(2 * n - 1);
+      return x;
     }
     // Map to the interval [-1, 1]
     x = 2 * x - 1;
@@ -109,7 +109,7 @@ struct LegendrePoly {
       Lj = Ljp1;
     }
     // Compute the integral
-    return (Lj - Ljm2) / (4 * n - 2);  // * std::sqrt(2 * n - 1);
+    return (Lj - Ljm2) / (4 * n - 2);
   }
 
   /**
@@ -129,16 +129,16 @@ struct LegendrePoly {
    */
   static SCALAR derivative(unsigned n, double x) {
     if (n == 0) {
-      return 2.;  // * std::sqrt(2 * n + 3);
+      return 2.;
     }
     // Special cases for x == 0 and x == 1
     if (x == 1) {
-      return (n + 1) * (n + 2);  // * std::sqrt(2 * n + 3);
+      return (n + 1) * (n + 2);
     }
     if (x == 0) {
       // Depends on whether the polynomial is even or odd
       return (n % 2 == 0 ? (n + 1.) * (n + 2.)
-                         : -(n + 1.) * (n + 2.));  // * std::sqrt(2 * n + 3);
+                         : -(n + 1.) * (n + 2.));
     }
     // Map to the interval [-1, 1]
     x = 2 * x - 1;
@@ -152,7 +152,7 @@ struct LegendrePoly {
     }
     // Compute the derivative of the (n+1)-th polynomial
     return (2 * n + 2) / (x * x - 1) *
-           (x * Lj - Ljm1);  // * std::sqrt(2 * n + 3);
+           (x * Lj - Ljm1);
   }
 };
 
@@ -238,6 +238,7 @@ struct JacobiPoly {
       return x;
     }
     // Compute the n-th, (n-1)-th and (n-2)-th Jacobi Polynomial
+    // This uses the same recurrence relation as the `eval` method
     double ajp1P = 2 * 2 * (2 + alpha) * (2 * 2 + alpha - 2);
     double bjp1P = 2 * 2 + alpha - 1;
     double cjp1P = (2 * 2 + alpha) * (2 * 2 + alpha - 2);
@@ -292,6 +293,8 @@ struct JacobiPoly {
    * function which is specialized for \f$ \beta = 0 \f$.
    */
   static SCALAR eval_general(unsigned n, double alpha, double beta, double x) {
+    // The recurrence relation is for the non-shifted Jacobi Polynomials
+    // We thus map [0, 1] onto [-1, 1]
     x = 2 * x - 1;
     if (n == 0) {
       return 1;
@@ -1118,6 +1121,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   lf::quad::QuadRule qr_dual_tria_;
   nonstd::span<const lf::mesh::Orientation> rel_orient_;
 
+  /*
+   * @brief Compute the DOFs of the vertex functions from some
+   * given nodal evaluations
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>
   NodalValuesToVertexDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
@@ -1128,6 +1135,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     return dofs;
   }
 
+  /*
+   * @brief Compute the DOFs of the edge functions from some
+   * given nodal evaluations
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToEdgeDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
     const lf::base::size_type Ns = qr_dual_segment_.NumPoints();
@@ -1181,6 +1192,10 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     return dofs;
   }
 
+  /*
+   * @brief Compute the non-orthogonalized DOFs of the face bubbles from some
+   * given nodal evaluations
+   */
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToFaceDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const {
     const lf::base::size_type Ns = qr_dual_segment_.NumPoints();
@@ -1193,6 +1208,8 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
            qr_dual_tria_.Points().row(1).array().unaryExpr([&](double y) {
              return 1 - y;
            })).matrix();
+      // We need to flip the local coordinates in case the
+      // relative orientation is negative
       const Eigen::Matrix<double, 1, Eigen::Dynamic> xnorm_adj =
           rel_orient_[0] == lf::mesh::Orientation::positive
               ? xnorm

@@ -9,7 +9,7 @@
 /**
  * @file
  * @brief Finite elements: local definition and assembly for elliptic BVPs
- * @author Tobias
+ * @author Tobias Rohner
  * @date May 2020
  * @copyright MIT License
  */
@@ -27,8 +27,32 @@
  * element methods primarily meant for second-order elliptic boundary value
  * problems.
  *
- * TODO: ADD DOCUMENTATION
+ * This namespace contains a number of classes/functions which
+ * can be used to solve boundary vlaue problems with scalar finite elements.
+ * This means that the shape functions must be scalar valued, but the shape
+ * functions of a given approximation space may depend on the location in
+ * the mesh instead of only the corresponding reference element. The
+ * `lf::uscalfe` namespace is a specialization of this namespace to uniform
+ * scalar finite elements. (Mainly Lagrangian FE).
+ *
+ * Examples of approximation spaces that the methodsclasses in this namespace
+ * can represent/handle are:
+ * - Lagrangian FE of any order
+ * - Hierarchical FE Spaces
+ * - Approximation spaces with local p-refinement
+ * - Broken spaces (e.g. for Discontinuous Galerkin Approximations)
+ *
+ * Here are examples of use cases not supported by `lf::fe`:
+ * - Non-Scalar valued approximation spaces
  */
-namespace lf::fe {}  // namespace lf::fe
+namespace lf::fe {
+// Import operators/free functions from lf::mesh::utils so we can apply them
+// also to mesh functions defined in lf::fe (Argument Dependent Lookup)
+using mesh::utils::operator*;
+using mesh::utils::operator+;
+using mesh::utils::operator-;
+using mesh::utils::squaredNorm;
+using mesh::utils::transpose;
+}  // namespace lf::fe
 
 #endif
