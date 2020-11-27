@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is a utility script for linux/osx users to run clang-tidy over all relevant files
-# The continuous integration build environment (travis) runs exactly the same command.
+# The continuous integration build environment (github actions) runs exactly the same command.
 #
 # HOW TO USE:
 # - change into your CMake build directory and call this script from there.

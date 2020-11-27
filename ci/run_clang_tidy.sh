@@ -1,11 +1,11 @@
-# This script is called from .travis.yml
+# This script is called from .github/workflows/ci.yml
 #
 # It takes two inputs as environment variables:
 #   COMPILER specifies the compiler to use (e.g. g++-7)
 #   BUILD_TYPE specifies the CMAKE_BUILD_TYPE.
 # 
 # Also it takes exactly one command line parameter which is a regex expression
-# that specifies the files to include (see .travis.yml for example)
+# that specifies the files to include (see .github/workflows/ci.yml for example)
 # It builds and tests Lehrfempp using the provided compiler + cmake configuration.
 
 # Exit immediately from this script upon error

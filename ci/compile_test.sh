@@ -1,4 +1,4 @@
-# This script is called from .travis.yml
+# This script is called from .github/workflows/ci.yml
 #
 # It takes two inputs as environment variables:
 #   COMPILER specifies the compiler to use (e.g. g++-7)

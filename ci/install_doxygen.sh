@@ -1,4 +1,4 @@
-# This script installs an up-2-date version of cmake on the travis build server.
+# This script installs an up-2-date version of cmake on the github actions build server.
 
 # Exit immediately from this script upon error
 set -e
