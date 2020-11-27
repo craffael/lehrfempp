@@ -323,15 +323,15 @@ int main(int argc, char **argv) {
 
   vm.notify();
 
-  // set the level of assemble_matrix_logger to trace
+  // set the level of AssembleMatrixLogger to trace
   // A soon as spdlog 1.8.0 is available via hunter
   // (https://github.com/cpp-pm/hunter/pull/260) this can be achieved by
   // setting the environment variable `SPDLOG_LEVEL=trace` or
-  // `SPDLOG_LEVEL="info,lf::assemble::assemble_matrix_logger=trace"`
-  lf::assemble::assemble_matrix_logger->set_level(spdlog::level::trace);
+  // `SPDLOG_LEVEL="info,lf::assemble::AssembleMatrixLogger=trace"`
+  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::trace);
 
-  std::cout << "assemble_matrix_logger level "
-            << lf::assemble::assemble_matrix_logger->level() << "\n";
+  std::cout << "AssembleMatrixLogger level "
+            << lf::assemble::AssembleMatrixLogger()->level() << "\n";
   std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
             << std::endl;
   // Retrieve number of degrees of freedom for each entity type from
@@ -402,12 +402,11 @@ int main(int argc, char **argv) {
   }
 
   // Set debugging switches
-  lf::uscalfe::LinearFELaplaceElementMatrix::logger->set_level(
+  lf::uscalfe::LinearFELaplaceElementMatrix::Logger()->set_level(
       spdlog::level::info);
   // LinearFELaplaceElementMatrix::dbg_geo |
   // LinearFELaplaceElementMatrix::dbg_locmat;
-  lf::uscalfe::linear_fe_local_load_vector_logger->set_level(
-      spdlog::level::info);
+  lf::uscalfe::LinearFeLocalLoadVectorLogger()->set_level(spdlog::level::info);
 
   dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
   // lf::assemble::ass_mat_dbg_ctrl = 255;

@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#include <lf/mesh/mesh.h>
 #include <lf/geometry/geometry.h>
+#include <lf/mesh/mesh.h>
 #include <iostream>
 
 // The following snippet is copied from lecturedemomesh.cc

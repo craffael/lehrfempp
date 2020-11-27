@@ -15,8 +15,10 @@
 #include "assembler.h"
 
 namespace lf::assemble {
-// Initialize assemble_matrix_logger
-std::shared_ptr<spdlog::logger> assemble_matrix_logger =
-    base::InitLogger("lf::assemble::assemble_matrix_logger");
+// Initialize AssembleMatrixLogger
+std::shared_ptr<spdlog::logger>& AssembleMatrixLogger() {
+  static auto logger = base::InitLogger("lf::assemble::AssembleMatrixLogger");
+  return logger;
+}
 
 }  // namespace lf::assemble

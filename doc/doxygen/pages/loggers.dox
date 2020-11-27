@@ -45,8 +45,8 @@ namespace lf {
  If you want to show these log statements, you have to change the log level of the associated loggers.
  
  In LehrFEM++ every class or free function, which wants to log something, decalares a `spdlog::logger`.
- - For classes, these loggers are public static fields of the corresponding class (e.g. \ref lf::mesh::hybrid2d::Mesh::logger "Mesh::logger").
- - For free functions, there is a corresponding logger in the same namespace as the free function (e.g. lf::assemble::assemble_matrix_logger for \ref lf::assemble::AssembleMatrixLocally)
+ - For classes, these loggers are public static member functions of the corresponding class (e.g. \ref lf::mesh::hybrid2d::Mesh::Logger() "Mesh::Logger()").
+ - For free functions, there is a corresponding function in the same namespace as the free function (e.g. lf::assemble::AssembleMatrixLogger() for \ref lf::assemble::AssembleMatrixLocally)
  
   
  

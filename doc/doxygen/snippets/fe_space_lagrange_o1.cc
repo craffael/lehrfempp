@@ -21,7 +21,8 @@ void foo() {
       std::make_shared<FeSpaceLagrangeO1<double>>(gmsh_reader.mesh());
 
   // #dofs = #points in mesh:
-  assert(fe_space->LocGlobMap().NumDofs() == gmsh_reader.mesh()->NumEntities(2));
+  assert(fe_space->LocGlobMap().NumDofs() ==
+         gmsh_reader.mesh()->NumEntities(2));
   //! [usage]
 }
 

@@ -51,7 +51,7 @@ TEST(lf_base_timer, TimerSingleThread) {
   EXPECT_GE(elapsed2.user, elapsed.user);
 
   // The following in principle makes sense, but is often not true on
-  // travis/github actions:
+  // github actions:
   // EXPECT_GT(elapsed2.system, elapsed2.user);
 
   t.Start();

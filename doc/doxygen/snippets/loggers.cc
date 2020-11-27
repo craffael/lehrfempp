@@ -17,11 +17,11 @@ void PrintInfoSnippet() {
 
 void ChangeLogLevel() {
   //! [ChangeLogLevel]
-  lf::assemble::assemble_matrix_logger->set_level(spdlog::level::debug);
+  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::debug);
   //! [ChangeLogLevel]
 
   //! [ChangeLogLevel2]
-  lf::mesh::hybrid2d::Mesh::logger->set_level(spdlog::level::trace);
+  lf::mesh::hybrid2d::Mesh::Logger()->set_level(spdlog::level::trace);
   //! [ChangeLogLevel2]
 
   //! [ChangeLogLevelAll]

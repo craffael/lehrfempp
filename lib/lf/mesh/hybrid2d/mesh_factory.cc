@@ -7,8 +7,11 @@
 
 namespace lf::mesh::hybrid2d {
 
-std::shared_ptr<spdlog::logger> MeshFactory::logger =
-    lf::base::InitLogger("lf::mesh::hybrid2d::MeshFactory::logger");
+std::shared_ptr<spdlog::logger>& MeshFactory::Logger() {
+  static auto logger =
+      lf::base::InitLogger("lf::mesh::hybrid2d::MeshFactory::Logger");
+  return logger;
+}
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(coord.rows() == dim_world_,
@@ -99,10 +102,10 @@ MeshFactory::size_type MeshFactory::AddEntity(
 
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   // DIAGNOSTICS
-  if (logger->should_log(spdlog::level::trace)) {
+  if (Logger()->should_log(spdlog::level::trace)) {
     std::stringstream ss;
     PrintLists(ss);
-    SPDLOG_LOGGER_TRACE(logger, ss.str());
+    SPDLOG_LOGGER_TRACE(Logger(), ss.str());
   }
 
   // Obtain points to new mesh object; the actual construction of the

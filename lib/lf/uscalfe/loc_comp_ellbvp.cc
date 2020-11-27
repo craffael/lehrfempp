@@ -17,17 +17,28 @@
 
 namespace lf::uscalfe {
 
-std::shared_ptr<spdlog::logger>
-    reaction_diffusion_element_matrix_provider_logger = base::InitLogger(
-        "lf::uscalfe::reaction_diffusion_element_matrix_provider_logger");
+std::shared_ptr<spdlog::logger>&
+ReactionDiffusionElementMatrixProviderLogger() {
+  static auto logger = base::InitLogger(
+      "lf::uscalfe::ReactionDiffusionElementMatrixProviderLogger");
+  return logger;
+}
 
-std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger =
-    base::InitLogger("lf::uscalfe::mass_edge_matrix_provider_logger");
+std::shared_ptr<spdlog::logger>& MassEdgeMatrixProviderLogger() {
+  static auto logger =
+      base::InitLogger("lf::uscalfe::MassEdgeMatrixProviderLogger");
+  return logger;
+}
 
-std::shared_ptr<spdlog::logger> scalar_load_element_vector_provider_logger =
-    base::InitLogger("lf::uscalfe::scalar_load_element_vector_provider_logger");
+std::shared_ptr<spdlog::logger>& ScalarLoadElementVectorProviderLogger() {
+  static auto logger =
+      base::InitLogger("lf::uscalfe::ScalarLoadElementVectorProviderLogger");
+  return logger;
+}
 
-std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger =
-    base::InitLogger("scalar_load_edge_vector_provider_logger");
+std::shared_ptr<spdlog::logger>& ScalarLoadEdgeVectorProviderLogger() {
+  static auto logger = base::InitLogger("ScalarLoadEdgeVectorProviderLogger");
+  return logger;
+}
 
 }  // end namespace lf::uscalfe

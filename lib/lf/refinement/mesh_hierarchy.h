@@ -447,7 +447,7 @@ class MeshHierarchy {
    * @brief Is used by MeshHierarchy to log additional information for debugging
    * purposes.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger> &Logger();
 };
 
 template <typename Marker>

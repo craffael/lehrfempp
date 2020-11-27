@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is a utility script for linux/osx users to run clang-tidy over all relevant files
-# The continuous integration build environment (travis) runs exactly the same command.
+# The continuous integration build environment (github actions) runs exactly the same command.
 #
 # HOW TO USE:
 # - change into your CMake build directory and call this script from there.
@@ -58,4 +58,4 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-$(dirname $0)/travis/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ $FILES $1
+$(dirname $0)/ci/run-clang-tidy.py -p . -clang-tidy-binary $ct -header-filter=lib/ $FILES $1

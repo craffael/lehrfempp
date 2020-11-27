@@ -46,7 +46,7 @@ class TPQuadMeshBuilder : public StructuredMeshBuilder {
   /**
    * @brief is used by the Build() method to output additional information.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger>& Logger();
 };  // end class definition TPQuadMeshBuilder
 
 }  // namespace lf::mesh::utils
