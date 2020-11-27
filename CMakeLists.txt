@@ -47,7 +47,6 @@ find_package(Eigen3 CONFIG REQUIRED)
 # Get SPDLog
 hunter_add_package(spdlog)
 find_package(spdlog CONFIG REQUIRED)
-
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
