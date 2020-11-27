@@ -24,6 +24,7 @@ if(LF_ENABLE_TESTING)
 endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
+option(LF_BUILD_DOC      "Whether the documentation should be build."                     ON)
 
 # Group targets in folders in Visual Studio/Xcode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -71,7 +72,9 @@ set(config_install_dir "lib/cmake/lehrfempp")
 
 
 add_subdirectory(lib)
-add_subdirectory(doc/doxygen)
+if(LF_BUILD_DOC)
+  add_subdirectory(doc/doxygen)
+endif()
 if(LF_BUILD_EXAMPLES)
   # Add custom target which will run all examples
   add_custom_target(examples_run)
