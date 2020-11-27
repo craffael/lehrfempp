@@ -25,17 +25,17 @@ namespace lf::base {
  * registry](https://github.com/gabime/spdlog/wiki/5.-Logger-registry) and
  * initialize it with LehrFEM++ specific settings.
  * @param name The name of the logger, is usually equal to the fully-scoped
- * variable name, e.g. `lf::mesh::hybrid2d::Mesh::logger` or
- * `lf::assemble::assemble_matrix_logger`
+ * variable name, e.g. `lf::mesh::hybrid2d::Mesh::Logger` or
+ * `lf::assemble::AssembleMatrixLogger`
  * @return The initialized logger
  *
  * LehrFEM++ uses spdlog loggers to provide the user with
  * additional information about long running operations. These loggers are
- * either associated with a class, in which case they are static, public members
- * of this class (e.g. `lf::mesh::hybrid2d::Mesh::logger`) or they are
- * associated with a free function in which case they are assigned to a global
- * variable lying in the same namespace as the free function (e.g.
- * `lf::assemble::assemble_matrix_logger`).
+ * either associated with a class, in which case they are static, public member
+ * functions of this class (e.g. `lf::mesh::hybrid2d::Mesh::Logger()`) or they
+ * are associated with a free function in which case they are retrieved through
+ * a global free function lying in the same namespace as the free function (e.g.
+ * `lf::assemble::AssembleMatrixLogger()`).
  *
  * You should use InitLogger() to initialize these loggers. In this way, we can
  * set some sensible defaults for all LehrFEM++ loggers at one central location.

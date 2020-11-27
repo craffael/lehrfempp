@@ -77,7 +77,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  *
  * ## Logger
  * This class logs additional information to
- * \ref reaction_diffusion_element_matrix_provider_logger.
+ * \ref ReactionDiffusionElementMatrixProviderLogger().
  * See \ref loggers for more information.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
@@ -186,8 +186,7 @@ class ReactionDiffusionElementMatrixProvider {
 /**
  * @brief logger for ReactionDiffusionElementMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    reaction_diffusion_element_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &ReactionDiffusionElementMatrixProviderLogger();
 
 template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
@@ -284,7 +283,7 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(reaction_diffusion_element_matrix_provider_logger,
+  SPDLOG_LOGGER_TRACE(ReactionDiffusionElementMatrixProviderLogger(),
                       "{}, shape = \n{}", ref_el,
                       geo_ptr->Global(ref_el.NodeCoords()));
 
@@ -350,7 +349,7 @@ ReactionDiffusionElementMatrixProvider<
  *
  * #### Logger
  * This class logs additional information to
- * \ref mass_edge_matrix_provider_logger.
+ * \ref MassEdgeMatrixProviderLogger().
  * See \ref loggers for more information.
  *
  */
@@ -460,7 +459,7 @@ class MassEdgeMatrixProvider {
 /**
  * @brief logger for MassEdgeMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &MassEdgeMatrixProviderLogger();
 
 // deduction guide:
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
@@ -539,7 +538,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  *
  * #### Logger
  * This class logs additional information to
- * \ref scalar_load_element_vector_provider_logger.
+ * \ref ScalarLoadElementVectorProvider().
  * See \ref loggers for more information.
  *
  */
@@ -607,8 +606,7 @@ class ScalarLoadElementVectorProvider {
 /**
  * @brief logger used by ScalarLoadElementVectorProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    scalar_load_element_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadElementVectorProviderLogger();
 
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
@@ -690,7 +688,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "{}, shape = \n{}", ref_el,
                       geo_ptr->Global(ref_el.NodeCoords()));
 
@@ -700,7 +698,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(
       determinants.size() == pfe.Qr().NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << pfe.Qr().NumPoints());
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "LOCVEC({}): Metric factors :\n{}", ref_el,
                       determinants.transpose());
 
@@ -712,7 +710,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+    SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                         "LOCVEC: [{}] -> [weight = {}]",
                         pfe.Qr().Points().transpose(), pfe.Qr().Weights()[k]);
     // Contribution of current quadrature point
@@ -720,8 +718,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
            pfe.PrecompReferenceShapeFunctions().col(k);
   }
 
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
-                      "LOCVEC = \n{}", vec.transpose());
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(), "LOCVEC = \n{}",
+                      vec.transpose());
 
   return vec;
 }
@@ -750,7 +748,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  *
  * ### Logger
  * This class logs additional information to
- * \ref scalar_load_edge_vector_provider_logger.
+ * \ref ScalarLoadEdgeVectorProvider().
  * See \ref loggers for more information.
  *
  * ### Type requirements
@@ -843,7 +841,7 @@ class ScalarLoadEdgeVectorProvider {
 /**
  * @brief logger for ScalarLoadEdgeVectorProvider class template.
  */
-extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadEdgeVectorProviderLogger();
 
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>

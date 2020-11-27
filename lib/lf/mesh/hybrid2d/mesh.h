@@ -132,8 +132,10 @@ class Mesh : public mesh::Mesh {
 
  public:
   /// logger, used by methods of Mesh to log additional information.
-  static inline std::shared_ptr<spdlog::logger> logger =
-      base::InitLogger("lf::mesh::hybrid2d::Mesh::logger");
+  static std::shared_ptr<spdlog::logger>& Logger() {
+    static auto logger = base::InitLogger("lf::mesh::hybrid2d::Mesh::Logger");
+    return logger;
+  }
 };
 
 }  // namespace lf::mesh::hybrid2d

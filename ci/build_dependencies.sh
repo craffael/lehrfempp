@@ -1,4 +1,4 @@
-# This script is called from .travis.yml
+# This script is called from github actions
 #
 # It takes two inputs as environment variables:
 #   COMPILER specifies the compiler to use (e.g. g++-7)
@@ -9,6 +9,8 @@
 # Exit immediately from this script upon error
 set -e
 
+HUNTER_ROOT=${GITHUB_WORKSPACE}/hunter
+
 # install new version of cmake:
 mkdir -p ${HUNTER_ROOT}
 
@@ -16,7 +18,7 @@ mkdir -p ${HUNTER_ROOT}
 source $(dirname $0)/install_cmake.sh
 
 # compile
-cd ${TRAVIS_BUILD_DIR}
+cd ${GITHUB_WORKSPACE}
 export CXX=${COMPILER}
 $CXX --version
 

@@ -19,7 +19,7 @@ namespace lf::mesh::test {
 // Test for pointer-based implementation and creation of tensor product grid
 TEST(lf_mesh_p, buildTPQuadMesh) {
   // Enable copious output
-  utils::TPQuadMeshBuilder::logger->set_level(spdlog::level::trace);
+  utils::TPQuadMeshBuilder::Logger()->set_level(spdlog::level::trace);
   // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
   std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =

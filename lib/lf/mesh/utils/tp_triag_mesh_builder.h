@@ -53,7 +53,7 @@ class TPTriagMeshBuilder : public StructuredMeshBuilder {
   /**
    * @brief Used by Build() method to output additional debug info.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger>& Logger();
 };  // end class definition TPTriagMeshBuilder
 
 }  // namespace lf::mesh::utils

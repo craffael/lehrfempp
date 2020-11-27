@@ -571,8 +571,8 @@ TEST(lf_fe_linear, lf_fe_loadvec) {
   using loc_comp_t = ScalarLoadElementVectorProvider<double, decltype(f)>;
 
   // Set debugging flags
-  scalar_load_element_vector_provider_logger->set_level(spdlog::level::info);
-  linear_fe_local_load_vector_logger->set_level(spdlog::level::info);  // 3;
+  ScalarLoadElementVectorProviderLogger()->set_level(spdlog::level::info);
+  LinearFeLocalLoadVectorLogger()->set_level(spdlog::level::info);  // 3;
 
   // Instantiate object for local computations
   loc_comp_t comp_elem_vec(fe_space, f);
