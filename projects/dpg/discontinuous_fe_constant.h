@@ -9,8 +9,8 @@
 #ifndef PROJECTS_DPG_DISCONTINUOUS_FE_CONSTANT_H
 #define PROJECTS_DPG_DISCONTINUOUS_FE_CONSTANT_H
 
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/uscalfe/uscalfe.h>
 #include <typeinfo>
 #include "dpg.h"
 

@@ -8,15 +8,15 @@
 
 #define _USE_MATH_DEFINES
 
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
-#include <lf/fe/fe.h>
 
-#include <lf/refinement/refinement.h>
-#include <lf/refinement/mesh_function_transfer.h>
 #include <lf/io/io.h>
+#include <lf/refinement/mesh_function_transfer.h>
+#include <lf/refinement/refinement.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -52,16 +52,14 @@ std::shared_ptr<lf::mesh::Mesh> getSquareDomain() {
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
-  lf::mesh::MeshFactory::size_type nodes[3];	// NOLINT
-  coords << 0, 1, 0,
-	    0, 0, 1;
+  lf::mesh::MeshFactory::size_type nodes[3];  // NOLINT
+  coords << 0, 1, 0, 0, 0, 1;
   nodes[0] = vertices[0];
   nodes[1] = vertices[1];
   nodes[2] = vertices[3];
   auto geom_tria1 = std::make_unique<lf::geometry::TriaO1>(coords);
   factory.AddEntity(lf::base::RefEl::kTria(), nodes, std::move(geom_tria1));
-  coords << 1, 1, 0,
-	    0, 1, 1;
+  coords << 1, 1, 0, 0, 1, 1;
   nodes[0] = vertices[1];
   nodes[1] = vertices[2];
   nodes[2] = vertices[3];
@@ -94,7 +92,7 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
   vertices.push_back(factory.AddPoint(vertex_coord));
   // Add the triangles
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords(2, 3);
-  lf::mesh::MeshFactory::size_type nodes[3];	// NOLINT
+  lf::mesh::MeshFactory::size_type nodes[3];  // NOLINT
   coords << -1, 0, -1, -1, 0, 1;
   nodes[0] = vertices[0];
   nodes[1] = vertices[2];
@@ -135,7 +133,9 @@ std::shared_ptr<lf::mesh::Mesh> getLDomain() {
         u(x) = \sin(\pi x_1)\sin(\pi x_2)
    \f]
  */
-std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<lf::fe::ScalarFESpace<double>>& fe_space) {
+std::tuple<double, double> computeErrorsSquareDomain(
+    unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh,
+    const std::shared_ptr<lf::fe::ScalarFESpace<double>> &fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
     return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
@@ -168,7 +168,8 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
   std::cout << "\t\t> Assembling right Hand Side" << std::endl;
-  lf::fe::ScalarLoadElementVectorProvider element_vector_provider(fe_space, mf_load);
+  lf::fe::ScalarLoadElementVectorProvider element_vector_provider(fe_space,
+                                                                  mf_load);
   lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
 
   // Enforce zero dirichlet boundary conditions
@@ -185,10 +186,9 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
-  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space,
-                                                               solution);
-  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(
-      fe_space, solution);
+  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space, solution);
+  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(fe_space,
+                                                                   solution);
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
@@ -234,8 +234,9 @@ std::tuple<double, double> computeErrorsSquareDomain(unsigned degree, const std:
         u(r, \phi) = r^{\frac{2}{3}}\sin(\frac{2}{3}\phi)
    \f]
  */
-std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh, const std::shared_ptr<const lf::fe::ScalarFESpace<double>>
-        &fe_space) {
+std::tuple<double, double> computeErrorsLDomain(
+    unsigned degree, const std::shared_ptr<lf::mesh::Mesh> &mesh,
+    const std::shared_ptr<const lf::fe::ScalarFESpace<double>> &fe_space) {
   // The analytic solution
   const auto u = [](const Eigen::Vector2d &x) -> double {
     const double r = x.norm();
@@ -283,16 +284,17 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   Eigen::VectorXd boundary_dofs = Eigen::VectorXd::Zero(dofh.NumDofs());
   for (const auto edge : mesh->Entities(1)) {
-      if (boundary(*edge)) {
-	  const auto sfl = fe_space->ShapeFunctionLayout(*edge);
-	  const auto eval_nodes = sfl->EvaluationNodes();
-	  const Eigen::RowVectorXd nodal_values = Eigen::Map<Eigen::RowVectorXd>(mf_u(*edge, eval_nodes).data(), eval_nodes.cols());
-	  const Eigen::VectorXd locdofs = sfl->NodalValuesToDofs(nodal_values);
-	  const auto dofidxs = dofh.GlobalDofIndices(*edge);
-	  for (long i = 0 ; i < dofidxs.size() ; ++i) {
-	      boundary_dofs[dofidxs[i]] = locdofs[i];
-	  }
+    if (boundary(*edge)) {
+      const auto sfl = fe_space->ShapeFunctionLayout(*edge);
+      const auto eval_nodes = sfl->EvaluationNodes();
+      const Eigen::RowVectorXd nodal_values = Eigen::Map<Eigen::RowVectorXd>(
+          mf_u(*edge, eval_nodes).data(), eval_nodes.cols());
+      const Eigen::VectorXd locdofs = sfl->NodalValuesToDofs(nodal_values);
+      const auto dofidxs = dofh.GlobalDofIndices(*edge);
+      for (long i = 0; i < dofidxs.size(); ++i) {
+        boundary_dofs[dofidxs[i]] = locdofs[i];
       }
+    }
   }
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     const lf::mesh::Entity &entity = dofh.Entity(idx);
@@ -305,10 +307,9 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
-  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space,
-                                                               solution);
-  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(
-      fe_space, solution);
+  const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space, solution);
+  const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(fe_space,
+                                                                   solution);
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
@@ -329,7 +330,7 @@ std::tuple<double, double> computeErrorsLDomain(unsigned degree, const std::shar
         return qr_quad;
       default:
         return lf::quad::make_QuadRule(refel, 2 * degree - 1);
-      }
+    }
   };
   const double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
       *mesh, lf::mesh::utils::squaredNorm(mf_u_grad - mf_numeric_grad),

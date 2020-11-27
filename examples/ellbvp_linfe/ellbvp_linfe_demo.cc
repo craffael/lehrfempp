@@ -11,13 +11,13 @@
 #include <iomanip>
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;

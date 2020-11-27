@@ -13,6 +13,7 @@
 #include <string>
 
 #include <lf/assemble/dofhandler.h>
+#include <lf/fe/fe.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
 #include <lf/mesh/entity.h>
@@ -21,7 +22,6 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-#include <lf/fe/fe.h>
 
 #include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
@@ -210,21 +210,22 @@ int main() {
     const auto qr_provider = [](const lf::mesh::Entity& e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };
-    const double factor = lf::fe::IntegrateMeshFunction(
-                              *(solutions[lvl].mesh),
-                              lf::mesh::utils::transpose(velocity) * velocity_exact,
-                              qr_provider)(0, 0) /
-                          lf::fe::IntegrateMeshFunction(
-                              *(solutions[lvl].mesh),
-                              lf::mesh::utils::squaredNorm(velocity), qr_provider);
+    const double factor =
+        lf::fe::IntegrateMeshFunction(
+            *(solutions[lvl].mesh),
+            lf::mesh::utils::transpose(velocity) * velocity_exact,
+            qr_provider)(0, 0) /
+        lf::fe::IntegrateMeshFunction(*(solutions[lvl].mesh),
+                                      lf::mesh::utils::squaredNorm(velocity),
+                                      qr_provider);
     const double factor_modified =
         lf::fe::IntegrateMeshFunction(
             *(solutions[lvl].mesh),
             lf::mesh::utils::transpose(velocity_modified) * velocity_exact,
             qr_provider)(0, 0) /
         lf::fe::IntegrateMeshFunction(
-            *(solutions[lvl].mesh), lf::mesh::utils::squaredNorm(velocity_modified),
-            qr_provider);
+            *(solutions[lvl].mesh),
+            lf::mesh::utils::squaredNorm(velocity_modified), qr_provider);
     std::cout << factor << std::endl;
     // The error in the corrected velocity
     const auto velocity_scaled =

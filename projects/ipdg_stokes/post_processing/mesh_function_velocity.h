@@ -7,8 +7,8 @@
  * potential
  */
 
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace projects::ipdg_stokes {
 

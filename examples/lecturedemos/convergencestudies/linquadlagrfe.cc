@@ -10,13 +10,13 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -143,9 +143,9 @@ int main(int argc, char *argv[]) {
               << std::endl;
     const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
     const lf::fe::MeshFunctionFE<double, double> mf_o1(fe_space_o1,
-                                                            solution_o1);
-    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(
-        fe_space_o1, solution_o1);
+                                                       solution_o1);
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(fe_space_o1,
+                                                                solution_o1);
 
     // Solve the problem with quadratic finite elements
     std::cout << "\t> Quadratic Lagrangian FE";
@@ -155,9 +155,9 @@ int main(int argc, char *argv[]) {
               << std::endl;
     const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
     const lf::fe::MeshFunctionFE<double, double> mf_o2(fe_space_o2,
-                                                            solution_o2);
-    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(
-        fe_space_o2, solution_o2);
+                                                       solution_o2);
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2,
+                                                                solution_o2);
 
     // Compute the H1 and L2 errors
     std::cout << "\t> Computing Error Norms" << std::endl;

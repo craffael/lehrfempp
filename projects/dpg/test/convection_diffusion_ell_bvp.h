@@ -10,9 +10,9 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include "../product_fe_space.h"
 

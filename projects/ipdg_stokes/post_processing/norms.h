@@ -7,12 +7,12 @@
  * over a mesh
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/entity.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include <functional>
 

@@ -15,11 +15,11 @@
 #include <vector>
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
-#include <lf/fe/fe.h>
 
 #include "product_dofhandler.h"
 #include "product_element_matrix_provider.h"
@@ -286,11 +286,11 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionsFromFunctions(
 
   // flag dofs on the component spaces
   std::vector<std::pair<bool, SCALAR>> componentTraceConditions =
-      lf::fe::InitEssentialConditionFromFunction(
-          trace_dofh, fe_spec_edge_trace, dirichletcondflag, g);
+      lf::fe::InitEssentialConditionFromFunction(trace_dofh, fe_spec_edge_trace,
+                                                 dirichletcondflag, g);
   std::vector<std::pair<bool, SCALAR>> componentFluxConditions =
-      lf::fe::InitEssentialConditionFromFunction(
-          flux_dofh, fe_spec_edge_flux, neumanncondflag, h);
+      lf::fe::InitEssentialConditionFromFunction(flux_dofh, fe_spec_edge_flux,
+                                                 neumanncondflag, h);
 
   // calculate offsets to transform flags on component spaces
   // to the full product space

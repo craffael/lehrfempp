@@ -9,21 +9,21 @@
 #define _USE_MATH_DEFINES
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <boost/program_options.hpp>
 #include <cmath>
 #include <filesystem>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <memory>
 
 namespace po = boost::program_options;
@@ -168,8 +168,8 @@ int main(int argc, char *argv[]) {
     std::cout << " (" << fe_space_o1->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
-    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(
-        fe_space_o1, solution_o1);
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(fe_space_o1,
+                                                                solution_o1);
 
     // Solve the problem with quadratic finite elements
     std::cout << "\t> Quadratic Lagrangian FE";
@@ -178,8 +178,8 @@ int main(int argc, char *argv[]) {
     std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
-    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(
-        fe_space_o2, solution_o2);
+    const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2,
+                                                                solution_o2);
 
     // Compute the errors
     std::cout << "\t> Computing Error Norms" << std::endl;

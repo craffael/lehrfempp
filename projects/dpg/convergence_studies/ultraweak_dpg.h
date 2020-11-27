@@ -12,11 +12,11 @@
 #include <cmath>
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include "../dpg_element_matrix_provider.h"
 #include "../dpg_element_vector_provider.h"
@@ -280,11 +280,11 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
         *mesh_p, lf::mesh::utils::squaredNorm(mf_fe_u - mf_solution_u), 10));
 
     double L2err_sigma_x = std::sqrt(lf::fe::IntegrateMeshFunction(
-        *mesh_p, lf::mesh::utils::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x),
-        10));
+        *mesh_p,
+        lf::mesh::utils::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x), 10));
     double L2err_sigma_y = std::sqrt(lf::fe::IntegrateMeshFunction(
-        *mesh_p, lf::mesh::utils::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y),
-        10));
+        *mesh_p,
+        lf::mesh::utils::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y), 10));
 
     double L2err_sigma = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh_p,

@@ -10,9 +10,9 @@
  */
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/mesh.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include "product_fe_space.h"
 

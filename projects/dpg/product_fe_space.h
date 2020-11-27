@@ -12,8 +12,8 @@
 #include <vector>
 
 #include <lf/base/base.h>
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/uscalfe/uscalfe.h>
 
 #include "dpg.h"
 #include "product_dofhandler.h"
@@ -91,17 +91,17 @@ class ProductUniformFESpace {
    */
   ProductUniformFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-      std::vector<std::shared_ptr<
-          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_tria_v,
-      std::vector<std::shared_ptr<
-          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_quad_v,
-      std::vector<std::shared_ptr<
-          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_edge_v,
-      std::vector<std::shared_ptr<
-          const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_point_v)
       : mesh_p_(std::move(mesh_p)),
         rfs_tria_v_(std::move(rfs_tria_v)),

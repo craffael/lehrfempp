@@ -11,12 +11,12 @@
 #define PROJECTS_DPG_CS_PRIMAL_DPG_H
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 #include "../dpg_element_matrix_provider.h"
 #include "../dpg_element_vector_provider.h"

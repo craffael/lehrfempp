@@ -10,12 +10,12 @@
 #ifndef PROJECTS_DPG_TEST_LAGR_TEST_UTILS
 #define PROJECTS_DPG_TEST_LAGR_TEST_UTILS
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/test/fe_testutils.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 #include "../dpg.h"
 
 namespace projects::dpg::test {

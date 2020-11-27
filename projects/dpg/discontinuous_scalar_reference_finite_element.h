@@ -13,8 +13,8 @@
 #include <iostream>
 #include <typeinfo>
 
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/uscalfe/uscalfe.h>
 
 #include "dpg.h"
 
@@ -58,10 +58,8 @@ class DiscontinuousScalarReferenceFiniteElement
       DiscontinuousScalarReferenceFiniteElement&&) noexcept = default;
 
   explicit DiscontinuousScalarReferenceFiniteElement(
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
-          cfe)
-      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
-        cfe_(std::move(cfe)) {}
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> cfe)
+      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(), cfe_(std::move(cfe)) {}
 
   /**
    * @brief Reports initialization status of the object

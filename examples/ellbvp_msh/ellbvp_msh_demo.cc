@@ -12,13 +12,13 @@
 #include <iomanip>
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 int main() {
   // abbreviations for types
@@ -157,7 +157,10 @@ int main() {
     auto mf_FE = lf::fe::MeshFunctionFE(fe_space, sol_vec);
     auto mf_GradFe = lf::fe::MeshFunctionGradFE(fe_space, sol_vec);
     auto h1_norm = std::sqrt(lf::fe::IntegrateMeshFunction(
-        *mesh, lf::mesh::utils::squaredNorm(mf_FE) + lf::mesh::utils::squaredNorm(mf_GradFe), 2));
+        *mesh,
+        lf::mesh::utils::squaredNorm(mf_FE) +
+            lf::mesh::utils::squaredNorm(mf_GradFe),
+        2));
 
     std::cout << "Computed H1 Norm: " << h1_norm << std::endl;
 
