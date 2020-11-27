@@ -137,8 +137,7 @@ struct LegendrePoly {
     }
     if (x == 0) {
       // Depends on whether the polynomial is even or odd
-      return (n % 2 == 0 ? (n + 1.) * (n + 2.)
-                         : -(n + 1.) * (n + 2.));
+      return (n % 2 == 0 ? (n + 1.) * (n + 2.) : -(n + 1.) * (n + 2.));
     }
     // Map to the interval [-1, 1]
     x = 2 * x - 1;
@@ -151,8 +150,7 @@ struct LegendrePoly {
       Lj = Ljp1;
     }
     // Compute the derivative of the (n+1)-th polynomial
-    return (2 * n + 2) / (x * x - 1) *
-           (x * Lj - Ljm1);
+    return (2 * n + 2) / (x * x - 1) * (x * Lj - Ljm1);
   }
 };
 
