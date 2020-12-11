@@ -60,7 +60,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
-  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
+  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
     LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
     return mesh_p_;
   }
