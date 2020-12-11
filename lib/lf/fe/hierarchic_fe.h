@@ -322,13 +322,6 @@ struct JacobiPoly {
 };
 
 /**
- * @brief Computes Chebyshev interpolation nodes in [0, 1]
- * @param n Degree of the Chebyshev interpolation nodes
- * @returns An Eigen vector containing the interpolation nodes on [0, 1]
- */
-Eigen::VectorXd chebyshevNodes(unsigned n);
-
-/**
  * @headerfile lf/fe/fe.h
  * @brief Linear finite element on a point
  *
@@ -474,7 +467,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the shape functions associated with the vertices
     result.row(0) =
         refcoords.unaryExpr([&](double x) -> SCALAR { return 1 - x; });
-    result.row(1) = refcoords.unaryExpr([&](double x) -> SCALAR { return x; });
+    result.row(1) = refcoords;
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
@@ -740,9 +733,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       l311n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l1[i] / (l3[i] + l1[i]);
     }
     // Get the basis functions associated with the vertices
-    result.row(0) = l1.unaryExpr([&](double x) -> SCALAR { return x; });
-    result.row(1) = l2.unaryExpr([&](double x) -> SCALAR { return x; });
-    result.row(2) = l3.unaryExpr([&](double x) -> SCALAR { return x; });
+    result.row(0) = l1;
+    result.row(1) = l2;
+    result.row(2) = l3;
     // Get the basis functions associated with the first edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {

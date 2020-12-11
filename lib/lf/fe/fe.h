@@ -41,9 +41,6 @@
  * - Hierarchical FE Spaces
  * - Approximation spaces with local p-refinement
  * - Broken spaces (e.g. for Discontinuous Galerkin Approximations)
- *
- * Here are examples of use cases not supported by `lf::fe`:
- * - Non-Scalar valued approximation spaces
  */
 namespace lf::fe {
 // Import operators/free functions from lf::mesh::utils so we can apply them

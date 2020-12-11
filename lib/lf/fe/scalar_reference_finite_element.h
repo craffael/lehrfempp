@@ -106,9 +106,6 @@ class ScalarReferenceFiniteElement {
 
   /**
    * @brief Request the polynomial degree of the finite element space
-   *
-   * @sa ScalarReferenceFiniteElement(lf::base::RefEl ref_el, unsigned int
-   * degree)
    */
   [[nodiscard]] virtual unsigned int Degree() const = 0;
 

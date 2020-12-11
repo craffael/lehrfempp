@@ -45,29 +45,20 @@ class ScalarFESpace {
  public:
   using Scalar = SCALAR;
 
+ protected:
   /** @brief default constructor, needed by std::vector
    * @note creates an invalid object that cannot be used. */
   ScalarFESpace() = default;
-  ScalarFESpace(const ScalarFESpace &) = delete;
+  ScalarFESpace(const ScalarFESpace &) = default;
   ScalarFESpace(ScalarFESpace &&) noexcept = default;
-  ScalarFESpace &operator=(const ScalarFESpace &) = delete;
+  ScalarFESpace &operator=(const ScalarFESpace &) = default;
   ScalarFESpace &operator=(ScalarFESpace &&) noexcept = default;
-  /**
-   * @brief Main constructor: sets up the local-to-global index mapping (dof
-   * handler)
-   *
-   * @param mesh_p shared pointer to underlying mesh (immutable)
-   */
-  explicit ScalarFESpace(std::shared_ptr<const lf::mesh::Mesh> mesh_p)
-      : mesh_p_(std::move(mesh_p)) {}
 
+ public:
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
-  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
-    LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
-    return mesh_p_;
-  }
+  [[nodiscard]] virtual std::shared_ptr<const lf::mesh::Mesh> Mesh() const = 0;
   /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
@@ -93,48 +84,12 @@ class ScalarFESpace {
 
   /** @brief No special destructor */
   virtual ~ScalarFESpace() = default;
-
- private:
-  /** Underlying mesh */
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-
- public:
-  /** Output control variable */
-  static unsigned int ctrl_;
-  static const unsigned int kout_mesh = 1;
-  static const unsigned int kout_dofh = 2;
-  static const unsigned int kout_rsfs = 4;
 };  // end class definition ScalarFESpace
 
 /** @brief output operator for scalar parametric finite element space */
 template <typename SCALAR>
-std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes);
-
-// Output control variable
-template <typename SCALAR>
-unsigned int ScalarFESpace<SCALAR>::ctrl_ = 0;
-
-/** output operator for scalar parametric finite element space */
-template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes) {
-  o << "Uniform scalar FE space, dim = " << fes.LocGlobMap().NumDofs()
-    << std::endl;
-  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_mesh) {
-    o << fes.Mesh() << std::endl;
-  }
-  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_dofh) {
-    o << fes.LocGlobMap() << std::endl;
-  }
-  if (ScalarFESpace<SCALAR>::ctrl_ & ScalarFESpace<SCALAR>::kout_rsfs) {
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kPoint()) << " rsfs @ nodes"
-      << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kSegment())
-      << " rsfs @ edges" << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kTria())
-      << " rsfs @ triangles" << std::endl;
-    o << fes.NumRefShapeFunctions(lf::base::RefEl::kQuad()) << " rsfs @ quads"
-      << std::endl;
-  }
+  fes.PrintInfo(o, 0);
   return o;
 }
 

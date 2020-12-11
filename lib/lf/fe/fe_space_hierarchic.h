@@ -50,19 +50,26 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
    */
   explicit FeSpaceHierarchic(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned N)
-      : ScalarFESpace<SCALAR>(mesh_p), ref_el_(mesh_p, nullptr), degree_(N) {
+      : ScalarFESpace<SCALAR>(),
+        mesh_p_(mesh_p),
+        ref_el_(mesh_p, nullptr),
+        degree_(N) {
     init();
   }
 
-  using ScalarFESpace<SCALAR>::Mesh;
+  /** @brief acess to underlying mesh
+   *  @return a shared _pointer_ to the mesh
+   */
+  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
+    LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
+    return mesh_p_;
+  }
 
   /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
   [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const override {
     LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
-    LF_VERIFY_MSG(dofh_p_ != nullptr,
-                  "No valid FE space object: no dof handler");
     return *dofh_p_;
   }
 
@@ -85,6 +92,9 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   ~FeSpaceHierarchic() override = default;
 
  private:
+  /* Underlying mesh */
+  std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
+
   // R.H.: Should this really be shared pointers ?
   lf::mesh::utils::AllCodimMeshDataSet<
       std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>

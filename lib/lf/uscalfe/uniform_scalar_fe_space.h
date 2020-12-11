@@ -92,15 +92,20 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
           rfs_edge_p = nullptr,
       std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
           rfs_point_p = nullptr)
-      : lf::fe::ScalarFESpace<SCALAR>(std::move(mesh_p)),
+      : lf::fe::ScalarFESpace<SCALAR>(),
         rfs_tria_p_(std::move(rfs_tria_p)),
         rfs_quad_p_(std::move(rfs_quad_p)),
         rfs_edge_p_(std::move(rfs_edge_p)),
         rfs_point_p_(std::move(rfs_point_p)) {
-    init();
+    init(std::move(mesh_p));
   }
 
-  using lf::fe::ScalarFESpace<SCALAR>::Mesh;
+  /** @brief acess to underlying mesh
+   *  @return a shared _pointer_ to the mesh
+   */
+  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
+    return dofh_p_->Mesh();
+  }
 
   /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
@@ -167,7 +172,7 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
   std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
 
   /** Initialization of class member variables and consistency checks */
-  void init();
+  void init(std::shared_ptr<const lf::mesh::Mesh> mesh_p);
   /** Checks whether some pointer are not valid */
   [[nodiscard]] bool check_ptr() const {
     LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
@@ -237,19 +242,20 @@ std::ostream &operator<<(std::ostream &o,
 
 // Initialization methods
 template <typename SCALAR>
-void UniformScalarFESpace<SCALAR>::init() {
+void UniformScalarFESpace<SCALAR>::init(
+    std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   // Check validity and consistency of mesh pointer
-  LF_VERIFY_MSG(Mesh() != nullptr, "Missing mesh!");
+  LF_VERIFY_MSG(mesh_p != nullptr, "Missing mesh!");
   LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
                 "Missing FE specification for cells");
-  LF_VERIFY_MSG((Mesh()->DimMesh() == 2), "Only for 2D meshes");
+  LF_VERIFY_MSG((mesh_p->DimMesh() == 2), "Only for 2D meshes");
 
   // Check whether all required finite element specifications are provided
   LF_VERIFY_MSG(
-      (Mesh()->NumEntities(lf::base::RefEl::kTria()) == 0) ||
+      (mesh_p->NumEntities(lf::base::RefEl::kTria()) == 0) ||
           (rfs_tria_p_ != nullptr),
       "Missing FE specification for triangles though mesh contains some");
-  LF_VERIFY_MSG((Mesh()->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
+  LF_VERIFY_MSG((mesh_p->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
                     (rfs_quad_p_ != nullptr),
                 "Missing FE specification for quads though mesh contains some");
 
@@ -334,8 +340,8 @@ void UniformScalarFESpace<SCALAR>::init() {
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},
       {lf::base::RefEl::kQuad(), num_rsf_quad_}};
-  dofh_p_ =
-      std::make_unique<lf::assemble::UniformFEDofHandler>(Mesh(), rsf_layout);
+  dofh_p_ = std::make_unique<lf::assemble::UniformFEDofHandler>(
+      std::move(mesh_p), rsf_layout);
 }
 
 template <typename SCALAR>
@@ -439,7 +445,7 @@ void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes) {
-  fes.PrintInfo(std::cout, 0);
+  fes.PrintInfo(o, 0);
   return o;
 }
 
