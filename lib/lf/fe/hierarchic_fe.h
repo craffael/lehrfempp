@@ -592,12 +592,12 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_2 ; \lambda_1+\lambda_2)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(3 + i, j) = ilegendre(i + 2, l2[j], l1[j] + l2[j]);
         }
       } else {
         // L_{i+2}(\lambda_1 ; \lambda_1+\lambda_2)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(degree_ + 1 - i, j) = ilegendre(i + 2, l1[j], l1[j] + l2[j]);
         }
       }
@@ -606,12 +606,12 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(degree_ + 2 + i, j) = ilegendre(i + 2, l3[j], l2[j] + l3[j]);
         }
       } else {
         // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(2 * degree_ - i, j) = ilegendre(i + 2, l2[j], l2[j] + l3[j]);
         }
       }
@@ -620,13 +620,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_1 ; \lambda_3+\lambda_1)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(2 * degree_ + 1 + i, j) =
               ilegendre(i + 2, l1[j], l3[j] + l1[j]);
         }
       } else {
         // L_{i+2}(\lambda_3 ; \lambda_3+\lambda_1)
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (long j = 0; j < refcoords.cols(); ++j) {
           result(3 * degree_ - 1 - i, j) =
               ilegendre(i + 2, l3[j], l3[j] + l1[j]);
         }
