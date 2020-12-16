@@ -36,290 +36,160 @@ using glb_idx_t = lf::assemble::glb_idx_t;
 using sub_idx_t = lf::base::sub_idx_t;
 
 /**
- * @brief Struct for computing Legrendre and integrated Legendre polynomials
- * on the interval [0, 1]
+ * @brief computes the `n`-th degree scaled Legendre Polynomial \f$ P_n(x;t)
+ *\f$
+ * @param n The degree of the polynomial
+ * @param x The evaluation coordinate
+ * @param t The scaling parameter
+ *
+ * To evaluate the scaled Legendre Polynomials \f$ P_n(x;t) \f$, we use that
+ * \f[ \begin{aligned}
+ *	    P_0(x;t) &= 1 \\
+ *	    P_1(x;t) &= 2x - t \\
+ *	    nP_n(x;t) &= (2n-1)(2x-t)P_{n-1}(x;t) - (n-1)t^2P_{p-2}(x;t)
+ * \end{aligned} \f]
  */
-template <typename SCALAR>
-struct LegendrePoly {
-  /**
-   * @brief computes the `n`-th degree shifted Legendre Polynomial \f$ P_n(x)
-   *\f$
-   * @param n The degree of the polynomial
-   * @param x The evaluation coordinate in [0, 1]
-   *
-   * To evaluate the non-shifted Legendre Polynomials \f$ \tilde{P}_p(x) \f$ on
-   *[-1, 1] we use that \f[ \begin{aligned}
-   *	    \tilde{P}_0(x) &= 1 \\
-   *	    \tilde{P}_1(x) &= x \\
-   *	    (p+1)\tilde{P}_{p+1}(x) &= (2p+1)\tilde{P}_p(x) -
-   *p\tilde{P}_{p-1}(x) \end{aligned} \f]
-   */
-  static SCALAR eval(unsigned n, double x) {
-    // The recurrence relation is for the non-shifted Legendre Polynomials
-    // We thus map [0, 1] onto [-1, 1]
-    x = 2 * x - 1;
-    double Ljm1 = 1;
-    double Lj = x;
-    if (n == 0) {
-      return Ljm1;
-    }
-    if (n == 1) {
-      return Lj;
-    }
-    // If the degree is > 1, we use the recurrence relation
-    for (unsigned j = 1; j < n; ++j) {
-      const double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
-      Ljm1 = Lj;
-      Lj = Ljp1;
-    }
-    return Lj;
-  }
-
-  /**
-   * @brief computes the integral of the (n-1)-th degree shifted Legendre
-   *Polynomial
-   * @param n The degree of the integrated polynomial
-   * @param x The evaluation coordinate in [0, 1]
-   *
-   * The integral is evaluated using
-   * \f[
-   *	\begin{aligned}
-   *	    L_1(x) &= x \\
-   *	    2(2p-1)L_p(x) &= P_p(x) - P_{p-2}(x)
-   *	\end{aligned}
-   * \f]
-   */
-  static SCALAR integral(unsigned n, double x) {
-    if (n == 0) {
-      return -1;
-    }
-    if (n == 1) {
-      return x;
-    }
-    // Map to the interval [-1, 1]
-    x = 2 * x - 1;
-    // Compute the n-th and (n-2)-th degree shifted Legendre Polynomials
-    double Ljm2 = 1;
-    double Ljm1 = x;
-    double Lj = (3 * x * x - 1) / 2;
-    for (unsigned j = 2; j < n; ++j) {
-      double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
-      Ljm2 = Ljm1;
-      Ljm1 = Lj;
-      Lj = Ljp1;
-    }
-    // Compute the integral
-    return (Lj - Ljm2) / (4 * n - 2);
-  }
-
-  /**
-   * @brief Computes the derivative of the (n+1)-th degree shifted Legendre
-   * Polynomial
-   * @param n The degree of the differentiated polynomial
-   * @param x The evaluation coordinate in [0, 1]
-   *
-   * The derivative is evaluated using
-   * \f[
-   *	P_n'(x) = \begin{cases}
-   *	    n(n+1) &\mbox{ for } x = 1 \\
-   *	    (-1)^{n+1}n(n+1) &\mbox{ for } x = 0 \\
-   *	    \frac{n}{2x^2-2x}\left((2x-1)P_n(x)-P_{n-1}(x)\right)
-   *	\end{cases}
-   * \f]
-   */
-  static SCALAR derivative(unsigned n, double x) {
-    if (n == 0) {
-      return 2.;
-    }
-    // Special cases for x == 0 and x == 1
-    if (x == 1) {
-      return (n + 1) * (n + 2);
-    }
-    if (x == 0) {
-      // Depends on whether the polynomial is even or odd
-      return (n % 2 == 0 ? (n + 1.) * (n + 2.) : -(n + 1.) * (n + 2.));
-    }
-    // Map to the interval [-1, 1]
-    x = 2 * x - 1;
-    // Compute the n-th and (n+1)-th degree shifted Legendre Polynomials
-    double Ljm1 = 1;
-    double Lj = x;
-    for (unsigned j = 1; j < n + 1; ++j) {
-      const double Ljp1 = ((2 * j + 1) * x * Lj - j * Ljm1) / (j + 1);
-      Ljm1 = Lj;
-      Lj = Ljp1;
-    }
-    // Compute the derivative of the (n+1)-th polynomial
-    return (2 * n + 2) / (x * x - 1) * (x * Lj - Ljm1);
-  }
-};
+double legendre(unsigned n, double x, double t = 1);
 
 /**
- * @brief Struct for computing Jacobi and integrated Jacobi polynomials with \f$
- * \beta=0 \f$
+ * @brief computes the integral of the (n-1)-th degree scaled Legendre
+ *Polynomial
+ * @param n The degree of the integrated polynomial
+ * @param x The evaluation coordinate
+ * @param t The scaling parameter
+ *
+ * The integral is evaluated using
+ * \f[
+ *	\begin{aligned}
+ *	    L_1(x) &= x \\
+ *	    2(2n-1)L_n(x) &= P_n(x) - t^2P_{n-2}(x)
+ *	\end{aligned}
+ * \f]
  */
-template <typename SCALAR>
-struct JacobiPoly {
-  /**
-   * @brief Evaluate the n-th degree Jacobi polynomial
-   * @param n The degree of the polynomial
-   * @param alpha The \f$ \alpha \f$ parameter to the Jacobi polynomial
-   * @param x The evaluation point in [0, 1]
-   *
-   * For the evaluation, we use that
-   * \f[
-   *	\begin{aligned}
-   *	    P_0^\alpha(x) &= 1 \\
-   *	    P_1^\alpha(x) &= (2+\alpha)x - 1 \\
-   *	    a_pP_p^\alpha(x) &= b_p(c_p(2x-1)+\alpha^2)P_{p-1}^\alpha(x) -
-   *d_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
-   * \f[
-   *	\begin{aligned}
-   *	    a_p &= 2p(p+\alpha)(2p+\alpha-2) \\
-   *	    b_p &= 2p + \alpha - 1 \\
-   *	    c_p &= (2p+\alpha)(2p+\alpha-2) \\
-   *	    d_p &= 2(p+\alpha-1)(p-1)(2p+\alpha)
-   *	\end{aligned}
-   * \f]
-   */
-  static SCALAR eval(unsigned n, double alpha, double x) {
-    double Pjm1 = 1;
-    double Pj = (2 + alpha) * x - 1;
-    if (n == 0) {
-      return Pjm1;
-    }
-    if (n == 1) {
-      return Pj;
-    }
-    // For n >= 2 we need to use the recurrence relation
-    for (unsigned j = 1; j < n; ++j) {
-      const double ajp1 =
-          2 * (j + 1) * ((j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
-      const double bjp1 = 2 * (j + 1) + alpha - 1;
-      const double cjp1 = (2 * (j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
-      const double djp1 =
-          2 * ((j + 1) + alpha - 1) * ((j + 1) - 1) * (2 * (j + 1) + alpha);
-      double Pjp1 =
-          (bjp1 * (cjp1 * (2 * x - 1) + alpha * alpha) * Pj - djp1 * Pjm1) /
-          ajp1;
-      Pjm1 = Pj;
-      Pj = Pjp1;
-    }
-    return Pj;
-  }
+double ilegendre(unsigned n, double x, double t = 1);
 
-  /**
-   * @brief Evaluate the integral of the (n-1)-th degree Jacobi Polynomial
-   * @param n The degree of the integrated polynomial
-   * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
-   * @param x The evaluation coordinate in [0, 1]
-   *
-   * The integral is evaluated using
-   * \f[
-   *	\begin{aligned}
-   *	    L_1^\alpha(x) &= x \\
-   *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) -
-   *c_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
-   * \f[
-   *	\begin{aligned}
-   *	    a_p &= \frac{p+\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
-   *	    b_p &= \frac{\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
-   *	    c_p &= \frac{p-1}{(2p+\alpha-2)(2p+\alpha-1)}
-   *	\end{aligned}
-   * \f]
-   */
-  static SCALAR integral(unsigned n, double alpha, double x) {
-    if (n == 0) {
-      return -1;
-    }
-    if (n == 1) {
-      return x;
-    }
-    // Compute the n-th, (n-1)-th and (n-2)-th Jacobi Polynomial
-    // This uses the same recurrence relation as the `eval` method
-    double ajp1P = 2 * 2 * (2 + alpha) * (2 * 2 + alpha - 2);
-    double bjp1P = 2 * 2 + alpha - 1;
-    double cjp1P = (2 * 2 + alpha) * (2 * 2 + alpha - 2);
-    double djp1P = 2 * (2 + alpha - 1) * (2 - 1) * (2 * 2 + alpha);
-    double Pjm2 = 1;
-    double Pjm1 = (2 + alpha) * x - 1;
-    double Pj =
-        (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pjm1 - djp1P * Pjm2) /
-        ajp1P;
-    for (unsigned j = 2; j < n; ++j) {
-      ajp1P = 2 * (j + 1) * ((j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
-      bjp1P = 2 * (j + 1) + alpha - 1;
-      cjp1P = (2 * (j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
-      djp1P = 2 * ((j + 1) + alpha - 1) * ((j + 1) - 1) * (2 * (j + 1) + alpha);
-      double Pjp1 =
-          (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pj - djp1P * Pjm1) /
-          ajp1P;
-      Pjm2 = Pjm1;
-      Pjm1 = Pj;
-      Pj = Pjp1;
-    }
-    // Compute the integral by the formula in the docstring
-    const double anL = (n + alpha) / ((2 * n + alpha - 1) * (2 * n + alpha));
-    const double bnL = alpha / ((2 * n + alpha - 2) * (2 * n + alpha));
-    const double cnL = (n - 1) / ((2 * n + alpha - 2) * (2 * n + alpha - 1));
-    return anL * Pj + bnL * Pjm1 - cnL * Pjm2;
-  }
+/**
+ * @brief Computes \f$ \frac{\partial}{\partial x} L(x;t) \f$
+ * @param n The degree of the integrated scaled Legendre polynomial
+ * @param x The evaluation coordinate
+ * @param t The scaling parameter
+ *
+ * The derivative is simply given by \f$ \frac{\partial}{\partial x} L_n(x;t) =
+ * P_{n-1}(x;t) \f$
+ */
+double ilegendre_dx(unsigned n, double x, double t = 1);
 
-  /**
-   * @brief Computes the derivative of the (n+1)-th degree Jacobi Polynomial
-   * @param n The degree of the differentiated polynomial
-   * @param alpha The \f$ \alpha \f$ parameter of the Jacobi Polynomial
-   * @param x The evaluation coordinate in [0, 1]
-   *
-   * The derivative is evaluated using
-   * \f[
-   *	{P^{(\alpha,0)}_n}'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
-   * \f]
-   */
-  static SCALAR derivative(unsigned n, double alpha, double x) {
-    return eval_general(n, alpha + 1, 1, x) * (alpha + n + 2);
-  }
+/**
+ * @brief Computes \f$ \frac{\partial}{\partial t} L(x;t) \f$
+ * @param n The degree of the integrated scaled Legendre polynomial
+ * @param x The evaluation coordinate
+ * @param t The scaling parameter
+ *
+ * The derivative is given by
+ * \f[
+ *	\begin{aligned}
+ *	    \frac{\partial}{\partial t} L_1(x;t) &= 0 \\
+ *	    \frac{\partial}{\partial t} L_n(x;t) &= -\frac{1}{2} \left(
+ *P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \end{aligned} \f]
+ */
+double ilegendre_dt(unsigned n, double x, double t = 1);
 
-  /**
-   * @brief Evaluate the n-th degree Jacobi polynomial
-   * @param n The degree of the polynomial
-   * @param alpha The \f$ \alpha \f$ parameter to the Jacobi polynomial
-   * @param beta The \f$ \beta \f$ parameter to the Jacobi polynomial
-   * @param x The evaluation point in [0, 1]
-   *
-   * This method might be more unstable than the `JacobiPoly<SCALAR>::eval`
-   * function which is specialized for \f$ \beta = 0 \f$.
-   */
-  static SCALAR eval_general(unsigned n, double alpha, double beta, double x) {
-    // The recurrence relation is for the non-shifted Jacobi Polynomials
-    // We thus map [0, 1] onto [-1, 1]
-    x = 2 * x - 1;
-    if (n == 0) {
-      return 1;
-    }
-    if (n == 1) {
-      return 0.5 * (alpha - beta + x * (alpha + beta + 2));
-    }
-    double p0 = 1;
-    double p1 = 0.5 * (alpha - beta + x * (alpha + beta + 2));
-    double p2 = 0;
-    for (unsigned j = 1; j < n; ++j) {
-      const double alpha1 =
-          2 * (j + 1) * (j + alpha + beta + 1) * (2 * j + alpha + beta);
-      const double alpha2 =
-          (2 * j + alpha + beta + 1) * (alpha * alpha - beta * beta);
-      const double alpha3 = (2 * j + alpha + beta) *
-                            (2 * j + alpha + beta + 1) *
-                            (2 * j + alpha + beta + 2);
-      const double alpha4 =
-          2 * (j + alpha) * (j + beta) * (2 * j + alpha + beta + 2);
-      p2 = 1. / alpha1 * ((alpha2 + alpha3 * x) * p1 - alpha4 * p0);
-      p0 = p1;
-      p1 = p2;
-    }
-    return p2;
-  }
-};
+/**
+ * @brief Computes the derivative of the n-th degree scaled Legendre polynomial
+ * @param n The degree of the polynomial
+ * @param x The evaluation coordinate
+ * @param t The scaling parameter
+ *
+ * The derivative is given by
+ * \f[
+ *	\begin{aligned}
+ *	    \frac{\partial}{\partial x} L_0(x;t) &= 0 \\
+ *	    \frac{\partial}{\partial x} L_n(x;t) &= 2nP_{n-1}(x;t) +
+ *(2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
+ */
+double legendre_dx(unsigned n, double x, double t = 1);
+
+/**
+ * @brief Computes the n-th degree shifted Jacobi polynomial
+ * @param n The degree of the polynomial
+ * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
+ * @param beta The \f$ \beta \f$ parameter of the Jacobi polynomial
+ * @param x The evaluation coordinate
+ *
+ * We use the recurrence relation for non-shifted Jacobi polynomials
+ * \f[
+ *	\begin{aligned}
+ *	    P_0^{(\alpha,\beta)}(x) &= 1 \\
+ *	    P_1^{(\alpha,\beta)}(x) &= \frac{1}{2} \left( \alpha - \beta +
+ *(\alpha + \beta + 2)x \right) \\ P_{n+1}^{(\alpha,\beta)}(x) &= \frac{1}{a_n}
+ *\left( (b_n+c_nx)P_n^{(\alpha,\beta)}(x) - d_nP_{n-1}^{(\alpha,\beta)}(x)
+ *\right) \end{aligned} \f] where \f[ \begin{aligned}
+ *	    a_n &= 2(n+1)(n+\alpha+\beta+1)(2n+\alpha+\beta) \\
+ *	    b_n &= (2n+\alpha+\beta+1)(\alpha^2-\beta^2) \\
+ *	    c_n &= (2n+\alpha+\beta)(2n+\alpha+\beta+1)(2n+\alpha+\beta+2) \\
+ *	    d_n &= 2(n+\alpha)(n+\beta)(2n+\alpha+\beta+2)
+ *	\end{aligned}
+ * \f]
+ */
+double jacobi(unsigned n, double alpha, double beta, double x);
+
+/**
+ * @brief Computes the n-th degree shifted Jacobi polynomial for \f$ \beta = 0
+ * \f$
+ * @param n The degree of the polynomial
+ * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
+ * @param x The evaluation coordinate
+ */
+double jacobi(unsigned n, double alpha, double x);
+
+/**
+ * @brief Evaluate the integral of the (n-1)-th degree Jacobi Polynomial for \f$
+ *\beta = 0 \f$
+ * @param n The degree of the integrated polynomial
+ * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
+ * @param x The evaluation coordinate
+ *
+ * The integral is evaluated using
+ * \f[
+ *	\begin{aligned}
+ *	    L_1^\alpha(x) &= x \\
+ *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) -
+ *c_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
+ * \f[
+ *	\begin{aligned}
+ *	    a_p &= \frac{p+\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
+ *	    b_p &= \frac{\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
+ *	    c_p &= \frac{p-1}{(2p+\alpha-2)(2p+\alpha-1)}
+ *	\end{aligned}
+ * \f]
+ */
+double ijacobi(unsigned n, double alpha, double x);
+
+/**
+ * @brief Computes the derivative of the n-th integrated scaled Jacobi
+ * polynomial
+ * @param n The degree of the integrated scaled Jacobi polynomial
+ * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
+ * @param x The evaluation coordinate
+ *
+ * The derivative is simply given by \f$ \frac{\partial}{\partial x}
+ * L_n^{(\alpha,0)}(x) = P_{n-1}^{(\alpha,0)}(x) \f$
+ */
+double ijacobi_dx(unsigned n, double alpha, double x);
+
+/**
+ * @brief Computes the derivative of the n-th degree Jacobi Polynomial for \f$
+ *\beta = 0 \f$
+ * @param n The degree of the differentiated polynomial
+ * @param alpha The \f$ \alpha \f$ parameter of the Jacobi Polynomial
+ * @param x The evaluation coordinate
+ *
+ * The derivative is evaluated using
+ * \f[
+ *	{P^{(\alpha,0)}_n}'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
+ * \f]
+ */
+double jacobi_dx(unsigned n, double alpha, double x);
 
 /**
  * @headerfile lf/fe/fe.h
@@ -470,9 +340,8 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     result.row(1) = refcoords;
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
-      result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
-        return LegendrePoly<SCALAR>::integral(i + 2, x);
-      });
+      result.row(i + 2) = refcoords.unaryExpr(
+          [&](double x) -> SCALAR { return ilegendre(i + 2, x); });
     }
     return result;
   }
@@ -490,9 +359,8 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
         refcoords.unaryExpr([&](double /*x*/) -> SCALAR { return 1; });
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
-      result.row(i + 2) = refcoords.unaryExpr([&](double x) -> SCALAR {
-        return LegendrePoly<SCALAR>::eval(i + 1, x);
-      });
+      result.row(i + 2) = refcoords.unaryExpr(
+          [&](double x) -> SCALAR { return ilegendre_dx(i + 2, x); });
     }
     return result;
   }
@@ -540,12 +408,11 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     dofs[1] = nodevals[1];
     // Compute the other basis function coefficients
     for (lf::base::size_type i = 2; i < NumRefShapeFunctions(); ++i) {
-      const SCALAR P0 = LegendrePoly<SCALAR>::eval(i - 1, 0);
-      const SCALAR P1 = LegendrePoly<SCALAR>::eval(i - 1, 1);
+      const SCALAR P0 = ilegendre_dx(i, 0);
+      const SCALAR P1 = ilegendre_dx(i, 1);
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
-          qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-            return LegendrePoly<SCALAR>::derivative(i - 2, x);
-          });
+          qr_dual_.Points().unaryExpr(
+              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
       // Evaluate the integral from the dual basis
       const SCALAR integ =
           (qr_dual_.Weights().transpose().array() * psidd.array() *
@@ -717,21 +584,6 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                                   refcoords.row(0) - refcoords.row(1);
     const Eigen::RowVectorXd l2 = refcoords.row(0);
     const Eigen::RowVectorXd l3 = refcoords.row(1);
-    // Compute normalized coordinates for the scaled polynomials
-    Eigen::RowVectorXd l121n(refcoords.cols());
-    Eigen::RowVectorXd l122n(refcoords.cols());
-    Eigen::RowVectorXd l232n(refcoords.cols());
-    Eigen::RowVectorXd l233n(refcoords.cols());
-    Eigen::RowVectorXd l313n(refcoords.cols());
-    Eigen::RowVectorXd l311n(refcoords.cols());
-    for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
-      l121n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l1[i] / (l1[i] + l2[i]);
-      l122n[i] = l1[i] + l2[i] == 0 ? SCALAR(0) : l2[i] / (l1[i] + l2[i]);
-      l232n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l2[i] / (l2[i] + l3[i]);
-      l233n[i] = l2[i] + l3[i] == 0 ? SCALAR(0) : l3[i] / (l2[i] + l3[i]);
-      l313n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l3[i] / (l3[i] + l1[i]);
-      l311n[i] = l3[i] + l1[i] == 0 ? SCALAR(0) : l1[i] / (l3[i] + l1[i]);
-    }
     // Get the basis functions associated with the vertices
     result.row(0) = l1;
     result.row(1) = l2;
@@ -740,72 +592,44 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_2 ; \lambda_1+\lambda_2)
-        result.row(3 + i) = ((l1 + l2)
-                                 .unaryExpr([&](double x) -> SCALAR {
-                                   return std::pow(x, i + 2);
-                                 })
-                                 .array() *
-                             l122n.array().unaryExpr([&](double x) -> SCALAR {
-                               return LegendrePoly<SCALAR>::integral(i + 2, x);
-                             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(3 + i, j) = ilegendre(i + 2, l2[j], l1[j] + l2[j]);
+        }
       } else {
         // L_{i+2}(\lambda_1 ; \lambda_1+\lambda_2)
-        result.row(degree_ + 1 - i) =
-            ((l1 + l2)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l121n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(degree_ + 1 - i, j) = ilegendre(i + 2, l1[j], l1[j] + l2[j]);
+        }
       }
     }
     // Get the basis functions associated with the second edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3)
-        result.row(degree_ + 2 + i) =
-            ((l2 + l3)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l233n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(degree_ + 2 + i, j) = ilegendre(i + 2, l3[j], l2[j] + l3[j]);
+        }
       } else {
         // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3)
-        result.row(2 * degree_ - i) =
-            ((l2 + l3)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l232n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(2 * degree_ - i, j) = ilegendre(i + 2, l2[j], l2[j] + l3[j]);
+        }
       }
     }
     // Get the basis functions associated with the third edge
     for (unsigned i = 0; i < degree_ - 1; ++i) {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_1 ; \lambda_3+\lambda_1)
-        result.row(2 * degree_ + 1 + i) =
-            ((l3 + l1)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l311n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(2 * degree_ + 1 + i, j) =
+              ilegendre(i + 2, l1[j], l3[j] + l1[j]);
+        }
       } else {
         // L_{i+2}(\lambda_3 ; \lambda_3+\lambda_1)
-        result.row(3 * degree_ - 1 - i) =
-            ((l3 + l1)
-                 .unaryExpr(
-                     [&](double x) -> SCALAR { return std::pow(x, i + 2); })
-                 .array() *
-             l313n.array().unaryExpr([&](double x) -> SCALAR {
-               return LegendrePoly<SCALAR>::integral(i + 2, x);
-             })).matrix();
+        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+          result(3 * degree_ - 1 - i, j) =
+              ilegendre(i + 2, l3[j], l3[j] + l1[j]);
+        }
       }
     }
     // Get the basis functions associated with the interior of the triangle
@@ -818,19 +642,17 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
           if (rel_orient_[0] == lf::mesh::Orientation::positive) {
             // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3) *
             // P_{j+1}^{2i+4}(\lambda_1)
-            result.row(idx) =
-                (result.row(3 + i).array() *
-                 l3.array().unaryExpr([&](double x) -> SCALAR {
-                   return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
-                 })).matrix();
+            result.row(idx) = (result.row(3 + i).array() *
+                               l3.array().unaryExpr([&](double x) -> SCALAR {
+                                 return ijacobi(j + 1, 2 * i + 4, x);
+                               })).matrix();
           } else {
             // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3) *
             // P_{j+1}^{2i+4}(\lambda_1)
-            result.row(idx) =
-                (result.row(degree_ + 1 - i).array() *
-                 l3.array().unaryExpr([&](double x) -> SCALAR {
-                   return JacobiPoly<SCALAR>::integral(j + 1, 2 * i + 4, x);
-                 })).matrix();
+            result.row(idx) = (result.row(degree_ + 1 - i).array() *
+                               l3.array().unaryExpr([&](double x) -> SCALAR {
+                                 return ijacobi(j + 1, 2 * i + 4, x);
+                               })).matrix();
           }
           ++idx;
         }
@@ -864,60 +686,6 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         Eigen::RowVectorXd::Constant(refcoords.cols(), 1);
     // Iterate over all refcoords
     for (Eigen::Index i = 0; i < refcoords.cols(); ++i) {
-      // Compute normalized coordinates for edge 1
-      const SCALAR l1p2 = l1[i] + l2[i];
-      const SCALAR l1p2_dx = l1_dx[i] + l2_dx[i];
-      const SCALAR l1p2_dy = l1_dy[i] + l2_dy[i];
-      const SCALAR l121n = l1p2 == 0 ? SCALAR(0) : (l1[i] / l1p2);
-      const SCALAR l121n_dx =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l1_dx[i] * l1p2 - l1[i] * l1p2_dx) / (l1p2 * l1p2));
-      const SCALAR l121n_dy =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l1_dy[i] * l1p2 - l1[i] * l1p2_dy) / (l1p2 * l1p2));
-      const SCALAR l122n = l1p2 == 0 ? SCALAR(0) : (l2[i] / l1p2);
-      const SCALAR l122n_dx =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l2_dx[i] * l1p2 - l2[i] * l1p2_dx) / (l1p2 * l1p2));
-      const SCALAR l122n_dy =
-          l1p2 == 0 ? SCALAR(0)
-                    : ((l2_dy[i] * l1p2 - l2[i] * l1p2_dy) / (l1p2 * l1p2));
-      // Compute normalized coordinates for edge 2
-      const SCALAR l2p3 = l2[i] + l3[i];
-      const SCALAR l2p3_dx = l2_dx[i] + l3_dx[i];
-      const SCALAR l2p3_dy = l2_dy[i] + l3_dy[i];
-      const SCALAR l232n = l2p3 == 0 ? SCALAR(0) : (l2[i] / l2p3);
-      const SCALAR l232n_dx =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l2_dx[i] * l2p3 - l2[i] * l2p3_dx) / (l2p3 * l2p3));
-      const SCALAR l232n_dy =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l2_dy[i] * l2p3 - l2[i] * l2p3_dy) / (l2p3 * l2p3));
-      const SCALAR l233n = l2p3 == 0 ? SCALAR(0) : (l3[i] / l2p3);
-      const SCALAR l233n_dx =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l3_dx[i] * l2p3 - l3[i] * l2p3_dx) / (l2p3 * l2p3));
-      const SCALAR l233n_dy =
-          l2p3 == 0 ? SCALAR(0)
-                    : ((l3_dy[i] * l2p3 - l3[i] * l2p3_dy) / (l2p3 * l2p3));
-      // Compute normalized coordinates for edge 3
-      const SCALAR l3p1 = l3[i] + l1[i];
-      const SCALAR l3p1_dx = l3_dx[i] + l1_dx[i];
-      const SCALAR l3p1_dy = l3_dy[i] + l1_dy[i];
-      const SCALAR l313n = l3p1 == 0 ? SCALAR(0) : (l3[i] / l3p1);
-      const SCALAR l313n_dx =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l3_dx[i] * l3p1 - l3[i] * l3p1_dx) / (l3p1 * l3p1));
-      const SCALAR l313n_dy =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l3_dy[i] * l3p1 - l3[i] * l3p1_dy) / (l3p1 * l3p1));
-      const SCALAR l311n = l3p1 == 0 ? SCALAR(0) : (l1[i] / l3p1);
-      const SCALAR l311n_dx =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l1_dx[i] * l3p1 - l1[i] * l3p1_dx) / (l3p1 * l3p1));
-      const SCALAR l311n_dy =
-          l3p1 == 0 ? SCALAR(0)
-                    : ((l1_dy[i] * l3p1 - l1[i] * l3p1_dy) / (l3p1 * l3p1));
       // Get the gradient of the basis functions associated with the vertices
       result(0, 2 * i + 0) = l1_dx[i];
       result(0, 2 * i + 1) = l1_dy[i];
@@ -928,67 +696,55 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       // Get the gradient of the basis functions associated with the first edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-          const SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j + 2, l122n);
-          const SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j + 1, l122n);
           result(3 + j, 2 * i + 0) =
-              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
-              std::pow(l1p2, j + 2) * l122n_dx * leg2eval;
+              ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dx[i] +
+              ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
           result(3 + j, 2 * i + 1) =
-              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg2inte +
-              std::pow(l1p2, j + 2) * l122n_dy * leg2eval;
+              ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dy[i] +
+              ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
         } else {
-          const SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j + 2, l121n);
-          const SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j + 1, l121n);
           result(degree_ + 1 - j, 2 * i + 0) =
-              l1p2_dx * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
-              std::pow(l1p2, j + 2) * l121n_dx * leg1eval;
+              ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dx[i] +
+              ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
           result(degree_ + 1 - j, 2 * i + 1) =
-              l1p2_dy * (j + 2) * std::pow(l1p2, j + 1) * leg1inte +
-              std::pow(l1p2, j + 2) * l121n_dy * leg1eval;
+              ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dy[i] +
+              ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
         }
       }
       // Get the gradient of the basis functions associated with the second edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-          const SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j + 2, l233n);
-          const SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j + 1, l233n);
           result(2 + degree_ + j, 2 * i + 0) =
-              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
-              std::pow(l2p3, j + 2) * l233n_dx * leg3eval;
+              ilegendre_dx(j + 2, l3[i], l2[i] + l3[i]) * l3_dx[i] +
+              ilegendre_dt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
           result(2 + degree_ + j, 2 * i + 1) =
-              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg3inte +
-              std::pow(l2p3, j + 2) * l233n_dy * leg3eval;
+              ilegendre_dx(j + 2, l3[i], l2[i] + l3[i]) * l3_dy[i] +
+              ilegendre_dt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
         } else {
-          const SCALAR leg2inte = LegendrePoly<SCALAR>::integral(j + 2, l232n);
-          const SCALAR leg2eval = LegendrePoly<SCALAR>::eval(j + 1, l232n);
           result(2 * degree_ - j, 2 * i + 0) =
-              l2p3_dx * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
-              std::pow(l2p3, j + 2) * l232n_dx * leg2eval;
+              ilegendre_dx(j + 2, l2[i], l2[i] + l3[i]) * l2_dx[i] +
+              ilegendre_dt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
           result(2 * degree_ - j, 2 * i + 1) =
-              l2p3_dy * (j + 2) * std::pow(l2p3, j + 1) * leg2inte +
-              std::pow(l2p3, j + 2) * l232n_dy * leg2eval;
+              ilegendre_dx(j + 2, l2[i], l2[i] + l3[i]) * l2_dy[i] +
+              ilegendre_dt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
         }
       }
       // Get the gradient of the basis functions associated with the third edge
       for (int j = 0; j < degree_ - 1; ++j) {
         if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-          const SCALAR leg1inte = LegendrePoly<SCALAR>::integral(j + 2, l311n);
-          const SCALAR leg1eval = LegendrePoly<SCALAR>::eval(j + 1, l311n);
           result(1 + 2 * degree_ + j, 2 * i + 0) =
-              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
-              std::pow(l3p1, j + 2) * l311n_dx * leg1eval;
+              ilegendre_dx(j + 2, l1[i], l3[i] + l1[i]) * l1_dx[i] +
+              ilegendre_dt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
           result(1 + 2 * degree_ + j, 2 * i + 1) =
-              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg1inte +
-              std::pow(l3p1, j + 2) * l311n_dy * leg1eval;
+              ilegendre_dx(j + 2, l1[i], l3[i] + l1[i]) * l1_dy[i] +
+              ilegendre_dt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
         } else {
-          const SCALAR leg3inte = LegendrePoly<SCALAR>::integral(j + 2, l313n);
-          const SCALAR leg3eval = LegendrePoly<SCALAR>::eval(j + 1, l313n);
           result(3 * degree_ - 1 - j, 2 * i + 0) =
-              l3p1_dx * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
-              std::pow(l3p1, j + 2) * l313n_dx * leg3eval;
+              ilegendre_dx(j + 2, l3[i], l3[i] + l1[i]) * l3_dx[i] +
+              ilegendre_dt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
           result(3 * degree_ - 1 - j, 2 * i + 1) =
-              l3p1_dy * (j + 2) * std::pow(l3p1, j + 1) * leg3inte +
-              std::pow(l3p1, j + 2) * l313n_dy * leg3eval;
+              ilegendre_dx(j + 2, l3[i], l3[i] + l1[i]) * l3_dy[i] +
+              ilegendre_dt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
         }
       }
       // Get the gradient of the basis functions associated with the interior of
@@ -1000,20 +756,17 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
           SCALAR edge_dx;
           SCALAR edge_dy;
           if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-            edge_eval = std::pow(l1p2, j + 2) *
-                        LegendrePoly<SCALAR>::integral(j + 2, l122n);
+            edge_eval = ilegendre(j + 2, l2[i], l1[i] + l2[i]);
             edge_dx = result(3 + j, 2 * i + 0);
             edge_dy = result(3 + j, 2 * i + 1);
           } else {
-            edge_eval = std::pow(l1p2, j + 2) *
-                        LegendrePoly<SCALAR>::integral(j + 2, l121n);
+            edge_eval = ilegendre(j + 2, l1[i], l1[i] + l2[i]);
             edge_dx = result(degree_ + 1 - j, 2 * i + 0);
             edge_dy = result(degree_ + 1 - j, 2 * i + 1);
           }
           for (unsigned k = 0; k < degree_ - j - 2; ++k) {
-            SCALAR jackinte =
-                JacobiPoly<SCALAR>::integral(k + 1, 2 * j + 4, l3[i]);
-            SCALAR jackeval = JacobiPoly<SCALAR>::eval(k, 2 * j + 4, l3[i]);
+            SCALAR jackinte = ijacobi(k + 1, 2 * j + 4, l3[i]);
+            SCALAR jackeval = ijacobi_dx(k + 1, 2 * j + 4, l3[i]);
             result(idx, 2 * i + 0) =
                 jackinte * edge_dx + edge_eval * jackeval * l3_dx[i];
             result(idx, 2 * i + 1) =
@@ -1138,12 +891,11 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     // Compute the basis function coefficients on the edges
     // by applying the dual basis of the segment
     for (lf::base::size_type i = 2; i < Degree() + 1; ++i) {
-      const SCALAR P0 = LegendrePoly<SCALAR>::eval(i - 1, 0);
-      const SCALAR P1 = LegendrePoly<SCALAR>::eval(i - 1, 1);
+      const SCALAR P0 = ilegendre_dx(i, 0);
+      const SCALAR P1 = ilegendre_dx(i, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
-          qr_dual_segment_.Points().unaryExpr([&](double x) -> SCALAR {
-            return LegendrePoly<SCALAR>::derivative(i - 2, x);
-          });
+          qr_dual_segment_.Points().unaryExpr(
+              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
       // Compute the basis function coefficients for the first edge
       const SCALAR integ1 = (qr_dual_segment_.Weights().transpose().array() *
                              psidd.array() * nodevals.segment(3, Ns).array())
@@ -1220,20 +972,17 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                     [&](double y) -> SCALAR { return std::pow(1 - y, i + 1); })
                 .matrix();
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
-            xnorm_adj.unaryExpr([&](double x) -> SCALAR {
-              return LegendrePoly<SCALAR>::derivative(i, x);
-            });
+            xnorm_adj.unaryExpr(
+                [&](double x) -> SCALAR { return legendre_dx(i + 1, x); });
         // j is the degree of the blending Jacobi polynomial
         for (unsigned j = 0; j < Degree() - i - 2; ++j) {
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
-                return j == 0 ? SCALAR(0)
-                              : JacobiPoly<SCALAR>::derivative(j - 1, 2 * i + 4,
-                                                               y);
+                return jacobi_dx(j, 2 * i + 4, y);
               });
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
               qr_dual_tria_.Points().row(1).unaryExpr([&](double y) -> SCALAR {
-                return JacobiPoly<SCALAR>::eval(j, 2 * i + 4, y);
+                return ijacobi_dx(j + 1, 2 * i + 4, y);
               });
           dofs[idx] =
               (qr_dual_tria_.Weights().transpose().array() *
@@ -1600,12 +1349,11 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     // Compute the basis function coefficients on the edges
     // by applying the dual basis of the segment
     for (lf::base::size_type i = 2; i < Degree() + 1; ++i) {
-      const SCALAR P0 = LegendrePoly<SCALAR>::eval(i - 1, 0);
-      const SCALAR P1 = LegendrePoly<SCALAR>::eval(i - 1, 1);
+      const SCALAR P0 = ilegendre_dx(i, 0);
+      const SCALAR P1 = ilegendre_dx(i, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
-          qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-            return LegendrePoly<SCALAR>::derivative(i - 2, x);
-          });
+          qr_dual_.Points().unaryExpr(
+              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
       // Compute the basis function coefficients for the first edge
       const SCALAR integ1 = (qr_dual_.Weights().transpose().array() *
                              psidd.array() * nodevals.segment(4, N).array())
@@ -1656,12 +1404,11 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     // Compute the basis function coefficients for the face bubbles
     for (unsigned i = 0; i < Degree() - 1; ++i) {
       // Apply the 1d dual along the x-axis
-      const SCALAR P0i = LegendrePoly<SCALAR>::eval(i + 1, 0);
-      const SCALAR P1i = LegendrePoly<SCALAR>::eval(i + 1, 1);
+      const SCALAR P0i = ilegendre_dx(i + 2, 0);
+      const SCALAR P1i = ilegendre_dx(i + 2, 1);
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psiddi =
-          qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-            return LegendrePoly<SCALAR>::derivative(i, x);
-          });
+          qr_dual_.Points().unaryExpr(
+              [&](double x) -> SCALAR { return legendre_dx(i + 1, x); });
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> partial(N);
       for (lf::base::size_type j = 0; j < N; ++j) {
         const SCALAR integ =
@@ -1708,12 +1455,11 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
           (P1i * nodevals[2] - P0i * nodevals[3] - f1_integ) * (2 * i + 3);
       for (unsigned j = 0; j < Degree() - 1; ++j) {
         // Apply the 1d dual along the y-axis
-        const SCALAR P0j = LegendrePoly<SCALAR>::eval(j + 1, 0);
-        const SCALAR P1j = LegendrePoly<SCALAR>::eval(j + 1, 1);
+        const SCALAR P0j = ilegendre_dx(j + 2, 0);
+        const SCALAR P1j = ilegendre_dx(j + 2, 1);
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psiddj =
-            qr_dual_.Points().unaryExpr([&](double x) -> SCALAR {
-              return LegendrePoly<SCALAR>::derivative(j, x);
-            });
+            qr_dual_.Points().unaryExpr(
+                [&](double x) -> SCALAR { return legendre_dx(j + 1, x); });
         const SCALAR integ = (qr_dual_.Weights().transpose().array() *
                               psiddj.array() * partial.array())
                                  .sum();

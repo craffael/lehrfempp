@@ -33,8 +33,8 @@ TEST(fe_space_hierarchic, legendre_orthogonality) {
       // to check whether the norm is as expected
       double result = 0;
       for (int i = 0; i < num_points; ++i) {
-        const double Ln = lf::fe::LegendrePoly<double>::eval(n, points[i]);
-        const double Lm = lf::fe::LegendrePoly<double>::eval(m, points[i]);
+        const double Ln = lf::fe::legendre(n, points[i]);
+        const double Lm = lf::fe::legendre(m, points[i]);
         result += weights[i] * Ln * Lm;
       }
       const double expected = n == m ? 1. / (2 * n + 1) : 0.;
@@ -43,19 +43,17 @@ TEST(fe_space_hierarchic, legendre_orthogonality) {
   }
 }
 
-TEST(fe_space_hierarchic, legendre_integral) {
+TEST(fe_space_hierarchic, ilegendre) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
     for (unsigned i = 0; i <= N; ++i) {
       const double x = static_cast<double>(i) / N;
       // Compute the legendre polynomial at x
-      const double exact = lf::fe::LegendrePoly<double>::eval(p, x);
+      const double exact = lf::fe::legendre(p, x);
       // Differentiate the integral using central differences
-      const double intp =
-          lf::fe::LegendrePoly<double>::integral(p + 1, x + eps / 2);
-      const double intm =
-          lf::fe::LegendrePoly<double>::integral(p + 1, x - eps / 2);
+      const double intp = lf::fe::ilegendre(p + 1, x + eps / 2);
+      const double intm = lf::fe::ilegendre(p + 1, x - eps / 2);
       const double approx = (intp - intm) / eps;
       // Compare the two values
       if (std::fabs(exact) < 100) {
@@ -67,19 +65,17 @@ TEST(fe_space_hierarchic, legendre_integral) {
   }
 }
 
-TEST(fe_space_hierarchic, legendre_derivative) {
+TEST(fe_space_hierarchic, legendre_dx) {
   const unsigned N = 1000;
   const double eps = std::sqrt(std::numeric_limits<double>::epsilon());
   for (unsigned p = 0; p < 20; ++p) {
     for (unsigned i = 0; i <= N; ++i) {
       const double x = static_cast<double>(i) / N;
       // Compute the differentiated legendre polynomial at x
-      const double exact = lf::fe::LegendrePoly<double>::derivative(p, x);
+      const double exact = lf::fe::legendre_dx(p, x);
       // Differentiate the polynomial using central differences
-      const double evalp =
-          lf::fe::LegendrePoly<double>::eval(p + 1, x + eps / 2);
-      const double evalm =
-          lf::fe::LegendrePoly<double>::eval(p + 1, x - eps / 2);
+      const double evalp = lf::fe::legendre(p, x + eps / 2);
+      const double evalm = lf::fe::legendre(p, x - eps / 2);
       const double approx = (evalp - evalm) / eps;
       // Compare the two values
       if (std::fabs(exact) < 100) {
@@ -102,10 +98,9 @@ TEST(fe_space_hierarchic, jacobi_general) {
       for (unsigned i = 0; i <= N; ++i) {
         const double x = static_cast<double>(i) / N;
         // Compute the jacobi polynomial at x using the accurate scheme
-        const double accurate = lf::fe::JacobiPoly<double>::eval(p, alpha, x);
+        const double accurate = lf::fe::jacobi(p, alpha, x);
         // Compute the jacobi polynomial at x using the general scheme
-        const double general =
-            lf::fe::JacobiPoly<double>::eval_general(p, alpha, 0, x);
+        const double general = lf::fe::jacobi(p, alpha, 0, x);
         // Compare the two values
         ASSERT_NEAR(accurate, general, 1e-5)
             << "P=" << p << " alpha=" << alpha << " x=" << x;
@@ -122,12 +117,10 @@ TEST(fe_space_hierarchic, jacobi_integral) {
       for (unsigned i = 0; i <= N; ++i) {
         const double x = static_cast<double>(i) / N;
         // Compute the jacobi polynomial at x
-        const double exact = lf::fe::JacobiPoly<double>::eval(p, alpha, x);
+        const double exact = lf::fe::jacobi(p, alpha, x);
         // Differentiate the integral using central differences
-        const double intp =
-            lf::fe::JacobiPoly<double>::integral(p + 1, alpha, x + eps / 2);
-        const double intm =
-            lf::fe::JacobiPoly<double>::integral(p + 1, alpha, x - eps / 2);
+        const double intp = lf::fe::ijacobi(p + 1, alpha, x + eps / 2);
+        const double intm = lf::fe::ijacobi(p + 1, alpha, x - eps / 2);
         const double approx = (intp - intm) / eps;
         // Compare the two values
         if (std::fabs(exact) < 100) {
@@ -150,13 +143,10 @@ TEST(fe_space_hierarchic, jacobi_derivative) {
       for (unsigned i = 0; i <= N; ++i) {
         const double x = static_cast<double>(i) / N;
         // Compute the differentiated jacobi polynomial at x
-        const double exact =
-            lf::fe::JacobiPoly<double>::derivative(p, alpha, x);
+        const double exact = lf::fe::jacobi_dx(p, alpha, x);
         // Differentiate the polynomial using central differences
-        const double evalp =
-            lf::fe::JacobiPoly<double>::eval(p + 1, alpha, x + eps / 2);
-        const double evalm =
-            lf::fe::JacobiPoly<double>::eval(p + 1, alpha, x - eps / 2);
+        const double evalp = lf::fe::jacobi(p, alpha, x + eps / 2);
+        const double evalm = lf::fe::jacobi(p, alpha, x - eps / 2);
         const double approx = (evalp - evalm) / eps;
         // Compare the two values
         if (std::fabs(exact) < 100) {
