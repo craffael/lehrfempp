@@ -134,7 +134,7 @@ wget https://github.com/craffael/lehrfempp/archive/41fe4560d5f56612059c3f919ec1a
 openssl sha1 41fe4560d5f56612059c3f919ec1a83093116984.tar.gz
 ```
 
-2) create the file `cmake/Hunter/config.cmake` in your own project and fill it with the following content (see [here](https://docs.hunter.sh/en/latest/reference/user-modules/hunter_config.html) for more information), adapt it accordingly if you want to use another commit:
+2) create the file `cmake/Hunter/config.cmake` in your own project and fill it with the following content (see [here](https://docs.hunter.sh/en/latest/reference/user-modules/hunter_config.html) for more information), *adapt it accordingly if you want to use another commit(!)*:
 ```
 hunter_config(lehrfempp
   URL "https://github.com/craffael/lehrfempp/archive/41fe4560d5f56612059c3f919ec1a83093116984.tar.gz"
