@@ -549,14 +549,14 @@ TEST(lf_uscalfe_ReactionDiffusion, ComplexReactionDiffusion) {
   ReactionDiffusionElementMatrixProvider complex_matrix_emp(
       real_fe_space, complex_matrix_mf, complex_mf);
 
-  ReactionDiffusionElementMatrixProvider complex_fe_space_emp(complex_fe_space,
-                                                              real_mf, real_mf);
+  ReactionDiffusionElementMatrixProvider complex_fe_space_emp(
+      complex_fe_space, complex_mf, complex_mf);
 
   for (const auto &e : mesh_p->Entities(0)) {
     auto real_em = real_emp.Eval(*e);
     auto complex_em = complex_emp.Eval(*e);
     EXPECT_TRUE(complex_em.imag().isApprox(real_em));
-    EXPECT_TRUE(complex_fe_space_emp.Eval(*e).real().isApprox(real_em));
+    EXPECT_TRUE(complex_fe_space_emp.Eval(*e).imag().isApprox(real_em));
 
     real_em = real_matrix_emp.Eval(*e);
     complex_em = complex_matrix_emp.Eval(*e);
@@ -564,7 +564,7 @@ TEST(lf_uscalfe_ReactionDiffusion, ComplexReactionDiffusion) {
   }
 }
 
-TEST(lf_fe_linear, lf_fe_edgemass) {
+TEST(lf_uscalfe_MassEdgeMatrixProvider, lf_fe_edgemass) {
   std::cout << "### TEST: Computation of local edge" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
@@ -593,6 +593,32 @@ TEST(lf_fe_linear, lf_fe_edgemass) {
     const double diffnorm =
         (quad_mat - lf::geometry::Volume(*edge->Geometry()) * RefM).norm();
     EXPECT_NEAR(diffnorm, 0.0, 1E-6);
+  }
+}
+
+TEST(lf_uscalfe_MassEdgeMatrixProvider, ComplexEdgeMass) {
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
+  auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
+  auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
+      (Eigen::Matrix2d() << 1, 2, 3, 4).finished());
+  auto complex_matrix_mf =
+      mesh::utils::MeshFunctionConstant(std::complex<double>(0, 1)) *
+      real_matrix_mf;
+
+  MassEdgeMatrixProvider real_emp(real_fe_space, real_mf);
+  MassEdgeMatrixProvider complex_emp(real_fe_space, complex_mf);
+
+  MassEdgeMatrixProvider complex_fe_space_emp(complex_fe_space, complex_mf);
+
+  for (const auto &e : mesh_p->Entities(1)) {
+    auto real_em = real_emp.Eval(*e);
+    auto complex_em = complex_emp.Eval(*e);
+    EXPECT_TRUE(complex_em.imag().isApprox(real_em));
+    EXPECT_TRUE(complex_fe_space_emp.Eval(*e).imag().isApprox(real_em));
   }
 }
 

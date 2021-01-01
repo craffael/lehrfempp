@@ -511,7 +511,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const auto w =
         (fe_precomp_.Qr().Weights()[k] * determinants[k]) * gammaval[k];
     mat += ((fe_precomp_.PrecompReferenceShapeFunctions().col(k)) *
-            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).transpose())) *
+            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).adjoint())) *
            w;
   }
   return mat;
