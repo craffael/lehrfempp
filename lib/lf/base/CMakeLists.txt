@@ -15,6 +15,7 @@ set(sources
   predicate_true.h
   ref_el.cc
   ref_el.h
+  scalar_traits.h
   span.h
   spdlog_utils.h
   spdlog_utils.cc

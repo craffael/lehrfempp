@@ -93,7 +93,7 @@ namespace internal {
  */
 struct OperatorAddition {
   /**
-   * @brief Addition of two scalar types (`std::is_arithmetic_v<...> == true`)
+   * @brief Addition of two scalar types (`base::is_scalar<...> == true`)
    *
    * @note The implementation of this method makes use of the fact that the
    * memory layout of the data of `std::vector<U>` and
@@ -102,8 +102,8 @@ struct OperatorAddition {
    * us to use the Eigen optimized `operator+`
    */
   template <class U, class V,
-            class = typename std::enable_if<std::is_arithmetic_v<U> &&
-                                            std::is_arithmetic_v<V>>::type>
+            class = typename std::enable_if<base::is_scalar<U> &&
+                                            base::is_scalar<V>>::type>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
@@ -261,7 +261,7 @@ struct OperatorAddition {
  */
 struct OperatorSubtraction {
   /**
-   * @brief Subtraction of two scalar types (`std::is_arithmetic_v<...> ==
+   * @brief Subtraction of two scalar types (`base::is_scalar<...> ==
    * true`)
    *
    * @note The implementation of this method makes use of the fact that the
@@ -271,8 +271,8 @@ struct OperatorSubtraction {
    * us to use the Eigen optimized `operator-`
    */
   template <class U, class V,
-            class = typename std::enable_if<std::is_arithmetic_v<U> &&
-                                            std::is_arithmetic_v<V>>::type>
+            class = typename std::enable_if<base::is_scalar<U> &&
+                                            base::is_scalar<V>>::type>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
@@ -439,7 +439,7 @@ struct OperatorSubtraction {
  */
 struct OperatorMultiplication {
   /**
-   * @brief Multiplication of two scalar types (`std::is_arithmetic_v<...> ==
+   * @brief Multiplication of two scalar types (`base::is_scalar<...> ==
    * true`)
    *
    * @note The implementation of this method makes use of the fact that the
@@ -449,8 +449,8 @@ struct OperatorMultiplication {
    * us to use the Eigen optimized `operator*`
    */
   template <class U, class V,
-            class = typename std::enable_if<std::is_arithmetic_v<U> &&
-                                            std::is_arithmetic_v<V>>::type>
+            class = typename std::enable_if_t<base::is_scalar<U> &&
+                                              base::is_scalar<V>>>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(&u[0], 1, u.size());
@@ -559,7 +559,7 @@ struct OperatorMultiplication {
 
   // multiplication of a scalar with matrix
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+            class = std::enable_if_t<base::is_scalar<U>>>
   auto operator()(const std::vector<U>& u,
                   const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& v,
                   int /*unused*/) const {
@@ -586,7 +586,7 @@ struct OperatorMultiplication {
 
   // multiplication of matrix with scalar (other way around)
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+            class = std::enable_if_t<base::is_scalar<U>>>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& v,
                   const std::vector<U>& u, int /*unused*/) const {
     return operator()(u, v, 0);
@@ -594,7 +594,7 @@ struct OperatorMultiplication {
 
   // multiplication of a scalar with array
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+            class = std::enable_if_t<base::is_scalar<U>>>
   auto operator()(const std::vector<U>& u,
                   const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
                   int /*unused*/) const {
@@ -621,7 +621,7 @@ struct OperatorMultiplication {
 
   // multiplication of array with scalar (other way around)
   template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<std::is_arithmetic_v<U>>>
+            class = std::enable_if_t<base::is_scalar<U>>>
   auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
                   const std::vector<U>& u, int /*unused*/) const {
     return operator()(u, v, 0);

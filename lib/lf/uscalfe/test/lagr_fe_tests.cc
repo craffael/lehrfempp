@@ -19,6 +19,8 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
 
+#include "fe_testutils.h"
+
 namespace lf::uscalfe::test {
 
 template <typename SCALAR>
@@ -522,6 +524,43 @@ TEST(lf_fe_linear, lf_fe_ellbvp) {
         comp_elem_mat.Eval(*cell)};
     std::cout << quad_mat << std::endl;
     EXPECT_NEAR((lfe_mat.block(0, 0, n, n) - quad_mat).norm(), 0.0, 1E-2);
+  }
+}
+
+TEST(lf_uscalfe_ReactionDiffusion, ComplexReactionDiffusion) {
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
+
+  auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
+  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
+  auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
+  auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
+      (Eigen::Matrix2d() << 1, 2, 3, 4).finished());
+  auto complex_matrix_mf =
+      mesh::utils::MeshFunctionConstant(std::complex<double>(0, 1)) *
+      real_matrix_mf;
+
+  ReactionDiffusionElementMatrixProvider real_emp(real_fe_space, real_mf,
+                                                  real_mf);
+  ReactionDiffusionElementMatrixProvider complex_emp(real_fe_space, complex_mf,
+                                                     complex_mf);
+  ReactionDiffusionElementMatrixProvider real_matrix_emp(
+      real_fe_space, real_matrix_mf, real_mf);
+  ReactionDiffusionElementMatrixProvider complex_matrix_emp(
+      real_fe_space, complex_matrix_mf, complex_mf);
+
+  ReactionDiffusionElementMatrixProvider complex_fe_space_emp(complex_fe_space,
+                                                              real_mf, real_mf);
+
+  for (const auto &e : mesh_p->Entities(0)) {
+    auto real_em = real_emp.Eval(*e);
+    auto complex_em = complex_emp.Eval(*e);
+    EXPECT_TRUE(complex_em.imag().isApprox(real_em));
+    EXPECT_TRUE(complex_fe_space_emp.Eval(*e).real().isApprox(real_em));
+
+    real_em = real_matrix_emp.Eval(*e);
+    complex_em = complex_matrix_emp.Eval(*e);
+    EXPECT_TRUE(complex_em.imag().isApprox(real_em));
   }
 }
 

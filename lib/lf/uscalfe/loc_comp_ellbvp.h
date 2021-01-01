@@ -36,7 +36,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
  *
- * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ * @tparam SCALAR scalar type of the UniformScalarFESpace. Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
@@ -89,7 +89,12 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief type of returned element matrix
    */
-  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
+  using Scalar =
+      typename decltype(mesh::utils::MeshFunctionReturnType<DIFF_COEFF>() *
+                            Eigen::Vector<SCALAR, Eigen::Dynamic>() +
+                        mesh::utils::MeshFunctionReturnType<REACTION_COEFF>() *
+                            Eigen::Vector<SCALAR, Eigen::Dynamic>())::Scalar;
+  using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
@@ -322,9 +327,9 @@ ReactionDiffusionElementMatrixProvider<
                             .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad +
+    mat += w * (alpha_trf_grad.transpose() * trf_grad.conjugate() +
                 (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
-                    (pfe.PrecompReferenceShapeFunctions().col(k).transpose()));
+                    (pfe.PrecompReferenceShapeFunctions().col(k).adjoint()));
   }
   return mat;
 }
@@ -762,7 +767,11 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
+                "FUNCTOR does not fulfill the concept of a mesh function.");
+  using Scalar =
+      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
+  using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/

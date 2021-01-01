@@ -5,6 +5,7 @@ set(sources
   eigen_tools_tests.cc
   lehrfem_info_tests.cc
   ref_el_tests.cc
+  scalar_traits_tests.cc
   timer_tests.cc
 )
 
