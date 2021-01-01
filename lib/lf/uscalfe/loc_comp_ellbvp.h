@@ -52,7 +52,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
-          \cdot\overline{\mathbf{grad}\,v} +
+          \cdot\mathbf{grad}\,v +
  \gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
