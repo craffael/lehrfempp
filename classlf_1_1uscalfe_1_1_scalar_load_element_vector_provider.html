@@ -102,8 +102,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a0040f38e269cecf5af723c3fadda28b1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a0040f38e269cecf5af723c3fadda28b1">ElemVec</a> = Eigen::Matrix&lt; SCALAR, Eigen::Dynamic, 1 &gt;</td></tr>
-<tr class="separator:a0040f38e269cecf5af723c3fadda28b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bdc11c8d56d83f98b291989a85daa37"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a4bdc11c8d56d83f98b291989a85daa37">scalar_t</a> = decltype(SCALAR(0) *<a class="el" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">mesh::utils::MeshFunctionReturnType</a>&lt; MESH_FUNCTION &gt;(0))</td></tr>
+<tr class="memdesc:a4bdc11c8d56d83f98b291989a85daa37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar type of the element matrix.  <a href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a4bdc11c8d56d83f98b291989a85daa37">More...</a><br /></td></tr>
+<tr class="separator:a4bdc11c8d56d83f98b291989a85daa37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad33e31a2b79806c5c5392771178f34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a5ad33e31a2b79806c5c5392771178f34">ElemVec</a> = Eigen::Matrix&lt; <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a4bdc11c8d56d83f98b291989a85daa37">scalar_t</a>, Eigen::Dynamic, 1 &gt;</td></tr>
+<tr class="separator:a5ad33e31a2b79806c5c5392771178f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -116,7 +119,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe134fddac209cf998e1a363af1928bc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#afe134fddac209cf998e1a363af1928bc">isActive</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;)</td></tr>
 <tr class="memdesc:afe134fddac209cf998e1a363af1928bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default implement: all cells are active.  <a href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#afe134fddac209cf998e1a363af1928bc">More...</a><br /></td></tr>
 <tr class="separator:afe134fddac209cf998e1a363af1928bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0ad425e582d8aa2ed83c47e416dd8a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a0040f38e269cecf5af723c3fadda28b1">ElemVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#aa0ad425e582d8aa2ed83c47e416dd8a0">Eval</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;cell)</td></tr>
+<tr class="memitem:aa0ad425e582d8aa2ed83c47e416dd8a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a5ad33e31a2b79806c5c5392771178f34">ElemVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#aa0ad425e582d8aa2ed83c47e416dd8a0">Eval</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;cell)</td></tr>
 <tr class="separator:aa0ad425e582d8aa2ed83c47e416dd8a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe38d998b1765de1ea99436f0ad1d273"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#abe38d998b1765de1ea99436f0ad1d273">~ScalarLoadElementVectorProvider</a> ()=default</td></tr>
 <tr class="separator:abe38d998b1765de1ea99436f0ad1d273"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,13 +148,13 @@ class lf::uscalfe::ScalarLoadElementVectorProvider&lt; SCALAR, MESH_FUNCTION &gt
 <p>Local computation of general element (load) vector for scalar finite elements; volume contributions only. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">SCALAR</td><td>underlying scalar type, usually double or complex&lt;double&gt; </td></tr>
+    <tr><td class="paramname">SCALAR</td><td>Scalar type of the Finite Element Space. </td></tr>
     <tr><td class="paramname">MESH_FUNCTION</td><td><a class="el" href="group__mesh__function.html">MeshFunction</a> which defines the source function \( f \)</td></tr>
   </table>
   </dd>
 </dl>
 <p>The underlying local linear form is </p><p class="formulaDsp">
-\[ v \mapsto \int_K f(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}\mathbf{x}\;, \]
+\[ v \mapsto \int_K f(\mathbf{x})\,\overline{v(\mathbf{x})}\,\mathrm{d}\mathbf{x}\;, \]
 </p>
 <p> where \(f\) is supposed to be a locally continuous source function.</p>
 <p>Computation is based on a quadrature rules supplied by the LehrFEM++ <a class="el" href="classlf_1_1quad_1_1_quad_rule.html" title="Represents a Quadrature Rule over one of the Reference Elements.">lf::quad::QuadRule</a> module.</p>
@@ -159,10 +162,10 @@ class lf::uscalfe::ScalarLoadElementVectorProvider&lt; SCALAR, MESH_FUNCTION &gt
 <h4>Logger</h4>
 <p>This class logs additional information to <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a98b5bde6b0291425ccb1ea1997407f86">ScalarLoadElementVectorProvider()</a>. See <a class="el" href="loggers.html">Loggers and Debug output</a> for more information. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00546">546</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00555">555</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a0040f38e269cecf5af723c3fadda28b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0040f38e269cecf5af723c3fadda28b1">&#9670;&nbsp;</a></span>ElemVec</h2>
+<a id="a5ad33e31a2b79806c5c5392771178f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad33e31a2b79806c5c5392771178f34">&#9670;&nbsp;</a></span>ElemVec</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -170,12 +173,32 @@ class lf::uscalfe::ScalarLoadElementVectorProvider&lt; SCALAR, MESH_FUNCTION &gt
 template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">lf::uscalfe::ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a0040f38e269cecf5af723c3fadda28b1">ElemVec</a> =  Eigen::Matrix&lt;SCALAR, Eigen::Dynamic, 1&gt;</td>
+          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">lf::uscalfe::ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a5ad33e31a2b79806c5c5392771178f34">ElemVec</a> =  Eigen::Matrix&lt;<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a4bdc11c8d56d83f98b291989a85daa37">scalar_t</a>, Eigen::Dynamic, 1&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00550">550</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00562">562</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+
+</div>
+</div>
+<a id="a4bdc11c8d56d83f98b291989a85daa37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bdc11c8d56d83f98b291989a85daa37">&#9670;&nbsp;</a></span>scalar_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">lf::uscalfe::ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a4bdc11c8d56d83f98b291989a85daa37">scalar_t</a> =  decltype( SCALAR(0) * <a class="el" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">mesh::utils::MeshFunctionReturnType</a>&lt;MESH_FUNCTION&gt;(0))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scalar type of the element matrix. </p>
+
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00560">560</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -359,7 +382,7 @@ template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
 template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a0040f38e269cecf5af723c3fadda28b1">ElemVec</a> <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">lf::uscalfe::ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::Eval </td>
+          <td class="memname"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html#a5ad33e31a2b79806c5c5392771178f34">ElemVec</a> <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_element_vector_provider.html">lf::uscalfe::ScalarLoadElementVectorProvider</a>&lt; SCALAR, MESH_FUNCTION &gt;::Eval </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;&#160;</td>
           <td class="paramname"><em>cell</em></td><td>)</td>
@@ -368,7 +391,7 @@ template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00672">672</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00684">684</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 <p class="reference">References <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a3f937acbc212bbd6685ec89d9025a61c">lf::geometry::Geometry::DimLocal()</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#af5ebd8531c4cb2dfa9342e8f265de61c">lf::mesh::Entity::Geometry()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a34b0bc0a54ff1de82e2a5cbc52c506a5">lf::geometry::Geometry::Global()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a80112cf5cfa9314cb44e61756299607d">lf::geometry::Geometry::IntegrationElement()</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>, and <a class="el" href="loc__comp__ellbvp_8cc_source.html#l00033">lf::uscalfe::ScalarLoadElementVectorProviderLogger()</a>.</p>
 
@@ -402,7 +425,7 @@ template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
 
 <p>Default implement: all cells are active. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00587">587</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00599">599</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -487,7 +510,7 @@ template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
 
 <p>An object providing the source function. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00601">601</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00613">613</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -513,7 +536,7 @@ template&lt;typename SCALAR , typename MESH_FUNCTION &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00603">603</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00615">615</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>

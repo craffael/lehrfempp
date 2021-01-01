@@ -102,8 +102,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a31eee1a5b51eb57d014c4952b7fcde24"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a31eee1a5b51eb57d014c4952b7fcde24">ElemVec</a> = Eigen::Matrix&lt; SCALAR, Eigen::Dynamic, 1 &gt;</td></tr>
-<tr class="separator:a31eee1a5b51eb57d014c4952b7fcde24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1cd87e5e2156ea114fd6b361f1a27f6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#af1cd87e5e2156ea114fd6b361f1a27f6">Scalar</a> = decltype(SCALAR(0) *<a class="el" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">mesh::utils::MeshFunctionReturnType</a>&lt; FUNCTOR &gt;(0))</td></tr>
+<tr class="separator:af1cd87e5e2156ea114fd6b361f1a27f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c2fe91c1e90319e7f85f0ae53a0edb6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a9c2fe91c1e90319e7f85f0ae53a0edb6">ElemVec</a> = Eigen::Matrix&lt; <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#af1cd87e5e2156ea114fd6b361f1a27f6">Scalar</a>, Eigen::Dynamic, 1 &gt;</td></tr>
+<tr class="separator:a9c2fe91c1e90319e7f85f0ae53a0edb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -116,7 +118,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1dba046510c524c72df1cdb2c32040cb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a1dba046510c524c72df1cdb2c32040cb">isActive</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;cell)</td></tr>
 <tr class="memdesc:a1dba046510c524c72df1cdb2c32040cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default implement: all edges are active.  <a href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a1dba046510c524c72df1cdb2c32040cb">More...</a><br /></td></tr>
 <tr class="separator:a1dba046510c524c72df1cdb2c32040cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abafaf273b186b80347d26534a980030d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a31eee1a5b51eb57d014c4952b7fcde24">ElemVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#abafaf273b186b80347d26534a980030d">Eval</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;edge)</td></tr>
+<tr class="memitem:abafaf273b186b80347d26534a980030d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a9c2fe91c1e90319e7f85f0ae53a0edb6">ElemVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#abafaf273b186b80347d26534a980030d">Eval</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;edge)</td></tr>
 <tr class="separator:abafaf273b186b80347d26534a980030d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad38ea169c2b3327b0d34d0f84da3610"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#aad38ea169c2b3327b0d34d0f84da3610">~ScalarLoadEdgeVectorProvider</a> ()=default</td></tr>
 <tr class="separator:aad38ea169c2b3327b0d34d0f84da3610"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,7 +155,7 @@ class lf::uscalfe::ScalarLoadEdgeVectorProvider&lt; SCALAR, FUNCTOR, EDGESELECTO
   </dd>
 </dl>
 <p>The underlying local linear form for an edge \(e\) is </p><p class="formulaDsp">
-\[ v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x})\,\mathrm{d}S\mathbf{x}\;, \]
+\[ v \mapsto \int_e g(\mathbf{x})\, \overline{v(\mathbf{x})}\,\mathrm{d}S\mathbf{x}\;, \]
 </p>
 <p> where \(g\) is supposed to be a locally continuous source function.</p>
 <p>Computations are either based on a quadrature rules supplied by the LehrFEM++ <a class="el" href="classlf_1_1quad_1_1_quad_rule.html" title="Represents a Quadrature Rule over one of the Reference Elements.">lf::quad::QuadRule</a> module or on a user-supplied quadrature rule.</p>
@@ -167,10 +169,10 @@ class lf::uscalfe::ScalarLoadEdgeVectorProvider&lt; SCALAR, FUNCTOR, EDGESELECTO
 </ul>
 <p>which returns true, if the edge is to be included in assembly. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00763">763</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00776">776</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a31eee1a5b51eb57d014c4952b7fcde24"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31eee1a5b51eb57d014c4952b7fcde24">&#9670;&nbsp;</a></span>ElemVec</h2>
+<a id="a9c2fe91c1e90319e7f85f0ae53a0edb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c2fe91c1e90319e7f85f0ae53a0edb6">&#9670;&nbsp;</a></span>ElemVec</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -178,12 +180,30 @@ class lf::uscalfe::ScalarLoadEdgeVectorProvider&lt; SCALAR, FUNCTOR, EDGESELECTO
 template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::PredicateTrue&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">lf::uscalfe::ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a31eee1a5b51eb57d014c4952b7fcde24">ElemVec</a> =  Eigen::Matrix&lt;SCALAR, Eigen::Dynamic, 1&gt;</td>
+          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">lf::uscalfe::ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a9c2fe91c1e90319e7f85f0ae53a0edb6">ElemVec</a> =  Eigen::Matrix&lt;<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#af1cd87e5e2156ea114fd6b361f1a27f6">Scalar</a>, Eigen::Dynamic, 1&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00765">765</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00782">782</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+
+</div>
+</div>
+<a id="af1cd87e5e2156ea114fd6b361f1a27f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1cd87e5e2156ea114fd6b361f1a27f6">&#9670;&nbsp;</a></span>Scalar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::PredicateTrue&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">lf::uscalfe::ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#af1cd87e5e2156ea114fd6b361f1a27f6">Scalar</a> =  decltype(SCALAR(0) * <a class="el" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">mesh::utils::MeshFunctionReturnType</a>&lt;FUNCTOR&gt;(0))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00780">780</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -297,7 +317,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 </dl>
 <p>This constructor selects one of LehrFEM++'s built-in quadrature rules with a degree of exactness twice as big as the polynomial degree of the finite element space. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00788">788</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00805">805</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -360,7 +380,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00807">807</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00824">824</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -401,7 +421,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a31eee1a5b51eb57d014c4952b7fcde24">ElemVec</a> <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">lf::uscalfe::ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::Eval </td>
+          <td class="memname"><a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::<a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html#a9c2fe91c1e90319e7f85f0ae53a0edb6">ElemVec</a> <a class="el" href="classlf_1_1uscalfe_1_1_scalar_load_edge_vector_provider.html">lf::uscalfe::ScalarLoadEdgeVectorProvider</a>&lt; SCALAR, FUNCTOR, EDGESELECTOR &gt;::Eval </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -410,7 +430,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00858">858</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00875">875</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 <p class="reference">References <a class="el" href="classlf_1_1mesh_1_1_entity.html#af5ebd8531c4cb2dfa9342e8f265de61c">lf::mesh::Entity::Geometry()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a34b0bc0a54ff1de82e2a5cbc52c506a5">lf::geometry::Geometry::Global()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a80112cf5cfa9314cb44e61756299607d">lf::geometry::Geometry::IntegrationElement()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
 
@@ -444,7 +464,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 
 <p>Default implement: all edges are active. </p>
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00821">821</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00838">838</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -527,7 +547,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00837">837</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00854">854</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -553,7 +573,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00836">836</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00853">853</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -579,7 +599,7 @@ template&lt;class SCALAR , class FUNCTOR , class EDGESELECTOR  = base::Predicate
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00838">838</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="loc__comp__ellbvp_8h_source.html#l00855">855</a> of file <a class="el" href="loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>

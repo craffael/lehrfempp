@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['refeltype_1922',['RefElType',['../namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21',1,'lf::base']]],
-  ['refpat_1923',['RefPat',['../namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5d',1,'lf::refinement']]]
+  ['refeltype_1932',['RefElType',['../namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21',1,'lf::base']]],
+  ['refpat_1933',['RefPat',['../namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5d',1,'lf::refinement']]]
 ];

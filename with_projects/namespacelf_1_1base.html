@@ -107,6 +107,15 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1base_1_1_invalid_type_exception.html">InvalidTypeException</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thrown to signal that an argument passed to a function had the wrong (polymorphic) type.  <a href="classlf_1_1base_1_1_invalid_type_exception.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlf_1_1base_1_1_is_scalar.html">IsScalar</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base Traits class which can be used to determine if a type <code>T</code> is a scalar value.  <a href="structlf_1_1base_1_1_is_scalar.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlf_1_1base_1_1_is_scalar_3_01std_1_1complex_3_01_t_01_4_00_01std_1_1enable__if__t_3_01std_425d8065ad36a2406f7195e4fc283c3a.html">IsScalar&lt; std::complex&lt; T &gt;, std::enable_if_t&lt; std::is_arithmetic_v&lt; T &gt; &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Also <code>std::complex</code> is a "scalar" type if the underlying type is a <code>std::is_arithmetic</code> type.  <a href="structlf_1_1base_1_1_is_scalar_3_01std_1_1complex_3_01_t_01_4_00_01std_1_1enable__if__t_3_01std_425d8065ad36a2406f7195e4fc283c3a.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlf_1_1base_1_1_is_scalar_3_01_t_00_01std_1_1enable__if__t_3_01std_1_1is__arithmetic__v_3_01_t_01_4_01_4_01_4.html">IsScalar&lt; T, std::enable_if_t&lt; std::is_arithmetic_v&lt; T &gt; &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">any type that is a <code>std::is_arithmetic</code> is also a scalar type.  <a href="structlf_1_1base_1_1_is_scalar_3_01_t_00_01std_1_1enable__if__t_3_01std_1_1is__arithmetic__v_3_01_t_01_4_01_4_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1base_1_1_lehr_fem_info.html">LehrFemInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides extra information about this version of LehrFEM++, in particular licensing information.  <a href="classlf_1_1base_1_1_lehr_fem_info.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,6 +188,10 @@ Variables</h2></td></tr>
 <tr class="memitem:a404e199abc3918a225ac9519323f8897"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a404e199abc3918a225ac9519323f8897">is_eigen_array</a></td></tr>
 <tr class="memdesc:a404e199abc3918a225ac9519323f8897"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a given type T is an Eigen::Array.  <a href="namespacelf_1_1base.html#a404e199abc3918a225ac9519323f8897">More...</a><br /></td></tr>
 <tr class="separator:a404e199abc3918a225ac9519323f8897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14e8a56703b53dc57821ce98311d97bc"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a14e8a56703b53dc57821ce98311d97bc"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a14e8a56703b53dc57821ce98311d97bc">is_scalar</a> = <a class="el" href="structlf_1_1base_1_1_is_scalar.html">IsScalar</a>&lt;T&gt;::value</td></tr>
+<tr class="memdesc:a14e8a56703b53dc57821ce98311d97bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable template that determines if a type <code>T</code> is a scalar type, i.e. if it is a "field" in the mathematical sense.  <a href="namespacelf_1_1base.html#a14e8a56703b53dc57821ce98311d97bc">More...</a><br /></td></tr>
+<tr class="separator:a14e8a56703b53dc57821ce98311d97bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains basic functionality that is used by other parts of LehrFEM++. </p>
@@ -471,6 +484,41 @@ template&lt;class T &gt; </div>
 <p>Check if a given type T is an Eigen::Matrix. </p>
 
 <p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00047">47</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
+
+</div>
+</div>
+<a id="a14e8a56703b53dc57821ce98311d97bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14e8a56703b53dc57821ce98311d97bc">&#9670;&nbsp;</a></span>is_scalar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool lf::base::is_scalar = <a class="el" href="structlf_1_1base_1_1_is_scalar.html">IsScalar</a>&lt;T&gt;::value</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Variable template that determines if a type <code>T</code> is a scalar type, i.e. if it is a "field" in the mathematical sense. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type that should be tested.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This method is e.g. used to determine if a given type can be multiplied to a Eigen::Matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="scalar__traits_8h_source.html#l00056">56</a> of file <a class="el" href="scalar__traits_8h_source.html">scalar_traits.h</a>.</p>
 
 </div>
 </div>
