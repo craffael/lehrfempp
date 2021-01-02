@@ -92,9 +92,9 @@ class ReactionDiffusionElementMatrixProvider {
    */
   using Scalar =
       typename decltype(mesh::utils::MeshFunctionReturnType<DIFF_COEFF>() *
-                            Eigen::Vector<SCALAR, Eigen::Dynamic>() +
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>() +
                         mesh::utils::MeshFunctionReturnType<REACTION_COEFF>() *
-                            Eigen::Vector<SCALAR, Eigen::Dynamic>())::Scalar;
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>())::Scalar;
   using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
