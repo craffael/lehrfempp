@@ -51,9 +51,6 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  /** @brief default constructor, needed by std::vector
-   * @note creates an invalid object that cannot be used. */
-  UniformScalarFESpace() = default;
   UniformScalarFESpace(const UniformScalarFESpace &) = delete;
   UniformScalarFESpace(UniformScalarFESpace &&) noexcept = default;
   UniformScalarFESpace &operator=(const UniformScalarFESpace &) = delete;
@@ -96,15 +93,14 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
         rfs_tria_p_(std::move(rfs_tria_p)),
         rfs_quad_p_(std::move(rfs_quad_p)),
         rfs_edge_p_(std::move(rfs_edge_p)),
-        rfs_point_p_(std::move(rfs_point_p)) {
-    init(std::move(mesh_p));
-  }
+        rfs_point_p_(std::move(rfs_point_p)),
+        dofh_(InitDofHandler(std::move(mesh_p))) {}
 
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
-    return dofh_p_->Mesh();
+    return dofh_.Mesh();
   }
 
   /** @brief access to associated local-to-global map
@@ -112,9 +108,7 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
    */
   [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const override {
     LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
-    LF_VERIFY_MSG(dofh_p_ != nullptr,
-                  "No valid FE space object: no dof handler");
-    return *dofh_p_;
+    return dofh_;
   }
 
   /** @brief access to shape function layout for cells
@@ -168,16 +162,16 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
   /** Numbers of local shape functions for different types of entities */
   size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
       num_rsf_quad_{0};
+
   /** Local-to-global index map for the finite element space */
-  std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
+  assemble::UniformFEDofHandler dofh_;
 
   /** Initialization of class member variables and consistency checks */
-  void init(std::shared_ptr<const lf::mesh::Mesh> mesh_p);
+  assemble::UniformFEDofHandler InitDofHandler(
+      std::shared_ptr<const lf::mesh::Mesh> mesh_p);
   /** Checks whether some pointer are not valid */
   [[nodiscard]] bool check_ptr() const {
     LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
-    LF_VERIFY_MSG(dofh_p_ != nullptr,
-                  "No valid FE space object: no dof handler");
     LF_VERIFY_MSG((rfs_quad_p_ != nullptr) && (rfs_quad_p_ != nullptr),
                   "No valid FE space object: no rsfs for cells");
     return true;
@@ -242,7 +236,7 @@ std::ostream &operator<<(std::ostream &o,
 
 // Initialization methods
 template <typename SCALAR>
-void UniformScalarFESpace<SCALAR>::init(
+assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
     std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   // Check validity and consistency of mesh pointer
   LF_VERIFY_MSG(mesh_p != nullptr, "Missing mesh!");
@@ -340,8 +334,7 @@ void UniformScalarFESpace<SCALAR>::init(
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},
       {lf::base::RefEl::kQuad(), num_rsf_quad_}};
-  dofh_p_ = std::make_unique<lf::assemble::UniformFEDofHandler>(
-      std::move(mesh_p), rsf_layout);
+  return lf::assemble::UniformFEDofHandler(std::move(mesh_p), rsf_layout);
 }
 
 template <typename SCALAR>
@@ -412,7 +405,9 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
     case lf::base::RefEl::kQuad(): {
       return num_rsf_quad_;
     }
-    dafault : { LF_VERIFY_MSG(false, "Illegal entity type"); }
+    default: {
+      LF_VERIFY_MSG(false, "Illegal entity type");
+    }
   }
   return 0;
 }

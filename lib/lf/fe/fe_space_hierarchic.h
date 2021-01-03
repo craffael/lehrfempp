@@ -53,9 +53,8 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       : ScalarFESpace<SCALAR>(),
         mesh_p_(mesh_p),
         ref_el_(mesh_p, nullptr),
-        degree_(N) {
-    init();
-  }
+        dofh_(initDofHandler()),
+        degree_(N) {}
 
   /** @brief acess to underlying mesh
    *  @return a shared _pointer_ to the mesh
@@ -70,7 +69,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
    */
   [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const override {
     LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
-    return *dofh_p_;
+    return dofh_;
   }
 
   /** @brief access to shape function layout for cells
@@ -99,11 +98,11 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   lf::mesh::utils::AllCodimMeshDataSet<
       std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       ref_el_;
-  std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
+  lf::assemble::UniformFEDofHandler dofh_;
   unsigned degree_;
 
   // R.H. Detailed comment needed for this function
-  void init() {
+  [[nodiscard]] assemble::UniformFEDofHandler initDofHandler() {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
@@ -141,8 +140,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
         {lf::base::RefEl::kSegment(), num_rsf_edge},
         {lf::base::RefEl::kTria(), num_rsf_tria},
         {lf::base::RefEl::kQuad(), num_rsf_quad}};
-    dofh_p_ =
-        std::make_unique<lf::assemble::UniformFEDofHandler>(Mesh(), rsf_layout);
+    return lf::assemble::UniformFEDofHandler(Mesh(), rsf_layout);
   }
 };
 

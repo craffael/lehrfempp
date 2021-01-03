@@ -297,7 +297,7 @@ void Parallelogram::init() {
     integrationElement_ =
         std::sqrt((jacobian_.transpose() * jacobian_).determinant());
   }
-}  // end init()
+}  // end InitDofHandler()
 
 Eigen::MatrixXd Parallelogram::Global(const Eigen::MatrixXd& local) const {
   return coords_.col(0) *
