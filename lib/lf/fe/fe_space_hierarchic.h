@@ -106,7 +106,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = std::make_shared<FeHierarchicPoint<SCALAR>>(degree);
+      ref_el_(*entity) = std::make_shared<FePoint<SCALAR>>(degree);
     }
     // Initialize all shape function layouts for the edges
     size_type num_rsf_edge = 0;

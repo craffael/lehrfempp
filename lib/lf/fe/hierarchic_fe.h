@@ -197,17 +197,17 @@ double jacobi_dx(unsigned n, double alpha, double x);
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
  * of dimension 0, which is exactly one scalar value. It is an ingredient
- * of all hierarchic finite element spaces.
+ * of all scalar finite element spaces.
  */
 template <class SCALAR>
-class FeHierarchicPoint : public ScalarReferenceFiniteElement<SCALAR> {
+class FePoint : public ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
-   * @brief Create a new FeHierarchicPoint by specifying the degree of the shape
+   * @brief Create a new FePoint by specifying the degree of the shape
    * functions.
    * @param degree The degree of the shape function.
    */
-  explicit FeHierarchicPoint(unsigned degree) : degree_(degree) {}
+  explicit FePoint(unsigned degree) : degree_(degree) {}
 
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kPoint();

@@ -10,6 +10,7 @@
 #ifndef LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 #define LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 
+#include <lf/fe/hierarchic_fe.h>
 #include "lagr_fe.h"
 #include "uniform_scalar_fe_space.h"
 
@@ -48,7 +49,7 @@ class FeSpaceLagrangeO2 : public UniformScalarFESpace<SCALAR> {
             mesh_p, std::make_shared<FeLagrangeO2Tria<SCALAR>>(),
             std::make_shared<FeLagrangeO2Quad<SCALAR>>(),
             std::make_shared<FeLagrangeO2Segment<SCALAR>>(),
-            std::make_shared<FeLagrangePoint<SCALAR>>(2)) {}
+            std::make_shared<fe::FePoint<SCALAR>>(2)) {}
   ~FeSpaceLagrangeO2() override = default;
 };
 }  // namespace lf::uscalfe
