@@ -209,7 +209,7 @@ ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
       }
     }
     case (lf::base::RefEl::kPoint()): {
-      return std::make_shared<lf::uscalfe::FeLagrangePoint<SCALAR>>(degree);
+      return std::make_shared<lf::fe::FePoint<SCALAR>>(degree);
     }
     default: {
       LF_ASSERT_MSG(false, "unsupported reference element " << ref_el);
