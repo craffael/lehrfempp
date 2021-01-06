@@ -53,7 +53,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       : ScalarFESpace<SCALAR>(),
         mesh_p_(mesh_p),
         ref_el_(mesh_p, nullptr),
-        dofh_(initDofHandler()),
+        dofh_(initDofHandler(N)),
         degree_(N) {}
 
   /** @brief acess to underlying mesh
@@ -102,17 +102,17 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   unsigned degree_;
 
   // R.H. Detailed comment needed for this function
-  [[nodiscard]] assemble::UniformFEDofHandler initDofHandler() {
+  [[nodiscard]] assemble::UniformFEDofHandler initDofHandler(unsigned degree) {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = std::make_shared<FeHierarchicPoint<SCALAR>>(degree_);
+      ref_el_(*entity) = std::make_shared<FeHierarchicPoint<SCALAR>>(degree);
     }
     // Initialize all shape function layouts for the edges
     size_type num_rsf_edge = 0;
     for (auto entity : Mesh()->Entities(1)) {
       ref_el_(*entity) = std::make_shared<FeHierarchicSegment<SCALAR>>(
-          degree_, entity->RelativeOrientations());
+          degree, entity->RelativeOrientations());
       num_rsf_edge = ref_el_(*entity)->NumRefShapeFunctions(0);
     }
     // Initialize all shape function layouts for the cells
@@ -122,12 +122,12 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria():
           ref_el_(*entity) = std::make_shared<FeHierarchicTria<SCALAR>>(
-              degree_, entity->RelativeOrientations());
+              degree, entity->RelativeOrientations());
           num_rsf_tria = ref_el_(*entity)->NumRefShapeFunctions(0);
           break;
         case lf::base::RefEl::kQuad():
           ref_el_(*entity) = std::make_shared<FeHierarchicQuad<SCALAR>>(
-              degree_, entity->RelativeOrientations());
+              degree, entity->RelativeOrientations());
           num_rsf_quad = ref_el_(*entity)->NumRefShapeFunctions(0);
           break;
         default:

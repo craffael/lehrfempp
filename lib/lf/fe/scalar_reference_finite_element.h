@@ -9,6 +9,8 @@
  * @copyright MIT License
  */
 
+#include <lf/assemble/assemble.h>
+
 namespace lf::fe {
 /** Type for indices into global matrices/vectors */
 using gdof_idx_t = lf::assemble::gdof_idx_t;
