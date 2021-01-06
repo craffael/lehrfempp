@@ -1,4 +1,5 @@
 set(sources				
+    fe_point.h
     fe_space_hierarchic.h
     fe_tools.h
     fe_tools.cc

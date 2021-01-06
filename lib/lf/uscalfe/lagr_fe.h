@@ -15,6 +15,7 @@
  */
 
 #include <lf/assemble/dofhandler.h>
+#include <lf/fe/fe_point.h>
 #include <lf/fe/scalar_reference_finite_element.h>
 #include <iostream>
 #include <typeinfo>

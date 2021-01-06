@@ -10,7 +10,6 @@
 #ifndef __7a41e223dd0e4176af0371c2b57d2b67
 #define __7a41e223dd0e4176af0371c2b57d2b67
 
-#include <lf/fe/hierarchic_fe.h>
 #include "lagr_fe.h"
 #include "uniform_scalar_fe_space.h"
 

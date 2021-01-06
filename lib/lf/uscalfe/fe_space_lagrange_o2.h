@@ -10,7 +10,6 @@
 #ifndef LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 #define LF_USCALFE_FE_SPACE_LAGRANGE_O2_H
 
-#include <lf/fe/hierarchic_fe.h>
 #include "lagr_fe.h"
 #include "uniform_scalar_fe_space.h"
 
