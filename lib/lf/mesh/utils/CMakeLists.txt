@@ -1,7 +1,6 @@
 set(sources
   all_codim_mesh_data_set.h
   codim_mesh_data_set.h
-  lambda_mesh_data_set.h
   mesh_data_set.h
   mesh_function_binary.h
   mesh_function_constant.h
