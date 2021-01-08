@@ -14,7 +14,6 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
 #include "lecturedemo.h"
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 namespace lecturedemo {
 

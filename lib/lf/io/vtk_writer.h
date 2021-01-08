@@ -17,7 +17,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 namespace lf::io {
 
@@ -839,99 +838,96 @@ class VtkWriter {
 template <class MESH_FUNCTION, class>
 void VtkWriter::WritePointData(const std::string& name,
                                const MESH_FUNCTION& mesh_function) {
-  if (order_ == 1) {
-    Eigen::Matrix<double, 0, 1> origin{};
-    WritePointData(
-        name, *mesh::utils::make_LambdaMeshDataSet(
-                  [&](const auto& e) { return mesh_function(e, origin)[0]; }));
-  } else {
-    // for higher orders, we have to evaluate the mesh function at all points
-    // and write this into the vtk file:
-    CheckAttributeSetName(vtk_file_.point_data, name);
-    using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
-    auto dim_mesh = mesh_->DimMesh();
+  //  we have to evaluate the mesh function at all points
+  // and write this into the vtk file:
+  CheckAttributeSetName(vtk_file_.point_data, name);
+  using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
+  auto dim_mesh = mesh_->DimMesh();
 
-    Eigen::Matrix<double, 0, 1> origin;
+  Eigen::Matrix<double, 0, 1> origin;
 
-    if constexpr (std::is_same_v<T, unsigned char> || std::is_same_v<T, char> ||
-                  std::is_same_v<T, unsigned> || std::is_same_v<T, int> ||
-                  std::is_same_v<T, float> || std::is_same_v<T, double>) {
-      // MeshFunction is scalar valued:
-      VtkFile::ScalarData<T> data{};
-      data.data.resize(vtk_file_.unstructured_grid.points.size());
-      data.name = name;
+  if constexpr (std::is_same_v<T, unsigned char> || std::is_same_v<T, char> ||
+                std::is_same_v<T, unsigned> || std::is_same_v<T, int> ||
+                std::is_same_v<T, float> ||
+                std::is_same_v<T, double>) {  // NOLINT
+    // MeshFunction is scalar valued:
+    VtkFile::ScalarData<T> data{};
+    data.data.resize(vtk_file_.unstructured_grid.points.size());
+    data.name = name;
 
-      // evaluate at nodes:
-      for (auto n : mesh_->Entities(dim_mesh)) {
-        data.data[mesh_->Index(*n)] = mesh_function(*n, origin)[0];
-      }
-
-      for (int codim = static_cast<int>(dim_mesh - 1);
-           codim >= static_cast<char>(codim_); --codim) {
-        for (auto e : mesh_->Entities(codim)) {
-          auto ref_el = e->RefEl();
-          if (order_ < 3 && ref_el == base::RefEl::kTria()) {
-            continue;
-          }
-          auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
-          auto offset = aux_node_offset_[codim](*e);
-          for (int i = 0; i < values.size(); ++i) {
-            data.data[offset + i] = values[i];
-          }
-        }
-      }
-      vtk_file_.point_data.push_back(std::move(data));
-    } else if constexpr (base::is_eigen_matrix<T>) {
-      static_assert(T::ColsAtCompileTime == 1,
-                    "The MeshFunction must return row-vectors");
-      static_assert(
-          T::RowsAtCompileTime == Eigen::Dynamic ||
-              (T::RowsAtCompileTime > 1 && T::RowsAtCompileTime < 4),
-          "The Row vectors returned by the MeshFunction must be either dynamic "
-          "or must have 2 or 3 rows (at compile time).");
-      using Scalar = typename T::Scalar;
-      static_assert(
-          std::is_same_v<double, Scalar> || std::is_same_v<float, Scalar>,
-          "The RowVectors returned by the MeshFunction must be either double "
-          "or float valued.");
-      VtkFile::VectorData<Scalar> data{};
-      data.data.resize(vtk_file_.unstructured_grid.points.size());
-      data.name = name;
-
-      // evaluate at nodes:
-      for (auto n : mesh_->Entities(dim_mesh)) {
-        PadWithZeros<T::RowsAtCompileTime, Scalar>(
-            data.data[mesh_->Index(*n)], mesh_function(*n, origin)[0]);
-      }
-
-      for (int codim = static_cast<int>(dim_mesh - 1);
-           codim >= static_cast<char>(codim_); --codim) {
-        for (auto e : mesh_->Entities(codim)) {
-          auto ref_el = e->RefEl();
-          if (order_ < 3 && ref_el == base::RefEl::kTria()) {
-            continue;
-          }
-          auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
-          auto offset = aux_node_offset_[codim](*e);
-          for (int i = 0; i < values.size(); ++i) {
-            PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[offset + i],
-                                                       values[i]);
-          }
-        }
-      }
-      vtk_file_.point_data.push_back(std::move(data));
-    } else {
-      LF_VERIFY_MSG(false,
-                    "MeshFunction values must be one of: unsigned char, char, "
-                    "unsigned, int, float, double, Eigen::Vector<double, ...> "
-                    "or Eigen::Vector<float, ...>");
+    // evaluate at nodes:
+    for (auto n : mesh_->Entities(dim_mesh)) {
+      data.data[mesh_->Index(*n)] = mesh_function(*n, origin)[0];
     }
+
+    for (int codim = static_cast<int>(dim_mesh - 1);
+         codim >= static_cast<char>(codim_); --codim) {
+      for (auto e : mesh_->Entities(codim)) {
+        auto ref_el = e->RefEl();
+        if (order_ < 3 && ref_el == base::RefEl::kTria()) {
+          continue;
+        }
+        auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
+        auto offset = aux_node_offset_[codim](*e);
+        for (int i = 0; i < values.size(); ++i) {
+          data.data[offset + i] = values[i];
+        }
+      }
+    }
+    vtk_file_.point_data.push_back(std::move(data));
+  } else if constexpr (base::is_eigen_matrix<T>) {  // NOLINT
+    static_assert(T::ColsAtCompileTime == 1,
+                  "The MeshFunction must return row-vectors");
+    static_assert(
+        T::RowsAtCompileTime == Eigen::Dynamic ||
+            (T::RowsAtCompileTime > 1 && T::RowsAtCompileTime < 4),
+        "The Row vectors returned by the MeshFunction must be either dynamic "
+        "or must have 2 or 3 rows (at compile time).");
+    using Scalar = typename T::Scalar;
+    static_assert(
+        std::is_same_v<double, Scalar> || std::is_same_v<float, Scalar>,
+        "The RowVectors returned by the MeshFunction must be either double "
+        "or float valued.");
+    VtkFile::VectorData<Scalar> data{};
+    data.data.resize(vtk_file_.unstructured_grid.points.size());
+    data.name = name;
+
+    // evaluate at nodes:
+    for (auto n : mesh_->Entities(dim_mesh)) {
+      PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[mesh_->Index(*n)],
+                                                 mesh_function(*n, origin)[0]);
+    }
+
+    for (int codim = static_cast<int>(dim_mesh - 1);
+         codim >= static_cast<char>(codim_); --codim) {
+      for (auto e : mesh_->Entities(codim)) {
+        auto ref_el = e->RefEl();
+        if (order_ < 2 || (order_ < 3 && ref_el == base::RefEl::kTria())) {
+          continue;
+        }
+        auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
+        auto offset = aux_node_offset_[codim](*e);
+        for (unsigned long i = 0; i < values.size(); ++i) {
+          PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[offset + i],
+                                                     values[i]);
+        }
+      }
+    }
+    vtk_file_.point_data.push_back(std::move(data));
+  } else {
+    LF_VERIFY_MSG(false,
+                  "MeshFunction values must be one of: unsigned char, char, "
+                  "unsigned, int, float, double, Eigen::Vector<double, ...> "
+                  "or Eigen::Vector<float, ...>");
   }
 }
 
 template <class MESH_FUNCTION, class>
 void VtkWriter::WriteCellData(const std::string& name,
                               const MESH_FUNCTION& mesh_function) {
+  CheckAttributeSetName(vtk_file_.cell_data, name);
+  using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
+
   // maps from RefEl::Id() -> barycenter of the reference element
   std::vector<Eigen::VectorXd> barycenters(5);
   barycenters[base::RefEl::kPoint().Id()] = Eigen::Matrix<double, 0, 1>();
@@ -942,9 +938,39 @@ void VtkWriter::WriteCellData(const std::string& name,
   barycenters[base::RefEl::kQuad().Id()] =
       base::RefEl::kTria().NodeCoords().rowwise().sum() / 4.;
 
-  WriteCellData(name, *mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
-                  return mesh_function(e, barycenters[e.RefEl().Id()])[0];
-                }));
+  if constexpr (base::is_eigen_array<T> || base::is_eigen_matrix<T>) {
+    static_assert(T::ColsAtCompileTime == 1,
+                  "The MeshFunction must return row-vectors");
+    static_assert(
+        T::RowsAtCompileTime == Eigen::Dynamic ||
+            (T::RowsAtCompileTime > 1 && T::RowsAtCompileTime < 4),
+        "The Row vectors returned by the MeshFunction must be either dynamic "
+        "or must have 2 or 3 rows (at compile time).");
+    using Scalar = typename T::Scalar;
+    static_assert(
+        std::is_same_v<double, Scalar> || std::is_same_v<float, Scalar>,
+        "The RowVectors returned by the MeshFunction must be either double "
+        "or float valued.");
+    VtkFile::VectorData<Scalar> data{};
+    data.data.resize(mesh_->NumEntities(codim_));
+    data.name = name;
+    constexpr int rows = T::RowsAtCompileTime;
+    for (auto p : mesh_->Entities(codim_)) {
+      this->PadWithZeros<rows, Scalar>(
+          data.data[mesh_->Index(*p)],
+          mesh_function(*p, barycenters[p->RefEl().Id()])[0]);
+    }
+    vtk_file_.cell_data.push_back(std::move(data));
+  } else {
+    VtkFile::ScalarData<T> data{};
+    data.data.resize(mesh_->NumEntities(codim_));
+    data.name = name;
+    for (auto e : mesh_->Entities(codim_)) {
+      data.data[mesh_->Index(*e)] =
+          mesh_function(*e, barycenters[e->RefEl().Id()])[0];
+    }
+    vtk_file_.cell_data.push_back(std::move(data));
+  }
 }
 
 template <class DATA>
@@ -974,6 +1000,8 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
   } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
   } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
+    LF_ASSERT_MSG(in.rows() == 2 || in.rows() == 3,
+                  "VtkWriter can only write out 2d or 3d vectors.");
     if (in.rows() == 2) {
       out(2) = T(0);
       out.topRows(2) = in;

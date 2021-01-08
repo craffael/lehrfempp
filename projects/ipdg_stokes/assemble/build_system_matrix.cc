@@ -5,7 +5,6 @@
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
 #include <lf/io/vtk_writer.h>
-#include <lf/mesh/utils/lambda_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/lagr_fe.h>
 
@@ -28,8 +27,10 @@ buildSystemMatrixNoFlow(
   // Compute the boundary elements
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Compute the dirichlet data
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_data);
+  auto dirichlet = lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_data(*ep);
+  }
   // Assemble the system matrix
   lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const auto elem_mat_builder =
@@ -65,8 +66,10 @@ buildSystemMatrixInOutFlow(
   // Compute the boundary elements
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   // Compute the dirichlet data
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_data);
+  auto dirichlet = lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d>(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_data(*ep);
+  }
   // Assemble the system matrix
   lf::assemble::COOMatrix<double> A(dofh.NumDofs(), dofh.NumDofs());
   const auto elem_mat_builder =

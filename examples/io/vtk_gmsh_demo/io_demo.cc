@@ -11,7 +11,6 @@
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
 
 int main() {
   // Find path to the smiley mesh
@@ -70,11 +69,14 @@ int main() {
 
   // write a cell-based function that takes the value 1 on the eyes and 0
   // everywhere else
-  vtk_writer.WriteCellData(
-      "eyes", *lf::mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
-        return static_cast<int>(
-            reader.IsPhysicalEntity(e, physical_entity_nr_eyes));
-      }));
+  {
+    lf::mesh::utils::CodimMeshDataSet<int> data(mesh, 0);
+    for (auto e : mesh->Entities(0)) {
+      data(*e) = static_cast<int>(
+          reader.IsPhysicalEntity(*e, physical_entity_nr_eyes));
+    }
+    vtk_writer.WriteCellData("eyes", data);
+  }
 
   // write nodal data that takes the value 2 on the eyes and 1 on the mouth,
   // zero everywhere else.
@@ -98,9 +100,7 @@ int main() {
   vtk_writer.WritePointData("smile", *mds);
 
   // write a node based, vector valued function that points to the nose:
-  auto origin = Eigen::MatrixXd::Zero(0, 1);
   vtk_writer.WritePointData(
-      "nose_vec", *lf::mesh::utils::make_LambdaMeshDataSet([&](const auto& n) {
-        return Eigen::Vector2d(-n.Geometry()->Global(origin));
-      }));
+      "nose_vec", lf::mesh::utils::MeshFunctionGlobal(
+                      [&](const Eigen::Vector2d& x) { return (-x).eval(); }));
 }

@@ -61,7 +61,7 @@ class CodimMeshDataSet : public MeshDataSet<T> {
     return data_[mesh_->Index(e)];
   }
   // NOLINTNEXTLINE(readability-const-return-type)
-  [[nodiscard]] const T operator()(const Entity& e) const override {
+  [[nodiscard]] const T& operator()(const Entity& e) const override {
     LF_ASSERT_MSG(DefinedOn(e), "MeshDataSet not defined on this entity.");
     return data_[mesh_->Index(e)];
   }
@@ -70,23 +70,10 @@ class CodimMeshDataSet : public MeshDataSet<T> {
   }
 
  private:
-  // template magic to not use std::vector<bool> but boost::dynamic_bitset
-  // instead
-  template <class X, class Y = int>
-  struct Container {
-    // static_assert(false, "gugus");
-    using type_t = std::vector<X>;
-  };
-
-  template <class Y>
-  struct Container<bool, Y> {
-    using type_t = boost::container::vector<bool>;
-  };
-
   /** pointer to underlying mesh. Owned by the data set ! */
   std::shared_ptr<const Mesh> mesh_;
   /** data vector */
-  typename Container<T, int>::type_t data_;
+  boost::container::vector<T> data_;
   /** co-dimension */
   dim_t codim_;
 };
