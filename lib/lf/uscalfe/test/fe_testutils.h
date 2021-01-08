@@ -650,10 +650,10 @@ std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
  */
 template <class SCALAR>
 class ComplexScalarReferenceFiniteElement
-    : public ScalarReferenceFiniteElement<std::complex<SCALAR>> {
+    : public lf::fe::ScalarReferenceFiniteElement<std::complex<SCALAR>> {
  public:
   ComplexScalarReferenceFiniteElement(
-      std::unique_ptr<ScalarReferenceFiniteElement<SCALAR>> fe)
+      std::unique_ptr<lf::fe::ScalarReferenceFiniteElement<SCALAR>> fe)
       : inner_(std::move(fe)) {}
 
   [[nodiscard]] base::RefEl RefEl() const override { return inner_->RefEl(); }
@@ -694,7 +694,7 @@ class ComplexScalarReferenceFiniteElement
   }
 
  private:
-  std::unique_ptr<const ScalarReferenceFiniteElement<SCALAR>> inner_;
+  std::unique_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> inner_;
 };
 
 /**
