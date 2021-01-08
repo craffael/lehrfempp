@@ -109,12 +109,13 @@ class PrecomputedScalarReferenceFiniteElement
     return fe_->NumRefShapeFunctions(codim, subidx);
   }
 
-  [[nodiscard]] Eigen::MatrixXd EvalReferenceShapeFunctions(
-      const Eigen::MatrixXd& local) const override {
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  EvalReferenceShapeFunctions(const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->EvalReferenceShapeFunctions(local);
   }
-  [[nodiscard]] Eigen::MatrixXd GradientsReferenceShapeFunctions(
+  [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return fe_->GradientsReferenceShapeFunctions(local);
@@ -146,7 +147,8 @@ class PrecomputedScalarReferenceFiniteElement
   /**
    * @brief Value of `EvalReferenceShapeFunctions(Qr().Points())`
    */
-  [[nodiscard]] const Eigen::MatrixXd& PrecompReferenceShapeFunctions() const {
+  [[nodiscard]] const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>&
+  PrecompReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return shap_fun_;
   }
@@ -157,8 +159,8 @@ class PrecomputedScalarReferenceFiniteElement
    * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
    * for the packed format in which the gradients are returned.
    */
-  [[nodiscard]] const Eigen::MatrixXd& PrecompGradientsReferenceShapeFunctions()
-      const {
+  [[nodiscard]] const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>&
+  PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
     return grad_shape_fun_;
   }
@@ -173,9 +175,9 @@ class PrecomputedScalarReferenceFiniteElement
    * element */
   quad::QuadRule qr_;
   /** Holds values of reference shape functions at reference quadrature nodes */
-  Eigen::MatrixXd shap_fun_;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> shap_fun_;
   /** Holds gradients of reference shape functions at quadrature nodes */
-  Eigen::MatrixXd grad_shape_fun_;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grad_shape_fun_;
 };
 
 }  // namespace lf::uscalfe

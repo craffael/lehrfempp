@@ -96,7 +96,7 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
         rfs_point_p_(std::move(rfs_point_p)),
         dofh_(InitDofHandler(std::move(mesh_p))) {}
 
-  /** @brief acess to underlying mesh
+  /** @brief access to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {

@@ -36,7 +36,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
  *
- * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ * @tparam SCALAR scalar type of the UniformScalarFESpace. Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
@@ -52,7 +52,8 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
-          \cdot\mathbf{grad}\,v + \gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
+          \cdot\mathbf{grad}\,v +
+ \gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
  * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
@@ -89,7 +90,12 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief type of returned element matrix
    */
-  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
+  using Scalar =
+      typename decltype(mesh::utils::MeshFunctionReturnType<DIFF_COEFF>() *
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>() +
+                        mesh::utils::MeshFunctionReturnType<REACTION_COEFF>() *
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>())::Scalar;
+  using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
@@ -322,9 +328,9 @@ ReactionDiffusionElementMatrixProvider<
                             .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad +
+    mat += w * (alpha_trf_grad.transpose() * trf_grad.conjugate() +
                 (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
-                    (pfe.PrecompReferenceShapeFunctions().col(k).transpose()));
+                    (pfe.PrecompReferenceShapeFunctions().col(k).adjoint()));
   }
   return mat;
 }
@@ -342,7 +348,8 @@ ReactionDiffusionElementMatrixProvider<
  * This helper class corresponds to the the element matrix
  * for the bilinear form
  * @f[
- *     (u,v) \mapsto \int\limits_e \gamma(x)u(x)v(x)\,\mathrm{d}S(x)\;,
+ *     (u,v) \mapsto \int\limits_e
+ * \gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
  * @f]
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
@@ -356,6 +363,7 @@ ReactionDiffusionElementMatrixProvider<
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
+  /// Scalar type of the element matrix
   using scalar_t =
       decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<COEFF>(0));
   using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
@@ -506,7 +514,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const auto w =
         (fe_precomp_.Qr().Weights()[k] * determinants[k]) * gammaval[k];
     mat += ((fe_precomp_.PrecompReferenceShapeFunctions().col(k)) *
-            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).transpose())) *
+            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).adjoint())) *
            w;
   }
   return mat;
@@ -519,14 +527,15 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  finite
  * elements; volume contributions only
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR Scalar type of the Finite Element Space.
  * @tparam MESH_FUNCTION \ref mesh_function "MeshFunction" which defines the
  source
  * function \f$ f \f$
  *
  * The underlying local linear form is
  * @f[
-      v \mapsto \int_K f(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}\mathbf{x}\;,
+      v \mapsto \int_K
+ f(\mathbf{x})\,\overline{v(\mathbf{x})}\,\mathrm{d}\mathbf{x}\;,
  * @f]
  * where \f$f\f$ is supposed to be a locally continuous source function.
  *
@@ -547,7 +556,10 @@ class ScalarLoadElementVectorProvider {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  /// Scalar type of the element matrix
+  using scalar_t = decltype(
+      SCALAR(0) * mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -715,7 +727,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
                         pfe.Qr().Points().transpose(), pfe.Qr().Weights()[k]);
     // Contribution of current quadrature point
     vec += (pfe.Qr().Weights()[k] * determinants[k] * fval[k]) *
-           pfe.PrecompReferenceShapeFunctions().col(k);
+           pfe.PrecompReferenceShapeFunctions().col(k).conjugate();
   }
 
   SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(), "LOCVEC = \n{}",
@@ -736,7 +748,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  *
  * The underlying local linear form for an edge @f$e@f$ is
  * @f[
-    v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x})\,\mathrm{d}S\mathbf{x}\;,
+    v \mapsto \int_e g(\mathbf{x})\,
+ \overline{v(\mathbf{x})}\,\mathrm{d}S\mathbf{x}\;,
  * @f]
  * where \f$g\f$ is supposed to be a locally continuous source function.
  *
@@ -762,7 +775,11 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
+                "FUNCTOR does not fulfill the concept of a mesh function.");
+  using Scalar =
+      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
+  using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -888,7 +905,7 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
   for (base::size_type k = 0; k < pfe_.Qr().NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
     const auto w = (pfe_.Qr().Weights()[k] * determinants[k]) * g_vals[k];
-    vec += pfe_.PrecompReferenceShapeFunctions().col(k) * w;
+    vec += pfe_.PrecompReferenceShapeFunctions().col(k).conjugate() * w;
   }
   return vec;
 }
