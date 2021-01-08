@@ -20,6 +20,7 @@ target_link_libraries(lf.fe PUBLIC
   Eigen3::Eigen lf.mesh lf.base lf.geometry
   lf.mesh.utils lf.assemble lf.quad)
 target_compile_features(lf.fe PUBLIC cxx_std_17)
+set_target_properties(lf.fe PROPERTIES FOLDER "lib")
 
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)

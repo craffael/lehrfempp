@@ -196,6 +196,7 @@ TEST(fe_space_hierarchic, continuity) {
           }();
           const auto edge = edges[i];
           const auto sfl_edge = fe_space->ShapeFunctionLayout(*edge);
+          ASSERT_TRUE(sfl_edge);
           const auto rsf_edge =
               sfl_edge->EvalReferenceShapeFunctions(edge_eval_coords);
           const auto rsf_cell =

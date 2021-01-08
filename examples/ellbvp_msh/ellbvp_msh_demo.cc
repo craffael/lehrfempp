@@ -119,8 +119,8 @@ int main() {
     };
 
     // Obtain specification for shape functions on edges
-    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
-        rsf_edge_p = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
+    lf::fe::ScalarReferenceFiniteElement<double> const* rsf_edge_p =
+        fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
     LF_ASSERT_MSG(rsf_edge_p != nullptr, "FE specification for edges missing");
 
     // Fetch flags and values for degrees of freedom located on Dirichlet

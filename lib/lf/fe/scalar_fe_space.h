@@ -71,9 +71,11 @@ class ScalarFESpace {
    * @warning NULL pointers may be returned by this method in case a finite
    * element specification was not given for a particular topological type of
    * entity.
+   *
+   * @note The returned ShapeFunctionLayout pointer will remain for the entire
+   * lifetime of the owning ScalarFESpace
    */
-  [[nodiscard]] virtual std::shared_ptr<
-      const ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] virtual ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const = 0;
 
   /** @brief number of _interior_ shape functions associated to entities of

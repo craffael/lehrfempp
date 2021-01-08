@@ -52,11 +52,11 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned N)
       : ScalarFESpace<SCALAR>(),
         mesh_p_(mesh_p),
-        ref_el_(mesh_p, nullptr),
-        dofh_(initDofHandler(N)),
-        degree_(N) {}
+        ref_el_(mesh_p),
+        degree_(N),
+        dofh_(Init()) {}
 
-  /** @brief acess to underlying mesh
+  /** @brief access to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
@@ -73,11 +73,23 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   }
 
   /** @brief access to shape function layout for cells
-   * @copydoc SclarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
+   * @copydoc ScalarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
    */
-  [[nodiscard]] std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
-  ShapeFunctionLayout(const lf::mesh::Entity &entity) const override {
-    return ref_el_(entity);
+  [[nodiscard]] ScalarReferenceFiniteElement<SCALAR> const *ShapeFunctionLayout(
+      const lf::mesh::Entity &entity) const override {
+    return std::visit(
+        [](const auto &fe) -> ScalarReferenceFiniteElement<SCALAR> const * {
+          if constexpr (std::is_same_v<decltype(fe), const std::monostate &>) {
+            LF_VERIFY_MSG(false,
+                          "Something is wrong, no "
+                          "ScalarReferenceFiniteElement found for "
+                          "this entity.");
+            return nullptr;  // make compiler happy.
+          } else {
+            return &fe;
+          }
+        },
+        ref_el_(entity));
   }
 
   /** @brief number of _interior_ shape functions associated to entities of
@@ -94,42 +106,44 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
   /* Underlying mesh */
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
 
-  // R.H.: Should this really be shared pointers ?
   lf::mesh::utils::AllCodimMeshDataSet<
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::variant<std::monostate, FePoint<SCALAR>, FeHierarchicSegment<SCALAR>,
+                   FeHierarchicTria<SCALAR>, FeHierarchicQuad<SCALAR>>>
       ref_el_;
-  lf::assemble::UniformFEDofHandler dofh_;
   unsigned degree_;
+  lf::assemble::UniformFEDofHandler dofh_;
 
   // R.H. Detailed comment needed for this function
-  [[nodiscard]] assemble::UniformFEDofHandler initDofHandler(unsigned degree) {
+  [[nodiscard]] assemble::UniformFEDofHandler Init() {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = std::make_shared<FePoint<SCALAR>>(degree);
+      ref_el_(*entity) = FePoint<SCALAR>(degree_);
     }
     // Initialize all shape function layouts for the edges
     size_type num_rsf_edge = 0;
     for (auto entity : Mesh()->Entities(1)) {
-      ref_el_(*entity) = std::make_shared<FeHierarchicSegment<SCALAR>>(
-          degree, entity->RelativeOrientations());
-      num_rsf_edge = ref_el_(*entity)->NumRefShapeFunctions(0);
+      FeHierarchicSegment<SCALAR> fe(degree_, entity->RelativeOrientations());
+      num_rsf_edge = fe.NumRefShapeFunctions(0);
+      ref_el_(*entity) = std::move(fe);
     }
     // Initialize all shape function layouts for the cells
     size_type num_rsf_tria = 0;
     size_type num_rsf_quad = 0;
     for (auto entity : Mesh()->Entities(0)) {
       switch (entity->RefEl()) {
-        case lf::base::RefEl::kTria():
-          ref_el_(*entity) = std::make_shared<FeHierarchicTria<SCALAR>>(
-              degree, entity->RelativeOrientations());
-          num_rsf_tria = ref_el_(*entity)->NumRefShapeFunctions(0);
+        case lf::base::RefEl::kTria(): {
+          FeHierarchicTria<SCALAR> fe(degree_, entity->RelativeOrientations());
+          num_rsf_tria = fe.NumRefShapeFunctions(0);
+          ref_el_(*entity) = std::move(fe);
           break;
-        case lf::base::RefEl::kQuad():
-          ref_el_(*entity) = std::make_shared<FeHierarchicQuad<SCALAR>>(
-              degree, entity->RelativeOrientations());
-          num_rsf_quad = ref_el_(*entity)->NumRefShapeFunctions(0);
+        }
+        case lf::base::RefEl::kQuad(): {
+          FeHierarchicQuad<SCALAR> fe(degree_, entity->RelativeOrientations());
+          num_rsf_quad = fe.NumRefShapeFunctions(0);
+          ref_el_(*entity) = std::move(fe);
           break;
+        }
         default:
           LF_VERIFY_MSG(false, "Illegal entity type");
       }

@@ -68,10 +68,9 @@ class PrecomputedScalarReferenceFiniteElement
    * Initialization of local data members.
    */
   PrecomputedScalarReferenceFiniteElement(
-      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> fe,
-      quad::QuadRule qr)
+      lf::fe::ScalarReferenceFiniteElement<SCALAR> const* fe, quad::QuadRule qr)
       : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
-        fe_(std::move(fe)),
+        fe_(fe),
         qr_(std::move(qr)),
         shap_fun_(fe_->EvalReferenceShapeFunctions(qr_.Points())),
         grad_shape_fun_(fe_->GradientsReferenceShapeFunctions(qr_.Points())) {}
@@ -170,7 +169,7 @@ class PrecomputedScalarReferenceFiniteElement
 
  private:
   /** The underlying scalar-valued parametric finite element */
-  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>> fe_;
+  fe::ScalarReferenceFiniteElement<SCALAR> const* fe_;
   /** Uniform parametric quadrature rule for the associated type of reference
    * element */
   quad::QuadRule qr_;

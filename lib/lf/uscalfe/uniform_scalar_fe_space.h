@@ -114,8 +114,7 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
   /** @brief access to shape function layout for cells
    * @copydoc SclarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
    */
-  [[nodiscard]] std::shared_ptr<
-      const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const override;
 
   /** @brief access to shape function layout for cells
@@ -126,9 +125,11 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
    * @warning NULL pointers may be returned by this method in case a finite
    * element specification was not given for a particular topological type of
    * entity.
+   *
+   * @note The returned ShapeFunctionLayout pointer will remain for the entire
+   * lifetime of the owning ScalarFESpace
    */
-  [[nodiscard]] std::shared_ptr<
-      const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(lf::base::RefEl ref_el_type) const;
 
   /** @brief number of _interior_ shape functions associated to entities of
@@ -338,38 +339,38 @@ assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
 }
 
 template <typename SCALAR>
-std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
 UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
     const lf::mesh::Entity &entity) const {
   return ShapeFunctionLayout(entity.RefEl());
 }
 
 template <typename SCALAR>
-std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
 UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
     lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
-      return rfs_point_p_;
+      return rfs_point_p_.get();
     }
     case lf::base::RefEl::kSegment(): {
       // Null pointer valid return value: indicates that a shape function
       // description for edges is missing.
       // LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
-      return rfs_edge_p_;
+      return rfs_edge_p_.get();
     }
     case lf::base::RefEl::kTria(): {
       // Null pointer valid return value: indicates that a shape function
       // description for triangular cells is missing.
       // LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
-      return rfs_tria_p_;
+      return rfs_tria_p_.get();
     }
     case lf::base::RefEl::kQuad(): {
       // Null pointer valid return value: indicates that a shape function
       // description for quadrilaterals is missing.
       // LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
-      return rfs_quad_p_;
+      return rfs_quad_p_.get();
     }
     default: {
       LF_VERIFY_MSG(false, "Illegal entity type");
