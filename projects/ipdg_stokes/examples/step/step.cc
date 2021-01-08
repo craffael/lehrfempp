@@ -228,19 +228,22 @@ int main() {
     lf::refinement::MeshFunctionTransfer velocity_fine_modified(
         *mesh_hierarchy, velocity_lvl_modified, lvl,
         mesh_hierarchy->NumLevels() - 1);
-    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-                               return velocity_fine(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
+
+    lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v(solutions.back().mesh,
+                                                         0);
+    for (const auto *ep : solutions.back().mesh->Entities(0)) {
+      v(*ep) = velocity_fine(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+    }
+    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)), v);
+
+    lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v_modified(
+        solutions.back().mesh, 0);
+    for (const auto *ep : solutions.back().mesh->Entities(0)) {
+      v_modified(*ep) =
+          velocity_fine_modified(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+    }
     writer.WriteCellData(
-        concat("v_modified", solutions[lvl].mesh->NumEntities(2)),
-        *lf::mesh::utils::make_LambdaMeshDataSet(
-            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-              return velocity_fine_modified(
-                  e, Eigen::Vector2d::Constant(1. / 3))[0];
-            }));
+        concat("v_modified", solutions[lvl].mesh->NumEntities(2)), v_modified);
     const auto qr_provider = [](const lf::mesh::Entity &e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };

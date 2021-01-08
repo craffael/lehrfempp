@@ -15,7 +15,6 @@
 #include <lf/io/vtk_writer.h>
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
-#include <lf/mesh/utils/lambda_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 
@@ -70,8 +69,11 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
     }
     return Eigen::Vector2d::Zero();
   };
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_funct);
+
+  lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> dirichlet(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_funct(*ep);
+  }
 
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
@@ -144,8 +146,11 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
     }
     return Eigen::Vector2d::Zero();
   };
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_funct);
+
+  lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> dirichlet(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_funct(*ep);
+  }
 
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);

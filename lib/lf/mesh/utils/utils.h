@@ -17,7 +17,6 @@ namespace lf::mesh::utils {}
 
 #include "all_codim_mesh_data_set.h"
 #include "codim_mesh_data_set.h"
-#include "lambda_mesh_data_set.h"
 #include "mesh_data_set.h"
 #include "mesh_function_binary.h"
 #include "mesh_function_constant.h"

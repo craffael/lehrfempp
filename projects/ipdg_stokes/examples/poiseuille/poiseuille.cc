@@ -196,25 +196,26 @@ int main(int argc, char *argv[]) {
             fe_space, solutions[lvl].solution_modified);
     // Store the result on the finest mesh to vtk
     if (lvl == refinement_level) {
-      const auto v = *lf::mesh::utils::make_LambdaMeshDataSet(
-          [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
-            const Eigen::Vector2d center =
-                entity.Geometry()
-                    ->Global(entity.RefEl().NodeCoords())
-                    .rowwise()
-                    .sum() /
-                entity.RefEl().NumNodes();
-            return analytic_velocity(center);
-          });
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v(
+          solutions.back().mesh, 0);
+      for (const auto *ep : solutions.back().mesh->Entities(0)) {
+        const Eigen::Vector2d center =
+            ep->Geometry()->Global(ep->RefEl().NodeCoords()).rowwise().sum() /
+            ep->RefEl().NumNodes();
+        v(*ep) = analytic_velocity(center);
+      }
       writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
                            velocity);
+
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v_modified(
+          solutions.back().mesh, 0);
+      for (const auto *ep : solutions.back().mesh->Entities(0)) {
+        v_modified(*ep) =
+            velocity_modified(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+      }
       writer.WriteCellData(
           concat("v__modified_", solutions[lvl].mesh->NumEntities(2)),
-          *lf::mesh::utils::make_LambdaMeshDataSet(
-              [&](const lf::mesh::Entity &e) {
-                return velocity_modified(e,
-                                         Eigen::Vector2d::Constant(1. / 3))[0];
-              }));
+          v_modified);
       writer.WriteCellData("analytic", v);
     }
     // Compute the error in the velocity
