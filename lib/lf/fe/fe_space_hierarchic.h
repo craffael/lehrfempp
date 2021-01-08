@@ -79,13 +79,14 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       const lf::mesh::Entity &entity) const override {
     return std::visit(
         [](const auto &fe) -> ScalarReferenceFiniteElement<SCALAR> const * {
-          if constexpr (std::is_same_v<decltype(fe), const std::monostate &>) {
+          if constexpr (std::is_same_v<decltype(fe),
+                                       const std::monostate &>) {  // NOLINT
             LF_VERIFY_MSG(false,
                           "Something is wrong, no "
                           "ScalarReferenceFiniteElement found for "
                           "this entity.");
             return nullptr;  // make compiler happy.
-          } else {
+          } else {           // NOLINT
             return &fe;
           }
         },

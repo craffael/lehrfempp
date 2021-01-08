@@ -169,7 +169,7 @@ class PrecomputedScalarReferenceFiniteElement
 
  private:
   /** The underlying scalar-valued parametric finite element */
-  fe::ScalarReferenceFiniteElement<SCALAR> const* fe_;
+  fe::ScalarReferenceFiniteElement<SCALAR> const* fe_ = nullptr;
   /** Uniform parametric quadrature rule for the associated type of reference
    * element */
   quad::QuadRule qr_;
