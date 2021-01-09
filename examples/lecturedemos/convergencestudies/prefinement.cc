@@ -162,7 +162,8 @@ std::tuple<double, double> computeErrorsSquareDomain(
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   std::cout << "\t\t> Assembling System Matrix" << std::endl;
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
-  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space, mf_alpha);
+  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space,
+                                                                 mf_alpha);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
   std::cout << "\t\t> Assembling right Hand Side" << std::endl;
@@ -267,8 +268,8 @@ std::tuple<double, double> computeErrorsLDomain(
   // Assemble the system matrix
   std::cout << "\t\t> Assembling System Matrix" << std::endl;
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
-  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(
-      fe_space, mf_alpha);
+  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space,
+                                                                 mf_alpha);
   lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);

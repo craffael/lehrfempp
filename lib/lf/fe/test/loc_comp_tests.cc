@@ -9,9 +9,9 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
-#include <lf/fe/fe.h>
 
 namespace lf::fe::test {
 
@@ -20,7 +20,8 @@ TEST(lf_fe, diffusion_mat_test) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   // Use a relatively high polynomial degree
   const unsigned degree = 15;
-  const auto fe_space = std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
+  const auto fe_space =
+      std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
 
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
@@ -40,7 +41,8 @@ TEST(lf_fe, diffusion_mat_test) {
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
   std::cout << "> Assembling System Matrix" << std::endl;
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
-  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space, mf_alpha);
+  lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space,
+                                                                 mf_alpha);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
   std::cout << "> Assembling right Hand Side" << std::endl;
@@ -100,7 +102,8 @@ TEST(lf_fe, mass_mat_test) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   // Use a relatively high polynomial degree
   const unsigned degree = 15;
-  const auto fe_space = std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
+  const auto fe_space =
+      std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
 
   // Define some right hand side
   const auto load = [](const Eigen::Vector2d &x) -> double {
@@ -169,4 +172,4 @@ TEST(lf_fe, mass_mat_test) {
   ASSERT_NEAR(L2_err, 0, 1e-5);
 }
 
-}   // namespace lf::fe::test
+}  // namespace lf::fe::test
