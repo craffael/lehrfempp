@@ -8,10 +8,15 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
+#include <cmath>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 
+#include <lf/assemble/assemble.h>
 #include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
+#include <lf/quad/quad.h>
 
 namespace lf::fe::test {
 
