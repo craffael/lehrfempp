@@ -17,13 +17,11 @@
 
 namespace lf::fe {
 
-std::shared_ptr<spdlog::logger>
-    diffusion_element_matrix_provider_logger = base::InitLogger(
-        "lf::fe::reaction_element_matrix_provider_logger");
+std::shared_ptr<spdlog::logger> diffusion_element_matrix_provider_logger =
+    base::InitLogger("lf::fe::reaction_element_matrix_provider_logger");
 
-std::shared_ptr<spdlog::logger>
-    mass_element_matrix_provider_logger = base::InitLogger(
-        "lf::fe::mass_element_matrix_provider_logger");
+std::shared_ptr<spdlog::logger> mass_element_matrix_provider_logger =
+    base::InitLogger("lf::fe::mass_element_matrix_provider_logger");
 
 std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger =
     base::InitLogger("lf::fe::mass_edge_matrix_provider_logger");

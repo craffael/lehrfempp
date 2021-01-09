@@ -7,10 +7,10 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-#include <cmath>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <cmath>
+#include <iostream>
 
 #include <lf/assemble/assemble.h>
 #include <lf/fe/fe.h>
