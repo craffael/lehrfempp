@@ -25,9 +25,9 @@
 namespace lf::fe {
 /**
  * @ingroup entity_matrix_provider
- * @headerfile lf/uscalfe/uscalfe.h
- * @brief Class for local quadrature based computations for Lagrangian finite
- * elements and second-order scalar elliptic BVPs.
+ * @headerfile lf/fe/fe.h
+ * @brief Class for local quadrature based computations for general finite
+ elements
  *
  * @tparam SCALAR type for the entries of the element matrices. Must be a field
  *                     type such as `double` or `std::complex<double>`
@@ -45,11 +45,10 @@ namespace lf::fe {
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
-          \cdot\mathbf{grad}\,v + \gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
+          \cdot\mathbf{grad}\,v\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
- * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
- * @f$\gamma@f$, see also @lref{ex:rdemp}
+ * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$, see also @lref{ex:rdemp}
  *
  * ## Template parameter requirement
  *
@@ -60,7 +59,7 @@ namespace lf::fe {
  * be an Eigen::Matrix either of variable of fixed size.
  *
  * @note The constructors of this class want an object of type @ref
- * UniformScalarFESpace, which holds a pointer to a mesh. However, for local
+ * ScalarFESpace, which holds a pointer to a mesh. However, for local
  * builder classes global information about the mesh is irrelevant, and,
  * therefore this object is used only to obtain information about the local
  * shape functions.
@@ -68,27 +67,29 @@ namespace lf::fe {
  * constructor.
  *
  */
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-class ReactionDiffusionElementMatrixProvider {
+template <typename SCALAR, typename DIFF_COEFF>
+class DiffusionElementMatrixProvider {
   static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
-  static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
 
  public:
   /**
    * @brief type of returned element matrix
    */
-  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
+  using Scalar =
+      typename decltype(mesh::utils::MeshFunctionReturnType<DIFF_COEFF>() *
+                        Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>())::Scalar;
+  using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
-  ReactionDiffusionElementMatrixProvider(
-      const ReactionDiffusionElementMatrixProvider &) = delete;
-  ReactionDiffusionElementMatrixProvider(
-      ReactionDiffusionElementMatrixProvider &&) noexcept = default;
-  ReactionDiffusionElementMatrixProvider &operator=(
-      const ReactionDiffusionElementMatrixProvider &) = delete;
-  ReactionDiffusionElementMatrixProvider &operator=(
-      ReactionDiffusionElementMatrixProvider &&) = delete;
+  DiffusionElementMatrixProvider(const DiffusionElementMatrixProvider &) =
+      delete;
+  DiffusionElementMatrixProvider(DiffusionElementMatrixProvider &&) noexcept =
+      default;
+  DiffusionElementMatrixProvider &operator=(
+      const DiffusionElementMatrixProvider &) = delete;
+  DiffusionElementMatrixProvider &operator=(DiffusionElementMatrixProvider &&) =
+      delete;
   /** @} */
 
   /**
@@ -98,16 +99,14 @@ class ReactionDiffusionElementMatrixProvider {
    * reference elements
    * @param alpha mesh function for the (possibly matrix-valued) diffusion
    * coefficient
-   * @param gamma mesh function providing scalar-valued diffusion coefficient
    *
    * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
    *
    * This constructor uses local quadature rules with double the degree of
    * exactness as the polynomial degree of the finite element space.
    */
-  ReactionDiffusionElementMatrixProvider(
-      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
-      REACTION_COEFF gamma);
+  DiffusionElementMatrixProvider(
+      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha);
 
   /**
    * @brief All cells are considered active in the default implementation
@@ -125,7 +124,7 @@ class ReactionDiffusionElementMatrixProvider {
    *
    * Actual computation of the element matrix based on numerical quadrature and
    * mapping techniques. The order of the quadrature rule is tied to the
-   * polynomial degree of the underlying Lagrangian finite element spaces: for
+   * polynomial degree of the underlying finite element spaces: for
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials o degree 2p.
    *
@@ -135,15 +134,13 @@ class ReactionDiffusionElementMatrixProvider {
   ElemMat Eval(const lf::mesh::Entity &cell);
 
   /** Virtual destructor */
-  virtual ~ReactionDiffusionElementMatrixProvider() = default;
+  virtual ~DiffusionElementMatrixProvider() = default;
 
  private:
   /** @name functors providing coefficient functions
    * @{ */
   /** Diffusion coefficient */
   DIFF_COEFF alpha_;
-  /** Reaction coefficient */
-  REACTION_COEFF gamma_;
   /** @} */
 
   /** FE Space */
@@ -151,41 +148,35 @@ class ReactionDiffusionElementMatrixProvider {
 };
 
 /**
- * @brief logger for ReactionDiffusionElementMatrixProvider
+ * @brief logger for DiffusionElementMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    reaction_diffusion_element_matrix_provider_logger;
+extern std::shared_ptr<spdlog::logger> diffusion_element_matrix_provider_logger;
 
-template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
-ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
-                                       REACTION_COEFF gamma)
-    ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
-                                             DIFF_COEFF, REACTION_COEFF>;
+template <class PTR, class DIFF_COEFF>
+DiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha)
+    ->DiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
+                                     DIFF_COEFF>;
 
 // First constructor (internal construction of quadrature rules
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
-    ReactionDiffusionElementMatrixProvider(
-        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha,
-        REACTION_COEFF gamma)
-    : alpha_(std::move(alpha)),
-      gamma_(std::move(gamma)),
-      fe_space_(std::move(fe_space)) {}
+template <typename SCALAR, typename DIFF_COEFF>
+DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::
+    DiffusionElementMatrixProvider(
+        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha)
+    : alpha_(std::move(alpha)), fe_space_(std::move(fe_space)) {}
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
-typename lf::fe::ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF,
-                                                        REACTION_COEFF>::ElemMat
-ReactionDiffusionElementMatrixProvider<
-    SCALAR, DIFF_COEFF, REACTION_COEFF>::Eval(const lf::mesh::Entity &cell) {
+template <typename SCALAR, typename DIFF_COEFF>
+typename lf::fe::DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::ElemMat
+DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
+    const lf::mesh::Entity &cell) {
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(reaction_diffusion_element_matrix_provider_logger,
+  SPDLOG_LOGGER_TRACE(diffusion_element_matrix_provider_logger,
                       "{}, shape = \n{}", cell.RefEl(),
                       geo_ptr->Global(cell.RefEl().NodeCoords()));
   // Physical dimension of the cell
@@ -207,9 +198,8 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
 
-  // compute values of alpha, gamma at quadrature points:
+  // compute values of alpha at quadrature points:
   auto alphaval = alpha_(cell, qr.Points());
-  auto gammaval = gamma_(cell, qr.Points());
 
   // Element matrix
   ElemMat mat(sfl->NumRefShapeFunctions(), sfl->NumRefShapeFunctions());
@@ -227,15 +217,188 @@ ReactionDiffusionElementMatrixProvider<
                         grsf.block(0, 2 * k, mat.rows(), 2).transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad +
-                (gammaval[k] * rsf.col(k)) * (rsf.col(k).transpose()));
+    mat += w * alpha_trf_grad.transpose() * trf_grad.conjugate();
   }
   return mat;
 }
 
 /**
  * @ingroup entity_matrix_provider
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
+ * @brief Class for local quadrature based computations for general finite
+ elements
+ *
+ * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ *                     type such as `double` or `std::complex<double>`
+ * @tparam REACTION_COEFF a \ref mesh_function "MeshFunction" that defines the
+ *                        reaction coefficient \f$ \mathbf{\gamma} \f$.
+ *                    It should be either scalar- or matrix-valued.
+  *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
+ *
+ * The element matrix is corresponds to the (local) bilinear form
+ * @f[
+    (u,v) \mapsto\int\limits_{K}\gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
+ \;,
+ * @f]
+ * with reaction coefficient @f$\gamma@f$, see also @lref{ex:rdemp}
+ *
+ * ## Template parameter requirement
+ *
+ * - SCALAR must be a type like `double`
+ *
+ * @note The constructors of this class want an object of type @ref
+ * ScalarFESpace, which holds a pointer to a mesh. However, for local
+ * builder classes global information about the mesh is irrelevant, and,
+ * therefore this object is used only to obtain information about the local
+ * shape functions.
+ * A revised implementation should directly pass this information to the
+ * constructor.
+ *
+ */
+template <typename SCALAR, typename REACTION_COEFF>
+class MassElementMatrixProvider {
+  static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
+
+ public:
+  /**
+   * @brief type of returned element matrix
+   */
+  using Scalar =
+      typename decltype(mesh::utils::MeshFunctionReturnType<REACTION_COEFF>() *
+                        Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>())::Scalar;
+  using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
+
+  /** @brief standard constructors */
+  /** @{ */
+  MassElementMatrixProvider(const MassElementMatrixProvider &) = delete;
+  MassElementMatrixProvider(MassElementMatrixProvider &&) noexcept = default;
+  MassElementMatrixProvider &operator=(const MassElementMatrixProvider &) =
+      delete;
+  MassElementMatrixProvider &operator=(MassElementMatrixProvider &&) = delete;
+  /** @} */
+
+  /**
+   * @brief Constructor: cell-independent precomputations
+   *
+   * @param fe_space collection of specifications for scalar-valued parametric
+   * reference elements
+   * @param gamma mesh function providing scalar-valued diffusion coefficient
+   *
+   * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
+   *
+   * This constructor uses local quadature rules with double the degree of
+   * exactness as the polynomial degree of the finite element space.
+   */
+  MassElementMatrixProvider(
+      std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
+      REACTION_COEFF gamma);
+
+  /**
+   * @brief All cells are considered active in the default implementation
+   *
+   * This method is meant to be overloaded if assembly should be restricted to a
+   * subset of cells.
+   */
+  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  /**
+   * @brief main routine for the computation of element matrices
+   *
+   * @param cell reference to the (triangular or quadrilateral) cell for
+   *        which the element matrix should be computed.
+   * @return a small dense, containing the element matrix.
+   *
+   * Actual computation of the element matrix based on numerical quadrature and
+   * mapping techniques. The order of the quadrature rule is tied to the
+   * polynomial degree of the underlying finite element spaces: for
+   * polynomial degree p a quadrature rule is chosen that is exact for
+   * polynomials o degree 2p.
+   *
+   * Throws an assertion in case the finite element specification is missing for
+   * the type of the cell.
+   */
+  ElemMat Eval(const lf::mesh::Entity &cell);
+
+  /** Virtual destructor */
+  virtual ~MassElementMatrixProvider() = default;
+
+ private:
+  /** @name functors providing coefficient functions
+   * @{ */
+  /** Reaction coefficient */
+  REACTION_COEFF gamma_;
+  /** @} */
+
+  /** FE Space */
+  std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+};
+
+/**
+ * @brief logger for MassElementMatrixProvider
+ */
+extern std::shared_ptr<spdlog::logger> mass_element_matrix_provider_logger;
+
+template <class PTR, class REACTION_COEFF>
+MassElementMatrixProvider(PTR fe_space, REACTION_COEFF gamma)
+    ->MassElementMatrixProvider<typename PTR::element_type::Scalar,
+                                REACTION_COEFF>;
+
+// First constructor
+template <typename SCALAR, typename REACTION_COEFF>
+MassElementMatrixProvider<SCALAR, REACTION_COEFF>::MassElementMatrixProvider(
+    std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, REACTION_COEFF gamma)
+    : gamma_(std::move(gamma)), fe_space_(std::move(fe_space)) {}
+
+// TODO(craffael) remove const once
+// https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
+// is resolved
+template <typename SCALAR, typename REACTION_COEFF>
+typename lf::fe::MassElementMatrixProvider<SCALAR, REACTION_COEFF>::ElemMat
+MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
+    const lf::mesh::Entity &cell) {
+  // Query the shape of the cell
+  const lf::geometry::Geometry *geo_ptr = cell.Geometry();
+  LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
+  LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
+                "Only 2D implementation available!");
+  SPDLOG_LOGGER_TRACE(mass_element_matrix_provider_logger, "{}, shape = \n{}",
+                      cell.RefEl(), geo_ptr->Global(cell.RefEl().NodeCoords()));
+  // Physical dimension of the cell
+  const dim_t world_dim = geo_ptr->DimGlobal();
+
+  // Get a quadrature rule of sufficiently high degree on the element
+  const auto sfl = fe_space_->ShapeFunctionLayout(cell);
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
+
+  const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
+  LF_ASSERT_MSG(
+      determinants.size() == qr.NumPoints(),
+      "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
+
+  // compute values of alpha, gamma at quadrature points:
+  auto gammaval = gamma_(cell, qr.Points());
+
+  // Element matrix
+  ElemMat mat(sfl->NumRefShapeFunctions(), sfl->NumRefShapeFunctions());
+  mat.setZero();
+
+  // Compute the reference shape functions
+  const auto rsf = sfl->EvalReferenceShapeFunctions(qr.Points());
+
+  // Loop over quadrature points
+  for (base::size_type k = 0; k < qr.NumPoints(); ++k) {
+    const double w = qr.Weights()[k] * determinants[k];
+    mat += w * ((gammaval[k] * rsf.col(k)) * (rsf.col(k).adjoint()));
+  }
+  return mat;
+}
+
+/**
+ * @ingroup entity_matrix_provider
+ * @headerfile lf/fe/fe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
@@ -369,14 +532,14 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     // Build local matrix by summing rank-1 contributions
     // from quadrature points.
     const auto w = (qr.Weights()[k] * determinants[k]) * gammaval[k];
-    mat += ((rsf.col(k)) * (rsf.col(k).transpose())) * w;
+    mat += ((rsf.col(k)) * (rsf.col(k).adjoint())) * w;
   }
   return mat;
 }
 
 /**
  * @ingroup entity_vector_provider
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @brief Local computation of general element (load) vector for scalar
  finite
  * elements; volume contributions only
@@ -403,7 +566,9 @@ class ScalarLoadElementVectorProvider {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  using scalar_t = decltype(
+      SCALAR(0) * mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -515,7 +680,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
                         "LOCVEC: [{}] -> [weight = {}]",
                         qr.Points().transpose(), qr.Weights()[k]);
     // Contribution of current quadrature point
-    vec += (qr.Weights()[k] * determinants[k] * fval[k]) * rsf.col(k);
+    vec +=
+        (qr.Weights()[k] * determinants[k] * fval[k]) * rsf.col(k).conjugate();
   }
 
   SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
@@ -525,7 +691,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
 /**
  * @ingroup entity_vector_provider
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @brief Local edge contributions to element vector
  *
  * @tparam SCALAR underlying scalar type, usually double or complex<double>
@@ -556,7 +722,11 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
+                "FUNCTOR does not fulfill the concept of a mesh function.");
+  using Scalar =
+      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
+  using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -657,7 +827,7 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
   for (base::size_type k = 0; k < qr.NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
     const auto w = (qr.Weights()[k] * determinants[k]) * g_vals[k];
-    vec += rsf.col(k) * w;
+    vec += rsf.col(k).conjugate() * w;
   }
   return vec;
 }
