@@ -239,12 +239,10 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicSegment &operator=(FeHierarchicSegment &&) noexcept = default;
   ~FeHierarchicSegment() override = default;
 
-  FeHierarchicSegment(unsigned degree, const quad::QuadRuleCache &qr_cache,
-                      nonstd::span<const lf::mesh::Orientation> rel_orient)
+  FeHierarchicSegment(unsigned degree, const quad::QuadRuleCache &qr_cache)
       : ScalarReferenceFiniteElement<SCALAR>(),
         degree_(degree),
-        qr_dual_(&qr_cache.Get(RefEl(), 2 * (degree - 1))),
-        rel_orient_(rel_orient) {}
+        qr_dual_(&qr_cache.Get(RefEl(), 2 * (degree - 1))) {}
 
   [[nodiscard]] lf::base::RefEl RefEl() const override {
     return lf::base::RefEl::kSegment();
@@ -381,7 +379,6 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  private:
   unsigned degree_;
   const lf::quad::QuadRule *qr_dual_;
-  nonstd::span<const lf::mesh::Orientation> rel_orient_;
 };
 
 /**
@@ -1122,18 +1119,10 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
                                      2 * (edge_degrees_[2] - 1)),
                        &qr_cache.Get(lf::base::RefEl::kSegment(),
                                      2 * (edge_degrees_[3] - 1))}),
-        // Note that we the quadrature rule for the quad interior has to be at
-        // least as large as the quad degree of all edges, otherwise we cannot
-        // compute analytical value of the dual basisfunction of quad when
-        // applied to a edge basis functions.
-        qr_dual_quad_(&qr_cache.Get(
-            base::RefEl::kSegment(),
-            std::max({interior_degree, edge_degrees[0], edge_degrees[1],
-                      edge_degrees[2], edge_degrees[3]}))),
         rel_orient_(rel_orient),
         fe1d_(std::max({interior_degree_, edge_degrees_[0], edge_degrees_[1],
                         edge_degrees_[2], edge_degrees_[3]}),
-              qr_cache, rel_orient) {
+              qr_cache) {
     LF_ASSERT_MSG(interior_degree_ >= 0, "illegal interior degree.");
     LF_ASSERT_MSG(edge_degrees_[0] >= 0, "illegal degree for edge 0");
     LF_ASSERT_MSG(edge_degrees_[1] >= 0, "illegal degree for edge 1");
@@ -1155,7 +1144,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
    * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions() const override {
-    return NumRefShapeFunctions(0) + NumRefShapeFunctions(1, 0) +
+    return 4 + NumRefShapeFunctions(0) + NumRefShapeFunctions(1, 0) +
            NumRefShapeFunctions(1, 1) + NumRefShapeFunctions(1, 2) +
            NumRefShapeFunctions(1, 3);
   }
@@ -1426,8 +1415,8 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         edge_degrees_[2] > 1 ? qr_dual_edge_[2]->NumPoints() : 0;
     const base::size_type Ne3 =
         edge_degrees_[3] > 1 ? qr_dual_edge_[3]->NumPoints() : 0;
-    const lf::base::size_type Nq =
-        interior_degree_ > 1 ? qr_dual_quad_->NumPoints() : 0;
+    auto Nq = interior_degree_ > 1 ? fe1d_.NumEvaluationNodes() : 0;
+
     Eigen::MatrixXd nodes(2, 4 + Ne0 + Ne1 + Ne2 + Ne3 + Nq * Nq);
     // Add the vertices
     nodes(0, 0) = 0;
@@ -1438,44 +1427,56 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     nodes(1, 2) = 1;
     nodes(0, 3) = 0;
     nodes(1, 3) = 1;
-    // Add the quadrature points on the first edge
-    if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-      nodes.block(0, 4, 1, Ne0) = qr_dual_edge_[0]->Points();
-    } else {
-      nodes.block(0, 4, 1, Ne0) =
-          Eigen::RowVectorXd::Ones(Ne0) - qr_dual_edge_[0]->Points();
+    if (edge_degrees_[0] > 1) {
+      // Add the quadrature points on the first edge
+      if (rel_orient_[0] == lf::mesh::Orientation::positive) {
+        nodes.block(0, 4, 1, Ne0) = qr_dual_edge_[0]->Points();
+      } else {
+        nodes.block(0, 4, 1, Ne0) =
+            Eigen::RowVectorXd::Ones(Ne0) - qr_dual_edge_[0]->Points();
+      }
+      nodes.block(1, 4, 1, Ne0).setZero();
     }
-    nodes.block(1, 4, 1, Ne0).setZero();
-    // Add the quadrature points on the second edge
-    nodes.block(0, 4 + Ne0, 1, Ne1).setOnes();
-    if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-      nodes.block(1, 4 + Ne0, 1, Ne1) = qr_dual_edge_[1]->Points();
-    } else {
-      nodes.block(1, 4 + Ne0, 1, Ne1) =
-          Eigen::RowVectorXd::Ones(Ne1) - qr_dual_edge_[1]->Points();
+
+    if (edge_degrees_[1] > 1) {
+      // Add the quadrature points on the second edge
+      nodes.block(0, 4 + Ne0, 1, Ne1).setOnes();
+      if (rel_orient_[1] == lf::mesh::Orientation::positive) {
+        nodes.block(1, 4 + Ne0, 1, Ne1) = qr_dual_edge_[1]->Points();
+      } else {
+        nodes.block(1, 4 + Ne0, 1, Ne1) =
+            Eigen::RowVectorXd::Ones(Ne1) - qr_dual_edge_[1]->Points();
+      }
     }
-    // Add the quadrature points on the third edge
-    if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-      nodes.block(0, 4 + Ne0 + Ne1, 1, Ne2) =
-          Eigen::RowVectorXd::Ones(Ne2) - qr_dual_edge_[2]->Points();
-    } else {
-      nodes.block(0, 4 + Ne0 + Ne1, 1, Ne2) = qr_dual_edge_[2]->Points();
+    if (edge_degrees_[2] > 1) {
+      // Add the quadrature points on the third edge
+      if (rel_orient_[2] == lf::mesh::Orientation::positive) {
+        nodes.block(0, 4 + Ne0 + Ne1, 1, Ne2) =
+            Eigen::RowVectorXd::Ones(Ne2) - qr_dual_edge_[2]->Points();
+      } else {
+        nodes.block(0, 4 + Ne0 + Ne1, 1, Ne2) = qr_dual_edge_[2]->Points();
+      }
+      nodes.block(1, 4 + Ne0 + Ne1, 1, Ne2).setOnes();
     }
-    nodes.block(1, 4 + Ne0 + Ne1, 1, Ne2).setOnes();
-    // Add the quadrature points on the fourth edge
-    nodes.block(0, 4 + Ne0 + Ne1 + Ne2, 1, Ne3).setZero();
-    if (rel_orient_[3] == lf::mesh::Orientation::positive) {
-      nodes.block(1, 4 + Ne0 + Ne1 + Ne2, 1, Ne3) =
-          Eigen::RowVectorXd::Ones(Ne3) - qr_dual_edge_[3]->Points();
-    } else {
-      nodes.block(1, 4 + Ne0 + Ne1 + Ne2, 1, Ne3) = qr_dual_edge_[3]->Points();
+    if (edge_degrees_[3] > 1) {
+      // Add the quadrature points on the fourth edge
+      nodes.block(0, 4 + Ne0 + Ne1 + Ne2, 1, Ne3).setZero();
+      if (rel_orient_[3] == lf::mesh::Orientation::positive) {
+        nodes.block(1, 4 + Ne0 + Ne1 + Ne2, 1, Ne3) =
+            Eigen::RowVectorXd::Ones(Ne3) - qr_dual_edge_[3]->Points();
+      } else {
+        nodes.block(1, 4 + Ne0 + Ne1 + Ne2, 1, Ne3) =
+            qr_dual_edge_[3]->Points();
+      }
     }
-    // Add the quadrature points for the face
-    for (lf::base::size_type i = 0; i < Nq; ++i) {
-      nodes.block(0, 4 + Ne0 + Ne1 + Ne2 + Ne3 + i * Nq, 1, Nq) =
-          qr_dual_quad_->Points();
-      nodes.block(1, 4 + Ne0 + Ne1 + Ne2 + Ne3 + i * Nq, 1, Nq)
-          .setConstant(qr_dual_quad_->Points()(0, i));
+    if (interior_degree_ > 1) {
+      // Add the quadrature points for the face
+      auto points = fe1d_.EvaluationNodes();
+      for (lf::base::size_type i = 0; i < Nq; ++i) {
+        nodes.block(0, 4 + Ne0 + Ne1 + Ne2 + Ne3 + i * Nq, 1, Nq) = points;
+        nodes.block(1, 4 + Ne0 + Ne1 + Ne2 + Ne3 + i * Nq, 1, Nq)
+            .setConstant(points(0, i));
+      }
     }
     return nodes;
   }
@@ -1493,7 +1494,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     const base::size_type Ne3 =
         edge_degrees_[3] > 1 ? qr_dual_edge_[3]->NumPoints() : 0;
     const lf::base::size_type Nq =
-        interior_degree_ > 1 ? qr_dual_quad_->NumPoints() : 0;
+        interior_degree_ > 1 ? fe1d_.NumEvaluationNodes() : 0;
     return 4 + Ne0 + Ne1 + Ne2 + Ne3 + Nq * Nq;
   }
 
@@ -1508,8 +1509,6 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         edge_degrees_[2] > 1 ? qr_dual_edge_[2]->NumPoints() : 0;
     const base::size_type Ne3 =
         edge_degrees_[3] > 1 ? qr_dual_edge_[3]->NumPoints() : 0;
-    const lf::base::size_type Nq =
-        interior_degree_ > 1 ? qr_dual_quad_->NumPoints() : 0;
 
     // Compute the basis function coefficients of the vertex basis functions
     dofs[0] = nodevals[0];
@@ -1594,76 +1593,32 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         }
       }
     }
-    // Compute the basis function coefficients for the face bubbles
-    for (unsigned i = 0; i < interior_degree_ - 1; ++i) {
-      // Apply the 1d dual along the x-axis
-      const SCALAR P0i = ilegendre_dx(i + 2, 0);
-      const SCALAR P1i = ilegendre_dx(i + 2, 1);
-      const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psiddi =
-          qr_dual_quad_->Points().unaryExpr(
-              [&](double x) -> SCALAR { return legendre_dx(i + 1, x); });
-      Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> partial(Nq);
-      for (lf::base::size_type j = 0; j < Nq; ++j) {
-        const SCALAR integ =
-            (qr_dual_quad_->Weights().transpose().array() * psiddi.array() *
-             nodevals.segment(4 + Ne0 + Ne1 + Ne2 + Ne3 + j * Nq, Nq).array())
-                .sum();
-        SCALAR n0 = 0;
-        if (j < edge_degrees_[3] - 1) {
-          if (rel_orient_[3] == lf::mesh::Orientation::positive) {
-            n0 = nodevals[3 + Ne0 + Ne1 + Ne2 + Ne3 - j];
-          } else {
-            n0 = nodevals[4 + Ne0 + Ne1 + Ne2 + j];
-          }
-        }
-        SCALAR n1 = 0;
-        if (j < edge_degrees_[1] - 1) {
-          if (rel_orient_[1] == lf::mesh::Orientation::positive) {
-            n1 = nodevals[4 + Ne0 + j];
-          } else {
-            n1 = nodevals[3 + Ne0 + Ne1 - j];
-          }
-        }
-        partial[j] = (P1i * n1 - P0i * n0 - integ) * (2 * i + 3);
+    if (interior_degree_ > 1) {
+      // Compute the basis function coefficients for the face bubbles
+      auto Nq = fe1d_.NumEvaluationNodes();
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dof_temp(
+          Nq, interior_degree_ - 1);
+      for (unsigned i = 0; i < Nq; ++i) {
+        dof_temp.row(i) = fe1d_
+                              .NodalValuesToDofs(nodevals.segment(
+                                  4 + Ne0 + Ne1 + Ne2 + Ne3 + Nq * i, Nq))
+                              .segment(2, interior_degree_ - 1);
       }
-
-      SCALAR f0_integ;
-      if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-        f0_integ = (qr_dual_.Weights().transpose().array() * psiddi.array() *
-                    nodevals.segment(4, N).array())
-                       .sum();
-      } else {
-        f0_integ = (qr_dual_.Weights().transpose().array() * psiddi.array() *
-                    nodevals.segment(4, N).array().reverse())
-                       .sum();
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> dof_temp2(
+          interior_degree_ - 1, interior_degree_ - 1);
+      for (unsigned i = 0; i < interior_degree_ - 1; ++i) {
+        dofs.segment(edge_degrees_[0] + edge_degrees_[1] + edge_degrees_[2] +
+                         edge_degrees_[3] + i * (interior_degree_ - 1),
+                     interior_degree_ - 1) = dof_temp2.row(i) =
+            fe1d_.NodalValuesToDofs(dof_temp.col(i))
+                .segment(2, interior_degree_ - 1);
       }
-      const SCALAR f0 =
-          (P1i * nodevals[1] - P0i * nodevals[0] - f0_integ) * (2 * i + 3);
-      SCALAR f1_integ;
-      if (rel_orient_[2] == lf::mesh::Orientation::positive) {
-        f1_integ = (qr_dual_.Weights().transpose().array() * psiddi.array() *
-                    nodevals.segment(4 + 2 * N, N).array().reverse())
-                       .sum();
-      } else {
-        f1_integ = (qr_dual_.Weights().transpose().array() * psiddi.array() *
-                    nodevals.segment(4 + 2 * N, N).array())
-                       .sum();
-      }
-      const SCALAR f1 =
-          (P1i * nodevals[2] - P0i * nodevals[3] - f1_integ) * (2 * i + 3);
-      for (unsigned j = 0; j < Degree() - 1; ++j) {
-        // Apply the 1d dual along the y-axis
-        const SCALAR P0j = ilegendre_dx(j + 2, 0);
-        const SCALAR P1j = ilegendre_dx(j + 2, 1);
-        const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psiddj =
-            qr_dual_.Points().unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(j + 1, x); });
-        const SCALAR integ = (qr_dual_.Weights().transpose().array() *
-                              psiddj.array() * partial.array())
-                                 .sum();
-        dofs[4 * Degree() + j * (Degree() - 1) + i] =
-            (P1j * f1 - P0j * f0 - integ) * (2 * j + 3);
-      }
+      dofs.segment(edge_degrees_[0] + edge_degrees_[1] + edge_degrees_[2] +
+                       edge_degrees_[3],
+                   (interior_degree_ - 1) * (interior_degree_ - 1)) =
+          Eigen::Map<Eigen::Matrix<SCALAR, 1, Eigen::Dynamic>>(
+              dof_temp2.data(), 1,
+              (interior_degree_ - 1) * (interior_degree_ - 1));
     }
     return dofs;
   }
@@ -1672,7 +1627,6 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   unsigned interior_degree_;
   std::array<unsigned, 4> edge_degrees_;
   std::array<const quad::QuadRule *, 4> qr_dual_edge_;
-  const lf::quad::QuadRule *qr_dual_quad_;
   FeHierarchicSegment<SCALAR>
       fe1d_;  // degree = max(interior_degree_, edge_degrees_)
   nonstd::span<const lf::mesh::Orientation> rel_orient_;

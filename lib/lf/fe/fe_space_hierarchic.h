@@ -151,8 +151,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
     }
     // Initialize all shape function layouts for the edges
     for (auto entity : Mesh()->Entities(1)) {
-      FeHierarchicSegment<SCALAR> fe(degree_functor(*entity), qr_cache_,
-                                     entity->RelativeOrientations());
+      FeHierarchicSegment<SCALAR> fe(degree_functor(*entity), qr_cache_);
 
       ref_el_(*entity) = std::move(fe);
     }
@@ -171,7 +170,13 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
           break;
         }
         case lf::base::RefEl::kQuad(): {
-          FeHierarchicQuad<SCALAR> fe(0, qr_cache_,
+          std::array<unsigned, 4> edge_degrees{
+              {{degree_functor(*entity->SubEntities(1)[0])},
+               {degree_functor(*entity->SubEntities(1)[1])},
+               {degree_functor(*entity->SubEntities(1)[2])},
+               {degree_functor(*entity->SubEntities(1)[3])}}};
+          FeHierarchicQuad<SCALAR> fe(degree_functor(*entity), edge_degrees,
+                                      qr_cache_,
                                       entity->RelativeOrientations());
           ref_el_(*entity) = std::move(fe);
           break;
