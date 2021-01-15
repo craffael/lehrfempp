@@ -11,6 +11,7 @@
 
 #include "make_quad_rule.h"
 #include "make_quad_rule_nodal.h"
+#include "quad_rule_cache.h"
 
 /** @brief Rules for numerical quadrature on reference entity shapes
  *

@@ -167,7 +167,7 @@ TEST(fe_space_hierarchic, continuity) {
   for (int selector = 0; selector <= 8; ++selector) {
     // Get a hybrid test mesh on [0, 3]^2
     const auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
-    for (unsigned p = 1; p <= 20; ++p) {
+    for (unsigned p = 1; p <= 10; ++p) {
       // Generate a FeSpaceHierarchic with order p on the mesh
       const auto fe_space =
           std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, p);
@@ -236,12 +236,13 @@ TEST(fe_space_hierarchic, continuity) {
 TEST(fe_space_hierarchic, segment_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 20
+  quad::QuadRuleCache qr_cache;
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
     for (const auto o0 :
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       const lf::mesh::Orientation orientations[] = {o0};
-      const lf::fe::FeHierarchicSegment<double> sfl(p, orientations);
+      const lf::fe::FeHierarchicSegment<double> sfl(p, qr_cache, orientations);
       // Get the evaluation nodes for the segment
       const auto eval_nodes = sfl.EvaluationNodes();
       // Evaluate the basis functions at the evaluation nodes
@@ -264,31 +265,41 @@ TEST(fe_space_hierarchic, segment_dual) {
 TEST(fe_space_hierarchic, tria_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 10
-  for (unsigned p = 1; p <= 10; ++p) {
-    // Test for all possible combinations of orientations
-    for (const auto o0 :
-         {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-      for (const auto o1 :
-           {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-        for (const auto o2 : {lf::mesh::Orientation::positive,
-                              lf::mesh::Orientation::negative}) {
-          const lf::mesh::Orientation orientations[] = {o0, o1, o2};
-          const lf::fe::FeHierarchicTria<double> sfl(p, orientations);
-          // Get the evaluation nodes for the quad
-          const auto eval_nodes = sfl.EvaluationNodes();
-          // Evaluate the basis functions at the evaluation nodes
-          const Eigen::MatrixXd basis =
-              sfl.EvalReferenceShapeFunctions(eval_nodes);
-          // Interpolate all basis functions
-          for (unsigned i = 0; i < basis.rows(); ++i) {
-            // Compute the basis function coefficients
-            const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
-            // Only the i-th entry should be 1, all others 0
-            for (long j = 0; j < dofs.size(); ++j) {
-              ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
-                  << "o=" << to_char(o0) << to_char(o1) << to_char(o2)
-                  << " p=" << p << " i=" << i << " j=" << j << "\ndofs=["
-                  << dofs << "]";
+  quad::QuadRuleCache qr_cache;
+  for (unsigned p_interior = 1; p_interior <= 6; ++p_interior) {
+    for (unsigned p_edge0 = 1; p_edge0 <= 6; ++p_edge0) {
+      for (unsigned p_edge1 = 1; p_edge1 <= 6; ++p_edge1) {
+        for (unsigned p_edge2 = 1; p_edge2 <= 6; ++p_edge2) {
+          // Test for all possible combinations of orientations
+          for (const auto o0 : {lf::mesh::Orientation::positive,
+                                lf::mesh::Orientation::negative}) {
+            for (const auto o1 : {lf::mesh::Orientation::positive,
+                                  lf::mesh::Orientation::negative}) {
+              for (const auto o2 : {lf::mesh::Orientation::positive,
+                                    lf::mesh::Orientation::negative}) {
+                const lf::mesh::Orientation orientations[] = {o0, o1, o2};
+                std::array<unsigned, 3> p_edges = {{p_edge0, p_edge1, p_edge2}};
+                const lf::fe::FeHierarchicTria<double> sfl(
+                    p_interior, p_edges, qr_cache, orientations);
+                // Get the evaluation nodes for the quad
+                const auto eval_nodes = sfl.EvaluationNodes();
+                // Evaluate the basis functions at the evaluation nodes
+                const Eigen::MatrixXd basis =
+                    sfl.EvalReferenceShapeFunctions(eval_nodes);
+                // Interpolate all basis functions
+                for (unsigned i = 0; i < basis.rows(); ++i) {
+                  // Compute the basis function coefficients
+                  const auto dofs = sfl.NodalValuesToDofs(basis.row(i));
+                  // Only the i-th entry should be 1, all others 0
+                  for (long j = 0; j < dofs.size(); ++j) {
+                    ASSERT_NEAR(dofs[j], j == i ? 1 : 0, 1e-8)
+                        << "o=" << to_char(o0) << to_char(o1) << to_char(o2)
+                        << " p=" << p_interior << "," << p_edge0 << ","
+                        << p_edge1 << "," << p_edge2 << " i=" << i << " j=" << j
+                        << "\ndofs=[" << dofs << "]";
+                  }
+                }
+              }
             }
           }
         }
@@ -300,6 +311,7 @@ TEST(fe_space_hierarchic, tria_dual) {
 TEST(fe_space_hierarchic, quad_dual) {
   // Test the nodal values to dofs function of all segments
   // with degree up to 10
+  quad::QuadRuleCache qr_cache;
   for (unsigned p = 1; p <= 10; ++p) {
     // Test for all possible combinations of orientations
     for (const auto o0 :
@@ -311,7 +323,8 @@ TEST(fe_space_hierarchic, quad_dual) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             const lf::mesh::Orientation orientations[] = {o0, o1, o2, o3};
-            const lf::fe::FeHierarchicQuad<double> sfl(p, orientations);
+            const lf::fe::FeHierarchicQuad<double> sfl(p, qr_cache,
+                                                       orientations);
             // Get the evaluation nodes for the quad
             const auto eval_nodes = sfl.EvaluationNodes();
             // Evaluate the basis functions at the evaluation nodes
@@ -338,13 +351,14 @@ TEST(fe_space_hierarchic, quad_dual) {
 
 TEST(fe_space_hierarchic, grad_segment) {
   // Test the gradients of the shape functions up to degree p=20
+  quad::QuadRuleCache qr_cache;
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
     lf::mesh::Orientation orient[1];
     for (const auto o0 :
          {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
       orient[0] = o0;
-      const lf::fe::FeHierarchicSegment<double> sfl(p, orient);
+      const lf::fe::FeHierarchicSegment<double> sfl(p, qr_cache, orient);
       const auto eval_nodes = sfl.EvaluationNodes();
       // Compute the exact gradients
       const auto grad_exact = sfl.GradientsReferenceShapeFunctions(eval_nodes);
@@ -368,70 +382,86 @@ TEST(fe_space_hierarchic, grad_segment) {
 }
 
 TEST(fe_space_hierarchic, grad_tria) {
-  // Test the gradients of the shape functions up to degree p=20
-  for (unsigned p = 1; p <= 20; ++p) {
-    // Test for all possible combinations of orientations
-    lf::mesh::Orientation orient[4];
-    for (const auto o0 :
-         {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-      orient[0] = o0;
-      for (const auto o1 :
-           {lf::mesh::Orientation::positive, lf::mesh::Orientation::negative}) {
-        orient[1] = o1;
-        for (const auto o2 : {lf::mesh::Orientation::positive,
-                              lf::mesh::Orientation::negative}) {
-          orient[2] = o2;
-          for (const auto o3 : {lf::mesh::Orientation::positive,
+  // Test the gradients of the shape functions up to degree p=10
+  quad::QuadRuleCache qr_cache;
+  for (unsigned p_interior = 1; p_interior <= 6; ++p_interior) {
+    for (unsigned p_edge0 = 1; p_edge0 <= 6; ++p_edge0) {
+      for (unsigned p_edge1 = 1; p_edge1 <= 6; ++p_edge1) {
+        for (unsigned p_edge2 = 1; p_edge2 <= 6; ++p_edge2) {
+          // Test for all possible combinations of orientations
+          lf::mesh::Orientation orient[4];
+          for (const auto o0 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
-            orient[3] = o3;
-            const lf::fe::FeHierarchicTria<double> sfl(p, orient);
-            const auto eval_nodes = sfl.EvaluationNodes();
-            // Compute the exact gradients
-            const auto grad_exact =
-                sfl.GradientsReferenceShapeFunctions(eval_nodes);
-            // Compute the gradients with finite differences
-            const double d = std::sqrt(std::numeric_limits<double>::epsilon());
-            Eigen::MatrixXd eval_nodes_xp = eval_nodes;
-            eval_nodes_xp.row(0) +=
-                Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
-            Eigen::MatrixXd eval_nodes_xn = eval_nodes;
-            eval_nodes_xn.row(0) -=
-                Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
-            Eigen::MatrixXd eval_nodes_yp = eval_nodes;
-            eval_nodes_yp.row(1) +=
-                Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
-            Eigen::MatrixXd eval_nodes_yn = eval_nodes;
-            eval_nodes_yn.row(1) -=
-                Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
-            const auto rsfxp = sfl.EvalReferenceShapeFunctions(eval_nodes_xp);
-            const auto rsfxn = sfl.EvalReferenceShapeFunctions(eval_nodes_xn);
-            const auto rsfyp = sfl.EvalReferenceShapeFunctions(eval_nodes_yp);
-            const auto rsfyn = sfl.EvalReferenceShapeFunctions(eval_nodes_yn);
-            const Eigen::MatrixXd dx_approx = (rsfxp - rsfxn) / d;
-            const Eigen::MatrixXd dy_approx = (rsfyp - rsfyn) / d;
-            // Compare the gradients
-            for (int i = 0; i < grad_exact.rows(); ++i) {
-              for (int j = 0; j < eval_nodes.cols(); ++j) {
-                const double dx_ij_exact = grad_exact(i, 2 * j + 0);
-                const double dy_ij_exact = grad_exact(i, 2 * j + 1);
-                const double dx_ij_approx = dx_approx(i, j);
-                const double dy_ij_approx = dy_approx(i, j);
-                ASSERT_TRUE(std::fabs(dx_ij_exact - dx_ij_approx) < 1e-5)
-                    << "p=" << p << " i=" << i << " eval_node=["
-                    << eval_nodes.col(j).transpose() << "] orient=["
-                    << static_cast<int>(orient[0]) << ", "
-                    << static_cast<int>(orient[1]) << ", "
-                    << static_cast<int>(orient[2]) << "]\ngrad_exact=["
-                    << dx_ij_exact << ", " << dy_ij_exact << "]\ngrad_approx=["
-                    << dx_ij_approx << ", " << dy_ij_approx << "]" << std::endl;
-                ASSERT_TRUE(std::fabs(dy_ij_exact - dy_ij_approx) < 1e-5)
-                    << "p=" << p << " i=" << i << " eval_node=["
-                    << eval_nodes.col(j).transpose() << "] orient=["
-                    << static_cast<int>(orient[0]) << ", "
-                    << static_cast<int>(orient[1]) << ", "
-                    << static_cast<int>(orient[2]) << "]\ngrad_exact=["
-                    << dx_ij_exact << ", " << dy_ij_exact << "]\ngrad_approx=["
-                    << dx_ij_approx << ", " << dy_ij_approx << "]" << std::endl;
+            orient[0] = o0;
+            for (const auto o1 : {lf::mesh::Orientation::positive,
+                                  lf::mesh::Orientation::negative}) {
+              orient[1] = o1;
+              for (const auto o2 : {lf::mesh::Orientation::positive,
+                                    lf::mesh::Orientation::negative}) {
+                orient[2] = o2;
+                for (const auto o3 : {lf::mesh::Orientation::positive,
+                                      lf::mesh::Orientation::negative}) {
+                  orient[3] = o3;
+                  std::array<unsigned, 3> p_edges{{p_edge0, p_edge1, p_edge2}};
+                  const lf::fe::FeHierarchicTria<double> sfl(
+                      p_interior, p_edges, qr_cache, orient);
+                  const auto eval_nodes = sfl.EvaluationNodes();
+                  // Compute the exact gradients
+                  const auto grad_exact =
+                      sfl.GradientsReferenceShapeFunctions(eval_nodes);
+                  // Compute the gradients with finite differences
+                  const double d =
+                      std::sqrt(std::numeric_limits<double>::epsilon());
+                  Eigen::MatrixXd eval_nodes_xp = eval_nodes;
+                  eval_nodes_xp.row(0) +=
+                      Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
+                  Eigen::MatrixXd eval_nodes_xn = eval_nodes;
+                  eval_nodes_xn.row(0) -=
+                      Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
+                  Eigen::MatrixXd eval_nodes_yp = eval_nodes;
+                  eval_nodes_yp.row(1) +=
+                      Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
+                  Eigen::MatrixXd eval_nodes_yn = eval_nodes;
+                  eval_nodes_yn.row(1) -=
+                      Eigen::RowVectorXd::Constant(eval_nodes.cols(), d / 2);
+                  const auto rsfxp =
+                      sfl.EvalReferenceShapeFunctions(eval_nodes_xp);
+                  const auto rsfxn =
+                      sfl.EvalReferenceShapeFunctions(eval_nodes_xn);
+                  const auto rsfyp =
+                      sfl.EvalReferenceShapeFunctions(eval_nodes_yp);
+                  const auto rsfyn =
+                      sfl.EvalReferenceShapeFunctions(eval_nodes_yn);
+                  const Eigen::MatrixXd dx_approx = (rsfxp - rsfxn) / d;
+                  const Eigen::MatrixXd dy_approx = (rsfyp - rsfyn) / d;
+                  // Compare the gradients
+                  for (int i = 0; i < grad_exact.rows(); ++i) {
+                    for (int j = 0; j < eval_nodes.cols(); ++j) {
+                      const double dx_ij_exact = grad_exact(i, 2 * j + 0);
+                      const double dy_ij_exact = grad_exact(i, 2 * j + 1);
+                      const double dx_ij_approx = dx_approx(i, j);
+                      const double dy_ij_approx = dy_approx(i, j);
+                      ASSERT_TRUE(std::fabs(dx_ij_exact - dx_ij_approx) < 1e-5)
+                          << "p=" << p_interior << " i=" << i << " eval_node=["
+                          << eval_nodes.col(j).transpose() << "] orient=["
+                          << static_cast<int>(orient[0]) << ", "
+                          << static_cast<int>(orient[1]) << ", "
+                          << static_cast<int>(orient[2]) << "]\ngrad_exact=["
+                          << dx_ij_exact << ", " << dy_ij_exact
+                          << "]\ngrad_approx=[" << dx_ij_approx << ", "
+                          << dy_ij_approx << "]" << std::endl;
+                      ASSERT_TRUE(std::fabs(dy_ij_exact - dy_ij_approx) < 1e-5)
+                          << "p=" << p_interior << " i=" << i << " eval_node=["
+                          << eval_nodes.col(j).transpose() << "] orient=["
+                          << static_cast<int>(orient[0]) << ", "
+                          << static_cast<int>(orient[1]) << ", "
+                          << static_cast<int>(orient[2]) << "]\ngrad_exact=["
+                          << dx_ij_exact << ", " << dy_ij_exact
+                          << "]\ngrad_approx=[" << dx_ij_approx << ", "
+                          << dy_ij_approx << "]" << std::endl;
+                    }
+                  }
+                }
               }
             }
           }
@@ -443,6 +473,7 @@ TEST(fe_space_hierarchic, grad_tria) {
 
 TEST(fe_space_hierarchic, grad_quad) {
   // Test the gradients of the shape functions up to degree p=20
+  quad::QuadRuleCache qr_cache;
   for (unsigned p = 1; p <= 20; ++p) {
     // Test for all possible combinations of orientations
     lf::mesh::Orientation orient[4];
@@ -458,7 +489,7 @@ TEST(fe_space_hierarchic, grad_quad) {
           for (const auto o3 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {
             orient[3] = o3;
-            const lf::fe::FeHierarchicQuad<double> sfl(p, orient);
+            const lf::fe::FeHierarchicQuad<double> sfl(p, qr_cache, orient);
             const auto eval_nodes = sfl.EvaluationNodes();
             // Compute the exact gradients
             const auto grad_exact =

@@ -49,12 +49,39 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
    * @param N The polynomial degree of the Finite Element Space
    */
   explicit FeSpaceHierarchic(
-      const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned N)
+      const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned degree)
+      : FeSpaceHierarchic(mesh_p, [degree](const mesh::Entity &e) -> unsigned {
+          if (e.RefEl() == base::RefEl::kPoint()) {
+            return 1;
+          } else {
+            return degree;
+          }
+        }) {}
+
+  template <class F>
+  explicit FeSpaceHierarchic(
+      const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, F &&degree_functor)
       : ScalarFESpace<SCALAR>(),
         mesh_p_(mesh_p),
         ref_el_(mesh_p),
-        degree_(N),
-        dofh_(Init()) {}
+        dofh_(mesh_p,
+              [&degree_functor](const mesh::Entity &e) -> base::size_type {
+                auto degree = degree_functor(e);
+                switch (e.RefEl()) {
+                  case base::RefEl::kPoint():
+                    return 1;
+                  case base::RefEl::kSegment():
+                    return degree - 1;
+                  case base::RefEl::kTria():
+                    return degree <= 2 ? 0 : (degree - 2) * (degree - 1) / 2;
+                  case base::RefEl::kQuad():
+                    return (degree - 1) * (degree - 1);
+                  default:
+                    LF_VERIFY_MSG(false, "Something went wrong.");
+                }
+              }) {
+    Init(std::forward<F>(degree_functor));
+  }
 
   /** @brief access to underlying mesh
    *  @return a shared _pointer_ to the mesh
@@ -106,42 +133,46 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
  private:
   /* Underlying mesh */
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-
+  quad::QuadRuleCache qr_cache_;
+  // Store the ScalarReferenceFiniteElement for every entity.
   lf::mesh::utils::AllCodimMeshDataSet<
       std::variant<std::monostate, FePoint<SCALAR>, FeHierarchicSegment<SCALAR>,
                    FeHierarchicTria<SCALAR>, FeHierarchicQuad<SCALAR>>>
       ref_el_;
-  unsigned degree_;
-  lf::assemble::UniformFEDofHandler dofh_;
+  lf::assemble::DynamicFEDofHandler dofh_;
 
   // R.H. Detailed comment needed for this function
-  [[nodiscard]] assemble::UniformFEDofHandler Init() {
+  template <class F>
+  void Init(F &&degree_functor) {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
     for (auto entity : Mesh()->Entities(2)) {
-      ref_el_(*entity) = FePoint<SCALAR>(degree_);
+      ref_el_(*entity) = FePoint<SCALAR>(1);
     }
     // Initialize all shape function layouts for the edges
-    size_type num_rsf_edge = 0;
     for (auto entity : Mesh()->Entities(1)) {
-      FeHierarchicSegment<SCALAR> fe(degree_, entity->RelativeOrientations());
-      num_rsf_edge = fe.NumRefShapeFunctions(0);
+      FeHierarchicSegment<SCALAR> fe(degree_functor(*entity), qr_cache_,
+                                     entity->RelativeOrientations());
+
       ref_el_(*entity) = std::move(fe);
     }
     // Initialize all shape function layouts for the cells
-    size_type num_rsf_tria = 0;
-    size_type num_rsf_quad = 0;
     for (auto entity : Mesh()->Entities(0)) {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria(): {
-          FeHierarchicTria<SCALAR> fe(degree_, entity->RelativeOrientations());
-          num_rsf_tria = fe.NumRefShapeFunctions(0);
+          std::array<unsigned, 3> edge_degrees{
+              {{degree_functor(*entity->SubEntities(1)[0])},
+               {degree_functor(*entity->SubEntities(1)[1])},
+               {degree_functor(*entity->SubEntities(1)[2])}}};
+          FeHierarchicTria<SCALAR> fe(degree_functor(*entity), edge_degrees,
+                                      qr_cache_,
+                                      entity->RelativeOrientations());
           ref_el_(*entity) = std::move(fe);
           break;
         }
         case lf::base::RefEl::kQuad(): {
-          FeHierarchicQuad<SCALAR> fe(degree_, entity->RelativeOrientations());
-          num_rsf_quad = fe.NumRefShapeFunctions(0);
+          FeHierarchicQuad<SCALAR> fe(0, qr_cache_,
+                                      entity->RelativeOrientations());
           ref_el_(*entity) = std::move(fe);
           break;
         }
@@ -149,13 +180,6 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
           LF_VERIFY_MSG(false, "Illegal entity type");
       }
     }
-    // Initialize the dofhandler
-    lf::assemble::UniformFEDofHandler::dof_map_t rsf_layout{
-        {lf::base::RefEl::kPoint(), num_rsf_node},
-        {lf::base::RefEl::kSegment(), num_rsf_edge},
-        {lf::base::RefEl::kTria(), num_rsf_tria},
-        {lf::base::RefEl::kQuad(), num_rsf_quad}};
-    return lf::assemble::UniformFEDofHandler(Mesh(), rsf_layout);
   }
 };
 

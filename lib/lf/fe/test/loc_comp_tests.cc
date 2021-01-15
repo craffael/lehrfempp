@@ -30,13 +30,14 @@ TEST(lf_fe, diffusion_mat_test) {
 
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
-    return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    return std::sin(base::kPi * x[0]) * std::sin(base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
 
   // Define the load function of the manufactured solution
   const auto load = [](const Eigen::Vector2d &x) -> double {
-    return 2 * M_PI * M_PI * std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    return 2 * base::kPi * base::kPi * std::sin(base::kPi * x[0]) *
+           std::sin(base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_load(load);
 
@@ -112,7 +113,8 @@ TEST(lf_fe, mass_mat_test) {
 
   // Define some right hand side
   const auto load = [](const Eigen::Vector2d &x) -> double {
-    return 2 * M_PI * M_PI * std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    return 2 * base::kPi * base::kPi * std::sin(base::kPi * x[0]) *
+           std::sin(base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_load(load);
 

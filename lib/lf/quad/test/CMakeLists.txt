@@ -5,6 +5,7 @@ set(sources
   gauss_jacobi_tests.cc
   gauss_legendre_tests.cc
   make_quad_rule_tests.cc
+  quad_rule_cache_tests.cc
 )
 
 add_executable(lf.quad.test ${sources})

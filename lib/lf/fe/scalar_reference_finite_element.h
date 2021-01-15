@@ -108,6 +108,7 @@ class ScalarReferenceFiniteElement {
 
   /**
    * @brief Request the polynomial degree of the finite element space
+   *
    */
   [[nodiscard]] virtual unsigned int Degree() const = 0;
 
