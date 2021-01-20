@@ -266,7 +266,8 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
    */
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim) const override {
-    return codim == 0 ? degree_ - 1 : 1;
+    LF_ASSERT_MSG(codim >= 0 && codim <= 1, "codim out of range.");
+    return codim == 0 ? degree_ - 1 : 2;
   }
 
   /**

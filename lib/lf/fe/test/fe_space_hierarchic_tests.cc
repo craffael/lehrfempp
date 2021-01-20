@@ -168,9 +168,20 @@ TEST(fe_space_hierarchic, continuity) {
     // Get a hybrid test mesh on [0, 3]^2
     const auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     for (unsigned p = 1; p <= 10; ++p) {
-      // Generate a FeSpaceHierarchic with order p on the mesh
+      // Generate a FeSpaceHierarchic with varying polynomial degrees:
+      mesh::utils::AllCodimMeshDataSet<unsigned> degrees(mesh);
+      int count = 0;
+      for (auto& e : mesh->Entities(0)) {
+        degrees(*e) = (count++ % 2) + 2;
+      }
+      for (auto& e : mesh->Entities(1)) {
+        degrees(*e) = (count++ % 2) + 2;
+      }
+      for (auto& e : mesh->Entities(2)) {
+        degrees(*e) = 1;
+      }
       const auto fe_space =
-          std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, p);
+          std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, degrees);
       // Test the continuity of each basis function associated with an edge
       for (auto&& cell : mesh->Entities(0)) {
         const auto sfl_cell = fe_space->ShapeFunctionLayout(*cell);
@@ -179,21 +190,27 @@ TEST(fe_space_hierarchic, continuity) {
         const auto cell_nodes = cell_refel.NodeCoords();
         const auto edges = cell->SubEntities(1);
         const auto orient = cell->RelativeOrientations();
+        int edge_offset = cell_num_nodes;  // where do the next edge dofs start?
         for (int i = 0; i < edges.size(); ++i) {
-          const Eigen::RowVectorXd edge_eval_coords =
+          Eigen::RowVectorXd edge_eval_coords =
               Eigen::RowVectorXd::LinSpaced(p + 1, 0, 1);
+
           const Eigen::MatrixXd cell_eval_coords = [&]() {
             Eigen::MatrixXd result(2, p + 1);
-            const Eigen::Vector2d node0 =
-                cell_nodes.col((i + 0) % cell_num_nodes);
-            const Eigen::Vector2d node1 =
-                cell_nodes.col((i + 1) % cell_num_nodes);
+            Eigen::Vector2d node0 = cell_nodes.col((i + 0) % cell_num_nodes);
+            Eigen::Vector2d node1 = cell_nodes.col((i + 1) % cell_num_nodes);
+            if (orient[i] == mesh::Orientation::negative) {
+              std::swap(node0, node1);
+            }
             result.row(0) = Eigen::RowVectorXd::Constant(p + 1, node0[0]) +
                             (node1[0] - node0[0]) * edge_eval_coords;
             result.row(1) = Eigen::RowVectorXd::Constant(p + 1, node0[1]) +
                             (node1[1] - node0[1]) * edge_eval_coords;
             return result;
           }();
+          auto a = cell->Geometry()->Global(cell_eval_coords);
+          auto b = edges[i]->Geometry()->Global(edge_eval_coords);
+
           const auto edge = edges[i];
           const auto sfl_edge = fe_space->ShapeFunctionLayout(*edge);
           ASSERT_TRUE(sfl_edge);
@@ -203,34 +220,221 @@ TEST(fe_space_hierarchic, continuity) {
               sfl_cell->EvalReferenceShapeFunctions(cell_eval_coords);
           // Compare each basis function on the edge
           ASSERT_TRUE(sfl_edge->NumRefShapeFunctions(0) ==
-                      sfl_cell->NumRefShapeFunctions(1))
+                      sfl_cell->NumRefShapeFunctions(1, i))
               << "selector=" << selector << " p=" << p
               << " cell=" << mesh->Index(*cell) << " edge=" << i << std::endl;
           for (int rsf_idx = 0; rsf_idx < sfl_edge->NumRefShapeFunctions(0);
                ++rsf_idx) {
             const Eigen::RowVectorXd rsf_edge_eval = rsf_edge.row(2 + rsf_idx);
             Eigen::RowVectorXd rsf_cell_eval;
-            if (orient[i] == lf::mesh::Orientation::positive) {
-              rsf_cell_eval =
-                  rsf_cell.row(cell_num_nodes + (p - 1) * i + rsf_idx);
+            if (orient[i] == mesh::Orientation::positive) {
+              rsf_cell_eval = rsf_cell.row(edge_offset + rsf_idx);
             } else {
               rsf_cell_eval =
-                  rsf_cell.row(cell_num_nodes + (p - 1) * (i + 1) - rsf_idx - 1)
-                      .reverse();
+                  rsf_cell.row(edge_offset + sfl_edge->NumRefShapeFunctions(0) -
+                               1 - rsf_idx);
             }
+
             const double max_diff =
                 (rsf_edge_eval - rsf_cell_eval).array().abs().maxCoeff();
-            ASSERT_TRUE(max_diff < 1e-10)
+            ASSERT_LT(max_diff, 1e-10)
                 << "selector=" << selector << " p=" << p
                 << " cell=" << mesh->Index(*cell) << " edge=" << i
                 << " rsf_idx=" << rsf_idx << "\nrsf_edge_eval=["
                 << rsf_edge_eval << "]\nrsf_cell_eval=[" << rsf_cell_eval << "]"
                 << std::endl;
           }
+          edge_offset += sfl_edge->NumRefShapeFunctions(0);
         }
       }
     }
   }
+}
+
+template <class SCALAR>
+void CheckContinuity(std::function<std::shared_ptr<fe::ScalarFESpace<SCALAR>>(
+                         std::shared_ptr<mesh::Mesh>)>
+                         fes_factory) {
+  Eigen::Matrix<double, Eigen::Dynamic, 4> quad_nodes(2, 4),
+      quad_nodes_shifted(2, 4);
+  Eigen::Matrix<double, Eigen::Dynamic, 3> tria_nodes(2, 3),
+      tria_nodes_shifted(2, 3);
+  std::array<base::size_type, 3> tria_node_indices{{1, 4, 2}};
+  // clang-format off
+  quad_nodes << 0, 1, 1, 0,
+                0, 0, 1, 1;
+  tria_nodes << 1,2,1,
+                0,0,1;
+  // clang-format on
+  for (int quad_rot : {0, 1, 2, 3}) {
+    for (int tria_rot : {0, 1, 2}) {
+      for (bool invert_orient : {false, true}) {
+        // construct the mesh:
+        lf::mesh::hybrid2d::MeshFactory factory(2);
+        factory.AddPoint(Eigen::Vector2d{0., 0.});
+        factory.AddPoint(Eigen::Vector2d{1., 0.});
+        factory.AddPoint(Eigen::Vector2d{1., 1.});
+        factory.AddPoint(Eigen::Vector2d{0., 1.});
+        factory.AddPoint(Eigen::Vector2d{2., 0.});
+
+        // quad
+        std::array<base::size_type, 4> quad_node_indices_shifted;
+        base::size_type quad_index;
+        for (int i = 0; i < 4; ++i) {
+          quad_nodes_shifted.col(i) = quad_nodes.col((i + quad_rot) % 4);
+          quad_node_indices_shifted[i] = (i + quad_rot) % 4;
+        }
+        auto quad_geom = std::make_unique<geometry::QuadO1>(quad_nodes_shifted);
+        quad_index =
+            factory.AddEntity(base::RefEl::kQuad(), quad_node_indices_shifted,
+                              std::move(quad_geom));
+
+        // tria
+        std::array<base::size_type, 3> tria_node_indices_shifted;
+        base::size_type tria_index;
+        for (int i = 0; i < 3; ++i) {
+          tria_nodes_shifted.col(i) = tria_nodes.col((i + tria_rot) % 3);
+          tria_node_indices_shifted[i] = tria_node_indices[(i + tria_rot) % 3];
+        }
+        auto tria_geom = std::make_unique<geometry::TriaO1>(tria_nodes_shifted);
+        tria_index =
+            factory.AddEntity(base::RefEl::kTria(), tria_node_indices_shifted,
+                              std::move(tria_geom));
+
+        // edge
+        Eigen::Matrix<double, Eigen::Dynamic, 2> edge_nodes(2, 2);
+        base::size_type edge_index;
+        if (invert_orient) {
+          edge_nodes << 1, 1, 1, 0;
+          edge_index = factory.AddEntity(
+              base::RefEl::kSegment(), std::array<base::size_type, 2>{{2, 1}},
+              std::make_unique<geometry::SegmentO1>(std::move(edge_nodes)));
+        } else {
+          edge_nodes << 1, 1, 0, 1;
+          edge_index = factory.AddEntity(
+              base::RefEl::kSegment(), std::array<base::size_type, 2>{{1, 2}},
+              std::make_unique<geometry::SegmentO1>(std::move(edge_nodes)));
+        }
+
+        auto mesh = factory.Build();
+        auto edge = mesh->EntityByIndex(1, edge_index);
+        auto tria = mesh->EntityByIndex(0, tria_index);
+        auto quad = mesh->EntityByIndex(0, quad_index);
+        auto quad_edge_subindex =
+            (5 - quad_rot) % 4;  // subindex of the common edge w.r.t. quad
+        auto tria_edge_subindex =
+            (2 - tria_rot) % 3;  // subindex of the common edge w.r.t. tria
+        ASSERT_EQ(tria->SubEntities(1)[tria_edge_subindex], edge);
+        ASSERT_EQ(quad->SubEntities(1)[quad_edge_subindex], edge);
+
+        auto fes = fes_factory(mesh);
+        auto edge_fe = fes->ShapeFunctionLayout(*edge);
+        auto tria_fe = fes->ShapeFunctionLayout(*tria);
+        auto quad_fe = fes->ShapeFunctionLayout(*quad);
+
+        // transform edge local coordinates to quad/tria local coordinates:
+        Eigen::RowVectorXd edge_local =
+            Eigen::RowVectorXd::LinSpaced(edge_fe->Degree() + 1, 0, 1);
+        Eigen::Matrix<double, 2, Eigen::Dynamic> tria_local(2,
+                                                            edge_local.cols()),
+            quad_local(2, edge_local.cols());
+        const auto& tria_local_node_coords = base::RefEl::kTria().NodeCoords();
+        const auto& quad_local_node_coords = base::RefEl::kQuad().NodeCoords();
+        base::sub_idx_t tria_subsubindex0 =
+            base::RefEl::kTria().SubSubEntity2SubEntity(1, tria_edge_subindex,
+                                                        1, 0);
+        base::sub_idx_t tria_subsubindex1 =
+            base::RefEl::kTria().SubSubEntity2SubEntity(1, tria_edge_subindex,
+                                                        1, 1);
+        base::sub_idx_t quad_subsubindex0 =
+            base::RefEl::kQuad().SubSubEntity2SubEntity(1, quad_edge_subindex,
+                                                        1, 0);
+        base::sub_idx_t quad_subsubindex1 =
+            base::RefEl::kQuad().SubSubEntity2SubEntity(1, quad_edge_subindex,
+                                                        1, 1);
+        if (tria->RelativeOrientations()[tria_edge_subindex] ==
+            mesh::Orientation::positive) {
+          tria_local =
+              tria_local_node_coords.col(tria_subsubindex0) *
+                  (1 - edge_local.array()).matrix() +
+              tria_local_node_coords.col(tria_subsubindex1) * edge_local;
+        } else {
+          tria_local =
+              tria_local_node_coords.col(tria_subsubindex1) *
+                  (1 - edge_local.array()).matrix() +
+              tria_local_node_coords.col(tria_subsubindex0) * edge_local;
+        }
+        if (quad->RelativeOrientations()[quad_edge_subindex] ==
+            mesh::Orientation::positive) {
+          quad_local =
+              quad_local_node_coords.col(quad_subsubindex0) *
+                  (1 - edge_local.array()).matrix() +
+              quad_local_node_coords.col(quad_subsubindex1) * edge_local;
+        } else {
+          quad_local =
+              quad_local_node_coords.col(quad_subsubindex1) *
+                  (1 - edge_local.array()).matrix() +
+              quad_local_node_coords.col(quad_subsubindex0) * edge_local;
+        }
+        ASSERT_TRUE(quad->Geometry()
+                        ->Global(quad_local)
+                        .isApprox(edge->Geometry()->Global(edge_local)));
+        ASSERT_TRUE(tria->Geometry()
+                        ->Global(tria_local)
+                        .isApprox(edge->Geometry()->Global(edge_local)));
+
+        // go through all shape functions and make sure they are continuous
+        // across the edge:
+        Eigen::VectorXd coeff_vector(fes->LocGlobMap().NumDofs());
+        for (base::size_type dof = 0; dof < fes->LocGlobMap().NumDofs();
+             ++dof) {
+          coeff_vector.setZero();
+          coeff_vector(dof) = 1;
+
+          auto mf_fe = fe::MeshFunctionFE(fes, coeff_vector);
+          auto edge_values = mf_fe(*edge, edge_local);
+          auto tria_values = mf_fe(*tria, tria_local);
+          auto quad_values = mf_fe(*quad, quad_local);
+
+          ASSERT_EQ(edge_values.size(), edge_local.cols());
+          ASSERT_EQ(quad_values.size(), edge_local.cols());
+          ASSERT_EQ(tria_values.size(), edge_local.cols());
+
+          for (int i = 0; i < edge_values.size(); ++i) {
+            ASSERT_NEAR(edge_values[i], quad_values[i], 1e-7);
+            ASSERT_NEAR(edge_values[i], tria_values[i], 1e-7);
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(fe_space_hierarchic, continuity2) {
+  // check continuity with uniformly distributed degrees:
+  CheckContinuity<double>([](std::shared_ptr<mesh::Mesh> mesh) {
+    return std::make_shared<FeSpaceHierarchic<double>>(mesh, 10);
+  });
+
+  // when degrees vary from entity to entity:
+  CheckContinuity<double>([](std::shared_ptr<mesh::Mesh> mesh) {
+    auto degrees =
+        std::make_unique<mesh::utils::AllCodimMeshDataSet<unsigned>>(mesh);
+    int count = 0;
+    for (auto& e : mesh->Entities(0)) {
+      (*degrees)(*e) = (count++ % 2) + 2;
+    }
+    for (auto& e : mesh->Entities(1)) {
+      (*degrees)(*e) = (count++ % 2) + 2;
+    }
+    for (auto& e : mesh->Entities(2)) {
+      (*degrees)(*e) = 1;
+    }
+    return std::make_shared<lf::fe::FeSpaceHierarchic<double>>(
+        mesh, [degrees{std::move(degrees)}](const mesh::Entity& e) {
+          return (*degrees)(e);
+        });
+  });
 }
 
 TEST(fe_space_hierarchic, segment_dual) {
@@ -265,10 +469,10 @@ TEST(fe_space_hierarchic, tria_dual) {
   max_p = 6;
 #endif
   quad::QuadRuleCache qr_cache;
-  for (unsigned p_interior = 1; p_interior <= 6; ++p_interior) {
-    for (unsigned p_edge0 = 1; p_edge0 <= 6; ++p_edge0) {
-      for (unsigned p_edge1 = 1; p_edge1 <= 6; ++p_edge1) {
-        for (unsigned p_edge2 = 1; p_edge2 <= 6; ++p_edge2) {
+  for (unsigned p_interior = 1; p_interior <= max_p; ++p_interior) {
+    for (unsigned p_edge0 = 1; p_edge0 <= max_p; ++p_edge0) {
+      for (unsigned p_edge1 = 1; p_edge1 <= max_p; ++p_edge1) {
+        for (unsigned p_edge2 = 1; p_edge2 <= max_p; ++p_edge2) {
           // Test for all possible combinations of orientations
           for (const auto o0 : {lf::mesh::Orientation::positive,
                                 lf::mesh::Orientation::negative}) {

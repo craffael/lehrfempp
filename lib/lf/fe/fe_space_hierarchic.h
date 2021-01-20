@@ -58,7 +58,8 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
           }
         }) {}
 
-  template <class F>
+  template <class F, class = std::enable_if_t<
+                         std::is_invocable_v<F, const mesh::Entity &>>>
   explicit FeSpaceHierarchic(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, F &&degree_functor)
       : ScalarFESpace<SCALAR>(),
