@@ -107,7 +107,8 @@ class ScalarReferenceFiniteElement {
   [[nodiscard]] virtual base::RefEl RefEl() const = 0;
 
   /**
-   * @brief Request the polynomial degree of the finite element space
+   * @brief Request the maximal polynomial degree of the basis functions in this
+   * finite element.
    *
    */
   [[nodiscard]] virtual unsigned int Degree() const = 0;

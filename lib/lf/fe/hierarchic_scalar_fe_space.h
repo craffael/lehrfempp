@@ -42,9 +42,9 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
       default;
 
   /**
-   * @brief Constructor: Sets up the dof handler
+   * @brief Construct a new Hierarchic FESpace with uniform polynomial degree.
    * @param mesh_p A shared pointer to the underlying mesh (immutable)
-   * @param N The polynomial degree of the Finite Element Space
+   * @param degree The uniform polynomial degree.
    */
   explicit HierarchicScalarFESpace(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned degree)
@@ -56,6 +56,23 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
                                   return degree;
                                 }) {}
 
+  /**
+   * @brief Construct a new Hierarchic FESpace with (possibly) varying
+   * polynomial degrees.
+   * @tparam F type of the `degree_functor`
+   * @param mesh_p A shared pointer to the underlying mesh (immutable)
+   * @param degree_functor A function object that assigns a polynomial degree to
+   * every entity in the mesh. See below for more info.
+   *
+   * ### Degree Functor
+   * The `degree_functor` must overload the call operator as follows:
+   * ```
+   * unsigned degree_functor(const lf::mesh::Entity& e)
+   * ```
+   * and should return the polynomial degree for the respective entity.
+   * The degree functor will be called for all entities (i.e. edges, triangles,
+   * quadrilaterals) in the mesh except for points.
+   */
   template <class F, class = std::enable_if_t<
                          std::is_invocable_v<F, const mesh::Entity &>>>
   explicit HierarchicScalarFESpace(
@@ -65,10 +82,11 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
         ref_el_(mesh_p),
         dofh_(mesh_p,
               [&degree_functor](const mesh::Entity &e) -> base::size_type {
+                if (e.RefEl() == base::RefEl::kPoint()) {
+                  return 1;
+                }
                 auto degree = degree_functor(e);
                 switch (e.RefEl()) {
-                  case base::RefEl::kPoint():
-                    return 1;
                   case base::RefEl::kSegment():
                     return degree - 1;
                   case base::RefEl::kTria():

@@ -369,7 +369,8 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
     const auto fe_space_square =
-        std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(square_mesh, p);
+        std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(square_mesh,
+                                                                  p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_square, L2_square] =
