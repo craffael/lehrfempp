@@ -369,7 +369,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
     const auto fe_space_square =
-        std::make_shared<lf::fe::FeSpaceHierarchic<double>>(square_mesh, p);
+        std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(square_mesh, p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_square, L2_square] =
@@ -378,7 +378,7 @@ int main(int argc, char *argv[]) {
     // Solve the problem on the L-shaped domain
     std::cout << "\t> L-shaped Domain";
     const auto fe_space_L =
-        std::make_shared<lf::fe::FeSpaceHierarchic<double>>(L_mesh, p);
+        std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(L_mesh, p);
     std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
               << std::endl;
     const auto [H1_L, L2_L] = computeErrorsLDomain(p, L_mesh, fe_space_L);

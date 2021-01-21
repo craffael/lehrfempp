@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Check that the FeSpaceHierarchic class works as expected
+ * @brief Check that the HierarchicScalarFESpace class works as expected
  * @author Tobias Rohner
  * @date May 2020
  * @copyright MIT License
@@ -168,7 +168,7 @@ TEST(fe_space_hierarchic, continuity) {
     // Get a hybrid test mesh on [0, 3]^2
     const auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     for (unsigned p = 1; p <= 10; ++p) {
-      // Generate a FeSpaceHierarchic with varying polynomial degrees:
+      // Generate a HierarchicScalarFESpace with varying polynomial degrees:
       mesh::utils::AllCodimMeshDataSet<unsigned> degrees(mesh);
       int count = 0;
       for (auto& e : mesh->Entities(0)) {
@@ -181,7 +181,8 @@ TEST(fe_space_hierarchic, continuity) {
         degrees(*e) = 1;
       }
       const auto fe_space =
-          std::make_unique<lf::fe::FeSpaceHierarchic<double>>(mesh, degrees);
+          std::make_unique<lf::fe::HierarchicScalarFESpace<double>>(mesh,
+                                                                    degrees);
       // Test the continuity of each basis function associated with an edge
       for (auto&& cell : mesh->Entities(0)) {
         const auto sfl_cell = fe_space->ShapeFunctionLayout(*cell);
@@ -424,7 +425,7 @@ void CheckContinuity(std::function<std::shared_ptr<fe::ScalarFESpace<SCALAR>>(
 TEST(fe_space_hierarchic, continuity2) {
   // check continuity with uniformly distributed degrees:
   CheckContinuity<double>([](std::shared_ptr<mesh::Mesh> mesh) {
-    return std::make_shared<FeSpaceHierarchic<double>>(mesh, 10);
+    return std::make_shared<HierarchicScalarFESpace<double>>(mesh, 10);
   });
 
   // when degrees vary from entity to entity:
@@ -441,7 +442,7 @@ TEST(fe_space_hierarchic, continuity2) {
     for (auto& e : mesh->Entities(2)) {
       (*degrees)(*e) = 1;
     }
-    return std::make_shared<lf::fe::FeSpaceHierarchic<double>>(
+    return std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(
         mesh, [degrees{std::move(degrees)}](const mesh::Entity& e) {
           return (*degrees)(e);
         });

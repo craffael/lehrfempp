@@ -1,11 +1,11 @@
 set(sources				
     fe_point.h
-    fe_space_hierarchic.h
     fe_tools.h
     fe_tools.cc
     fe.h
     hierarchic_fe.h
     hierarchic_fe.cc
+    hierarchic_scalar_fe_space.h
     loc_comp_ellbvp.h
     loc_comp_ellbvp.cc
     mesh_function_fe.h

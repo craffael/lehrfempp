@@ -16,7 +16,7 @@
 namespace lf::fe {
 
 /**
- * @brief Lagrangian Finite Element Space of arbitrary degree
+ * @brief Finite Element Space that supports arbitrary, local degrees.
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
  * `complex<double>`
@@ -25,41 +25,40 @@ namespace lf::fe {
  * the function spaces of lower polynomial degree are contained
  * in the higher order function spaces.
  *
- * The polynomial degree is constant over the whole mesh meaning
- * that there is no \f$p\f$-refinement supported.
+ * The polynomial degree can vary from entity to entity, i.e. local
+ * \f$p\f$-refinement is supported.
  *
- * @note Some of the pointers may be NULL. For instance, if all computations
- *       are done on purely triangular meshes then a finite element
- * specification for quadrilaterals need not be given.
  */
 template <typename SCALAR>
-class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
+class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  FeSpaceHierarchic() = delete;
-  FeSpaceHierarchic(const FeSpaceHierarchic &) = delete;
-  FeSpaceHierarchic(FeSpaceHierarchic &&) noexcept = default;
-  FeSpaceHierarchic &operator=(const FeSpaceHierarchic &) = delete;
-  FeSpaceHierarchic &operator=(FeSpaceHierarchic &&) noexcept = default;
+  HierarchicScalarFESpace() = delete;
+  HierarchicScalarFESpace(const HierarchicScalarFESpace &) = delete;
+  HierarchicScalarFESpace(HierarchicScalarFESpace &&) noexcept = default;
+  HierarchicScalarFESpace &operator=(const HierarchicScalarFESpace &) = delete;
+  HierarchicScalarFESpace &operator=(HierarchicScalarFESpace &&) noexcept =
+      default;
 
   /**
    * @brief Constructor: Sets up the dof handler
    * @param mesh_p A shared pointer to the underlying mesh (immutable)
    * @param N The polynomial degree of the Finite Element Space
    */
-  explicit FeSpaceHierarchic(
+  explicit HierarchicScalarFESpace(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, unsigned degree)
-      : FeSpaceHierarchic(mesh_p, [degree](const mesh::Entity &e) -> unsigned {
-          if (e.RefEl() == base::RefEl::kPoint()) {
-            return 1;
-          }
-          return degree;
-        }) {}
+      : HierarchicScalarFESpace(mesh_p,
+                                [degree](const mesh::Entity &e) -> unsigned {
+                                  if (e.RefEl() == base::RefEl::kPoint()) {
+                                    return 1;
+                                  }
+                                  return degree;
+                                }) {}
 
   template <class F, class = std::enable_if_t<
                          std::is_invocable_v<F, const mesh::Entity &>>>
-  explicit FeSpaceHierarchic(
+  explicit HierarchicScalarFESpace(
       const std::shared_ptr<const lf::mesh::Mesh> &mesh_p, F &&degree_functor)
       : ScalarFESpace<SCALAR>(),
         mesh_p_(mesh_p),
@@ -128,7 +127,7 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
     return ShapeFunctionLayout(entity)->NumRefShapeFunctions();
   }
 
-  ~FeSpaceHierarchic() override = default;
+  ~HierarchicScalarFESpace() override = default;
 
  private:
   /* Underlying mesh */
@@ -160,9 +159,9 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria(): {
           std::array<unsigned, 3> edge_degrees{
-              {{degree_functor(*entity->SubEntities(1)[0])},
-               {degree_functor(*entity->SubEntities(1)[1])},
-               {degree_functor(*entity->SubEntities(1)[2])}}};
+              {degree_functor(*entity->SubEntities(1)[0]),
+               degree_functor(*entity->SubEntities(1)[1]),
+               degree_functor(*entity->SubEntities(1)[2])}};
           FeHierarchicTria<SCALAR> fe(degree_functor(*entity), edge_degrees,
                                       qr_cache_,
                                       entity->RelativeOrientations());

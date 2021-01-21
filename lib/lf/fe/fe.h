@@ -14,7 +14,7 @@
  * @copyright MIT License
  */
 
-#include "fe_space_hierarchic.h"
+#include "hierarchic_scalar_fe_space.h"
 #include "fe_tools.h"
 #include "loc_comp_ellbvp.h"
 #include "mesh_function_fe.h"

@@ -26,7 +26,7 @@ TEST(lf_fe, diffusion_mat_test) {
   // Use a relatively high polynomial degree
   const unsigned degree = 15;
   const auto fe_space =
-      std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
+      std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(mesh_p, degree);
 
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
@@ -109,7 +109,7 @@ TEST(lf_fe, mass_mat_test) {
   // Use a relatively high polynomial degree
   const unsigned degree = 15;
   const auto fe_space =
-      std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh_p, degree);
+      std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(mesh_p, degree);
 
   // Define some right hand side
   const auto load = [](const Eigen::Vector2d &x) -> double {

@@ -86,8 +86,8 @@ int main() {
         degrees(*edge_p) = std::min(degrees(*edge_p), element_degree);
       }
     }
-    auto fes =
-        std::make_shared<lf::fe::FeSpaceHierarchic<double>>(mesh, degrees);
+    auto fes = std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(
+        mesh, degrees);
 
     // 5) solve laplace problem with inhomogeneous dirichlet boundary conditions
     lf::base::size_type num_dof = fes->LocGlobMap().NumDofs();
