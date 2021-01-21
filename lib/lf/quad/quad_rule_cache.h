@@ -40,6 +40,8 @@ class QuadRuleCache {
    */
   QuadRuleCache& operator=(QuadRuleCache&&) noexcept = default;
 
+  ~QuadRuleCache() = default;
+
   /**
    * @brief Retrieve a quadrature rule for reference element `ref_el` with
    * degree `d`. Is identical to calling `make_QuadRule()`.

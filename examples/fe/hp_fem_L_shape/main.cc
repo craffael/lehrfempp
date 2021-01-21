@@ -121,7 +121,8 @@ int main() {
     auto solution_mf = lf::fe::MeshFunctionFE(fes, solution_vec);
 
     auto L2error = std::sqrt(lf::fe::IntegrateMeshFunction(
-        *mesh, squaredNorm(solution_mf - exact_solution), 2 * (level + 5)));
+        *mesh, squaredNorm(solution_mf - exact_solution),
+        static_cast<int>(2 * (level + 5))));
     errors(level) = L2error;
     std::cout << ", L2 error: " << L2error << std::endl;
 
@@ -144,7 +145,7 @@ int main() {
         }
       }
       mesh_hierarchy.MarkEdges(
-          [&](const lf::mesh::Mesh&, const lf::mesh::Entity& edge) {
+          [&](const lf::mesh::Mesh& /*unused*/, const lf::mesh::Entity& edge) {
             return marked_edges(edge);
           });
       mesh_hierarchy.RefineMarked();

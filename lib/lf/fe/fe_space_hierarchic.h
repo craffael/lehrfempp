@@ -53,9 +53,8 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
       : FeSpaceHierarchic(mesh_p, [degree](const mesh::Entity &e) -> unsigned {
           if (e.RefEl() == base::RefEl::kPoint()) {
             return 1;
-          } else {
-            return degree;
           }
+          return degree;
         }) {}
 
   template <class F, class = std::enable_if_t<
@@ -172,10 +171,10 @@ class FeSpaceHierarchic : public ScalarFESpace<SCALAR> {
         }
         case lf::base::RefEl::kQuad(): {
           std::array<unsigned, 4> edge_degrees{
-              {{degree_functor(*entity->SubEntities(1)[0])},
-               {degree_functor(*entity->SubEntities(1)[1])},
-               {degree_functor(*entity->SubEntities(1)[2])},
-               {degree_functor(*entity->SubEntities(1)[3])}}};
+              {degree_functor(*entity->SubEntities(1)[0]),
+               degree_functor(*entity->SubEntities(1)[1]),
+               degree_functor(*entity->SubEntities(1)[2]),
+               degree_functor(*entity->SubEntities(1)[3])}};
           FeHierarchicQuad<SCALAR> fe(degree_functor(*entity), edge_degrees,
                                       qr_cache_,
                                       entity->RelativeOrientations());

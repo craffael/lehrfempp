@@ -472,7 +472,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                    nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         interior_degree_(interior_degree),
-        edge_degrees_(std::move(edge_degrees)),
+        edge_degrees_(edge_degrees),
         qr_dual_edge_(
             {&qr_cache.Get(base::RefEl::kSegment(), 2 * (edge_degrees_[0] - 1)),
              &qr_cache.Get(base::RefEl::kSegment(), 2 * (edge_degrees_[1] - 1)),
@@ -493,7 +493,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 
   [[nodiscard]] unsigned Degree() const override {
     return std::max({interior_degree_, edge_degrees_[0], edge_degrees_[1],
-                     edge_degrees_[2], 1u});
+                     edge_degrees_[2], 1U});
   }
 
   /**
@@ -637,7 +637,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         // but since the degrees of the edge and interior are not linked at all,
         // we cannot make any assumptions.
         Eigen::Array<SCALAR, 1, Eigen::Dynamic> edge(refcoords.cols());
-        for (unsigned j = 0; j < refcoords.cols(); ++j) {
+        for (Eigen::Index j = 0; j < refcoords.cols(); ++j) {
           if (rel_orient_[0] == mesh::Orientation::positive) {
             edge(j) = ilegendre(i + 2, l2[j], l1[j] + l2[j]);
           } else {
@@ -1111,7 +1111,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
                    nonstd::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         interior_degree_(interior_degree),
-        edge_degrees_(std::move(edge_degrees)),
+        edge_degrees_(edge_degrees),
         qr_dual_edge_({&qr_cache.Get(lf::base::RefEl::kSegment(),
                                      2 * (edge_degrees_[0] - 1)),
                        &qr_cache.Get(lf::base::RefEl::kSegment(),

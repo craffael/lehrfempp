@@ -869,7 +869,7 @@ void VtkWriter::WritePointData(const std::string& name,
         }
         auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
         auto offset = aux_node_offset_[codim](*e);
-        for (int i = 0; i < values.size(); ++i) {
+        for (typename std::vector<T>::size_type i = 0; i < values.size(); ++i) {
           data.data[offset + i] = values[i];
         }
       }
