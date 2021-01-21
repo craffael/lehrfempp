@@ -14,8 +14,8 @@
  * @copyright MIT License
  */
 
-#include "hierarchic_scalar_fe_space.h"
 #include "fe_tools.h"
+#include "hierarchic_scalar_fe_space.h"
 #include "loc_comp_ellbvp.h"
 #include "mesh_function_fe.h"
 #include "mesh_function_grad_fe.h"
@@ -43,6 +43,20 @@
  * - Broken spaces (e.g. for Discontinuous Galerkin Approximations)
  */
 namespace lf::fe {
+
+/** Type for indices into global matrices/vectors */
+using gdof_idx_t = lf::assemble::gdof_idx_t;
+/** Type for indices referring to entity matrices/vectors */
+using ldof_idx_t = lf::assemble::ldof_idx_t;
+/** Type for vector length/matrix sizes */
+using size_type = lf::assemble::size_type;
+/** Type for (co-)dimensions */
+using dim_t = lf::assemble::dim_t;
+/** Type for global index of entities */
+using glb_idx_t = lf::assemble::glb_idx_t;
+/** Type for indexing sub-entities */
+using sub_idx_t = lf::base::sub_idx_t;
+
 // Import operators/free functions from lf::mesh::utils so we can apply them
 // also to mesh functions defined in lf::fe (Argument Dependent Lookup)
 using mesh::utils::operator*;
