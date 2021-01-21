@@ -118,11 +118,6 @@ int main() {
       return reader.IsPhysicalEntity(edge, physical_entity_nr_dir);
     };
 
-    // Obtain specification for shape functions on edges
-    lf::fe::ScalarReferenceFiniteElement<double> const* rsf_edge_p =
-        fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
-    LF_ASSERT_MSG(rsf_edge_p != nullptr, "FE specification for edges missing");
-
     // Fetch flags and values for degrees of freedom located on Dirichlet
     // edges.
     // bd_flags strictly speaking would not be necessary here since only
@@ -130,7 +125,7 @@ int main() {
     // however be necessary.
     auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
     auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
-        dofh, *rsf_edge_p,
+        *fe_space,
         [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && edge_sel_dir(edge));
         },

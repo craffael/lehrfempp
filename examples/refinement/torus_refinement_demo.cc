@@ -9,6 +9,7 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include "lf/io/io.h"
 

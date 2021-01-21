@@ -159,8 +159,8 @@ class ProductUniformFESpace {
    * lf::uscalfe::UniformScalarFESpace may be impossible, since some of the
    * constraints regarding the shape function layouts were weakened.
    */
-  std::shared_ptr<lf::uscalfe::UniformScalarFESpace<SCALAR>> ComponentFESpace(
-      size_type component) {
+  std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<SCALAR>>
+  ComponentFESpace(size_type component) const {
     return std::make_shared<lf::uscalfe::UniformScalarFESpace<SCALAR>>(
         mesh_p_, rfs_tria_v_[component], rfs_quad_v_[component],
         rfs_edge_v_[component], rfs_point_v_[component]);

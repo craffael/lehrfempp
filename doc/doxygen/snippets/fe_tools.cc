@@ -6,10 +6,10 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/uscalfe/uscalfe.h>
-#include <lf/fe/fe.h>
 
 namespace lf::fe {
 
@@ -54,7 +54,8 @@ void nodalProjection() {
 
   // project a first-degree polynomial onto a first order lagrange space and
   // make sure the representation is exact:
-  auto fe_space = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
+  auto fe_space =
+      std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
   auto mf_linear = mesh::utils::MeshFunctionGlobal(
       [](const Eigen::Vector2d& x) { return 2 + 3 * x[0] + 4 * x[1]; });
 
@@ -72,7 +73,8 @@ void InitEssentialConditionFromFunction() {
   auto gmsh_reader = io::GmshReader(std::move(mesh_factory), "mesh.msh");
   auto mesh = gmsh_reader.mesh();
 
-  auto fe_space = std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
+  auto fe_space =
+      std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
   // We want to solve the pde
   // - \laplace u = 0
@@ -87,17 +89,15 @@ void InitEssentialConditionFromFunction() {
 
   // 2) determine the dofs on the boundary and to what value the should be set
   auto boundary_cond = InitEssentialConditionFromFunction(
-      fe_space->LocGlobMap(),
-      *fe_space->ShapeFunctionLayout(base::RefEl::kSegment()),
-      base::PredicateTrue{}, mf_boundary);
+      *fe_space, base::PredicateTrue{}, mf_boundary);
 
   // 3) Assemble the stiffness matrix:
   assemble::COOMatrix<double> lhs(fe_space->LocGlobMap().NumDofs(),
                                   fe_space->LocGlobMap().NumDofs());
   auto mf_one = mesh::utils::MeshFunctionConstant(1.);
   auto mf_zero = mesh::utils::MeshFunctionConstant(0.);
-  auto matrix_provider =
-      lf::uscalfe::ReactionDiffusionElementMatrixProvider(fe_space, mf_one, mf_zero);
+  auto matrix_provider = lf::uscalfe::ReactionDiffusionElementMatrixProvider(
+      fe_space, mf_one, mf_zero);
   assemble::AssembleMatrixLocally(0, fe_space->LocGlobMap(),
                                   fe_space->LocGlobMap(), matrix_provider, lhs);
 

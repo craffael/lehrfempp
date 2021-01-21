@@ -6,9 +6,10 @@
  * @copyright MIT License
  */
 
-#include <lf/io/io.h>
-#include <lf/uscalfe/uscalfe.h>
 #include <lf/fe/fe.h>
+#include <lf/io/io.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
+#include <lf/uscalfe/uscalfe.h>
 
 namespace lf::io {
 

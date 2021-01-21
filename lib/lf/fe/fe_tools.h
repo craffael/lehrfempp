@@ -319,6 +319,8 @@ std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     if (esscondflag(*edge)) {
       // retrieve reference finite element:
       auto fe = fes.ShapeFunctionLayout(*edge);
+      LF_ASSERT_MSG(fe != nullptr,
+                    "No ScalarReferenceFiniteElement for this edge!");
       auto ref_eval_pts = fe->EvaluationNodes();
 
       // Evaluate mesh function at several points specified by their

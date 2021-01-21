@@ -214,8 +214,8 @@ ConvectionDiffusionDPGLinSys(
 
   // obtain flags and values of degrees of feedom.
   auto ess_bdc_flags_values{InitEssentialConditionsFromFunctions(
-      dofh, *rfs_edge_trace_p, *rfs_edge_flux_p, dirichlet_selector,
-      neumann_selector, g_mf, h_mf, trace_component, flux_component)};
+      *fe_space, trace_component, flux_component, dirichlet_selector,
+      neumann_selector, g_mf, h_mf)};
 
   // eliminate dirichlet and neumann dofs from the linear system:
   lf::assemble::FixFlaggedSolutionComponents<SCALAR>(

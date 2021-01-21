@@ -204,11 +204,7 @@ TEST(lf_gfe, set_dirbdc) {
       mesh_p, std::make_shared<FeLagrangeO1Tria<double>>(),
       std::make_shared<FeLagrangeO1Quad<double>>(),
       std::make_shared<FeLagrangeO1Segment<double>>());
-  // Specification of local shape functions for a edge
-  auto fe_spec_edge_p{
-      fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment())};
-  LF_ASSERT_MSG(fe_spec_edge_p,
-                "Reference Finite Element for segment is missing.");
+
   // Local to global index mapping
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
 
@@ -225,7 +221,7 @@ TEST(lf_gfe, set_dirbdc) {
   };
 
   auto flag_val_vec(InitEssentialConditionFromFunction(
-      dofh, *fe_spec_edge_p, bd_edge_sel, mesh::utils::MeshFunctionGlobal(g)));
+      *fe_space, bd_edge_sel, mesh::utils::MeshFunctionGlobal(g)));
   // Checking agreement of values
   for (lf::assemble::gdof_idx_t j = 0; j < flag_val_vec.size(); ++j) {
     const lf::mesh::Entity &node{dofh.Entity(j)};

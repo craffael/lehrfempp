@@ -333,7 +333,7 @@ int main(int /*argc*/, const char** /*argv*/) {
       // Fetch flags and values for degrees of freedom located on Dirichlet
       // edges.
       auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
-          dofh, *rsf_edge_p,
+          *fe_space,
           [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
             return (bd_flags(edge) && edge_sel_dir(edge));
           },

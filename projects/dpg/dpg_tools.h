@@ -270,43 +270,39 @@ template <typename SCALAR, typename EDGESELECTOR_DIRICHLET,
           typename EDGESELECTOR_NEUMANN, typename FUNCTION_G,
           typename FUNCTION_H>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionsFromFunctions(
-    const ProductUniformFEDofHandler& dofh,
-    const lf::fe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_trace,
-    const lf::fe::ScalarReferenceFiniteElement<SCALAR>& fe_spec_edge_flux,
-    EDGESELECTOR_DIRICHLET&& dirichletcondflag,
-    EDGESELECTOR_NEUMANN&& neumanncondflag, FUNCTION_G&& g, FUNCTION_H&& h,
-    size_type trace_component, size_type flux_component) {
+    const ProductUniformFESpace<SCALAR>& fes, size_type trace_component,
+    size_type flux_component, EDGESELECTOR_DIRICHLET&& dirichletcondflag,
+    EDGESELECTOR_NEUMANN&& neumanncondflag, FUNCTION_G&& g, FUNCTION_H&& h) {
   // check, that the two components actually differ (necessary?)
   LF_ASSERT_MSG(trace_component != flux_component,
                 "Boundary conditions imposed on same component");
 
   // retrive the dofhandlers for the corresponding  trace and flux components
-  const auto& trace_dofh = dofh.ComponentDofHandler(trace_component);
-  const auto& flux_dofh = dofh.ComponentDofHandler(flux_component);
+  const auto& trace_fes = fes.ComponentFESpace(trace_component);
+  const auto& flux_fes = fes.ComponentFESpace(flux_component);
 
   // flag dofs on the component spaces
   std::vector<std::pair<bool, SCALAR>> componentTraceConditions =
-      lf::fe::InitEssentialConditionFromFunction(trace_dofh, fe_spec_edge_trace,
-                                                 dirichletcondflag, g);
+      lf::fe::InitEssentialConditionFromFunction(*trace_fes, dirichletcondflag,
+                                                 g);
   std::vector<std::pair<bool, SCALAR>> componentFluxConditions =
-      lf::fe::InitEssentialConditionFromFunction(flux_dofh, fe_spec_edge_flux,
-                                                 neumanncondflag, h);
+      lf::fe::InitEssentialConditionFromFunction(*flux_fes, neumanncondflag, h);
 
   // calculate offsets to transform flags on component spaces
   // to the full product space
-  size_type trace_offset = dofh.Offset(trace_component);
-  size_type flux_offset = dofh.Offset(flux_component);
+  size_type trace_offset = fes.LocGlobMap().Offset(trace_component);
+  size_type flux_offset = fes.LocGlobMap().Offset(flux_component);
 
-  std::vector<std::pair<bool, SCALAR>> EssentialConditions(dofh.NumDofs(),
-                                                           {false, SCALAR{}});
+  std::vector<std::pair<bool, SCALAR>> EssentialConditions(
+      fes.LocGlobMap().NumDofs(), {false, SCALAR{}});
 
   // flag dofs on product space corresponding to fixed trace dofs
-  for (size_type dof = 0; dof < trace_dofh.NumDofs(); dof++) {
+  for (size_type dof = 0; dof < trace_fes->LocGlobMap().NumDofs(); dof++) {
     EssentialConditions[trace_offset + dof] = componentTraceConditions[dof];
   }
 
   // flag dofs on product space corresponding to fixed flux dofs
-  for (size_type dof = 0; dof < flux_dofh.NumDofs(); dof++) {
+  for (size_type dof = 0; dof < flux_fes->LocGlobMap().NumDofs(); dof++) {
     EssentialConditions[flux_offset + dof] = componentFluxConditions[dof];
   }
 
