@@ -5,6 +5,7 @@
 #include "lf/mesh/mesh.h"
 
 #include <fstream>
+#include <iostream>
 
 namespace lf::io {
 

@@ -864,7 +864,7 @@ void VtkWriter::WritePointData(const std::string& name,
          codim >= static_cast<char>(codim_); --codim) {
       for (auto e : mesh_->Entities(codim)) {
         auto ref_el = e->RefEl();
-        if (order_ < 3 && ref_el == base::RefEl::kTria()) {
+        if (order_ == 1 || (order_ == 2 && ref_el == base::RefEl::kTria())) {
           continue;
         }
         auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);

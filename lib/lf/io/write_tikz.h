@@ -8,7 +8,6 @@
 #define WRITE_TIKZ_H
 
 #include <lf/mesh/mesh.h>
-#include "lf/mesh/hybrid2d/hybrid2d.h"
 
 #include <string>
 #include <vector>

@@ -251,6 +251,16 @@ TEST(fe_space_hierarchic, continuity) {
   }
 }
 
+/**
+ * @brief Utility function, that generates a 2 element mesh consisting each of a
+ * triangle + quadrilateral such that these two elements share all possible
+ * edges with all possible orientations. It then asks for a FESpace on such a
+ * mesh and makes sure this space is continuous across the shared edge.
+ * @tparam SCALAR The scalar type of the ScalarFESpace that is returned by
+ * fes_factory.
+ * @param fes_factory A functor which is called for every mesh and should return
+ * the corresponding ScalarFESpace (as a shared_ptr).
+ */
 template <class SCALAR>
 void CheckContinuity(std::function<std::shared_ptr<fe::ScalarFESpace<SCALAR>>(
                          std::shared_ptr<mesh::Mesh>)>
@@ -327,6 +337,7 @@ void CheckContinuity(std::function<std::shared_ptr<fe::ScalarFESpace<SCALAR>>(
         ASSERT_EQ(tria->SubEntities(1)[tria_edge_subindex], edge);
         ASSERT_EQ(quad->SubEntities(1)[quad_edge_subindex], edge);
 
+        // acquire the ScalarFESpace
         auto fes = fes_factory(mesh);
         auto edge_fe = fes->ShapeFunctionLayout(*edge);
         auto tria_fe = fes->ShapeFunctionLayout(*tria);
