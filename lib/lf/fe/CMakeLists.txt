@@ -10,6 +10,7 @@ set(sources
     loc_comp_ellbvp.cc
     mesh_function_fe.h
     mesh_function_grad_fe.h
+    prolongation.h
     scalar_fe_space.h
     scalar_fe_space.cc
     scalar_reference_finite_element.h
@@ -25,3 +26,5 @@ set_target_properties(lf.fe PROPERTIES FOLDER "lib")
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)
 endif()
+
+add_subdirectory(test_utils)

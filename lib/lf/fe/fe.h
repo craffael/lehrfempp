@@ -14,13 +14,15 @@
  * @copyright MIT License
  */
 
+#include "fe_point.h"
 #include "fe_tools.h"
 #include "hierarchic_scalar_fe_space.h"
 #include "loc_comp_ellbvp.h"
 #include "mesh_function_fe.h"
 #include "mesh_function_grad_fe.h"
-
-#include <lf/mesh/utils/utils.h>
+#include "prolongation.h"
+#include "scalar_fe_space.h"
+#include "scalar_reference_finite_element.h"
 
 /**
  * @brief Collects data structures and algorithms designed for scalar finite
@@ -62,6 +64,8 @@ using sub_idx_t = lf::base::sub_idx_t;
 using mesh::utils::operator*;
 using mesh::utils::operator+;
 using mesh::utils::operator-;
+using mesh::utils::adjoint;
+using mesh::utils::conjugate;
 using mesh::utils::squaredNorm;
 using mesh::utils::transpose;
 }  // namespace lf::fe

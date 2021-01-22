@@ -16,10 +16,10 @@
 #include <gtest/gtest.h>
 
 #include <lf/fe/fe.h>
+#include <lf/fe/test_utils/test_utils.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
-
 #include "fe_testutils.h"
 
 namespace lf::uscalfe::test {
@@ -535,7 +535,7 @@ TEST(lf_uscalfe_ReactionDiffusion, ComplexReactionDiffusion) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -604,7 +604,7 @@ TEST(lf_uscalfe_MassEdgeMatrixProvider, ComplexEdgeMass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -670,7 +670,7 @@ TEST(lf_uscalfe_ScalarLoadElementVectorProvider, Complex) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -725,7 +725,7 @@ TEST(lf_uscalfe_ScalarLoadEdgeVectorProvider, Complex) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(

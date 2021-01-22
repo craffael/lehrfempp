@@ -6,7 +6,9 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
 
-TEST(lf_uscalfe, NormLinear) {
+namespace lf::fe::test {
+
+TEST(lf_fe, NormLinear) {
   // Generate a test mesh, refine it and compare the norm of the coarse and the
   // fine version
   for (int selector = 0; selector < 9; ++selector) {
@@ -35,7 +37,7 @@ TEST(lf_uscalfe, NormLinear) {
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::uscalfe::prolongate(
+      const auto dofvector_fine = lf::fe::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::fe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
@@ -55,7 +57,7 @@ TEST(lf_uscalfe, NormLinear) {
   }
 }
 
-TEST(lf_uscalfe, NormQuadratic) {
+TEST(lf_fe, NormQuadratic) {
   // Generate a test mesh, refine it and compare the norm of the coarse and the
   // fine version
   for (int selector = 0; selector < 9; ++selector) {
@@ -84,7 +86,7 @@ TEST(lf_uscalfe, NormQuadratic) {
       Eigen::VectorXd dofvector_coarse = Eigen::VectorXd::Zero(dofcount_coarse);
       dofvector_coarse[dofidx] = 1;
       // Transfer the mesh function one level down in the hierarchy
-      const auto dofvector_fine = lf::uscalfe::prolongate(
+      const auto dofvector_fine = lf::fe::prolongate(
           hierarchy, fes_coarse, fes_fine, dofvector_coarse, 0);
       lf::fe::MeshFunctionFE mf_fine(fes_fine, dofvector_fine);
       // Compare the norms of the two mesh functions
@@ -118,7 +120,7 @@ void check_lagr_interp_nodes(std::shared_ptr<lf::mesh::Mesh> mesh_coarse,
   const auto fes_fine = std::make_shared<const FES_FINE>(mesh_fine);
   // Prolongate the given dof vector
   const auto dofs_fine =
-      lf::uscalfe::prolongate(mh, fes_coarse, fes_fine, dofs_coarse, 0);
+      lf::fe::prolongate(mh, fes_coarse, fes_fine, dofs_coarse, 0);
   // Compare the resulting mesh functions at the interpolation nodes
   lf::fe::MeshFunctionFE mf_coarse(fes_coarse, dofs_coarse);
   lf::fe::MeshFunctionFE mf_fine(fes_fine, dofs_fine);
@@ -137,7 +139,7 @@ void check_lagr_interp_nodes(std::shared_ptr<lf::mesh::Mesh> mesh_coarse,
   }
 }
 
-TEST(lf_uscalfe, LagrInterpNodes) {
+TEST(lf_fe, LagrInterpNodes) {
   for (int selector = 0; selector < 9; ++selector) {
     // Initialize a coarse test mesh
     const auto mesh_coarse =
@@ -177,3 +179,5 @@ TEST(lf_uscalfe, LagrInterpNodes) {
     }
   }
 }
+
+}  // namespace lf::fe::test

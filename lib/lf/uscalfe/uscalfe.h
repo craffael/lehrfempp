@@ -20,10 +20,7 @@
 #include "fe_space_lagrange_o3.h"
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
-#include "prolongation.h"
 #include "uniform_scalar_fe_space.h"
-
-#include <lf/mesh/utils/utils.h>
 
 /**
  * @brief Collects data structures and algorithms designed for scalar finite
@@ -58,6 +55,8 @@ namespace lf::uscalfe {
 using mesh::utils::operator*;
 using mesh::utils::operator+;
 using mesh::utils::operator-;
+using mesh::utils::adjoint;
+using mesh::utils::conjugate;
 using mesh::utils::squaredNorm;
 using mesh::utils::transpose;
 }  // namespace lf::uscalfe

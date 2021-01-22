@@ -29,13 +29,10 @@ namespace lf::fe {
  * @brief Class for local quadrature based computations for general finite
  elements
  *
- * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ * @tparam SCALAR scalar type of the ScalarFESpace Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
- *                    It should be either scalar- or matrix-valued.
- * @tparam REACTION_COEFF a \ref mesh_function "MeshFunction" that defines the
- *                        reaction coefficient \f$ \mathbf{\gamma} \f$.
  *                    It should be either scalar- or matrix-valued.
   *
  * @note This class complies with the type requirements for the template
@@ -53,22 +50,13 @@ namespace lf::fe {
  * ## Template parameter requirement
  *
  * - SCALAR must be a type like `double`
- * - DIFF_COEFF must provide an evaluation operator
- * `operator (const Entity &,ref_coord_t)` that returns either a scalar
- * or a matrix type that is compatible with Eigen's matrices. Usually it will
- * be an Eigen::Matrix either of variable of fixed size.
+ * - DIFF_COEFF must model the concept of a \ref mesh_function "MeshFunction"
+ *   that returns either scalars or matrices.
  *
- * @note The constructors of this class want an object of type @ref
- * ScalarFESpace, which holds a pointer to a mesh. However, for local
- * builder classes global information about the mesh is irrelevant, and,
- * therefore this object is used only to obtain information about the local
- * shape functions.
- * A revised implementation should directly pass this information to the
- * constructor.
  *
  */
 template <typename SCALAR, typename DIFF_COEFF>
-class DiffusionElementMatrixProvider {
+class DiffusionElementMatrixProvider final {
   static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
 
  public:
@@ -109,12 +97,9 @@ class DiffusionElementMatrixProvider {
       std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha);
 
   /**
-   * @brief All cells are considered active in the default implementation
-   *
-   * This method is meant to be overloaded if assembly should be restricted to a
-   * subset of cells.
+   * @brief All cells are considered active.
    */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  bool isActive(const lf::mesh::Entity & /*cell*/) const { return true; }
   /**
    * @brief main routine for the computation of element matrices
    *
@@ -131,10 +116,10 @@ class DiffusionElementMatrixProvider {
    * Throws an assertion in case the finite element specification is missing for
    * the type of the cell.
    */
-  ElemMat Eval(const lf::mesh::Entity &cell);
+  ElemMat Eval(const lf::mesh::Entity &cell) const;
 
-  /** Virtual destructor */
-  virtual ~DiffusionElementMatrixProvider() = default;
+  /** destructor */
+  ~DiffusionElementMatrixProvider() = default;
 
  private:
   /** @name functors providing coefficient functions
@@ -145,6 +130,8 @@ class DiffusionElementMatrixProvider {
 
   /** FE Space */
   std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+
+  quad::QuadRuleCache qr_cache_;
 };
 
 /**
@@ -170,7 +157,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::
 template <typename SCALAR, typename DIFF_COEFF>
 typename lf::fe::DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::ElemMat
 DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
-    const lf::mesh::Entity &cell) {
+    const lf::mesh::Entity &cell) const {
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -184,8 +171,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
 
   // Get a quadrature rule of sufficiently high degree on the element
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
-  const lf::quad::QuadRule qr =
-      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
+  const lf::quad::QuadRule qr = qr_cache_.Get(cell.RefEl(), 2 * sfl->Degree());
 
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
@@ -206,7 +192,6 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
   mat.setZero();
 
   // Compute the reference shape functions
-  const auto rsf = sfl->EvalReferenceShapeFunctions(qr.Points());
   const auto grsf = sfl->GradientsReferenceShapeFunctions(qr.Points());
 
   // Loop over quadrature points
@@ -216,8 +201,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
                         grsf.block(0, 2 * k, mat.rows(), 2).transpose());
     // Transformed gradients multiplied with coefficient
-    const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * alpha_trf_grad.transpose() * trf_grad.conjugate();
+    mat += w * trf_grad.adjoint() * (alphaval[k] * trf_grad);
   }
   return mat;
 }
@@ -228,7 +212,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * @brief Class for local quadrature based computations for general finite
  elements
  *
- * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ * @tparam SCALAR scalar type of the FiniteElementSpace. Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam REACTION_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                        reaction coefficient \f$ \mathbf{\gamma} \f$.
@@ -240,7 +224,8 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  *
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
-    (u,v) \mapsto\int\limits_{K}\gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
+    (u,v)
+ \mapsto\int\limits_{K}\gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
  * with reaction coefficient @f$\gamma@f$, see also @lref{ex:rdemp}
@@ -249,17 +234,10 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  *
  * - SCALAR must be a type like `double`
  *
- * @note The constructors of this class want an object of type @ref
- * ScalarFESpace, which holds a pointer to a mesh. However, for local
- * builder classes global information about the mesh is irrelevant, and,
- * therefore this object is used only to obtain information about the local
- * shape functions.
- * A revised implementation should directly pass this information to the
- * constructor.
  *
  */
 template <typename SCALAR, typename REACTION_COEFF>
-class MassElementMatrixProvider {
+class MassElementMatrixProvider final {
   static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
 
  public:
@@ -297,12 +275,10 @@ class MassElementMatrixProvider {
       REACTION_COEFF gamma);
 
   /**
-   * @brief All cells are considered active in the default implementation
+   * @brief All cells are considered active.
    *
-   * This method is meant to be overloaded if assembly should be restricted to a
-   * subset of cells.
    */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  bool isActive(const lf::mesh::Entity & /*cell*/) const { return true; }
   /**
    * @brief main routine for the computation of element matrices
    *
@@ -319,10 +295,10 @@ class MassElementMatrixProvider {
    * Throws an assertion in case the finite element specification is missing for
    * the type of the cell.
    */
-  ElemMat Eval(const lf::mesh::Entity &cell);
+  ElemMat Eval(const lf::mesh::Entity &cell) const;
 
-  /** Virtual destructor */
-  virtual ~MassElementMatrixProvider() = default;
+  /** destructor */
+  ~MassElementMatrixProvider() = default;
 
  private:
   /** @name functors providing coefficient functions
@@ -333,6 +309,8 @@ class MassElementMatrixProvider {
 
   /** FE Space */
   std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+
+  quad::QuadRuleCache qr_cache_;
 };
 
 /**
@@ -357,7 +335,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::MassElementMatrixProvider(
 template <typename SCALAR, typename REACTION_COEFF>
 typename lf::fe::MassElementMatrixProvider<SCALAR, REACTION_COEFF>::ElemMat
 MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
-    const lf::mesh::Entity &cell) {
+    const lf::mesh::Entity &cell) const {
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
@@ -370,8 +348,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
 
   // Get a quadrature rule of sufficiently high degree on the element
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
-  const lf::quad::QuadRule qr =
-      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
+  const lf::quad::QuadRule qr = qr_cache_.Get(cell.RefEl(), 2 * sfl->Degree());
 
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
@@ -401,22 +378,24 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
  * @headerfile lf/fe/fe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR underlying scalar type of the ScalarFESpace, usually double or
+ * complex<double>
  * @tparam COEFF \ref mesh_function "MeshFunction" that defines the
  * scalar valued coefficient \f$ \gamma \f$
  * @tparam EDGESELECTOR predicate defining which edges are included
  *
- * This helper class corresponds to the the element matrix
- * for the bilinear form
+ * This \ref entity_matrix_provider "EntityMatrixProvider" class corresponds to
+ * the the element matrix for the bilinear form
  * @f[
- *     (u,v) \mapsto \int\limits_e \gamma(x)u(x)v(x)\,\mathrm{d}S(x)\;,
+ *     (u,v) \mapsto \int\limits_e
+ * \gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
  * @f]
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
-class MassEdgeMatrixProvider {
+class MassEdgeMatrixProvider final {
  public:
   using scalar_t =
       decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<COEFF>(0));
@@ -439,7 +418,7 @@ class MassEdgeMatrixProvider {
    * the assembly
    *
    * This constructor chooses a local quadature rule with double the degree of
-   * exactness as the polynomial degree of the finite element space.
+   * exactness as the polynomial degree of the finite element.
    */
   MassEdgeMatrixProvider(std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space,
                          COEFF gamma,
@@ -454,7 +433,7 @@ class MassEdgeMatrixProvider {
    * The information about "active" edges is supplied through the
    * `edge_selector` argument of the constructor.
    */
-  bool isActive(const lf::mesh::Entity &edge) {
+  bool isActive(const lf::mesh::Entity &edge) const {
     LF_ASSERT_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
                   "Wrong type for an edge");
     return edge_sel_(edge);
@@ -475,15 +454,17 @@ class MassEdgeMatrixProvider {
    * polynomial degree p a quadrature rule is chosen that is exact for
    * polynomials o degree 2p.
    */
-  ElemMat Eval(const lf::mesh::Entity &edge);
+  ElemMat Eval(const lf::mesh::Entity &edge) const;
 
-  virtual ~MassEdgeMatrixProvider() = default;
+  ~MassEdgeMatrixProvider() = default;
 
  private:
   COEFF gamma_;            // functor for coefficient
   EDGESELECTOR edge_sel_;  // Defines the active edges
   // FE Space
   std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+
+  quad::QuadRuleCache qr_cache_;
 };
 
 /**
@@ -506,13 +487,12 @@ MassEdgeMatrixProvider(PTR, COEFF coeff,
 template <class SCALAR, class COEFF, class EDGESELECTOR>
 typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat
 MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
-    const lf::mesh::Entity &edge) {
+    const lf::mesh::Entity &edge) const {
   const lf::geometry::Geometry *geo_ptr = edge.Geometry();
   // Get the shape function layout on the edge
   const auto sfl = fe_space_->ShapeFunctionLayout(edge);
   // Compute a quadrature rule on the given entity
-  const lf::quad::QuadRule qr =
-      lf::quad::make_QuadRule(edge.RefEl(), 2 * sfl->Degree());
+  const lf::quad::QuadRule qr = qr_cache_.Get(edge.RefEl(), 2 * sfl->Degree());
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
@@ -544,14 +524,15 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  finite
  * elements; volume contributions only
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR underlying scalar type of the ScalarFESpace, usually double or
+ *                complex<double>
  * @tparam MESH_FUNCTION \ref mesh_function "MeshFunction" which defines the
- source
- * function \f$ f \f$
+ *                       source function \f$ f \f$
  *
  * The underlying local linear form is
  * @f[
-      v \mapsto \int_K f(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}\mathbf{x}\;,
+      v \mapsto \int_K
+ f(\mathbf{x})\,\overline{v(\mathbf{x})}\,\mathrm{d}\mathbf{x}\;,
  * @f]
  * where \f$f\f$ is supposed to be a locally continuous source function.
  *
@@ -559,10 +540,10 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * lf::quad::QuadRule module.
  *
  * This class complies with the requirements for the template parameter
- * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
+ * `ELEM_VEC_COMP` of the function assemble::AssembleVectorLocally().
  */
 template <typename SCALAR, typename MESH_FUNCTION>
-class ScalarLoadElementVectorProvider {
+class ScalarLoadElementVectorProvider final {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
@@ -592,8 +573,8 @@ class ScalarLoadElementVectorProvider {
    */
   ScalarLoadElementVectorProvider(
       std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, MESH_FUNCTION f);
-  /** @brief Default implement: all cells are active */
-  virtual bool isActive(const lf::mesh::Entity & /*cell*/) { return true; }
+  /** @brief all cells are active */
+  bool isActive(const lf::mesh::Entity & /*cell*/) const { return true; }
   /*
    * @brief Main method for computing the element vector
    *
@@ -601,15 +582,17 @@ class ScalarLoadElementVectorProvider {
    * @return local load vector as column vector
    *
    */
-  ElemVec Eval(const lf::mesh::Entity &cell);
+  ElemVec Eval(const lf::mesh::Entity &cell) const;
 
-  virtual ~ScalarLoadElementVectorProvider() = default;
+  ~ScalarLoadElementVectorProvider() = default;
 
  private:
   /** @brief An object providing the source function */
   MESH_FUNCTION f_;
 
   std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+
+  quad::QuadRuleCache qr_cache_;
 };
 
 /**
@@ -637,7 +620,7 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
 template <typename SCALAR, typename MESH_FUNCTION>
 typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
-    const lf::mesh::Entity &cell) {
+    const lf::mesh::Entity &cell) const {
   // Type for source function
   using source_fn_t = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
 
@@ -645,8 +628,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
 
   // Initialize a quadrature rule of sufficiently high degree
-  const lf::quad::QuadRule qr =
-      lf::quad::make_QuadRule(cell.RefEl(), 2 * sfl->Degree());
+  const lf::quad::QuadRule qr = qr_cache_.Get(cell.RefEl(), 2 * sfl->Degree());
 
   // Query the shape of the cell
   const lf::geometry::Geometry *geo_ptr = cell.Geometry();
@@ -694,19 +676,21 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * @headerfile lf/fe/fe.h
  * @brief Local edge contributions to element vector
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR underlying scalar type of the FESpace, usually double or
+ *                complex<double>
  * @tparam FUNCTOR `SCALAR` valued \ref mesh_function "MeshFunction" which
- * defines the function \f$ g \f$
+ *                 defines the function \f$ g \f$
  * @tparam EDGESELECTOR selector type for active edges
  *
  * The underlying local linear form for an edge @f$e@f$ is
  * @f[
-    v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x})\,\mathrm{d}S\mathbf{x}\;,
+    v \mapsto \int_e
+ g(\mathbf{x})\,\overline{v(\mathbf{x})}\,\mathrm{d}S\mathbf{x}\;,
  * @f]
  * where \f$g\f$ is supposed to be a locally continuous source function.
  *
- * Computations are either based on a quadrature rules supplied by the LehrFEM++
- * lf::quad::QuadRule module or on a user-supplied quadrature rule.
+ * Computations are based on quadrature rules supplied by the LehrFEM++
+ * lf::quad::make_QuadRule() method.
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function AssembleVectorLocally().
@@ -720,7 +704,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * which returns true, if the edge is to be included in assembly.
  */
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
-class ScalarLoadEdgeVectorProvider {
+class ScalarLoadEdgeVectorProvider final {
  public:
   static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
                 "FUNCTOR does not fulfill the concept of a mesh function.");
@@ -739,9 +723,9 @@ class ScalarLoadEdgeVectorProvider {
       delete;
   /**@}*/
 
-  /** @brief Constructor, performs precomputations
+  /** @brief Constructor
    *
-   * @param fe_edge_p FE specification on edge
+   * @param fe_space ScalarFESpace that supplied the finite elements.
    * @param g functor object providing edge data
    * @param edge_sel selector predicate for active edges.
    *
@@ -754,10 +738,8 @@ class ScalarLoadEdgeVectorProvider {
       EDGESELECTOR edge_sel = base::PredicateTrue{})
       : g_(std::move(g)), edge_sel_(std::move(edge_sel)), fe_space_(fe_space) {}
 
-  /** @brief Default implement: all edges are active */
-  virtual bool isActive(const lf::mesh::Entity &cell) {
-    return edge_sel_(cell);
-  }
+  /** @brief all edges are active */
+  bool isActive(const lf::mesh::Entity &cell) const { return edge_sel_(cell); }
   /*
    * @brief Main method for computing the element vector
    *
@@ -765,14 +747,16 @@ class ScalarLoadEdgeVectorProvider {
    * @return local load vector as column vector
    *
    */
-  ElemVec Eval(const lf::mesh::Entity &edge);
+  ElemVec Eval(const lf::mesh::Entity &edge) const;
 
-  virtual ~ScalarLoadEdgeVectorProvider() = default;
+  ~ScalarLoadEdgeVectorProvider() = default;
 
  private:
   FUNCTOR g_;              // source function
   EDGESELECTOR edge_sel_;  // selects edges
   std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space_;
+
+  quad::QuadRuleCache qr_cache_;
 };
 
 /**
@@ -793,20 +777,17 @@ ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
 typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
-    const lf::mesh::Entity &edge) {
+    const lf::mesh::Entity &edge) const {
   // Query the shape of the edge
   const lf::geometry::Geometry *geo_ptr = edge.Geometry();
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
+  LF_ASSERT_MSG(geo_ptr->DimLocal() == 1, "The passed entity is not an edge!");
 
   // Get the shape function layout of the given edge
   const auto sfl = fe_space_->ShapeFunctionLayout(edge);
 
   // Quadrature points on physical edge
-  const lf::quad::QuadRule qr =
-      lf::quad::make_QuadRule(edge.RefEl(), 2 * sfl->Degree());
-  const Eigen::MatrixXd mapped_qpts(geo_ptr->Global(qr.Points()));
-  LF_ASSERT_MSG(mapped_qpts.cols() == qr.NumPoints(),
-                "Mismatch " << mapped_qpts.cols() << " <-> " << qr.NumPoints());
+  const lf::quad::QuadRule qr = qr_cache_.Get(edge.RefEl(), 2 * sfl->Degree());
 
   // Obtain the metric factors for the quadrature points
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));

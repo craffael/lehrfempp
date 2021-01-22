@@ -454,7 +454,7 @@ struct OperatorMultiplication {
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(&u[0], 1, u.size());
-    Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> vm(&v[0], 1, v.size());
+    Eigen::Map<const Eigen::Array<V, 1, Eigen::Dynamic>> vm(&v[0], 1, v.size());
     std::vector<decltype(U(0) * V(0))> result(u.size());
     Eigen::Map<Eigen::Array<decltype(U(0) * V(0)), 1, Eigen::Dynamic>> rm(
         &result[0], 1, u.size());

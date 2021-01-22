@@ -12,9 +12,9 @@
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/uscalfe/uscalfe.h>
 
-namespace lf::uscalfe::test {
+namespace lf::fe::test {
 
-TEST(feTools, IntegrateMeshFunction) {
+TEST(lf_fe_feTools, IntegrateMeshFunction) {
   // Obtain a hybrid mesh of the square [0,3]^2
   auto mesh = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
   // Write mesh data to file for visualization
@@ -57,7 +57,7 @@ TEST(feTools, IntegrateMeshFunction) {
   EXPECT_FLOAT_EQ(intMatrixDyn(1, 2), 27.);
 }
 
-TEST(feTools, NodalProjection) {
+TEST(lf_fe_feTools, NodalProjection) {
   // First stage: obtain a test mesh
   std::shared_ptr<lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(0, 1.0 / 3.0);
@@ -100,4 +100,52 @@ TEST(feTools, NodalProjection) {
   }
 }
 
-}  // namespace lf::uscalfe::test
+TEST(lf_fe_feTools, InitEssentialConditionFromFunction) {
+  std::shared_ptr<lf::mesh::Mesh> mesh_p =
+      lf::mesh::test_utils::GenerateHybrid2DTestMesh(0, 1.0 / 3.0);
+
+  // create a random high order space with varying polynomial degrees
+  fe::HierarchicScalarFESpace<double> fes(
+      mesh_p, [&](const mesh::Entity& e) { return mesh_p->Index(e) + 1; });
+
+  auto on_boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh_p, 1);
+
+  // select edges where we want to impose the boundary condition
+  auto edge_sel = [&](const mesh::Entity& e) -> bool {
+    EXPECT_TRUE(e.RefEl() == base::RefEl::kSegment());
+    return on_boundary(e) && mesh_p->Index(e) < 9;
+  };
+
+  // mesh function that contains prescribed values:
+  auto mf = lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
+    return std::sin(4 * x.x()) * std::cos(3 * x.y());
+  });
+
+  // test InitEssentialConditionFromFunction
+  auto result = InitEssentialConditionFromFunction(fes, edge_sel, mf);
+
+  // for reference make a nodal projection:
+  auto nodal_p = NodalProjection(fes, mf);
+
+  const auto& dofh = fes.LocGlobMap();
+  ASSERT_EQ(result.size(), dofh.NumDofs());
+
+  // afterwards constrained_dofs[i] should be the same as result[i].first
+  std::vector<bool> constrained_dofs(result.size(), false);
+  for (const auto* ep : mesh_p->Entities(1)) {
+    auto dofs = dofh.GlobalDofIndices(*ep);
+    if (edge_sel(*ep) == false) {
+      continue;
+    }
+    for (auto dof : dofs) {
+      constrained_dofs[dof] = true;
+      ASSERT_NEAR(result[dof].second, nodal_p(dof), 1e-7);
+    }
+  }
+
+  for (base::size_type i = 0; i < result.size(); ++i) {
+    ASSERT_EQ(constrained_dofs[i], result[i].first);
+  }
+}
+
+}  // namespace lf::fe::test

@@ -15,7 +15,7 @@
 
 namespace lf::uscalfe::test {
 
-TEST(meshFunctionFE, Projection) {
+TEST(lf_fe_meshFunctionFE, Projection) {
   // This test projects a linear mesh function onto a fe space and compares
   // the MeshFunctionFE with the original mesh function.
 
@@ -30,7 +30,7 @@ TEST(meshFunctionFE, Projection) {
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_linear, mf_projected);
 }
 
-TEST(meshFunctionFE, ProjectionQuad) {
+TEST(lf_fe_meshFunctionFE, ProjectionQuad) {
   // This test projects a quadratic mesh function onto a fe space and compares
   // the MeshFunctionFE with the original mesh function.
 
@@ -46,7 +46,7 @@ TEST(meshFunctionFE, ProjectionQuad) {
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_quad, mf_projected);
 }
 
-TEST(meshFunctionFE, ProjectionCubic) {
+TEST(lf_fe_meshFunctionFE, ProjectionCubic) {
   // This test projects a quadratic mesh function onto a fe space and compares
   // the MeshFunctionFE with the original mesh function.
 

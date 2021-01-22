@@ -8,6 +8,7 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>

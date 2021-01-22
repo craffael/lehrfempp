@@ -29,5 +29,5 @@ fi
 if [ -z "$ct" ]; then
   echo "clang-format, clang-format-8, clang-format-7, clang-format-6.0 or clang-format-5.0 not found in path"
 fi
-
+echo "using $ct"
 $(dirname $0)/ci/run-clang-format.py -r --clang-format-executable $ct --color always $(dirname $0)/lib $(dirname $0)/projects

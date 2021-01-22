@@ -328,7 +328,7 @@ ReactionDiffusionElementMatrixProvider<
                             .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad.conjugate() +
+    mat += w * (trf_grad.adjoint() * alpha_trf_grad +
                 (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
                     (pfe.PrecompReferenceShapeFunctions().col(k).adjoint()));
   }

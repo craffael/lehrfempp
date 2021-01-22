@@ -15,7 +15,7 @@
 
 namespace lf::uscalfe::test {
 
-TEST(meshFunctionGradFE, ProjectionTest) {
+TEST(lf_fe_meshFunctionGradFE, ProjectionTest) {
   // This test projects a linear mesh function onto a fe space and compares
   // the MeshFunctionFE with the original mesh function.
 
@@ -32,7 +32,7 @@ TEST(meshFunctionGradFE, ProjectionTest) {
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_grad, mf_grad_projected);
 }
 
-TEST(meshFunctionGradFE, ProjectionTestQuad) {
+TEST(lf_fe_meshFunctionGradFE, ProjectionTestQuad) {
   // This test projects a linear mesh function onto a quadratic Lagrangian FE
   // space and compares the MeshFunctionFE with the original mesh function.
 
