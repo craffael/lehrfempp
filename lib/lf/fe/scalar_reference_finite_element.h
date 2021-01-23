@@ -140,7 +140,7 @@ class ScalarReferenceFiniteElement {
    * @brief The number of _interior_ reference shape functions for sub-entities
    *        of a particular co-dimension
    *
-   * @param codim do-dimension of the subentity
+   * @param codim co-dimension of the subentity
    * @return number of _interior_ reference shape function belonging to the
    *         specified sub-entity.
    *
@@ -148,7 +148,7 @@ class ScalarReferenceFiniteElement {
    *       reference shape functions are assigned to different sub-entities
    *       of the same co-dimension
    */
-  [[nodiscard]] virtual size_type NumRefShapeFunctions(dim_t /*codim*/) const {
+  [[nodiscard]] virtual size_type NumRefShapeFunctions(dim_t codim) const {
     LF_VERIFY_MSG(false, "Illegal call for non-uniform sub-entity dof numbers");
     return 0;
   }

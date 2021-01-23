@@ -787,9 +787,9 @@ void VtkWriter::WritePointData(const std::string& name,
   WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(const std::string& name,
-                               const mesh::utils::MeshDataSet<unsigned>& mds,
-                               unsigned undefined_value) {
+void VtkWriter::WritePointData(
+    const std::string& name, const mesh::utils::MeshDataSet<unsigned int>& mds,
+    unsigned int undefined_value) {
   WriteScalarPointData(name, mds, undefined_value);
 }
 
@@ -866,8 +866,8 @@ void VtkWriter::WriteCellData(const std::string& name,
 }
 
 void VtkWriter::WriteCellData(const std::string& name,
-                              const mesh::utils::MeshDataSet<unsigned>& mds,
-                              unsigned undefined_value) {
+                              const mesh::utils::MeshDataSet<unsigned int>& mds,
+                              unsigned int undefined_value) {
   WriteScalarCellData(name, mds, undefined_value);
 }
 

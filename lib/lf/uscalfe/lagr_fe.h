@@ -70,25 +70,28 @@ class FeLagrangeO1Tria final
   [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 3; }
 
+  // clang-format off
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
+  // clang-format off
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
     return (codim == 2) ? 1 : 0;
   }
@@ -122,14 +125,14 @@ class FeLagrangeO1Tria final
   }
 
   /** @brief Evalutation nodes are just the vertices of the triangle
-   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
   /** @brief Three evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return RefEl().NumNodes();
@@ -171,23 +174,28 @@ class FeLagrangeO1Quad final
   [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: four bilinear basis functions
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 4; }
 
+  // clang-format off
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     return (codim == 2) ? 1 : 0;
   }
+
+  // clang-format off
   /** @brief Exactly one shape function attached to each node, none to other
    * sub-entities
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t, sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     return (codim == 2) ? 1 : 0;
   }
 
@@ -281,23 +289,27 @@ class FeLagrangeO1Segment final
   [[nodiscard]] unsigned Degree() const override { return 1; }
 
   /** @brief The local shape functions: barycentric coordinate functions
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 2; }
 
+  // clang-format off
   /** @brief All shape functions attached to nodes
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }
+
+  // clang-format off
   /** @brief All shape functions attached to nodes
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 1) ? 1 : 0;
   }
@@ -332,14 +344,14 @@ class FeLagrangeO1Segment final
   }
 
   /** @brief Evalutation nodes are just the vertices of the segment
-   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     return RefEl().NodeCoords();
   }
 
   /** @brief Two evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return RefEl().NumNodes();
@@ -384,7 +396,7 @@ class FeLagrangeO2Tria final
   FeLagrangeO2Tria() = default;
   ~FeLagrangeO2Tria() override = default;
 
-  /** @copydoc ScalarReferenceFiniteElement::RefEl()
+  /** @copydoc fe::ScalarReferenceFiniteElement::RefEl()
    */
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kTria();
@@ -645,7 +657,7 @@ class FeLagrangeO2Segment
   }
 
   /** @brief Evaluation nodes are the endpoints of the segment and its midpoint
-   * @copydoc ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::Matrix<double, 1, 3> nodes;
@@ -655,7 +667,7 @@ class FeLagrangeO2Segment
   }
 
   /** @brief Three evaluation nodes, same number as local shape functions
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -697,7 +709,7 @@ class FeLagrangeO2Quad final
   FeLagrangeO2Quad() = default;
   ~FeLagrangeO2Quad() override = default;
 
-  /** @copydoc ScalarReferenceFiniteElement::RefEl() */
+  /** @copydoc fe::ScalarReferenceFiniteElement::RefEl() */
   [[nodiscard]] base::RefEl RefEl() const override {
     return base::RefEl::kQuad();
   }
@@ -945,26 +957,29 @@ class FeLagrangeO3Tria final
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 10; }
 
+  // clang-format off
   /**
    * @brief One shape function attached to each node
    * and two to each edge of the triangle. There is one interior
    * shape function.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
     return (codim == 1) ? 2 : 1;
   }
 
+  // clang-format off
   /**
    * @brief One shape function attached to each node
    * and two to each edge of the triangle. There is one interior
    * shape function.
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
     return (codim == 1) ? 2 : 1;
   }
@@ -1101,7 +1116,7 @@ class FeLagrangeO3Tria final
     return nodes;
   }
   /** @brief Ten evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -1139,22 +1154,25 @@ class FeLagrangeO3Segment final
 
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 4; }
 
+  // clang-format off
   /** @brief One shape function attached to each node and two interior
    * shape functions.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 0) ? 2 : 1;
   }
 
+  // clang-format off
   /** @brief One shape function attached to each node and two interior
    * shape functions.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,
-   * sub_idx_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t, sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
     return (codim == 0) ? 2 : 1;
   }
@@ -1208,7 +1226,7 @@ class FeLagrangeO3Segment final
   }
 
   /** @brief Four evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -1258,10 +1276,12 @@ class FeLagrangeO3Quad final
 
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 16; }
 
+  // clang-format off
   /** @brief One shape function attached to each node and two to each edge
    * of the quadrilateral. Four interior shape functions.
-   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {
     switch (codim) {
       case 0:
@@ -1276,13 +1296,14 @@ class FeLagrangeO3Quad final
     return 0;
   }
 
+  // clang-format off
   /** @brief One shape function attached to each node and two to each edge
    * of the quadrilateral. Four interior shape functions.
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t)
+   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /* subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     return NumRefShapeFunctions(codim);
   }
 
@@ -1379,7 +1400,7 @@ class FeLagrangeO3Quad final
   }
 
   /** @brief Sixteen evaluation nodes
-   * @copydoc ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();

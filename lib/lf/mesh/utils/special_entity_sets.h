@@ -49,7 +49,8 @@ CodimMeshDataSet<lf::base::size_type> CountNumSuperEntities(
 
 /**
  * @brief flag entities of a specific co-dimension located on the boundary
- *
+ * @param mesh_p shared pointer to the mesh whose boudnary entities should be
+ * flagged.
  * @param codim co-dimension of entities to be flagged, must be > 0.
  * @return an object of a boolean-valued @ref CodimMeshDataSet (= an array of
  * boolean values index by entities) for the entities of the specified
@@ -77,16 +78,13 @@ CodimMeshDataSet<bool> flagEntitiesOnBoundary(
 
 /**
  * @brief flag entities of _any co-dimension_ located on the boundary
+ * @param mesh_p shared pointer to the mesh whose boudnary entities should be
+ * flagged.
+ * @return an AllCodimMeshDataSet<bool> which flags entities of any co-dimension
+ * on the boundary.
  *
- * @param codim co-dimension of entities to be flagged, must be > 0.
- * @return an array of boolean values (actually an object of type @ref
- * AllCodimMeshDataSet) for the entities of the specified co-dimension
- *
- * An entity of co-dimension 1 is located on the boundary, if it is adjacent
- * to exactly 1 cell (= entity of co-dimension 0).
- *
- * The boundary of a mesh is the set of all entities that are either entities
- * of co-dimension 1 located on the boundary or sub-entities of those.
+ * @sa flagEntitiesOnBoundary(const std::shared_ptr<const Mesh>& mesh_p,
+ * lf::base::dim_t codim)
  *
  */
 AllCodimMeshDataSet<bool> flagEntitiesOnBoundary(

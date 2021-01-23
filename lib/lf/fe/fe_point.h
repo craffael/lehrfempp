@@ -2,7 +2,8 @@
 #define LF_FE_FE_POINT_H_
 
 /**
- * @file Finite Element on vertices for general scalar FE spaces
+ * @file
+ * @brief Finite Element on vertices for general scalar FE spaces
  * @author Tobias Rohner
  * @date January 2021
  * @copyright MIT License

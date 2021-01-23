@@ -233,6 +233,9 @@ using fixed_components_t =
  *
  * @tparam SCALAR underlying scalar type, e.g. double
  * @tparam RHSVEC generic vector type for right hand side
+ * @param fixed_components A vector of pairs where the first entry specifies the
+ * dof number that should be fixed and the second entry specifies the value it
+ * should be fixed to.
  * @param A reference to the _square_ coefficient matrix in COO format
  * @param b reference to the right-hand-side vector
  *
@@ -241,7 +244,7 @@ using fixed_components_t =
  * telling the length of the vector and `operator []` for read/write access to
  * vector entries.
  *
- * This function is basedon \ref fix_flagged_solution_components_alt()
+ * This function is based on \ref FixFlaggedSolutionCompAlt()
  *
  * @sa fix_flagged_solution_components_alt()
  */

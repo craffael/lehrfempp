@@ -20,7 +20,7 @@ void checkLocalTopology(const Entity& e);
  *
  * Implements a test whether dimensions of sub-entities match the
  * relative dimension with which they are accessed through the
- * @ref SubEntities() method of @ref lf::mesh::Entity.
+ * @ref Entity::SubEntities() method of @ref lf::mesh::Entity.
  */
 void checkRelCodim(const Entity& e);
 

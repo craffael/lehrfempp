@@ -26,7 +26,9 @@ class MeshFactory {
   /** @copydoc Mesh::size_type */
   using size_type = unsigned int;
 
-  /** @copydoc Mesh::coord_t */
+  /**
+   * @brief Coordinate type of a point.
+   */
   using coord_t = Eigen::VectorXd;
 
   using dim_t = base::dim_t;

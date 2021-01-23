@@ -645,7 +645,7 @@ struct OperatorMultiplication {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Add's two \ref mesh_function "mesh functions"
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @tparam A Type of the lhs \ref mesh_function
  * @tparam B Type of the rhs \ref mesh_function
  * @param a the lhs \ref mesh_function
@@ -674,7 +674,7 @@ auto operator+(const A& a, const B& b) {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Subtracts two \ref mesh_function "mesh functions"
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @tparam A Type of the lhs \ref mesh_function
  * @tparam B Type of the rhs \ref mesh_function
  * @param a the lhs \ref mesh_function
@@ -702,7 +702,7 @@ auto operator-(const A& a, const B& b) {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @brief Multiply two \ref mesh_function "mesh functions" with each other.
  * @tparam A The type of the lhs \ref mesh_function
  * @tparam B The type of the rhs \ref mesh_function

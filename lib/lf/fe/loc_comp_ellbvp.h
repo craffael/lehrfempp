@@ -608,10 +608,10 @@ ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
                                       MESH_FUNCTION>;
 
 // Constructors
-template <typename SCALAR, typename FUNCTOR>
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+template <typename SCALAR, typename MESH_FUNCTION>
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
+        std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, MESH_FUNCTION f)
     : f_(std::move(f)), fe_space_(std::move(fe_space)) {}
 
 // TODO(craffael) remove const once

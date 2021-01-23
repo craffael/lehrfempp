@@ -249,8 +249,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   /**
    * @brief One shape function for each vertex, p-1 shape functions for the
    * segment
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim) const override {
@@ -258,15 +257,15 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     return codim == 0 ? degree_ - 1 : 2;
   }
 
+  // clang-format off
   /**
    * @brief One shape function for each vertex, p-1 shape functions for the
    * segment
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,
-   * sub_idx_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t, sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t /*subidx*/) const override {
+      dim_t codim, sub_idx_t subidx) const override {
     return NumRefShapeFunctions(codim);
   }
 
@@ -496,8 +495,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   /**
    * @brief One shape function for each vertex, p-1 shape functions on the edges
    * and max(0, (p-2)*(p-1)/2) shape functions on the triangle
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim) const override {
@@ -524,12 +522,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
     }
   }
 
+  // clang-format off
   /**
    * @brief One shape function for each vertex, p-1 shape functions on the edges
    * and max(0, (p-2)*(p-1)/2) shape functions on the triangle
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t, sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     switch (codim) {
@@ -1141,8 +1140,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   /**
    * @brief One shape function for each vertex, p-1 shape functions on the edges
    * and (p-1)^2 shape functions on the quadrilateral
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim) const override {
@@ -1166,12 +1164,13 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     }
   }
 
+  // clang-format off
   /**
    * @brief One shape function for each vertex, p-1 shape functions on the edges
    * and (p-1)^2 shape functions on the quadrilateral
-   * @copydoc
-   * ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t)
+   * @copydoc ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t,sub_idx_t) const
    */
+  // clang-format on
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     switch (codim) {

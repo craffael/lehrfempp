@@ -117,7 +117,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
   }
 
   /** @brief access to shape function layout for cells
-   * @copydoc ScalarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
+   * @copydoc ScalarFESpace::ShapeFunctionLayout()
    */
   [[nodiscard]] ScalarReferenceFiniteElement<SCALAR> const *ShapeFunctionLayout(
       const lf::mesh::Entity &entity) const override {

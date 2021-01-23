@@ -1,5 +1,5 @@
 /**
- * @file refinement_hierarchy.cc
+ * @file
  * @brief implementation of global/local refinement methods
  */
 
