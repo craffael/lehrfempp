@@ -15,6 +15,13 @@
 
 namespace lf::quad {
 
+/**
+ * @brief A cache for make_QuadRule()
+ *
+ * This class has one important method: QuadRuleCache::Get()
+ * which returns the same result as make_QuadRule() but uses
+ * caching to construct the QuadRule only the first time.
+ */
 class QuadRuleCache {
  public:
   QuadRuleCache() = default;
