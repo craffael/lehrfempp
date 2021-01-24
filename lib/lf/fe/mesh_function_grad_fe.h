@@ -129,7 +129,7 @@ class MeshFunctionGradFE {
 template <class T, class SCALAR_COEFF>
 MeshFunctionGradFE(std::shared_ptr<T>,
                    const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
-    -> MeshFunctionGradFE<typename T::Scalar, SCALAR_COEFF>;
+    ->MeshFunctionGradFE<typename T::Scalar, SCALAR_COEFF>;
 
 }  // namespace lf::fe
 
