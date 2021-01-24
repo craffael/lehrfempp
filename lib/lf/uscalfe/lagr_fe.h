@@ -17,6 +17,7 @@
 #include <lf/assemble/dofhandler.h>
 #include <lf/fe/fe_point.h>
 #include <lf/fe/scalar_reference_finite_element.h>
+
 #include <iostream>
 #include <typeinfo>
 
@@ -369,7 +370,7 @@ class FeLagrangeO1Segment final
  * \f}
  *
  * The numbering convention for the local shape functions is explained in
- @lref{ex:quadnodes}.
+ * @lref{ex:quadnodes}.
  *
  * @see ScalarReferenceFiniteElement
  */

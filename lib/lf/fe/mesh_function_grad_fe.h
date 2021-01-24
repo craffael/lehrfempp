@@ -13,7 +13,7 @@
 namespace lf::fe {
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing the gradient of a
  * function from a finite element space (e.g. gradient of a solution of BVP).
@@ -26,8 +26,8 @@ namespace lf::fe {
  * continuous functions. Otherwise the evaluation for non-cell entities is not
  * possible.
  * - A Coefficient Vector which defines what element should be picked from the
- * FeSpace. This is a simple Eigen::Vector which defines the coefficient in
- * front of every basis function of the FeSpace (same ordering).
+ * FeSpace. This is a simple Eigen::Vector which defines the coefficient
+ * for every basis function of the FeSpace (same ordering).
  *
  * @note A MeshFunctionGradFE can be evaluated on entities of all codimensions
  * except for points.
@@ -51,8 +51,11 @@ class MeshFunctionGradFE {
    * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
    * coefficient vector
    * @param fe_space the approximation space in which the function lies.
-   * @param dof_vector Defines the coefficients in front of the basis
-   * functions of `fe_space`
+   * @param dof_vector passes the basis expansion coefficients
+   *
+   * @warn This constructor just takes a reference to the vector of basis
+   * expansion coefficients. Thus, this vector has to be "kept alive" as long as
+   * the mesh function exists.
    */
   MeshFunctionGradFE(
       std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
@@ -117,7 +120,8 @@ class MeshFunctionGradFE {
  private:
   /** @brief Pointer to underlying finite element space */
   std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space_;
-  /** @brief Basis expansion coefficient vector for finite-element function */
+  /** @brief _Reference_ to basis expansion coefficient vector for
+   * finite-element function */
   const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
 };
 
@@ -125,7 +129,7 @@ class MeshFunctionGradFE {
 template <class T, class SCALAR_COEFF>
 MeshFunctionGradFE(std::shared_ptr<T>,
                    const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
-    ->MeshFunctionGradFE<typename T::Scalar, SCALAR_COEFF>;
+    -> MeshFunctionGradFE<typename T::Scalar, SCALAR_COEFF>;
 
 }  // namespace lf::fe
 

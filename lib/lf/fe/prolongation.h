@@ -21,6 +21,13 @@ namespace lf::fe {
  * @param level_coarse The level of the coarse mesh
  * @returns An interpolated vector of basis function coefficients on the fine
  * mesh
+ *
+ * Objects of type @ref MeshHierarchy contain sequences of _nested_ meshes. A
+ * finite-element function on a coarse mesh, which can be regarded as just
+ * another continuous function on the meshed domain, can be interpolated to
+ * yield a finite element function on the next finer mesh. This function
+ * realizes the conversion of the corresponding basis expansion coefficient
+ * vectors.
  */
 template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
 [[nodiscard]] Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> prolongate(
@@ -42,10 +49,10 @@ template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
   const lf::assemble::DofHandler &dofh_coarse{fespace_coarse->LocGlobMap()};
   const lf::assemble::DofHandler &dofh_fine{fespace_fine->LocGlobMap()};
   const lf::base::size_type N_coarse = dofh_coarse.NumDofs();
-  const lf::base::size_type N_fine = dofh_fine.NumDofs();
   // Assert correctness of inputs
-  LF_ASSERT_MSG(level_coarse < mh.NumLevels() - 1,
-                "level must not point to the finest mesh in the hierarchy");
+  LF_ASSERT_MSG(
+      level_coarse < mh.NumLevels() - 1,
+      "level must not point to or beyond the finest mesh in the hierarchy");
   LF_ASSERT_MSG(
       dofs_coarse.size() >= N_coarse,
       "Too few basis function coefficients provided for coarse FE space");

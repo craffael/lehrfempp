@@ -15,6 +15,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+
 #include "assembly_types.h"
 
 namespace lf::assemble {
@@ -460,11 +461,11 @@ class UniformFEDofHandler : public DofHandler {
 
 /* ====================================================================== */
 
-/** @brief Dof handler allowing variable local dof layouts
+/** @brief Dof handler allowing _variable_ local dof layouts
  *
  * This dof handler can accommodate cases where entities of the mesh
- * have different numbers of local shape functions attached to them.
- * This is relevant, for instance, for hp-FEM.
+ * have different numbers of local shape functions attached to them, see
+ * @lref{par:dofhinit}. This is relevant, for instance, for hp-FEM.
  *
  */
 class DynamicFEDofHandler : public DofHandler {

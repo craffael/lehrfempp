@@ -6,8 +6,6 @@
  * @date October 2018
  * @copyright MIT License
  */
-#include <map>
-
 #ifndef LF_FE_LOCCOMPELLBVP
 #define LF_FE_LOCCOMPELLBVP
 /***************************************************************************
@@ -15,10 +13,12 @@
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
  * lead developers Dr. R. Casagrande and Prof. R. Hiptmair
  ***************************************************************************/
-
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
 #include <iostream>
+#include <map>
+
 #include "scalar_fe_space.h"
 #include "scalar_reference_finite_element.h"
 
@@ -26,15 +26,15 @@ namespace lf::fe {
 /**
  * @ingroup entity_matrix_provider
  * @headerfile lf/fe/fe.h
- * @brief Class for local quadrature based computations for general finite
- elements
+ * @brief Class for computing element matrices for general scalar-valued finite
+ * elements and homogeneous 2nd-order elliptic bilinear forms
  *
  * @tparam SCALAR scalar type of the ScalarFESpace Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
  *                    It should be either scalar- or matrix-valued.
-  *
+ *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_MATRIX_PROVIDER of the function
  * lf::assemble::AssembleMatrixLocally().
@@ -111,7 +111,7 @@ class DiffusionElementMatrixProvider final {
    * mapping techniques. The order of the quadrature rule is tied to the
    * polynomial degree of the underlying finite element spaces: for
    * polynomial degree p a quadrature rule is chosen that is exact for
-   * polynomials o degree 2p.
+   * polynomials of degree 2p.
    *
    * Throws an assertion in case the finite element specification is missing for
    * the type of the cell.
@@ -141,8 +141,8 @@ extern std::shared_ptr<spdlog::logger> diffusion_element_matrix_provider_logger;
 
 template <class PTR, class DIFF_COEFF>
 DiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha)
-    ->DiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
-                                     DIFF_COEFF>;
+    -> DiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
+                                      DIFF_COEFF>;
 
 // First constructor (internal construction of quadrature rules
 template <typename SCALAR, typename DIFF_COEFF>
@@ -183,21 +183,19 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
                 "Mismatch " << JinvT.cols() << " <-> " << 2 * qr.NumPoints());
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
-
-  // compute values of alpha at quadrature points:
+  // Fetch values of diffusion coefficient alpha at quadrature points:
   auto alphaval = alpha_(cell, qr.Points());
-
-  // Element matrix
+  // The requested element matrix is square, size = number of local shape
+  // functions
   ElemMat mat(sfl->NumRefShapeFunctions(), sfl->NumRefShapeFunctions());
   mat.setZero();
-
-  // Compute the reference shape functions
+  // Compute the gradients of the reference shape functions in the quadrature
+  // points
   const auto grsf = sfl->GradientsReferenceShapeFunctions(qr.Points());
-
-  // Loop over quadrature points
+  // Quadrature formula: loop over quadrature points
   for (base::size_type k = 0; k < qr.NumPoints(); ++k) {
     const double w = qr.Weights()[k] * determinants[k];
-    // Transformed gradients
+    // Transformed gradient in current quadrature node
     const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
                         grsf.block(0, 2 * k, mat.rows(), 2).transpose());
     // Transformed gradients multiplied with coefficient
@@ -209,8 +207,8 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
 /**
  * @ingroup entity_matrix_provider
  * @headerfile lf/fe/fe.h
- * @brief Class for local quadrature based computations for general finite
- elements
+ * @brief Class for local quadrature based computation of element matrix for
+ * Lagrangian finite elements and a weighted \f$L^2\f$ inner product.
  *
  * @tparam SCALAR scalar type of the FiniteElementSpace. Must be a field
  *                     type such as `double` or `std::complex<double>`
@@ -233,7 +231,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * ## Template parameter requirement
  *
  * - SCALAR must be a type like `double`
- *
+ * - REACTION_COEFF should be compatible with a scalar-valued \ref mesh_function
  *
  */
 template <typename SCALAR, typename REACTION_COEFF>
@@ -320,8 +318,8 @@ extern std::shared_ptr<spdlog::logger> mass_element_matrix_provider_logger;
 
 template <class PTR, class REACTION_COEFF>
 MassElementMatrixProvider(PTR fe_space, REACTION_COEFF gamma)
-    ->MassElementMatrixProvider<typename PTR::element_type::Scalar,
-                                REACTION_COEFF>;
+    -> MassElementMatrixProvider<typename PTR::element_type::Scalar,
+                                 REACTION_COEFF>;
 
 // First constructor
 template <typename SCALAR, typename REACTION_COEFF>
@@ -349,23 +347,19 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
   // Get a quadrature rule of sufficiently high degree on the element
   const auto sfl = fe_space_->ShapeFunctionLayout(cell);
   const lf::quad::QuadRule qr = qr_cache_.Get(cell.RefEl(), 2 * sfl->Degree());
-
+  // Metric factors in quadrature nodes
   const Eigen::VectorXd determinants(geo_ptr->IntegrationElement(qr.Points()));
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
-
-  // compute values of alpha, gamma at quadrature points:
+  // Fetch values of reaction coefficient gamma at quadrature points:
   auto gammaval = gamma_(cell, qr.Points());
-
-  // Element matrix
+  // Alocated element matrix
   ElemMat mat(sfl->NumRefShapeFunctions(), sfl->NumRefShapeFunctions());
   mat.setZero();
-
-  // Compute the reference shape functions
+  // Compute the reference shape functions in the quadrature points
   const auto rsf = sfl->EvalReferenceShapeFunctions(qr.Points());
-
-  // Loop over quadrature points
+  // Loop over quadrature points to evaluate quadrature formula
   for (base::size_type k = 0; k < qr.NumPoints(); ++k) {
     const double w = qr.Weights()[k] * determinants[k];
     mat += w * ((gammaval[k] * rsf.col(k)) * (rsf.col(k).adjoint()));
@@ -476,8 +470,8 @@ extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
 MassEdgeMatrixProvider(PTR, COEFF coeff,
                        EDGESELECTOR edge_predicate = base::PredicateTrue{})
-    ->MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
-                             EDGESELECTOR>;
+    -> MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
+                              EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -604,8 +598,8 @@ extern std::shared_ptr<spdlog::logger>
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
 ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
-    ->ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
-                                      MESH_FUNCTION>;
+    -> ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
+                                       MESH_FUNCTION>;
 
 // Constructors
 template <typename SCALAR, typename FUNCTOR>
@@ -767,8 +761,8 @@ extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
-    ->ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
-                                   EDGESELECTOR>;
+    -> ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
+                                    EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once

@@ -18,6 +18,7 @@
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
 #include "scalar_fe_space.h"
 
 namespace lf::fe {
@@ -117,7 +118,7 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
 
   auto entities = mesh.Entities(codim);
   auto result = internal::LocalIntegral(**entities.begin(), qr_selector, mf);
-  for (auto i = entities.begin() + 1; i != entities.end(); ++i) {
+  for (const auto *i = entities.begin() + 1; i != entities.end(); ++i) {
     if (!ep(**i)) {
       continue;
     }

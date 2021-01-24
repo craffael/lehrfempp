@@ -17,7 +17,7 @@
 namespace lf::fe {
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing an element from a
  * ScalarUniformFESpace (e.g. solution of BVP)
@@ -25,7 +25,7 @@ namespace lf::fe {
  * @tparam SCALAR_COEFF The scalar type of the coefficient vector
  *
  * The MeshFunctionFE takes essentially two parameters:
- * - A ScalarUniformFESpace which defines the space of all approximation
+ * - A ScalarFESpace which defines the space of all approximation
  * functions.
  * - A Coefficient Vector which defines what element should be picked from the
  * FeSpace. This is a simple Eigen::Vector which defines the coefficient in
@@ -43,33 +43,47 @@ namespace lf::fe {
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionFE {
  public:
+  // Why this? Because we can use real-valued finite element spaces to represent
+  // complex-valued functions by using complex degrees of freedom!
   using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));
 
   /**
-   * @brief Create a new MeshFunctionFE from a ScalarUniformFESpace and a
+   * @brief Create a new MeshFunctionFE from a @ref ScalarFESpace and a
    * coefficient vector
    * @param fe_space the approximation space in which the function lies.
    * @param coeff_vector Defines the coefficients in front of the basis
    * functions of `fe_space`
+   *
+   * @warn This constructor just takes a reference to the vector of basis
+   * expansion coefficients. Thus, this vector has to be "kept alive" as long as
+   * the mesh function exists.
    */
   MeshFunctionFE(
       std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
       const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
       : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {}
 
-  /** Evaluate the mesh function on a MeshEntity */
+  /** @brief Evaluate the mesh function on a MeshEntity
+   *
+   * @param e the relevant mesh entity
+   * @param local _reference coordinates_ of evalation points passed in the
+   * columns of a matrix
+   * @return values of the function at evaluation points
+   */
   std::vector<Scalar> operator()(const lf::mesh::Entity& e,
                                  const Eigen::MatrixXd& local) const {
+    // Obtain values of all shape functions in the evaluation points
     auto sf_eval =
         fe_space_->ShapeFunctionLayout(e)->EvalReferenceShapeFunctions(local);
-
+    // Extract the d.o.f.s for the current entity from the vector of global
+    // d.o.f. values
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(1,
                                                               sf_eval.rows());
     auto global_dofs = fe_space_->LocGlobMap().GlobalDofIndices(e);
     for (Eigen::Index i = 0; i < sf_eval.rows(); ++i) {
       local_dofs(i) = dof_vector_(global_dofs[i]);
     }
-
+    // Trick to combine Eigen data types with STL containers
     std::vector<Scalar> result(local.cols());
     Eigen::Map<Eigen::Matrix<Scalar, 1, Eigen::Dynamic>> temp(&result[0], 1,
                                                               local.cols());
@@ -105,7 +119,7 @@ class MeshFunctionFE {
 template <class T, class SCALAR_COEFF>
 MeshFunctionFE(std::shared_ptr<T>,
                const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
-    ->MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
+    -> MeshFunctionFE<typename T::Scalar, SCALAR_COEFF>;
 
 }  // namespace lf::fe
 

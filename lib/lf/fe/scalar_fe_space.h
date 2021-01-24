@@ -15,12 +15,13 @@
  */
 
 #include <lf/assemble/assemble.h>
+
 #include "scalar_reference_finite_element.h"
 
 namespace lf::fe {
 
 /**
- * @headerfile lf/uscalfe/uscalfe.h
+ * @headerfile lf/fe/fe.h
  * @brief Space of scalar valued finite element functions on a _hybrid 2D mesh_
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
@@ -38,7 +39,7 @@ namespace lf::fe {
  *       are done on purely triangular meshes then a finite element
  * specification for quadrilaterals need not be given.
  *
- * This class is covered in @\lref{par:fespace}.
+ * This class is covered in @lref{par:fespace}.
  */
 template <typename SCALAR>
 class ScalarFESpace {
@@ -60,11 +61,12 @@ class ScalarFESpace {
    */
   [[nodiscard]] virtual std::shared_ptr<const lf::mesh::Mesh> Mesh() const = 0;
   /** @brief access to associated local-to-global map
+   *
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
   [[nodiscard]] virtual const lf::assemble::DofHandler &LocGlobMap() const = 0;
 
-  /** @brief access to shape function layout for cells
+  /** @brief access to shape function layout for mesh entities
    *
    * @param entity The entity to get the reference element for
    *
@@ -73,13 +75,18 @@ class ScalarFESpace {
    * entity.
    *
    * @note The returned ShapeFunctionLayout pointer will remain for the entire
-   * lifetime of the owning ScalarFESpace
+   * lifetime of the owning ScalarFESpace.
+   *
+   * @see ScalarReferenceFiniteElement
    */
   [[nodiscard]] virtual ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const = 0;
 
-  /** @brief number of _interior_ shape functions associated to entities of
-   * various types
+  /** @brief number of _interior_ shape functions associated to a particular
+   * mesh entity.
+   *
+   * @param entity mesh entity to be queried
+   * @return number of _interior_ shape functions
    */
   [[nodiscard]] virtual size_type NumRefShapeFunctions(
       const lf::mesh::Entity &entity) const = 0;
