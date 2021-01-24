@@ -112,7 +112,7 @@ class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
   }
 
   /** @brief access to shape function layout for cells
-   * @copydoc SclarFESpace::ShapeFunctionLayout(const lf::mesh::Entity&)
+   * @copydoc fe::ScalarFESpace::ShapeFunctionLayout()
    */
   [[nodiscard]] lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(const lf::mesh::Entity &entity) const override;

@@ -386,7 +386,7 @@ class RefEl {
    *
    * @note the argument `sub_rel_codim` is a **relative co-dimension**.
    *
-   * @notes the argument `sub_rel_index` is a local index in the sub-entity.
+   * @note the argument `sub_rel_index` is a local index in the sub-entity.
    *
    * #### Conventions
    * - For a triangle (the arrow indicates the induced orientation of the edge)

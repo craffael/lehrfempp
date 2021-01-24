@@ -2,7 +2,7 @@
 #define _LF_REFINEMENT_HIER_H_
 
 /**
- * @file refinement_hierarchy.h
+ * @file
  * @brief Data structures for managing nested meshes created by refinement
  *
  */
@@ -356,7 +356,7 @@ class MeshHierarchy {
    * the specified level.
    *  @return pointer to parent entity
    *
-   * @note to be used in combination with @GeometryInParent()
+   * @note to be used in combination with geometry::Geometry::GeometryInParent()
    */
   [[nodiscard]] const lf::mesh::Entity *ParentEntity(
       size_type level, const lf::mesh::Entity &e) const;
@@ -365,6 +365,7 @@ class MeshHierarchy {
    * @brief Output of information about the mesh hierarchy.
    *
    * @param o output stream, can be `std::cout` or similar
+   * @param ctrl controls the level of detail of the generated output.
    * @return output stream
    *
    * The type of output is controlled by the `ctrl` static control
@@ -407,7 +408,7 @@ class MeshHierarchy {
   /**
    * @brief Initialization of rel_ref_geo fields of @ref ParentInfo structures
    *
-   * This method created @ref lf::refinement::Geometry type objects describing
+   * This method created @ref geometry::Geometry type objects describing
    * the shape of a child entity in the reference coordinates of its parent.
    *
    * @note This method assumes that the parent-child connections of the mesh

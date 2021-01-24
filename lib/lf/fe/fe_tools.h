@@ -270,6 +270,8 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
  * @param esscondflag predicate object whose evaluation operator returns
  *        true for all edges whose associated degrees of freedom should be
  *        set a fixed value.
+ * @param g A scalar valued \ref mesh_function "MeshFunction" which describes
+ * the values on the edges to which the dofs should be fixed.
  * @return a vector of flag-value pairs, a `true` first component indicating
  *         a fixed dof, with the second component providing the value in
  * this case.

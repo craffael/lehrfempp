@@ -248,7 +248,7 @@ struct UnaryOpConjugate {
 /**
  * @brief Applies the unary minus operator to a \ref mesh_function
  * "mesh function".
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the original mesh function.
  * @param a The original mesh function.
  * @return `-a`, where the minus operator is applied pointwise everywhere on the
@@ -263,7 +263,7 @@ auto operator-(const A& a) {
 
 /**
  * @brief Pointwise squared norm of another \ref mesh_function "mesh function"
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the wrapped mesh function.
  * @param a The original mesh function
  * @return \ref mesh_function representing `|a|^2` (pointwise)
@@ -278,7 +278,7 @@ auto squaredNorm(const A& a) {
 
 /**
  * @brief Pointwise transpose of an `Eigen::Matrix` or `Eigen::Array`
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the wrapped mesh function.
  * @param a The original \ref mesh_function
  * @return \ref mesh_function representing the pointwise transpose of `a`.
@@ -294,7 +294,8 @@ auto transpose(const A& a) {
 
 /**
  * @brief Pointwise adjoint of an `Eigen::Matrix`, i.e. the conjugate transposed
- * of the amtrix.
+ * of the matrix.
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the original mesh function.
  * @param a The original mesh function whose adjoint should be taken.
  * @return \ref mesh_function representing the pointwise adjoint of `a`.
@@ -311,6 +312,7 @@ auto adjoint(const A& a) {
 /**
  * @brief Pointwise conjuagte of an `Eigen::Matrix`, `Eigen::Array` or scalar
  * valued mesh function.
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the original mesh function.
  * @param a The original mesh function that should be conjugated.
  * @return \ref mesh_function representing the pointwise conjugate of `a`.

@@ -194,7 +194,7 @@ class Geometry {
    * parts ("children"), whose shape will depend on the refinement pattern.
    * This method creates the geometry objects describing the shape of children.
    * The details of subdivisions corresponding to particular refinement patterns
-   * are fixed by the method @ref Hybrid2D::RefinementPattern::ChildPolygons()
+   * are fixed by the method @ref RefinementPattern::ChildPolygons()
    * and should be documented there.
    *
    * @sa class lf::geometry::RefinementPattern
@@ -227,7 +227,7 @@ class Geometry {
 
 /**
  * @brief Compute the (approximate) volume (area) of a shape
- * @param geometry object
+ * @param geo The geometry object
  * @return approximate volume
  *
  * @note the volume can be computed exactly only for planar affine/bilinear (2D)
@@ -237,7 +237,7 @@ double Volume(const Geometry& geo);
 
 /**
  * @brief The corners of a shape with piecewise smooth boundary
- * @param geometry object
+ * @param geo The geometry object
  * @return the coordinates vectors for the corners of the shape represented by
  * the geometry object packed into the _columns_ of a dxn-matrix, where d is the
  * dimension of physical space, and n stands for the number of corners.
@@ -247,13 +247,13 @@ double Volume(const Geometry& geo);
  * the types
  * @ref lf::geometry::TriaO1 and @ref lf::geometry::QuadO1
  *
- * #### Demonstration code [Lecture
- * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * #### Demonstration code [Lecture Document]
+ * (https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
  * @lref{cpp:lfgeo}
  * @snippet geometryuse.cc corners
  *
- * Additional explanations can be found in [Lecture
- * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * Additional explanations can be found in [Lecture Document]
+ * (https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
  * @lref{par:coords}.
  *
  */

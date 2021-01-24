@@ -302,14 +302,14 @@ class UniformFEDofHandler : public DofHandler {
   [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
-   * @copydoc DofHandler::GetNoLocalDofs()
+   * @copydoc DofHandler::NumLocalDofs()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] size_type NumLocalDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetNoInteriorDofs()
+   * @copydoc DofHandler::NumInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
   [[nodiscard]] size_type NumInteriorDofs(
@@ -324,12 +324,11 @@ class UniformFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  /** @copydoc DofHandler::InteriorGlobalDofIndices() */
   [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetEntity()
+   * @copydoc DofHandler::Entity()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] const lf::mesh::Entity &Entity(
@@ -339,7 +338,7 @@ class UniformFEDofHandler : public DofHandler {
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::mesh()
+  /** @copydoc DofHandler::Mesh()
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
     return mesh_;
@@ -669,19 +668,19 @@ class DynamicFEDofHandler : public DofHandler {
   }  // end constructor
 
   /**
-   * @copydoc DofHandler::GetNoDofs()
+   * @copydoc DofHandler::NumDofs()
    */
   [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
-   * @copydoc DofHandler::GetNoInteriorDofs()
+   * @copydoc DofHandler::NumInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
   [[nodiscard]] size_type NumInteriorDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetNoLocalDofs()
+   * @copydoc DofHandler::NumLocalDofs()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] size_type NumLocalDofs(
@@ -700,7 +699,7 @@ class DynamicFEDofHandler : public DofHandler {
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetEntity()
+   * @copydoc DofHandler::Entity()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] const lf::mesh::Entity &Entity(
@@ -710,7 +709,7 @@ class DynamicFEDofHandler : public DofHandler {
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::mesh()
+  /** @copydoc DofHandler::Mesh()
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
     return mesh_p_;

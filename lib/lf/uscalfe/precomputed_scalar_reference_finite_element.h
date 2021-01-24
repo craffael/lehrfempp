@@ -35,8 +35,8 @@ namespace lf::uscalfe {
  * used for local computations on all mesh entities of the same topological
  * type.
  *
- * Detailed explanations can be found in @\lref{par:locparm},
- * @lref{{par:locparm2}.
+ * Detailed explanations can be found in @lref{par:locparm},
+ * @lref{par:locparm2}.
  */
 template <class SCALAR>
 class PrecomputedScalarReferenceFiniteElement
@@ -152,12 +152,14 @@ class PrecomputedScalarReferenceFiniteElement
     return shap_fun_;
   }
 
+  // clang-format off
   /**
    * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Points())`
    *
-   * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
+   * See @ref fe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions()
    * for the packed format in which the gradients are returned.
    */
+  // clang-format on
   [[nodiscard]] const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>&
   PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
