@@ -148,6 +148,7 @@ class ScalarReferenceFiniteElement {
    *       reference shape functions are assigned to different sub-entities
    *       of the same co-dimension
    */
+  // NOLINTNEXTLINE(misc-unused-parameters)
   [[nodiscard]] virtual size_type NumRefShapeFunctions(dim_t codim) const {
     LF_VERIFY_MSG(false, "Illegal call for non-uniform sub-entity dof numbers");
     return 0;

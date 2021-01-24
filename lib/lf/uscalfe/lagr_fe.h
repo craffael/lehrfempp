@@ -94,6 +94,9 @@ class FeLagrangeO1Tria final
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim " << codim);
+    LF_ASSERT_MSG((codim == 2 && subidx < 3) || (codim == 1 && subidx < 3) ||
+                      (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return (codim == 2) ? 1 : 0;
   }
 
@@ -197,6 +200,9 @@ class FeLagrangeO1Quad final
   // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
+    LF_ASSERT_MSG((codim == 2 && subidx < 4) || (codim == 1 && subidx < 4) ||
+                      (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return (codim == 2) ? 1 : 0;
   }
 
@@ -312,6 +318,8 @@ class FeLagrangeO1Segment final
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
+    LF_ASSERT_MSG((codim == 1 && subidx < 2) || (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return (codim == 1) ? 1 : 0;
   }
 
@@ -982,6 +990,9 @@ class FeLagrangeO3Tria final
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 2, "Illegal codim" << codim);
+    LF_ASSERT_MSG((codim == 2 && subidx < 3) || (codim == 1 && subidx < 3) ||
+                      (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return (codim == 1) ? 2 : 1;
   }
 
@@ -1175,6 +1186,8 @@ class FeLagrangeO3Segment final
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
     LF_ASSERT_MSG(codim <= 1, "Illegal codim " << codim);
+    LF_ASSERT_MSG((codim == 1 && subidx < 2) || (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return (codim == 0) ? 2 : 1;
   }
 
@@ -1305,6 +1318,9 @@ class FeLagrangeO3Quad final
   // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
+    LF_ASSERT_MSG((codim == 2 && subidx < 4) || (codim == 1 && subidx < 4) ||
+                      (codim == 0 && subidx == 0),
+                  "codim/subidx out of range.");
     return NumRefShapeFunctions(codim);
   }
 

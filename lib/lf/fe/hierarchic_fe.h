@@ -266,6 +266,8 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   // clang-format on
   [[nodiscard]] lf::base::size_type NumRefShapeFunctions(
       dim_t codim, sub_idx_t subidx) const override {
+    LF_ASSERT_MSG((codim == 0 && subidx == 0) || (codim == 1 && subidx < 2),
+                  "codim/subidx out of range.");
     return NumRefShapeFunctions(codim);
   }
 
