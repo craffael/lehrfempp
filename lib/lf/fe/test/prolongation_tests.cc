@@ -180,4 +180,47 @@ TEST(lf_fe, LagrInterpNodes) {
   }
 }
 
+TEST(lf_fe, ProlongationHierarchicFESpace) {
+  // create a hierarchic fe space, project a function onto it, prolongate it to
+  // a finer mesh and make sure it stays the same.
+
+  auto mesh_coarse = mesh::test_utils::GenerateHybrid2DTestMesh(0);
+
+  // mesh function of order 2
+  auto mf = mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d& x) {
+    return 5 + x.x() + 0.5 * x.y() + x.x() * x.y();
+  });
+
+  // refine mesh adaptively:
+  refinement::MeshHierarchy mh(
+      mesh_coarse, std::make_unique<mesh::hybrid2d::MeshFactory>(2));
+  mh.MarkEdges([&](const mesh::Mesh& m, const mesh::Entity& e) {
+    return m.Index(e) < 4;
+  });
+  mh.RefineMarked();
+  auto mesh_fine = mh.getMesh(1);
+
+  // construct HierarchicScalarFESpaces on the two meshes with degrees [2-4]
+  auto degree_functor_coarse = [&](const mesh::Entity& e) {
+    return mesh_coarse->Index(e) % 3 + 2;
+  };
+  auto fes_coarse = std::make_shared<HierarchicScalarFESpace<double>>(
+      mesh_coarse, degree_functor_coarse);
+  auto degree_functor_fine = [&](const mesh::Entity& e) {
+    return degree_functor_coarse(*mh.ParentEntity(1, e));
+  };
+  auto fes_fine = std::make_shared<HierarchicScalarFESpace<double>>(
+      mesh_fine, degree_functor_fine);
+
+  // project the mesh function into the coarse space:
+  auto coeff_coarse = fe::NodalProjection(*fes_coarse, mf);
+  auto mf_coarse = fe::MeshFunctionFE(fes_coarse, coeff_coarse);
+  EXPECT_LT(std::sqrt(IntegrateMeshFunction(
+                *mesh_coarse, mesh::utils::squaredNorm(mf_coarse - mf), 8)),
+            1e-7);
+
+  // prolongate the coefficient vector:
+  auto mf_fine = prolongate(mh, fes_coarse, fes_fine, coeff_coarse, 0);
+}
+
 }  // namespace lf::fe::test

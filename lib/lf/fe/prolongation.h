@@ -32,19 +32,20 @@ namespace lf::fe {
 template <typename SCALAR_COEFF, typename FES_COARSE, typename FES_FINE>
 [[nodiscard]] Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> prolongate(
     const lf::refinement::MeshHierarchy &mh,
-    std::shared_ptr<const FES_COARSE> fespace_coarse,
-    std::shared_ptr<const FES_FINE> fespace_fine,
+    std::shared_ptr<FES_COARSE> fespace_coarse,
+    std::shared_ptr<FES_FINE> fespace_fine,
     const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> &dofs_coarse,
     lf::base::size_type level_coarse) {
   // Assert that the FES_* are actually FE spaces
   using scalar_fe_coarse_t = typename FES_COARSE::Scalar;
   using scalar_fe_fine_t = typename FES_FINE::Scalar;
   static_assert(
-      std::is_convertible_v<FES_COARSE &, ScalarFESpace<scalar_fe_coarse_t> &>,
+      std::is_convertible_v<FES_COARSE &,
+                            const ScalarFESpace<scalar_fe_coarse_t> &>,
       "Invalid coarse FE space provided");
-  static_assert(
-      std::is_convertible_v<FES_FINE &, ScalarFESpace<scalar_fe_fine_t> &>,
-      "Invalid fine FE space provided");
+  static_assert(std::is_convertible_v<FES_FINE &,
+                                      const ScalarFESpace<scalar_fe_fine_t> &>,
+                "Invalid fine FE space provided");
   // Obtain the dofhandlers from the fe spaces
   const lf::assemble::DofHandler &dofh_coarse{fespace_coarse->LocGlobMap()};
   const lf::assemble::DofHandler &dofh_fine{fespace_fine->LocGlobMap()};
