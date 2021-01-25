@@ -122,7 +122,7 @@ class MeshFunctionGradFE {
   std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space_;
   /** @brief _Reference_ to basis expansion coefficient vector for
    * finite-element function */
-  const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
+  Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> dof_vector_;
 };
 
 // deduction guide

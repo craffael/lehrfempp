@@ -112,7 +112,7 @@ class MeshFunctionFE {
 
  private:
   std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space_;
-  const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector_;
+  Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> dof_vector_;
 };
 
 // deduction guide
