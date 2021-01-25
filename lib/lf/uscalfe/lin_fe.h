@@ -104,7 +104,8 @@ class LinearFELaplaceElementMatrix {
  * ~~~
  * std::function<auto(const lf::mesh::Entity &cell,const Eigen::MatrixXd &)>
  * ~~~
- *         which supplies the source function, see @ref fe::MeshFunctionGlobal.
+ *         which supplies the source function, see @ref
+ * mesh::utils::MeshFunctionGlobal.
  *
  * Computations employ edge midpoint quadrature.
  *
