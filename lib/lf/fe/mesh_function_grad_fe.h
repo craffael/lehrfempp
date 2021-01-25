@@ -57,10 +57,9 @@ class MeshFunctionGradFE {
    * expansion coefficients. Thus, this vector has to be "kept alive" as long
    * as the mesh function exists.
    */
-  MeshFunctionGradFE(
-      std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
-      const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& dof_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(dof_vector) {}
+  MeshFunctionGradFE(std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
+                     Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> dof_vector)
+      : fe_space_(std::move(fe_space)), dof_vector_(std::move(dof_vector)) {}
 
   /**
    * @brief Convenience method to retrieve the underlying mesh

@@ -58,10 +58,9 @@ class MeshFunctionFE {
    * expansion coefficients. Thus, this vector has to be "kept alive" as long as
    * the mesh function exists.
    */
-  MeshFunctionFE(
-      std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
-      const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>& coeff_vector)
-      : fe_space_(std::move(fe_space)), dof_vector_(coeff_vector) {}
+  MeshFunctionFE(std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
+                 Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1> coeff_vector)
+      : fe_space_(std::move(fe_space)), dof_vector_(std::move(coeff_vector)) {}
 
   /** @brief Evaluate the mesh function on a MeshEntity
    *
