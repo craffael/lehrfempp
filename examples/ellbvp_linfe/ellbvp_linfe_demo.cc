@@ -325,7 +325,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     // boundary conditions
     if (no_Dirichlet_edges > 0) {
       // Obtain specification for shape functions on edges
-      auto rsf_edge_p =
+      const auto* rsf_edge_p =
           fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
       LF_ASSERT_MSG(rsf_edge_p != nullptr,
                     "FE specification for edges missing");

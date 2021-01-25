@@ -102,7 +102,7 @@ int main() {
     // The top lid is driven with velocity 1
     auto dirichlet_funct = [](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       Eigen::Vector2d v;
       v << 1, 0;

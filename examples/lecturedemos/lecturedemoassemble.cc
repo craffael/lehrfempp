@@ -13,7 +13,7 @@ namespace lecturedemo {
 
 // clang-format off
 /* SAM_LISTING_BEGIN_1 */
-  Eigen::Matrix<double, 3, 3> LinFELaplaceElemMatProvider::Eval(
+  Eigen::Matrix<double, 3, 3> LinFELaplaceElemMatProvider::Eval( // NOLINT
     const lf::mesh::Entity &tria) {
     // Throw error in case no triangular cell
     LF_VERIFY_MSG(tria.RefEl() == lf::base::RefEl::kTria(),
@@ -45,7 +45,7 @@ namespace lecturedemo {
 
 // clang-format off
 /* SAM_LISTING_BEGIN_2 */
-  Eigen::Matrix2d LinFEMassEdgeMatProvider::Eval(const lf::mesh::Entity &edge) {
+  Eigen::Matrix2d LinFEMassEdgeMatProvider::Eval(const lf::mesh::Entity &edge) { // NOLINT
     LF_VERIFY_MSG(edge.RefEl() == lf::base::RefEl::kSegment(),
 		  "Unsupported edge type " << edge.RefEl());
     // Obtain endpoint coordinates of the triangle in a 2x3 matrix

@@ -78,7 +78,7 @@ Eigen::VectorXd solvePoisson(
     }
     const lf::geometry::Geometry *geom = entity.Geometry();
     // Find out where the evaluation node corresponding to the DOF is
-    const auto shape_function_layout =
+    const auto *const shape_function_layout =
         fe_space->ShapeFunctionLayout(entity.RefEl());
     const auto num_dofs = dofh.NumLocalDofs(entity);
     const auto glob_dof_idxs = dofh.GlobalDofIndices(entity);
@@ -101,7 +101,7 @@ Eigen::VectorXd solvePoisson(
   std::cout << "\t\t> Solving LSE" << std::endl;
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
-  const Eigen::VectorXd solution = solver.solve(rhs);
+  Eigen::VectorXd solution = solver.solve(rhs);
 
   // Return the resulting solution vector
   return solution;

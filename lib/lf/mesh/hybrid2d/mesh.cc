@@ -288,7 +288,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       ss << "Edge " << eip.first_node() << " <-> " << eip.second_node() << ": ";
       const AdjCellsList &acl(edat.adj_cells_list);
       const GeometryPtr &gptr(edat.geo_uptr);
-      for (auto &i : acl) {
+      for (const auto &i : acl) {
         ss << "[" << i.cell_idx << "," << i.edge_idx << "] ";
       }
       SPDLOG_LOGGER_TRACE(Logger(), ss.str());
@@ -454,7 +454,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         }
         const AdjCellsList &acl(edat.adj_cells_list);
         const GeometryPtr &gptr(edat.geo_uptr);
-        for (auto &i : acl) {
+        for (const auto &i : acl) {
           ss_log_line << "[" << i.cell_idx << "," << i.edge_idx << "] ";
         }
         ss_log_line << " geo = " << std::endl;

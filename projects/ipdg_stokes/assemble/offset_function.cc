@@ -26,7 +26,7 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   const Eigen::Matrix<double, 2, 3> normals =
       projects::ipdg_stokes::mesh::computeOutwardNormals(entity);
   // Construct the basis functions from the curl of the standard hat functions
-  const auto geom = entity.Geometry();
+  const auto *geom = entity.Geometry();
   const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
   const Eigen::MatrixXd ref_grads =
       hat_func.GradientsReferenceShapeFunctions(Eigen::VectorXd::Zero(2))
@@ -42,12 +42,12 @@ Eigen::MatrixXd PiecewiseBoundaryNormalJumpAssembler::Eval(
   // to get the size of the element matrix
   int boundary_node_count = 0;
   int boundary_edge_count = 0;
-  for (const auto node : nodes) {
+  for (const auto *const node : nodes) {
     if (boundary_(*node)) {
       ++boundary_node_count;
     }
   }
-  for (const auto edge : edges) {
+  for (const auto *const edge : edges) {
     if (boundary_(*edge)) {
       ++boundary_edge_count;
     }
@@ -116,7 +116,7 @@ Eigen::VectorXd createOffsetFunction(
   Eigen::SparseMatrix<double> Js = J.makeSparse();
   // Assemble the right hand side from the provided dirichlet data
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NumDofs() + 1);
-  for (const auto cell : mesh->Entities(0)) {
+  for (const auto *const cell : mesh->Entities(0)) {
     const Eigen::Matrix<double, 2, 3> normals =
         projects::ipdg_stokes::mesh::computeOutwardNormals(*cell);
     const auto edges = cell->SubEntities(1);

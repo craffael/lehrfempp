@@ -42,15 +42,15 @@ int main() {
     // create a MeshDataSet that stores for every point the adjacent cells:
     lf::mesh::utils::CodimMeshDataSet<std::vector<const lf::mesh::Entity*>>
         adjacent_cells(mesh, 2);
-    for (auto& ep : mesh->Entities(0)) {
-      for (auto& sp : ep->SubEntities(2)) {
+    for (const auto& ep : mesh->Entities(0)) {
+      for (const auto& sp : ep->SubEntities(2)) {
         adjacent_cells(*sp).push_back(ep);
       }
     }
 
     // find the point entity at the origin (0,0):
     Eigen::Matrix<double, 0, 1> zero;
-    const auto origin = std::find_if(
+    const auto* const origin = std::find_if(
         mesh->Entities(2).begin(), mesh->Entities(2).end(), [&](auto ep) {
           auto coord = ep->Geometry()->Global(zero);
           return coord.norm() < 1e-10;

@@ -71,8 +71,8 @@ class MeshFunctionTransfer {
    */
   decltype(auto) operator()(const lf::mesh::Entity &e,
                             const Eigen::MatrixXd &local) const {
-    auto rel_geom = mh_.GeometryInParent(level_fine_, e);
-    auto parent = mh_.ParentEntity(level_fine_, e);
+    const auto *rel_geom = mh_.GeometryInParent(level_fine_, e);
+    const auto *parent = mh_.ParentEntity(level_fine_, e);
     auto local_parent = rel_geom->Global(local);
     for (lf::base::size_type lvl = level_fine_ - 1; lvl > level_coarse_;
          --lvl) {

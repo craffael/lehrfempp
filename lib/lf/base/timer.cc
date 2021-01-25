@@ -173,7 +173,7 @@ const std::string& AutoTimer::FormatString() const { return format_; }
 
 void AutoTimer::Report() {
   auto string = timer_.Format(format_);
-  if (auto ostream = std::get_if<std::ostream*>(&output_)) {
+  if (auto* ostream = std::get_if<std::ostream*>(&output_)) {
     (**ostream) << string << std::endl;
   } else {
     std::get<1>(output_).first->log(std::get<1>(output_).second, string);

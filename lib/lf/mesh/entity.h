@@ -114,7 +114,7 @@ class Entity {
    * indicate missing geometric information.
    *
    */
-  [[nodiscard]] virtual geometry::Geometry* Geometry() const = 0;
+  [[nodiscard]] virtual const geometry::Geometry* Geometry() const = 0;
 
   /**
    * @brief Describes the reference element type of this entity.

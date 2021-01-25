@@ -155,7 +155,8 @@ int main(int /*argc*/, char ** /*argv*/) {
         return tmp_res;
       };
 
-      auto fe = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
+      const auto *fe =
+          fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
       res = localQuadFunction(
           *mesh_p,
           {{lf::base::RefEl::kSegment(),

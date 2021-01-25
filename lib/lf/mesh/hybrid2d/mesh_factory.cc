@@ -56,7 +56,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
   if (ref_el == base::RefEl::kSegment()) {
     std::array<size_type, 2> ns{};
     unsigned char count = 0;
-    for (auto& n : nodes) {
+    for (const auto& n : nodes) {
       LF_ASSERT_MSG(n < nodes_.size(),
                     "node " << n
                             << " specified in call to AddEntity must be "
@@ -77,7 +77,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
   // LF_ASSERT_MSG(geometry, "Geometry is required for elements (codim=0)");
   std::array<size_type, 4> ns{};
   unsigned char count = 0;
-  for (auto& n : nodes) {
+  for (const auto& n : nodes) {
     LF_ASSERT_MSG(count < ref_el.NumNodes(),
                   "ref_el = " << ref_el << ", but nodes contains " << count + 1
                               << "node indices");

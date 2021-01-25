@@ -86,7 +86,7 @@ Eigen::VectorXd solvePoisson(
   std::cout << "\t\t> Solving LSE" << std::endl;
   Eigen::SparseMatrix<double> A = A_COO.makeSparse();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
-  const Eigen::VectorXd solution = solver.solve(rhs);
+  Eigen::VectorXd solution = solver.solve(rhs);
 
   // Return the resulting dof vector
   return solution;

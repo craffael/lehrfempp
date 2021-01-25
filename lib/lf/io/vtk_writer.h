@@ -856,13 +856,13 @@ void VtkWriter::WritePointData(const std::string& name,
     data.name = name;
 
     // evaluate at nodes:
-    for (auto n : mesh_->Entities(dim_mesh)) {
+    for (const auto* n : mesh_->Entities(dim_mesh)) {
       data.data[mesh_->Index(*n)] = mesh_function(*n, origin)[0];
     }
 
     for (int codim = static_cast<int>(dim_mesh - 1);
          codim >= static_cast<char>(codim_); --codim) {
-      for (auto e : mesh_->Entities(codim)) {
+      for (const auto* e : mesh_->Entities(codim)) {
         auto ref_el = e->RefEl();
         if (order_ == 1 || (order_ == 2 && ref_el == base::RefEl::kTria())) {
           continue;
@@ -893,14 +893,14 @@ void VtkWriter::WritePointData(const std::string& name,
     data.name = name;
 
     // evaluate at nodes:
-    for (auto n : mesh_->Entities(dim_mesh)) {
+    for (const auto* n : mesh_->Entities(dim_mesh)) {
       PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[mesh_->Index(*n)],
                                                  mesh_function(*n, origin)[0]);
     }
 
     for (int codim = static_cast<int>(dim_mesh - 1);
          codim >= static_cast<char>(codim_); --codim) {
-      for (auto e : mesh_->Entities(codim)) {
+      for (const auto* e : mesh_->Entities(codim)) {
         auto ref_el = e->RefEl();
         if (order_ < 2 || (order_ < 3 && ref_el == base::RefEl::kTria())) {
           continue;
@@ -955,7 +955,7 @@ void VtkWriter::WriteCellData(const std::string& name,
     data.data.resize(mesh_->NumEntities(codim_));
     data.name = name;
     constexpr int rows = T::RowsAtCompileTime;
-    for (auto p : mesh_->Entities(codim_)) {
+    for (const auto* p : mesh_->Entities(codim_)) {
       this->PadWithZeros<rows, Scalar>(
           data.data[mesh_->Index(*p)],
           mesh_function(*p, barycenters[p->RefEl().Id()])[0]);
@@ -965,7 +965,7 @@ void VtkWriter::WriteCellData(const std::string& name,
     VtkFile::ScalarData<T> data{};
     data.data.resize(mesh_->NumEntities(codim_));
     data.name = name;
-    for (auto e : mesh_->Entities(codim_)) {
+    for (const auto* e : mesh_->Entities(codim_)) {
       data.data[mesh_->Index(*e)] =
           mesh_function(*e, barycenters[e->RefEl().Id()])[0];
     }

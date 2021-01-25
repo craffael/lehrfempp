@@ -191,11 +191,11 @@ std::tuple<double, double> computeErrorsSquareDomain(
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
-  const auto qr_segment =
+  auto qr_segment =
       lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2 * degree - 1);
-  const auto qr_tria =
+  auto qr_tria =
       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2 * degree - 1);
-  const auto qr_quad =
+  auto qr_quad =
       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2 * degree - 1);
   const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
     const lf::base::RefEl refel = entity.RefEl();
@@ -281,9 +281,9 @@ std::tuple<double, double> computeErrorsLDomain(
   std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   Eigen::VectorXd boundary_dofs = Eigen::VectorXd::Zero(dofh.NumDofs());
-  for (const auto edge : mesh->Entities(1)) {
+  for (const auto *const edge : mesh->Entities(1)) {
     if (boundary(*edge)) {
-      const auto sfl = fe_space->ShapeFunctionLayout(*edge);
+      const auto *const sfl = fe_space->ShapeFunctionLayout(*edge);
       const auto eval_nodes = sfl->EvaluationNodes();
       const Eigen::RowVectorXd nodal_values = Eigen::Map<Eigen::RowVectorXd>(
           mf_u(*edge, eval_nodes).data(), eval_nodes.cols());
@@ -311,11 +311,11 @@ std::tuple<double, double> computeErrorsLDomain(
 
   // Compute the H1 and L2 errors
   std::cout << "\t\t> Computing Error Norms" << std::endl;
-  const auto qr_segment =
+  auto qr_segment =
       lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2 * degree - 1);
-  const auto qr_tria =
+  auto qr_tria =
       lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2 * degree - 1);
-  const auto qr_quad =
+  auto qr_quad =
       lf::quad::make_QuadRule(lf::base::RefEl::kQuad(), 2 * degree - 1);
   const auto quadrule_provider = [&](const lf::mesh::Entity &entity) {
     const lf::base::RefEl refel = entity.RefEl();

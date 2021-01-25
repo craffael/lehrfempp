@@ -417,7 +417,6 @@ class MeshHierarchy {
    */
   void initGeometryInParent();
 
- private:
   /** @brief the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;
   /** @brief The mesh factory to be used to creating a new mesh */
@@ -441,7 +440,7 @@ class MeshHierarchy {
    * This method is used for setting refinement edges on coarsest meshes.
    * Called in the constructor of MeshHierarchy.
    */
-  [[nodiscard]] sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
+  [[nodiscard]] static sub_idx_t LongestEdge(const lf::mesh::Entity &T);
 
  public:
   /**
@@ -517,7 +516,7 @@ class EntityCenterPositionSelector {
   bool operator()(const lf::mesh::Entity &ent) const {
     const lf::base::RefEl ref_el_type = ent.RefEl();
     // Obtain shape of entity
-    lf::geometry::Geometry *geo_ptr = ent.Geometry();
+    const lf::geometry::Geometry *geo_ptr = ent.Geometry();
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {

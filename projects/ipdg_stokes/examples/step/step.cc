@@ -78,7 +78,7 @@ Eigen::VectorXd solveStep(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   // tube boundaries
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
     static constexpr double eps = 1e-10;
-    const auto geom = edge.Geometry();
+    const auto *const geom = edge.Geometry();
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
     Eigen::Vector2d v;
@@ -167,7 +167,7 @@ int main() {
     auto dirichlet_funct =
         [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
       Eigen::Vector2d v;

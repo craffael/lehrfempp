@@ -53,7 +53,7 @@ struct IsScalar<std::complex<T>, std::enable_if_t<std::is_arithmetic_v<T>>> {
  * to a Eigen::Matrix.
  */
 template <class T>
-constexpr bool is_scalar = IsScalar<T>::value;
+inline constexpr bool is_scalar = IsScalar<T>::value;
 
 }  // namespace lf::base
 
