@@ -26,12 +26,13 @@ fi
 
 if [ -z "$ct" ]; then
   echo "clang-tidy or clang-tidy-10 not found in path"
+  exit 1
 fi
 echo $ct
 version=$($ct --version)
 if [[ ! $version =~ "LLVM version 10." ]]; then
   echo "ERROR: Found clang-tidy but it doesn't have version 10.x"
-  exit
+  exit 1
 fi
 
 # Parse commandline arguments to see if --files option has been passed:
