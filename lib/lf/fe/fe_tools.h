@@ -19,7 +19,6 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 
-
 #include "scalar_fe_space.h"
 
 namespace lf::fe {

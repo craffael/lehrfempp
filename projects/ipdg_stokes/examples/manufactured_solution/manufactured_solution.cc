@@ -28,13 +28,6 @@
 #include <sstream>
 #include <string>
 
-#include <filesystem>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-#include <sstream>
-#include <string>
-
 /**
  * @brief Compute the analytic flow velocity
  * @param n Number of rings around the origin

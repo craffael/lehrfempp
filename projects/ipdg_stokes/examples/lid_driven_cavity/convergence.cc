@@ -21,12 +21,6 @@
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
 
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-#include <sstream>
-#include <string>
-
 #include <cmath>
 #include <iomanip>
 #include <iostream>
