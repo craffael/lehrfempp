@@ -10,16 +10,16 @@
  * @copyright MIT License
  */
 
-#include <algorithm>
-#include <cmath>
-#include <vector>
-
 #include <lf/base/base.h>
 #include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
+#include <algorithm>
+#include <cmath>
+#include <vector>
 
 #include "product_dofhandler.h"
 #include "product_element_matrix_provider.h"

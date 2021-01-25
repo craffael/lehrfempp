@@ -7,6 +7,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+
 #include <iostream>
 
 namespace lf::mesh {

@@ -1,12 +1,12 @@
 #include "build_system_matrix.h"
 
-#include <vector>
-
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
 #include <lf/io/vtk_writer.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/lagr_fe.h>
+
+#include <vector>
 
 #include "offset_function.h"
 #include "piecewise_const_element_matrix_provider.h"

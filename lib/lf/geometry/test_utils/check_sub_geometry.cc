@@ -7,6 +7,7 @@
  */
 
 #include "check_sub_geometry.h"
+
 #include <gtest/gtest.h>
 
 namespace lf::geometry::test_utils {

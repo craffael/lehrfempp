@@ -1,5 +1,7 @@
 #include "quad_o1.h"
+
 #include <cmath>
+
 #include "point.h"
 #include "segment_o1.h"
 #include "tria_o1.h"

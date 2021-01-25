@@ -1,8 +1,8 @@
 /** @brief Demonstrates the construction of a structured mesh in LehrFEM++ */
 
+#include <boost/program_options.hpp>
 #include <iostream>
 
-#include <boost/program_options.hpp>
 #include "lf/base/base.h"
 #include "lf/io/io.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"

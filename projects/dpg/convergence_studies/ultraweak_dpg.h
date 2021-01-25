@@ -9,14 +9,14 @@
 #ifndef PROJECTS_DPG_CS_ULTRAWEAK_DPG_H
 #define PROJECTS_DPG_CS_ULTRAWEAK_DPG_H
 
-#include <cmath>
-
 #include <lf/base/base.h>
 #include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <cmath>
 
 #include "../dpg_element_matrix_provider.h"
 #include "../dpg_element_vector_provider.h"
@@ -25,7 +25,6 @@
 #include "../product_element_vector_provider_builder.h"
 #include "../product_fe_space.h"
 #include "../product_fe_space_factory.h"
-
 #include "../test/convection_diffusion_ell_bvp.h"
 
 // utility type to return the reported energy norms:

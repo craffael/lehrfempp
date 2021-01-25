@@ -10,11 +10,11 @@
  * @copyright MIT License
  */
 
-#include <iostream>
-#include <typeinfo>
-
 #include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
+#include <typeinfo>
 
 #include "dpg.h"
 

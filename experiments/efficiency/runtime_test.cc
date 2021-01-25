@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+
 #include "lf/base/base.h"
 
 static const int N = 10;

@@ -10,12 +10,12 @@
  * @copyright MIT License
  */
 
-#include <iostream>
-#include <vector>
-
 #include <lf/base/base.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
+#include <vector>
 
 #include "dpg.h"
 #include "product_fe_space.h"
@@ -125,7 +125,7 @@ class ProductElementMatrixProvider {
 template <typename ptr, typename vector>
 ProductElementMatrixProvider(ptr fe_space_tiral, ptr fe_space_test,
                              vector subproviders)
-    ->ProductElementMatrixProvider<typename ptr::element_type::SCALAR>;
+    -> ProductElementMatrixProvider<typename ptr::element_type::SCALAR>;
 
 // evaluation method
 template <typename SCALAR>

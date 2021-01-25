@@ -4,11 +4,12 @@
  */
 
 #include "mesh_hierarchy.h"
-#include "lf/mesh/hybrid2d/hybrid2d.h"
-#include "lf/mesh/utils/utils.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
+#include "lf/mesh/hybrid2d/hybrid2d.h"
+#include "lf/mesh/utils/utils.h"
 
 namespace lf::refinement {
 

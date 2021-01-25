@@ -11,7 +11,9 @@
 
 #include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
+
 #include <typeinfo>
+
 #include "dpg.h"
 
 namespace projects::dpg {

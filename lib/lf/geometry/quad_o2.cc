@@ -7,6 +7,7 @@
  */
 
 #include "quad_o2.h"
+
 #include "point.h"
 
 namespace lf::geometry {

@@ -14,12 +14,10 @@
 #include <lf/mesh/mesh.h>
 #include <lf/uscalfe/uscalfe.h>
 
-#include "product_fe_space.h"
-
 #include "discontinuous_fe_constant.h"
-
 #include "discontinuous_scalar_reference_finite_element.h"
 #include "dpg.h"
+#include "product_fe_space.h"
 #include "trace_scalar_reference_finite_element.h"
 
 namespace projects::dpg {

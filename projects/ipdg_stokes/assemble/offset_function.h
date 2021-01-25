@@ -7,11 +7,11 @@
  * boundary conditions
  */
 
-#include <functional>
-
 #include <lf/assemble/dofhandler.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/mesh_data_set.h>
+
+#include <functional>
 
 namespace projects::ipdg_stokes {
 

@@ -7,17 +7,17 @@
  */
 
 #include <gtest/gtest.h>
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <cmath>
-#include <iostream>
-
 #include <lf/assemble/assemble.h>
 #include <lf/fe/fe.h>
 #include <lf/fe/test_utils/test_utils.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <cmath>
+#include <iostream>
 
 namespace lf::fe::test {
 

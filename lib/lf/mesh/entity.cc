@@ -1,4 +1,5 @@
 #include "entity.h"
+
 #include "lf/mesh/utils/utils.h"
 
 namespace lf::mesh {

@@ -1,4 +1,5 @@
 #include "check_geometry_orientation.h"
+
 #include <gtest/gtest.h>
 
 namespace lf::mesh::test_utils {

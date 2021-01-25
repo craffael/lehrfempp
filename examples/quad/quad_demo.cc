@@ -7,13 +7,13 @@
  * @copyright MIT License
  */
 
-#include <boost/math/constants/constants.hpp>
-#include <boost/program_options.hpp>
-
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/quad/quad.h>
+
+#include <boost/math/constants/constants.hpp>
+#include <boost/program_options.hpp>
 
 #include "lf/refinement/test/refinement_test_utils.h"
 

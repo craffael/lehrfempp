@@ -7,7 +7,6 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <lf/base/base.h>
 
 namespace lf::base::test {

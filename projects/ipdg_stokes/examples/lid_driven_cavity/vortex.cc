@@ -3,12 +3,7 @@
  * @brief Solve the lid driven cavity experiment on a nonuniform mesh
  */
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-
-#include <cassert>
-#include <filesystem>
-
+#include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
@@ -17,11 +12,14 @@
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-
-#include <build_system_matrix.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <cassert>
+#include <filesystem>
 
 /**
  * @brief Solves the lid driven cavity problem on a domain [0,100]x[0,100]

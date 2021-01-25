@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
+
 #include "mesh_function_utils.h"
 
 namespace lf::mesh::utils::test {

@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+
 #include "lf/io/io.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"

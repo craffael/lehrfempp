@@ -7,6 +7,7 @@
  */
 
 #include "quad_rule_cache.h"
+
 #include "make_quad_rule.h"
 
 namespace lf::quad {

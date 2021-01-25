@@ -10,7 +10,9 @@
 #ifndef __1bd576875bb04c168d82c67cc451cbe7
 #define __1bd576875bb04c168d82c67cc451cbe7
 #include <lf/mesh/hybrid2d/hybrid2d.h>
+
 #include <string>
+
 #include "lf/io/gmsh_reader.h"
 
 namespace lf::io::test_utils {

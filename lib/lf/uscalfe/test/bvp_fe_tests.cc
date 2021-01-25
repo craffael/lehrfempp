@@ -14,11 +14,12 @@
 
 #include <gtest/gtest.h>
 #include <lf/fe/fe.h>
-#include <lf/uscalfe/uscalfe.h>
-#include <iostream>
-#include "fe_testutils.h"
-
 #include <lf/mesh/utils/utils.h>
+#include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
+
+#include "fe_testutils.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "sec_ord_ell_bvp.h"
 

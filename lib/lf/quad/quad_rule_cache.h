@@ -11,6 +11,7 @@
 #define __5b965019a2a74585a86f055191a31def
 
 #include <deque>
+
 #include "quad_rule.h"
 
 namespace lf::quad {

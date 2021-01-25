@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <lf/base/base.h>
 #include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
@@ -7,7 +6,6 @@
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh.h>
-
 #include <utils.h>
 
 #include <array>

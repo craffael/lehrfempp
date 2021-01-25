@@ -5,13 +5,7 @@
 
 #define _USE_MATH_DEFINES
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-#include <sstream>
-#include <string>
-
+#include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
@@ -22,13 +16,18 @@
 #include <lf/quad/quad.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/refinement.h>
-
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <string>
 
 using lf::uscalfe::operator-;
 using lf::uscalfe::operator*;

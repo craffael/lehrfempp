@@ -9,6 +9,7 @@
 #ifndef __3178e8d1e7bf4366bcb00cdb4ebbf5fb
 #define __3178e8d1e7bf4366bcb00cdb4ebbf5fb
 #include <utility>
+
 #include "lf/base/base.h"
 
 namespace lf::geometry {

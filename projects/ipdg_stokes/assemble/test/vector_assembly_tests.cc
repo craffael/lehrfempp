@@ -1,7 +1,4 @@
 #include <gtest/gtest.h>
-
-#include <piecewise_const_element_vector_provider.h>
-
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -13,6 +10,7 @@
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+#include <piecewise_const_element_vector_provider.h>
 
 #include <array>
 

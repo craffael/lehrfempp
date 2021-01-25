@@ -6,10 +6,11 @@
  * @copyright MIT License
  */
 
+#include "print_info.h"
+
 #include <typeinfo>
 
 #include "lf/geometry/geometry.h"
-#include "print_info.h"
 
 namespace lf::mesh::utils {
 

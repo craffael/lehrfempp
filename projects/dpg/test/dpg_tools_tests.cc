@@ -6,12 +6,12 @@
  * @copyright MIT License
  */
 
+#include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 
-#include <gtest/gtest.h>
 #include <array>
 #include <cmath>
 #include <iostream>

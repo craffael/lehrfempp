@@ -13,7 +13,9 @@
  */
 #include <gtest/gtest.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <iostream>
+
 #include "lf/mesh/test_utils/test_meshes.h"
 
 namespace lf::mesh::utils::test {

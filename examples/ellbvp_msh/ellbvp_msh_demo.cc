@@ -7,10 +7,6 @@
  * @copyright MIT License
  */
 
-#include <filesystem>
-#include <fstream>
-#include <iomanip>
-
 #include <lf/assemble/assemble.h>
 #include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
@@ -19,6 +15,10 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
 
 int main() {
   // abbreviations for types

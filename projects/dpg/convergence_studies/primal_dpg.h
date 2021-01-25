@@ -24,7 +24,6 @@
 #include "../product_element_vector_provider_builder.h"
 #include "../product_fe_space.h"
 #include "../product_fe_space_factory.h"
-
 #include "../test/convection_diffusion_ell_bvp.h"
 
 // utility type to return the reported energy norms.

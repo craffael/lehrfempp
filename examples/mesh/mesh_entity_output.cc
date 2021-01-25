@@ -2,13 +2,14 @@
  * Demo for outputting information about mesh entity elements
  */
 
+#include <lf/io/io.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
+#include <lf/mesh/utils/utils.h>
+
 #include <algorithm>  // for std::find
 #include <iostream>
 #include <vector>
 
-#include <lf/io/io.h>
-#include <lf/mesh/hybrid2d/hybrid2d.h>
-#include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
 
 int main() {

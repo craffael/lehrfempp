@@ -8,9 +8,9 @@
  * @copyright MIT License
  */
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
 
 #include "../discontinuous_fe_constant.h"
 #include "lagr_test_utils.h"

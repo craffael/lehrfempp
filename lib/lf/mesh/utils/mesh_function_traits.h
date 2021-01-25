@@ -12,6 +12,7 @@
 #define __7e4ffaa81e244723acbfbbaea68e03b1
 
 #include <lf/mesh/mesh.h>
+
 #include <type_traits>
 
 namespace lf::mesh::utils {

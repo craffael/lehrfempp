@@ -1,12 +1,11 @@
 #include "piecewise_const_element_matrix_provider.h"
 
+#include <lf/uscalfe/lagr_fe.h>
+#include <utils.h>
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-
-#include <lf/uscalfe/lagr_fe.h>
-
-#include <utils.h>
 
 namespace projects::ipdg_stokes::assemble {
 

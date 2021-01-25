@@ -13,12 +13,12 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/assemble/assemble.h>
+#include <lf/mesh/utils/utils.h>
+
 #include <iostream>
 
-#include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
-
-#include <lf/assemble/assemble.h>
 
 namespace lf::assemble::test {
 

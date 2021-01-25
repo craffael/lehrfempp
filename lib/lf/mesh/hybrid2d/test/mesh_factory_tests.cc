@@ -11,7 +11,9 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <Eigen/Eigen>
+
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 #include "lf/mesh/test_utils/test_meshes.h"

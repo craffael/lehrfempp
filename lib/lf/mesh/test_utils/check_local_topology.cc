@@ -1,4 +1,5 @@
 #include "check_local_topology.h"
+
 #include <gtest/gtest.h>
 
 namespace lf::mesh::test_utils {

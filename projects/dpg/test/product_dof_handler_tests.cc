@@ -7,20 +7,18 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-
-#include <lf/mesh/utils/utils.h>
-#include "lf/mesh/test_utils/test_meshes.h"
-
 #include <lf/assemble/assemble.h>
+#include <lf/mesh/utils/utils.h>
+
+#include <iostream>
 
 #include "../discontinuous_fe_constant.h"
 #include "../loc_comp_dpg.h"
 #include "../product_dofhandler.h"
 #include "../product_element_matrix_provider_builder.h"
 #include "../product_fe_space_factory.h"
-
 #include "assembly_test_utils.h"
+#include "lf/mesh/test_utils/test_meshes.h"
 namespace projects::dpg::test {
 
 // simple test to check consistencies in the dofhandler:

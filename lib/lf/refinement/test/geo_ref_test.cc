@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/refinement/refinement.h>
+
 #include <iostream>
 
 namespace lf::refinement::test {

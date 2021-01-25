@@ -9,9 +9,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
 
 #include "../discontinuous_fe_constant.h"
 #include "../trace_scalar_reference_finite_element.h"

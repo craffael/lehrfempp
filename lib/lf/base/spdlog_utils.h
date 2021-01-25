@@ -13,6 +13,7 @@
 #include <fmt/ranges.h>
 #include <spdlog/formatter.h>
 #include <spdlog/logger.h>
+
 #include <Eigen/Eigen>
 #include <memory>
 

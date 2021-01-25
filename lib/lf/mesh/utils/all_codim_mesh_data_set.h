@@ -10,7 +10,9 @@
 #define __df4311acf6554f11919b7b1edfc5b3dd
 
 #include <lf/mesh/mesh.h>
+
 #include <boost/container/vector.hpp>
+
 #include "lf/base/lf_assert.h"
 #include "mesh_data_set.h"
 

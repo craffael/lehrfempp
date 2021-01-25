@@ -141,8 +141,8 @@ extern std::shared_ptr<spdlog::logger> diffusion_element_matrix_provider_logger;
 
 template <class PTR, class DIFF_COEFF>
 DiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha)
-    ->DiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
-                                     DIFF_COEFF>;
+    -> DiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
+                                      DIFF_COEFF>;
 
 // First constructor (internal construction of quadrature rules
 template <typename SCALAR, typename DIFF_COEFF>
@@ -318,8 +318,8 @@ extern std::shared_ptr<spdlog::logger> mass_element_matrix_provider_logger;
 
 template <class PTR, class REACTION_COEFF>
 MassElementMatrixProvider(PTR fe_space, REACTION_COEFF gamma)
-    ->MassElementMatrixProvider<typename PTR::element_type::Scalar,
-                                REACTION_COEFF>;
+    -> MassElementMatrixProvider<typename PTR::element_type::Scalar,
+                                 REACTION_COEFF>;
 
 // First constructor
 template <typename SCALAR, typename REACTION_COEFF>
@@ -470,8 +470,8 @@ extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
 MassEdgeMatrixProvider(PTR, COEFF coeff,
                        EDGESELECTOR edge_predicate = base::PredicateTrue{})
-    ->MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
-                             EDGESELECTOR>;
+    -> MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
+                              EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -598,8 +598,8 @@ extern std::shared_ptr<spdlog::logger>
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
 ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
-    ->ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
-                                      MESH_FUNCTION>;
+    -> ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
+                                       MESH_FUNCTION>;
 
 // Constructors
 template <typename SCALAR, typename MESH_FUNCTION>
@@ -761,8 +761,8 @@ extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
-    ->ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
-                                   EDGESELECTOR>;
+    -> ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
+                                    EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once

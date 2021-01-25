@@ -9,6 +9,7 @@
 #include "timer.h"
 
 #include <fmt/format.h>
+
 #include <boost/config.hpp>
 #include <chrono>
 #include <iostream>

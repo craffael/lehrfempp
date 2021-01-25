@@ -2,8 +2,10 @@
 #define __7ed6b0d4d9244155819c464fc4eb9bbb
 
 #include <lf/base/base.h>
+
 #include <Eigen/Eigen>
 #include <memory>
+
 #include "refinement_pattern.h"
 
 namespace lf::geometry {

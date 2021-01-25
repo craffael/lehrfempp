@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
-#include <iostream>
-#include "lf/mesh/hybrid2d/mesh.h"
-
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
+
+#include "lf/mesh/hybrid2d/mesh.h"
 
 namespace lf::mesh::test_utils {
 bool checkMeshCompleteness(const Mesh& mesh) {

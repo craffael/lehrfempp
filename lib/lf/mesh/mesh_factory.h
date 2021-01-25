@@ -10,6 +10,7 @@
 
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
+
 #include "mesh_interface.h"
 
 namespace lf::mesh {

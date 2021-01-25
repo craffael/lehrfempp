@@ -2,9 +2,10 @@
 #define __e98a803fac5b430a8ff634ceb2f809aX
 
 #include <lf/mesh/mesh.h>
-#include "mesh.h"
 
 #include <iostream>
+
+#include "mesh.h"
 
 namespace lf::mesh::hybrid2d {
 

@@ -9,9 +9,9 @@
 
 #ifndef __1323b89d2f584608940fcb37657142cc
 #define __1323b89d2f584608940fcb37657142cc
-#include <vector>
-
 #include <lf/mesh/mesh.h>
+
+#include <vector>
 
 namespace lf::mesh::utils {
 

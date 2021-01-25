@@ -15,8 +15,8 @@
  */
 
 #include <lf/assemble/assemble.h>
-
 #include <lf/fe/scalar_fe_space.h>
+
 #include "lagr_fe.h"
 
 namespace lf::uscalfe {

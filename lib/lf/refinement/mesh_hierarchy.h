@@ -8,6 +8,7 @@
  */
 
 #include <iostream>
+
 #include "hybrid2d_refinement_pattern.h"
 
 namespace lf::refinement {

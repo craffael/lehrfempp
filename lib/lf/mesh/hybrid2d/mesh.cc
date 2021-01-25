@@ -7,8 +7,10 @@
  */
 
 #include "mesh.h"
+
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
+
 #include <iostream>
 #include <numeric>
 

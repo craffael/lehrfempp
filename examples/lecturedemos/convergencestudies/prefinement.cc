@@ -13,8 +13,6 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
-
-#include <lf/io/io.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/refinement.h>
 

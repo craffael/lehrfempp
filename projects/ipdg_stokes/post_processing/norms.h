@@ -13,10 +13,9 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <utils.h>
 
 #include <functional>
-
-#include <utils.h>
 
 namespace projects::ipdg_stokes {
 

@@ -1,12 +1,13 @@
 #include "gmsh_reader.h"
 
 #include <lf/geometry/geometry.h>
+
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_string.hpp>
-#include "eigen_fusion_adapter.h"
-
 #include <fstream>
+
+#include "eigen_fusion_adapter.h"
 
 using size_type = lf::mesh::Mesh::size_type;
 

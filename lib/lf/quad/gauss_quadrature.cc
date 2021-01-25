@@ -8,6 +8,7 @@
  */
 
 #include "gauss_quadrature.h"
+
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 

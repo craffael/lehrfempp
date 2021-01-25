@@ -7,13 +7,13 @@
  * system
  */
 
-#include <Eigen/Dense>
-#include <functional>
-#include <utility>
-
 #include <lf/mesh/entity.h>
 #include <lf/mesh/utils/mesh_data_set.h>
 #include <lf/quad/quad_rule.h>
+
+#include <Eigen/Dense>
+#include <functional>
+#include <utility>
 
 namespace projects::ipdg_stokes {
 

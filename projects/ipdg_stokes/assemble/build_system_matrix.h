@@ -7,17 +7,17 @@
  * Dirichlet boundary conditions
  */
 
-#include <Eigen/Dense>
-#include <functional>
-#include <tuple>
-#include <utility>
-
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/mesh/entity.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/mesh_data_set.h>
 #include <lf/quad/quad_rule.h>
+
+#include <Eigen/Dense>
+#include <functional>
+#include <tuple>
+#include <utility>
 
 namespace projects::ipdg_stokes {
 

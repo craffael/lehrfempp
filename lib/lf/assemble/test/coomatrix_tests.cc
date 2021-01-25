@@ -13,9 +13,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <lf/assemble/fix_dof.h>
+
+#include <iostream>
 
 namespace lf::assemble::test {
 

@@ -12,8 +12,6 @@
 #ifndef __c3071f8127a44f7e8cb57f0b1dd3335a
 #define __c3071f8127a44f7e8cb57f0b1dd3335a
 
-#include "gmsh_file_v4.h"
-
 #include <boost/fusion/adapted.hpp>
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
@@ -39,7 +37,9 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_binary.hpp>
 #include <boost/spirit/include/qi_uint.hpp>
+
 #include "eigen_fusion_adapter.h"
+#include "gmsh_file_v4.h"
 
 // Boost Fusion Adaptions (needed so boost spirit can parse directly into
 // GmshFileV4 struct)

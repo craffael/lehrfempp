@@ -56,7 +56,7 @@ class MeshFunctionVelocity {
 template <typename T, typename SCALAR_COEFF>
 MeshFunctionVelocity(std::shared_ptr<T>,
                      const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
-    ->MeshFunctionVelocity<typename T::Scalar, SCALAR_COEFF>;
+    -> MeshFunctionVelocity<typename T::Scalar, SCALAR_COEFF>;
 
 }  // end namespace post_processing
 

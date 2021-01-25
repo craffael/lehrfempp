@@ -11,6 +11,7 @@
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
 #include <iostream>
 
 //! [quadrule]

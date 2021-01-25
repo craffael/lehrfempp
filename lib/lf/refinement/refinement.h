@@ -8,6 +8,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+
 #include "hybrid2d_refinement_pattern.h"
 #include "mesh_hierarchy.h"
 #include "refutils.h"
