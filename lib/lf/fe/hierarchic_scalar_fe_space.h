@@ -16,6 +16,7 @@
 namespace lf::fe {
 
 /**
+ * @headerfile lf/fe/fe.h
  * @brief Finite Element Space that supports arbitrary, local degrees.
  *
  * @tparam SCALAR underlying scalar type, usually either `double` or
