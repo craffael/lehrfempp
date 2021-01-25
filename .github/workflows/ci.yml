@@ -174,23 +174,23 @@ jobs:
       - name: doxygen 
         run: |
           . ./ci/install_doxygen.sh
-        cd $GITHUB_WORKSPACE
-        export CXX=g++-8
-        cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-        cd Build
-        make doxygen
-        cd doc/doxygen/html
-        mkdir with_projects
-        shopt -s extglob
-        mv !(with_projects) with_projects
-        cd ../../..
-        cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-        unbuffer make doxygen 2>&1 | tee output
-        if grep -q "warning:" "output"; then
-          echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
-          grep "warning:" "output"
-          exit 1
-        fi
+          cd $GITHUB_WORKSPACE
+          export CXX=g++-8
+          cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+          cd Build
+          make doxygen
+          cd doc/doxygen/html
+          mkdir with_projects
+          shopt -s extglob
+          mv !(with_projects) with_projects
+          cd ../../..
+          cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+          unbuffer make doxygen 2>&1 | tee output
+          if grep -q "warning:" "output"; then
+            echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
+            grep "warning:" "output"
+            exit 1
+          fi
       - name: deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         if: github.ref == 'refs/heads/master'
