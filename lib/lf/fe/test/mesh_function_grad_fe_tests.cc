@@ -14,7 +14,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/test/mesh_function_utils.h"
 
-namespace lf::uscalfe::test {
+namespace lf::fe::test {
 
 TEST(lf_fe_meshFunctionGradFE, ProjectionTest) {
   // This test projects a linear mesh function onto a fe space and compares
@@ -26,7 +26,7 @@ TEST(lf_fe_meshFunctionGradFE, ProjectionTest) {
   auto mf_grad =
       mesh::utils::MeshFunctionConstant(Eigen::VectorXd(Eigen::Vector2d(1, 2)));
 
-  auto fespaceO1 = std::make_shared<FeSpaceLagrangeO1<double>>(mesh);
+  auto fespaceO1 = std::make_shared<uscalfe::FeSpaceLagrangeO1<double>>(mesh);
 
   auto projected = lf::fe::NodalProjection(*fespaceO1, mf_linear);
   auto mf_grad_projected = lf::fe::MeshFunctionGradFE(fespaceO1, projected);
@@ -46,11 +46,11 @@ TEST(lf_fe_meshFunctionGradFE, ProjectionTestQuad) {
     return Eigen::VectorXd(Eigen::Vector2d(x[1], x[0] + 2.0));
   });
 
-  auto fespaceO2 = std::make_shared<FeSpaceLagrangeO2<double>>(mesh);
+  auto fespaceO2 = std::make_shared<uscalfe::FeSpaceLagrangeO2<double>>(mesh);
 
   auto projected = NodalProjection(*fespaceO2, mf_quad);
   auto mf_grad_projected = lf::fe::MeshFunctionGradFE(fespaceO2, projected);
   mesh::utils::test::checkMeshFunctionEqual(*mesh, mf_grad, mf_grad_projected);
 }
 
-}  // namespace lf::uscalfe::test
+}  // namespace lf::fe::test

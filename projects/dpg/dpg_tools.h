@@ -258,7 +258,7 @@ lf::mesh::utils::CodimMeshDataSet<bool> flagEntitiesOnOutflowBoundary(
  * traces. This allows us to impose both Dirichlet and Neumann boundary
  * conditions as essential boundary conditions on the corresponding components
  * and is a generalization of the lehrfempp function
- * lf::uscalfe::InitEssentialConditionFromFunction to product spaces.
+ * lf::fe::InitEssentialConditionFromFunction to product spaces.
  *
  *
  *  This function is meant to supply information for the
