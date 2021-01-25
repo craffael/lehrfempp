@@ -4,7 +4,6 @@
  */
 
 #define _USE_MATH_DEFINES
-
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/fe/fe.h>
@@ -21,6 +20,13 @@
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <string>
 
 #include <filesystem>
 #include <iomanip>

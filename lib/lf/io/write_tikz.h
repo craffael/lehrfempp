@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "lf/mesh/hybrid2d/hybrid2d.h"
+
 namespace lf::io {
 
 /**

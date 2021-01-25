@@ -8,6 +8,9 @@
 #include "lf/base/base.h"
 #include "lf/mesh/mesh.h"
 
+#include "lf/base/base.h"
+#include "lf/mesh/mesh.h"
+
 namespace lf::io {
 
 TikzOutputCtrl operator|(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {

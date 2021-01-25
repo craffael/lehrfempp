@@ -4,7 +4,6 @@
  */
 
 #define _USE_MATH_DEFINES
-
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -19,6 +18,14 @@
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <algorithm>
+#include <boost/program_options.hpp>
+#include <cstring>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 #include <algorithm>
 #include <boost/program_options.hpp>

@@ -15,6 +15,8 @@
  * @copyright MIT License
  */
 
+#include <lf/mesh/utils/utils.h>
+
 #include "fe_space_lagrange_o1.h"
 #include "fe_space_lagrange_o2.h"
 #include "fe_space_lagrange_o3.h"

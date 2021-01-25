@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+#include <iostream>
+
 #include "fe_testutils.h"
 
 namespace lf::uscalfe::test {
