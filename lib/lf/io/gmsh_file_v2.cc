@@ -7,6 +7,8 @@
  * @copyright MIT License
  */
 
+#include "gmsh_file_v2.h"
+
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/adapt_struct_named.hpp>
 #include <boost/fusion/include/boost_array.hpp>
@@ -25,9 +27,8 @@
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_binary.hpp>
-#include "eigen_fusion_adapter.h"
 
-#include "gmsh_file_v2.h"
+#include "eigen_fusion_adapter.h"
 
 using size_type = lf::mesh::Mesh::size_type;
 

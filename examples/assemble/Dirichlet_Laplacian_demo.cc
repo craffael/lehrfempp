@@ -7,10 +7,6 @@
  * @copyright MIT License
  */
 
-#include <cmath>
-
-#include <boost/program_options.hpp>
-
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
@@ -18,10 +14,13 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <boost/program_options.hpp>
+#include <cmath>
+#include <filesystem>
+
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
-
-#include <filesystem>
 
 static unsigned int dbg_ctrl = 0;
 const unsigned int dbg_dofh = 1;

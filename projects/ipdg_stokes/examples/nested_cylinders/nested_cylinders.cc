@@ -3,13 +3,8 @@
  * @brief Compute the convergence of the nested cylinders experiment
  */
 
-#include <algorithm>
-#include <cstring>
-#include <filesystem>
-#include <iomanip>
-#include <iostream>
-#include <string>
-
+#include <annulus_triag_mesh_builder.h>
+#include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
@@ -17,16 +12,19 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
-
-#include <boost/program_options.hpp>
-
-#include <annulus_triag_mesh_builder.h>
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <algorithm>
+#include <boost/program_options.hpp>
+#include <cstring>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 using lf::uscalfe::operator-;
 

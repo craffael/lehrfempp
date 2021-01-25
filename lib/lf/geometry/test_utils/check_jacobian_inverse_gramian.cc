@@ -7,6 +7,7 @@
  */
 
 #include "check_jacobian_inverse_gramian.h"
+
 #include <gtest/gtest.h>
 
 namespace lf::geometry::test_utils {

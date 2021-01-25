@@ -15,9 +15,9 @@
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
-
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <Eigen/Dense>
 #include <Eigen/LU>
 #include <Eigen/Sparse>

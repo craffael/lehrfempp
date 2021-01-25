@@ -1,4 +1,5 @@
 #include "segment_o1.h"
+
 #include "point.h"
 
 namespace lf::geometry {

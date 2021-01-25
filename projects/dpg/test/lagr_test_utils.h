@@ -15,6 +15,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/test/fe_testutils.h>
 #include <lf/uscalfe/uscalfe.h>
+
 #include "../dpg.h"
 
 namespace projects::dpg::test {

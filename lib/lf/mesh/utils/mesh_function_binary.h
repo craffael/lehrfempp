@@ -11,6 +11,7 @@
 #include <Eigen/Eigen>
 #include <type_traits>
 #include <vector>
+
 #include "mesh_function_traits.h"
 
 namespace lf::mesh::utils {

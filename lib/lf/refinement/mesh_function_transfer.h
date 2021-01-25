@@ -5,6 +5,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
+
 #include <Eigen/Dense>
 #include <type_traits>
 
@@ -103,7 +104,7 @@ class MeshFunctionTransfer {
 template <typename MF>
 MeshFunctionTransfer(const lf::refinement::MeshHierarchy &, const MF &,
                      lf::base::size_type, lf::base::size_type)
-    ->MeshFunctionTransfer<MF>;
+    -> MeshFunctionTransfer<MF>;
 
 }  // namespace lf::refinement
 

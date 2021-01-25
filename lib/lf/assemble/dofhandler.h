@@ -15,6 +15,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+
 #include "assembly_types.h"
 
 namespace lf::assemble {

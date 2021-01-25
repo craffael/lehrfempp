@@ -12,7 +12,9 @@
 
 #include <Eigen/src/Core/util/ForwardDeclarations.h>
 #include <lf/quad/quad.h>
+
 #include <memory>
+
 #include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {

@@ -7,6 +7,7 @@
  */
 
 #include "quad.h"
+
 #include "point.h"
 #include "segment.h"
 

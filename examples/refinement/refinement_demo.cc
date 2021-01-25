@@ -8,13 +8,14 @@
  * is stored in the form of MATLAB functions.
  */
 
+#include <lf/io/io.h>
+#include <lf/refinement/mesh_hierarchy.h>
+#include <lf/refinement/refutils.h>
+
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <sstream>
 
-#include <lf/io/io.h>
-#include <lf/refinement/mesh_hierarchy.h>
-#include <lf/refinement/refutils.h>
 #include "lf/base/base.h"
 #include "lf/mesh/hybrid2d/hybrid2d.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"

@@ -3,11 +3,7 @@
  * @brief Solves the problem of computing the flow over a step
  */
 
-#include <filesystem>
-#include <iostream>
-#include <string>
-#include <vector>
-
+#include <build_system_matrix.h>
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -22,13 +18,16 @@
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <filesystem>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using lf::uscalfe::operator-;
 

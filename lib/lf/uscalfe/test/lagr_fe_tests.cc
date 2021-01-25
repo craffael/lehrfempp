@@ -11,13 +11,12 @@
  * @date October 2018
  * @copyright MIT License
  */
-#include <iostream>
-
 #include <gtest/gtest.h>
-
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
 
 #include "fe_testutils.h"
 

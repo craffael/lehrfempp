@@ -8,11 +8,12 @@
  * @copyright MIT License
  */
 
-#include <filesystem>
-
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
+
+#include <filesystem>
+
 #include "lecturedemo.h"
 
 namespace lecturedemo {

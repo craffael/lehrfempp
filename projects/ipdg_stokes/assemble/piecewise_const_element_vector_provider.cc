@@ -2,10 +2,9 @@
 
 #include <lf/base/base.h>
 #include <lf/uscalfe/lagr_fe.h>
+#include <utils.h>
 
 #include <iostream>
-
-#include <utils.h>
 
 namespace projects::ipdg_stokes::assemble {
 

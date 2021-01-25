@@ -1,10 +1,11 @@
-#include <lf/geometry/geometry.h>
-
-#include <iostream>
-#include "lf/mesh/mesh_interface.h"
 #include "tp_triag_mesh_builder.h"
 
+#include <lf/geometry/geometry.h>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
+
+#include "lf/mesh/mesh_interface.h"
 
 namespace lf::mesh::utils {
 

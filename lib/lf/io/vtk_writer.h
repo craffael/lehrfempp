@@ -12,6 +12,7 @@
 
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <Eigen/Eigen>
 #include <boost/variant/variant.hpp>
 #include <string>

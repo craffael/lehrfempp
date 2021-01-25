@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/quad/quad.h>
+
 #include <boost/math/special_functions/factorials.hpp>
 
 namespace lf::quad::test {

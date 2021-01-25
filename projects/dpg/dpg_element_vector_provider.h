@@ -10,6 +10,7 @@
  */
 
 #include <lf/mesh/mesh.h>
+
 #include "dpg.h"
 #include "product_element_matrix_provider.h"
 #include "product_element_vector_provider.h"
@@ -123,7 +124,7 @@ class DpgElementVectorProvider {
 template <class PTR1, class PTR2>
 DpgElementVectorProvider(PTR1 eLoadVectorProvider, PTR2 eStiffnessProvider,
                          PTR2 gramianProvider)
-    ->DpgElementVectorProvider<typename PTR1::element_type::SCALAR>;
+    -> DpgElementVectorProvider<typename PTR1::element_type::SCALAR>;
 
 // evaluation method
 template <typename SCALAR>

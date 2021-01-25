@@ -6,6 +6,7 @@
  */
 
 #include "test_meshes.h"
+
 #include <iostream>
 
 namespace lf::mesh::test_utils {

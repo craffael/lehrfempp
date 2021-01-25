@@ -1,6 +1,7 @@
 /** @file lf_assert.cc */
 
 #include "lf_assert.h"
+
 #include <iostream>
 
 namespace lf::base {

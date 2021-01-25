@@ -10,7 +10,9 @@
 #define PROJECTS_DPG_DISCONTINUOUS_FE_CONSTANT_H
 
 #include <lf/uscalfe/uscalfe.h>
+
 #include <typeinfo>
+
 #include "dpg.h"
 
 namespace projects::dpg {

@@ -6,10 +6,11 @@
  * @copyright MIT License
  */
 
+#include <lf/refinement/mesh_hierarchy.h>
+
 #include <boost/program_options.hpp>
 #include <iostream>
 
-#include <lf/refinement/mesh_hierarchy.h>
 #include "lf/io/io.h"
 
 using size_type = lf::base::size_type;

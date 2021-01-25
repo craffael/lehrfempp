@@ -1,4 +1,5 @@
 #include "tria_o1.h"
+
 #include "point.h"
 #include "segment_o1.h"
 

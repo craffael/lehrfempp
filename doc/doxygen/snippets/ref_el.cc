@@ -1,5 +1,7 @@
 #include "lf/base/ref_el.h"
+
 #include <lf/quad/quad.h>
+
 #include <cassert>
 #include <iostream>
 

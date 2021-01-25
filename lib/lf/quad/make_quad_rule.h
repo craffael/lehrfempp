@@ -7,6 +7,7 @@
  */
 
 #include <lf/base/base.h>
+
 #include "quad_rule.h"
 
 namespace lf::quad {

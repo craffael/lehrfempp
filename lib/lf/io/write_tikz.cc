@@ -1,10 +1,11 @@
 /** @file write_tikz.cc */
 
 #include "write_tikz.h"
-#include "lf/base/base.h"
-#include "lf/mesh/mesh.h"
 
 #include <fstream>
+
+#include "lf/base/base.h"
+#include "lf/mesh/mesh.h"
 
 namespace lf::io {
 

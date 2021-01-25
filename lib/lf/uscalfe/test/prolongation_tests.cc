@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/refinement/mesh_hierarchy.h>

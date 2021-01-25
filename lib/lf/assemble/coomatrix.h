@@ -15,6 +15,7 @@
  */
 
 #include <Eigen/Sparse>
+
 #include "assembly_types.h"
 
 namespace lf::assemble {

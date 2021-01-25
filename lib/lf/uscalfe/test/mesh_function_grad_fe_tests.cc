@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/io/test_utils/read_mesh.h>
 #include <lf/uscalfe/uscalfe.h>
+
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/test/mesh_function_utils.h"
 

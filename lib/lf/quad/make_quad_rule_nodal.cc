@@ -7,6 +7,7 @@
  */
 
 #include "make_quad_rule_nodal.h"
+
 #include <boost/core/ref.hpp>
 
 namespace lf::quad {

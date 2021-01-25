@@ -18,6 +18,7 @@
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
 #include "uniform_scalar_fe_space.h"
 
 namespace lf::uscalfe {

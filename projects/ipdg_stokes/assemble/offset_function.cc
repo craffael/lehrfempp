@@ -1,7 +1,5 @@
 #include "offset_function.h"
 
-#include "utils.h"
-
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/base/base.h>
@@ -12,6 +10,8 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+
+#include "utils.h"
 
 namespace projects::ipdg_stokes::assemble {
 

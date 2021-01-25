@@ -8,14 +8,15 @@
 
 #define _USE_MATH_DEFINES
 
-#include <lf/geometry/geometry.h>
-#include <cmath>
-
-#include <iostream>
-#include "lf/mesh/mesh_interface.h"
 #include "torus_mesh_builder.h"
 
+#include <lf/geometry/geometry.h>
 #include <spdlog/spdlog.h>
+
+#include <cmath>
+#include <iostream>
+
+#include "lf/mesh/mesh_interface.h"
 
 namespace lf::mesh::utils {
 

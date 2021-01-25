@@ -11,9 +11,8 @@
 // line arguments
 #include <spdlog/cfg/argv.h>
 #include <spdlog/cfg/env.h>
-#include <spdlog/spdlog.h>
-
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>

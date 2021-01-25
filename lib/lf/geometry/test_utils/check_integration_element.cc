@@ -7,6 +7,7 @@
  */
 
 #include "check_integration_element.h"
+
 #include <gtest/gtest.h>
 
 namespace lf::geometry::test_utils {

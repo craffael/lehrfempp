@@ -6,11 +6,11 @@
  * @copyright MIT License
  */
 
-#include <thread>
-
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
 #include <spdlog/spdlog.h>
+
+#include <thread>
 
 using namespace std::chrono_literals;
 

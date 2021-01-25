@@ -9,10 +9,10 @@
  * @copyright MIT License
  */
 
-#include <vector>
-
 #include <lf/base/base.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <vector>
 
 #include "dpg.h"
 #include "product_dofhandler.h"

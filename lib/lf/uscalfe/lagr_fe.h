@@ -15,6 +15,7 @@
  */
 
 #include <lf/assemble/dofhandler.h>
+
 #include <iostream>
 #include <typeinfo>
 

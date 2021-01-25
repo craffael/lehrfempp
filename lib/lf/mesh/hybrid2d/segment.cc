@@ -7,6 +7,7 @@
  */
 
 #include "segment.h"
+
 #include "point.h"
 
 namespace lf::mesh::hybrid2d {

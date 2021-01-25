@@ -15,6 +15,8 @@
  * @copyright MIT License
  */
 
+#include <lf/mesh/utils/utils.h>
+
 #include "fe_space_lagrange_o1.h"
 #include "fe_space_lagrange_o2.h"
 #include "fe_space_lagrange_o3.h"
@@ -24,8 +26,6 @@
 #include "mesh_function_fe.h"
 #include "mesh_function_grad_fe.h"
 #include "uniform_scalar_fe_space.h"
-
-#include <lf/mesh/utils/utils.h>
 
 /**
  * @brief Collects data structures and algorithms designed for scalar finite
