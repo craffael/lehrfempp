@@ -29,6 +29,14 @@ namespace lf::fe {
  * The polynomial degree can vary from entity to entity, i.e. local
  * \f$p\f$-refinement is supported.
  *
+ * ### Example usage
+ * The following code snippet computes the solution of the BVP
+ * \f{align}
+ * - \Delta u &= 1 && \text{on }\Omega := [0,1]^2 \\
+ * u &= 0 && \text{on }\partial \Omega
+ * \f}
+ *
+ * @snippet hierarchic_scalar_fe_space_snippets.cc Laplace
  */
 template <typename SCALAR>
 class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
