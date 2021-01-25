@@ -127,7 +127,7 @@ class RefEl {
       sub_sub_entity_index_quad_ = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 
  public:
-  using dim_t = lf::base::dim_t;
+  using dim_t = unsigned int;
   /**
    * @brief Type of the node coordinate iterator that is returned from
    * NodeCoords()

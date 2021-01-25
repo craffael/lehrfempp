@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-modernize-use-trailing-return-type,-clang-analyzer-core.NonNullParamChecker,-clang-analyzer-core.uninitialized.Assign,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.NullDereference,-clang-analyzer-unix.Malloc,-clang-analyzer-unix.API,-clang-analyzer-optin.portability.UnixAPI'
+Checks:          '*,-cert-err58-cpp,-fuchsia*,-cppcoreguidelines-*,-google-readability-namespace-comments,-google-runtime-int,-llvm-*,-misc-macro-parentheses,-cert-dcl21-cpp,-hicpp-no-array-decay,-readability-magic-numbers,-bugprone-exception-escape,-modernize-use-trailing-return-type,-clang-analyzer-core.uninitialized.Assign,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-core.uninitialized.UndefReturn,,-clang-analyzer-unix.Malloc,-clang-analyzer-unix.API,-clang-analyzer-optin.portability.UnixAPI'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'lib/'
 AnalyzeTemporaryDtors: false
