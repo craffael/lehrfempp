@@ -54,7 +54,7 @@ class MeshFunctionFE {
    * @param coeff_vector Defines the coefficients in front of the basis
    * functions of `fe_space`
    *
-   * @warn This constructor just takes a reference to the vector of basis
+   * @warning This constructor just takes a reference to the vector of basis
    * expansion coefficients. Thus, this vector has to be "kept alive" as long as
    * the mesh function exists.
    */

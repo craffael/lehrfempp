@@ -22,9 +22,9 @@ namespace lf::fe {
  * @returns An interpolated vector of basis function coefficients on the fine
  * mesh
  *
- * Objects of type @ref MeshHierarchy contain sequences of _nested_ meshes. A
- * finite-element function on a coarse mesh, which can be regarded as just
- * another continuous function on the meshed domain, can be interpolated to
+ * Objects of type @ref refinement::MeshHierarchy contain sequences of _nested_
+ * meshes. A finite-element function on a coarse mesh, which can be regarded as
+ * just another continuous function on the meshed domain, can be interpolated to
  * yield a finite element function on the next finer mesh. This function
  * realizes the conversion of the corresponding basis expansion coefficient
  * vectors.

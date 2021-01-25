@@ -25,7 +25,7 @@
 namespace lf::fe {
 
 /**
- * @bref computes the `n`-th degree scaled Legendre Polynomial \f$ P_n(x;t)
+ * @brief computes the `n`-th degree scaled Legendre Polynomial \f$ P_n(x;t)
  *\f$
  * @param n The degree of the polynomial
  * @param x The evaluation coordinate

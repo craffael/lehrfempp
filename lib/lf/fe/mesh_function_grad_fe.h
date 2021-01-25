@@ -34,13 +34,13 @@ namespace lf::fe {
  *
  * @note The gradient that is returned by this mesh function is w.r.t. to the
  * global coordinate system of the mesh, i.e. the gradients of the shape
- * function are multiplied by Geometry::JacobianInverseGramian(). Hence, what is
- * returned is a "tangential gradient". For instance, if the evaluation operator
- * is invoked for an edge of a 2D mesh, the gradient of the finite element
- * function in the direction of that edge is returned. If the evaluation is
- * requested for a (curved) triangle in 3D, then a gradient with 3 components is
- * retrurned, which represents the tangential gradient of the finite element
- * function _in global 3D Euclidean coordinates_.
+ * function are multiplied by Geometry::JacobianInverseGramian(). Hence, what
+ * is returned is a "tangential gradient". For instance, if the evaluation
+ * operator is invoked for an edge of a 2D mesh, the gradient of the finite
+ * element function in the direction of that edge is returned. If the
+ * evaluation is requested for a (curved) triangle in 3D, then a gradient with
+ * 3 components is retrurned, which represents the tangential gradient of the
+ * finite element function _in global 3D Euclidean coordinates_.
  */
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionGradFE {
@@ -53,9 +53,9 @@ class MeshFunctionGradFE {
    * @param fe_space the approximation space in which the function lies.
    * @param dof_vector passes the basis expansion coefficients
    *
-   * @warn This constructor just takes a reference to the vector of basis
-   * expansion coefficients. Thus, this vector has to be "kept alive" as long as
-   * the mesh function exists.
+   * @warning This constructor just takes a reference to the vector of basis
+   * expansion coefficients. Thus, this vector has to be "kept alive" as long
+   * as the mesh function exists.
    */
   MeshFunctionGradFE(
       std::shared_ptr<const ScalarFESpace<SCALAR_FE>> fe_space,
@@ -71,8 +71,8 @@ class MeshFunctionGradFE {
   }
 
   /**
-   * @brief Convenience method to retrieve the finite element space to which the
-   * original function belongs (i.e. before taking the gradient)
+   * @brief Convenience method to retrieve the finite element space to which
+   * the original function belongs (i.e. before taking the gradient)
    * @return shared_ptr to UniformScalarFESpace to which the original function
    * belongs (i.e. before taking the gradient)
    */
@@ -95,8 +95,8 @@ class MeshFunctionGradFE {
     auto grad_sf_eval =
         fe_space_->ShapeFunctionLayout(e)->GradientsReferenceShapeFunctions(
             local);
-    // Fetch the coefficients of the global shape functions associated with the
-    // current mesh entity
+    // Fetch the coefficients of the global shape functions associated with
+    // the current mesh entity
     Eigen::Matrix<SCALAR_COEFF, 1, Eigen::Dynamic> local_dofs(
         1, grad_sf_eval.rows());
     auto global_dofs = fe_space_->LocGlobMap().GlobalDofIndices(e);

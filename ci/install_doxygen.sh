@@ -8,16 +8,16 @@ dir=$(pwd)
 
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-if [ ! -d "doxygen-Release_1_8_20" ]; then
-  wget -O - https://github.com/doxygen/doxygen/archive/Release_1_8_20.tar.gz | tar xz
-  cd doxygen-Release_1_8_20
+if [ ! -d "doxygen-Release_1_9_1" ]; then
+  wget -O - https://doxygen.nl/files/doxygen-1.9.1.src.tar.gz | tar xz
+  cd doxygen-1.9.1
   mkdir build
   cd build
   export CXX=g++-9
   cmake -Duse_libclang=ON  ..
   make -j2
 fi
-export PATH=${DEPS_DIR}/doxygen-Release_1_8_20/build/bin:$PATH
+export PATH=${DEPS_DIR}/doxygen-1.9.1/build/bin:$PATH
 doxygen --version
 
 #Change back to where we left off.
