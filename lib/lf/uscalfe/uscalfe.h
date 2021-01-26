@@ -1,5 +1,5 @@
-#ifndef LF_FE_H
-#define LF_FE_H
+#ifndef LF_USCALFE_H
+#define LF_USCALFE_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -20,11 +20,8 @@
 #include "fe_space_lagrange_o1.h"
 #include "fe_space_lagrange_o2.h"
 #include "fe_space_lagrange_o3.h"
-#include "fe_tools.h"
 #include "lin_fe.h"
 #include "loc_comp_ellbvp.h"
-#include "mesh_function_fe.h"
-#include "mesh_function_grad_fe.h"
 #include "uniform_scalar_fe_space.h"
 
 /**
@@ -60,6 +57,8 @@ namespace lf::uscalfe {
 using mesh::utils::operator*;
 using mesh::utils::operator+;
 using mesh::utils::operator-;
+using mesh::utils::adjoint;
+using mesh::utils::conjugate;
 using mesh::utils::squaredNorm;
 using mesh::utils::transpose;
 }  // namespace lf::uscalfe

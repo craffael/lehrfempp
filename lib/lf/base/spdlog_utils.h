@@ -116,8 +116,8 @@ struct fmt::is_range<lf::base::internal::enable_if_eigen<MATRIX>, char> {
 template <class MATRIX>
 struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
   constexpr auto parse(const format_parse_context& ctx) {
-    auto it = ctx.begin();
-    auto end = ctx.end();
+    const auto* it = ctx.begin();
+    const auto* end = ctx.end();
 
     if (it != end && *it != '}') {
       throw format_error("invalid format");

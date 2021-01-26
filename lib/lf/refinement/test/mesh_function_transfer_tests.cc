@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
@@ -15,7 +16,7 @@ TEST(lf_refinement, MeshFunctionTransferConcept) {
   using mf_scalar = lf::mesh::utils::MeshFunctionConstant<double>;
   using mf_matrix = lf::mesh::utils::MeshFunctionConstant<Eigen::MatrixXd>;
   using mf_array = lf::mesh::utils::MeshFunctionConstant<Eigen::ArrayXd>;
-  using mf_fe = lf::uscalfe::MeshFunctionFE<double, double>;
+  using mf_fe = lf::fe::MeshFunctionFE<double, double>;
   ASSERT_TRUE(std::is_copy_constructible_v<mf_scalar>);
   ASSERT_TRUE(std::is_copy_constructible_v<mf_matrix>);
   ASSERT_TRUE(std::is_copy_constructible_v<mf_array>);

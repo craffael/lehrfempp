@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     auto dirichlet_funct =
         [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
       Eigen::Vector2d v = Eigen::Vector2d::Zero();

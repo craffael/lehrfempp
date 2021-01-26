@@ -12,6 +12,8 @@
  * @copyright MIT License
  */
 #include <gtest/gtest.h>
+#include <lf/fe/fe.h>
+#include <lf/fe/test_utils/test_utils.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
@@ -23,7 +25,8 @@
 namespace lf::uscalfe::test {
 
 template <typename SCALAR>
-bool scalarFEEvalNodeTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+bool scalarFEEvalNodeTest(
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Evaluates a random linear combination of reference shape functions
   // at the evaluation nodes for the finite element and then reconstructs
   // the "interpolant" which must agree with what we started from
@@ -103,7 +106,8 @@ TEST(lf_fe_cubic, scalf_fe_coeff_node) {
 }
 
 template <typename SCALAR>
-bool scalarFEInterpTest(const ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+bool scalarFEInterpTest(
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Interpolates random values at interpolation nodes
   // and checks whether the resulting linear combination of
   // basis functions reproduces those values
@@ -385,11 +389,12 @@ template <typename SCALAR, typename FUNCTION, typename FUNCTION_GRAD>
 SCALAR nodalProjectionTest(
     std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTION g,
     FUNCTION_GRAD grad_g, int quad_degree) {
-  auto dof_vector = NodalProjection(*fe_space, g);
-  auto mf_fe = MeshFunctionFE<double, double>(fe_space, dof_vector);
-  auto grad_mf_fe = MeshFunctionGradFE<double, double>(fe_space, dof_vector);
+  auto dof_vector = lf::fe::NodalProjection(*fe_space, g);
+  auto mf_fe = lf::fe::MeshFunctionFE<double, double>(fe_space, dof_vector);
+  auto grad_mf_fe =
+      lf::fe::MeshFunctionGradFE<double, double>(fe_space, dof_vector);
 
-  return IntegrateMeshFunction(
+  return lf::fe::IntegrateMeshFunction(
       *(fe_space->Mesh()),
       squaredNorm(g - mf_fe) + squaredNorm(grad_mf_fe - grad_g), quad_degree);
 }
@@ -530,7 +535,7 @@ TEST(lf_uscalfe_ReactionDiffusion, ComplexReactionDiffusion) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -599,7 +604,7 @@ TEST(lf_uscalfe_MassEdgeMatrixProvider, ComplexEdgeMass) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -665,7 +670,7 @@ TEST(lf_uscalfe_ScalarLoadElementVectorProvider, Complex) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -720,7 +725,7 @@ TEST(lf_uscalfe_ScalarLoadEdgeVectorProvider, Complex) {
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
   auto real_fe_space = std::make_shared<FeSpaceLagrangeO1<double>>(mesh_p);
-  auto complex_fe_space = MakeComplexLagrangeO1FeSpace(mesh_p);
+  auto complex_fe_space = fe::test_utils::MakeComplexLagrangeO1FeSpace(mesh_p);
   auto real_mf = mesh::utils::MeshFunctionConstant(1.0);
   auto complex_mf = mesh::utils::MeshFunctionConstant(std::complex(0., 1.));
   auto real_matrix_mf = mesh::utils::MeshFunctionConstant(
@@ -789,8 +794,8 @@ SCALAR reactionDiffusionTest(
                         provider, matrix);
 
   // project functions onto the fe space
-  auto a_vec = NodalProjection<double>(*fe_space, a);
-  auto b_vec = NodalProjection<double>(*fe_space, b);
+  auto a_vec = lf::fe::NodalProjection<double>(*fe_space, a);
+  auto b_vec = lf::fe::NodalProjection<double>(*fe_space, b);
 
   // evaluate bilinear form on projected functions:
   auto product = (a_vec.transpose() * matrix.makeSparse() * b_vec).eval();

@@ -19,7 +19,7 @@ jobs:
       - name: clang-format
         run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-10 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
-    name: clang-tidy-8 ${{ matrix.name }}
+    name: clang-tidy-10 ${{ matrix.name }}
     needs: clang-format
     runs-on: ubuntu-20.04
     strategy:
@@ -31,13 +31,13 @@ jobs:
            paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
 
     env:
-      COMPILER: "clang++-8"
+      COMPILER: "clang++-10"
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: sudo apt-get install clang-tidy-8 g++-8
+        run: sudo apt-get install clang-tidy-10 g++-8
       - name: Restore cache
         uses: actions/cache@v2
         with:
@@ -152,7 +152,7 @@ jobs:
   doxygen:
     name: doxygen
     runs-on: ubuntu-20.04
-    needs: [windows, compile_test, clang-tidy, clang-format]
+    needs: [clang-format]
     env:
       CXX: "clang++-7"
       BUILD_TYPE: "Debug"
@@ -160,7 +160,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install packages
-        run: sudo apt remove clang-10 clang-8 llvm-8 llvm-10 && sudo apt-get install graphviz g++-8 flex bison libclang-9-dev libclang-cpp9
+        run: sudo apt remove clang-10 clang-8 llvm-8 llvm-10 && sudo apt-get install graphviz g++-8 flex bison libclang-9-dev libclang-cpp9 expect
       - name: Restore cache
         uses: actions/cache@v2
         with:
@@ -185,7 +185,12 @@ jobs:
           mv !(with_projects) with_projects
           cd ../../..
           cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-          make doxygen
+          unbuffer make doxygen 2>&1 | tee output
+          if grep -q "warning:" "output"; then
+            echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
+            grep "warning:" "output"
+            exit 1
+          fi
       - name: deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         if: github.ref == 'refs/heads/master'

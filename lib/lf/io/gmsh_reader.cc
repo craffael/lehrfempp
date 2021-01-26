@@ -102,7 +102,7 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
 std::vector<std::pair<size_type, std::string>> GmshReader::PhysicalEntities(
     dim_t codim) const {
   std::vector<std::pair<size_type, std::string>> result;
-  for (auto& p : nr_2_name_) {
+  for (const auto& p : nr_2_name_) {
     if (p.second.second != codim) {
       continue;
     }
@@ -187,7 +187,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
   gi2i.resize(is_main_node.size(), -1);
 
   for (std::size_t i = 0; i < msh_file.Nodes.size(); ++i) {
-    auto& n = msh_file.Nodes[i];
+    const auto& n = msh_file.Nodes[i];
     if (gi2i.size() <= n.first) {
       gi2i.resize(n.first + 1, -1);
     }
@@ -214,8 +214,8 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
 
   std::size_t begin = 0;
   for (std::size_t end = 0; end < msh_file.Elements.size(); ++end) {
-    auto& begin_element = msh_file.Elements[begin];
-    auto& end_element = msh_file.Elements[end];
+    const auto& begin_element = msh_file.Elements[begin];
+    const auto& end_element = msh_file.Elements[end];
     auto ref_el = RefElOf(end_element.Type);
     auto codim = dim_mesh - ref_el.Dimension();
     if (begin_element.NodeNumbers == end_element.NodeNumbers && begin != end &&
@@ -307,7 +307,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
       mesh::utils::make_AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
 
   for (dim_t c = 0; c <= dim_mesh; ++c) {
-    for (auto e : mesh_->Entities(c)) {
+    for (const auto* const e : mesh_->Entities(c)) {
       auto mi = mesh_->Index(*e);
       if (c == dim_mesh && mi >= mi2gi[dim_mesh].size()) {
         // this point did not appear as a gmsh element in the file -> don't
@@ -328,7 +328,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
   // 6) Create mapping physicalEntityNr <-> physicalEntityName:
   //////////////////////////////////////////////////////////////////////////
 
-  for (auto& pe : msh_file.PhysicalEntities) {
+  for (const auto& pe : msh_file.PhysicalEntities) {
     name_2_nr_.insert(
         std::pair{pe.Name, std::pair{pe.Number, dim_mesh - pe.Dimension}});
     nr_2_name_.insert(
@@ -390,8 +390,8 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       if (eb.dimension == dim_mesh) {
         // mark main nodes
         auto ref_el = RefElOf(eb.element_type);
-        for (auto& element : eb.elements) {
-          auto& node_indices = std::get<1>(element);
+        for (const auto& element : eb.elements) {
+          const auto& node_indices = std::get<1>(element);
           for (unsigned int i = 0; i < ref_el.NumNodes(); ++i) {
             auto node_tag = node_indices[i];
             if (is_main_node.size() <= node_tag - min_node_tag) {
@@ -426,9 +426,9 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
   gi2i.resize(is_main_node.size(), {-1, -1});
 
   for (std::size_t j = 0; j < msh_file.nodes.node_blocks.size(); ++j) {
-    auto& node_block = msh_file.nodes.node_blocks[j];
+    const auto& node_block = msh_file.nodes.node_blocks[j];
     for (std::size_t k = 0; k < node_block.nodes.size(); ++k) {
-      auto& n = node_block.nodes[k];
+      const auto& n = node_block.nodes[k];
       LF_ASSERT_MSG(gi2i.size() > n.first - min_node_tag,
                     "error: node_tag is higher than max_node_tag");
 
@@ -456,14 +456,14 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
 
   for (std::size_t ebi = 0; ebi < msh_file.elements.element_blocks.size();
        ++ebi) {
-    auto& element_block = msh_file.elements.element_blocks[ebi];
+    const auto& element_block = msh_file.elements.element_blocks[ebi];
     std::size_t begin = 0;
     auto ref_el = RefElOf(element_block.element_type);
     auto codim = dim_mesh - ref_el.Dimension();
 
     for (std::size_t end = 0; end < element_block.elements.size(); ++end) {
-      auto& begin_element = element_block.elements[begin];
-      auto& end_element = element_block.elements[end];
+      const auto& begin_element = element_block.elements[begin];
+      const auto& end_element = element_block.elements[end];
 
       if (begin_element.second == end_element.second && begin != end) {
         // This entity appears more than once
@@ -599,7 +599,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       mesh::utils::make_AllCodimMeshDataSet<std::vector<size_type>>(mesh_);
 
   for (dim_t c = 0; c <= dim_mesh; ++c) {
-    for (auto e : mesh_->Entities(c)) {
+    for (const auto* e : mesh_->Entities(c)) {
       auto mi = mesh_->Index(*e);
       if (c == dim_mesh && mi >= mi2gi[dim_mesh].size()) {
         // this point did not appear as a gmsh element in the file -> don't
@@ -609,7 +609,8 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
       if (mi2gi[c].size() > mi) {
         std::vector<size_type> temp;
         for (auto& gmsh_index : mi2gi[c][mi]) {
-          auto& element_block = msh_file.elements.element_blocks[gmsh_index];
+          const auto& element_block =
+              msh_file.elements.element_blocks[gmsh_index];
           auto& physical_tags = gmei2gmphi[c][element_block.entity_tag];
           temp.insert(std::end(temp), std::begin(physical_tags),
                       std::end(physical_tags));
@@ -623,7 +624,7 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
   // 7) Create mapping physicalEntityNr <-> physicalEntityName:
   //////////////////////////////////////////////////////////////////////////
 
-  for (auto& pn : msh_file.physical_names) {
+  for (const auto& pn : msh_file.physical_names) {
     name_2_nr_.insert(std::pair{
         pn.name, std::pair{pn.physical_tag, dim_mesh - pn.dimension}});
     nr_2_name_.insert(std::pair{pn.physical_tag,

@@ -195,12 +195,60 @@ struct UnaryOpTranspose {
   }
 };
 
+struct UnaryOpAdjoint {
+  // adjoint of eigen matrix
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    std::vector<Eigen::Matrix<S, C, R>> result(u.size());
+    for (std::size_t i = 0; i < u.size(); ++i) {
+      result[i] = u[i].adjoint();
+    }
+    return result;
+  }
+};
+
+struct UnaryOpConjugate {
+  // conjugate of scalar type
+  template <class U, class = std::enable_if_t<base::is_scalar<U>>>
+  auto operator()(const std::vector<U>& u, int /*unused*/) const {
+    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
+                                                             u.size());
+    std::vector<U> result(u.size());
+    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(&result[0], 1, u.size());
+    rm = um.conjugate();
+    return result;
+  }
+
+  // conjugate of eigen matrix
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Matrix<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    std::vector<Eigen::Matrix<S, R, C>> result(u.size());
+    for (std::size_t i = 0; i < u.size(); ++i) {
+      result[i] = u[i].conjugate();
+    }
+    return result;
+  }
+
+  // conjugate of eigen array
+  template <class S, int R, int C, int O, int MR, int MC>
+  auto operator()(const std::vector<Eigen::Array<S, R, C, O, MR, MC>>& u,
+                  int /*unused*/) const {
+    std::vector<Eigen::Array<S, R, C>> result(u.size());
+    for (std::size_t i = 0; i < u.size(); ++i) {
+      result[i] = u[i].conjugate();
+    }
+    return result;
+  }
+};
+
 }  // namespace internal
 
 /**
  * @brief Applies the unary minus operator to a \ref mesh_function
  * "mesh function".
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the original mesh function.
  * @param a The original mesh function.
  * @return `-a`, where the minus operator is applied pointwise everywhere on the
@@ -215,7 +263,7 @@ auto operator-(const A& a) {
 
 /**
  * @brief Pointwise squared norm of another \ref mesh_function "mesh function"
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the wrapped mesh function.
  * @param a The original mesh function
  * @return \ref mesh_function representing `|a|^2` (pointwise)
@@ -230,18 +278,54 @@ auto squaredNorm(const A& a) {
 
 /**
  * @brief Pointwise transpose of an `Eigen::Matrix` or `Eigen::Array`
- * @relates lf::uscalfe::MeshFunctionUnary
+ * @relates lf::mesh::utils::MeshFunctionUnary
  * @tparam A The type of the wrapped mesh function.
  * @param a The original \ref mesh_function
  * @return \ref mesh_function representing the pointwise transpose of `a`.
  */
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto transpose(const A& a) {
-  static_assert(
-      base::is_eigen_matrix<MeshFunctionReturnType<A>> ||
-          base::is_eigen_array<MeshFunctionReturnType<A>>,
-      "transpose() only supported for Eigen::Matrix valued mesh functions");
+  static_assert(base::is_eigen_matrix<MeshFunctionReturnType<A>> ||
+                    base::is_eigen_array<MeshFunctionReturnType<A>>,
+                "transpose() only supported for Eigen::Matrix and Eigen::Array "
+                "valued mesh functions");
   return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
+}
+
+/**
+ * @brief Pointwise adjoint of an `Eigen::Matrix`, i.e. the conjugate transposed
+ * of the matrix.
+ * @relates lf::mesh::utils::MeshFunctionUnary
+ * @tparam A The type of the original mesh function.
+ * @param a The original mesh function whose adjoint should be taken.
+ * @return \ref mesh_function representing the pointwise adjoint of `a`.
+ */
+template <class A, class = std::enable_if_t<isMeshFunction<A>>>
+auto adjoint(const A& a) {
+  using returnType_t = MeshFunctionReturnType<A>;
+  static_assert(base::is_eigen_matrix<returnType_t>,
+                "adjoint only supported for Eigen::Matrix valued mesh "
+                "functions.");
+  return MeshFunctionUnary(internal::UnaryOpAdjoint{}, a);
+}
+
+/**
+ * @brief Pointwise conjuagte of an `Eigen::Matrix`, `Eigen::Array` or scalar
+ * valued mesh function.
+ * @relates lf::mesh::utils::MeshFunctionUnary
+ * @tparam A The type of the original mesh function.
+ * @param a The original mesh function that should be conjugated.
+ * @return \ref mesh_function representing the pointwise conjugate of `a`.
+ */
+template <class A, class = std::enable_if_t<isMeshFunction<A>>>
+auto conjugate(const A& a) {
+  using returnType_t = MeshFunctionReturnType<A>;
+  static_assert(
+      base::is_eigen_matrix<returnType_t> ||
+          base::is_eigen_array<returnType_t> || base::is_scalar<returnType_t>,
+      "conjugate() supports only Eigen::Matrix, Eigen::Array or Scalar valued "
+      "mesh functions.");
+  return MeshFunctionUnary(internal::UnaryOpConjugate{}, a);
 }
 
 }  // namespace lf::mesh::utils

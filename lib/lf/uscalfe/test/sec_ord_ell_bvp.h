@@ -15,6 +15,7 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
 
@@ -239,13 +240,9 @@ SecOrdEllBVPLagrFELinSys(
 
   // III: Fixing coefficients due to essential boundary conditions
   if (no_Dirichlet_edges > 0) {
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p =
-        fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
-    LF_ASSERT_MSG(rfs_edge_p != nullptr, "FE specification for edges missing");
-
     // Obtain flags and values for degrees of freedom located on Dirichlet edges
     auto ess_bdc_flags_values{InitEssentialConditionFromFunction(
-        dofh, *rfs_edge_p,
+        *fe_space,
         [&bvp_p, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && bvp_p->EssentialConditionsOnEdge(edge));
         },

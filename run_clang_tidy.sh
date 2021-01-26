@@ -5,8 +5,7 @@
 #
 # HOW TO USE:
 # - change into your CMake build directory and call this script from there.
-# - If you want to run it in parallel, append e.g. `-j4` as an argument.
-# - If you want to use a custom regex for filtering the files on which clang-tidy is run, add the `--files`
+# - If you want to use a custom regex for filtering the files on which clang-tidy is run, add the `--files` option.
 
 set -e
 
@@ -21,21 +20,20 @@ fi
 if [ -x "$(command -v clang-tidy)" ]; then
   ct=clang-tidy
 fi
-if [ -x "$(command -v clang-tidy-5.0)" ]; then
-  ct=clang-tidy-5.0
-fi
-if [ -x "$(command -v clang-tidy-6.0)" ]; then
-  ct=clang-tidy-6.0
-fi
-if [ -x "$(command -v clang-tidy-8)" ]; then
-  ct=clang-tidy-8
+if [ -x "$(command -v clang-tidy-10)" ]; then
+  ct=clang-tidy-10
 fi
 
 if [ -z "$ct" ]; then
-  echo "clang-tidy, clang-tidy-8, clang-tidy-6.0 or clang-tidy-5.0 not found in path"
+  echo "clang-tidy or clang-tidy-10 not found in path"
+  exit 1
 fi
 echo $ct
-$ct --version
+version=$($ct --version)
+if [[ ! $version =~ "LLVM version 10." ]]; then
+  echo "ERROR: Found clang-tidy but it doesn't have version 10.x"
+  exit 1
+fi
 
 # Parse commandline arguments to see if --files option has been passed:
 FILES='^((?!snippets|/test/|/test_utils/).)*$'

@@ -44,14 +44,14 @@ struct IsEigenArrayTester {
  * @brief Check if a given type T is an Eigen::Matrix
  */
 template <class T>
-constexpr bool is_eigen_matrix = std::is_same_v<
+inline constexpr bool is_eigen_matrix = std::is_same_v<
     decltype(internal::IsEigenMatrixTester::Test(std::declval<T>(), 0)), bool>;
 
 /**
  * @brief Check if a given type T is an Eigen::Array
  */
 template <class T>
-constexpr bool is_eigen_array = std::is_same_v<
+inline constexpr bool is_eigen_array = std::is_same_v<
     decltype(internal::IsEigenArrayTester::Test(std::declval<T>(), 0)), bool>;
 
 }  // namespace lf::base

@@ -330,7 +330,7 @@ ReactionDiffusionElementMatrixProvider<
                             .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad.conjugate() +
+    mat += w * (trf_grad.adjoint() * alpha_trf_grad +
                 (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
                     (pfe.PrecompReferenceShapeFunctions().col(k).adjoint()));
   }
@@ -629,10 +629,11 @@ ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
                                        MESH_FUNCTION>;
 
 // Constructors
-template <typename SCALAR, typename FUNCTOR>
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+template <typename SCALAR, typename MESH_FUNCTION>
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+        MESH_FUNCTION f)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -648,11 +649,11 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
   }
 }
 
-template <typename SCALAR, typename FUNCTOR>
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+template <typename SCALAR, typename MESH_FUNCTION>
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
-        quad_rule_collection_t qr_collection)
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+        MESH_FUNCTION f, quad_rule_collection_t qr_collection)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -796,7 +797,7 @@ class ScalarLoadEdgeVectorProvider {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_edge_p FE specification on edge
+   * @param fe_space UniformScalarFESpace which describes the shape functions.
    * @param g functor object providing edge data
    * @param edge_sel selector predicate for active edges.
    *
@@ -818,7 +819,7 @@ class ScalarLoadEdgeVectorProvider {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_edge_p FE specification on edge
+   * @param fe_space UniformScalarFESpace which describes the shape functions.
    * @param g functor object providing edge data
    * @param quadrule user-supplied quadrature rule object
    * @param edge_sel selector predicate for active edges.

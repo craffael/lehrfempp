@@ -37,7 +37,7 @@ int main() {
   int num_eye_elements = 0;
   auto mesh = reader.mesh();
   auto physical_entity_nr_eyes = reader.PhysicalEntityName2Nr("eyes");
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_eyes)) {
       ++num_eye_elements;
     }
@@ -47,7 +47,7 @@ int main() {
   // count the number of edges that form the mouth
   int num_mouth_edges = 0;
   auto physical_entity_nr_mouth = reader.PhysicalEntityName2Nr("mouth");
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_mouth)) {
       ++num_mouth_edges;
     }
@@ -57,7 +57,7 @@ int main() {
   // count the total number of elements in the face (including eyes)
   int num_face_elements = 0;
   auto physical_entity_nr_face = reader.PhysicalEntityName2Nr("face");
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_face)) {
       ++num_face_elements;
     }
@@ -71,7 +71,7 @@ int main() {
   // everywhere else
   {
     lf::mesh::utils::CodimMeshDataSet<int> data(mesh, 0);
-    for (auto e : mesh->Entities(0)) {
+    for (const auto* e : mesh->Entities(0)) {
       data(*e) = static_cast<int>(
           reader.IsPhysicalEntity(*e, physical_entity_nr_eyes));
     }
@@ -82,17 +82,17 @@ int main() {
   // zero everywhere else.
   auto mds = lf::mesh::utils::make_CodimMeshDataSet<int>(mesh, 2, 0);
   // mark the eyes
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_eyes)) {
-      for (auto node : e->SubEntities(2)) {
+      for (const auto* node : e->SubEntities(2)) {
         mds->operator()(*node) = 2;
       }
     }
   }
   // mark the mouth
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_mouth)) {
-      for (auto node : e->SubEntities(1)) {
+      for (const auto* node : e->SubEntities(1)) {
         mds->operator()(*node) = 1;
       }
     }

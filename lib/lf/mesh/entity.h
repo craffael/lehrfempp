@@ -59,7 +59,7 @@ class Entity {
    * pointers to the sub-entities with the specified _relative co-dimension_
    *
    * Implicitly this function defines the numbering of sub-entities, see @ref
-   * lf::bas::RefEl and [Lecture
+   * lf::base::RefEl and [Lecture
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{par:subentnum}.
    *
@@ -114,7 +114,7 @@ class Entity {
    * indicate missing geometric information.
    *
    */
-  [[nodiscard]] virtual geometry::Geometry* Geometry() const = 0;
+  [[nodiscard]] virtual const geometry::Geometry* Geometry() const = 0;
 
   /**
    * @brief Describes the reference element type of this entity.

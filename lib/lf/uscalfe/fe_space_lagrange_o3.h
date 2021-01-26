@@ -45,7 +45,7 @@ class FeSpaceLagrangeO3 : public UniformScalarFESpace<SCALAR> {
             mesh_p, std::make_shared<FeLagrangeO3Tria<SCALAR>>(),
             std::make_shared<FeLagrangeO3Quad<SCALAR>>(),
             std::make_shared<FeLagrangeO3Segment<SCALAR>>(),
-            std::make_shared<FeLagrangePoint<SCALAR>>(3)) {}
+            std::make_shared<fe::FePoint<SCALAR>>(3)) {}
   ~FeSpaceLagrangeO3() override = default;
 };
 }  // namespace lf::uscalfe

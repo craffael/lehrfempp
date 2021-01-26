@@ -7,6 +7,7 @@
  * @copyright MIT License
  */
 
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 
@@ -157,8 +158,10 @@ int main(int argc, char **argv) {
 
     if (pointwise) {
       CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
-      multi_mesh.MarkEdges(std::bind(marker, std::placeholders::_1,
-                                     std::placeholders::_2, marked_mesh));
+      multi_mesh.MarkEdges([marker, marked_mesh](const lf::mesh::Mesh &mesh,
+                                                 const lf::mesh::Entity &e) {
+        return marker(mesh, e, marked_mesh);
+      });
       multi_mesh.RefineMarked();
     } else {
       multi_mesh.RefineRegular();

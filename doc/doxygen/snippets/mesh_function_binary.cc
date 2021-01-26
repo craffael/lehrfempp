@@ -6,7 +6,9 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
+#include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/uscalfe/uscalfe.h>
 
 namespace lf::uscalfe {
@@ -112,7 +114,7 @@ double computeL2ErrorNorm(
   // Has to be wrapped into a mesh function for error computation
   lf::mesh::utils::MeshFunctionGlobal mf_u{u};
   // create mesh functions representing solution
-  auto mf_sol = lf::uscalfe::MeshFunctionFE<double, double>(fe_space_p, mu);
+  auto mf_sol = lf::fe::MeshFunctionFE<double, double>(fe_space_p, mu);
   // compute errors with 10-th order quadrature rules
   double L2err_2 =  // NOLINT
       std::sqrt(IntegrateMeshFunction(mesh, squaredNorm(mf_sol - mf_u), 2));

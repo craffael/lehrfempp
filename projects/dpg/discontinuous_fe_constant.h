@@ -9,6 +9,7 @@
 #ifndef PROJECTS_DPG_DISCONTINUOUS_FE_CONSTANT_H
 #define PROJECTS_DPG_DISCONTINUOUS_FE_CONSTANT_H
 
+#include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
 
 #include <typeinfo>
@@ -22,7 +23,7 @@ namespace projects::dpg {
  * @brief Discontinuous constant finite element on a triangular reference
  * element.
  *
- * This is a specialization of lf::uscalfe::ScalarReferenceFiniteElement.
+ * This is a specialization of lf::fe::ScalarReferenceFiniteElement.
  * Refer to its documentation.
  *
  * The only reference shape function is constant  and  associated with
@@ -30,7 +31,7 @@ namespace projects::dpg {
  */
 template <typename SCALAR>
 class FeDiscontinuousO0Tria final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeDiscontinuousO0Tria(const FeDiscontinuousO0Tria&) = default;
   FeDiscontinuousO0Tria(FeDiscontinuousO0Tria&&) noexcept = default;
@@ -46,7 +47,7 @@ class FeDiscontinuousO0Tria final
   [[nodiscard]] unsigned Degree() const override { return 0; }
 
   /**
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 1; }
 
@@ -65,7 +66,7 @@ class FeDiscontinuousO0Tria final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
@@ -78,7 +79,7 @@ class FeDiscontinuousO0Tria final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
@@ -93,7 +94,7 @@ class FeDiscontinuousO0Tria final
   }
 
   /** @brief Only evaluation node is the barycenter of the reference triangle.
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(2, 1);
@@ -102,7 +103,7 @@ class FeDiscontinuousO0Tria final
   }
 
   /** @brief One evaluation node
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -114,7 +115,7 @@ class FeDiscontinuousO0Tria final
  * @brief Discontinuous constant finite element on a quadrilateral reference
  * element.
  *
- * This is a specialization of lf::uscalfe::ScalarReferenceFiniteElement.
+ * This is a specialization of lf::fe::ScalarReferenceFiniteElement.
  * Refer to its documentation.
  *
  * The only reference shape function is constant and associated with
@@ -122,7 +123,7 @@ class FeDiscontinuousO0Tria final
  */
 template <typename SCALAR>
 class FeDiscontinuousO0Quad final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeDiscontinuousO0Quad(const FeDiscontinuousO0Quad&) = default;
   FeDiscontinuousO0Quad(FeDiscontinuousO0Quad&&) noexcept = default;
@@ -137,7 +138,7 @@ class FeDiscontinuousO0Quad final
 
   [[nodiscard]] unsigned Degree() const override { return 0; }
 
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 1; }
 
@@ -156,7 +157,7 @@ class FeDiscontinuousO0Quad final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
@@ -169,7 +170,7 @@ class FeDiscontinuousO0Quad final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
@@ -184,7 +185,7 @@ class FeDiscontinuousO0Quad final
   }
 
   /** @brief Only evaluation node is the center of the reference quadrilateral
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(2, 1);
@@ -192,7 +193,7 @@ class FeDiscontinuousO0Quad final
     return nodes;
   }
   /** @brief Only one evaluation node
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumEvaluationNodes()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::NumEvaluationNodes()
    */
   [[nodiscard]] size_type NumEvaluationNodes() const override {
     return NumRefShapeFunctions();
@@ -203,7 +204,7 @@ class FeDiscontinuousO0Quad final
  * @headerfile projects/dpg/lagr_fe_constant.h
  * @brief Discontinuous constant finite element on a line segment.
  *
- * This is a specialization of lf::uscalfe::ScalarReferenceFiniteElement.
+ * This is a specialization of lf::fe::ScalarReferenceFiniteElement.
  * Refer to its documentation.
  *
  * The only reference shape function is constant  and associated with
@@ -211,7 +212,7 @@ class FeDiscontinuousO0Quad final
  */
 template <typename SCALAR>
 class FeDiscontinuousO0Segment final
-    : public lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   FeDiscontinuousO0Segment(const FeDiscontinuousO0Segment&) = default;
   FeDiscontinuousO0Segment(FeDiscontinuousO0Segment&&) noexcept = default;
@@ -228,7 +229,7 @@ class FeDiscontinuousO0Segment final
 
   [[nodiscard]] unsigned Degree() const override { return 0; }
 
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::NumRefShapeFunctions()
    */
   [[nodiscard]] size_type NumRefShapeFunctions() const override { return 1; }
 
@@ -247,7 +248,7 @@ class FeDiscontinuousO0Segment final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::EvalReferenceShapeFunctions() */
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   EvalReferenceShapeFunctions(const Eigen::MatrixXd& refcoords) const override {
@@ -260,7 +261,7 @@ class FeDiscontinuousO0Segment final
   }
 
   // clang-format off
-  /** @copydoc lf::uscalfe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
+  /** @copydoc lf::fe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions*/
   // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
   GradientsReferenceShapeFunctions(
@@ -276,7 +277,7 @@ class FeDiscontinuousO0Segment final
 
   /** @brief The only evaluation node is the center of the reference line
    * segment.
-   * @copydoc lf::uscalfe::ScalarReferenceFiniteElement::EvaluationNodes()
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::EvaluationNodes()
    */
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
     Eigen::MatrixXd nodes(1, 1);

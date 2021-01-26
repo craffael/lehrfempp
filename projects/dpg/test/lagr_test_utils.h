@@ -10,6 +10,7 @@
 #ifndef PROJECTS_DPG_TEST_LAGR_TEST_UTILS
 #define PROJECTS_DPG_TEST_LAGR_TEST_UTILS
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
@@ -26,7 +27,7 @@ namespace projects::dpg::test {
 // satisfied and the constraint was weakened.
 template <typename SCALAR>
 bool scalarFEEvalNodeTest(
-    const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Evaluates a random linear combination of reference shape functions
   // at the evaluation nodes for the finite element and then reconstructs
   // the "interpolant" which must agree with what we started from
@@ -61,7 +62,7 @@ bool scalarFEEvalNodeTest(
 // and the constraint was weakened.
 template <typename SCALAR>
 bool scalarFEInterpTest(
-    const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   // Interpolates random values at interpolation nodes
   // and checks whether the resulting linear combination of
   // basis functions reproduces those values
@@ -98,7 +99,7 @@ bool scalarFEInterpTest(
 // checks if the gradients sum up to 0
 template <typename SCALAR>
 bool scalarFEEvalGRadTest(
-    const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
+    const lf::fe::ScalarReferenceFiniteElement<SCALAR> &fe_desc) {
   lf::base::RefEl refel = fe_desc.RefEl();
   unsigned dim = refel.Dimension();
 
@@ -121,7 +122,7 @@ bool scalarFEEvalGRadTest(
 }
 
 using fe_ptr =
-    std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>;
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>;
 // adaption of the lf::uscalfe::test in full_gal_tests.cc to
 // support fulll galerkin test , with second and third order shape functions.
 template <typename FFUNC, typename DIFF_COEFF, typename REAC_COEFF>

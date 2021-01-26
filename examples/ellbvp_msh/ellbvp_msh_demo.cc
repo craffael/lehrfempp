@@ -8,6 +8,7 @@
  */
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
@@ -39,7 +40,7 @@ int main() {
   // Count the number of edges with von Neumann boundary condition
   auto physical_entity_nr_neu = reader.PhysicalEntityName2Nr("neu");
   int num_neumann = 0;
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_neu)) {
       ++num_neumann;
     }
@@ -50,7 +51,7 @@ int main() {
   // Count the number of edges with Dirichlet boundary condition
   auto physical_entity_nr_dir = reader.PhysicalEntityName2Nr("dir");
   int num_dirichlet = 0;
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_dir)) {
       ++num_dirichlet;
     }
@@ -117,19 +118,14 @@ int main() {
       return reader.IsPhysicalEntity(edge, physical_entity_nr_dir);
     };
 
-    // Obtain specification for shape functions on edges
-    std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<double>>
-        rsf_edge_p = fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
-    LF_ASSERT_MSG(rsf_edge_p != nullptr, "FE specification for edges missing");
-
     // Fetch flags and values for degrees of freedom located on Dirichlet
     // edges.
     // bd_flags strictly speaking would not be necessary here since only
     // boundary edges are flagged as 'dir' anyway. In other cases this might
     // however be necessary.
     auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(fe_space->Mesh(), 1)};
-    auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
-        dofh, *rsf_edge_p,
+    auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
+        *fe_space,
         [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
           return (bd_flags(edge) && edge_sel_dir(edge));
         },
@@ -153,10 +149,13 @@ int main() {
   // Compute H1 Norm
   if (N_dofs > 0) {
     // Version 1: Using Mesh Functions
-    auto mf_FE = lf::uscalfe::MeshFunctionFE(fe_space, sol_vec);
-    auto mf_GradFe = lf::uscalfe::MeshFunctionGradFE(fe_space, sol_vec);
-    auto h1_norm = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        *mesh, squaredNorm(mf_FE) + squaredNorm(mf_GradFe), 2));
+    auto mf_FE = lf::fe::MeshFunctionFE(fe_space, sol_vec);
+    auto mf_GradFe = lf::fe::MeshFunctionGradFE(fe_space, sol_vec);
+    auto h1_norm = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh,
+        lf::mesh::utils::squaredNorm(mf_FE) +
+            lf::mesh::utils::squaredNorm(mf_GradFe),
+        2));
 
     std::cout << "Computed H1 Norm: " << h1_norm << std::endl;
 

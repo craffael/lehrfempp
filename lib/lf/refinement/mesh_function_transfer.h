@@ -1,10 +1,8 @@
 #ifndef LF_REFINEMENT_MESH_FUNCTION_TRANSFER_H
 #define LF_REFINEMENT_MESH_FUNCTION_TRANSFER_H
 
-#include <lf/assemble/dofhandler.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
-#include <lf/uscalfe/uscalfe.h>
 
 #include <Eigen/Dense>
 #include <type_traits>
@@ -74,8 +72,8 @@ class MeshFunctionTransfer {
    */
   decltype(auto) operator()(const lf::mesh::Entity &e,
                             const Eigen::MatrixXd &local) const {
-    auto rel_geom = mh_.GeometryInParent(level_fine_, e);
-    auto parent = mh_.ParentEntity(level_fine_, e);
+    const auto *rel_geom = mh_.GeometryInParent(level_fine_, e);
+    const auto *parent = mh_.ParentEntity(level_fine_, e);
     auto local_parent = rel_geom->Global(local);
     for (lf::base::size_type lvl = level_fine_ - 1; lvl > level_coarse_;
          --lvl) {

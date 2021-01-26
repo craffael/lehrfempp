@@ -7,7 +7,7 @@ namespace projects::ipdg_stokes::mesh {
 Eigen::Matrix<double, 2, 3> computeOutwardNormals(
     const lf::mesh::Entity &entity) {
   // Get the geometry of the entity
-  const auto geom = entity.Geometry();
+  const auto *const geom = entity.Geometry();
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
   // Use the vertex coordinates to compute the local normals on the edges

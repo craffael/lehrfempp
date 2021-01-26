@@ -8,6 +8,8 @@ set(sources
   quad.h
   quad_rule.h
   quad_rule.cc
+  quad_rule_cache.h
+  quad_rule_cache.cc
   quad_rules_tria.cc
 )
 

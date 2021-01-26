@@ -13,11 +13,11 @@
 namespace lf::quad {
 
 /**
- * @brief Returns a QuadRule object for the given Reference Element and Order
+ * @brief Returns a QuadRule object for the given Reference Element and Degree
  * @param ref_el The type of reference element
  * @param degree The minimum degree that the QuadRule object should have.
- * @return A QuadRule object for the given reference element and with an order
- * >= `order`
+ * @return A QuadRule object for the given reference element and with a degree
+ * >= `degree`
  *
  * This method tries to return optimal quadrature rules when possible:
  * - For Segments it returns Gauss-Legendre quadrature rules
@@ -29,7 +29,7 @@ namespace lf::quad {
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree);
 
 /** @defgroup namedqr Special "named" quadrature rules
- * @breif Creation of special quadrature rules
+ * @brief Creation of special quadrature rules
  *
  * These functions provide a number of special quadrature rules
  * in the forms of @ref QuadRule objects. They are meant to be

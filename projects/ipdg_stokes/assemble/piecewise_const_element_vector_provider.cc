@@ -21,7 +21,7 @@ PiecewiseConstElementVectorProvider::PiecewiseConstElementVectorProvider(
 
 Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
     const lf::mesh::Entity &entity) const {
-  const auto geom = entity.Geometry();
+  const auto *const geom = entity.Geometry();
   // Construct the basis functions from the curl of the standard hat functions
   const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
   const Eigen::MatrixXd ref_grads =

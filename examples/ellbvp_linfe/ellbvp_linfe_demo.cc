@@ -8,6 +8,7 @@
  */
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
@@ -324,15 +325,15 @@ int main(int /*argc*/, const char** /*argv*/) {
     // boundary conditions
     if (no_Dirichlet_edges > 0) {
       // Obtain specification for shape functions on edges
-      auto rsf_edge_p =
+      const auto* rsf_edge_p =
           fe_space->ShapeFunctionLayout(lf::base::RefEl::kSegment());
       LF_ASSERT_MSG(rsf_edge_p != nullptr,
                     "FE specification for edges missing");
 
       // Fetch flags and values for degrees of freedom located on Dirichlet
       // edges.
-      auto ess_bdc_flags_values{lf::uscalfe::InitEssentialConditionFromFunction(
-          dofh, *rsf_edge_p,
+      auto ess_bdc_flags_values{lf::fe::InitEssentialConditionFromFunction(
+          *fe_space,
           [&edge_sel_dir, &bd_flags](const lf::mesh::Entity& edge) -> bool {
             return (bd_flags(edge) && edge_sel_dir(edge));
           },
@@ -360,14 +361,14 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     // Postprocessing: Compute error norms
     // create mesh functions representing solution / gradient of solution
-    const lf::uscalfe::MeshFunctionFE mf_sol(fe_space, sol_vec);
-    const lf::uscalfe::MeshFunctionGradFE mf_grad_sol(fe_space, sol_vec);
+    const lf::fe::MeshFunctionFE mf_sol(fe_space, sol_vec);
+    const lf::fe::MeshFunctionGradFE mf_grad_sol(fe_space, sol_vec);
     // compute errors with 3rd order quadrature rules, which is sufficient for
     // piecewise linear finite elements
     double L2err =  // NOLINT
-        std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+        std::sqrt(lf::fe::IntegrateMeshFunction(
             mesh, lf::mesh::utils::squaredNorm(mf_sol - mf_u), 2));
-    double H1serr = std::sqrt(lf::uscalfe::IntegrateMeshFunction(  // NOLINT
+    double H1serr = std::sqrt(lf::fe::IntegrateMeshFunction(  // NOLINT
         mesh, lf::mesh::utils::squaredNorm(mf_grad_sol - mf_grad_u), 2));
     /* SAM_LISTING_END_2 */
     errs.emplace_back(N_dofs, L2err, H1serr);

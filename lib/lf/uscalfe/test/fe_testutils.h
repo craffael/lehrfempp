@@ -14,6 +14,7 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/uscalfe/uscalfe.h>
@@ -223,8 +224,10 @@ template <typename FFUNC, typename GRADFUNC>
 std::vector<std::pair<double, double>> InterpolationErrors(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     GRADFUNC grad_f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   // Vector of error norms
   std::vector<std::pair<double, double>> err_norms{};
 
@@ -240,12 +243,13 @@ std::vector<std::pair<double, double>> InterpolationErrors(
     auto coeff_vec{NodalProjection(*fe_space_p, f)};
     // Compute norms of interpolation error by means of numerical quadrature
     // whose order is controlled by the polynomials degree of the FE space
-    auto mf_fe = MeshFunctionFE<double, double>(fe_space_p, coeff_vec);
-    auto mf_grad_fe = MeshFunctionGradFE<double, double>(fe_space_p, coeff_vec);
-    double L2err =
-        std::sqrt(IntegrateMeshFunction(*mesh_p, squaredNorm(f - mf_fe), 2));
-    double H1serr = std::sqrt(
-        IntegrateMeshFunction(*mesh_p, squaredNorm(grad_f - mf_grad_fe), 2));
+    auto mf_fe = lf::fe::MeshFunctionFE<double, double>(fe_space_p, coeff_vec);
+    auto mf_grad_fe =
+        lf::fe::MeshFunctionGradFE<double, double>(fe_space_p, coeff_vec);
+    double L2err = std::sqrt(
+        lf::fe::IntegrateMeshFunction(*mesh_p, squaredNorm(f - mf_fe), 2));
+    double H1serr = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh_p, squaredNorm(grad_f - mf_grad_fe), 2));
     err_norms.emplace_back(L2err, H1serr);
   }
   return err_norms;
@@ -254,8 +258,10 @@ std::vector<std::pair<double, double>> InterpolationErrors(
 template <typename FFUNC, typename GRADFUNC>
 inline std::vector<std::pair<double, double>> InterpolationErrors(
     refinement::MeshHierarchy &multi_mesh, FFUNC f, GRADFUNC grad_f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   return InterpolationErrors(multi_mesh.getMeshes(), f, grad_f, rfs_tria_p,
                              rfs_quad_p);
 }
@@ -303,8 +309,10 @@ template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
 std::vector<SCALAR> EnergiesOfInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     DIFF_COEFF alpha, REAC_COEFF gamma,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
   static_assert(mesh::utils::isMeshFunction<REAC_COEFF>);
   static_assert(mesh::utils::isMeshFunction<FFUNC>);
@@ -342,8 +350,10 @@ template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
 std::vector<SCALAR> EnergiesOfInterpolants(
     refinement::MeshHierarchy &multi_mesh, FFUNC f, DIFF_COEFF alpha,
     REAC_COEFF gamma,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   return EnergiesOfInterpolants<SCALAR>(multi_mesh.getMeshes(), f, alpha, gamma,
                                         rfs_tria_p, rfs_quad_p);
 }
@@ -396,9 +406,12 @@ template <typename SCALAR, typename FFUNC, typename IMP_COEFF,
 std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     IMP_COEFF eta,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_edge_p,
     EDGESELECTOR edge_sel) {
   // Vector for returning the energies
   std::vector<SCALAR> energies{};
@@ -440,9 +453,12 @@ template <typename SCALAR, typename FFUNC, typename IMP_COEFF,
           typename EDGESELECTOR>
 std::vector<SCALAR> BoundaryEnergiesOfInterpolants(
     refinement::MeshHierarchy &multi_mesh, FFUNC f, IMP_COEFF eta,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_edge_p,
     EDGESELECTOR edge_sel) {
   return BoundaryEnergiesOfInterpolants<SCALAR>(multi_mesh.getMeshes(), f, eta,
                                                 rfs_tria_p, rfs_quad_p,
@@ -486,8 +502,10 @@ template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC>
 std::vector<SCALAR> RHSFunctionalForInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC v,
     SOURCE_FUNC f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   // Vector for returning the energies
   std::vector<SCALAR> ell_vals{};
 
@@ -518,8 +536,10 @@ std::vector<SCALAR> RHSFunctionalForInterpolants(
 template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC>
 std::vector<SCALAR> RHSFunctionalForInterpolants(
     refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p) {
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p) {
   return RHSFunctionalForInterpolants<SCALAR>(multi_mesh.getMeshes(), v, f,
                                               rfs_tria_p, rfs_quad_p);
 }
@@ -566,9 +586,12 @@ template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC,
 std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC v,
     SOURCE_FUNC f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_edge_p,
     EDGESELECTOR edge_sel) {
   // Vector for returning the energies
   std::vector<SCALAR> ell_vals{};
@@ -608,84 +631,16 @@ template <typename SCALAR, typename FFUNC, typename SOURCE_FUNC,
           typename EDGESELECTOR>
 std::vector<SCALAR> RHSBoundaryFunctionalForInterpolants(
     refinement::MeshHierarchy &multi_mesh, FFUNC v, SOURCE_FUNC f,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_tria_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_quad_p,
-    std::shared_ptr<const ScalarReferenceFiniteElement<double>> rfs_edge_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_tria_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_quad_p,
+    std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
+        rfs_edge_p,
     EDGESELECTOR edge_sel) {
   return RHSBoundaryFunctionalForInterpolants<SCALAR>(multi_mesh.getMeshes(), v,
                                                       f, rfs_tria_p, rfs_quad_p,
                                                       rfs_edge_p, edge_sel);
-}
-
-/**
- * @brief Wraps another ScalarReferenceFiniteElement and multiplies the shape
- * functions with the imaginary unit to create complex valued shape functions.
- * @tparam SCALAR Scalar type of the wrapped FiniteElement.
- */
-template <class SCALAR>
-class ComplexScalarReferenceFiniteElement
-    : public ScalarReferenceFiniteElement<std::complex<SCALAR>> {
- public:
-  ComplexScalarReferenceFiniteElement(
-      std::unique_ptr<ScalarReferenceFiniteElement<SCALAR>> fe)
-      : inner_(std::move(fe)) {}
-
-  [[nodiscard]] base::RefEl RefEl() const override { return inner_->RefEl(); }
-  [[nodiscard]] unsigned Degree() const override { return inner_->Degree(); }
-  [[nodiscard]] size_type NumRefShapeFunctions(
-      dim_t codim, sub_idx_t subidx) const override {
-    return inner_->NumRefShapeFunctions(codim, subidx);
-  }
-  [[nodiscard]] Eigen::Matrix<std::complex<SCALAR>, Eigen::Dynamic,
-                              Eigen::Dynamic>
-  EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
-    return std::complex<SCALAR>(0, 1) *
-           inner_->EvalReferenceShapeFunctions(refcoords);
-  }
-  [[nodiscard]] Eigen::Matrix<std::complex<SCALAR>, Eigen::Dynamic,
-                              Eigen::Dynamic>
-  GradientsReferenceShapeFunctions(
-      const Eigen::MatrixXd &refcoords) const override {
-    return std::complex<SCALAR>(0, 1) *
-           inner_->GradientsReferenceShapeFunctions(refcoords);
-  }
-  [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    return inner_->EvaluationNodes();
-  }
-  [[nodiscard]] size_type NumEvaluationNodes() const override {
-    return inner_->NumEvaluationNodes();
-  }
-
-  [[nodiscard]] Eigen::Matrix<std::complex<SCALAR>, 1, Eigen::Dynamic>
-  NodalValuesToDofs(const Eigen::Matrix<std::complex<SCALAR>, 1, Eigen::Dynamic>
-                        &nodvals) const override {
-    return inner_->NodalValuesToDofs(
-        (nodvals / std::complex<SCALAR>(0, 1)).real());
-  }
-
-  [[nodiscard]] size_type NumRefShapeFunctions(dim_t dim) const override {
-    return inner_->NumRefShapeFunctions(dim);
-  }
-
- private:
-  std::unique_ptr<const ScalarReferenceFiniteElement<SCALAR>> inner_;
-};
-
-/**
- * @brief Returns a UniformScalarFESpace that is made up of "complexified" (via
- * ComplexScalarReferenceFiniteElement) FeLagrangeO1 finite elements.
- */
-inline std::shared_ptr<UniformScalarFESpace<std::complex<double>>>
-MakeComplexLagrangeO1FeSpace(std::shared_ptr<const mesh::Mesh> mesh_p) {
-  return std::make_shared<UniformScalarFESpace<std::complex<double>>>(
-      mesh_p,
-      std::make_shared<ComplexScalarReferenceFiniteElement<double>>(
-          std::make_unique<FeLagrangeO1Tria<double>>()),
-      std::make_shared<ComplexScalarReferenceFiniteElement<double>>(
-          std::make_unique<FeLagrangeO1Quad<double>>()),
-      std::make_shared<ComplexScalarReferenceFiniteElement<double>>(
-          std::make_unique<FeLagrangeO1Segment<double>>()),
-      nullptr);
 }
 
 }  // namespace lf::uscalfe::test

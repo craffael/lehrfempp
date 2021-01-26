@@ -79,7 +79,7 @@ class Point : public mesh::Entity {
   }
 
   /** @brief return _pointer_ to associated geometry object */
-  [[nodiscard]] geometry::Geometry* Geometry() const override {
+  [[nodiscard]] const geometry::Geometry* Geometry() const override {
     return geometry_.get();
   }
 

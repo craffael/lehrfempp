@@ -37,12 +37,12 @@ namespace lf::uscalfe {
  * used for local computations on all mesh entities of the same topological
  * type.
  *
- * Detailed explanations can be found in @\lref{par:locparm},
- * @lref{{par:locparm2}.
+ * Detailed explanations can be found in @lref{par:locparm},
+ * @lref{par:locparm2}.
  */
 template <class SCALAR>
 class PrecomputedScalarReferenceFiniteElement
-    : public ScalarReferenceFiniteElement<SCALAR> {
+    : public lf::fe::ScalarReferenceFiniteElement<SCALAR> {
  public:
   /**
    * @brief Default constructor which does not initialize this class at all
@@ -70,10 +70,9 @@ class PrecomputedScalarReferenceFiniteElement
    * Initialization of local data members.
    */
   PrecomputedScalarReferenceFiniteElement(
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe,
-      quad::QuadRule qr)
-      : ScalarReferenceFiniteElement<SCALAR>(),
-        fe_(std::move(fe)),
+      lf::fe::ScalarReferenceFiniteElement<SCALAR> const* fe, quad::QuadRule qr)
+      : lf::fe::ScalarReferenceFiniteElement<SCALAR>(),
+        fe_(fe),
         qr_(std::move(qr)),
         shap_fun_(fe_->EvalReferenceShapeFunctions(qr_.Points())),
         grad_shape_fun_(fe_->GradientsReferenceShapeFunctions(qr_.Points())) {}
@@ -155,12 +154,14 @@ class PrecomputedScalarReferenceFiniteElement
     return shap_fun_;
   }
 
+  // clang-format off
   /**
    * @brief Value of `EvalGradientsReferenceShapeFunctions(Qr().Points())`
    *
-   * See @ref ScalarReferenceFiniteElement::EvalGradientsReferenceShapeFunctions
+   * See @ref fe::ScalarReferenceFiniteElement::GradientsReferenceShapeFunctions()
    * for the packed format in which the gradients are returned.
    */
+  // clang-format on
   [[nodiscard]] const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>&
   PrecompGradientsReferenceShapeFunctions() const {
     LF_ASSERT_MSG(fe_ != nullptr, "Not initialized.");
@@ -172,7 +173,7 @@ class PrecomputedScalarReferenceFiniteElement
 
  private:
   /** The underlying scalar-valued parametric finite element */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> fe_;
+  fe::ScalarReferenceFiniteElement<SCALAR> const* fe_ = nullptr;
   /** Uniform parametric quadrature rule for the associated type of reference
    * element */
   quad::QuadRule qr_;

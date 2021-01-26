@@ -48,7 +48,7 @@ void lecturedemomeshfunction() {
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(lev_mesh_p);
     // Compute FE nodal interpolant
     lf::mesh::utils::MeshFunctionGlobal mf_f(f);
-    auto coeff_vec{lf::uscalfe::NodalProjection(*fe_space_p, mf_f)};
+    auto coeff_vec{lf::fe::NodalProjection(*fe_space_p, mf_f)};
     std::cout << "Level " << level << ", integral = "
               << integrateCoeffgradUhVf(fe_space_p, coeff_vec, cf, vf)
               << std::endl;

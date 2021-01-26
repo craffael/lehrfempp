@@ -67,7 +67,7 @@ constexpr bool IsMeshFunctionCallable(long /*unused*/) {
  * returns objects of type `R`
  */
 template <class T, class R = void>
-constexpr bool isMeshFunction =
+inline constexpr bool isMeshFunction =
     !std::is_reference_v<T> && std::is_copy_constructible_v<T> &&
     std::is_move_constructible_v<T> &&
     internal::IsMeshFunctionCallable<T, R>(0);

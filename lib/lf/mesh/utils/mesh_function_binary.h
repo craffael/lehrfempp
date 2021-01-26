@@ -455,7 +455,7 @@ struct OperatorMultiplication {
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(&u[0], 1, u.size());
-    Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> vm(&v[0], 1, v.size());
+    Eigen::Map<const Eigen::Array<V, 1, Eigen::Dynamic>> vm(&v[0], 1, v.size());
     std::vector<decltype(U(0) * V(0))> result(u.size());
     Eigen::Map<Eigen::Array<decltype(U(0) * V(0)), 1, Eigen::Dynamic>> rm(
         &result[0], 1, u.size());
@@ -646,7 +646,7 @@ struct OperatorMultiplication {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Add's two \ref mesh_function "mesh functions"
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @tparam A Type of the lhs \ref mesh_function
  * @tparam B Type of the rhs \ref mesh_function
  * @param a the lhs \ref mesh_function
@@ -675,7 +675,7 @@ auto operator+(const A& a, const B& b) {
 /**
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Subtracts two \ref mesh_function "mesh functions"
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @tparam A Type of the lhs \ref mesh_function
  * @tparam B Type of the rhs \ref mesh_function
  * @param a the lhs \ref mesh_function
@@ -703,7 +703,7 @@ auto operator-(const A& a, const B& b) {
 
 /**
  * @headerfile lf/uscalfe/uscalfe.h
- * @relatesalso lf::uscalfe::MeshFunctionBinary
+ * @relatesalso lf::mesh::utils::MeshFunctionBinary
  * @brief Multiply two \ref mesh_function "mesh functions" with each other.
  * @tparam A The type of the lhs \ref mesh_function
  * @tparam B The type of the rhs \ref mesh_function

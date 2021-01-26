@@ -100,7 +100,7 @@ class Quadrilateral : public mesh::Entity {
    * @sa mesh::Entity
    * @{
    */
-  [[nodiscard]] geometry::Geometry* Geometry() const override {
+  [[nodiscard]] const geometry::Geometry* Geometry() const override {
     return geometry_.get();
   }
   [[nodiscard]] base::RefEl RefEl() const override {

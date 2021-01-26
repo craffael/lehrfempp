@@ -1,5 +1,5 @@
 /**
- * @file refinement_hierarchy.cc
+ * @file
  * @brief implementation of global/local refinement methods
  */
 
@@ -1457,10 +1457,7 @@ void MeshHierarchy::PerformRefinement() {
               LF_VERIFY_MSG(fine_cell_child_number < 4,
                             "Only 3 children for rp_quadsect");
               switch (fine_cell_child_number) {
-                case 0: {
-                  child_ref_edges[cell_index] = 2;
-                  break;
-                }
+                case 0:
                 case 1: {
                   child_ref_edges[cell_index] = 2;
                   break;
@@ -1482,14 +1479,8 @@ void MeshHierarchy::PerformRefinement() {
                   child_ref_edges[cell_index] = 2;
                   break;
                 }
-                case 1: {
-                  child_ref_edges[cell_index] = 0;
-                  break;
-                }
-                case 2: {
-                  child_ref_edges[cell_index] = 0;
-                  break;
-                }
+                case 1:
+                case 2:
                 case 3: {
                   child_ref_edges[cell_index] = 0;
                   break;
@@ -1508,18 +1499,12 @@ void MeshHierarchy::PerformRefinement() {
               switch (parent_ref_edge_idx) {
                 case 0: {
                   switch (fine_cell_child_number) {
-                    case 0: {
-                      child_ref_edges[cell_index] = 0;
-                      break;
-                    }
+                    case 0:
                     case 1: {
                       child_ref_edges[cell_index] = 0;
                       break;
                     }
-                    case 2: {
-                      child_ref_edges[cell_index] = 1;
-                      break;
-                    }
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 1;
                       break;
@@ -1537,14 +1522,8 @@ void MeshHierarchy::PerformRefinement() {
                       child_ref_edges[cell_index] = 1;
                       break;
                     }
-                    case 1: {
-                      child_ref_edges[cell_index] = 2;
-                      break;
-                    }
-                    case 2: {
-                      child_ref_edges[cell_index] = 2;
-                      break;
-                    }
+                    case 1:
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 2;
                       break;
@@ -1566,10 +1545,7 @@ void MeshHierarchy::PerformRefinement() {
                       child_ref_edges[cell_index] = 1;
                       break;
                     }
-                    case 2: {
-                      child_ref_edges[cell_index] = 0;
-                      break;
-                    }
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 0;
                       break;
@@ -1852,7 +1828,7 @@ void MeshHierarchy::initGeometryInParent() {
   }      // end loop over codims
 }  // end initGeometryInParent
 
-sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
+sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) {
   LF_VERIFY_MSG(T.Codim() == 0, "Entity must be a call");
   // Obtain iterator over the edges
   const size_type num_edges = T.RefEl().NumSubEntities(1);

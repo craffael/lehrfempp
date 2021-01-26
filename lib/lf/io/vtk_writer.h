@@ -226,7 +226,7 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
  * ## Higher order cells
  * Recent versions of Paraview [support higher order Lagrange cells](https://blog.kitware.com/modeling-arbitrary-order-lagrange-finite-elements-in-the-visualization-toolkit/)
  * of order up to 10. VtkWriter can write such higher order cells so that 
- * e.g. higher-order \ref Geometry "geometry mappings" or higher order BVP solutions can be visualized appropriately.
+ * e.g. higher-order \ref geometry::Geometry "geometry mappings" or higher order BVP solutions can be visualized appropriately.
  * 
  * #### Example usage:
  * The following code will output a mesh of the unit circle (\f$ \{\vec{x} \in \mathbb{R}^2 | \norm{x}<1 \}\f$) consisting of second order quadrilaterals and the function \f$ \sin(\pi x)  \cos(\pi x)\f$ to vtk:
@@ -245,7 +245,7 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename);
  * 
  * @note you need a recent version of Paraview to visualize higher-order cells. Version 5.6.0 is known to work.
  * 
- * @note By using higher order cells, not only the geometry is better approximated, the \emph Point datasets are also much better approximated. This is unfortunately not
+ * @note By using higher order cells, not only the geometry is better approximated, the *Point datasets are also much better approximated*. This is unfortunately not
  * true for cell datasets.
  * 
  * @note If you construct a VtkWriter with `order` greater than one, you cannot call WritePointData() methods anymore that accept a mesh::utils::MeshDataSet. 
@@ -355,7 +355,7 @@ class VtkWriter {
    */
   void WritePointData(const std::string& name,
                       const mesh::utils::MeshDataSet<unsigned int>& mds,
-                      unsigned undefined_value = 0);
+                      unsigned int undefined_value = 0);
 
   /**
    * @brief Add a new `unsigned int` attribute dataset that attaches data to
@@ -530,7 +530,7 @@ class VtkWriter {
    * of the mesh, i.e. at entities with codim=dimMesh. If the VtkWriter has been
    * instantiated with `order>1`, the mesh function will also be evaluated on
    * edges and possibly in the interior of the elements. Some \ref
-   * mesh_functions are not well defined on points, e.g. the gradient of the
+   * mesh_function are not well defined on points, e.g. the gradient of the
    * solution of a BVP is not well defined on the points of the mesh.
    * In this case WriteCellData(const std::string &name, const <!--
    * --> MESH_FUNCTION &mesh_function) may be more appropriate.
@@ -735,7 +735,7 @@ class VtkWriter {
    *
    * @note this function will evaluate the MeshFunction on barycenters
    * of the cells of the mesh, i.e. at codim=0 entities. Some \ref
-   * mesh_functions are not well defined on cells (e.g. boundary conditions)
+   * mesh_function are not well defined on cells (e.g. boundary conditions)
    * and cannot be visualized with this function. (An assert will fail)
    *
    * ### Example usage
@@ -857,20 +857,20 @@ void VtkWriter::WritePointData(const std::string& name,
     data.name = name;
 
     // evaluate at nodes:
-    for (auto n : mesh_->Entities(dim_mesh)) {
+    for (const auto* n : mesh_->Entities(dim_mesh)) {
       data.data[mesh_->Index(*n)] = mesh_function(*n, origin)[0];
     }
 
     for (int codim = static_cast<int>(dim_mesh - 1);
          codim >= static_cast<char>(codim_); --codim) {
-      for (auto e : mesh_->Entities(codim)) {
+      for (const auto* e : mesh_->Entities(codim)) {
         auto ref_el = e->RefEl();
-        if (order_ < 3 && ref_el == base::RefEl::kTria()) {
+        if (order_ == 1 || (order_ == 2 && ref_el == base::RefEl::kTria())) {
           continue;
         }
         auto values = mesh_function(*e, aux_nodes_[ref_el.Id()]);
         auto offset = aux_node_offset_[codim](*e);
-        for (int i = 0; i < values.size(); ++i) {
+        for (typename std::vector<T>::size_type i = 0; i < values.size(); ++i) {
           data.data[offset + i] = values[i];
         }
       }
@@ -894,14 +894,14 @@ void VtkWriter::WritePointData(const std::string& name,
     data.name = name;
 
     // evaluate at nodes:
-    for (auto n : mesh_->Entities(dim_mesh)) {
+    for (const auto* n : mesh_->Entities(dim_mesh)) {
       PadWithZeros<T::RowsAtCompileTime, Scalar>(data.data[mesh_->Index(*n)],
                                                  mesh_function(*n, origin)[0]);
     }
 
     for (int codim = static_cast<int>(dim_mesh - 1);
          codim >= static_cast<char>(codim_); --codim) {
-      for (auto e : mesh_->Entities(codim)) {
+      for (const auto* e : mesh_->Entities(codim)) {
         auto ref_el = e->RefEl();
         if (order_ < 2 || (order_ < 3 && ref_el == base::RefEl::kTria())) {
           continue;
@@ -956,7 +956,7 @@ void VtkWriter::WriteCellData(const std::string& name,
     data.data.resize(mesh_->NumEntities(codim_));
     data.name = name;
     constexpr int rows = T::RowsAtCompileTime;
-    for (auto p : mesh_->Entities(codim_)) {
+    for (const auto* p : mesh_->Entities(codim_)) {
       this->PadWithZeros<rows, Scalar>(
           data.data[mesh_->Index(*p)],
           mesh_function(*p, barycenters[p->RefEl().Id()])[0]);
@@ -966,7 +966,7 @@ void VtkWriter::WriteCellData(const std::string& name,
     VtkFile::ScalarData<T> data{};
     data.data.resize(mesh_->NumEntities(codim_));
     data.name = name;
-    for (auto e : mesh_->Entities(codim_)) {
+    for (const auto* e : mesh_->Entities(codim_)) {
       data.data[mesh_->Index(*e)] =
           mesh_function(*e, barycenters[e->RefEl().Id()])[0];
     }

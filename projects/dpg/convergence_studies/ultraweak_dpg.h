@@ -10,6 +10,7 @@
 #define PROJECTS_DPG_CS_ULTRAWEAK_DPG_H
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/refinement/refinement.h>
@@ -257,37 +258,37 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
         sol_vec.segment(dofh.Offset(sigma_y), dofh.NumDofs(sigma_y));
 
     // wrap finite element solution and exact solution into a mesh function:
-    auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
+    auto mf_fe_u = lf::fe::MeshFunctionFE(fe_space_u, sol_vec_u);
     auto mf_solution_u = lf::mesh::utils::MeshFunctionGlobal(solution_u);
 
     auto mf_fe_sigma_x =
-        lf::uscalfe::MeshFunctionFE(fe_space_sigma_x, sol_vec_sigma_x);
+        lf::fe::MeshFunctionFE(fe_space_sigma_x, sol_vec_sigma_x);
     auto mf_solution_sigma_x = lf::mesh::utils::MeshFunctionGlobal(
         [&solution_sigma](Eigen::Vector2d x) -> double {
           return solution_sigma(x)[0];
         });
 
     auto mf_fe_sigma_y =
-        lf::uscalfe::MeshFunctionFE(fe_space_sigma_y, sol_vec_sigma_y);
+        lf::fe::MeshFunctionFE(fe_space_sigma_y, sol_vec_sigma_y);
     auto mf_solution_sigma_y = lf::mesh::utils::MeshFunctionGlobal(
         [&solution_sigma](Eigen::Vector2d x) -> double {
           return solution_sigma(x)[1];
         });
 
-    double L2err_u = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        *mesh_p, lf::uscalfe::squaredNorm(mf_fe_u - mf_solution_u), 10));
+    double L2err_u = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh_p, lf::mesh::utils::squaredNorm(mf_fe_u - mf_solution_u), 10));
 
-    double L2err_sigma_x = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        *mesh_p, lf::uscalfe::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x),
-        10));
-    double L2err_sigma_y = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-        *mesh_p, lf::uscalfe::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y),
-        10));
-
-    double L2err_sigma = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    double L2err_sigma_x = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh_p,
-        lf::uscalfe::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x) +
-            lf::uscalfe::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y),
+        lf::mesh::utils::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x), 10));
+    double L2err_sigma_y = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh_p,
+        lf::mesh::utils::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y), 10));
+
+    double L2err_sigma = std::sqrt(lf::fe::IntegrateMeshFunction(
+        *mesh_p,
+        lf::mesh::utils::squaredNorm(mf_fe_sigma_x - mf_solution_sigma_x) +
+            lf::mesh::utils::squaredNorm(mf_fe_sigma_y - mf_solution_sigma_y),
         10));
 
     auto local_errors =

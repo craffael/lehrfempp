@@ -483,7 +483,7 @@ TEST(LocRefTest, AffMeshRef) {
     // Loop over all cells
     double dom_vol = 0.0;
     for (const lf::mesh::Entity *cell : mesh.Entities(0)) {
-      lf::geometry::Geometry *geo_ptr{cell->Geometry()};
+      const lf::geometry::Geometry *geo_ptr{cell->Geometry()};
       LF_ASSERT_MSG(geo_ptr != nullptr, "No geometry for cell " << *cell);
       EXPECT_TRUE(geo_ptr->isAffine())
           << "Level " << l << ", cell " << *cell << " not affine!";
