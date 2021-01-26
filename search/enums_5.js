@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tikzoutputctrl_1584',['TikzOutputCtrl',['../namespacelf_1_1io.html#a1e6d52a0a94a802c60564378bd70048b',1,'lf::io']]]
+  ['tikzoutputctrl_1709',['TikzOutputCtrl',['../namespacelf_1_1io.html#a1e6d52a0a94a802c60564378bd70048b',1,'lf::io']]]
 ];

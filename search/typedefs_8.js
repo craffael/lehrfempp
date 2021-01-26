@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['lambda_5freturn_5ft_1557',['lambda_return_t',['../classlf_1_1mesh_1_1utils_1_1_lambda_mesh_data_set.html#a434e4be928fe46810b1d512579036a80',1,'lf::mesh::utils::LambdaMeshDataSet']]],
-  ['ldof_5fidx_5ft_1558',['ldof_idx_t',['../namespacelf_1_1assemble.html#aeb2733d288075a934d8b620d007c90e4',1,'lf::assemble::ldof_idx_t()'],['../namespacelf_1_1uscalfe.html#ae140dabe6607ff690e0b361457316241',1,'lf::uscalfe::ldof_idx_t()']]]
+  ['meshfunctionreturntype_1686',['MeshFunctionReturnType',['../namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648',1,'lf::mesh::utils']]],
+  ['mf_5ft_1687',['mf_t',['../classlf_1_1refinement_1_1_mesh_function_transfer.html#abd8a62b7f9c323e4aaa4b9806306e3d3',1,'lf::refinement::MeshFunctionTransfer']]]
 ];

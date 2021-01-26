@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['quad_5frule_5fcollection_5ft_1564',['quad_rule_collection_t',['../namespacelf_1_1uscalfe.html#aae5612e64a1975df47f35fa5186672db',1,'lf::uscalfe']]],
-  ['quaddegree_5ft_1565',['quadDegree_t',['../namespacelf_1_1quad.html#a82ced7ee27edc229ee4f03e2ebbc9d06',1,'lf::quad']]]
+  ['reference_1693',['reference',['../classnonstd_1_1span__lite_1_1span.html#a1f5f8514d5883012f9cdb08dc8ac0669',1,'nonstd::span_lite::span']]],
+  ['result_5ftype_1694',['result_type',['../class_variant_visitor.html#aa31bf2f433857af13e205688586a76c6',1,'VariantVisitor']]],
+  ['reverse_5fiterator_1695',['reverse_iterator',['../classnonstd_1_1span__lite_1_1span.html#a56eb30b048b7f9fd7b6e82c16379c267',1,'nonstd::span_lite::span']]]
 ];

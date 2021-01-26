@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['pointer_1563',['pointer',['../classnonstd_1_1span__lite_1_1span.html#ab1f55b463a1066b7a414baa7f5a0d7bd',1,'nonstd::span_lite::span']]]
+  ['quad_5frule_5fcollection_5ft_1691',['quad_rule_collection_t',['../namespacelf_1_1uscalfe.html#aae5612e64a1975df47f35fa5186672db',1,'lf::uscalfe']]],
+  ['quaddegree_5ft_1692',['quadDegree_t',['../namespacelf_1_1quad.html#a82ced7ee27edc229ee4f03e2ebbc9d06',1,'lf::quad']]]
 ];
