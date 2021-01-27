@@ -106,7 +106,7 @@ jobs:
           cmake --version
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
-      - uses: action/upload-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
           name: my-artifact
           path: /home/runner/work/lehrfempp/lehrfempp/Build/CMakeFiles/CMakeOutput.log
