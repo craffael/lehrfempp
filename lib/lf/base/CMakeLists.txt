@@ -70,6 +70,10 @@ if(UNIX)
       target_compile_definitions(lf.base PRIVATE BOOST_STACKTRACE_USE_BACKTRACE)
       target_link_libraries(lf.base PUBLIC dl backtrace)
     endif()
+    if(APPLE)
+      # The following is additionally needed on OSX
+      target_compile_definitions(lf.base PRIVATE _GNU_SOURCE)
+    endif()
   else()
     # backtrace.h can be included as is:
     target_compile_definitions(lf.base PRIVATE BOOST_STACKTRACE_USE_BACKTRACE)
