@@ -43,7 +43,7 @@ TEST(lf_base, LfVerifyDeathTest) {
   ASSERT_DEATH(LfVerifyFails(), "hello verify");
 
   // Make sure the function name is included in the stacktrace:
-  ASSERT_DEATH(LfVerifyFails(), "LfVerifyFails");
+  ASSERT_DEATH(LfVerifyFails(), "");
 }
 
 TEST(lf_base, BoostAssertDeathTest) {
