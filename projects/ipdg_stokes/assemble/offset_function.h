@@ -11,6 +11,7 @@
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/mesh_data_set.h>
 
+#include <Eigen/Sparse>
 #include <functional>
 
 namespace projects::ipdg_stokes {

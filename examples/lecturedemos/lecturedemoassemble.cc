@@ -9,6 +9,8 @@
 
 #include "lecturedemoassemble.h"
 
+#include <Eigen/Eigen>
+
 namespace lecturedemo {
 
 // clang-format off

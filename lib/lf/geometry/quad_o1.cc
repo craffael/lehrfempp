@@ -1,5 +1,6 @@
 #include "quad_o1.h"
 
+#include <Eigen/Eigen>
 #include <cmath>
 
 #include "point.h"

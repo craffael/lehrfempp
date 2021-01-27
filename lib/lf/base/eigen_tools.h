@@ -9,7 +9,11 @@
 #ifndef __1cc1076600024d7ea537871be7fc1fc0
 #define __1cc1076600024d7ea537871be7fc1fc0
 
-#include <Eigen/Eigen>
+// clang-format off
+#include "lf_assert.h"  // must be included before eigen!
+// clang-format on
+
+#include <Eigen/Core>
 #include <utility>
 
 namespace lf::base {

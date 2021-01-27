@@ -9,13 +9,14 @@
 #include "vtk_writer.h"
 
 #include <lf/base/base.h>
-#include <unsupported/Eigen/src/KroneckerProduct/KroneckerTensorProduct.h>
 
+#include <Eigen/Eigen>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/phoenix/phoenix.hpp>
 #include <boost/phoenix/scope/let.hpp>
 #include <boost/spirit/include/karma.hpp>
 #include <fstream>
+#include <unsupported/Eigen/KroneckerProduct>
 
 #include "eigen_fusion_adapter.h"
 

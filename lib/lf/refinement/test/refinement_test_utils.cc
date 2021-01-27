@@ -9,6 +9,8 @@
 
 #include "refinement_test_utils.h"
 
+#include <Eigen/Eigen>
+
 namespace lf::refinement::test {
 
 void checkGeometryInParent(const MeshHierarchy &mh,

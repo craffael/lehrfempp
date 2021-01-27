@@ -15,6 +15,8 @@
 
 #include "lin_fe.h"
 
+#include <Eigen/Eigen>
+
 namespace lf::uscalfe {
 std::shared_ptr<spdlog::logger> &LinearFELaplaceElementMatrix::Logger() {
   static auto logger =

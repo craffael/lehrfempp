@@ -11,6 +11,7 @@
 #include <lf/refinement/mesh_hierarchy.h>
 #include <lf/refinement/refutils.h>
 
+#include <Eigen/Eigen>
 #include <boost/program_options.hpp>
 #include <functional>
 #include <iostream>

@@ -3,7 +3,6 @@
 
 #include <lf/base/base.h>
 
-#include <Eigen/Eigen>
 #include <memory>
 
 #include "refinement_pattern.h"

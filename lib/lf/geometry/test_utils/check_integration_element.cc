@@ -10,6 +10,8 @@
 
 #include <gtest/gtest.h>
 
+#include <Eigen/LU>
+
 namespace lf::geometry::test_utils {
 
 void checkIntegrationElement(const lf::geometry::Geometry &geom,

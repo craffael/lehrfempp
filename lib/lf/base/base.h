@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @brief Module include file for lf::base
+ * @author Raffael Casagrande
+ * @date   2021-01-27 10:32:40
+ * @copyright MIT License
+ */
+
 #ifndef __986f32316282425d9be137cb399482f3
 #define __986f32316282425d9be137cb399482f3
 

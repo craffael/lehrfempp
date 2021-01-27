@@ -173,6 +173,8 @@ TEST(lf_assembly, dynamic_dof_index_test) {
       }
       default: {
         LF_ASSERT_MSG(false, "Illegal entity type");
+        // make compiler happy:
+        return 0;
       }
     }
   };

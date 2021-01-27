@@ -12,6 +12,7 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/quad/quad.h>
 
+#include <Eigen/Eigen>
 #include <boost/math/constants/constants.hpp>
 #include <boost/program_options.hpp>
 

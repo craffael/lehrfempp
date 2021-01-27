@@ -12,6 +12,7 @@
 #include <spdlog/spdlog.h>
 
 #include <iostream>
+#include <map>
 #include <numeric>
 
 namespace lf::mesh::hybrid2d {

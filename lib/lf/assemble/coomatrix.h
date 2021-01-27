@@ -14,9 +14,10 @@
  * @copyright MIT License
  */
 
-#include <Eigen/Sparse>
-
 #include "assembly_types.h"
+// clang-format off
+#include <Eigen/Sparse> // must be included after assembly_types.h
+// clang-format on 
 
 namespace lf::assemble {
 /**
