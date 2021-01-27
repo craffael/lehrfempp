@@ -16,6 +16,8 @@
 
 #include <lf/mesh/mesh.h>
 
+#include <map>
+
 #include "assembly_types.h"
 
 namespace lf::assemble {

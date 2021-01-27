@@ -10,6 +10,8 @@
 
 #include <gtest/gtest.h>
 
+#include <Eigen/Eigen>
+
 namespace lf::geometry::test_utils {
 
 void checkJacobianInverseGramian(const lf::geometry::Geometry &geom,

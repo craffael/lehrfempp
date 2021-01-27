@@ -14,7 +14,7 @@
 #include <spdlog/formatter.h>
 #include <spdlog/logger.h>
 
-#include <Eigen/Eigen>
+#include <Eigen/Core>
 #include <memory>
 
 namespace lf::base {

@@ -8,6 +8,8 @@
 
 #include "quad_o2.h"
 
+#include <Eigen/Eigen>
+
 #include "point.h"
 
 namespace lf::geometry {

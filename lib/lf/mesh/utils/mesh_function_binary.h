@@ -8,7 +8,7 @@
 
 #ifndef __9bad469d38e04e8ab67391ce50c2c480
 #define __9bad469d38e04e8ab67391ce50c2c480
-#include <Eigen/Eigen>
+
 #include <type_traits>
 #include <vector>
 
