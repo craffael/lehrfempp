@@ -110,7 +110,9 @@ jobs:
         if: failure()
         with:
           name: my-artifact
-          path: /home/runner/work/lehrfempp/lehrfempp/Build/CMakeFiles/CMakeOutput.log
+          path: |
+            /home/runner/work/lehrfempp/lehrfempp/Build/CMakeFiles/CMakeOutput.log
+            /home/runner/work/lehrfempp/lehrfempp/Build/CMakeFiles/CMakeError.log
       # - name: compile and test
         # run: "./ci/compile_test.sh"
       
