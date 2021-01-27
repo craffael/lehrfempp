@@ -103,10 +103,7 @@ jobs:
             # ${{ runner.os }}-${{ env.COMPILER }}-
       - name: debug
         run: |
-          echo "#include <pthread.h>
-          int main() {
-          }" > temp.cc
-          g++-8 temp.cc
+          cmake --version
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
       - name: compile and test
