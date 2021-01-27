@@ -9,14 +9,15 @@
 #ifndef __c3c605c9e48646758bf03fab65d52836
 #define __c3c605c9e48646758bf03fab65d52836
 
+#include <boost/assert.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
 namespace lf::base {
 
-void AssertionFailed(const std::string& expr, const std::string& file, int line,
-                     const std::string& msg);
+void AssertionFailed(const std::string& expr, const std::string& file,
+                     long line, const std::string& msg);
 
 }  // namespace lf::base
 
@@ -58,22 +59,6 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
     }                                                                   \
   }
 #endif
-
-// the following is needed to redirect BOOST_ASSERT(_MSG)/BOOST_VERIFY (_MSG)
-namespace boost {
-
-inline void assertion_failed_msg(char const* expr, char const* msg,
-                                 char const* function, char const* file,
-                                 long line) {
-  lf::base::AssertionFailed(expr, file, line, msg);
-}
-
-inline void assertion_failed(char const* expr, char const* function,
-                             char const* file, long line) {
-  lf::base::AssertionFailed(expr, file, line, "");
-}
-
-}  // namespace boost
 
 // And now we will redefine eigen_assert if needed:
 #ifdef LF_REDIRECT_ASSERTS
