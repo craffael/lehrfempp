@@ -1,5 +1,6 @@
 # Functionality for lf::base::LehrFemInfo:
 include(cmake/get_version.cmake)
+include(CheckCXXSourceCompiles)
 configure_file(lehrfem_info.cc ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc)
 
 # Define sources that make up this Library:
@@ -30,10 +31,7 @@ set_target_properties(lf.base PROPERTIES FOLDER "lib")
 # required libraries for boost::stacktrace:
 if(UNIX)
   # check if we can compile lf_assert.cc with backtrace support:
-  try_compile(assert_compiles 
-             ${CMAKE_CURRENT_BINARY_DIR}/cmake 
-             ${CMAKE_CURRENT_LIST_DIR}/cmake/has_backtrace.cc
-             )
+  check_cxx_source_compiles(${CMAKE_CURRENT_LIST_DIR}/cmake/has_backtrace.cc assert_compiles)
   
   if(NOT assert_compiles)
     # We have to find the backtrace.h file ourselves:

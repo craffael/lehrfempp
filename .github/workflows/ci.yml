@@ -58,10 +58,10 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: ubuntu-20.04
-            # compiler: "clang++-7"
-            # packages: "clang++-7 g++-8"
-            # build_type: "Debug"
+          - os: ubuntu-20.04
+            compiler: "clang++-7"
+            packages: "clang++-7 g++-8"
+            build_type: "Debug"
           # - os: ubuntu-20.04
             # compiler: "clang++-7"
             # packages: "clang++-7 g++-8"
