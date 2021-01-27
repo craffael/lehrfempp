@@ -42,8 +42,8 @@ TEST(lf_base, LfVerifyDeathTest) {
   // Make sure the message is contained in the output:
   ASSERT_DEATH(LfVerifyFails(), "hello verify");
 
-  // Make sure the function name is included in the stacktrace in debug mode:
-  ASSERT_DEBUG_DEATH(LfVerifyFails(), "LfVerifyFails");
+  // Make sure the function name is included in the stacktrace:
+  ASSERT_DEATH(LfVerifyFails(), "LfVerifyFails");
 }
 
 TEST(lf_base, BoostAssertDeathTest) {
@@ -54,9 +54,9 @@ TEST(lf_base, BoostAssertDeathTest) {
 
 TEST(lf_base, BoostVerifyDeathTest) {
   ASSERT_DEBUG_DEATH(BoostVerifyFails(), "BoostVerifyFails");
-  ASSERT_DEATH(BoostVerifyFails(), "");
+  ASSERT_DEBUG_DEATH(BoostVerifyFails(), "");
   ASSERT_DEBUG_DEATH(BoostVerifyMsgFails(), "BoostVerifyMsgFails");
-  ASSERT_DEATH(BoostVerifyMsgFails(), "hello boost verify");
+  ASSERT_DEBUG_DEATH(BoostVerifyMsgFails(), "hello boost verify");
 }
 
 TEST(lf_base, EigenAssertDeathTest) {

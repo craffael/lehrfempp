@@ -211,6 +211,7 @@ ProductUniformFESpaceFactory<SCALAR>::ReferenceFiniteElement(
     }
     default: {
       LF_ASSERT_MSG(false, "unsupported reference element " << ref_el);
+      return nullptr;
     }
   }
 }
