@@ -2,6 +2,7 @@
 
 #include "lf_assert.h"
 
+#include <boost/stacktrace.hpp>
 #include <iostream>
 
 namespace lf::base {
@@ -12,6 +13,8 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
   std::cerr << "***** Internal Program Error - assertion (" << expr
             << ") failed:\n"
             << file << '(' << line << "): " << msg << std::endl;
+  std::cerr << "Backtrace:\n" << boost::stacktrace::stacktrace() << '\n';
+  std::abort();
 }
 
 }  // end namespace lf::base

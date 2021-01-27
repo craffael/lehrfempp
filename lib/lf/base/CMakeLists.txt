@@ -27,6 +27,54 @@ lf_add_library(lf.base ${sources})
 target_link_libraries(lf.base PUBLIC Eigen3::Eigen Boost::boost spdlog::spdlog)
 set_target_properties(lf.base PROPERTIES FOLDER "lib")
 
+# required libraries for boost::stacktrace:
+if(UNIX)
+  if(NOT APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(NOT BACKTRACE_H)
+      # If we are on linux and using clang, we have to supply the path to the backtrace include separately
+      # see https://www.boost.org/doc/libs/1_75_0/doc/html/stacktrace/configuration_and_build.html
+      # 1) if gcc is installed, lets try to get the include paths from there:
+      execute_process(
+                      COMMAND /usr/bin/gcc -E -Wp,-v -xc /dev/null
+                      RESULT_VARIABLE GCC_ERROR
+                      ERROR_VARIABLE GCC_OUTPUT
+                      OUTPUT_QUIET
+                      )
+      set(HINTS "")
+      if(NOT GCC_ERROR)
+        # extract include paths using regex:
+        if(GCC_OUTPUT MATCHES "#include <\\.\\.\\.> search starts here:(.*)End of search list")
+          separate_arguments(HINTS UNIX_COMMAND ${CMAKE_MATCH_1})
+        endif()
+      endif()
+      
+      # Try to find backtrace.h
+      find_file(BACKTRACE_H "backtrace.h" 
+        HINTS
+        ${HINTS}
+      )
+    endif()
+    if(NOT BACKTRACE_H)
+      message(STATUS "You are using clang on linux but I couldn't find backtrace.h => backtraces will not include source lines.")
+      target_link_libraries(lf.base PUBLIC dl)
+    else()
+      target_compile_definitions(lf.base PRIVATE "BOOST_STACKTRACE_BACKTRACE_INCLUDE_FILE=\"${BACKTRACE_H}\"")
+      target_compile_definitions(lf.base PRIVATE BOOST_STACKTRACE_USE_BACKTRACE)
+      target_link_libraries(lf.base PUBLIC dl backtrace)
+    endif()
+  else()
+    target_compile_definitions(lf.base PRIVATE BOOST_STACKTRACE_USE_BACKTRACE)
+    target_link_libraries(lf.base PUBLIC dl backtrace)
+  endif()
+  
+endif()
+
+if(LF_REDIRECT_ASSERTS)
+  # redirect boost asserts to LF_ASSERT/LF_VERIFY:
+  target_compile_definitions(lf.base PUBLIC BOOST_ENABLE_ASSERT_DEBUG_HANDLER)
+  target_compile_definitions(lf.base PUBLIC "LF_REDIRECT_ASSERTS")
+endif()
+
 # enable SPDLOG_DEBUG and SPDLOG_TRACE statements in all modes except release::
 target_compile_definitions(lf.base PUBLIC $<IF:$<CONFIG:Release>,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>)
 

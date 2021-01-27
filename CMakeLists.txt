@@ -25,6 +25,7 @@ endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
 option(LF_BUILD_DOC      "Whether the documentation should be build."                     ON)
+option(LF_REDIRECT_ASSERTS "When set to true, LehrFEM++ will modify the eigen and boost asserts to print a stacktrace on failure" ON)
 
 # Group targets in folders in Visual Studio/Xcode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

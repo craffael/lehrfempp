@@ -35,7 +35,6 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
@@ -55,10 +54,40 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
 #endif
 
+// the following is needed to redirect BOOST_ASSERT(_MSG)/BOOST_VERIFY (_MSG)
+namespace boost {
+
+inline void assertion_failed_msg(char const* expr, char const* msg,
+                                 char const* function, char const* file,
+                                 long line) {
+  lf::base::AssertionFailed(expr, file, line, msg);
+}
+
+inline void assertion_failed(char const* expr, char const* function,
+                             char const* file, long line) {
+  lf::base::AssertionFailed(expr, file, line, "");
+}
+
+}  // namespace boost
+
+// And now we will redefine eigen_assert if needed:
+#ifdef LF_REDIRECT_ASSERTS
+#ifdef eigen_assert
+#ifndef eigen_assert_redirected
+#warning \
+    "Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html"
+#undef eigen_assert
+#define eigen_assert(x) LF_ASSERT_MSG(x, "")
+#define eigen_assert_redirected
+#endif
+#else
+#define eigen_assert(x) LF_ASSERT_MSG(x, "")
+#define eigen_assert_redirected
+#endif
+#endif
 #endif  // __c3c605c9e48646758bf03fab65d52836

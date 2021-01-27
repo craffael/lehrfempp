@@ -14,9 +14,9 @@
  * @copyright MIT License
  */
 
-#include <Eigen/Sparse>
-
 #include "coomatrix.h"
+
+#include <Eigen/Sparse>
 
 namespace lf::assemble {
 
