@@ -3,6 +3,4 @@
 
 #include <backtrace.h>
 
-int main() {
-  
-}
+int main() {}
