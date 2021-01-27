@@ -13,7 +13,7 @@
 #include "lf_assert.h"  // must be included before eigen!
 // clang-format on
 
-#include <Eigen/Eigen>
+#include <Eigen/Core>
 #include <utility>
 
 namespace lf::base {
