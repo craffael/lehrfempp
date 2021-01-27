@@ -94,44 +94,46 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;gtest/gtest.h&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacelf_1_1geometry_1_1test__utils.html">lf::geometry::test_utils</a> {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;Eigen/Eigen&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">   15</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">checkJacobianInverseGramian</a>(<span class="keyword">const</span> <a class="code" href="classlf_1_1geometry_1_1_geometry.html">lf::geometry::Geometry</a> &amp;geom,</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                                 <span class="keyword">const</span> Eigen::MatrixXd &amp;eval_points) {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> num_points = eval_points.cols();</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> dim_local = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a3f937acbc212bbd6685ec89d9025a61c">DimLocal</a>();</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> dim_global = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a7200354b3ea18b68c4112c3a4dd6ef07">DimGlobal</a>();</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  Eigen::MatrixXd jacobians = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#ac665d163a4692af4a1dc7cc54e98315f">Jacobian</a>(eval_points);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  Eigen::MatrixXd jacInvGrams = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a7cb2b572966d7492522acb1b127cbbd0">JacobianInverseGramian</a>(eval_points);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  EXPECT_EQ(jacInvGrams.rows(), dim_global)</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian has &quot;</span> &lt;&lt; jacInvGrams.rows()</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; rows instead of &quot;</span> &lt;&lt; dim_global;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  EXPECT_EQ(jacInvGrams.cols(), num_points * dim_local)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian has &quot;</span> &lt;&lt; jacInvGrams.cols()</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; cols instead of &quot;</span> &lt;&lt; num_points * dim_local;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; num_points; ++j) {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    Eigen::MatrixXd jacInvGram =</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        jacInvGrams.block(0, j * dim_local, dim_global, dim_local);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    Eigen::MatrixXd jacobian =</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        jacobians.block(0, j * dim_local, dim_global, dim_local);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    EXPECT_TRUE(jacInvGram.isApprox(</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        jacobian * (jacobian.transpose() * jacobian).inverse()))</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian incorrect at point &quot;</span> &lt;&lt; eval_points.col(j);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}  <span class="comment">// namespace lf::geometry::test_utils</span></div>
-<div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html">lf::geometry::Geometry</a></div><div class="ttdoc">Interface class for shape information on a mesh cell in the spirit of parametric finite element metho...</div><div class="ttdef"><b>Definition:</b> <a href="geometry__interface_8h_source.html#l00022">geometry_interface.h:22</a></div></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacelf_1_1geometry_1_1test__utils.html">lf::geometry::test_utils</a> {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">   17</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">checkJacobianInverseGramian</a>(<span class="keyword">const</span> <a class="code" href="classlf_1_1geometry_1_1_geometry.html">lf::geometry::Geometry</a> &amp;geom,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                                 <span class="keyword">const</span> Eigen::MatrixXd &amp;eval_points) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> num_points = eval_points.cols();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> dim_local = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a3f937acbc212bbd6685ec89d9025a61c">DimLocal</a>();</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> dim_global = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a7200354b3ea18b68c4112c3a4dd6ef07">DimGlobal</a>();</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  Eigen::MatrixXd jacobians = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#ac665d163a4692af4a1dc7cc54e98315f">Jacobian</a>(eval_points);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  Eigen::MatrixXd jacInvGrams = geom.<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a7cb2b572966d7492522acb1b127cbbd0">JacobianInverseGramian</a>(eval_points);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  EXPECT_EQ(jacInvGrams.rows(), dim_global)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian has &quot;</span> &lt;&lt; jacInvGrams.rows()</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; rows instead of &quot;</span> &lt;&lt; dim_global;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  EXPECT_EQ(jacInvGrams.cols(), num_points * dim_local)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian has &quot;</span> &lt;&lt; jacInvGrams.cols()</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; cols instead of &quot;</span> &lt;&lt; num_points * dim_local;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; num_points; ++j) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    Eigen::MatrixXd jacInvGram =</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        jacInvGrams.block(0, j * dim_local, dim_global, dim_local);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    Eigen::MatrixXd jacobian =</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        jacobians.block(0, j * dim_local, dim_global, dim_local);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    EXPECT_TRUE(jacInvGram.isApprox(</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        jacobian * (jacobian.transpose() * jacobian).inverse()))</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;JacobianInverseGramian incorrect at point &quot;</span> &lt;&lt; eval_points.col(j);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}  <span class="comment">// namespace lf::geometry::test_utils</span></div>
+<div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html">lf::geometry::Geometry</a></div><div class="ttdoc">Interface class for shape information on a mesh cell in the spirit of parametric finite element metho...</div><div class="ttdef"><b>Definition:</b> <a href="geometry__interface_8h_source.html#l00021">geometry_interface.h:21</a></div></div>
 <div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html_a3f937acbc212bbd6685ec89d9025a61c"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html#a3f937acbc212bbd6685ec89d9025a61c">lf::geometry::Geometry::DimLocal</a></div><div class="ttdeci">virtual dim_t DimLocal() const =0</div><div class="ttdoc">Dimension of the domain of this mapping.</div></div>
 <div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html_a7200354b3ea18b68c4112c3a4dd6ef07"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html#a7200354b3ea18b68c4112c3a4dd6ef07">lf::geometry::Geometry::DimGlobal</a></div><div class="ttdeci">virtual dim_t DimGlobal() const =0</div><div class="ttdoc">Dimension of the image of this mapping.</div></div>
 <div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html_a7cb2b572966d7492522acb1b127cbbd0"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html#a7cb2b572966d7492522acb1b127cbbd0">lf::geometry::Geometry::JacobianInverseGramian</a></div><div class="ttdeci">virtual Eigen::MatrixXd JacobianInverseGramian(const Eigen::MatrixXd &amp;local) const =0</div><div class="ttdoc">Evaluate the Jacobian * Inverse Gramian ( ) simulatanesouly at numPoints.</div></div>
 <div class="ttc" id="aclasslf_1_1geometry_1_1_geometry_html_ac665d163a4692af4a1dc7cc54e98315f"><div class="ttname"><a href="classlf_1_1geometry_1_1_geometry.html#ac665d163a4692af4a1dc7cc54e98315f">lf::geometry::Geometry::Jacobian</a></div><div class="ttdeci">virtual Eigen::MatrixXd Jacobian(const Eigen::MatrixXd &amp;local) const =0</div><div class="ttdoc">Evaluate the jacobian of the mapping simultaneously at numPoints points.</div></div>
 <div class="ttc" id="anamespacelf_1_1geometry_1_1test__utils_html"><div class="ttname"><a href="namespacelf_1_1geometry_1_1test__utils.html">lf::geometry::test_utils</a></div><div class="ttdoc">Defines the Geometry::test_utils module and provides a number of test functions to check geometry obj...</div><div class="ttdef"><b>Definition:</b> <a href="check__child__geometry_8cc_source.html#l00013">check_child_geometry.cc:13</a></div></div>
-<div class="ttc" id="anamespacelf_1_1geometry_1_1test__utils_html_a0e98b46f9072de6afe883bfb16fd8b28"><div class="ttname"><a href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">lf::geometry::test_utils::checkJacobianInverseGramian</a></div><div class="ttdeci">void checkJacobianInverseGramian(const lf::geometry::Geometry &amp;geom, const Eigen::MatrixXd &amp;eval_points)</div><div class="ttdoc">Checks if JacobianInverseGramian() is implemented correctly assuming that Jacobian() is correct.</div><div class="ttdef"><b>Definition:</b> <a href="check__jacobian__inverse__gramian_8cc_source.html#l00015">check_jacobian_inverse_gramian.cc:15</a></div></div>
+<div class="ttc" id="anamespacelf_1_1geometry_1_1test__utils_html_a0e98b46f9072de6afe883bfb16fd8b28"><div class="ttname"><a href="namespacelf_1_1geometry_1_1test__utils.html#a0e98b46f9072de6afe883bfb16fd8b28">lf::geometry::test_utils::checkJacobianInverseGramian</a></div><div class="ttdeci">void checkJacobianInverseGramian(const lf::geometry::Geometry &amp;geom, const Eigen::MatrixXd &amp;eval_points)</div><div class="ttdoc">Checks if JacobianInverseGramian() is implemented correctly assuming that Jacobian() is correct.</div><div class="ttdef"><b>Definition:</b> <a href="check__jacobian__inverse__gramian_8cc_source.html#l00017">check_jacobian_inverse_gramian.cc:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

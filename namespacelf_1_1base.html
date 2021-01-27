@@ -162,8 +162,8 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a43434ab00b4f8452845500f73849459f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a43434ab00b4f8452845500f73849459f">AssertionFailed</a> (const std::string &amp;expr, const std::string &amp;file, int line, const std::string &amp;msg)</td></tr>
-<tr class="separator:a43434ab00b4f8452845500f73849459f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a107b5158c9389c01da99c4b9f2ef1fab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a107b5158c9389c01da99c4b9f2ef1fab">AssertionFailed</a> (const std::string &amp;expr, const std::string &amp;file, long line, const std::string &amp;msg)</td></tr>
+<tr class="separator:a107b5158c9389c01da99c4b9f2ef1fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68986d1aa68e6b74cb2453b34dbc1643"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a68986d1aa68e6b74cb2453b34dbc1643">PrintInfo</a> (std::ostream &amp;o, const <a class="el" href="classlf_1_1base_1_1_ref_el.html">RefEl</a> &amp;ref_el, int output_ctrl)</td></tr>
 <tr class="separator:a68986d1aa68e6b74cb2453b34dbc1643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd38471e3da2165f752fb1e80bc7e1b"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#aebd38471e3da2165f752fb1e80bc7e1b">operator&lt;&lt;</a> (std::ostream &amp;stream, const <a class="el" href="classlf_1_1base_1_1_ref_el.html">RefEl</a> &amp;ref_el)</td></tr>
@@ -221,17 +221,17 @@ Variables</h2></td></tr>
 <div class="line">  <a class="code" href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a1e75742352f47497c49d2cc8d839684b">RefElType::kSegment</a> == <a class="code" href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">RefEl::kSegment</a>();</div>
 <div class="line">  <a class="code" href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21ab218aadab40d1a5a4f2e7500b94da4fc">RefElType::kTria</a> == <a class="code" href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">RefEl::kTria</a>();</div>
 <div class="line">  <a class="code" href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21acf7fd46dda0070fc1ac6150450f12f67">RefElType::kQuad</a> == <a class="code" href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">RefEl::kQuad</a>();</div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_a415d06db9dee088b67e47b94bdf53db7"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">lf::base::RefEl::kSegment</a></div><div class="ttdeci">static constexpr RefEl kSegment()</div><div class="ttdoc">Returns the (1-dimensional) reference segment.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00151">ref_el.h:151</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ab4167c45a6c22d9b8dd49218d4aedc51"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">lf::base::RefEl::kPoint</a></div><div class="ttdeci">static constexpr RefEl kPoint()</div><div class="ttdoc">Returns the (0-dimensional) reference point.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00142">ref_el.h:142</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ac6542f1b3d68028bc0bd8d9a223b35ff"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">lf::base::RefEl::kTria</a></div><div class="ttdeci">static constexpr RefEl kTria()</div><div class="ttdoc">Returns the reference triangle.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00159">ref_el.h:159</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ae28ad009a99541ecd2ab24999aebcf63"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">lf::base::RefEl::kQuad</a></div><div class="ttdeci">static constexpr RefEl kQuad()</div><div class="ttdoc">Returns the reference quadrilateral.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00167">ref_el.h:167</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_a415d06db9dee088b67e47b94bdf53db7"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">lf::base::RefEl::kSegment</a></div><div class="ttdeci">static constexpr RefEl kSegment()</div><div class="ttdoc">Returns the (1-dimensional) reference segment.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00150">ref_el.h:150</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ab4167c45a6c22d9b8dd49218d4aedc51"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">lf::base::RefEl::kPoint</a></div><div class="ttdeci">static constexpr RefEl kPoint()</div><div class="ttdoc">Returns the (0-dimensional) reference point.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00141">ref_el.h:141</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ac6542f1b3d68028bc0bd8d9a223b35ff"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">lf::base::RefEl::kTria</a></div><div class="ttdeci">static constexpr RefEl kTria()</div><div class="ttdoc">Returns the reference triangle.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00158">ref_el.h:158</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ae28ad009a99541ecd2ab24999aebcf63"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">lf::base::RefEl::kQuad</a></div><div class="ttdeci">static constexpr RefEl kQuad()</div><div class="ttdoc">Returns the reference quadrilateral.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00166">ref_el.h:166</a></div></div>
 <div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21a1e75742352f47497c49d2cc8d839684b"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a1e75742352f47497c49d2cc8d839684b">lf::base::RefElType::kSegment</a></div><div class="ttdeci">@ kSegment</div><div class="ttdoc">Returns the (1-dimensional) reference segment.</div></div>
 <div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21a20e722b15a1b587c30633f0a136b7009"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a20e722b15a1b587c30633f0a136b7009">lf::base::RefElType::kPoint</a></div><div class="ttdeci">@ kPoint</div><div class="ttdoc">Returns the (0-dimensional) reference point.</div></div>
 <div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21ab218aadab40d1a5a4f2e7500b94da4fc"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21ab218aadab40d1a5a4f2e7500b94da4fc">lf::base::RefElType::kTria</a></div><div class="ttdeci">@ kTria</div><div class="ttdoc">Returns the reference triangle.</div></div>
 <div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21acf7fd46dda0070fc1ac6150450f12f67"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21acf7fd46dda0070fc1ac6150450f12f67">lf::base::RefElType::kQuad</a></div><div class="ttdeci">@ kQuad</div><div class="ttdoc">Returns the reference quadrilateral.</div></div>
 </div><!-- fragment --><p> Also the enum representation is convertible into a <a class="el" href="classlf_1_1base_1_1_ref_el.html" title="Represents a reference element with all its properties.">lf::base::RefEl</a> instance and back: </p><div class="fragment"><div class="line">  <a class="code" href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21">RefElType</a> point = <a class="code" href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">RefEl::kPoint</a>();</div>
 <div class="line">  <span class="keyword">auto</span> segment = RefEl(<a class="code" href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a1e75742352f47497c49d2cc8d839684b">RefElType::kSegment</a>);</div>
-<div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21">lf::base::RefElType</a></div><div class="ttdeci">RefElType</div><div class="ttdoc">An enum that defines all possible RefEl types.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00029">ref_el.h:29</a></div></div>
+<div class="ttc" id="anamespacelf_1_1base_html_a2c68b938de56a5b67e3075dbcab4cb21"><div class="ttname"><a href="namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21">lf::base::RefElType</a></div><div class="ttdeci">RefElType</div><div class="ttdoc">An enum that defines all possible RefEl types.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00028">ref_el.h:28</a></div></div>
 </div><!-- fragment --><table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a2c68b938de56a5b67e3075dbcab4cb21a20e722b15a1b587c30633f0a136b7009"></a>kPoint&#160;</td><td class="fielddoc"><p>Returns the (0-dimensional) reference point. </p>
 </td></tr>
@@ -255,13 +255,13 @@ Variables</h2></td></tr>
  </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="ref__el_8h_source.html#l00029">29</a> of file <a class="el" href="ref__el_8h_source.html">ref_el.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ref__el_8h_source.html#l00028">28</a> of file <a class="el" href="ref__el_8h_source.html">ref_el.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a43434ab00b4f8452845500f73849459f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43434ab00b4f8452845500f73849459f">&#9670;&nbsp;</a></span>AssertionFailed()</h2>
+<a id="a107b5158c9389c01da99c4b9f2ef1fab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107b5158c9389c01da99c4b9f2ef1fab">&#9670;&nbsp;</a></span>AssertionFailed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -281,7 +281,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">long&#160;</td>
           <td class="paramname"><em>line</em>, </td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="lf__assert_8cc_source.html#l00010">10</a> of file <a class="el" href="lf__assert_8cc_source.html">lf_assert.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="lf__assert_8cc_source.html#l00011">11</a> of file <a class="el" href="lf__assert_8cc_source.html">lf_assert.cc</a>.</p>
 
 </div>
 </div>
@@ -332,7 +332,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="spdlog__utils_8cc_source.html#l00016">16</a> of file <a class="el" href="spdlog__utils_8cc_source.html">spdlog_utils.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="assembler_8cc_source.html#l00019">lf::assemble::AssembleMatrixLogger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00165">lf::uscalfe::LinearFeLocalLoadVectorLogger()</a>, <a class="el" href="hybrid2d_2mesh_8h_source.html#l00135">lf::mesh::hybrid2d::Mesh::Logger()</a>, <a class="el" href="mesh__factory_8cc_source.html#l00012">lf::mesh::hybrid2d::MeshFactory::Logger()</a>, <a class="el" href="torus__mesh__builder_8cc_source.html#l00023">lf::mesh::utils::TorusMeshBuilder::Logger()</a>, <a class="el" href="tp__quad__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPQuadMeshBuilder::Logger()</a>, <a class="el" href="tp__triag__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPTriagMeshBuilder::Logger()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00027">lf::refinement::MeshHierarchy::Logger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00019">lf::uscalfe::LinearFELaplaceElementMatrix::Logger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00027">lf::uscalfe::MassEdgeMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00021">lf::uscalfe::ReactionDiffusionElementMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00039">lf::uscalfe::ScalarLoadEdgeVectorProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00033">lf::uscalfe::ScalarLoadElementVectorProviderLogger()</a>, and <a class="el" href="check__mesh__completeness_8cc_source.html#l00080">lf::mesh::test_utils::WatertightLogger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="assembler_8cc_source.html#l00019">lf::assemble::AssembleMatrixLogger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00167">lf::uscalfe::LinearFeLocalLoadVectorLogger()</a>, <a class="el" href="hybrid2d_2mesh_8h_source.html#l00135">lf::mesh::hybrid2d::Mesh::Logger()</a>, <a class="el" href="mesh__factory_8cc_source.html#l00012">lf::mesh::hybrid2d::MeshFactory::Logger()</a>, <a class="el" href="torus__mesh__builder_8cc_source.html#l00023">lf::mesh::utils::TorusMeshBuilder::Logger()</a>, <a class="el" href="tp__quad__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPQuadMeshBuilder::Logger()</a>, <a class="el" href="tp__triag__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPTriagMeshBuilder::Logger()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00027">lf::refinement::MeshHierarchy::Logger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00021">lf::uscalfe::LinearFELaplaceElementMatrix::Logger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00027">lf::uscalfe::MassEdgeMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00021">lf::uscalfe::ReactionDiffusionElementMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00039">lf::uscalfe::ScalarLoadEdgeVectorProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00033">lf::uscalfe::ScalarLoadElementVectorProviderLogger()</a>, and <a class="el" href="check__mesh__completeness_8cc_source.html#l00080">lf::mesh::test_utils::WatertightLogger()</a>.</p>
 
 </div>
 </div>
@@ -383,9 +383,9 @@ Variables</h2></td></tr>
 <h4>Usage example</h4>
 <div class="fragment"><div class="line">  std::cout &lt;&lt; <a class="code" href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">RefEl::kSegment</a>();  <span class="comment">// prints &quot;kSegment&quot;</span></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="ref__el_8h_source.html#l00533">533</a> of file <a class="el" href="ref__el_8h_source.html">ref_el.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ref__el_8h_source.html#l00532">532</a> of file <a class="el" href="ref__el_8h_source.html">ref_el.h</a>.</p>
 
-<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00456">lf::base::RefEl::ToString()</a>.</p>
+<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00455">lf::base::RefEl::ToString()</a>.</p>
 
 </div>
 </div>
@@ -460,7 +460,7 @@ template&lt;class T &gt; </div>
 </div><!-- fragment -->
 <p>Check if a given type T is an Eigen::Array. </p>
 
-<p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00054">54</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00058">58</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00287">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
 
@@ -492,7 +492,7 @@ template&lt;class T &gt; </div>
 </div><!-- fragment -->
 <p>Check if a given type T is an Eigen::Matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00047">47</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00051">51</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00287">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
 
@@ -553,7 +553,7 @@ template&lt;class T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="base_8h_source.html#l00035">35</a> of file <a class="el" href="base_8h_source.html">base.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="base_8h_source.html#l00043">43</a> of file <a class="el" href="base_8h_source.html">base.h</a>.</p>
 
 </div>
 </div>
