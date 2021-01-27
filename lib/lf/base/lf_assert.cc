@@ -20,15 +20,17 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 }  // end namespace lf::base
 
 #ifdef LF_REDIRECT_ASSERTS
+namespace boost {
 // the following is needed to redirect BOOST_ASSERT(_MSG)/BOOST_VERIFY (_MSG)
-void boost::assertion_failed_msg(char const* expr, char const* msg,
-                                 char const* /*function*/, char const* file,
-                                 long line) {
+void assertion_failed_msg(char const* expr, char const* msg,
+                          char const* /*function*/, char const* file,
+                          long line) {
   lf::base::AssertionFailed(expr, file, line, msg);
 }
 
-void boost::assertion_failed(char const* expr, char const* /*function*/,
-                             char const* file, long line) {
+void assertion_failed(char const* expr, char const* /*function*/,
+                      char const* file, long line) {
   lf::base::AssertionFailed(expr, file, line, "");
 }
+}  // namespace boost
 #endif
