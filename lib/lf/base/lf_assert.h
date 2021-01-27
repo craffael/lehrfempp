@@ -79,8 +79,14 @@ inline void assertion_failed(char const* expr, char const* function,
 #ifdef LF_REDIRECT_ASSERTS
 #ifdef eigen_assert
 #ifndef eigen_assert_redirected
+// eigen_assert has already been defined, but not by us!
+#ifdef _MSC_VER
+#pragma message( \
+    "WARNING: Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html")
+#else
 #warning \
     "Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html"
+#endif
 #undef eigen_assert
 #define eigen_assert(x) LF_ASSERT_MSG(x, "")
 #define eigen_assert_redirected

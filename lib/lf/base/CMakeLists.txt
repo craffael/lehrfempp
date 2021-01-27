@@ -1,5 +1,5 @@
 # Functionality for lf::base::LehrFemInfo:
-include(get_version.cmake)
+include(cmake/get_version.cmake)
 configure_file(lehrfem_info.cc ${CMAKE_CURRENT_BINARY_DIR}/lehrfem_info.cc)
 
 # Define sources that make up this Library:
@@ -29,9 +29,16 @@ set_target_properties(lf.base PROPERTIES FOLDER "lib")
 
 # required libraries for boost::stacktrace:
 if(UNIX)
-  if(NOT APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # check if we can compile lf_assert.cc with backtrace support:
+  try_compile(assert_compiles 
+             ${CMAKE_CURRENT_BINARY_DIR}/cmake 
+             ${CMAKE_CURRENT_LIST_DIR}/cmake/has_backtrace.cc
+             )
+  
+  if(NOT assert_compiles)
+    # We have to find the backtrace.h file ourselves:
     if(NOT BACKTRACE_H)
-      # If we are on linux and using clang, we have to supply the path to the backtrace include separately
+      # we have to supply the path to the backtrace include separately
       # see https://www.boost.org/doc/libs/1_75_0/doc/html/stacktrace/configuration_and_build.html
       # 1) if gcc is installed, lets try to get the include paths from there:
       execute_process(
@@ -55,7 +62,7 @@ if(UNIX)
       )
     endif()
     if(NOT BACKTRACE_H)
-      message(STATUS "You are using clang on linux but I couldn't find backtrace.h => backtraces will not include source lines.")
+      message(STATUS "Your compiler can't find backtrace.h => backtraces will not include source lines.")
       target_link_libraries(lf.base PUBLIC dl)
     else()
       target_compile_definitions(lf.base PRIVATE "BOOST_STACKTRACE_BACKTRACE_INCLUDE_FILE=\"${BACKTRACE_H}\"")
@@ -63,6 +70,7 @@ if(UNIX)
       target_link_libraries(lf.base PUBLIC dl backtrace)
     endif()
   else()
+    # backtrace.h can be included as is:
     target_compile_definitions(lf.base PRIVATE BOOST_STACKTRACE_USE_BACKTRACE)
     target_link_libraries(lf.base PUBLIC dl backtrace)
   endif()
