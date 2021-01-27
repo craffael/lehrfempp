@@ -14,9 +14,9 @@
  * @copyright MIT License
  */
 
-#include "assembly_types.h"
-
 #include <Eigen/Sparse>
+
+#include "assembly_types.h"
 
 namespace lf::assemble {
 /**

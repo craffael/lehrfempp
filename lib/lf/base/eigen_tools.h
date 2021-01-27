@@ -9,7 +9,9 @@
 #ifndef __1cc1076600024d7ea537871be7fc1fc0
 #define __1cc1076600024d7ea537871be7fc1fc0
 
+// clang-format off
 #include "lf_assert.h"  // must be included before eigen!
+// clang-format on
 
 #include <Eigen/Eigen>
 #include <utility>

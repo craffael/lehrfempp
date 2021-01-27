@@ -6,10 +6,10 @@
  * @copyright MIT License
  */
 
-#include <Eigen/Eigen>
-
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
+
+#include <Eigen/Eigen>
 
 #include "lf/base/eigen_tools.h"
 

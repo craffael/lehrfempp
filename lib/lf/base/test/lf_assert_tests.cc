@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
+
 #include <boost/assert.hpp>
 
 namespace lf::base {
