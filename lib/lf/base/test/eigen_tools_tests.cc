@@ -6,12 +6,10 @@
  * @copyright MIT License
  */
 
-// clang-format off
-#include <Eigen/Core>
-// clang-format on
-
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
+
+#include <Eigen/Core>
 
 #include "lf/base/eigen_tools.h"
 
