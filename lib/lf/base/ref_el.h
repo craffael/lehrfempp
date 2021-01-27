@@ -8,8 +8,6 @@
 
 //#include <boost/range.hpp>
 
-#include <Eigen/Eigen>
-
 #include "base.h"
 #include "lf_assert.h"
 
