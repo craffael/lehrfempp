@@ -8,6 +8,7 @@
  * @copyright MIT License
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
@@ -45,7 +46,7 @@ double integrateCoeffgradUhVf(
   const lf::mesh::utils::MeshFunctionGlobal mf_vectorfield(vectorfield);
   // Build a MeshFunction representing the gradient of the finite element
   // solution
-  const lf::uscalfe::MeshFunctionGradFE mf_grad(fe_space, coeff_vec);
+  const lf::fe::MeshFunctionGradFE mf_grad(fe_space, coeff_vec);
   // Mesh function representing the integrand
   const auto mf_itg{lf::mesh::utils::transpose(mf_coefficient * mf_grad) *
                     mf_vectorfield};
@@ -55,7 +56,7 @@ double integrateCoeffgradUhVf(
     qrs[ref_el.Id()] = lf::quad::make_QuadRule(ref_el, 2);
   }
   // Apply composite mesh-based quadrature to a mesh function
-  const double s = lf::uscalfe::IntegrateMeshFunction(
+  const double s = lf::fe::IntegrateMeshFunction(
       *mesh_p, mf_itg,
       [&qrs](const lf::mesh::Entity& e) { return qrs[e.RefEl().Id()]; })(0, 0);
   return s;

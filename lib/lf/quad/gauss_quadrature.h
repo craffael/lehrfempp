@@ -9,6 +9,7 @@
 #ifndef __cd0bee55c3bb44e8bda00e45e61f2001
 #define __cd0bee55c3bb44e8bda00e45e61f2001
 #include <tuple>
+
 #include "quad_rule.h"
 
 namespace lf::quad {

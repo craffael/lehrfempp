@@ -3,6 +3,7 @@
  */
 
 #include "geometry_interface.h"
+
 #include "print_info.h"
 
 namespace lf::geometry {

@@ -11,9 +11,8 @@
 
 #include <lf/mesh/mesh.h>
 
-#include "product_element_matrix_provider.h"
-
 #include "dpg.h"
+#include "product_element_matrix_provider.h"
 
 namespace projects::dpg {
 
@@ -109,7 +108,7 @@ class DpgElementMatrixProvider {
 // template deduction hint
 template <class PTR>
 DpgElementMatrixProvider(PTR stiffness_provider, PTR gramianProvider)
-    ->DpgElementMatrixProvider<typename PTR::element_type::SCALAR>;
+    -> DpgElementMatrixProvider<typename PTR::element_type::SCALAR>;
 
 // evaluation method.
 template <typename SCALAR>

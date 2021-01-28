@@ -7,7 +7,10 @@
  */
 
 #include "check_sub_geometry.h"
+
 #include <gtest/gtest.h>
+
+#include <Eigen/Eigen>
 
 namespace lf::geometry::test_utils {
 

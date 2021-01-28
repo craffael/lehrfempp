@@ -18,7 +18,9 @@
 
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
+
 #include <iostream>
+
 #include "precomputed_scalar_reference_finite_element.h"
 #include "uscalfe.h"
 
@@ -36,7 +38,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
  *
- * @tparam SCALAR type for the entries of the element matrices. Must be a field
+ * @tparam SCALAR scalar type of the UniformScalarFESpace. Must be a field
  *                     type such as `double` or `std::complex<double>`
  * @tparam DIFF_COEFF a \ref mesh_function "MeshFunction" that defines the
  *                    diffusion coefficient \f$ \mathbf{\alpha} \f$.
@@ -52,7 +54,8 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * The element matrix is corresponds to the (local) bilinear form
  * @f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
-          \cdot\mathbf{grad}\,v + \gamma(\mathbf{x})u\,v\,\mathrm{d}\mathbf{x}
+          \cdot\mathbf{grad}\,v +
+ \gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
  * @f]
  * with _diffusion coefficient_ @f$\mathbf{\alpha}@f$ and reaction coefficient
@@ -77,7 +80,7 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  *
  * ## Logger
  * This class logs additional information to
- * \ref reaction_diffusion_element_matrix_provider_logger.
+ * \ref ReactionDiffusionElementMatrixProviderLogger().
  * See \ref loggers for more information.
  */
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
@@ -89,7 +92,12 @@ class ReactionDiffusionElementMatrixProvider {
   /**
    * @brief type of returned element matrix
    */
-  using ElemMat = Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>;
+  using Scalar =
+      typename decltype(mesh::utils::MeshFunctionReturnType<DIFF_COEFF>() *
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>() +
+                        mesh::utils::MeshFunctionReturnType<REACTION_COEFF>() *
+                            Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>())::Scalar;
+  using ElemMat = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @brief standard constructors */
   /** @{ */
@@ -186,21 +194,20 @@ class ReactionDiffusionElementMatrixProvider {
 /**
  * @brief logger for ReactionDiffusionElementMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    reaction_diffusion_element_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &ReactionDiffusionElementMatrixProviderLogger();
 
 template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha,
                                        REACTION_COEFF gamma)
-    ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
-                                             DIFF_COEFF, REACTION_COEFF>;
+    -> ReactionDiffusionElementMatrixProvider<
+        typename PTR::element_type::Scalar, DIFF_COEFF, REACTION_COEFF>;
 
 template <class PTR, class DIFF_COEFF, class REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider(
     PTR fe_space, DIFF_COEFF alpha, REACTION_COEFF gamma,
     std::map<lf::base::RefEl, lf::quad::QuadRule>)
-    ->ReactionDiffusionElementMatrixProvider<typename PTR::element_type::Scalar,
-                                             DIFF_COEFF, REACTION_COEFF>;
+    -> ReactionDiffusionElementMatrixProvider<
+        typename PTR::element_type::Scalar, DIFF_COEFF, REACTION_COEFF>;
 
 // First constructor (internal construction of quadrature rules
 template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
@@ -284,7 +291,7 @@ ReactionDiffusionElementMatrixProvider<
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(reaction_diffusion_element_matrix_provider_logger,
+  SPDLOG_LOGGER_TRACE(ReactionDiffusionElementMatrixProviderLogger(),
                       "{}, shape = \n{}", ref_el,
                       geo_ptr->Global(ref_el.NodeCoords()));
 
@@ -323,9 +330,9 @@ ReactionDiffusionElementMatrixProvider<
                             .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
-    mat += w * (alpha_trf_grad.transpose() * trf_grad +
+    mat += w * (trf_grad.adjoint() * alpha_trf_grad +
                 (gammaval[k] * pfe.PrecompReferenceShapeFunctions().col(k)) *
-                    (pfe.PrecompReferenceShapeFunctions().col(k).transpose()));
+                    (pfe.PrecompReferenceShapeFunctions().col(k).adjoint()));
   }
   return mat;
 }
@@ -343,20 +350,22 @@ ReactionDiffusionElementMatrixProvider<
  * This helper class corresponds to the the element matrix
  * for the bilinear form
  * @f[
- *     (u,v) \mapsto \int\limits_e \gamma(x)u(x)v(x)\,\mathrm{d}S(x)\;,
+ *     (u,v) \mapsto \int\limits_e
+ * \gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
  * @f]
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
  * #### Logger
  * This class logs additional information to
- * \ref mass_edge_matrix_provider_logger.
+ * \ref MassEdgeMatrixProviderLogger().
  * See \ref loggers for more information.
  *
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
+  /// Scalar type of the element matrix
   using scalar_t =
       decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<COEFF>(0));
   using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
@@ -460,14 +469,14 @@ class MassEdgeMatrixProvider {
 /**
  * @brief logger for MassEdgeMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &MassEdgeMatrixProviderLogger();
 
 // deduction guide:
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
 MassEdgeMatrixProvider(PTR, COEFF coeff,
                        EDGESELECTOR edge_predicate = base::PredicateTrue{})
-    ->MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
-                             EDGESELECTOR>;
+    -> MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
+                              EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -507,7 +516,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const auto w =
         (fe_precomp_.Qr().Weights()[k] * determinants[k]) * gammaval[k];
     mat += ((fe_precomp_.PrecompReferenceShapeFunctions().col(k)) *
-            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).transpose())) *
+            (fe_precomp_.PrecompReferenceShapeFunctions().col(k).adjoint())) *
            w;
   }
   return mat;
@@ -520,14 +529,15 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  finite
  * elements; volume contributions only
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR Scalar type of the Finite Element Space.
  * @tparam MESH_FUNCTION \ref mesh_function "MeshFunction" which defines the
  source
  * function \f$ f \f$
  *
  * The underlying local linear form is
  * @f[
-      v \mapsto \int_K f(\mathbf{x})\,v(\mathbf{x}\,\mathrm{d}\mathbf{x}\;,
+      v \mapsto \int_K
+ f(\mathbf{x})\,\overline{v(\mathbf{x})}\,\mathrm{d}\mathbf{x}\;,
  * @f]
  * where \f$f\f$ is supposed to be a locally continuous source function.
  *
@@ -539,7 +549,7 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  *
  * #### Logger
  * This class logs additional information to
- * \ref scalar_load_element_vector_provider_logger.
+ * \ref ScalarLoadElementVectorProvider().
  * See \ref loggers for more information.
  *
  */
@@ -548,7 +558,10 @@ class ScalarLoadElementVectorProvider {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  /// Scalar type of the element matrix
+  using scalar_t = decltype(
+      SCALAR(0) * mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -607,20 +620,20 @@ class ScalarLoadElementVectorProvider {
 /**
  * @brief logger used by ScalarLoadElementVectorProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    scalar_load_element_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadElementVectorProviderLogger();
 
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
 ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
-    ->ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
-                                      MESH_FUNCTION>;
+    -> ScalarLoadElementVectorProvider<typename PTR::element_type::Scalar,
+                                       MESH_FUNCTION>;
 
 // Constructors
-template <typename SCALAR, typename FUNCTOR>
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+template <typename SCALAR, typename MESH_FUNCTION>
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f)
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+        MESH_FUNCTION f)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -636,11 +649,11 @@ ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
   }
 }
 
-template <typename SCALAR, typename FUNCTOR>
-ScalarLoadElementVectorProvider<SCALAR, FUNCTOR>::
+template <typename SCALAR, typename MESH_FUNCTION>
+ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
-        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space, FUNCTOR f,
-        quad_rule_collection_t qr_collection)
+        std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
+        MESH_FUNCTION f, quad_rule_collection_t qr_collection)
     : f_(std::move(f)) {
   for (auto ref_el : {base::RefEl::kTria(), base::RefEl::kQuad()}) {
     auto fe = fe_space->ShapeFunctionLayout(ref_el);
@@ -690,7 +703,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "{}, shape = \n{}", ref_el,
                       geo_ptr->Global(ref_el.NodeCoords()));
 
@@ -700,7 +713,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(
       determinants.size() == pfe.Qr().NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << pfe.Qr().NumPoints());
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "LOCVEC({}): Metric factors :\n{}", ref_el,
                       determinants.transpose());
 
@@ -712,16 +725,16 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+    SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                         "LOCVEC: [{}] -> [weight = {}]",
                         pfe.Qr().Points().transpose(), pfe.Qr().Weights()[k]);
     // Contribution of current quadrature point
     vec += (pfe.Qr().Weights()[k] * determinants[k] * fval[k]) *
-           pfe.PrecompReferenceShapeFunctions().col(k);
+           pfe.PrecompReferenceShapeFunctions().col(k).conjugate();
   }
 
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
-                      "LOCVEC = \n{}", vec.transpose());
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(), "LOCVEC = \n{}",
+                      vec.transpose());
 
   return vec;
 }
@@ -738,7 +751,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  *
  * The underlying local linear form for an edge @f$e@f$ is
  * @f[
-    v \mapsto \int_e g(\mathbf{x})\,v(\mathbf{x})\,\mathrm{d}S\mathbf{x}\;,
+    v \mapsto \int_e g(\mathbf{x})\,
+ \overline{v(\mathbf{x})}\,\mathrm{d}S\mathbf{x}\;,
  * @f]
  * where \f$g\f$ is supposed to be a locally continuous source function.
  *
@@ -750,7 +764,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  *
  * ### Logger
  * This class logs additional information to
- * \ref scalar_load_edge_vector_provider_logger.
+ * \ref ScalarLoadEdgeVectorProvider().
  * See \ref loggers for more information.
  *
  * ### Type requirements
@@ -764,7 +778,11 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  using ElemVec = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>;
+  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
+                "FUNCTOR does not fulfill the concept of a mesh function.");
+  using Scalar =
+      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
+  using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
    *@{*/
@@ -779,7 +797,7 @@ class ScalarLoadEdgeVectorProvider {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_edge_p FE specification on edge
+   * @param fe_space UniformScalarFESpace which describes the shape functions.
    * @param g functor object providing edge data
    * @param edge_sel selector predicate for active edges.
    *
@@ -801,7 +819,7 @@ class ScalarLoadEdgeVectorProvider {
 
   /** @brief Constructor, performs precomputations
    *
-   * @param fe_edge_p FE specification on edge
+   * @param fe_space UniformScalarFESpace which describes the shape functions.
    * @param g functor object providing edge data
    * @param quadrule user-supplied quadrature rule object
    * @param edge_sel selector predicate for active edges.
@@ -843,13 +861,13 @@ class ScalarLoadEdgeVectorProvider {
 /**
  * @brief logger for ScalarLoadEdgeVectorProvider class template.
  */
-extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadEdgeVectorProviderLogger();
 
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
-    ->ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
-                                   EDGESELECTOR>;
+    -> ScalarLoadEdgeVectorProvider<typename PTR::element_type::Scalar, FUNCTOR,
+                                    EDGESELECTOR>;
 
 // Eval() method
 // TODO(craffael) remove const once
@@ -890,7 +908,7 @@ ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
   for (base::size_type k = 0; k < pfe_.Qr().NumPoints(); ++k) {
     // Add contribution of quadrature point to local vector
     const auto w = (pfe_.Qr().Weights()[k] * determinants[k]) * g_vals[k];
-    vec += pfe_.PrecompReferenceShapeFunctions().col(k) * w;
+    vec += pfe_.PrecompReferenceShapeFunctions().col(k).conjugate() * w;
   }
   return vec;
 }

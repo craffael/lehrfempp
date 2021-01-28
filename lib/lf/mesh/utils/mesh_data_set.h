@@ -49,7 +49,7 @@ class MeshDataSet {
    *
    * @note The behavior of this method is undefined if `DefinedOn(e) == false`!
    */
-  [[nodiscard]] virtual const T operator()(const Entity& e) const = 0;
+  [[nodiscard]] virtual const T& operator()(const Entity& e) const = 0;
 
   /**
    * @brief Does the dataset store information with this entity?

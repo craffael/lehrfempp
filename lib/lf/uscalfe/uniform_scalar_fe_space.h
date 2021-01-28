@@ -15,6 +15,7 @@
  */
 
 #include <lf/assemble/assemble.h>
+#include <lf/fe/scalar_fe_space.h>
 
 #include "lagr_fe.h"
 
@@ -46,13 +47,10 @@ namespace lf::uscalfe {
  * This class is covered in @\lref{par:fespace}.
  */
 template <typename SCALAR>
-class UniformScalarFESpace {
+class UniformScalarFESpace : public lf::fe::ScalarFESpace<SCALAR> {
  public:
   using Scalar = SCALAR;
 
-  /** @brief default constructor, needed by std::vector
-   * @note creates an invalid object that cannot be used. */
-  UniformScalarFESpace() = default;
   UniformScalarFESpace(const UniformScalarFESpace &) = delete;
   UniformScalarFESpace(UniformScalarFESpace &&) noexcept = default;
   UniformScalarFESpace &operator=(const UniformScalarFESpace &) = delete;
@@ -83,36 +81,41 @@ class UniformScalarFESpace {
    */
   UniformScalarFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p,
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p =
-          nullptr,
-      std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_point_p =
-          nullptr)
-      : mesh_p_(std::move(mesh_p)),
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_tria_p,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_quad_p,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_edge_p = nullptr,
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+          rfs_point_p = nullptr)
+      : lf::fe::ScalarFESpace<SCALAR>(),
         rfs_tria_p_(std::move(rfs_tria_p)),
         rfs_quad_p_(std::move(rfs_quad_p)),
         rfs_edge_p_(std::move(rfs_edge_p)),
-        rfs_point_p_(std::move(rfs_point_p)) {
-    init();
-  }
+        rfs_point_p_(std::move(rfs_point_p)),
+        dofh_(InitDofHandler(std::move(mesh_p))) {}
 
-  /** @brief acess to underlying mesh
+  /** @brief access to underlying mesh
    *  @return a shared _pointer_ to the mesh
    */
-  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const {
-    LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
-    return mesh_p_;
+  [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
+    return dofh_.Mesh();
   }
+
   /** @brief access to associated local-to-global map
    * @return a reference to the lf::assemble::DofHandler object (immutable)
    */
-  [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const {
-    LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
-    LF_VERIFY_MSG(dofh_p_ != nullptr,
-                  "No valid FE space object: no dof handler");
-    return *dofh_p_;
+  [[nodiscard]] const lf::assemble::DofHandler &LocGlobMap() const override {
+    LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
+    return dofh_;
   }
+
+  /** @brief access to shape function layout for cells
+   * @copydoc fe::ScalarFESpace::ShapeFunctionLayout()
+   */
+  [[nodiscard]] lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
+  ShapeFunctionLayout(const lf::mesh::Entity &entity) const override;
 
   /** @brief access to shape function layout for cells
    *
@@ -122,9 +125,18 @@ class UniformScalarFESpace {
    * @warning NULL pointers may be returned by this method in case a finite
    * element specification was not given for a particular topological type of
    * entity.
+   *
+   * @note The returned ShapeFunctionLayout pointer will remain for the entire
+   * lifetime of the owning ScalarFESpace
    */
-  [[nodiscard]] std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
+  [[nodiscard]] lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
   ShapeFunctionLayout(lf::base::RefEl ref_el_type) const;
+
+  /** @brief number of _interior_ shape functions associated to entities of
+   * various types
+   */
+  [[nodiscard]] size_type NumRefShapeFunctions(
+      const lf::mesh::Entity &entity) const override;
 
   /** @brief number of _interior_ shape functions associated to entities of
    * various types
@@ -133,32 +145,34 @@ class UniformScalarFESpace {
       lf::base::RefEl ref_el_type) const;
 
   /** @brief No special destructor */
-  virtual ~UniformScalarFESpace() = default;
+  ~UniformScalarFESpace() override = default;
 
  private:
-  /** Underlying mesh */
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
   /** Description of reference shape functions on triangular cells */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_tria_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_tria_p_;
   /** Description of reference shape functions on quadrilateral cells */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_quad_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_quad_p_;
   /** Description of reference shape functions on an edge */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_edge_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_edge_p_;
   /** Description of refererence shape functions on a point */
-  std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>> rfs_point_p_;
+  std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+      rfs_point_p_;
   /** Numbers of local shape functions for different types of entities */
   size_type num_rsf_node_{0}, num_rsf_edge_{0}, num_rsf_tria_{0},
       num_rsf_quad_{0};
+
   /** Local-to-global index map for the finite element space */
-  std::unique_ptr<lf::assemble::UniformFEDofHandler> dofh_p_;
+  assemble::UniformFEDofHandler dofh_;
 
   /** Initialization of class member variables and consistency checks */
-  void init();
+  assemble::UniformFEDofHandler InitDofHandler(
+      std::shared_ptr<const lf::mesh::Mesh> mesh_p);
   /** Checks whether some pointer are not valid */
   [[nodiscard]] bool check_ptr() const {
-    LF_VERIFY_MSG(mesh_p_ != nullptr, "No valid FE space object: no mesh");
-    LF_VERIFY_MSG(dofh_p_ != nullptr,
-                  "No valid FE space object: no dof handler");
+    LF_VERIFY_MSG(Mesh() != nullptr, "No valid FE space object: no mesh");
     LF_VERIFY_MSG((rfs_quad_p_ != nullptr) && (rfs_quad_p_ != nullptr),
                   "No valid FE space object: no rsfs for cells");
     return true;
@@ -223,19 +237,20 @@ std::ostream &operator<<(std::ostream &o,
 
 // Initialization methods
 template <typename SCALAR>
-void UniformScalarFESpace<SCALAR>::init() {
+assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
+    std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   // Check validity and consistency of mesh pointer
-  LF_VERIFY_MSG(mesh_p_ != nullptr, "Missing mesh!");
+  LF_VERIFY_MSG(mesh_p != nullptr, "Missing mesh!");
   LF_VERIFY_MSG((rfs_quad_p_ != nullptr) || (rfs_tria_p_ != nullptr),
                 "Missing FE specification for cells");
-  LF_VERIFY_MSG((mesh_p_->DimMesh() == 2), "Only for 2D meshes");
+  LF_VERIFY_MSG((mesh_p->DimMesh() == 2), "Only for 2D meshes");
 
   // Check whether all required finite element specifications are provided
   LF_VERIFY_MSG(
-      (mesh_p_->NumEntities(lf::base::RefEl::kTria()) == 0) ||
+      (mesh_p->NumEntities(lf::base::RefEl::kTria()) == 0) ||
           (rfs_tria_p_ != nullptr),
       "Missing FE specification for triangles though mesh contains some");
-  LF_VERIFY_MSG((mesh_p_->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
+  LF_VERIFY_MSG((mesh_p->NumEntities(lf::base::RefEl::kQuad()) == 0) ||
                     (rfs_quad_p_ != nullptr),
                 "Missing FE specification for quads though mesh contains some");
 
@@ -320,42 +335,54 @@ void UniformScalarFESpace<SCALAR>::init() {
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},
       {lf::base::RefEl::kQuad(), num_rsf_quad_}};
-  dofh_p_ =
-      std::make_unique<lf::assemble::UniformFEDofHandler>(mesh_p_, rsf_layout);
+  return lf::assemble::UniformFEDofHandler(std::move(mesh_p), rsf_layout);
 }
 
 template <typename SCALAR>
-std::shared_ptr<const ScalarReferenceFiniteElement<SCALAR>>
+lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
+UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
+    const lf::mesh::Entity &entity) const {
+  return ShapeFunctionLayout(entity.RefEl());
+}
+
+template <typename SCALAR>
+lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
 UniformScalarFESpace<SCALAR>::ShapeFunctionLayout(
     lf::base::RefEl ref_el_type) const {
   // Retrieve specification of local shape functions
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
-      return rfs_point_p_;
+      return rfs_point_p_.get();
     }
     case lf::base::RefEl::kSegment(): {
       // Null pointer valid return value: indicates that a shape function
       // description for edges is missing.
       // LF_ASSERT_MSG(rfs_edge_p_ != nullptr, "No RSF for edges!");
-      return rfs_edge_p_;
+      return rfs_edge_p_.get();
     }
     case lf::base::RefEl::kTria(): {
       // Null pointer valid return value: indicates that a shape function
       // description for triangular cells is missing.
       // LF_ASSERT_MSG(rfs_tria_p_ != nullptr, "No RSF for triangles!");
-      return rfs_tria_p_;
+      return rfs_tria_p_.get();
     }
     case lf::base::RefEl::kQuad(): {
       // Null pointer valid return value: indicates that a shape function
       // description for quadrilaterals is missing.
       // LF_ASSERT_MSG(rfs_quad_p_ != nullptr, "No RSF for quads!");
-      return rfs_quad_p_;
+      return rfs_quad_p_.get();
     }
     default: {
       LF_VERIFY_MSG(false, "Illegal entity type");
     }
   }
   return nullptr;
+}
+
+template <typename SCALAR>
+size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
+    const lf::mesh::Entity &entity) const {
+  return NumRefShapeFunctions(entity.RefEl());
 }
 
 /* number of _interior_ shape functions associated to entities of various types
@@ -379,7 +406,9 @@ size_type UniformScalarFESpace<SCALAR>::NumRefShapeFunctions(
     case lf::base::RefEl::kQuad(): {
       return num_rsf_quad_;
     }
-    dafault : { LF_VERIFY_MSG(false, "Illegal entity type"); }
+    default: {
+      LF_VERIFY_MSG(false, "Illegal entity type");
+    }
   }
   return 0;
 }
@@ -412,7 +441,7 @@ void PrintInfo(std::ostream &o, const UniformScalarFESpace<SCALAR> &fes,
 template <typename SCALAR>
 std::ostream &operator<<(std::ostream &o,
                          const UniformScalarFESpace<SCALAR> &fes) {
-  fes.PrintInfo(std::cout, 0);
+  fes.PrintInfo(o, 0);
   return o;
 }
 

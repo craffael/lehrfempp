@@ -7,10 +7,6 @@
  * @copyright MIT License
  */
 
-#include <cmath>
-
-#include <boost/program_options.hpp>
-
 #include <lf/assemble/assemble.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
@@ -18,10 +14,13 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <boost/program_options.hpp>
+#include <cmath>
+#include <filesystem>
+
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
-
-#include <filesystem>
 
 static unsigned int dbg_ctrl = 0;
 const unsigned int dbg_dofh = 1;
@@ -230,7 +229,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
   LF_VERIFY_MSG(!mat.triplets().empty() > 0, "Empty stiffness matrix!");
-  Eigen::SparseMatrix<double> stiffness_matrix = {mat.makeSparse()};
+  Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
   // Solve linear system
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(stiffness_matrix);
@@ -323,15 +322,15 @@ int main(int argc, char **argv) {
 
   vm.notify();
 
-  // set the level of assemble_matrix_logger to trace
+  // set the level of AssembleMatrixLogger to trace
   // A soon as spdlog 1.8.0 is available via hunter
   // (https://github.com/cpp-pm/hunter/pull/260) this can be achieved by
   // setting the environment variable `SPDLOG_LEVEL=trace` or
-  // `SPDLOG_LEVEL="info,lf::assemble::assemble_matrix_logger=trace"`
-  lf::assemble::assemble_matrix_logger->set_level(spdlog::level::trace);
+  // `SPDLOG_LEVEL="info,lf::assemble::AssembleMatrixLogger=trace"`
+  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::trace);
 
-  std::cout << "assemble_matrix_logger level "
-            << lf::assemble::assemble_matrix_logger->level() << "\n";
+  std::cout << "AssembleMatrixLogger level "
+            << lf::assemble::AssembleMatrixLogger()->level() << "\n";
   std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
             << std::endl;
   // Retrieve number of degrees of freedom for each entity type from
@@ -402,12 +401,11 @@ int main(int argc, char **argv) {
   }
 
   // Set debugging switches
-  lf::uscalfe::LinearFELaplaceElementMatrix::logger->set_level(
+  lf::uscalfe::LinearFELaplaceElementMatrix::Logger()->set_level(
       spdlog::level::info);
   // LinearFELaplaceElementMatrix::dbg_geo |
   // LinearFELaplaceElementMatrix::dbg_locmat;
-  lf::uscalfe::linear_fe_local_load_vector_logger->set_level(
-      spdlog::level::info);
+  lf::uscalfe::LinearFeLocalLoadVectorLogger()->set_level(spdlog::level::info);
 
   dbg_ctrl = dbg_basic;  // | dbg_mat | dbg_mesh | dbg_dofh | dbg_trp;
   // lf::assemble::ass_mat_dbg_ctrl = 255;

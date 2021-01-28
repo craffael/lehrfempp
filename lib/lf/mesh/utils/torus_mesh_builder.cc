@@ -8,19 +8,23 @@
 
 #define _USE_MATH_DEFINES
 
-#include <lf/geometry/geometry.h>
-#include <cmath>
-
-#include <iostream>
-#include "lf/mesh/mesh_interface.h"
 #include "torus_mesh_builder.h"
 
+#include <lf/geometry/geometry.h>
 #include <spdlog/spdlog.h>
+
+#include <cmath>
+#include <iostream>
+
+#include "lf/mesh/mesh_interface.h"
 
 namespace lf::mesh::utils {
 
-std::shared_ptr<spdlog::logger> TorusMeshBuilder::logger =
-    base::InitLogger("lf::mesh::utils::TorusMeshBuilder::logger");
+std::shared_ptr<spdlog::logger>& TorusMeshBuilder::Logger() {
+  static auto logger =
+      base::InitLogger("lf::mesh::utils::TorusMeshBuilder::Logger");
+  return logger;
+}
 
 std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   using coord_t = Eigen::Vector3d;
@@ -55,7 +59,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   auto phi = [R, hy](double j) -> double { return (j * hy) / R; };
 
   SPDLOG_LOGGER_DEBUG(
-      logger,
+      Logger(),
       "TorusMesh: {} cells, {} edges, {} vertices, mesh widths hx/hy = {}/{}",
       no_of_cells, no_of_edges, no_of_vertices, hx, hy);
 
@@ -71,7 +75,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
           (R + r * std::cos(theta(i))) * std::sin(phi(j)),
           r * std::sin(theta(i));
 
-      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "Adding vertex {}: {}", node_cnt,
                           node_coord.transpose());
       // register vertex
       v_idx[node_cnt] = mesh_factory_->AddPoint(node_coord);
@@ -102,7 +106,7 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
           r * std::sin(theta(i)), r * std::sin(theta(i + 1)),
           r * std::sin(theta(i + 1)), r * std::sin(theta(i));
 
-      SPDLOG_LOGGER_TRACE(logger, "Adding quad {}:\n{}", quad_cnt, quad_geo);
+      SPDLOG_LOGGER_TRACE(Logger(), "Adding quad {}:\n{}", quad_cnt, quad_geo);
 
       // request cell production from MeshFactory (straight edges will be
       // created as needed)

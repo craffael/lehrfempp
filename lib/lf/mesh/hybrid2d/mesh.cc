@@ -7,9 +7,12 @@
  */
 
 #include "mesh.h"
+
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
+
 #include <iostream>
+#include <map>
 #include <numeric>
 
 namespace lf::mesh::hybrid2d {
@@ -221,14 +224,14 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // ASSUMPTION: The length of the nodes vector gives the number of nodes
 
   const size_type no_of_nodes(nodes.size());
-  SPDLOG_LOGGER_DEBUG(logger, "Constructing mesh: {} nodes", no_of_nodes);
+  SPDLOG_LOGGER_DEBUG(Logger(), "Constructing mesh: {} nodes", no_of_nodes);
 
   // ======================================================================
   // STEP I: Initialize array of edges using pointers to
   //          entries of the array of nodes
 
   // Register supplied edges in auxiliary map data structure
-  SPDLOG_LOGGER_DEBUG(logger, "Initializing edge map");
+  SPDLOG_LOGGER_DEBUG(Logger(), "Initializing edge map");
 
   EdgeMap edge_map;
   glb_idx_t edge_index = 0;  // position in the array gives index of edge
@@ -240,7 +243,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     LF_ASSERT_MSG(
         (end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
         "Illegal edge node numbers " << end_nodes[0] << ", " << end_nodes[1]);
-    SPDLOG_LOGGER_TRACE(logger, "Register edge: {} <-> {}", end_nodes[0],
+    SPDLOG_LOGGER_TRACE(Logger(), "Register edge: {} <-> {}", end_nodes[0],
                         end_nodes[1]);
 
     // If one of the endpoints of a edge does not have a geometry, supply it
@@ -279,7 +282,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // supplied geometry. The indexing of all extra edges created below must start
   // from this offset.
 
-  if (logger->should_log(spdlog::level::trace)) {
+  if (Logger()->should_log(spdlog::level::trace)) {
     std::stringstream ss;
     ss << "Edge map after edge registration" << std::endl;
     for (auto &edge_info : edge_map) {
@@ -288,10 +291,10 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       ss << "Edge " << eip.first_node() << " <-> " << eip.second_node() << ": ";
       const AdjCellsList &acl(edat.adj_cells_list);
       const GeometryPtr &gptr(edat.geo_uptr);
-      for (auto &i : acl) {
+      for (const auto &i : acl) {
         ss << "[" << i.cell_idx << "," << i.edge_idx << "] ";
       }
-      SPDLOG_LOGGER_TRACE(logger, ss.str());
+      SPDLOG_LOGGER_TRACE(Logger(), ss.str());
     }
   }
 
@@ -302,7 +305,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   size_type no_of_trilaterals = 0;
   size_type no_of_quadrilaterals = 0;
   // Diagnostics
-  SPDLOG_LOGGER_DEBUG(logger, "Scanning list of cells");
+  SPDLOG_LOGGER_DEBUG(Logger(), "Scanning list of cells");
 
   for (const auto &c : cells) {
     // node indices of corners of cell c
@@ -327,7 +330,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     std::stringstream ss_log_line;
-    if (logger->should_log(spdlog::level::trace)) {
+    if (Logger()->should_log(spdlog::level::trace)) {
       ss_log_line << "Cell " << cell_index;
       if (no_of_vertices == 3) {
         ss_log_line << ", tria " << no_of_trilaterals << ": ";
@@ -374,7 +377,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
                                               cell_node_list[p1_local_index]);
 
-      if (logger->should_log(spdlog::level::trace)) {
+      if (Logger()->should_log(spdlog::level::trace)) {
         ss_log_line << "e(" << j << ") = local " << p0_local_index << " <-> "
                     << p1_local_index << ", global "
                     << c_edge_vertex_indices.first_node() << " <-> "
@@ -428,16 +431,16 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     cell_index++;
 
     // Diagnostics
-    SPDLOG_LOGGER_TRACE(logger, ss_log_line.str());
+    SPDLOG_LOGGER_TRACE(Logger(), ss_log_line.str());
   }  // end loop over cells
 
   // DIAGNOSTICS
   {
-    SPDLOG_LOGGER_DEBUG(logger,
+    SPDLOG_LOGGER_DEBUG(Logger(),
                         "=============================================");
 
-    if (logger->should_log(spdlog::level::trace)) {
-      SPDLOG_LOGGER_TRACE(logger, "Edge map after cell scan");
+    if (Logger()->should_log(spdlog::level::trace)) {
+      SPDLOG_LOGGER_TRACE(Logger(), "Edge map after cell scan");
 
       size_type edge_cnt = 0;
       for (auto &edge_info : edge_map) {
@@ -454,7 +457,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         }
         const AdjCellsList &acl(edat.adj_cells_list);
         const GeometryPtr &gptr(edat.geo_uptr);
-        for (auto &i : acl) {
+        for (const auto &i : acl) {
           ss_log_line << "[" << i.cell_idx << "," << i.edge_idx << "] ";
         }
         ss_log_line << " geo = " << std::endl;
@@ -466,9 +469,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
           ss_log_line << "NO GEOMETRY";
         }
         edge_cnt++;
-        SPDLOG_LOGGER_TRACE(logger, ss_log_line.str());
+        SPDLOG_LOGGER_TRACE(Logger(), ss_log_line.str());
       }
-      SPDLOG_LOGGER_TRACE(logger,
+      SPDLOG_LOGGER_TRACE(Logger(),
                           "=============================================");
     }
   }
@@ -487,7 +490,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     LF_VERIFY_MSG(pt_geo_ptr != nullptr,
                   "Missing geometry for node " << node_index);
     SPDLOG_LOGGER_TRACE(
-        logger, "-> Adding node {} at {}", node_index,
+        Logger(), "-> Adding node {} at {}", node_index,
         (pt_geo_ptr->Global(Eigen::Matrix<double, 0, 1>())).transpose());
 
     points_.emplace_back(node_index, std::move(pt_geo_ptr));
@@ -570,7 +573,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     }
 
     // Diagnostics
-    SPDLOG_LOGGER_TRACE(logger, "Registering edge {}: {} <-> {}",
+    SPDLOG_LOGGER_TRACE(Logger(), "Registering edge {}: {} <-> {}",
                         edge.second.edge_global_index, p0, p1);
     // Building edge by adding another element to the edge vector.
     segments_.emplace_back(edge.second.edge_global_index,
@@ -614,8 +617,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   }
 
   // Diagnostics
-  SPDLOG_LOGGER_TRACE(logger, "########################################");
-  SPDLOG_LOGGER_TRACE(logger, "Edge array indices for cells ");
+  SPDLOG_LOGGER_TRACE(Logger(), "########################################");
+  SPDLOG_LOGGER_TRACE(Logger(), "Edge array indices for cells ");
 
   // Now complete information is available for the construction
   // of cells = entities of co-dimension 0
@@ -656,7 +659,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
 
       // Diagnostics
       SPDLOG_LOGGER_TRACE(
-          logger, "Triangular cell {}: nodes {}, {}, {}, edges {}, {}, {}",
+          Logger(), "Triangular cell {}: nodes {}, {}, {}, edges {}, {}, {}",
           cell_index, c_node_indices[0], c_node_indices[1], c_node_indices[2],
           c_edge_indices[0], c_edge_indices[1], c_edge_indices[2]);
 
@@ -688,7 +691,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
             corner2->Geometry()->Global(zero_point);
 
         // Diagnostics
-        SPDLOG_LOGGER_TRACE(logger, "Creating triangle with geometry \n{}",
+        SPDLOG_LOGGER_TRACE(Logger(), "Creating triangle with geometry \n{}",
                             triag_corner_coords);
 
         // Then create geometry of an affine triangle
@@ -703,7 +706,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       // Case of a quadrilateral
 
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "Quadrilateral cell {}: nodes {}, edges {}",
+      SPDLOG_LOGGER_TRACE(Logger(), "Quadrilateral cell {}: nodes {}, edges {}",
                           cell_index, c_node_indices, c_edge_indices);
 
       /*
@@ -740,7 +743,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         // Then create geometry of an affine triangle
 
         // Diagnostics
-        SPDLOG_LOGGER_TRACE(logger, "Creating quadrilateral with geometry\n{}",
+        SPDLOG_LOGGER_TRACE(Logger(),
+                            "Creating quadrilateral with geometry\n{}",
                             quad_corner_coords);
 
         c_geo_ptr = std::make_unique<geometry::QuadO1>(quad_corner_coords);

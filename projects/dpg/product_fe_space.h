@@ -9,10 +9,11 @@
  * @copyright MIT License
  */
 
-#include <vector>
-
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <vector>
 
 #include "dpg.h"
 #include "product_dofhandler.h"
@@ -90,17 +91,17 @@ class ProductUniformFESpace {
    */
   ProductUniformFESpace(
       std::shared_ptr<const lf::mesh::Mesh> mesh_p,
-      std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_tria_v,
-      std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_quad_v,
-      std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_edge_v,
-      std::vector<std::shared_ptr<
-          const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::vector<
+          std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
           rfs_point_v)
       : mesh_p_(std::move(mesh_p)),
         rfs_tria_v_(std::move(rfs_tria_v)),
@@ -139,8 +140,8 @@ class ProductUniformFESpace {
    * element specification was not given for a particular topological type of
    * entity and e particular component.
    */
-  std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
-  ShapeFunctionLayout(lf::base::RefEl ref_el_type, size_type component) const;
+  lf::fe::ScalarReferenceFiniteElement<SCALAR> const *ShapeFunctionLayout(
+      lf::base::RefEl ref_el_type, size_type component) const;
 
   /** @brief number of interior shape functions associated to entities of
    * various types for a given component */
@@ -158,8 +159,8 @@ class ProductUniformFESpace {
    * lf::uscalfe::UniformScalarFESpace may be impossible, since some of the
    * constraints regarding the shape function layouts were weakened.
    */
-  std::shared_ptr<lf::uscalfe::UniformScalarFESpace<SCALAR>> ComponentFESpace(
-      size_type component) {
+  std::shared_ptr<const lf::uscalfe::UniformScalarFESpace<SCALAR>>
+  ComponentFESpace(size_type component) const {
     return std::make_shared<lf::uscalfe::UniformScalarFESpace<SCALAR>>(
         mesh_p_, rfs_tria_v_[component], rfs_quad_v_[component],
         rfs_edge_v_[component], rfs_point_v_[component]);
@@ -175,16 +176,16 @@ class ProductUniformFESpace {
   /** descritpions of reference shape functions for all components on
    *  different types of entities. */
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_tria_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_quad_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_edge_v_;
   std::vector<
-      std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>>
+      std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<SCALAR>>>
       rfs_point_v_;
 
   /** numbers of local shape functions for all components
@@ -343,30 +344,30 @@ void ProductUniformFESpace<SCALAR>::init() {
 }
 
 template <typename SCALAR>
-std::shared_ptr<const lf::uscalfe::ScalarReferenceFiniteElement<SCALAR>>
+lf::fe::ScalarReferenceFiniteElement<SCALAR> const *
 ProductUniformFESpace<SCALAR>::ShapeFunctionLayout(lf::base::RefEl ref_el_type,
                                                    size_type component) const {
   // Retrive specification of local shape functions for
   // a certain component.
   switch (ref_el_type) {
     case lf::base::RefEl::kPoint(): {
-      return rfs_point_v_[component];
+      return rfs_point_v_[component].get();
     }
     case lf::base::RefEl::kSegment(): {
       // Null pointer valid return value:
       // indicates that a shape function description for edges is missing
-      return rfs_edge_v_[component];
+      return rfs_edge_v_[component].get();
     }
     case lf::base::RefEl::kTria(): {
       // Null pointer valid return value:
       // indicates that a shape function description for triangles is missing.
-      return rfs_tria_v_[component];
+      return rfs_tria_v_[component].get();
     }
     case lf::base::RefEl::kQuad(): {
       // Null pointer valid return value:
       // indicates that a shape function description for quadrilaterals is
       // missing.
-      return rfs_quad_v_[component];
+      return rfs_quad_v_[component].get();
     }
     default: {
       LF_ASSERT_MSG(false, "Illegal entity type");

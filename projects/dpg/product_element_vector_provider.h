@@ -10,11 +10,11 @@
  * @copyright MIT License
  */
 
-#include <iostream>
-#include <vector>
-
 #include <lf/mesh/mesh.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
+#include <vector>
 
 #include "dpg.h"
 #include "product_fe_space.h"
@@ -117,7 +117,7 @@ class ProductElementVectorProvider {
 // template deduction hint
 template <typename PTR, typename vector>
 ProductElementVectorProvider(PTR fe_space_test, vector subproviders)
-    ->ProductElementVectorProvider<typename PTR::element_type::SCALAR>;
+    -> ProductElementVectorProvider<typename PTR::element_type::SCALAR>;
 
 // evaluation method
 template <typename SCALAR>

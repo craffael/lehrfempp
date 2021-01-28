@@ -13,12 +13,12 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/assemble/assemble.h>
+#include <lf/mesh/utils/utils.h>
+
 #include <iostream>
 
-#include <lf/mesh/utils/utils.h>
 #include "lf/mesh/test_utils/test_meshes.h"
-
-#include <lf/assemble/assemble.h>
 
 namespace lf::assemble::test {
 
@@ -173,6 +173,8 @@ TEST(lf_assembly, dynamic_dof_index_test) {
       }
       default: {
         LF_ASSERT_MSG(false, "Illegal entity type");
+        // make compiler happy:
+        return 0;
       }
     }
   };

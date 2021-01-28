@@ -6,11 +6,12 @@
  * @copyright MIT License
  */
 
-#include <boost/program_options.hpp>
-
 #include <lf/assemble/assemble.h>
 #include <lf/geometry/geometry.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
+
+#include <boost/program_options.hpp>
+
 #include "lf/assemble/assemble.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"

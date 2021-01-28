@@ -7,15 +7,15 @@
  * over a mesh
  */
 
+#include <lf/fe/fe.h>
 #include <lf/mesh/entity.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <utils.h>
 
 #include <functional>
-
-#include <utils.h>
 
 namespace projects::ipdg_stokes {
 
@@ -39,8 +39,8 @@ namespace post_processing {
 template <typename MF, typename QR_SELECTOR>
 double L2norm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF &f,
               const QR_SELECTOR &qr_selector) {
-  return std::sqrt(lf::uscalfe::IntegrateMeshFunction(
-      *mesh, lf::uscalfe::squaredNorm(f), qr_selector));
+  return std::sqrt(lf::fe::IntegrateMeshFunction(
+      *mesh, lf::mesh::utils::squaredNorm(f), qr_selector));
 }
 
 /**
@@ -69,8 +69,8 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF_F &f,
               const MF_GRAD &f_grad, const QR_SELECTOR &qr_selector) {
   double norm2 = 0;
   // Compute the DG norm on the elements
-  norm2 += lf::uscalfe::IntegrateMeshFunction(
-      *mesh, lf::uscalfe::squaredNorm(f_grad), qr_selector);
+  norm2 += lf::fe::IntegrateMeshFunction(
+      *mesh, lf::mesh::utils::squaredNorm(f_grad), qr_selector);
   // Compute the norm on the edges
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
   using jump_t = std::remove_cv_t<decltype(

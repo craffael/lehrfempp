@@ -11,6 +11,7 @@
 #define PROJECTS_DPG_CS_PRIMAL_DPG_H
 
 #include <lf/base/base.h>
+#include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
@@ -23,7 +24,6 @@
 #include "../product_element_vector_provider_builder.h"
 #include "../product_fe_space.h"
 #include "../product_fe_space_factory.h"
-
 #include "../test/convection_diffusion_ell_bvp.h"
 
 // utility type to return the reported energy norms.
@@ -185,16 +185,16 @@ energy_vector TestConververgencePrimalDPGConvectionDiffusionDirichletBVP(
     Eigen::VectorXd sol_vec_u = sol_vec.head(dofh.NumDofs(u));
 
     // wrap finite element solution and exact solution into a mesh function:
-    auto mf_fe_u = lf::uscalfe::MeshFunctionFE(fe_space_u, sol_vec_u);
-    auto mf_fe_grad_u = lf::uscalfe::MeshFunctionGradFE(fe_space_u, sol_vec_u);
+    auto mf_fe_u = lf::fe::MeshFunctionFE(fe_space_u, sol_vec_u);
+    auto mf_fe_grad_u = lf::fe::MeshFunctionGradFE(fe_space_u, sol_vec_u);
     auto mf_solution = lf::mesh::utils::MeshFunctionGlobal(solution);
     auto mf_solution_grad = lf::mesh::utils::MeshFunctionGlobal(sol_grad);
 
     // calculate the error in the H1 norm
-    double H1_err = std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+    double H1_err = std::sqrt(lf::fe::IntegrateMeshFunction(
         *mesh_p,
-        lf::uscalfe::squaredNorm(mf_fe_u - mf_solution) +
-            lf::uscalfe::squaredNorm(mf_fe_grad_u - mf_solution_grad),
+        lf::mesh::utils::squaredNorm(mf_fe_u - mf_solution) +
+            lf::mesh::utils::squaredNorm(mf_fe_grad_u - mf_solution_grad),
         10));
 
     // evaluate error estimators:

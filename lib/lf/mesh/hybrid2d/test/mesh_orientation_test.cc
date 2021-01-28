@@ -7,12 +7,12 @@
  */
 
 #include <gtest/gtest.h>
-#include <Eigen/Eigen>
-#include <iostream>
-
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
+
+#include <iostream>
+
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_factory_test.h"
 

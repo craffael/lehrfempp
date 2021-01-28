@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/io/io.h>
 #include <lf/io/test_utils/read_mesh.h>
+
 #include "mesh_function_utils.h"
 
 namespace lf::mesh::utils::test {
@@ -122,6 +123,52 @@ TEST(meshFunctionUnary, transpose) {
   checkMeshFunctionEqual(*mesh, transpose(mfRowArray_dynamic), mfRowVectorT);
 
   checkMeshFunctionEqual(*mesh, transpose(mfMatrix), mfMatrix);
+}
+
+TEST(meshFunctionUnary, adjoint) {
+  auto reader = io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
+  auto mesh = reader.mesh();
+  using c_t = std::complex<double>;
+  MeshFunctionConstant a(c_t{1, 1});
+  MeshFunctionConstant b(c_t{1, -1});
+  auto mfVectorTrans = MeshFunctionGlobal(
+      [](auto x) -> Eigen::Matrix<double, 1, 2> { return x.transpose(); });
+  checkMeshFunctionEqual(*mesh, adjoint(a * mfVector), b * mfVectorTrans);
+  checkMeshFunctionEqual(*mesh, adjoint(a * mfVector_dynamic),
+                         b * mfVectorTrans);
+
+  auto mfRowVectorT = MeshFunctionGlobal(
+      [](auto x) -> Eigen::Vector2d { return Eigen::Vector2d(x[1], -x[0]); });
+  checkMeshFunctionEqual(*mesh, adjoint(a * mfRowVector), b * mfRowVectorT);
+  checkMeshFunctionEqual(*mesh, adjoint(a * mfRowVector_dynamic),
+                         b * mfRowVectorT);
+
+  checkMeshFunctionEqual(*mesh, adjoint(a * mfMatrix), b * mfMatrix);
+}
+
+TEST(meshFunctionUnary, conjugate) {
+  auto reader = io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
+  auto mesh = reader.mesh();
+  using c_t = std::complex<double>;
+  MeshFunctionConstant a(c_t{1, 1});
+  MeshFunctionConstant b(c_t{1, -1});
+
+  checkMeshFunctionEqual(*mesh, conjugate(mfScalar), mfScalar);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfScalar), b * mfScalar);
+
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfVector), b * mfVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfVector_dynamic), b * mfVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfArray), b * mfVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfArray_dynamic), b * mfVector);
+
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfRowVector), b * mfRowVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfRowVector_dynamic),
+                         b * mfRowVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfRowArray), b * mfRowVector);
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfRowArray_dynamic),
+                         b * mfRowVector);
+
+  checkMeshFunctionEqual(*mesh, conjugate(a * mfMatrix), b * mfMatrix);
 }
 
 }  // namespace lf::mesh::utils::test

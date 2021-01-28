@@ -1,15 +1,19 @@
-#include <lf/geometry/geometry.h>
-
-#include <iostream>
-#include "lf/mesh/mesh_interface.h"
 #include "tp_quad_mesh_builder.h"
 
+#include <lf/geometry/geometry.h>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
+
+#include "lf/mesh/mesh_interface.h"
 
 namespace lf::mesh::utils {
 
-std::shared_ptr<spdlog::logger> TPQuadMeshBuilder::logger =
-    base::InitLogger("lf::mesh::utils::TPQuadMeshBuilder::logger");
+std::shared_ptr<spdlog::logger>& TPQuadMeshBuilder::Logger() {
+  static auto logger =
+      base::InitLogger("lf::mesh::utils::TPQuadMeshBuilder::Logger");
+  return logger;
+}
 
 std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   using coord_t = Eigen::Vector2d;
@@ -35,7 +39,7 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
   const double hy = y_size / ny;
 
   SPDLOG_LOGGER_DEBUG(
-      logger,
+      Logger(),
       "TPQuadmesh: {} cells, {} edges, {} vertices, meshwidths hx/hy = {}/{}",
       no_of_cells, no_of_edges, no_of_vertices, hx, hy);
 
@@ -49,7 +53,7 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
       node_coord << bottom_left_corner_[0] + i * hx,
           bottom_left_corner_[1] + j * hy;
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "Adding vertex {}: {}", node_cnt,
+      SPDLOG_LOGGER_TRACE(Logger(), "Adding vertex {}: {}", node_cnt,
                           node_coord.transpose());
 
       // Register vertex
@@ -77,7 +81,7 @@ std::shared_ptr<mesh::Mesh> TPQuadMeshBuilder::Build() {
           bottom_left_corner_[1] + (j + 1) * hy,
           bottom_left_corner_[1] + (j + 1) * hy;
       // Diagnostics
-      SPDLOG_LOGGER_TRACE(logger, "Adding quad {}:\n{}", quad_cnt, quad_geo);
+      SPDLOG_LOGGER_TRACE(Logger(), "Adding quad {}:\n{}", quad_cnt, quad_geo);
 
       // Request production of the cell from the MeshFactory
       // Straight edges will be created as needed

@@ -9,6 +9,8 @@
 #include <lf/geometry/geometry.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
+
+#include <Eigen/Eigen>
 #include <filesystem>
 #include <fstream>
 #include <string>

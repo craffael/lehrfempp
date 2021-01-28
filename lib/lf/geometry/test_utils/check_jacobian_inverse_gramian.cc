@@ -7,7 +7,10 @@
  */
 
 #include "check_jacobian_inverse_gramian.h"
+
 #include <gtest/gtest.h>
+
+#include <Eigen/Eigen>
 
 namespace lf::geometry::test_utils {
 

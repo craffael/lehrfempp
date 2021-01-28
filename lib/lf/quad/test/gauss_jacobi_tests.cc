@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <lf/quad/quad.h>
+
 #include "lf/quad/gauss_quadrature.h"
 
 namespace lf::quad::test {

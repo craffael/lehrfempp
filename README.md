@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.com/craffael/lehrfempp.svg?branch=master)](https://travis-ci.com/craffael/lehrfempp)
 [![Build Status](https://github.com/craffael/lehrfempp/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/craffael/lehrfempp/actions)
 
 # LehrFEM++

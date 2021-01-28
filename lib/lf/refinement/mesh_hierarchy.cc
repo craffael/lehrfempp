@@ -1,14 +1,15 @@
 /**
- * @file refinement_hierarchy.cc
+ * @file
  * @brief implementation of global/local refinement methods
  */
 
 #include "mesh_hierarchy.h"
-#include "lf/mesh/hybrid2d/hybrid2d.h"
-#include "lf/mesh/utils/utils.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
+#include "lf/mesh/hybrid2d/hybrid2d.h"
+#include "lf/mesh/utils/utils.h"
 
 namespace lf::refinement {
 
@@ -23,8 +24,11 @@ bool checkValidIndex(const std::vector<glb_idx_t> &idx_vec) {
   return true;
 }
 
-std::shared_ptr<spdlog::logger> MeshHierarchy::logger =
-    base::InitLogger("lf::refinement::MeshHierarchy::logger");
+std::shared_ptr<spdlog::logger> &MeshHierarchy::Logger() {
+  static auto logger =
+      base::InitLogger("lf::refinement::MeshHierarchy::Logger");
+  return logger;
+}
 
 // Implementation of MeshHierarchy
 MeshHierarchy::MeshHierarchy(const std::shared_ptr<mesh::Mesh> &base_mesh,
@@ -355,7 +359,7 @@ void MeshHierarchy::RefineMarked() {
 
 // NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
 void MeshHierarchy::PerformRefinement() {
-  SPDLOG_LOGGER_DEBUG(logger,
+  SPDLOG_LOGGER_DEBUG(Logger(),
                       "Entering MeshHierarchy::PerformRefinement: {} levels",
                       meshes_.size());
 
@@ -398,7 +402,7 @@ void MeshHierarchy::PerformRefinement() {
         new_node_cnt++;
       }
     }  // end loop over nodes
-    SPDLOG_LOGGER_DEBUG(logger, "{} new nodes added", new_node_cnt);
+    SPDLOG_LOGGER_DEBUG(Logger(), "{} new nodes added", new_node_cnt);
 
     // ======================================================================
 
@@ -439,7 +443,7 @@ void MeshHierarchy::PerformRefinement() {
           LF_VERIFY_MSG(ed_copy.size() == 1,
                         "Copy may create only a single child!");
           // Register the new edge
-          SPDLOG_LOGGER_TRACE(logger, "Copy edge {} new edge [{},{}]",
+          SPDLOG_LOGGER_TRACE(Logger(), "Copy edge {} new edge [{},{}]",
                               edge_index, ed_p0_fine_idx, ed_p1_fine_idx);
 
           // Store index of copy of edge on finer mesh
@@ -474,7 +478,7 @@ void MeshHierarchy::PerformRefinement() {
           // refinement.cc
           // First child edge adjacent to endpoint #0, second child edge
           // adjacent to endpoint #1
-          SPDLOG_LOGGER_TRACE(logger,
+          SPDLOG_LOGGER_TRACE(Logger(),
                               "Split Edge {} new edges [{},{}], [{},{}]",
                               edge_index, ed_p0_fine_idx, midpoint_fine_idx,
                               midpoint_fine_idx, ed_p1_fine_idx);
@@ -501,7 +505,7 @@ void MeshHierarchy::PerformRefinement() {
       new_edge_cnt++;
     }  // end edge loop
 
-    SPDLOG_LOGGER_DEBUG(logger, "{} edges added", new_edge_cnt);
+    SPDLOG_LOGGER_DEBUG(Logger(), "{} edges added", new_edge_cnt);
     // ======================================================================
 
     // Partly intialized vectors of child information
@@ -524,7 +528,7 @@ void MeshHierarchy::PerformRefinement() {
       const RefPat cell_refpat(cell_ci.ref_pat_);
       const sub_idx_t anchor = cell_ci.anchor_;  // anchor edge index
 
-      SPDLOG_LOGGER_TRACE(logger, "Cell {} = {}, refpat = {}, anchor = {}",
+      SPDLOG_LOGGER_TRACE(Logger(), "Cell {} = {}, refpat = {}, anchor = {}",
                           cell_index, ref_el, static_cast<int>(cell_refpat),
                           anchor);
 
@@ -551,7 +555,7 @@ void MeshHierarchy::PerformRefinement() {
             ref_el.ToString() << ": only " << cell_subent_idx[codim].size()
                               << " subents of codim = " << codim);
 
-        SPDLOG_LOGGER_TRACE(logger, " Subent({}) = [{}], ", codim,
+        SPDLOG_LOGGER_TRACE(Logger(), " Subent({}) = [{}], ", codim,
                             cell_subent_idx[codim]);
       }
       // Index information for sub-entities with respect  to fine mesh
@@ -579,7 +583,7 @@ void MeshHierarchy::PerformRefinement() {
         }
       }  // end loop over local edges
 
-      SPDLOG_LOGGER_TRACE(logger, "vt_child_idx = {}, ed_mp_idx = {}",
+      SPDLOG_LOGGER_TRACE(Logger(), "vt_child_idx = {}, ed_mp_idx = {}",
                           nonstd::span(vertex_child_idx.data(), num_vertices),
                           nonstd::span(edge_midpoint_idx.data(), num_edges));
 
@@ -1161,7 +1165,7 @@ void MeshHierarchy::PerformRefinement() {
         for (int k = 0; k < num_new_edges; k++) {
           const std::array<glb_idx_t, 2> &cen(child_edge_nodes[k]);
           SPDLOG_LOGGER_TRACE(
-              logger, "{}({}), ref_pat = {}: new edge {}[{},{}]", ref_el,
+              Logger(), "{}({}), ref_pat = {}: new edge {}[{},{}]", ref_el,
               cell_index, (int)cell_refpat, k, cen[0], cen[1]);
 
           const glb_idx_t new_edge_index = mesh_factory_->AddEntity(
@@ -1185,7 +1189,7 @@ void MeshHierarchy::PerformRefinement() {
           if (ccn.size() == 3) {
             // New cell is a triangle
             SPDLOG_LOGGER_TRACE(
-                logger, "{}({}), ref_pat = {}: new triangle {}[{},{},{}]",
+                Logger(), "{}({}), ref_pat = {}: new triangle {}[{},{},{}]",
                 ref_el, cell_index, (int)cell_refpat, k, ccn[0], ccn[1],
                 ccn[2]);
 
@@ -1196,7 +1200,7 @@ void MeshHierarchy::PerformRefinement() {
           } else if (ccn.size() == 4) {
             // New cell is a quadrilateral
             SPDLOG_LOGGER_TRACE(
-                logger, "{}({}), ref_pat = {}: new quad {}[{},{},{},{}]",
+                Logger(), "{}({}), ref_pat = {}: new quad {}[{},{},{},{}]",
                 ref_el, cell_index, (int)cell_refpat, k, ccn[0], ccn[1], ccn[2],
                 ccn[3]);
 
@@ -1219,7 +1223,7 @@ void MeshHierarchy::PerformRefinement() {
   meshes_.push_back(mesh_factory_->Build());  // MESH CONSTRUCTION
   mesh::Mesh &child_mesh(*meshes_.back());
 
-  SPDLOG_LOGGER_DEBUG(logger, "Child mesh {} nodes, {} edges, {} cells.",
+  SPDLOG_LOGGER_DEBUG(Logger(), "Child mesh {} nodes, {} edges, {} cells.",
                       child_mesh.NumEntities(2), child_mesh.NumEntities(1),
                       child_mesh.NumEntities(0));
 
@@ -1372,7 +1376,7 @@ void MeshHierarchy::PerformRefinement() {
         refinement_edges_.at(n_levels - 2));
 
     // Traverse the cells of the fine mesh
-    SPDLOG_LOGGER_DEBUG(logger, "Setting refinement edges");
+    SPDLOG_LOGGER_DEBUG(Logger(), "Setting refinement edges");
 
     for (const mesh::Entity *fine_cell : child_mesh.Entities(0)) {
       const glb_idx_t cell_index = child_mesh.Index(*fine_cell);
@@ -1397,7 +1401,8 @@ void MeshHierarchy::PerformRefinement() {
           LF_VERIFY_MSG(parent_index < parent_mesh.NumEntities(0),
                         "parent_index = " << parent_index << " out of range");
 
-          SPDLOG_LOGGER_TRACE(logger, "Cell {}: triangle child {} of parent {}",
+          SPDLOG_LOGGER_TRACE(Logger(),
+                              "Cell {}: triangle child {} of parent {}",
                               cell_index, fine_cell_child_number, parent_index);
 
           const CellChildInfo &parent_ci(parent_cell_ci[parent_index]);
@@ -1452,10 +1457,7 @@ void MeshHierarchy::PerformRefinement() {
               LF_VERIFY_MSG(fine_cell_child_number < 4,
                             "Only 3 children for rp_quadsect");
               switch (fine_cell_child_number) {
-                case 0: {
-                  child_ref_edges[cell_index] = 2;
-                  break;
-                }
+                case 0:
                 case 1: {
                   child_ref_edges[cell_index] = 2;
                   break;
@@ -1477,14 +1479,8 @@ void MeshHierarchy::PerformRefinement() {
                   child_ref_edges[cell_index] = 2;
                   break;
                 }
-                case 1: {
-                  child_ref_edges[cell_index] = 0;
-                  break;
-                }
-                case 2: {
-                  child_ref_edges[cell_index] = 0;
-                  break;
-                }
+                case 1:
+                case 2:
                 case 3: {
                   child_ref_edges[cell_index] = 0;
                   break;
@@ -1503,18 +1499,12 @@ void MeshHierarchy::PerformRefinement() {
               switch (parent_ref_edge_idx) {
                 case 0: {
                   switch (fine_cell_child_number) {
-                    case 0: {
-                      child_ref_edges[cell_index] = 0;
-                      break;
-                    }
+                    case 0:
                     case 1: {
                       child_ref_edges[cell_index] = 0;
                       break;
                     }
-                    case 2: {
-                      child_ref_edges[cell_index] = 1;
-                      break;
-                    }
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 1;
                       break;
@@ -1532,14 +1522,8 @@ void MeshHierarchy::PerformRefinement() {
                       child_ref_edges[cell_index] = 1;
                       break;
                     }
-                    case 1: {
-                      child_ref_edges[cell_index] = 2;
-                      break;
-                    }
-                    case 2: {
-                      child_ref_edges[cell_index] = 2;
-                      break;
-                    }
+                    case 1:
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 2;
                       break;
@@ -1561,10 +1545,7 @@ void MeshHierarchy::PerformRefinement() {
                       child_ref_edges[cell_index] = 1;
                       break;
                     }
-                    case 2: {
-                      child_ref_edges[cell_index] = 0;
-                      break;
-                    }
+                    case 2:
                     case 3: {
                       child_ref_edges[cell_index] = 0;
                       break;
@@ -1593,7 +1574,7 @@ void MeshHierarchy::PerformRefinement() {
             }
           }  // end switch parent_ref_pat
 
-          SPDLOG_LOGGER_TRACE(logger, "ref_pat = {}({}) ref edge = {}",
+          SPDLOG_LOGGER_TRACE(Logger(), "ref_pat = {}({}) ref edge = {}",
                               (int)parent_ref_pat, parent_ref_pat,
                               child_ref_edges[cell_index]);
 
@@ -1616,7 +1597,7 @@ void MeshHierarchy::PerformRefinement() {
 void MeshHierarchy::initGeometryInParent() {
   // number of meshes contained in the hierarchy
   const size_type num_levels = NumLevels();
-  SPDLOG_LOGGER_DEBUG(logger,
+  SPDLOG_LOGGER_DEBUG(Logger(),
                       "Entering MeshHierarchy::initGeometryInParent: {} levels",
                       num_levels);
 
@@ -1702,7 +1683,7 @@ void MeshHierarchy::initGeometryInParent() {
                   LF_ASSERT_MSG(
                       child_entity->RefEl() == lf::base::RefEl::kTria(),
                       "Must be triangle!");
-                  SPDLOG_LOGGER_TRACE(logger, "Triangle in {}: geo = {}",
+                  SPDLOG_LOGGER_TRACE(Logger(), "Triangle in {}: geo = {}",
                                       parent_ref_el, child_corners);
 
                   child_pi.rel_ref_geo_ =
@@ -1713,7 +1694,7 @@ void MeshHierarchy::initGeometryInParent() {
                   LF_ASSERT_MSG(
                       child_entity->RefEl() == lf::base::RefEl::kQuad(),
                       "Must be quad!");
-                  SPDLOG_LOGGER_TRACE(logger, "Quad in {}: geo = {}",
+                  SPDLOG_LOGGER_TRACE(Logger(), "Quad in {}: geo = {}",
                                       parent_ref_el, child_corners);
 
                   child_pi.rel_ref_geo_ =
@@ -1739,7 +1720,7 @@ void MeshHierarchy::initGeometryInParent() {
                   "Must be an edge!");
               LF_ASSERT_MSG(child_corners.cols() == 2,
                             "Segement must have two endpoints");
-              SPDLOG_LOGGER_TRACE(logger, "Segment in {}: geo = {}",
+              SPDLOG_LOGGER_TRACE(Logger(), "Segment in {}: geo = {}",
                                   parent_ref_el, child_corners);
 
               child_pi.rel_ref_geo_ =
@@ -1755,7 +1736,7 @@ void MeshHierarchy::initGeometryInParent() {
                             "Must be a point!");
               LF_ASSERT_MSG(child_corners.cols() == 1,
                             "Only a single coordindate for a point!");
-              SPDLOG_LOGGER_TRACE(logger, "Point in {}: geo = {}",
+              SPDLOG_LOGGER_TRACE(Logger(), "Point in {}: geo = {}",
                                   parent_ref_el, child_corners);
 
               child_pi.rel_ref_geo_ =
@@ -1800,7 +1781,7 @@ void MeshHierarchy::initGeometryInParent() {
                   "Must be an edge!");
               LF_ASSERT_MSG(child_corners.cols() == 2,
                             "Segement must have two endpoints");
-              SPDLOG_LOGGER_TRACE(logger, "Segment in {}: geo = {}",
+              SPDLOG_LOGGER_TRACE(Logger(), "Segment in {}: geo = {}",
                                   parent_ref_el, child_corners);
 
               child_pi.rel_ref_geo_ =
@@ -1816,7 +1797,7 @@ void MeshHierarchy::initGeometryInParent() {
                             "Must be a point!");
               LF_ASSERT_MSG(child_corners.cols() == 1,
                             "Only a single coordindate for a point!");
-              SPDLOG_LOGGER_TRACE(logger, "Point in {}: geo = {}",
+              SPDLOG_LOGGER_TRACE(Logger(), "Point in {}: geo = {}",
                                   parent_ref_el, child_corners);
 
               child_pi.rel_ref_geo_ =
@@ -1833,7 +1814,7 @@ void MeshHierarchy::initGeometryInParent() {
         }
         case 2: {  // the parent entity is a point
           // No relative geometry for a point
-          SPDLOG_LOGGER_TRACE(logger, "point in {}", parent_ref_el);
+          SPDLOG_LOGGER_TRACE(Logger(), "point in {}", parent_ref_el);
           child_pi.rel_ref_geo_ =
               std::make_unique<lf::geometry::Point>(nil_coords);
           break;
@@ -1847,7 +1828,7 @@ void MeshHierarchy::initGeometryInParent() {
   }      // end loop over codims
 }  // end initGeometryInParent
 
-sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) const {
+sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) {
   LF_VERIFY_MSG(T.Codim() == 0, "Entity must be a call");
   // Obtain iterator over the edges
   const size_type num_edges = T.RefEl().NumSubEntities(1);

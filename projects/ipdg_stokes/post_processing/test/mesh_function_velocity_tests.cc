@@ -1,13 +1,11 @@
 #include <gtest/gtest.h>
-
-#include <mesh_function_velocity.h>
-
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/codim_mesh_data_set.h>
 #include <lf/mesh/utils/mesh_data_set.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+#include <mesh_function_velocity.h>
 
 #include <tuple>
 #include <vector>

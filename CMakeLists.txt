@@ -3,8 +3,11 @@ cmake_minimum_required( VERSION 3.10)
 include("cmake/functions.cmake")
 
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.282.tar.gz"
-    SHA1 "6811dd3e10eea8cd6b479a422a828115af1a35ba"
+    #URL "https://github.com/cpp-pm/hunter/archive/v0.23.282.tar.gz"
+    #SHA1 "6811dd3e10eea8cd6b479a422a828115af1a35ba"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.288.tar.gz"
+    SHA1 "6c9b2bc606d86ae31f96a62fc68f0a593024815b"
+    #LOCAL # use cmake/Hunter/config.cmake
 )
 
 project(LehrFEMpp VERSION 1.0.0)
@@ -23,8 +26,10 @@ if(LF_ENABLE_TESTING)
 endif()
 
 option(LF_BUILD_EXAMPLES "Whether the examples, experiments and projects should be built" ON)
+option(LF_BUILD_DOC      "Whether the documentation should be build."                     ON)
 option(LF_BUILD_OCCT "Whether the lf.brep.occt project should be built. This will include OpenCascade via hunter (long compilation)" OFF)
 option(LF_ENABLE_CLING "if set to true, we will link with libdl so that cling works" OFF)
+option(LF_REDIRECT_ASSERTS "When set to true, LehrFEM++ will modify the eigen and boost asserts to print a stacktrace on failure" ON)
 
 # Group targets in folders in Visual Studio/Xcode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -48,7 +53,6 @@ find_package(Eigen3 CONFIG REQUIRED)
 # Get SPDLog
 hunter_add_package(spdlog)
 find_package(spdlog CONFIG REQUIRED)
-
 # Get Google Test (required by test_utils modules!)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
@@ -77,7 +81,9 @@ set(config_install_dir "lib/cmake/lehrfempp")
 
 
 add_subdirectory(lib)
-add_subdirectory(doc/doxygen)
+if(LF_BUILD_DOC)
+  add_subdirectory(doc/doxygen)
+endif()
 if(LF_BUILD_EXAMPLES)
   # Add custom target which will run all examples
   add_custom_target(examples_run)

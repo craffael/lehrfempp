@@ -3,31 +3,29 @@
  * @brief Compute the convergence of the nested cylinders experiment
  */
 
-#include <algorithm>
-#include <cstring>
-#include <filesystem>
-#include <iomanip>
-#include <iostream>
-#include <string>
-
+#define _USE_MATH_DEFINES
+#include <annulus_triag_mesh_builder.h>
+#include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
-#include <lf/mesh/utils/lambda_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
-
-#include <boost/program_options.hpp>
-
-#include <annulus_triag_mesh_builder.h>
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <algorithm>
+#include <boost/program_options.hpp>
+#include <cstring>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 using lf::uscalfe::operator-;
 
@@ -54,7 +52,7 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
   // Drive the inner and outer cylinder with omega1 and omega2
   const double eps = 1e-10;
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
-    const auto geom = edge.Geometry();
+    const auto *const geom = edge.Geometry();
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     if (vertices.col(0).norm() <= R + eps &&
         vertices.col(0).norm() >= R - eps &&
@@ -70,8 +68,11 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
     }
     return Eigen::Vector2d::Zero();
   };
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_funct);
+
+  lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> dirichlet(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_funct(*ep);
+  }
 
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
@@ -128,7 +129,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   // Drive the inner and outer cylinder with omega1 and omega2
   const double eps = 1e-10;
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
-    const auto geom = edge.Geometry();
+    const auto *const geom = edge.Geometry();
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     if (vertices.col(0).norm() <= R + eps &&
         vertices.col(0).norm() >= R - eps &&
@@ -144,8 +145,11 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
     }
     return Eigen::Vector2d::Zero();
   };
-  const auto dirichlet =
-      *lf::mesh::utils::make_LambdaMeshDataSet(dirichlet_funct);
+
+  lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> dirichlet(mesh, 1);
+  for (const auto *ep : mesh->Entities(1)) {
+    dirichlet(*ep) = dirichlet_funct(*ep);
+  }
 
   // Asemble the LSE
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
@@ -169,7 +173,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   lf::base::size_type idx = 2;
   for (lf::base::size_type dof = 0; dof < dofh.NumDofs(); ++dof) {
     const auto &entity = dofh.Entity(dof);
-    const auto geom = entity.Geometry();
+    const auto *const geom = entity.Geometry();
     if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
       if (geom->Global(entity.RefEl().NodeCoords()).norm() > R - eps) {
         dofmap[dof] = M_outer;

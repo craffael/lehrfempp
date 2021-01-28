@@ -7,6 +7,8 @@
  * @copyright MIT License
  */
 
+#include "gmsh_file_v2.h"
+
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/adapt_struct_named.hpp>
 #include <boost/fusion/include/boost_array.hpp>
@@ -25,9 +27,8 @@
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_binary.hpp>
-#include "eigen_fusion_adapter.h"
 
-#include "gmsh_file_v2.h"
+#include "eigen_fusion_adapter.h"
 
 using size_type = lf::mesh::Mesh::size_type;
 
@@ -149,18 +150,18 @@ std::ostream& operator<<(std::ostream& stream, const GMshFileV2& mf) {
   stream << "======================================================="
          << std::endl;
   stream << "PHYSICAL ENTITIES (Dimension, Number, Name):" << std::endl;
-  for (auto& pe : mf.PhysicalEntities) {
+  for (const auto& pe : mf.PhysicalEntities) {
     stream << "  " << pe.Dimension << "\t , " << pe.Number << "\t , " << pe.Name
            << std::endl;
   }
   stream << "NODES (Number, coords)" << std::endl;
-  for (auto& n : mf.Nodes) {
+  for (const auto& n : mf.Nodes) {
     stream << "  " << n.first << "\t , " << n.second.transpose() << std::endl;
   }
   stream << "ELEMENTS (Number, Type, PhysicalEntity Nr, ElementaryEntityNr, "
             "Mesh partitions to which it belongs, Node numbers in it)"
          << std::endl;
-  for (auto& e : mf.Elements) {
+  for (const auto& e : mf.Elements) {
     stream << "  " << e.Number << "\t " << e.Type << '\t' << e.PhysicalEntityNr
            << "\t" << e.ElementaryEntityNr << "\t";
     for (auto p : e.MeshPartitions) {
@@ -174,7 +175,7 @@ std::ostream& operator<<(std::ostream& stream, const GMshFileV2& mf) {
   }
   stream << std::endl;
   stream << "PERIODIC ENTITIES:" << std::endl;
-  for (auto& pe : mf.Periodic) {
+  for (const auto& pe : mf.Periodic) {
     std::cout << "  dim=" << pe.Dimension
               << ", slaveNr=" << pe.ElementarySlaveNr
               << ", masterNr=" << pe.ElementaryMasterNr << std::endl;
@@ -195,7 +196,6 @@ size_type NumNodes(GMshFileV2::ElementType et) {
     case GMshFileV2::ElementType::TRIA3:
       return 3;
     case GMshFileV2::ElementType::QUAD4:
-      return 4;
     case GMshFileV2::ElementType::TET4:
       return 4;
     case GMshFileV2::ElementType::HEX8:
@@ -235,7 +235,6 @@ size_type NumNodes(GMshFileV2::ElementType et) {
     case GMshFileV2::ElementType::TRIA12:
       return 12;
     case GMshFileV2::ElementType::TRIA15:
-      return 15;
     case GMshFileV2::ElementType::TRIA15_5:
       return 15;
     case GMshFileV2::ElementType::TRIA21:
@@ -430,7 +429,7 @@ namespace phoenix = boost::phoenix;
 /// A lookup table for boost spirit that can parse an element type
 struct gmshElementType : qi::symbols<char, unsigned> {
   gmshElementType() {
-    for (auto& et : GMshFileV2::AllElementTypes) {
+    for (const auto& et : GMshFileV2::AllElementTypes) {
       add(std::to_string(static_cast<int>(et)), static_cast<int>(et));
     }
   }

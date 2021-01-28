@@ -13,11 +13,11 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
 
 namespace lf::uscalfe::test {
 

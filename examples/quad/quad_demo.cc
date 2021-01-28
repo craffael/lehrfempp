@@ -7,13 +7,14 @@
  * @copyright MIT License
  */
 
-#include <boost/math/constants/constants.hpp>
-#include <boost/program_options.hpp>
-
 #include <lf/geometry/geometry.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/quad/quad.h>
+
+#include <Eigen/Eigen>
+#include <boost/math/constants/constants.hpp>
+#include <boost/program_options.hpp>
 
 #include "lf/refinement/test/refinement_test_utils.h"
 
@@ -27,7 +28,7 @@ double integrate(const lf::mesh::Mesh& mesh, lf::quad::quadDegree_t degree,
   Eigen::MatrixXd points(1, 1);
   Eigen::VectorXd weights(1);
 
-  for (auto e : mesh.Entities(0)) {
+  for (const auto* e : mesh.Entities(0)) {
     if (e->RefEl() == lf::base::RefEl::kTria()) {
       points = qr_tria.Points();
       weights = qr_tria.Weights();

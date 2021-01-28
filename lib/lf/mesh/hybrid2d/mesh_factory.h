@@ -2,9 +2,10 @@
 #define __e98a803fac5b430a8ff634ceb2f809aX
 
 #include <lf/mesh/mesh.h>
-#include "mesh.h"
 
 #include <iostream>
+
+#include "mesh.h"
 
 namespace lf::mesh::hybrid2d {
 
@@ -77,7 +78,7 @@ class MeshFactory : public mesh::MeshFactory {
    * @brief logger that is used by the build method to output additional
    * information to the command line.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger>& Logger();
 };
 
 inline std::ostream& operator<<(std::ostream& stream,

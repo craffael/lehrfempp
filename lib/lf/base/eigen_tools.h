@@ -9,7 +9,11 @@
 #ifndef __1cc1076600024d7ea537871be7fc1fc0
 #define __1cc1076600024d7ea537871be7fc1fc0
 
-#include <Eigen/Eigen>
+// clang-format off
+#include "lf_assert.h"  // must be included before eigen!
+// clang-format on
+
+#include <Eigen/Core>
 #include <utility>
 
 namespace lf::base {
@@ -44,14 +48,14 @@ struct IsEigenArrayTester {
  * @brief Check if a given type T is an Eigen::Matrix
  */
 template <class T>
-constexpr bool is_eigen_matrix = std::is_same_v<
+inline constexpr bool is_eigen_matrix = std::is_same_v<
     decltype(internal::IsEigenMatrixTester::Test(std::declval<T>(), 0)), bool>;
 
 /**
  * @brief Check if a given type T is an Eigen::Array
  */
 template <class T>
-constexpr bool is_eigen_array = std::is_same_v<
+inline constexpr bool is_eigen_array = std::is_same_v<
     decltype(internal::IsEigenArrayTester::Test(std::declval<T>(), 0)), bool>;
 
 }  // namespace lf::base

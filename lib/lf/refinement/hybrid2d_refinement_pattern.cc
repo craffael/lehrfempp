@@ -90,9 +90,7 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
         }
         case 1: {
           switch (ref_pat_) {
-            case RefPat::rp_nil: {
-              return 0;
-            }
+            case RefPat::rp_nil:
             case RefPat::rp_copy: {
               return 0;
             }
@@ -126,15 +124,11 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
             case RefPat::rp_bisect: {
               return 2;
             }
-            case RefPat::rp_trisect: {
-              return 3;
-            }
+            case RefPat::rp_trisect:
             case RefPat::rp_trisect_left: {
               return 3;
             }
-            case RefPat::rp_quadsect: {
-              return 4;
-            }
+            case RefPat::rp_quadsect:
             case RefPat::rp_regular: {
               return 4;
             }
@@ -154,24 +148,18 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
         }  // end case codim = 0
         case 1: {
           switch (ref_pat_) {
-            case RefPat::rp_nil: {
-              return 0;
-            }
+            case RefPat::rp_nil:
             case RefPat::rp_copy: {
               return 0;
             }
             case RefPat::rp_bisect: {
               return 1;
             }
-            case RefPat::rp_trisect: {
-              return 2;
-            }
+            case RefPat::rp_trisect:
             case RefPat::rp_trisect_left: {
               return 2;
             }
-            case RefPat::rp_quadsect: {
-              return 3;
-            }
+            case RefPat::rp_quadsect:
             case RefPat::rp_regular: {
               return 3;
             }
@@ -216,9 +204,7 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
             case RefPat::rp_split: {
               return 2;
             }
-            case RefPat::rp_threeedge: {
-              return 4;
-            }
+            case RefPat::rp_threeedge:
             case RefPat::rp_barycentric:
             case RefPat::rp_regular: {
               return 4;
@@ -234,9 +220,7 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
         }
         case 1: {
           switch (ref_pat_) {
-            case RefPat::rp_nil: {
-              return 0;
-            }
+            case RefPat::rp_nil:
             case RefPat::rp_copy: {
               return 0;
             }

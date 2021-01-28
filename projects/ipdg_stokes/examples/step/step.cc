@@ -3,11 +3,7 @@
  * @brief Solves the problem of computing the flow over a step
  */
 
-#include <filesystem>
-#include <iostream>
-#include <string>
-#include <vector>
-
+#include <build_system_matrix.h>
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -22,13 +18,16 @@
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/refinement.h>
 #include <lf/uscalfe/uscalfe.h>
-
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <filesystem>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using lf::uscalfe::operator-;
 
@@ -78,7 +77,7 @@ Eigen::VectorXd solveStep(const std::shared_ptr<const lf::mesh::Mesh> &mesh,
   // tube boundaries
   auto dirichlet_funct = [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
     static constexpr double eps = 1e-10;
-    const auto geom = edge.Geometry();
+    const auto *const geom = edge.Geometry();
     const auto vertices = geom->Global(edge.RefEl().NodeCoords());
     const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
     Eigen::Vector2d v;
@@ -167,7 +166,7 @@ int main() {
     auto dirichlet_funct =
         [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
       Eigen::Vector2d v;
@@ -228,19 +227,22 @@ int main() {
     lf::refinement::MeshFunctionTransfer velocity_fine_modified(
         *mesh_hierarchy, velocity_lvl_modified, lvl,
         mesh_hierarchy->NumLevels() - 1);
-    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
-                         *lf::mesh::utils::make_LambdaMeshDataSet(
-                             [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-                               return velocity_fine(
-                                   e, Eigen::Vector2d::Constant(1. / 3))[0];
-                             }));
+
+    lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v(solutions.back().mesh,
+                                                         0);
+    for (const auto *ep : solutions.back().mesh->Entities(0)) {
+      v(*ep) = velocity_fine(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+    }
+    writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)), v);
+
+    lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v_modified(
+        solutions.back().mesh, 0);
+    for (const auto *ep : solutions.back().mesh->Entities(0)) {
+      v_modified(*ep) =
+          velocity_fine_modified(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+    }
     writer.WriteCellData(
-        concat("v_modified", solutions[lvl].mesh->NumEntities(2)),
-        *lf::mesh::utils::make_LambdaMeshDataSet(
-            [&](const lf::mesh::Entity &e) -> Eigen::Vector2d {
-              return velocity_fine_modified(
-                  e, Eigen::Vector2d::Constant(1. / 3))[0];
-            }));
+        concat("v_modified", solutions[lvl].mesh->NumEntities(2)), v_modified);
     const auto qr_provider = [](const lf::mesh::Entity &e) {
       return lf::quad::make_QuadRule(e.RefEl(), 0);
     };

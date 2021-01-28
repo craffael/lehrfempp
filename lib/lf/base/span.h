@@ -1193,19 +1193,19 @@ class span {  // NOLINT
 #if span_HAVE(DEDUCTION_GUIDES)  // span_CPP17_OR_GREATER
 
 template <class T, size_t N>
-span(T (&)[N])->span<T, static_cast<extent_t>(N)>;  // NOLINT
+span(T (&)[N]) -> span<T, static_cast<extent_t>(N)>;  // NOLINT
 
 template <class T, size_t N>
-span(std::array<T, N>&)->span<T, static_cast<extent_t>(N)>;
+span(std::array<T, N>&) -> span<T, static_cast<extent_t>(N)>;
 
 template <class T, size_t N>
-span(std::array<T, N> const&)->span<const T, static_cast<extent_t>(N)>;
+span(std::array<T, N> const&) -> span<const T, static_cast<extent_t>(N)>;
 
 template <class Container>
-span(Container&)->span<typename Container::value_type>;
+span(Container&) -> span<typename Container::value_type>;
 
 template <class Container>
-span(Container const&)->span<const typename Container::value_type>;
+span(Container const&) -> span<const typename Container::value_type>;
 
 #endif  // span_HAVE( DEDUCTION_GUIDES )
 

@@ -10,7 +10,9 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/torus_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <memory>
+
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 
@@ -19,7 +21,7 @@ namespace lf::mesh::test {
 // Test for creation of tensor product grid on torus
 TEST(lf_mesh_p, buildTorusMesh) {
   // Enable copious output
-  utils::TorusMeshBuilder::logger->set_level(spdlog::level::trace);
+  utils::TorusMeshBuilder::Logger()->set_level(spdlog::level::trace);
   // Construct a tensor-product grid with 15 cells
   std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<hybrid2d::MeshFactory>(3);

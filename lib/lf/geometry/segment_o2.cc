@@ -7,6 +7,7 @@
  */
 
 #include "segment_o2.h"
+
 #include "point.h"
 
 namespace lf::geometry {

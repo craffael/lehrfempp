@@ -9,14 +9,15 @@
 #ifndef __c3c605c9e48646758bf03fab65d52836
 #define __c3c605c9e48646758bf03fab65d52836
 
+#include <boost/assert.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
 namespace lf::base {
 
-void AssertionFailed(const std::string& expr, const std::string& file, int line,
-                     const std::string& msg);
+void AssertionFailed(const std::string& expr, const std::string& file,
+                     long line, const std::string& msg);
 
 }  // namespace lf::base
 
@@ -35,7 +36,6 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
@@ -55,10 +55,30 @@ void AssertionFailed(const std::string& expr, const std::string& file, int line,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      std::abort();                                                     \
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
 #endif
 
+// And now we will redefine eigen_assert if needed:
+#ifdef LF_REDIRECT_ASSERTS
+#ifdef eigen_assert
+#ifndef eigen_assert_redirected
+// eigen_assert has already been defined, but not by us!
+#ifdef _MSC_VER
+#pragma message( \
+    "WARNING: Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html")
+#else
+#warning \
+    "Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html"
+#endif
+#undef eigen_assert
+#define eigen_assert(x) LF_ASSERT_MSG(x, "")
+#define eigen_assert_redirected
+#endif
+#else
+#define eigen_assert(x) LF_ASSERT_MSG(x, "")
+#define eigen_assert_redirected
+#endif
+#endif
 #endif  // __c3c605c9e48646758bf03fab65d52836

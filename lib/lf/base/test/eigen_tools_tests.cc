@@ -8,6 +8,9 @@
 
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
+
+#include <Eigen/Core>
+
 #include "lf/base/eigen_tools.h"
 
 namespace lf::base::test {

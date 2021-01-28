@@ -3,8 +3,10 @@
  */
 
 #include "refutils.h"
+
 #include <lf/io/io.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <fstream>
 
 namespace lf::refinement {

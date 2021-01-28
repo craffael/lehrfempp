@@ -6,12 +6,11 @@
  * @copyright MIT License
  */
 
-#include <filesystem>
-
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/utils.h>
-#include "lf/mesh/utils/lambda_mesh_data_set.h"
+
+#include <filesystem>
 
 int main() {
   // Find path to the smiley mesh
@@ -38,7 +37,7 @@ int main() {
   int num_eye_elements = 0;
   auto mesh = reader.mesh();
   auto physical_entity_nr_eyes = reader.PhysicalEntityName2Nr("eyes");
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_eyes)) {
       ++num_eye_elements;
     }
@@ -48,7 +47,7 @@ int main() {
   // count the number of edges that form the mouth
   int num_mouth_edges = 0;
   auto physical_entity_nr_mouth = reader.PhysicalEntityName2Nr("mouth");
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_mouth)) {
       ++num_mouth_edges;
     }
@@ -58,7 +57,7 @@ int main() {
   // count the total number of elements in the face (including eyes)
   int num_face_elements = 0;
   auto physical_entity_nr_face = reader.PhysicalEntityName2Nr("face");
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_face)) {
       ++num_face_elements;
     }
@@ -70,27 +69,30 @@ int main() {
 
   // write a cell-based function that takes the value 1 on the eyes and 0
   // everywhere else
-  vtk_writer.WriteCellData(
-      "eyes", *lf::mesh::utils::make_LambdaMeshDataSet([&](const auto& e) {
-        return static_cast<int>(
-            reader.IsPhysicalEntity(e, physical_entity_nr_eyes));
-      }));
+  {
+    lf::mesh::utils::CodimMeshDataSet<int> data(mesh, 0);
+    for (const auto* e : mesh->Entities(0)) {
+      data(*e) = static_cast<int>(
+          reader.IsPhysicalEntity(*e, physical_entity_nr_eyes));
+    }
+    vtk_writer.WriteCellData("eyes", data);
+  }
 
   // write nodal data that takes the value 2 on the eyes and 1 on the mouth,
   // zero everywhere else.
   auto mds = lf::mesh::utils::make_CodimMeshDataSet<int>(mesh, 2, 0);
   // mark the eyes
-  for (auto e : mesh->Entities(0)) {
+  for (const auto* e : mesh->Entities(0)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_eyes)) {
-      for (auto node : e->SubEntities(2)) {
+      for (const auto* node : e->SubEntities(2)) {
         mds->operator()(*node) = 2;
       }
     }
   }
   // mark the mouth
-  for (auto e : mesh->Entities(1)) {
+  for (const auto* e : mesh->Entities(1)) {
     if (reader.IsPhysicalEntity(*e, physical_entity_nr_mouth)) {
-      for (auto node : e->SubEntities(1)) {
+      for (const auto* node : e->SubEntities(1)) {
         mds->operator()(*node) = 1;
       }
     }
@@ -98,9 +100,7 @@ int main() {
   vtk_writer.WritePointData("smile", *mds);
 
   // write a node based, vector valued function that points to the nose:
-  auto origin = Eigen::MatrixXd::Zero(0, 1);
   vtk_writer.WritePointData(
-      "nose_vec", *lf::mesh::utils::make_LambdaMeshDataSet([&](const auto& n) {
-        return Eigen::Vector2d(-n.Geometry()->Global(origin));
-      }));
+      "nose_vec", lf::mesh::utils::MeshFunctionGlobal(
+                      [&](const Eigen::Vector2d& x) { return (-x).eval(); }));
 }

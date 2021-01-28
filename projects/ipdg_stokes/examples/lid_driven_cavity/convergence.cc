@@ -3,12 +3,8 @@
  * @brief Produces h-convergence results for the lid driven cavity experiment
  */
 
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-#include <sstream>
-#include <string>
-
+#define _USE_MATH_DEFINES
+#include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
 #include <lf/io/vtk_writer.h>
@@ -19,13 +15,18 @@
 #include <lf/quad/quad.h>
 #include <lf/refinement/mesh_function_transfer.h>
 #include <lf/refinement/refinement.h>
-
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <string>
 
 using lf::uscalfe::operator-;
 using lf::uscalfe::operator*;
@@ -99,7 +100,7 @@ int main() {
     // The top lid is driven with velocity 1
     auto dirichlet_funct = [](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       Eigen::Vector2d v;
       v << 1, 0;

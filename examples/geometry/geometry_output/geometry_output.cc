@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+
 #include "lf/geometry/geometry.h"
 #include "lf/geometry/point.h"
 #include "lf/geometry/print_info.h"

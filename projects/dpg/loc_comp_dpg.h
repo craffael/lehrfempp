@@ -151,8 +151,8 @@ template <class PTR, class DIFF_COEFF>
 DiffusionElementMatrixProvider(PTR fe_space_trial, PTR fe_space_test,
                                size_type trial_component,
                                size_type test_component, DIFF_COEFF alpha)
-    ->DiffusionElementMatrixProvider<typename PTR::element_type::SCALAR,
-                                     DIFF_COEFF>;
+    -> DiffusionElementMatrixProvider<typename PTR::element_type::SCALAR,
+                                      DIFF_COEFF>;
 
 // Constructor. internal construction of quadrature rules.
 template <typename SCALAR, typename DIFF_COEFF>
@@ -384,8 +384,8 @@ template <class PTR, class REACTION_COEFF>
 ReactionElementMatrixProvider(PTR fe_trial, PTR fe_test,
                               size_type trial_component,
                               size_type test_component, REACTION_COEFF gamma)
-    ->ReactionElementMatrixProvider<typename PTR::element_type::SCALAR,
-                                    REACTION_COEFF>;
+    -> ReactionElementMatrixProvider<typename PTR::element_type::SCALAR,
+                                     REACTION_COEFF>;
 
 // Constructor. internal construction of quadrature rules.
 template <typename SCALAR, typename REACTION_COEFF>
@@ -619,8 +619,8 @@ ConvectionElementMatrixProvider(PTR fe_trial, PTR fe_test,
                                 size_type test_component,
                                 CONVECTION_COEFF_1 beta_1,
                                 CONVECTION_COEFF_2 beta_2)
-    ->ConvectionElementMatrixProvider<typename PTR::element_type::SCALAR,
-                                      CONVECTION_COEFF_1, CONVECTION_COEFF_2>;
+    -> ConvectionElementMatrixProvider<typename PTR::element_type::SCALAR,
+                                       CONVECTION_COEFF_1, CONVECTION_COEFF_2>;
 
 // Constructor. internal construction of quadrature rules.
 template <typename SCALAR, typename CONVECTION_COEFF_1,
@@ -880,7 +880,8 @@ template <class PTR, class DIFF_COEFF>
 FluxElementMatrixProvider(PTR fe_space_trial, PTR fe_space_test,
                           size_type trial_component, size_type test_component,
                           DIFF_COEFF alpha)
-    ->FluxElementMatrixProvider<typename PTR::element_type::SCALAR, DIFF_COEFF>;
+    -> FluxElementMatrixProvider<typename PTR::element_type::SCALAR,
+                                 DIFF_COEFF>;
 
 // constructor internal construction of quadrature rules.
 template <typename SCALAR, typename DIFF_COEFF>
@@ -1142,7 +1143,7 @@ template <class PTR, class COEFF>
 TraceElementMatrixProvider(PTR fe_space_trial, PTR fe_space_test,
                            size_type trial_component, size_type test_component,
                            COEFF alpha)
-    ->TraceElementMatrixProvider<typename PTR::element_type::SCALAR, COEFF>;
+    -> TraceElementMatrixProvider<typename PTR::element_type::SCALAR, COEFF>;
 
 // Constructor. internal construction of quadrature rules.
 template <typename SCALAR, typename COEFF>
@@ -1385,7 +1386,7 @@ class LoadElementVectorProvider : public SubElementVectorProvider<SCALAR> {
 template <class PTR, class FUNCTOR>
 LoadElementVectorProvider(PTR fe_space_test, size_type test_component,
                           FUNCTOR f)
-    ->LoadElementVectorProvider<typename PTR::element_type::SCALAR, FUNCTOR>;
+    -> LoadElementVectorProvider<typename PTR::element_type::SCALAR, FUNCTOR>;
 
 // constructor: internal construction of quadrature rules.
 template <typename SCALAR, typename FUNCTOR>

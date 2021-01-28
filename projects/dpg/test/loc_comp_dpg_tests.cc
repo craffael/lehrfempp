@@ -7,11 +7,11 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/mesh/utils/utils.h>
+
+#include <iostream>
 
 #include "../loc_comp_dpg.h"
 #include "../product_fe_space.h"

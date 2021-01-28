@@ -1,12 +1,11 @@
 #include "piecewise_const_element_matrix_provider.h"
 
+#include <lf/uscalfe/lagr_fe.h>
+#include <utils.h>
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-
-#include <lf/uscalfe/lagr_fe.h>
-
-#include <utils.h>
 
 namespace projects::ipdg_stokes::assemble {
 
@@ -18,7 +17,7 @@ PiecewiseConstElementMatrixProvider::PiecewiseConstElementMatrixProvider(
 Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
     const lf::mesh::Entity &entity) const {
   // Get the geometry of the entity
-  const auto geom = entity.Geometry();
+  const auto *geom = entity.Geometry();
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
   // Use the vertex coordinates to compute the local normals on the edges

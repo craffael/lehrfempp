@@ -7,7 +7,7 @@
 #include <vector>
 
 //#include <boost/range.hpp>
-#include <Eigen/Eigen>
+
 #include "base.h"
 #include "lf_assert.h"
 
@@ -45,7 +45,6 @@ constexpr dim_t DimensionImpl(RefElType type) {
     case RefElType::kSegment:
       return 1;
     case RefElType::kTria:
-      return 2;
     case RefElType::kQuad:
       return 2;
     default:
@@ -120,16 +119,14 @@ class RefEl {
   // Member variable
   RefElType type_;
 
- public:
-  using dim_t = lf::base::dim_t;
-
   // subSubEntities, used by SubSubEntity2SubEntity
-  static constexpr std::array<std::array<dim_t, 2>, 3>
+  static constexpr std::array<std::array<base::dim_t, 2>, 3>
       sub_sub_entity_index_tria_ = {{{0, 1}, {1, 2}, {2, 0}}};
-  static constexpr std::array<std::array<dim_t, 2>, 4>
+  static constexpr std::array<std::array<base::dim_t, 2>, 4>
       sub_sub_entity_index_quad_ = {{{0, 1}, {1, 2}, {2, 3}, {3, 0}}};
 
  public:
+  using dim_t = unsigned int;
   /**
    * @brief Type of the node coordinate iterator that is returned from
    * NodeCoords()
@@ -181,7 +178,7 @@ class RefEl {
   constexpr RefEl(RefEl&&) = default;
 
   /** @brief Default copy assignment operator */
-  // NOLINTNEXTLINE(modernize-use-equals-default,hicpp-use-equals-default)
+  // NOLINTNEXTLINE(modernize-use-equals-default,hicpp-use-equals-default,cert-oop54-cpp)
   constexpr RefEl& operator=(const RefEl& rhs) {
     type_ = rhs.type_;
     return *this;
@@ -386,7 +383,7 @@ class RefEl {
    *
    * @note the argument `sub_rel_codim` is a **relative co-dimension**.
    *
-   * @notes the argument `sub_rel_index` is a local index in the sub-entity.
+   * @note the argument `sub_rel_index` is a local index in the sub-entity.
    *
    * #### Conventions
    * - For a triangle (the arrow indicates the induced orientation of the edge)

@@ -7,6 +7,7 @@
  */
 
 #include "spdlog_utils.h"
+
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -26,9 +27,9 @@ LineFeedFormatter::LineFeedFormatter(
 void LineFeedFormatter::format(const spdlog::details::log_msg& msg,
                                spdlog::memory_buf_t& dest) {
   int offset = -2;  // -2: first line, // -1 second line
-  auto begin = msg.payload.begin();
+  const auto* begin = msg.payload.begin();
 
-  for (auto it = msg.payload.begin();; ++it) {
+  for (const auto* it = msg.payload.begin();; ++it) {
     if (it == msg.payload.end() || *it == '\n') {
       if (offset == -2) {
         ++offset;

@@ -15,9 +15,14 @@
 
 #include "lin_fe.h"
 
+#include <Eigen/Eigen>
+
 namespace lf::uscalfe {
-std::shared_ptr<spdlog::logger> LinearFELaplaceElementMatrix::logger =
-    base::InitLogger("lf::uscalfe::LinearFELaplaceElementMatrix::logger");
+std::shared_ptr<spdlog::logger> &LinearFELaplaceElementMatrix::Logger() {
+  static auto logger =
+      base::InitLogger("lf::uscalfe::LinearFELaplaceElementMatrix::Logger");
+  return logger;
+}
 
 Eigen::Matrix<double, 4, 2> LinearFELaplaceElementMatrix::DervRefShapFncts(
     const Eigen::Vector2d &xh) {
@@ -45,7 +50,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   // Matrix storing corner coordinates in its columns
   auto vertices = geo_ptr->Global(ref_el.NodeCoords());
   // Debugging output
-  SPDLOG_LOGGER_TRACE(logger, "{}, shape={}", ref_el, vertices);
+  SPDLOG_LOGGER_TRACE(Logger(), "{}, shape={}", ref_el, vertices);
 
   // 4x4 dense matrix for returning result
   ElemMat elem_mat = ElemMat::Zero(4, 4);
@@ -66,7 +71,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
       X.block<3, 2>(0, 1) = vertices.transpose();
       // The determinant of the auxliriary matrix also supplies the area
       const double area = 0.5 * std::abs(X.determinant());
-      SPDLOG_LOGGER_TRACE(logger, "Area: {} <-> {}", area,
+      SPDLOG_LOGGER_TRACE(Logger(), "Area: {} <-> {}", area,
                           0.5 * geo_ptr->IntegrationElement(kTriabc));
 
       // Compute the gradients of the barycentric coordinate functions
@@ -105,7 +110,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
       auto detDPhi = [&detc](const Eigen::Vector2d &xh) -> double {
         return std::abs(detc[0] + detc[1] * xh[0] + detc[2] * xh[1]);
       };
-      SPDLOG_LOGGER_DEBUG(logger, "Determinant: {} <-> {}", detDPhi(kQuadpt),
+      SPDLOG_LOGGER_DEBUG(Logger(), "Determinant: {} <-> {}", detDPhi(kQuadpt),
                           geo_ptr->IntegrationElement(kQuadpt));
 
       // Transposed adjunct matrix of Jacobian of transformation
@@ -119,7 +124,7 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
         // clang-format on
       };
       // Output for debugging
-      SPDLOG_LOGGER_TRACE(logger, "InverseTransposedJacobian:\n{} <-> {}",
+      SPDLOG_LOGGER_TRACE(Logger(), "InverseTransposedJacobian:\n{} <-> {}",
                           (DPhiadj(kQuadpt) / detDPhi(kQuadpt)),
                           (geo_ptr->JacobianInverseGramian(kQuadpt)));
 
@@ -147,9 +152,9 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
   }  // end switch
 
   auto nv = vertices.cols();
-  SPDLOG_LOGGER_TRACE(logger, "Element matrix\n{}",
+  SPDLOG_LOGGER_TRACE(Logger(), "Element matrix\n{}",
                       elem_mat.block(0, 0, nv, nv));
-  SPDLOG_LOGGER_TRACE(logger, "Row sums = {},\ncol sums = {}",
+  SPDLOG_LOGGER_TRACE(Logger(), "Row sums = {},\ncol sums = {}",
                       elem_mat.block(0, 0, nv, nv).colwise().sum(),
                       elem_mat.block(0, 0, nv, nv).rowwise().sum().transpose());
 
@@ -159,7 +164,10 @@ LinearFELaplaceElementMatrix::ElemMat LinearFELaplaceElementMatrix::Eval(
 
 // No implementation for TEMPLATE LinearFELocalLoadVector here
 
-std::shared_ptr<spdlog::logger> linear_fe_local_load_vector_logger =
-    base::InitLogger("lf::uscalfe::linear_fe_local_load_vector_logger");
+std::shared_ptr<spdlog::logger> &LinearFeLocalLoadVectorLogger() {
+  static auto logger =
+      base::InitLogger("lf::uscalfe::LinearFeLocalLoadVectorLogger");
+  return logger;
+}
 
 }  // namespace lf::uscalfe

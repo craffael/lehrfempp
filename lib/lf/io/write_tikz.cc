@@ -1,10 +1,12 @@
 /** @file write_tikz.cc */
 
 #include "write_tikz.h"
-#include "lf/base/base.h"
-#include "lf/mesh/mesh.h"
 
 #include <fstream>
+#include <iostream>
+
+#include "lf/base/base.h"
+#include "lf/mesh/mesh.h"
 
 namespace lf::io {
 
@@ -143,24 +145,13 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
               }
 
             } else {
-              if (EdgeNumOn && NodeNumOn) {
+              if (EdgeNumOn) {
                 outfile << "\\draw[] (" << vertices(0, 0) << ","
                         << vertices(1, 0) << ") -- node[black] {" << obj_idx
                         << "} "
                         << "(" << vertices(0, 1) << "," << vertices(1, 1)
                         << ");\n";
-              } else if (NodeNumOn && !EdgeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
-              } else if (!NodeNumOn && EdgeNumOn) {
-                outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- node[black] {" << obj_idx
-                        << "} "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
-              } else if (!NodeNumOn && !EdgeNumOn) {
+              } else if (!EdgeNumOn) {
                 outfile << "\\draw[] (" << vertices(0, 0) << ","
                         << vertices(1, 0) << ") -- "
                         << "(" << vertices(0, 1) << "," << vertices(1, 1)

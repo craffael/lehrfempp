@@ -10,6 +10,7 @@
  */
 
 #include <cmath>
+
 #include "lecturedemo.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"

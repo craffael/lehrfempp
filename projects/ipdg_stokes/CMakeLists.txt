@@ -2,9 +2,6 @@
 add_custom_target(projects.ipdg_stokes.plots)
 set_target_properties(projects.ipdg_stokes.plots PROPERTIES FOLDER "projects/ipdg_stokes")
 
-# Define _USE_MATH_DEFINES so that MSVC is happy
-add_definitions(-D_USE_MATH_DEFINES)
-
 # Add the different subprojects
 add_subdirectory(assemble)
 add_subdirectory(mesh)

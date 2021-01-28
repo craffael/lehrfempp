@@ -7,9 +7,9 @@
  * constant basis functions
  */
 
-#include <Eigen/Dense>
-
 #include <lf/mesh/utils/mesh_data_set.h>
+
+#include <Eigen/Dense>
 
 namespace projects::ipdg_stokes {
 

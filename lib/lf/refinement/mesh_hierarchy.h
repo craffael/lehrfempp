@@ -2,12 +2,13 @@
 #define _LF_REFINEMENT_HIER_H_
 
 /**
- * @file refinement_hierarchy.h
+ * @file
  * @brief Data structures for managing nested meshes created by refinement
  *
  */
 
 #include <iostream>
+
 #include "hybrid2d_refinement_pattern.h"
 
 namespace lf::refinement {
@@ -356,7 +357,7 @@ class MeshHierarchy {
    * the specified level.
    *  @return pointer to parent entity
    *
-   * @note to be used in combination with @GeometryInParent()
+   * @note to be used in combination with geometry::Geometry::GeometryInParent()
    */
   [[nodiscard]] const lf::mesh::Entity *ParentEntity(
       size_type level, const lf::mesh::Entity &e) const;
@@ -365,6 +366,7 @@ class MeshHierarchy {
    * @brief Output of information about the mesh hierarchy.
    *
    * @param o output stream, can be `std::cout` or similar
+   * @param ctrl controls the level of detail of the generated output.
    * @return output stream
    *
    * The type of output is controlled by the `ctrl` static control
@@ -407,7 +409,7 @@ class MeshHierarchy {
   /**
    * @brief Initialization of rel_ref_geo fields of @ref ParentInfo structures
    *
-   * This method created @ref lf::refinement::Geometry type objects describing
+   * This method created @ref geometry::Geometry type objects describing
    * the shape of a child entity in the reference coordinates of its parent.
    *
    * @note This method assumes that the parent-child connections of the mesh
@@ -416,7 +418,6 @@ class MeshHierarchy {
    */
   void initGeometryInParent();
 
- private:
   /** @brief the meshes managed by the MeshHierarchy object */
   std::vector<std::shared_ptr<mesh::Mesh>> meshes_;
   /** @brief The mesh factory to be used to creating a new mesh */
@@ -440,14 +441,14 @@ class MeshHierarchy {
    * This method is used for setting refinement edges on coarsest meshes.
    * Called in the constructor of MeshHierarchy.
    */
-  [[nodiscard]] sub_idx_t LongestEdge(const lf::mesh::Entity &T) const;
+  [[nodiscard]] static sub_idx_t LongestEdge(const lf::mesh::Entity &T);
 
  public:
   /**
    * @brief Is used by MeshHierarchy to log additional information for debugging
    * purposes.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger> &Logger();
 };
 
 template <typename Marker>
@@ -516,7 +517,7 @@ class EntityCenterPositionSelector {
   bool operator()(const lf::mesh::Entity &ent) const {
     const lf::base::RefEl ref_el_type = ent.RefEl();
     // Obtain shape of entity
-    lf::geometry::Geometry *geo_ptr = ent.Geometry();
+    const lf::geometry::Geometry *geo_ptr = ent.Geometry();
     LF_ASSERT_MSG(geo_ptr != nullptr, "Missing geometry for " << ent);
     switch (ref_el_type) {
       case lf::base::RefEl::kPoint(): {

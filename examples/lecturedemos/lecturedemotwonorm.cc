@@ -15,6 +15,8 @@
 
 #include "lecturedemotwonorm.h"
 
+#include <lf/fe/fe.h>
+
 namespace lecturedemo {
 
 class LinFEMassMatrixProvider {
@@ -117,8 +119,8 @@ double l2normByMeshFunction(
     const Eigen::VectorXd &uvec) {
   // Compute norms of finite element function by means of numerical quadrature
   // which is exact for piecewise quadratic polynomials (degree of exactness 2)
-  auto mf_fe = lf::uscalfe::MeshFunctionFE<double, double>(fe_space, uvec);
-  return std::sqrt(lf::uscalfe::IntegrateMeshFunction(
+  auto mf_fe = lf::fe::MeshFunctionFE<double, double>(fe_space, uvec);
+  return std::sqrt(lf::fe::IntegrateMeshFunction(
       *fe_space->Mesh(), lf::mesh::utils::squaredNorm(mf_fe), 2));
 }
 
@@ -151,8 +153,7 @@ void lecturedemotwonorm() {
   // should be computed exactly.
   auto u = lf::mesh::utils::MeshFunctionGlobal(
       [](auto x) -> double { return 2 * x[0] + x[1]; });
-  const Eigen::VectorXd uvec =
-      lf::uscalfe::NodalProjection<double>(*fe_space_p, u);
+  const Eigen::VectorXd uvec = lf::fe::NodalProjection<double>(*fe_space_p, u);
   // Other, simpler, ways to set the coefficient vector
   // const Eigen::VectorXd uvec{Eigen::VectorXd::LinSpaced(n_dofs,0.0,1.0)};
   // const Eigen::VectorXd uvec{Eigen::VectorXd::Random(n_dofs,1.0)};

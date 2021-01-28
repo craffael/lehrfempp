@@ -28,8 +28,8 @@ const unsigned int idx_nil = lf::base::kIdxNil;
  * refinement.
  *
  * A refinement pattern has to be passed as first argument to the member
- * function @ref lf::geometry::ChildGeometry() of a @ref lf::geometry::Geometry
- * object.
+ * function @ref geometry::Geometry::ChildGeometry() of a @ref
+ * lf::geometry::Geometry object.
  *
  */
 enum RefPat : int {
@@ -132,10 +132,10 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    *
    * - codim=0: request information about child cells
    *
-   * Below the output is largely visualized by pictures. The big pink numbers
-   * give the local index of the child cells, which is also the index in the
-   * return vector. The small orange number indicate the local vertex indices in
-   * the child cell.
+   *   Below the output is largely visualized by pictures. The big pink numbers
+   *   give the local index of the child cells, which is also the index in the
+   *   return vector. The small orange number indicate the local vertex indices
+   *   in the child cell.
    *
    *     + Q=0 for `rp_nil` (no refinement at all)
    *     + Q=1 for `rp_copy`, returns `{[0 N 0;0 0 N]}`
@@ -181,8 +181,8 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
    *
    * - codim=0: tell about all child cells
    *
-   * Below we visualize the output with large pink numbers indicating the
-   * the index of a child cell in the return vector.
+   *   Below we visualize the output with large pink numbers indicating the
+   *   the index of a child cell in the return vector.
    *
    *    + Q=0 for `rp_nil` (no refinement)
    *    + Q=1 for `rp_copy` (quadrilateral is duplicated)

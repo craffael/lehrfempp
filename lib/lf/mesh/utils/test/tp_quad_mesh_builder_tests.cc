@@ -10,7 +10,9 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/tp_quad_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <memory>
+
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 
@@ -19,7 +21,7 @@ namespace lf::mesh::test {
 // Test for pointer-based implementation and creation of tensor product grid
 TEST(lf_mesh_p, buildTPQuadMesh) {
   // Enable copious output
-  utils::TPQuadMeshBuilder::logger->set_level(spdlog::level::trace);
+  utils::TPQuadMeshBuilder::Logger()->set_level(spdlog::level::trace);
   // Construct a tensor-product grid of the unit square
   // with 6 rectangular cells
   std::unique_ptr<hybrid2d::MeshFactory> mesh_factory_ptr =

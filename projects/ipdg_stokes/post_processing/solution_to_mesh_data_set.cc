@@ -9,7 +9,7 @@ lf::mesh::utils::CodimMeshDataSet<double> extractBasisFunctionCoefficients(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const lf::assemble::DofHandler &dofh, const Eigen::VectorXd &solution) {
   lf::mesh::utils::CodimMeshDataSet<double> coefficients(mesh, 2);
-  for (const auto node : mesh->Entities(2)) {
+  for (const auto *const node : mesh->Entities(2)) {
     coefficients(*node) = solution[dofh.GlobalDofIndices(*node)[0]];
   }
   return coefficients;
@@ -19,8 +19,8 @@ lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> extractVelocity(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const lf::assemble::DofHandler &dofh, const Eigen::VectorXd &solution) {
   lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> velocity(mesh, 0);
-  for (const auto cell : mesh->Entities(0)) {
-    const auto geom = cell->Geometry();
+  for (const auto *const cell : mesh->Entities(0)) {
+    const auto *geom = cell->Geometry();
     // Construct the basis functions from the curl of the standard hat functions
     const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
     const Eigen::MatrixXd ref_grads =

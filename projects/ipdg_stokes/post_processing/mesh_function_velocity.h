@@ -7,6 +7,7 @@
  * potential
  */
 
+#include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
 
 namespace projects::ipdg_stokes {
@@ -49,13 +50,13 @@ class MeshFunctionVelocity {
   }
 
  private:
-  const lf::uscalfe::MeshFunctionGradFE<SCALAR_FE, SCALAR_COEFF> grad_;
+  const lf::fe::MeshFunctionGradFE<SCALAR_FE, SCALAR_COEFF> grad_;
 };
 
 template <typename T, typename SCALAR_COEFF>
 MeshFunctionVelocity(std::shared_ptr<T>,
                      const Eigen::Matrix<SCALAR_COEFF, Eigen::Dynamic, 1>&)
-    ->MeshFunctionVelocity<typename T::Scalar, SCALAR_COEFF>;
+    -> MeshFunctionVelocity<typename T::Scalar, SCALAR_COEFF>;
 
 }  // end namespace post_processing
 

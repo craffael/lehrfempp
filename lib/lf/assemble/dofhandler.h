@@ -15,6 +15,9 @@
  */
 
 #include <lf/mesh/mesh.h>
+
+#include <map>
+
 #include "assembly_types.h"
 
 namespace lf::assemble {
@@ -104,21 +107,24 @@ namespace lf::assemble {
  * @lref{rem:lfdofnumb}.
  */
 class DofHandler {
- public:
+ protected:
   /**
-   * @brief The constructor just stores the mesh pointer
+   * @brief Default constructor, can only be called from derived class.
    */
   DofHandler() = default;
-  virtual ~DofHandler() = default;
 
-  /** Copying and assignment do not make sense for @ref DofHandler objects */
+  /** Copying and assignment do not make sense for @ref DofHandler objects, but
+   * derived classes may be copied/assigned */
   /**@{*/
-  /** @name Disabled constructors*/
-  DofHandler(const DofHandler &) = delete;
-  DofHandler(DofHandler &&) = delete;
-  DofHandler &operator=(const DofHandler &) = delete;
-  DofHandler &operator=(DofHandler &&) = delete;
+  /** @name Protected constructors*/
+  DofHandler(const DofHandler &) = default;
+  DofHandler(DofHandler &&) = default;
+  DofHandler &operator=(const DofHandler &) = default;
+  DofHandler &operator=(DofHandler &&) = default;
   /**@}*/
+ public:
+  /// virtual Destructor
+  virtual ~DofHandler() = default;
 
   /**
    * @brief total number of dof's handled by the object
@@ -270,17 +276,42 @@ class UniformFEDofHandler : public DofHandler {
                       dof_map_t dofmap);
   /**@}*/
 
+  /**
+   * @brief UniformFEDofHandler can be moved
+   */
+  UniformFEDofHandler(UniformFEDofHandler &&) = default;
+
+  /**
+   * @brief Copy Construction doesn't make much sense for UniformFEDofHandler.
+   */
+  UniformFEDofHandler(const UniformFEDofHandler &) = delete;
+
+  /**
+   * @brief Uniform FEDofHandler can be move assigned to.
+   */
+  UniformFEDofHandler &operator=(UniformFEDofHandler &&) = default;
+
+  /**
+   * @brief Copy assigning a UniformFEDofHandler doesn't make much sense.
+   */
+  UniformFEDofHandler &operator=(const UniformFEDofHandler &) = delete;
+
+  /**
+   * @brief Virtual Destructor.
+   */
+  ~UniformFEDofHandler() override = default;
+
   [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
-   * @copydoc DofHandler::GetNoLocalDofs()
+   * @copydoc DofHandler::NumLocalDofs()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] size_type NumLocalDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetNoInteriorDofs()
+   * @copydoc DofHandler::NumInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
   [[nodiscard]] size_type NumInteriorDofs(
@@ -295,12 +326,11 @@ class UniformFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  /** @copydoc DofHandler::InteriorGlobalDofIndices() */
   [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetEntity()
+   * @copydoc DofHandler::Entity()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] const lf::mesh::Entity &Entity(
@@ -310,7 +340,7 @@ class UniformFEDofHandler : public DofHandler {
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::mesh()
+  /** @copydoc DofHandler::Mesh()
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
     return mesh_;
@@ -345,9 +375,9 @@ class UniformFEDofHandler : public DofHandler {
 
   /** co-dimensions of different geometric entities in a 2D mesh */
   /**@{*/
-  const size_type kNodeOrd = 2; /**< */
-  const size_type kEdgeOrd = 1; /**< */
-  const size_type kCellOrd = 0; /**< */
+  size_type kNodeOrd = 2; /**< */
+  size_type kEdgeOrd = 1; /**< */
+  size_type kCellOrd = 0; /**< */
   /**@}*/
 
   /** Number of covered dofs for an entity type */
@@ -432,15 +462,40 @@ class UniformFEDofHandler : public DofHandler {
 
 /* ====================================================================== */
 
-/** @brief Dof handler allowing variable local dof layouts
+/** @brief Dof handler allowing _variable_ local dof layouts
  *
  * This dof handler can accommodate cases where entities of the mesh
- * have different numbers of local shape functions attached to them.
- * This is relevant, for instance, for hp-FEM.
+ * have different numbers of local shape functions attached to them, see
+ * @lref{par:dofhinit}. This is relevant, for instance, for hp-FEM.
  *
  */
 class DynamicFEDofHandler : public DofHandler {
  public:
+  /**
+   * @brief A DynamicFEDofHandler can be move constructed.
+   */
+  DynamicFEDofHandler(DynamicFEDofHandler &&) = default;
+
+  /**
+   * @brief It doesn't make much sense to copy construct a DynamicFEDofHandler.
+   */
+  DynamicFEDofHandler(const DynamicFEDofHandler &) = delete;
+
+  /**
+   * @brief A DynamicFEDofHandler can be moved into.
+   */
+  DynamicFEDofHandler &operator=(DynamicFEDofHandler &&) = default;
+
+  /**
+   * @brief Copy assignment is forbidden.
+   */
+  DynamicFEDofHandler &operator=(const DynamicFEDofHandler &) = delete;
+
+  /**
+   * @brief Virtual destructor.
+   */
+  ~DynamicFEDofHandler() override = default;
+
   /** @brief Set-up of dof handler
    *
    * @tparam LOCALDOFINFO type for object telling number of interior local shape
@@ -615,19 +670,19 @@ class DynamicFEDofHandler : public DofHandler {
   }  // end constructor
 
   /**
-   * @copydoc DofHandler::GetNoDofs()
+   * @copydoc DofHandler::NumDofs()
    */
   [[nodiscard]] size_type NumDofs() const override { return num_dof_; }
 
   /**
-   * @copydoc DofHandler::GetNoInteriorDofs()
+   * @copydoc DofHandler::NumInteriorDofs()
    * @sa InteriorGlobalDofIndices
    */
   [[nodiscard]] size_type NumInteriorDofs(
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetNoLocalDofs()
+   * @copydoc DofHandler::NumLocalDofs()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] size_type NumLocalDofs(
@@ -646,7 +701,7 @@ class DynamicFEDofHandler : public DofHandler {
       const lf::mesh::Entity &entity) const override;
 
   /**
-   * @copydoc DofHandler::GetEntity()
+   * @copydoc DofHandler::Entity()
    * @sa GlobalDofIndices()
    */
   [[nodiscard]] const lf::mesh::Entity &Entity(
@@ -656,7 +711,7 @@ class DynamicFEDofHandler : public DofHandler {
     return *dof_entities_[dofnum];
   }
 
-  /** @copydoc DofHandler::mesh()
+  /** @copydoc DofHandler::Mesh()
    */
   [[nodiscard]] std::shared_ptr<const lf::mesh::Mesh> Mesh() const override {
     return mesh_p_;

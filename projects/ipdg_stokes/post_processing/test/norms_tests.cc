@@ -1,10 +1,8 @@
 #include <gtest/gtest.h>
-
-#include <norms.h>
-
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
+#include <norms.h>
 
 TEST(projects_ipdg_stokes_post_processing, norm_l2_constant) {
   // Build a mesh on $[0,1] \times [0,1]$

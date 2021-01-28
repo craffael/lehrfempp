@@ -14,6 +14,7 @@
 #include <lf/mesh/test_utils/check_geometry_orientation.h>
 #include <lf/mesh/test_utils/check_local_topology.h>
 #include <lf/mesh/test_utils/check_mesh_completeness.h>
+#include <lf/quad/quad.h>
 
 namespace lf::io::test {
 

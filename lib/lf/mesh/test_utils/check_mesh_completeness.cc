@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 #include <lf/mesh/mesh.h>
-#include <iostream>
-#include "lf/mesh/hybrid2d/mesh.h"
-
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
+
+#include "lf/mesh/hybrid2d/mesh.h"
 
 namespace lf::mesh::test_utils {
 bool checkMeshCompleteness(const Mesh& mesh) {
@@ -76,8 +77,11 @@ bool checkMeshCompleteness(const Mesh& mesh) {
   return status;
 }  // end checkMeshCompleteness
 
-std::shared_ptr<spdlog::logger> watertight_logger =
-    base::InitLogger("lf::mesh::test_utils::watertight_logger");
+std::shared_ptr<spdlog::logger>& WatertightLogger() {
+  static auto logger =
+      base::InitLogger("lf::mesh::test_utils::WatertightLogger");
+  return logger;
+}
 
 std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
     const Mesh& mesh, bool vertices_only) {
@@ -108,7 +112,7 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
             1.0E-8 * approx_area) {
           ret_vals.emplace_back(e_refel, mesh.Index(*e));
 
-          SPDLOG_LOGGER_TRACE(watertight_logger,
+          SPDLOG_LOGGER_TRACE(WatertightLogger(),
                               "Node {} of {} ({}): position mismatch", j,
                               e_refel, mesh.Index(*e));
 

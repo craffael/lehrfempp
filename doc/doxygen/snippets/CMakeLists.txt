@@ -9,7 +9,7 @@ set(sources
   fe_space_lagrange_o1.cc
   geometryuse.cc
   gmsh_reader.cc
-  lambda_mesh_data_set.cc
+  hierarchic_scalar_fe_space_snippets.cc
   line_feed_formatter.cc
   loggers.cc
   mesh_function_binary.cc

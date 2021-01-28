@@ -16,8 +16,9 @@ namespace lf::mesh::utils {
 
 /**
  * @brief Diagnostic output operator. Prints info about a mesh.
- * @param &mesh The mesh to print info about
- * @param &o The stream to which this function should output
+ * @param mesh The mesh to print info about
+ * @param ctrl controls the level of detail of the printed output (see below)
+ * @param o The stream to which this function should output
  *
  * #### Output levels
  * - > 10: also output entity information
@@ -32,6 +33,7 @@ void PrintInfo(std::ostream& o, const lf::mesh::Mesh& mesh, int ctrl = 11);
  * @brief Prints info about an entity.
  *
  * @param e The entity to print info about
+ * @param output_ctrl controls the level of output (see below)
  * @param stream The stream to which this function should output
  *
  * #### Output levels

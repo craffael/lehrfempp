@@ -1,14 +1,19 @@
 #include "mesh_factory.h"
-#include "hybrid2d.h"
 
 #include <spdlog/spdlog.h>
+
 #include <iostream>
+
+#include "hybrid2d.h"
 #include "lf/base/base.h"
 
 namespace lf::mesh::hybrid2d {
 
-std::shared_ptr<spdlog::logger> MeshFactory::logger =
-    lf::base::InitLogger("lf::mesh::hybrid2d::MeshFactory::logger");
+std::shared_ptr<spdlog::logger>& MeshFactory::Logger() {
+  static auto logger =
+      lf::base::InitLogger("lf::mesh::hybrid2d::MeshFactory::Logger");
+  return logger;
+}
 
 MeshFactory::size_type MeshFactory::AddPoint(coord_t coord) {
   LF_ASSERT_MSG(coord.rows() == dim_world_,
@@ -53,7 +58,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
   if (ref_el == base::RefEl::kSegment()) {
     std::array<size_type, 2> ns{};
     unsigned char count = 0;
-    for (auto& n : nodes) {
+    for (const auto& n : nodes) {
       LF_ASSERT_MSG(n < nodes_.size(),
                     "node " << n
                             << " specified in call to AddEntity must be "
@@ -74,7 +79,7 @@ MeshFactory::size_type MeshFactory::AddEntity(
   // LF_ASSERT_MSG(geometry, "Geometry is required for elements (codim=0)");
   std::array<size_type, 4> ns{};
   unsigned char count = 0;
-  for (auto& n : nodes) {
+  for (const auto& n : nodes) {
     LF_ASSERT_MSG(count < ref_el.NumNodes(),
                   "ref_el = " << ref_el << ", but nodes contains " << count + 1
                               << "node indices");
@@ -99,10 +104,10 @@ MeshFactory::size_type MeshFactory::AddEntity(
 
 std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
   // DIAGNOSTICS
-  if (logger->should_log(spdlog::level::trace)) {
+  if (Logger()->should_log(spdlog::level::trace)) {
     std::stringstream ss;
     PrintLists(ss);
-    SPDLOG_LOGGER_TRACE(logger, ss.str());
+    SPDLOG_LOGGER_TRACE(Logger(), ss.str());
   }
 
   // Obtain points to new mesh object; the actual construction of the

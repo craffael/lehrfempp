@@ -6,13 +6,13 @@
  * @copyright MIT License
  */
 
-#include <filesystem>
-
 #include <lf/base/base.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
 #include <lf/refinement/mesh_hierarchy.h>
+
+#include <filesystem>
 #include <iostream>
 
 using lf::io::TikzOutputCtrl;

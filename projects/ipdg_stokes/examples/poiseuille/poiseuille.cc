@@ -3,11 +3,7 @@
  * @brief Solve for the poiseuille velocity profile
  */
 
-#include <cstring>
-#include <iostream>
-#include <string>
-#include <vector>
-
+#include <build_system_matrix.h>
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -20,13 +16,16 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/refinement/refinement.h>
-
-#include <build_system_matrix.h>
 #include <mesh_function_velocity.h>
 #include <norms.h>
 #include <piecewise_const_element_matrix_provider.h>
 #include <piecewise_const_element_vector_provider.h>
 #include <solution_to_mesh_data_set.h>
+
+#include <cstring>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using lf::uscalfe::operator-;
 
@@ -126,7 +125,7 @@ int main(int argc, char *argv[]) {
     auto dirichlet_funct =
         [&](const lf::mesh::Entity &edge) -> Eigen::Vector2d {
       static constexpr double eps = 1e-10;
-      const auto geom = edge.Geometry();
+      const auto *const geom = edge.Geometry();
       const auto vertices = geom->Global(edge.RefEl().NodeCoords());
       const Eigen::Vector2d midpoint = vertices.rowwise().sum() / 2;
       Eigen::Vector2d v = Eigen::Vector2d::Zero();
@@ -196,25 +195,26 @@ int main(int argc, char *argv[]) {
             fe_space, solutions[lvl].solution_modified);
     // Store the result on the finest mesh to vtk
     if (lvl == refinement_level) {
-      const auto v = *lf::mesh::utils::make_LambdaMeshDataSet(
-          [&](const lf::mesh::Entity &entity) -> Eigen::Vector2d {
-            const Eigen::Vector2d center =
-                entity.Geometry()
-                    ->Global(entity.RefEl().NodeCoords())
-                    .rowwise()
-                    .sum() /
-                entity.RefEl().NumNodes();
-            return analytic_velocity(center);
-          });
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v(
+          solutions.back().mesh, 0);
+      for (const auto *ep : solutions.back().mesh->Entities(0)) {
+        const Eigen::Vector2d center =
+            ep->Geometry()->Global(ep->RefEl().NodeCoords()).rowwise().sum() /
+            ep->RefEl().NumNodes();
+        v(*ep) = analytic_velocity(center);
+      }
       writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
                            velocity);
+
+      lf::mesh::utils::CodimMeshDataSet<Eigen::Vector2d> v_modified(
+          solutions.back().mesh, 0);
+      for (const auto *ep : solutions.back().mesh->Entities(0)) {
+        v_modified(*ep) =
+            velocity_modified(*ep, Eigen::Vector2d::Constant(1. / 3))[0];
+      }
       writer.WriteCellData(
           concat("v__modified_", solutions[lvl].mesh->NumEntities(2)),
-          *lf::mesh::utils::make_LambdaMeshDataSet(
-              [&](const lf::mesh::Entity &e) {
-                return velocity_modified(e,
-                                         Eigen::Vector2d::Constant(1. / 3))[0];
-              }));
+          v_modified);
       writer.WriteCellData("analytic", v);
     }
     // Compute the error in the velocity

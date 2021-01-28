@@ -7,6 +7,7 @@
  */
 
 #include "triangle.h"
+
 #include "point.h"
 #include "segment.h"
 

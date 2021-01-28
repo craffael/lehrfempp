@@ -11,9 +11,8 @@
 // line arguments
 #include <spdlog/cfg/argv.h>
 #include <spdlog/cfg/env.h>
-#include <spdlog/spdlog.h>
-
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -36,11 +35,11 @@ int main(int argc, char** argv) {
 You can set the log level of every logger via the environment variable SPDLOG_LEVEL or the commandline argument SPDLOG_LEVEL.
 Example:
   // set log level of all loggers to debug, set the one of MeshHierarchy to trace:
-  export SPDLOG_LEVEL="debug,lf::refinement::MeshHierarchy::logger=trace"
+  export SPDLOG_LEVEL="debug,lf::refinement::MeshHierarchy::Logger=trace"
   ./examples.logger.mesh_hierarchy_demo
 
   // disable all loggers except for the MeshHierarchy one:
-  ./examples.logger.mesh_hierarchy_demo SPDLOG_LEVEL=Off,lf::refinement::MeshHierarchy::logger=info
+  ./examples.logger.mesh_hierarchy_demo SPDLOG_LEVEL=Off,lf::refinement::MeshHierarchy::Logger=info
 
 For every logger, you can set the level to one of [trace, debug, info, warning, error, fatal, critical, off].
 

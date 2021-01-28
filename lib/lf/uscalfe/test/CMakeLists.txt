@@ -7,13 +7,9 @@ set(src
   #sec_ord_ell_bvp.cc // nothing in the cc file, all is in the header
   loc_comp_test.cc
   bvp_fe_tests.cc
-  fe_tools_tests.cc
   full_gal_tests.cc
   gfe_tests.cc
   lagr_fe_tests.cc
-  mesh_function_fe_tests.cc
-  mesh_function_grad_fe_tests.cc
-  prolongation_tests.cc
 )
 
 add_executable(lf.uscalfe.test ${src})

@@ -6,8 +6,9 @@
  * @copyright MIT License
  */
 
-#include <iostream>
 #include <lf/mesh/mesh.h>
+
+#include <iostream>
 
 namespace lf::mesh {
 // This snippet is partly copied from
@@ -50,12 +51,12 @@ bool checkEntityIndexing(const lf::mesh::Mesh& mesh) {
 }  // end checkEntityIndexing()
    //! [usage]
 
-  // This snippet is copied from lecturedemomesh.cc
-  //! [loopentity]
-  int traverseEntities(const lf::mesh::Mesh &mesh, lf::base::dim_t codim) {
-    lf::base::size_type cnt = 0;
+// This snippet is copied from lecturedemomesh.cc
+//! [loopentity]
+int traverseEntities(const lf::mesh::Mesh& mesh, lf::base::dim_t codim) {
+  lf::base::size_type cnt = 0;
   // Typical loop for running through all entities of a specific co-dimension
-  for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
+  for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {
     // Print entity information including its unique index
     std::cout << cnt << ": Entity #" << mesh.Index(*entity) << ": " << *entity
               << std::endl;
@@ -63,5 +64,5 @@ bool checkEntityIndexing(const lf::mesh::Mesh& mesh) {
   }
   return cnt;
 }
-  //! [loopentity]
+//! [loopentity]
 }  // namespace lf::mesh

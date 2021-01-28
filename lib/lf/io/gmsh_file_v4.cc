@@ -128,7 +128,6 @@ int NumNodes(GMshFileV4::ElementType et) {
     case GMshFileV4::ElementType::TRIA3:
       return 3;
     case GMshFileV4::ElementType::QUAD4:
-      return 4;
     case GMshFileV4::ElementType::TET4:
       return 4;
     case GMshFileV4::ElementType::HEX8:
@@ -168,7 +167,6 @@ int NumNodes(GMshFileV4::ElementType et) {
     case GMshFileV4::ElementType::TRIA12:
       return 12;
     case GMshFileV4::ElementType::TRIA15:
-      return 15;
     case GMshFileV4::ElementType::TRIA15_5:
       return 15;
     case GMshFileV4::ElementType::TRIA21:

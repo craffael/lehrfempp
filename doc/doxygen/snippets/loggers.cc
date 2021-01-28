@@ -1,8 +1,8 @@
-#include <lf/mesh/utils/utils.h>
-
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/mesh.h>
+#include <lf/mesh/utils/utils.h>
+
 #include <iostream>
 
 namespace lf {
@@ -17,11 +17,11 @@ void PrintInfoSnippet() {
 
 void ChangeLogLevel() {
   //! [ChangeLogLevel]
-  lf::assemble::assemble_matrix_logger->set_level(spdlog::level::debug);
+  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::debug);
   //! [ChangeLogLevel]
 
   //! [ChangeLogLevel2]
-  lf::mesh::hybrid2d::Mesh::logger->set_level(spdlog::level::trace);
+  lf::mesh::hybrid2d::Mesh::Logger()->set_level(spdlog::level::trace);
   //! [ChangeLogLevel2]
 
   //! [ChangeLogLevelAll]

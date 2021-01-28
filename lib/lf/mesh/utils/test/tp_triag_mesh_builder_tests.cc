@@ -11,7 +11,9 @@
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
 #include <lf/mesh/utils/utils.h>
+
 #include <memory>
+
 #include "lf/mesh/test_utils/check_entity_indexing.h"
 #include "lf/mesh/test_utils/check_mesh_completeness.h"
 
@@ -68,7 +70,7 @@ TEST(lf_mesh_p, buildStructuredMesh_p) {
   std::cout << "Checking mesh completeness" << std::endl;
   test_utils::checkMeshCompleteness(*mesh_p);
   std::cout << "Checking geometry compatibility: " << std::flush;
-  lf::mesh::test_utils::watertight_logger->set_level(spdlog::level::trace);
+  test_utils::WatertightLogger()->set_level(spdlog::level::trace);
   auto fails = lf::mesh::test_utils::isWatertightMesh(*mesh_p, false);
   if (fails.empty()) {
     std::cout << "consistent!" << std::endl;

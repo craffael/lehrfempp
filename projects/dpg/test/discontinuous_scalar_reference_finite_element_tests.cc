@@ -6,11 +6,10 @@
  * @date June 2019
  * @copyright MIT License
  */
-#include <iostream>
-
 #include <gtest/gtest.h>
-
 #include <lf/uscalfe/uscalfe.h>
+
+#include <iostream>
 
 #include "../discontinuous_scalar_reference_finite_element.h"
 #include "lagr_test_utils.h"

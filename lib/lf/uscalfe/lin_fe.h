@@ -90,7 +90,7 @@ class LinearFELaplaceElementMatrix {
   /**
    * @brief Used by LinearFELaplaceElementMatrix to log additional (debug) info.
    */
-  static std::shared_ptr<spdlog::logger> logger;
+  static std::shared_ptr<spdlog::logger> &Logger();
 };
 
 /**
@@ -104,7 +104,8 @@ class LinearFELaplaceElementMatrix {
  * ~~~
  * std::function<auto(const lf::mesh::Entity &cell,const Eigen::MatrixXd &)>
  * ~~~
- *         which supplies the source function, see @ref MeshFunctionGlobal.
+ *         which supplies the source function, see @ref
+ * mesh::utils::MeshFunctionGlobal.
  *
  * Computations employ edge midpoint quadrature.
  *
@@ -118,7 +119,7 @@ class LinearFELaplaceElementMatrix {
  *
  * #### Logger
  * This class logs additional information to \ref
- * linear_fe_local_load_vector_logger.
+ * LinearFeLocalLoadVectorLogger().
  * See \ref loggers for more information.
  */
 template <typename SCALAR, typename FUNCTOR>
@@ -153,7 +154,7 @@ class LinearFELocalLoadVector {
  * @brief Used by LinearFELocalLoadVector to log additional (debug) information
  * during vector assembly.
  */
-extern std::shared_ptr<spdlog::logger> linear_fe_local_load_vector_logger;
+std::shared_ptr<spdlog::logger> &LinearFeLocalLoadVectorLogger();
 
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
@@ -176,7 +177,7 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
   // World coordinates of vertices
   // const Eigen::MatrixXd vertices{geo_ptr->Global(ref_el_corners)};
   // Debugging output
-  SPDLOG_LOGGER_TRACE(linear_fe_local_load_vector_logger, "{}, shape = \n{}",
+  SPDLOG_LOGGER_TRACE(LinearFeLocalLoadVectorLogger(), "{}, shape = \n{}",
                       ref_el, geo_ptr->Global(ref_el_corners));
 
   // Midpoints of edges in the reference cell
@@ -214,7 +215,7 @@ LinearFELocalLoadVector<SCALAR, FUNCTOR>::Eval(
     elem_vec[k] += 0.5 * fvals[k];
     elem_vec[(k + 1) % num_nodes] += 0.5 * fvals[k];
   }
-  SPDLOG_LOGGER_TRACE(linear_fe_local_load_vector_logger, "element vector = {}",
+  SPDLOG_LOGGER_TRACE(LinearFeLocalLoadVectorLogger(), "element vector = {}",
                       elem_vec.head(num_nodes).transpose());
 
   return (area / num_nodes) * elem_vec;

@@ -7,13 +7,17 @@
  */
 
 #include "vtk_writer.h"
+
 #include <lf/base/base.h>
-#include <unsupported/Eigen/src/KroneckerProduct/KroneckerTensorProduct.h>
+
+#include <Eigen/Eigen>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/phoenix/phoenix.hpp>
 #include <boost/phoenix/scope/let.hpp>
 #include <boost/spirit/include/karma.hpp>
 #include <fstream>
+#include <unsupported/Eigen/KroneckerProduct>
+
 #include "eigen_fusion_adapter.h"
 
 template <class RESULT_TYPE, class LAMBDA>
@@ -88,7 +92,7 @@ namespace /*anonymous*/ {
 void cell_list_size(unsigned int& result,  // NOLINT
                     const std::vector<std::vector<unsigned int>>& cells) {
   result = cells.size();
-  for (auto& v : cells) {
+  for (const auto& v : cells) {
     result += v.size();
   }
 }
@@ -433,7 +437,7 @@ void ValidateVtkFile(const VtkFile& vtk_file) {
     throw base::LfException(
         "Mismatch of size of cell_types and cells in VtkFile.");
   }
-  for (auto& d : vtk_file.point_data) {
+  for (const auto& d : vtk_file.point_data) {
     boost::apply_visitor(
         [&](auto e) {
           if (e.data.size() != vtk_file.unstructured_grid.points.size()) {
@@ -443,7 +447,7 @@ void ValidateVtkFile(const VtkFile& vtk_file) {
         },
         d);
   }
-  for (auto& d : vtk_file.cell_data) {
+  for (const auto& d : vtk_file.cell_data) {
     boost::apply_visitor(
         [&](auto e) {
           if (e.data.size() != vtk_file.unstructured_grid.cells.size()) {
@@ -603,7 +607,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   // insert main nodes:
   vtk_file_.unstructured_grid.points.resize(numNodes);
   Eigen::Matrix<double, 0, 1> zero;
-  for (auto p : mesh_->Entities(dim_mesh)) {
+  for (const auto* p : mesh_->Entities(dim_mesh)) {
     auto index = mesh_->Index(*p);
     Eigen::Vector3f coord;
     if (dim_world == 1) {
@@ -625,7 +629,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     auto index_offset = mesh_->NumEntities(dim_mesh);
     for (char cd = static_cast<char>(dim_mesh - 1);
          cd >= static_cast<char>(codim); --cd) {
-      for (auto e : mesh_->Entities(cd)) {
+      for (const auto* e : mesh_->Entities(cd)) {
         auto ref_el = e->RefEl();
         if (ref_el == base::RefEl::kTria() && order < 3) {
           continue;
@@ -669,14 +673,14 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
   vtk_file_.unstructured_grid.cells.resize(mesh_->NumEntities(codim));
   vtk_file_.unstructured_grid.cell_types.resize(mesh_->NumEntities(codim));
   auto points_per_segment = NumAuxNodes(base::RefEl::kSegment(), order);
-  for (auto e : mesh_->Entities(codim)) {
+  for (const auto* e : mesh_->Entities(codim)) {
     auto index = mesh_->Index(*e);
     auto ref_el = e->RefEl();
     auto& node_indices = vtk_file_.unstructured_grid.cells[index];
     node_indices.reserve(num_nodes[ref_el.Id()]);
 
     // node indices that make up this cell:
-    for (auto p : e->SubEntities(dim_mesh - codim)) {
+    for (const auto* p : e->SubEntities(dim_mesh - codim)) {
       node_indices.push_back(mesh_->Index(*p));
     }
 
@@ -698,8 +702,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         addSegmentNodes(*e, false);
         break;
       case base::RefEl::kTria(): {
-        auto iterator = e->SubEntities(1).begin();
-        auto o_iterator = e->RelativeOrientations().begin();
+        const auto* iterator = e->SubEntities(1).begin();
+        const auto* o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -713,8 +717,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         break;
       }
       case base::RefEl::kQuad(): {
-        auto iterator = e->SubEntities(1).begin();
-        auto o_iterator = e->RelativeOrientations().begin();
+        const auto* iterator = e->SubEntities(1).begin();
+        const auto* o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -787,9 +791,9 @@ void VtkWriter::WritePointData(const std::string& name,
   WriteScalarPointData(name, mds, undefined_value);
 }
 
-void VtkWriter::WritePointData(const std::string& name,
-                               const mesh::utils::MeshDataSet<unsigned>& mds,
-                               unsigned undefined_value) {
+void VtkWriter::WritePointData(
+    const std::string& name, const mesh::utils::MeshDataSet<unsigned int>& mds,
+    unsigned int undefined_value) {
   WriteScalarPointData(name, mds, undefined_value);
 }
 
@@ -866,8 +870,8 @@ void VtkWriter::WriteCellData(const std::string& name,
 }
 
 void VtkWriter::WriteCellData(const std::string& name,
-                              const mesh::utils::MeshDataSet<unsigned>& mds,
-                              unsigned undefined_value) {
+                              const mesh::utils::MeshDataSet<unsigned int>& mds,
+                              unsigned int undefined_value) {
   WriteScalarCellData(name, mds, undefined_value);
 }
 
@@ -957,7 +961,7 @@ void VtkWriter::WriteScalarPointData(const std::string& name,
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->NumEntities(mesh_->DimMesh()));
   data.name = name;
-  for (auto p : mesh_->Entities(mesh_->DimMesh())) {
+  for (const auto* p : mesh_->Entities(mesh_->DimMesh())) {
     if (mds.DefinedOn(*p)) {
       data.data[mesh_->Index(*p)] = mds(*p);
     } else {
@@ -982,7 +986,7 @@ void VtkWriter::WriteVectorPointData(
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
-  for (auto p : mesh_->Entities(mesh_->DimMesh())) {
+  for (const auto* p : mesh_->Entities(mesh_->DimMesh())) {
     if (mds.DefinedOn(*p)) {
       PadWithZeros<ROWS, T>(data.data[mesh_->Index(*p)], mds(*p));
     } else {
@@ -1000,7 +1004,7 @@ void VtkWriter::WriteScalarCellData(const std::string& name,
   VtkFile::ScalarData<T> data{};
   data.data.resize(mesh_->NumEntities(codim_));
   data.name = name;
-  for (auto e : mesh_->Entities(codim_)) {
+  for (const auto* e : mesh_->Entities(codim_)) {
     if (mds.DefinedOn(*e)) {
       data.data[mesh_->Index(*e)] = mds(*e);
     } else {
@@ -1022,7 +1026,7 @@ void VtkWriter::WriteVectorCellData(
   Eigen::Matrix<T, 3, 1> undefined_value_padded;
   PadWithZeros<ROWS, T>(undefined_value_padded, undefined_value);
 
-  for (auto p : mesh_->Entities(codim_)) {
+  for (const auto* p : mesh_->Entities(codim_)) {
     if (mds.DefinedOn(*p)) {
       PadWithZeros<ROWS, T>(data.data[mesh_->Index(*p)], mds(*p));
     } else {

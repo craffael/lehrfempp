@@ -8,6 +8,7 @@
 
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/mesh.h>
+
 #include <iostream>
 
 // Code snippet demonstrating the use of DofHandler functionality

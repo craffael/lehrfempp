@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @brief Module include file for lf::base
+ * @author Raffael Casagrande
+ * @date   2021-01-27 10:32:40
+ * @copyright MIT License
+ */
+
 #ifndef __986f32316282425d9be137cb399482f3
 #define __986f32316282425d9be137cb399482f3
 
@@ -39,10 +47,12 @@ constexpr double kPi = 3.14159265358979323846;
 // public header files that make up the base library:
 #include "eigen_tools.h"
 #include "invalid_type_exception.h"
+#include "lehrfem_info.h"
 #include "lf_assert.h"
 #include "lf_exception.h"
 #include "predicate_true.h"
 #include "ref_el.h"
+#include "scalar_traits.h"
 #include "span.h"
 #include "spdlog_utils.h"
 #include "timer.h"

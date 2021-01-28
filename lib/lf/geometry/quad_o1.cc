@@ -1,5 +1,8 @@
 #include "quad_o1.h"
+
+#include <Eigen/Eigen>
 #include <cmath>
+
 #include "point.h"
 #include "segment_o1.h"
 #include "tria_o1.h"
@@ -297,7 +300,7 @@ void Parallelogram::init() {
     integrationElement_ =
         std::sqrt((jacobian_.transpose() * jacobian_).determinant());
   }
-}  // end init()
+}  // end InitDofHandler()
 
 Eigen::MatrixXd Parallelogram::Global(const Eigen::MatrixXd& local) const {
   return coords_.col(0) *
