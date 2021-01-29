@@ -2,7 +2,6 @@
 #define __0ec30f6fc5554ec9bea4d9b83e83ea42
 
 #include "geometry_interface.h"
-
 namespace lf::geometry {
 
 /**
@@ -31,8 +30,15 @@ class SegmentO1 : public Geometry {
   [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
+  /**
+   * @brief Return the local coordinates of the Lagrange Nodes (which are mapped
+   * exactly).
+   */
+  [[nodiscard]] static const Eigen::Matrix<double, 1, 2>& LagrangeNodes();
+
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 2> coords_;
+  static const Eigen::Matrix<double, 1, 2> lagrange_nodes_;
 };
 
 }  // namespace lf::geometry

@@ -5,6 +5,7 @@ set(interface_src
   brep_geometry.h
   brep_surface.h
   interface.h
+  interface.cc
 )
 
 add_library(lf.brep.interface ${interface_src})

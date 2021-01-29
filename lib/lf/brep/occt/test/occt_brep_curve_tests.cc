@@ -1,5 +1,5 @@
-/** 
- * @file 
+/**
+ * @file
  * @brief Check that the Occt
  * @author Raffael Casagrande
  * @date   2020-11-23 09:43:11
@@ -37,7 +37,7 @@ TEST(occt, curveProjectionCube) {
 
   // project point 12,10,5 onto curve:
   std::tie(dist, local) = curve->Project(Eigen::Vector3d(12, 10, 5));
-  ASSERT_LE(std::abs(dist-2), 1e-6);
+  ASSERT_LE(std::abs(dist - 2), 1e-6);
   ASSERT_TRUE(curve->IsInside(local));
 }
 
@@ -45,11 +45,11 @@ TEST(occt, curveProjectionBSpline) {
   auto model = LoadModel("bspline_2d.brep");
 
   // find b-spline curve:
-  auto find_curve = model->FindCurves(Eigen::Vector3d(-10, -10,0));
+  auto find_curve = model->FindCurves(Eigen::Vector3d(-10, -10, 0));
   interface::BrepCurve const* curve;
   double curve_param;
   for (auto [c, param] : find_curve) {
-    if (c->Project(Eigen::Vector3d(-11.5, -8,0)).first > 1e-3) {
+    if (c->Project(Eigen::Vector3d(-11.5, -8, 0)).first > 1e-3) {
       curve = c;
       curve_param = param;
       break;
@@ -69,15 +69,14 @@ TEST(occt, curveProjectionBSpline) {
       std::abs(dist - (curve->GlobalSingle(local) - Eigen::Vector3d(-15, -7, 0))
                           .norm()) < 1e-6);
   ASSERT_TRUE(curve->IsInside(local));
-  //std::cout << curve->Global(local) << std::endl;
+  // std::cout << curve->Global(local) << std::endl;
 
   // another point:
-  Eigen::Vector3d p(-13-1e-7, -6, 0);
+  Eigen::Vector3d p(-13 - 1e-7, -6, 0);
   std::tie(dist, local) = curve->Project(p);
-  
-  ASSERT_TRUE(
-      std::abs(dist - (curve->GlobalSingle(local) - p).norm()) < 1e-6);
-  //std::cout << curve->Global(local) << std::endl;
+
+  ASSERT_TRUE(std::abs(dist - (curve->GlobalSingle(local) - p).norm()) < 1e-6);
+  // std::cout << curve->Global(local) << std::endl;
   ASSERT_LT(dist, 1e-7);
   ASSERT_TRUE(curve->IsInside(local));
 
@@ -91,9 +90,68 @@ TEST(occt, curveProjectionBSpline) {
   ASSERT_FALSE(curve->IsInside(curve_param - 1e-3));
   p = curve->GlobalSingle(curve_param - 1e-3);
   std::tie(dist, local) = curve->Project(p);
-  EXPECT_GT(dist, 1); // in this case we have no guarantee, and here the distance is actually much bigger
-  
+  EXPECT_GT(dist, 1);  // in this case we have no guarantee, and here the
+                       // distance is actually much bigger
 }
 
+TEST(occt, curveCircleTest) {
+  // load a circle with origin=(1,2,0) and radius=2
+  auto model = LoadModel("circle.brep");
 
+  auto find_curve = model->FindCurves(Eigen::Vector3d(3, 2, 0));
+  ASSERT_EQ(find_curve.size(), 1);
+  auto circle = find_curve[0].first;
+  auto loc0 = find_curve[0].second;
+  Eigen::Vector3d origin(1, 2, 0);
+
+  ASSERT_EQ(circle->DimLocal(), 1);
+  ASSERT_EQ(circle->DimGlobal(), 3);
+
+  // Test global:
+  Eigen::RowVectorXd local =
+      Eigen::RowVectorXd::LinSpaced(10, 0, 2 * base::kPi);
+  auto global = circle->GlobalMulti(local);
+  for (int i = 0; i < global.cols(); ++i) {
+    ASSERT_NEAR((global.col(i) - origin).norm(), 2, 1e-7);
+  }
+
+  // test bounding box:
+  auto in_box = circle->IsInBoundingBoxMulti(global);
+  for (int i = 0; i < global.cols(); ++i) {
+    ASSERT_TRUE(in_box[i]);
+  }
+
+  ASSERT_TRUE(circle->IsInBoundingBoxSingle(origin));
+  ASSERT_FALSE(circle->IsInBoundingBoxSingle(Eigen::Vector3d(4, 2, 0)));
+
+  // test IsInside:
+  ASSERT_TRUE(circle->IsInside(0.));
+  ASSERT_TRUE(circle->IsInside(2 * base::kPi));
+
+  // even though circle is periodic, not all values are inside:
+  ASSERT_FALSE(circle->IsInside(2.1 * base::kPi));
+  ASSERT_FALSE(circle->IsInside(-0.1));
+
+  // test projection by projecting points on the circle:
+  for (int i = 0; i < global.cols() - 1;
+       ++i) {  // leave out the last point as it projects onto 0
+    auto [dist, p] = circle->Project(global.col(i));
+    ASSERT_LT(dist, 1e-7);
+    ASSERT_NEAR(p, local[i], 1e-7);
+    ASSERT_TRUE(circle->IsInside(p));
+  }
+
+  // test projection by projecting a point from outside:
+  Eigen::Vector3d global2(3, 4, 5);
+  Eigen::Vector3d global2_proj;
+  global2_proj.topRows(2) =
+      (global2.topRows(2) - origin.topRows(2)).normalized() * 2 +
+      origin.topRows(2);
+  global2_proj.z() = 0.;
+  auto [dist, p] = circle->Project(global2);
+  ASSERT_TRUE(circle->IsInside(p));
+  ASSERT_NEAR(dist, (global2 - global2_proj).norm(), 1e-7);
+  ASSERT_TRUE(circle->GlobalSingle(p).isApprox(global2_proj));
 }
+
+}  // namespace lf::brep::occt::test

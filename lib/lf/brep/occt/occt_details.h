@@ -1,6 +1,7 @@
 /**
  * @file
- * @brief Some utility functions to deal with OpenCascade, should not be used externally.
+ * @brief Some utility functions to deal with OpenCascade, should not be used
+ * externally.
  * @author Raffael Casagrande
  * @date   2020-11-11 02:28:28
  * @copyright MIT License
@@ -8,7 +9,7 @@
 
 #ifndef __dd390c8ad3094cf296921339f483f15b
 #define __dd390c8ad3094cf296921339f483f15b
-#include <Eigen/Core>
+
 #include <gp_Pnt.hxx>
 
 #include "lf/base/base.h"

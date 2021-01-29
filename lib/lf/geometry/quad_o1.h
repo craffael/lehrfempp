@@ -84,9 +84,18 @@ class QuadO1 : public Geometry {
   [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
+  /**
+   * @brief Return the local coordinates of the Lagrange Nodes (which are mapped
+   * exactly by Global()).
+   */
+  [[nodiscard]] static const Eigen::Matrix<double, 2, 4>& LagrangeNodes() {
+    return lagrange_nodes_;
+  }
+
  private:
   /** @brief Coordinates of the a four vertices, stored in matrix columns */
   Eigen::Matrix<double, Eigen::Dynamic, 4> coords_;
+  static const Eigen::Matrix<double, 2, 4> lagrange_nodes_;
 };
 
 /**

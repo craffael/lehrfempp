@@ -145,4 +145,11 @@ std::vector<std::unique_ptr<Geometry>> SegmentO2::ChildGeometry(
   return childGeoPtrs;
 }
 
+const Eigen::Matrix<double, 1, 3>& SegmentO2::LagrangeNodes() {
+  return lagrange_nodes_;
+}
+
+const Eigen::Matrix<double, 1, 3> SegmentO2::lagrange_nodes_ =
+    Eigen::RowVector3d(0, 1, 0.5);
+
 }  // namespace lf::geometry

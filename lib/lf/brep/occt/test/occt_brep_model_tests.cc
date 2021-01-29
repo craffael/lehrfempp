@@ -7,6 +7,8 @@
  */
 
 #include <gtest/gtest.h>
+#include <lf/brep/test_utils/check_brep_geometry.h>
+
 #include "utils.h"
 
 namespace lf::brep::occt::test {
@@ -20,7 +22,7 @@ FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindCurvesMulti(global);
   for (auto& [c, param] : all) {
     EXPECT_TRUE(c->GlobalMulti(param).isApprox(global));
-    CheckGeometry(c, param);
+    test_utils::CheckBrepGeometry(*c, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
     auto curves = model.FindCurves(global.col(i));
@@ -37,7 +39,7 @@ FindSurfaces(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindSurfacesMulti(global);
   for (auto& [s, param] : all) {
     EXPECT_TRUE(s->GlobalMulti(param).isApprox(global));
-    CheckGeometry(s, param);
+    test_utils::CheckBrepGeometry(*s, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
     auto surfaces = model.FindSurfaces(global.col(i));
@@ -90,8 +92,9 @@ TEST(occt, rotatedCubeTest) {
   EXPECT_TRUE(find_surfaces[0].first);
   EXPECT_EQ(find_surfaces[0].second.rows(), 2);
   EXPECT_EQ(find_surfaces[0].second.cols(), 4);
-  EXPECT_TRUE(
-      find_surfaces[0].first->GlobalMulti(find_surfaces[0].second).isApprox(global));
+  EXPECT_TRUE(find_surfaces[0]
+                  .first->GlobalMulti(find_surfaces[0].second)
+                  .isApprox(global));
 
   // try to retrieve a face that is outside the parameter bounds:
   // clang-format off
@@ -133,7 +136,8 @@ TEST(occt, bSpline2dTest) {
   // -> check what happens if we retrieve the geometry that lies slightly
   // outside the parameter bounds of the bspline curve:
   Eigen::MatrixXd local(1, 1);
-  local(0, 0) = bspline_param(0, 0) - (bspline_param(0, 1) - bspline_param(0, 0)) / 100.;
+  local(0, 0) =
+      bspline_param(0, 0) - (bspline_param(0, 1) - bspline_param(0, 0)) / 100.;
 
   auto temp = bspline->GlobalMulti(local);
   EXPECT_TRUE(bspline->IsInBoundingBoxMulti(temp)[0]);
@@ -141,7 +145,8 @@ TEST(occt, bSpline2dTest) {
   EXPECT_EQ(temp_result.size(), 0);
 
   // find curves which go through (-13,-6,0) + eps:
-  auto find_result_single= model->FindCurves(Eigen::Vector3d(-13 + 1e-7, -6, 0));
+  auto find_result_single =
+      model->FindCurves(Eigen::Vector3d(-13 + 1e-7, -6, 0));
   ASSERT_EQ(find_result_single.size(), 2);
 
   // retrieve the surface:
@@ -149,14 +154,13 @@ TEST(occt, bSpline2dTest) {
   EXPECT_EQ(find_surface.size(), 1);
 
   // try to retrieve the surface with a point that lies outside:
-  find_surface = FindSurfaces(*model, Eigen::Vector3d(-4, -10,0));
+  find_surface = FindSurfaces(*model, Eigen::Vector3d(-4, -10, 0));
   EXPECT_TRUE(find_surface.empty());
 
   // try to find surface with a point that lies inside and one outside:
   global.col(1) = Eigen::Vector3d(-4, -10, 0);
   find_surface = FindSurfaces(*model, global);
   EXPECT_TRUE(find_surface.empty());
-
 }
 
 // This test checks that the number of faces/edges is correct for two cubes
@@ -182,7 +186,5 @@ TEST(occt, doubleCubeTest) {
   auto find_surf = FindSurfaces(*model, global);
   EXPECT_EQ(find_surf.size(), 1);
 }
-
-
 
 }  // namespace lf::brep::occt::test

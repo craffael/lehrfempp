@@ -250,6 +250,14 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   return (child_geo_uptrs);
 }  // end ChildGeometry()
 
+// clang-format off
+const Eigen::Matrix<double, 2, 4> QuadO1::lagrange_nodes_ =
+    (Eigen::Matrix<double, 2, 4>() << 
+      0, 1, 1, 0,
+      0, 0, 1, 1
+      ).finished();
+// clang-format on
+
 //////////////////////////////////////////////////////////////////////
 // Implementation class Parallelogram
 //////////////////////////////////////////////////////////////////////

@@ -241,4 +241,11 @@ std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
   return childGeoPtrs;
 }
 
+// clang-format off
+const Eigen::Matrix<double, 2, 6> TriaO2::lagrange_nodes_ =
+(Eigen::Matrix<double, 2, 6>() << 0, 1, 0, 0.5, 0.5, 0,
+                                  0, 0, 1, 0.0, 0.5, 0.5
+  ).finished();
+// clang-format on
+
 }  // namespace lf::geometry

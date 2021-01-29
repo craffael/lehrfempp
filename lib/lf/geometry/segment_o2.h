@@ -52,6 +52,12 @@ class SegmentO2 : public Geometry {
   [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, base::dim_t codim) const override;
 
+  /**
+   * @brief Return the local coordinates of the Lagrange Nodes (which are mapped
+   * exactly).
+   */
+  [[nodiscard]] static const Eigen::Matrix<double, 1, 3>& LagrangeNodes();
+
  private:
   /**
    * @brief Coordinates of the 3 vertices/midpoints, stored in matrix columns
@@ -73,6 +79,8 @@ class SegmentO2 : public Geometry {
   double alpha_squared_;
   double alpha_beta_;
   double beta_squared_;
+
+  static const Eigen::Matrix<double, 1, 3> lagrange_nodes_;
 };
 
 }  // namespace lf::geometry

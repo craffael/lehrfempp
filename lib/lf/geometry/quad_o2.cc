@@ -276,4 +276,12 @@ std::vector<std::unique_ptr<Geometry>> QuadO2::ChildGeometry(
   return childGeoPtrs;
 }
 
+// clang-format off
+const Eigen::Matrix<double, 2, 8> QuadO2::lagrange_nodes_ =
+    (Eigen::Matrix<double, 2, 8>() << 
+      0, 1, 1, 0, 0.5, 1,   0.5, 0,
+      0, 0, 1, 1, 0.0, 0.5, 1.0, 0.5 
+      ).finished();
+// clang-format on
+
 }  // namespace lf::geometry

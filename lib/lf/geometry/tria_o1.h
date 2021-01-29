@@ -58,11 +58,20 @@ class TriaO1 : public Geometry {
   [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern& ref_pat, lf::base::dim_t codim) const override;
 
+  /**
+   * @brief Return the local coordinates of the Lagrange Nodes (which are mapped
+   * exactly by Global()).
+   */
+  [[nodiscard]] static const Eigen::Matrix<double, 2, 3>& LagrangeNodes() {
+    return lagrange_nodes_;
+  }
+
  private:
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_inverse_gramian_;
   double integrationElement_;
+  static const Eigen::Matrix<double, 2, 3> lagrange_nodes_;
 };
 }  // namespace lf::geometry
 

@@ -91,4 +91,11 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   return child_geo_uptrs;
 }
 
+const Eigen::Matrix<double, 1, 2>& SegmentO1::LagrangeNodes() {
+  return lagrange_nodes_;
+}
+
+const Eigen::Matrix<double, 1, 2> SegmentO1::lagrange_nodes_ =
+    Eigen::RowVector2d(0, 1);
+
 }  // namespace lf::geometry

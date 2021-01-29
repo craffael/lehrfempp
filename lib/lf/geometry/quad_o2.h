@@ -63,6 +63,14 @@ class QuadO2 : public Geometry {
   [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
       const RefinementPattern &ref_pat, lf::base::dim_t codim) const override;
 
+  /**
+   * @brief Return the local coordinates of the Lagrange Nodes (which are mapped
+   * exactly by Global()).
+   */
+  [[nodiscard]] static const Eigen::Matrix<double, 2, 8> &LagrangeNodes() {
+    return lagrange_nodes_;
+  }
+
  private:
   /**
    * @brief Coordinates of the 8 vertices/midpoints, stored in matrix columns
@@ -83,6 +91,8 @@ class QuadO2 : public Geometry {
   /* Coefficients for efficient evaluation of Jacobian() */
   Eigen::Matrix<double, Eigen::Dynamic, 2> gamma_x_2_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> epsilon_x_2_;
+
+  static const Eigen::Matrix<double, 2, 8> lagrange_nodes_;
 };
 }  // namespace lf::geometry
 

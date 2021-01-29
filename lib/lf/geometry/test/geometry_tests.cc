@@ -70,8 +70,11 @@ TEST(Geometry, SegmentO1) {
     }
 
     // check that local nodes are mapped to global nodes
-    EXPECT_TRUE(geom.Global(lf::base::RefEl::kSegment().NodeCoords())
-                    .isApprox(global_nodes));
+    EXPECT_TRUE(geom.Global(geom.LagrangeNodes()).isApprox(global_nodes));
+
+    // check that reference element nodes agree with lagrange nodes:
+    EXPECT_TRUE(
+        geom.LagrangeNodes().isApprox(base::RefEl::kSegment().NodeCoords()));
   }
 }
 
@@ -97,9 +100,10 @@ TEST(Geometry, SegmentO2) {
           [](auto ref_el) { return lf::quad::make_QuadRule(ref_el, 5); });
     }
 
-    Eigen::MatrixXd local_nodes(1, 3);
-    local_nodes << 0, 1, 0.5;
-    EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
+    // check that reference element nodes are the first two nodes:
+    EXPECT_TRUE(geom.LagrangeNodes().leftCols(2).isApprox(
+        base::RefEl::kSegment().NodeCoords()));
+    EXPECT_TRUE(geom.Global(geom.LagrangeNodes()).isApprox(global_nodes));
   }
 }
 
@@ -143,9 +147,12 @@ TEST(Geometry, TriaO1) {
       }
     }
 
+    // check that reference element nodes are the first three nodes:
+    EXPECT_TRUE(
+        geom.LagrangeNodes().isApprox(base::RefEl::kTria().NodeCoords()));
+
     // check that local nodes are mapped to global nodes
-    EXPECT_TRUE(geom.Global(lf::base::RefEl::kTria().NodeCoords())
-                    .isApprox(global_nodes));
+    EXPECT_TRUE(geom.Global(TriaO1::LagrangeNodes()).isApprox(global_nodes));
   }
 }
 
@@ -191,9 +198,11 @@ TEST(Geometry, TriaO2) {
     }
 
     // check that local nodes are mapped to global nodes
-    Eigen::MatrixXd local_nodes(2, 6);
-    local_nodes << 0, 1, 0, 0.5, 0.5, 0, 0, 0, 1, 0, 0.5, 0.5;
-    EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
+    EXPECT_TRUE(geom.Global(geom.LagrangeNodes()).isApprox(global_nodes));
+
+    // check that reference element nodes are the first three nodes:
+    EXPECT_TRUE(geom.LagrangeNodes().leftCols(3).isApprox(
+        base::RefEl::kTria().NodeCoords()));
   }
 }
 
@@ -238,8 +247,11 @@ TEST(Geometry, QuadO1) {
     }
 
     // check that local nodes are mapped to global nodes
-    EXPECT_TRUE(geom.Global(lf::base::RefEl::kQuad().NodeCoords())
-                    .isApprox(global_nodes));
+    EXPECT_TRUE(geom.Global(geom.LagrangeNodes()).isApprox(global_nodes));
+
+    // check that reference element nodes are the first four nodes:
+    EXPECT_TRUE(
+        geom.LagrangeNodes().isApprox(base::RefEl::kQuad().NodeCoords()));
   }
 }
 
@@ -286,9 +298,11 @@ TEST(Geometry, QuadO2) {
     }
 
     // check that local nodes are mapped to global nodes
-    Eigen::MatrixXd local_nodes(2, 8);
-    local_nodes << 0, 1, 1, 0, .5, 1, .5, 0, 0, 0, 1, 1, 0, .5, 1, 0.5;
-    EXPECT_TRUE(geom.Global(local_nodes).isApprox(global_nodes));
+    EXPECT_TRUE(geom.Global(geom.LagrangeNodes()).isApprox(global_nodes));
+
+    // check that reference element nodes are the first four nodes:
+    EXPECT_TRUE(geom.LagrangeNodes().leftCols(4).isApprox(
+        base::RefEl::kQuad().NodeCoords()));
   }
 }
 

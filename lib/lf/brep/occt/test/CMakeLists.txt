@@ -10,6 +10,7 @@ set(sources
 add_executable(lf.brep.occt.test ${sources})
 target_link_libraries(lf.brep.occt.test PUBLIC GTest::gtest_main
   lf.brep.occt
+  lf.brep.test_utils
 )
 set_target_properties(lf.brep.occt.test PROPERTIES FOLDER "lib")
 target_compile_features(lf.brep.occt.test PUBLIC cxx_std_17)

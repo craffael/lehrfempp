@@ -150,5 +150,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   }    // end loop over the children
   return (child_geo_uptrs);
 }
+const Eigen::Matrix<double, 2, 3> TriaO1::lagrange_nodes_ =
+    (Eigen::Matrix<double, 2, 3>() << 0, 1, 0, 0, 0, 1).finished();
 
 }  // namespace lf::geometry
