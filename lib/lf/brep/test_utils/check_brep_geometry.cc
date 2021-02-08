@@ -46,12 +46,12 @@ void CheckBrepGeometry(interface::BrepGeometry const& geom,
     for (int i = 0; i < local.cols(); ++i) {
       EXPECT_TRUE(surf->IsInBoundingBox(global.col(i)));
       EXPECT_TRUE(surf->IsInside(local.col(i)));
-      EXPECT_TRUE(surf->Global(local.col(i)).isApprox(global.col(i)));
+      EXPECT_TRUE(surf->GlobalSingle(local.col(i)).isApprox(global.col(i)));
 
       auto jacApprox = approxJacobian(
-          [&](const auto& x) { return surf->Global(x); }, local.col(i));
+          [&](const auto& x) { return surf->GlobalSingle(x); }, local.col(i));
       EXPECT_TRUE(jacApprox.isApprox(jacobian.block<3, 2>(0, 2 * i), 1e-5));
-      EXPECT_TRUE(surf->Jacobian(local.col(i))
+      EXPECT_TRUE(surf->JacobianSingle(local.col(i))
                       .isApprox(jacobian.block<3, 2>(0, 2 * i)));
 
       auto [dist, pl] = surf->Project(global.col(i));

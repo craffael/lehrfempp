@@ -8,18 +8,16 @@
 
 #include "occt_brep_surface.h"
 
-#include "occt_brep_surface.h"
-
 #include <BRepBndLib.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomAPI_ProjectPointOnSurf.hxx>
 #include <IntTools_Tools.hxx>
 
+#include "occt_brep_surface.h"
 #include "occt_details.h"
 
 namespace lf::brep::occt {
-OcctBrepSurface::OcctBrepSurface(TopoDS_Face&& face)
-    : face_(std::move(face)) {
+OcctBrepSurface::OcctBrepSurface(TopoDS_Face&& face) : face_(std::move(face)) {
   BRepBndLib::AddOBB(face_, obb_);
   surface_ = BRep_Tool::Surface(face_);
   LF_VERIFY_MSG(!surface_.IsNull(),
@@ -34,12 +32,12 @@ Eigen::MatrixXd OcctBrepSurface::GlobalMulti(
   Eigen::MatrixXd result(3, local.cols());
 
   for (int i = 0; i < local.cols(); ++i) {
-    result.col(i) = Global(local.col(i));
+    result.col(i) = GlobalSingle(local.col(i));
   }
   return result;
 }
 
-Eigen::Vector3d OcctBrepSurface::Global(
+Eigen::Vector3d OcctBrepSurface::GlobalSingle(
     const Eigen::Vector2d& local) const {
   return detail::ToVector(surface_->Value(local.x(), local.y()));
 }
@@ -48,12 +46,12 @@ Eigen::MatrixXd OcctBrepSurface::JacobianMulti(
     const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(3, 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
-    result.block<3, 2>(0, 2 * i) = Jacobian(local.col(i));
+    result.block<3, 2>(0, 2 * i) = JacobianSingle(local.col(i));
   }
   return result;
 }
 
-Eigen::Matrix<double, 3, 2> OcctBrepSurface::Jacobian(
+Eigen::Matrix<double, 3, 2> OcctBrepSurface::JacobianSingle(
     const Eigen::Vector2d& local) const {
   Eigen::Matrix<double, 3, 2> result;
   gp_Pnt p;
@@ -82,8 +80,7 @@ std::vector<bool> OcctBrepSurface::IsInBoundingBoxMulti(
   return result;
 }
 
-bool OcctBrepSurface::IsInBoundingBox(
-    const Eigen::Vector3d& global) const {
+bool OcctBrepSurface::IsInBoundingBox(const Eigen::Vector3d& global) const {
   return !obb_.IsOut(detail::ToPoint(global));
 }
 

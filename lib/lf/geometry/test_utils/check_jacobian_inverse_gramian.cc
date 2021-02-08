@@ -15,7 +15,8 @@
 namespace lf::geometry::test_utils {
 
 void checkJacobianInverseGramian(const lf::geometry::Geometry &geom,
-                                 const Eigen::MatrixXd &eval_points) {
+                                 const Eigen::MatrixXd &eval_points,
+                                 double precision) {
   const size_t num_points = eval_points.cols();
   const size_t dim_local = geom.DimLocal();
   const size_t dim_global = geom.DimGlobal();
@@ -36,8 +37,10 @@ void checkJacobianInverseGramian(const lf::geometry::Geometry &geom,
     Eigen::MatrixXd jacobian =
         jacobians.block(0, j * dim_local, dim_global, dim_local);
 
-    EXPECT_TRUE(jacInvGram.isApprox(
-        jacobian * (jacobian.transpose() * jacobian).inverse()))
+    Eigen::MatrixXd jacInvGramApprox =
+        jacobian * (jacobian.transpose() * jacobian).inverse();
+
+    EXPECT_TRUE(jacInvGramApprox.isApprox(jacInvGram, precision))
         << "JacobianInverseGramian incorrect at point " << eval_points.col(j);
   }
 }

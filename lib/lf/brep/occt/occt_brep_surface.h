@@ -31,12 +31,12 @@ class OcctBrepSurface : public interface::BrepSurface {
   [[nodiscard]] Eigen::MatrixXd GlobalMulti(
       const Eigen::MatrixXd& local) const override;
 
-  [[nodiscard]] Eigen::Vector3d Global(
+  [[nodiscard]] Eigen::Vector3d GlobalSingle(
       const Eigen::Vector2d& local) const override;
   [[nodiscard]] Eigen::MatrixXd JacobianMulti(
       const Eigen::MatrixXd& local) const override;
 
-  [[nodiscard]] Eigen::Matrix<double, 3, 2> Jacobian(
+  [[nodiscard]] Eigen::Matrix<double, 3, 2> JacobianSingle(
       const Eigen::Vector2d& local) const override;
   [[nodiscard]] std::pair<double, Eigen::Vector2d> Project(
       const Eigen::Vector3d& global) const override;

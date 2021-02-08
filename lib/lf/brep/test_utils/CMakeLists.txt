@@ -3,7 +3,8 @@ set(src
   check_brep_geometry.cc
   curve_circle.h
   curve_circle.cc
-  
+  surface_cylinder.h
+  surface_cylinder.cc
 )
 
 add_library(lf.brep.test_utils ${src})

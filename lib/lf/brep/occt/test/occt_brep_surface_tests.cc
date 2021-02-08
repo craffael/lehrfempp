@@ -29,13 +29,13 @@ TEST(occt, cubeSurfaceProjection) {
   Eigen::Vector3d p(5, 10, 5);
   auto [dist, param] = surface->Project(p);
   EXPECT_LT(dist, 1e-6);
-  EXPECT_TRUE(surface->Global(param).isApprox(p));
+  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(p));
 
   // Project the point (5,15,5):
   p = Eigen::Vector3d(5, 15, 5);
   std::tie(dist, param) = surface->Project(p);
   EXPECT_LT(std::abs(dist - 5), 1e-5);
-  EXPECT_TRUE(surface->Global(param).isApprox(Eigen::Vector3d(5,10,5)));
+  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(Eigen::Vector3d(5,10,5)));
 
   // project a point that lies slightly outside:
   p = Eigen::Vector3d(11, 10, 0);
@@ -56,7 +56,7 @@ TEST(OCCT, hollowHemiespherSurfProjection) {
   Eigen::Vector3d p(-6, -6, -6);
   auto [dist, param] = surface->Project(p);
   EXPECT_GT(dist, 1);
-  EXPECT_TRUE(surface->Global(param).isApprox(p / p.norm() * 5));
+  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(p / p.norm() * 5));
 
   // Project point (6,6,6) onto the surface:
   // -> Here it's not clear if a point within the parameter bounds will be returned or not.

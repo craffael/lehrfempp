@@ -2,6 +2,7 @@ include(GoogleTest)
 
 set(sources
   curve_circle_tests.cc
+  surface_cylinder_tests.cc
 )
 
 add_executable(lf.brep.test_utils.test ${sources})

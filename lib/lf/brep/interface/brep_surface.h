@@ -23,9 +23,9 @@ class BrepSurface : public BrepGeometry {
  public:
   ~BrepSurface() = default;
 
-  [[nodiscard]] virtual Eigen::Vector3d Global(
+  [[nodiscard]] virtual Eigen::Vector3d GlobalSingle(
       const Eigen::Vector2d& local) const = 0;
-  [[nodiscard]] virtual Eigen::Matrix<double, 3, 2> Jacobian(
+  [[nodiscard]] virtual Eigen::Matrix<double, 3, 2> JacobianSingle(
       const Eigen::Vector2d& local) const = 0;
   [[nodiscard]] virtual std::pair<double, Eigen::Vector2d> Project(
       const Eigen::Vector3d& global) const = 0;

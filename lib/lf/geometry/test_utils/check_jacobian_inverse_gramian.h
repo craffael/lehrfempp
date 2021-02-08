@@ -18,9 +18,11 @@ namespace lf::geometry::test_utils {
  * assuming that Jacobian() is correct
  * @param geom geometry object to be evaluated
  * @param eval_points points ar which JacobianInverseGramian should be checked
+ * @param precision The precision with which the equivalence should be checked.
  */
 void checkJacobianInverseGramian(const lf::geometry::Geometry &geom,
-                                 const Eigen::MatrixXd &eval_points);
+                                 const Eigen::MatrixXd &eval_points,
+                                 double precision = 1e-12);
 
 }  // namespace lf::geometry::test_utils
 
