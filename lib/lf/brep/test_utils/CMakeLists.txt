@@ -3,6 +3,8 @@ set(src
   check_brep_geometry.cc
   curve_circle.h
   curve_circle.cc
+  curve_straight_segment.h
+  curve_straight_segment.cc
   surface_cylinder.h
   surface_cylinder.cc
 )

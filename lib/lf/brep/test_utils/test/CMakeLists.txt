@@ -2,6 +2,7 @@ include(GoogleTest)
 
 set(sources
   curve_circle_tests.cc
+  curve_straight_segment_tests.cc
   surface_cylinder_tests.cc
 )
 

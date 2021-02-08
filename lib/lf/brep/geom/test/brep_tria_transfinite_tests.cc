@@ -79,4 +79,15 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleTest) {
   }
 }
 
+TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest) {
+  Eigen::Vector3d origin(0, 0, 0);
+  test_utils::CurveCircle circle(origin, 1);
+
+  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  std::array<p_t, 3> curves{
+      p_t{&circle, Eigen::RowVector2d(0., base::kPi / 2.)},
+      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
+      p_t{&circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
+}
+
 }  // namespace lf::brep::geom::tests
