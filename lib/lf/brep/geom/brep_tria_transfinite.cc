@@ -72,6 +72,213 @@ class BrepTriaTransfiniteCurve : public interface::BrepCurve {
   Eigen::Matrix2d curve_ends_;
 };
 
+class SegmentIn2DFather : public geometry::Geometry {
+ public:
+  SegmentIn2DFather(std::unique_ptr<geometry::Geometry>&& father_geom,
+                    const Eigen::Matrix2d& nodes_in_father)
+      : father_(std::move(father_geom)) {
+    LF_ASSERT_MSG(father_->DimLocal() == 2, "");
+    transform_ = nodes_in_father.col(1) - nodes_in_father.col(0);
+    offset_ = nodes_in_father.col(0);
+  }
+
+  SegmentIn2DFather(const SegmentIn2DFather& other)
+      : father_(other.father_->SubGeometry(0, 0)),
+        transform_(other.transform_),
+        offset_(other.offset_) {}
+
+  [[nodiscard]] dim_t DimLocal() const override { return 1; }
+  [[nodiscard]] dim_t DimGlobal() const override {
+    return father_->DimGlobal();
+  }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kSegment();
+  }
+  [[nodiscard]] Eigen::MatrixXd Global(
+      const Eigen::MatrixXd& local) const override {
+    return father_->Global(transform_ * local +
+                           offset_.replicate(1, local.cols()));
+  }
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = father_->Jacobian(transform_ * local +
+                                 offset_.replicate(1, local.cols()));
+    Eigen::MatrixXd result(DimGlobal(), local.cols());
+    for (int i = 0; i < local.cols(); ++i) {
+      result.col(i) = jac.block(0, 2 * i, DimGlobal(), 2) * transform_;
+    }
+    return result;
+  }
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = Jacobian(local);
+    jac.array() /=
+        jac.colwise().squaredNorm().array().replicate(DimGlobal(), 1);
+    return jac;
+  }
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = Jacobian(local);
+    return jac.colwise().norm().transpose();
+  }
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override {
+    if (codim == 1) {
+      return std::make_unique<geometry::Point>(
+          Global(base::RefEl::kSegment().NodeCoords().col(i)));
+    }
+    LF_ASSERT_MSG(codim == 0, "");
+    return std::make_unique<SegmentIn2DFather>(*this);
+  }
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const geometry::RefinementPattern& ref_pat,
+      lf::base::dim_t codim) const override {
+    std::vector<std::unique_ptr<Geometry>> result;
+    result.reserve(ref_pat.NumChildren(codim));
+    double lattice_const = ref_pat.LatticeConst();
+    if (codim == 1) {
+      for (auto& n : ref_pat.ChildPolygons(1)) {
+        result.push_back(std::make_unique<geometry::Point>(
+            Global(n.cast<double>() / lattice_const)));
+      }
+    } else {
+      for (auto& e : ref_pat.ChildPolygons(0)) {
+        LF_ASSERT_MSG(e.cols() == 2, "unexpected number of columns.");
+        auto nodes_in_father = (transform_ * e.cast<double>() / lattice_const +
+                                offset_.replicate(1, 2))
+                                   .eval();
+        result.push_back(std::make_unique<SegmentIn2DFather>(
+            father_->SubGeometry(0, 0), nodes_in_father));
+      }
+    }
+    return result;
+  }
+
+ private:
+  std::unique_ptr<geometry::Geometry> father_;
+  Eigen::Vector2d transform_;
+  Eigen::Vector2d offset_;
+};
+
+class TriaInFather : public geometry::Geometry {
+ public:
+  TriaInFather(std::unique_ptr<Geometry>&& father_geom,
+               const Eigen::Matrix<double, 2, 3>& nodes_in_father)
+      : father_geom_(std::move(father_geom)) {
+    LF_ASSERT_MSG(father_geom_->DimLocal() == 2, "");
+    transform_.col(0) = nodes_in_father.col(1) - nodes_in_father.col(0);
+    transform_.col(1) = nodes_in_father.col(2) - nodes_in_father.col(0);
+    offset_ = nodes_in_father.col(0);
+  }
+
+  TriaInFather(const TriaInFather& other)
+      : father_geom_(other.father_geom_->SubGeometry(0, 0)),
+        transform_(other.transform_),
+        offset_(other.offset_) {}
+
+  [[nodiscard]] dim_t DimLocal() const override { return 2; }
+  [[nodiscard]] dim_t DimGlobal() const override {
+    return father_geom_->DimGlobal();
+  }
+  [[nodiscard]] base::RefEl RefEl() const override {
+    return base::RefEl::kTria();
+  }
+  [[nodiscard]] Eigen::MatrixXd Global(
+      const Eigen::MatrixXd& local) const override {
+    return father_geom_->Global(transform_ * local +
+                                offset_.replicate(1, local.cols()));
+  }
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = father_geom_->Jacobian(transform_ * local +
+                                      offset_.replicate(1, local.cols()));
+    for (int i = 0; i < local.cols(); ++i) {
+      jac.block(0, 2 * i, DimGlobal(), 2) *= transform_;
+    }
+    return jac;
+  }
+  [[nodiscard]] Eigen::MatrixXd JacobianInverseGramian(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = Jacobian(local);
+    Eigen::MatrixXd result(DimGlobal(), 2 * local.cols());
+    for (int i = 0; i < local.cols(); ++i) {
+      result.block(0, 2 * i, DimGlobal(), 2) =
+          (jac.block(0, 2 * i, DimGlobal(), 2).transpose() *
+           jac.block(0, 2 * i, DimGlobal(), 2))
+              .colPivHouseholderQr()
+              .solve(jac.block(0, 2 * i, DimGlobal(), 2).transpose())
+              .transpose();
+    }
+    return result;
+  }
+  [[nodiscard]] Eigen::VectorXd IntegrationElement(
+      const Eigen::MatrixXd& local) const override {
+    auto jac = Jacobian(local);
+    Eigen::RowVectorXd result(local.cols());
+    for (int i = 0; i < local.cols(); ++i) {
+      result(i) =
+          std::sqrt(std::abs((jac.block(0, 2 * i, DimGlobal(), 2).transpose() *
+                              jac.block(0, 2 * i, DimGlobal(), 2))
+                                 .determinant()));
+    }
+    return result;
+  }
+  [[nodiscard]] std::unique_ptr<Geometry> SubGeometry(dim_t codim,
+                                                      dim_t i) const override {
+    if (codim == 2) {
+      return std::make_unique<geometry::Point>(
+          Global(base::RefEl::kTria().NodeCoords().col(i)));
+    } else if (codim == 1) {
+      Eigen::Matrix2d nodes_in_father;
+      nodes_in_father.col(0) = base::RefEl::kTria().NodeCoords().col(
+          base::RefEl::kTria().SubSubEntity2SubEntity(1, i, 1, 0));
+      nodes_in_father.col(1) = base::RefEl::kTria().NodeCoords().col(
+          base::RefEl::kTria().SubSubEntity2SubEntity(1, i, 1, 1));
+      return std::make_unique<SegmentIn2DFather>(
+          std::make_unique<TriaInFather>(*this), nodes_in_father);
+    }
+    LF_ASSERT_MSG(codim == 0, "");
+    LF_ASSERT_MSG(i == 0, "");
+    return std::make_unique<TriaInFather>(*this);
+  }
+  [[nodiscard]] std::vector<std::unique_ptr<Geometry>> ChildGeometry(
+      const geometry::RefinementPattern& ref_pat,
+      lf::base::dim_t codim) const override {
+    std::vector<std::unique_ptr<Geometry>> result;
+    result.reserve(ref_pat.NumChildren(codim));
+    double lattice_const = ref_pat.LatticeConst();
+    if (codim == 2) {
+      for (auto& n : ref_pat.ChildPolygons(2)) {
+        LF_ASSERT_MSG(n.cols() == 1, "");
+        result.push_back(std::make_unique<geometry::Point>(
+            Global(n.cast<double>() / lattice_const)));
+      }
+    } else if (codim == 1) {
+      for (auto& e : ref_pat.ChildPolygons(1)) {
+        LF_ASSERT_MSG(e.cols() == 2, "");
+        result.push_back(std::make_unique<SegmentIn2DFather>(
+            father_geom_->SubGeometry(0, 0),
+            transform_ * e.cast<double>() / lattice_const +
+                offset_.replicate<1, 2>()));
+      }
+    } else if (codim == 0) {
+      for (auto& e : ref_pat.ChildPolygons(0)) {
+        LF_ASSERT_MSG(e.cols() == 3, "Only triangles are supported so far.");
+        result.push_back(std::make_unique<TriaInFather>(
+            father_geom_->SubGeometry(0, 0),
+            transform_ * e.cast<double>() / lattice_const +
+                offset_.replicate<1, 3>()));
+      }
+    }
+    return result;
+  }
+
+ private:
+  std::unique_ptr<geometry::Geometry> father_geom_;
+  Eigen::Matrix<double, 2, 2> transform_;
+  Eigen::Vector2d offset_;
+};
+
 BrepTriaTransfinite::BrepTriaTransfinite(
     std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
         curves,
@@ -142,13 +349,6 @@ Eigen::MatrixXd BrepTriaTransfinite::Global(
   auto y = local.row(1).array().eval();
   auto xr = x.replicate(DimGlobal(), 1).eval();
   auto yr = y.replicate(DimGlobal(), 1).eval();
-
-  auto t1 = (g0(x) * (1 - yr) - xr * g0(1 - y)).eval();
-  auto t2 =
-      ((node0_ * (x + y - 1).matrix()).array() + g2(1 - y) * (1 - xr)).eval();
-  auto t21 = ((node0_ * (x + y - 1).matrix()).array()).eval();
-  auto t22 = (g2(1 - y) * (1 - xr)).eval();
-  auto t3 = (yr * g2(x) + xr * g1(y) + yr * g1(1 - x)).eval();
 
   return (g0(x) * (1 - yr) - xr * g0(1 - y) +
           (node0_ * (x + y - 1).matrix()).array() + g2(1 - y) * (1 - xr) -
@@ -266,37 +466,17 @@ BrepTriaTransfinite::ChildGeometry(const geometry::RefinementPattern& ref_pat,
       LF_ASSERT_MSG(
           c.cols() == 3,
           "So far a triangle can only be split into other triangles...");
-      // construct curves of the triangle:
-      Eigen::Matrix2d curve_ends0;
-      curve_ends0.col(0) = c.col(0).cast<double>() / lattice_const;
-      curve_ends0.col(1) = c.col(1).cast<double>() / lattice_const;
-      auto* curve0 = new BrepTriaTransfiniteCurve(*this, curve_ends0);
 
-      Eigen::Matrix2d curve_ends1;
-      curve_ends1.col(0) = c.col(1).cast<double>() / lattice_const;
-      curve_ends1.col(1) = c.col(2).cast<double>() / lattice_const;
-      auto* curve1 = new BrepTriaTransfiniteCurve(*this, curve_ends1);
-
-      Eigen::Matrix2d curve_ends2;
-      curve_ends2.col(0) = c.col(2).cast<double>() / lattice_const;
-      curve_ends2.col(1) = c.col(0).cast<double>() / lattice_const;
-      auto* curve2 = new BrepTriaTransfiniteCurve(*this, curve_ends2);
-
-      Eigen::RowVector2d curve_coords(0., 1.);
-
-      using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
-      result.push_back(std::make_unique<BrepTriaTransfinite>(
-          std::array<p_t, 3>{p_t{curve0, curve_coords},
-                             p_t{curve1, curve_coords},
-                             p_t{curve2, curve_coords}},
-          std::array<bool, 3>{true, true, true}));
+      result.push_back(std::make_unique<TriaInFather>(
+          std::make_unique<BrepTriaTransfinite>(*this),
+          c.cast<double>() / lattice_const));
     }
   } else if (codim == 1) {
     for (auto& c : ref_pat.ChildPolygons(1)) {
       LF_ASSERT_MSG(c.cols() == 2, "Expected 2 columns...");
-      result.push_back(std::make_unique<BrepCurve>(
-          new BrepTriaTransfiniteCurve(*this, c.cast<double>() / lattice_const),
-          Eigen::RowVector2d(0., 1.), true));
+      result.push_back(std::make_unique<SegmentIn2DFather>(
+          std::make_unique<BrepTriaTransfinite>(*this),
+          c.cast<double>() / lattice_const));
     }
   } else if (codim == 2) {
     for (auto& c : ref_pat.ChildPolygons(2)) {
