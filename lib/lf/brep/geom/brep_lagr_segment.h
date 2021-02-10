@@ -17,9 +17,9 @@ namespace lf::brep::geom {
 template <class GEOMETRY>
 class BrepLagrSegment : public geometry::Geometry {
  public:
-  BrepLagrSegment(GEOMETRY segment, const interface::BrepCurve* curve,
-                  double curve_coord_p0, double curve_coord_p1,
-                  bool delete_curve = false);
+  BrepLagrSegment(GEOMETRY segment,
+                  std::shared_ptr<const interface::BrepCurve> curve,
+                  double curve_coord_p0, double curve_coord_p1);
   BrepLagrSegment(const BrepLagrSegment& other) = default;
 
   [[nodiscard]] dim_t DimLocal() const override { return geom_.DimLocal(); }
@@ -59,29 +59,23 @@ class BrepLagrSegment : public geometry::Geometry {
 
   static const auto LagrangeNodes() { return GEOMETRY::LagrangeNodes(); }
 
-  ~BrepLagrSegment() {
-    if (delete_curve_) delete curve_;
-  }
-
  private:
   GEOMETRY geom_;
-  const brep::interface::BrepCurve* curve_;
+  std::shared_ptr<const brep::interface::BrepCurve> curve_;
   double curve_coord_p0_;
   double curve_coord_p1_;
-  bool delete_curve_;
 };
 
 template <class GEOMETRY>
-BrepLagrSegment<GEOMETRY>::BrepLagrSegment(GEOMETRY segment,
-                                           const interface::BrepCurve* curve,
-                                           double curve_coord_p0,
-                                           double curve_coord_p1,
-                                           bool delete_curve)
+BrepLagrSegment<GEOMETRY>::BrepLagrSegment(
+    GEOMETRY segment, std::shared_ptr<const interface::BrepCurve> curve,
+    double curve_coord_p0,
+
+    double curve_coord_p1)
     : geom_(std::move(segment)),
       curve_(curve),
       curve_coord_p0_(curve_coord_p0),
-      curve_coord_p1_(curve_coord_p1),
-      delete_curve_(delete_curve) {
+      curve_coord_p1_(curve_coord_p1) {
   LF_ASSERT_MSG(geom_.RefEl() == base::RefEl::kSegment(),
                 "BrepLagrSegment can only wrap a geometry of type segment.");
   LF_ASSERT_MSG((geom_.LagrangeNodes().array() >= 0.).all() &&

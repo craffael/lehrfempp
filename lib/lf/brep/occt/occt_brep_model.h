@@ -29,30 +29,31 @@ class OcctBrepModel : public interface::BrepModel {
   /**
    * @brief Find all Curves that go through the given point.
    */
-  [[nodiscard]] std::vector<std::pair<interface::BrepCurve const *, double>>
+  [[nodiscard]] std::vector<
+      std::pair<std::shared_ptr<const interface::BrepCurve>, double>>
   FindCurves(const Eigen::Vector3d &global) const override;
 
   /**
    * @brief Find all Curves that go through *all* the given points (as column
    * vectors).
    */
-  [[nodiscard]] std::vector<
-      std::pair<interface::BrepCurve const *, Eigen::RowVectorXd>>
+  [[nodiscard]] std::vector<std::pair<
+      std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
   FindCurvesMulti(const Eigen::Matrix3Xd &global) const override;
 
   /**
    * @brief Find all Surfaces that contain the given point.
    */
   [[nodiscard]] std::vector<
-      std::pair<interface::BrepSurface const *, Eigen::Vector2d>>
+      std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
   FindSurfaces(const Eigen::Vector3d &global) const override;
 
   /**
    * @brief Find all Surfaces that contain *all* the given points (as column
    * vectors)
    */
-  [[nodiscard]] std::vector<
-      std::pair<interface::BrepSurface const *, Eigen::Matrix2Xd>>
+  [[nodiscard]] std::vector<std::pair<
+      std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
   FindSurfacesMulti(const Eigen::Matrix3Xd &global) const override;
 
   /**
@@ -71,8 +72,8 @@ class OcctBrepModel : public interface::BrepModel {
 
  private:
   TopoDS_Shape shape_;
-  std::vector<OcctBrepCurve> edges_;
-  std::vector<OcctBrepSurface> faces_;
+  std::vector<std::shared_ptr<OcctBrepCurve>> edges_;
+  std::vector<std::shared_ptr<OcctBrepSurface>> faces_;
 };
 
 }  // namespace lf::brep::occt

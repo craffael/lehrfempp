@@ -17,16 +17,16 @@ namespace lf::brep::geom::tests {
 
 TEST(lf_brep_geom, BrepTriaTransfiniteCircleTest) {
   Eigen::Vector3d origin(0, 0, 0);
-  test_utils::CurveCircle circle(origin, 1);
+  auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
   std::vector<std::unique_ptr<geometry::Geometry>> geometries;
-  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&circle, Eigen::RowVector2d(0., base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
-  geometries.push_back(std::make_unique<BrepTriaTransfinite>(
-      curves, std::array<bool, 3>{false, false, false}));
+      p_t{circle, Eigen::RowVector2d(0., base::kPi / 2.)},
+      p_t{circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
+      p_t{circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
+  geometries.push_back(std::make_unique<BrepTriaTransfinite>(curves));
 
   auto qr = quad::make_QuadRule(base::RefEl::kTria(), 20);
   auto qr_segment = quad::make_QuadRule(base::RefEl::kSegment(), 20);
@@ -89,17 +89,20 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleTest) {
  */
 TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest) {
   Eigen::Vector3d origin(0, 0, 0);
-  test_utils::CurveCircle circle(origin, 1);
+  auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  test_utils::CurveStraightLine line0({1, 0, 0}, {1, 1, 0});
-  test_utils::CurveStraightLine line1({0, 1, 0}, {1, 1, 0});
+  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{1, 1, 0});
+  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{1, 1, 0});
 
-  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&line0, Eigen::RowVector2d(0., 1.)},
-      p_t{&line1, Eigen::RowVector2d(1., 0.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
-  BrepTriaTransfinite tria(curves, {false, false, false});
+      p_t{line0, Eigen::RowVector2d(0., 1.)},
+      p_t{line1, Eigen::RowVector2d(1., 0.)},
+      p_t{circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
+  BrepTriaTransfinite tria(curves);
 
   auto qr = quad::make_QuadRule(base::RefEl::kTria(), 40);
 
@@ -137,17 +140,20 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest) {
  */
 TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest2) {
   Eigen::Vector3d origin(0, 0, 0);
-  test_utils::CurveCircle circle(origin, 1);
+  auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  test_utils::CurveStraightLine line0({1, 0, 0}, {2, 2, 0});
-  test_utils::CurveStraightLine line1({0, 1, 0}, {2, 2, 0});
+  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{2, 2, 0});
+  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{2, 2, 0});
 
-  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&line0, Eigen::RowVector2d(0., 1.)},
-      p_t{&line1, Eigen::RowVector2d(1., 0.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
-  BrepTriaTransfinite tria(curves, {false, false, false});
+      p_t{line0, Eigen::RowVector2d(0., 1.)},
+      p_t{line1, Eigen::RowVector2d(1., 0.)},
+      p_t{circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
+  BrepTriaTransfinite tria(curves);
 
   auto qr = quad::make_QuadRule(base::RefEl::kTria(), 40);
   double volume = tria.IntegrationElement(qr.Points()).dot(qr.Weights());
@@ -156,16 +162,16 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest2) {
 
 TEST(lf_brep_geom, BrepTriaTransfinitePerronnetCircleTest) {
   Eigen::Vector3d origin(0, 0, 0);
-  test_utils::CurveCircle circle(origin, 1);
+  auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
   std::vector<std::unique_ptr<geometry::Geometry>> geometries;
-  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&circle, Eigen::RowVector2d(0., base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
-  geometries.push_back(std::make_unique<BrepTriaTransfinitePerronnet>(
-      curves, std::array<bool, 3>{false, false, false}));
+      p_t{circle, Eigen::RowVector2d(0., base::kPi / 2.)},
+      p_t{circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
+      p_t{circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
+  geometries.push_back(std::make_unique<BrepTriaTransfinitePerronnet>(curves));
 
   auto qr = quad::make_QuadRule(base::RefEl::kTria(), 20);
   auto qr_segment = quad::make_QuadRule(base::RefEl::kSegment(), 20);
@@ -230,17 +236,20 @@ TEST(lf_brep_geom, BrepTriaTransfinitePerronnetCircleTest) {
  */
 TEST(lf_brep_geom, BrepTriaTransfinitePerronnetCircleCutoutTest) {
   Eigen::Vector3d origin(0, 0, 0);
-  test_utils::CurveCircle circle(origin, 1);
+  auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  test_utils::CurveStraightLine line0({1, 0, 0}, {1, 1, 0});
-  test_utils::CurveStraightLine line1({0, 1, 0}, {1, 1, 0});
+  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{1, 1, 0});
+  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+      Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{1, 1, 0});
 
-  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&line0, Eigen::RowVector2d(0., 1.)},
-      p_t{&line1, Eigen::RowVector2d(1., 0.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
-  BrepTriaTransfinitePerronnet tria(curves, {false, false, false});
+      p_t{line0, Eigen::RowVector2d(0., 1.)},
+      p_t{line1, Eigen::RowVector2d(1., 0.)},
+      p_t{circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
+  BrepTriaTransfinitePerronnet tria(curves);
 
   auto qr = quad::make_QuadRule(base::RefEl::kTria(), 40);
 

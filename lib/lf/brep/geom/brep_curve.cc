@@ -9,12 +9,11 @@
 #include "brep_curve.h"
 
 namespace lf::brep::geom {
-BrepCurve::BrepCurve(const interface::BrepCurve* curve,
-                     Eigen::RowVector2d curve_param, bool delete_curve)
+BrepCurve::BrepCurve(std::shared_ptr<const interface::BrepCurve> curve,
+                     Eigen::RowVector2d curve_param)
     : curve_(curve),
       offset_(curve_param(0)),
-      slope_(curve_param(1) - curve_param(0)),
-      delete_curve_(delete_curve) {}
+      slope_(curve_param(1) - curve_param(0)) {}
 
 Eigen::MatrixXd BrepCurve::Global(const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(local.rows() == 1, "unexpected # of rows.");
@@ -74,14 +73,9 @@ std::vector<std::unique_ptr<geometry::Geometry>> BrepCurve::ChildGeometry(
       auto local = (e.cast<double>().array() / lattic_const * slope_ + offset_)
                        .matrix()
                        .eval();
-      result.push_back(
-          std::make_unique<BrepCurve>(curve_, local, delete_curve_));
+      result.push_back(std::make_unique<BrepCurve>(curve_, local));
     }
   }
   return result;
-}
-
-BrepCurve::~BrepCurve() {
-  if (delete_curve_) delete curve_;
 }
 }  // namespace lf::brep::geom

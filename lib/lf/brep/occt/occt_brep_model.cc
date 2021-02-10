@@ -7,15 +7,16 @@
  */
 
 #include "occt_brep_model.h"
+
 #include <BRepBndLib.hxx>
 #include <BRepTools.hxx>
 #include <BRep_Builder.hxx>
 #include <GeomAPI_ProjectPointOnCurve.hxx>
+#include <GeomAPI_ProjectPointOnSurf.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
 
-#include <GeomAPI_ProjectPointOnSurf.hxx>
 #include "occt_brep_curve.h"
 #include "occt_details.h"
 
@@ -34,7 +35,8 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
     auto edge = TopoDS::Edge(explorer.Current());
 
     if (BRep_Tool::Degenerated(edge)) {
-      // This is a degenerated edge (e.g. the pole edge of a sphere) and doesn't have a geometry -> ignore it.
+      // This is a degenerated edge (e.g. the pole edge of a sphere) and doesn't
+      // have a geometry -> ignore it.
       explorer.Next();
       continue;
     }
@@ -42,12 +44,12 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
     // check if a same edge (same TShape, same location) already exists, and if
     // this is the case skip it:
     if (std::any_of(edges_.begin(), edges_.end(),
-                    [&](const auto& e) { return edge.IsSame(e.Edge()); })) {
+                    [&](const auto& e) { return edge.IsSame(e->Edge()); })) {
       explorer.Next();
       continue;
     }
 
-    edges_.emplace_back(std::move(edge));
+    edges_.push_back(std::make_shared<OcctBrepCurve>(std::move(edge)));
     explorer.Next();
   }
 
@@ -57,36 +59,39 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
     auto face = TopoDS::Face(explorer.Current());
 
     if (std::any_of(faces_.begin(), faces_.end(),
-                    [&](const auto& f) { return face.IsSame(f.Face()); })) {
+                    [&](const auto& f) { return face.IsSame(f->Face()); })) {
       explorer.Next();
       continue;
     }
 
-    faces_.emplace_back(std::move(face));
+    faces_.push_back(std::make_shared<OcctBrepSurface>(std::move(face)));
     explorer.Next();
   }
 }
 
-std::vector<std::pair<interface::BrepCurve const*, double>>
+std::vector<std::pair<std::shared_ptr<const interface::BrepCurve>, double>>
 OcctBrepModel::FindCurves(const Eigen::Vector3d& global) const {
-  std::vector<std::pair<interface::BrepCurve const*, double>> result;
+  std::vector<std::pair<std::shared_ptr<interface::BrepCurve const>, double>>
+      result;
   for (const auto& e : edges_) {
-    if (!e.IsInBoundingBoxSingle(global)) {
+    if (!e->IsInBoundingBoxSingle(global)) {
       continue;
     }
-    auto [dist, param] = e.Project(global);
-    if (dist <= 1e-5 && e.IsInside(param)) {
-      result.emplace_back(&e, param);
+    auto [dist, param] = e->Project(global);
+    if (dist <= 1e-5 && e->IsInside(param)) {
+      result.emplace_back(e, param);
     }
   }
   return result;
 }
 
-inline std::vector<std::pair<interface::BrepCurve const*, Eigen::RowVectorXd>>
+inline std::vector<
+    std::pair<std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
 OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
   LF_ASSERT_MSG(global.cols() > 0, "global must contain at least one column.");
 
-  std::vector<std::pair<interface::BrepCurve const*, Eigen::RowVectorXd>>
+  std::vector<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                        Eigen::RowVectorXd>>
       result;
 
   Eigen::RowVectorXd result_coord;
@@ -95,7 +100,7 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
     // 1) Check if all points are inside the bounding box:
     if ([&]() {
           for (int i = 0; i < global.cols(); ++i) {
-            if (!e.IsInBoundingBoxSingle(global.col(i))) {
+            if (!e->IsInBoundingBoxSingle(global.col(i))) {
               return true;
             }
           }
@@ -107,8 +112,8 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
 
     // 2) project point on curve and check if it is within the bounds:
     for (unsigned i = 0; i < global.cols(); ++i) {
-      auto [dist, param] = e.Project(global.col(i));
-      if (dist > 1e-5 || !e.IsInside(param)) {
+      auto [dist, param] = e->Project(global.col(i));
+      if (dist > 1e-5 || !e->IsInside(param)) {
         break;
       }
 
@@ -118,7 +123,7 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
 
       result_coord(0, i) = param;
       if (i + 1 == global.cols()) {
-        result.emplace_back(&e, std::move(result_coord));
+        result.emplace_back(e, std::move(result_coord));
         result_coord = Eigen::RowVectorXd();
       }
     }
@@ -127,31 +132,36 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
   return result;
 }
 
-std::vector<std::pair<interface::BrepSurface const*, Eigen::Vector2d>>
+std::vector<
+    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
 OcctBrepModel::FindSurfaces(const Eigen::Vector3d& global) const {
-  std::vector<std::pair<interface::BrepSurface const*, Eigen::Vector2d>> result;
+  std::vector<
+      std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
+      result;
   for (const auto& f : faces_) {
-    if (!f.IsInBoundingBox(global)) {
+    if (!f->IsInBoundingBox(global)) {
       continue;
     }
-    auto [dist, param] = f.Project(global);
-    if (dist <= 1e-5 && f.IsInside(param)) {
-      result.emplace_back(&f, std::move(param));
+    auto [dist, param] = f->Project(global);
+    if (dist <= 1e-5 && f->IsInside(param)) {
+      result.emplace_back(f, std::move(param));
     }
   }
   return result;
 }
 
-std::vector<std::pair<interface::BrepSurface const*, Eigen::Matrix2Xd>>
+std::vector<
+    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
 OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
-  std::vector<std::pair<interface::BrepSurface const*, Eigen::Matrix2Xd>>
+  std::vector<std::pair<std::shared_ptr<const interface::BrepSurface>,
+                        Eigen::Matrix2Xd>>
       result;
   Eigen::Matrix2Xd result_coord;
   for (const auto& f : faces_) {
     // 1) Check if all points are inside the bounding box:
     if ([&]() {
           for (int i = 0; i < global.cols(); ++i) {
-            if (!f.IsInBoundingBox(global.col(i))) {
+            if (!f->IsInBoundingBox(global.col(i))) {
               return true;
             }
           }
@@ -162,8 +172,8 @@ OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
 
     // project points onto face and check if it is within bounds:
     for (unsigned i = 0; i < global.cols(); ++i) {
-      auto [dist, param] = f.Project(global.col(i));
-      if (dist > 1e-5 || !f.IsInside(param)) {
+      auto [dist, param] = f->Project(global.col(i));
+      if (dist > 1e-5 || !f->IsInside(param)) {
         break;
       }
       if (result_coord.size() == 0) {
@@ -171,7 +181,7 @@ OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
       }
       result_coord.col(i) = param;
       if (i + 1 == global.cols()) {
-        result.emplace_back(&f, std::move(result_coord));
+        result.emplace_back(f, std::move(result_coord));
         result_coord = Eigen::Matrix2Xd();
       }
     }

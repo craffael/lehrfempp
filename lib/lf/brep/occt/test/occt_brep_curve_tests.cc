@@ -46,7 +46,7 @@ TEST(occt, curveProjectionBSpline) {
 
   // find b-spline curve:
   auto find_curve = model->FindCurves(Eigen::Vector3d(-10, -10, 0));
-  interface::BrepCurve const* curve;
+  std::shared_ptr<interface::BrepCurve const> curve;
   double curve_param;
   for (auto [c, param] : find_curve) {
     if (c->Project(Eigen::Vector3d(-11.5, -8, 0)).first > 1e-3) {

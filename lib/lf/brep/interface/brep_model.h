@@ -27,19 +27,20 @@ class BrepModel {
   BrepModel& operator=(BrepModel&&) = delete;
   virtual ~BrepModel() = default;
 
-  [[nodiscard]] virtual std::vector<std::pair<BrepCurve const*, double>>
+  [[nodiscard]] virtual std::vector<
+      std::pair<std::shared_ptr<const BrepCurve>, double>>
   FindCurves(const Eigen::Vector3d& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<BrepCurve const*, Eigen::RowVectorXd>>
+      std::pair<std::shared_ptr<const BrepCurve>, Eigen::RowVectorXd>>
   FindCurvesMulti(const Eigen::Matrix3Xd& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<BrepSurface const*, Eigen::Vector2d>>
+      std::pair<std::shared_ptr<const BrepSurface>, Eigen::Vector2d>>
   FindSurfaces(const Eigen::Vector3d& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<BrepSurface const*, Eigen::Matrix2Xd>>
+      std::pair<std::shared_ptr<const BrepSurface>, Eigen::Matrix2Xd>>
   FindSurfacesMulti(const Eigen::Matrix3Xd& global) const = 0;
 
   [[nodiscard]] virtual base::size_type NumCurves() const = 0;

@@ -280,10 +280,11 @@ class TriaInFather : public geometry::Geometry {
 };
 
 BrepTriaTransfinite::BrepTriaTransfinite(
-    std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
-        curves,
-    std::array<bool, 3> delete_curves)
-    : curves_(curves), delete_curves_(delete_curves) {
+    std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                         Eigen::RowVector2d>,
+               3>
+        curves)
+    : curves_(curves) {
   LF_ASSERT_MSG(
       curves_[0].first->DimGlobal() == curves_[1].first->DimGlobal() &&
           curves_[0].first->DimGlobal() == curves_[2].first->DimGlobal(),
@@ -441,8 +442,7 @@ std::unique_ptr<geometry::Geometry> BrepTriaTransfinite::SubGeometry(
     return std::make_unique<BrepTriaTransfinite>(*this);
   } else if (codim == 1) {
     LF_ASSERT_MSG(i >= 0 && i < 3, "subidx out of range.");
-    return std::make_unique<BrepCurve>(curves_[i].first, curves_[i].second,
-                                       false);
+    return std::make_unique<BrepCurve>(curves_[i].first, curves_[i].second);
   }
 
   // codim==2
@@ -488,20 +488,12 @@ BrepTriaTransfinite::ChildGeometry(const geometry::RefinementPattern& ref_pat,
   }
   return result;
 }
-
-BrepTriaTransfinite::~BrepTriaTransfinite() {
-  if (delete_curves_[0]) delete curves_[0].first;
-  if (delete_curves_[1]) delete curves_[1].first;
-  if (delete_curves_[2]) delete curves_[2].first;
-}
-
 BrepTriaTransfinitePerronnet::BrepTriaTransfinitePerronnet(
-    std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
-        curves,
-    std::array<bool, 3> delete_curves)
-    : curves_(curves),
-      delete_curves_(delete_curves),
-      nodes_(curves_[0].first->DimGlobal(), 3) {
+    std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                         Eigen::RowVector2d>,
+               3>
+        curves)
+    : curves_(curves), nodes_(curves_[0].first->DimGlobal(), 3) {
   LF_ASSERT_MSG(
       curves_[0].first->DimGlobal() == curves_[1].first->DimGlobal() &&
           curves_[0].first->DimGlobal() == curves_[2].first->DimGlobal(),
@@ -668,8 +660,7 @@ std::unique_ptr<geometry::Geometry> BrepTriaTransfinitePerronnet::SubGeometry(
     return std::make_unique<BrepTriaTransfinitePerronnet>(*this);
   } else if (codim == 1) {
     LF_ASSERT_MSG(i >= 0 && i < 3, "subidx out of range.");
-    return std::make_unique<BrepCurve>(curves_[i].first, curves_[i].second,
-                                       false);
+    return std::make_unique<BrepCurve>(curves_[i].first, curves_[i].second);
   }
 
   // codim==2
@@ -709,11 +700,5 @@ BrepTriaTransfinitePerronnet::ChildGeometry(
     }
   }
   return result;
-}
-
-BrepTriaTransfinitePerronnet::~BrepTriaTransfinitePerronnet() {
-  if (delete_curves_[0]) delete curves_[0].first;
-  if (delete_curves_[1]) delete curves_[1].first;
-  if (delete_curves_[2]) delete curves_[2].first;
 }
 }  // namespace lf::brep::geom

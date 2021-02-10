@@ -17,11 +17,12 @@
 namespace lf::brep::geom::test {
 
 TEST(lf_brep_geom, BrepSegmentCircleApprox) {
-  test_utils::CurveCircle circle(Eigen::Vector3d(0, 0, 0), 1.);
+  auto circle =
+      std::make_shared<test_utils::CurveCircle>(Eigen::Vector3d(0, 0, 0), 1.);
 
   std::vector<std::unique_ptr<geometry::Geometry>> geometries;
   geometries.push_back(std::make_unique<BrepCurve>(
-      &circle, Eigen::RowVector2d(0, base::kPi / 2), false));
+      circle, Eigen::RowVector2d(0, base::kPi / 2)));
   auto qr = quad::make_QuadRule(base::RefEl::kSegment(), 20);
 
   quad::QuadRuleCache qr_cache;

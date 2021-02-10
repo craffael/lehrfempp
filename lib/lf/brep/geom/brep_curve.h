@@ -16,8 +16,8 @@ namespace lf::brep::geom {
 
 class BrepCurve : public geometry::Geometry {
  public:
-  BrepCurve(const interface::BrepCurve* curve, Eigen::RowVector2d curve_param,
-            bool delete_curve);
+  BrepCurve(std::shared_ptr<const interface::BrepCurve> curve,
+            Eigen::RowVector2d curve_param);
 
   BrepCurve(const BrepCurve&) = default;
 
@@ -46,13 +46,10 @@ class BrepCurve : public geometry::Geometry {
       const geometry::RefinementPattern& ref_pat,
       lf::base::dim_t codim) const override;
 
-  ~BrepCurve();
-
  private:
-  const interface::BrepCurve* curve_;
+  std::shared_ptr<const interface::BrepCurve> curve_;
   double offset_;
   double slope_;
-  bool delete_curve_;
 };
 
 }  // namespace lf::brep::geom

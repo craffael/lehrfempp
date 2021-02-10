@@ -18,9 +18,10 @@ class BrepTriaTransfinite : public geometry::Geometry {
  public:
   BrepTriaTransfinite(const BrepTriaTransfinite&) = default;
   BrepTriaTransfinite(
-      std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
-          curves,
-      std::array<bool, 3> delete_curves);
+      std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                           Eigen::RowVector2d>,
+                 3>
+          curves);
 
   [[nodiscard]] dim_t DimLocal() const override { return 2; }
   [[nodiscard]] dim_t DimGlobal() const override {
@@ -44,12 +45,11 @@ class BrepTriaTransfinite : public geometry::Geometry {
       const geometry::RefinementPattern& ref_pat,
       lf::base::dim_t codim) const override;
 
-  ~BrepTriaTransfinite();
-
  private:
-  std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
+  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                       Eigen::RowVector2d>,
+             3>
       curves_;
-  std::array<bool, 3> delete_curves_;
   Eigen::VectorXd node0_;
 };
 
@@ -57,9 +57,10 @@ class BrepTriaTransfinitePerronnet : public geometry::Geometry {
  public:
   BrepTriaTransfinitePerronnet(const BrepTriaTransfinitePerronnet&) = default;
   BrepTriaTransfinitePerronnet(
-      std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
-          curves,
-      std::array<bool, 3> delete_curves);
+      std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                           Eigen::RowVector2d>,
+                 3>
+          curves);
 
   [[nodiscard]] dim_t DimLocal() const override { return 2; }
   [[nodiscard]] dim_t DimGlobal() const override {
@@ -82,12 +83,11 @@ class BrepTriaTransfinitePerronnet : public geometry::Geometry {
       const geometry::RefinementPattern& ref_pat,
       lf::base::dim_t codim) const override;
 
-  ~BrepTriaTransfinitePerronnet();
-
  private:
-  std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
+  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                       Eigen::RowVector2d>,
+             3>
       curves_;
-  std::array<bool, 3> delete_curves_;
   Eigen::MatrixXd nodes_;
 };
 

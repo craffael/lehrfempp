@@ -17,7 +17,8 @@ namespace lf::brep::occt::test {
  * @brief Checks that all Curves returned by FindCurvesMulti are contained in
  * the result of FindCurves()
  */
-std::vector<std::pair<interface::BrepCurve const*, Eigen::RowVectorXd>>
+std::vector<
+    std::pair<std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
 FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindCurvesMulti(global);
   for (auto& [c, param] : all) {
@@ -34,7 +35,8 @@ FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   return all;
 }
 
-std::vector<std::pair<interface::BrepSurface const*, Eigen::Matrix2Xd>>
+std::vector<
+    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
 FindSurfaces(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindSurfacesMulti(global);
   for (auto& [s, param] : all) {
@@ -122,7 +124,7 @@ TEST(occt, bSpline2dTest) {
 
   // find the b-spline curve (which is not linear):
   Eigen::Vector3d midpoint = global.rowwise().sum() / 2;
-  interface::BrepCurve const* bspline;
+  std::shared_ptr<const interface::BrepCurve> bspline;
   Eigen::RowVectorXd bspline_param;
   for (auto& g : find_result) {
     auto [distance, parameter] = g.first->Project(midpoint);

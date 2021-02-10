@@ -17,7 +17,7 @@ namespace lf::brep::geom::test {
 
 template <class GEOM>
 void CheckBrepLagrSegment(const BrepLagrSegment<GEOM>& geom,
-                          const interface::BrepCurve& curve) {
+                          std::shared_ptr<const interface::BrepCurve> curve) {
   // check ChildGeometry(codim=1)
   std::vector<std::unique_ptr<geometry::Geometry>> point_children =
       geom.ChildGeometry(SegmentRefPat{}, 1);
@@ -27,7 +27,7 @@ void CheckBrepLagrSegment(const BrepLagrSegment<GEOM>& geom,
   };
   auto checkOnCurve = [&curve](Eigen::MatrixXd x) {
     for (int i = 0; i < x.cols(); ++i) {
-      auto [dist, p] = curve.Project(x.col(i));
+      auto [dist, p] = curve->Project(x.col(i));
       ASSERT_LT(dist, 1e-6);
     }
   };
@@ -55,14 +55,15 @@ void CheckBrepLagrSegment(const BrepLagrSegment<GEOM>& geom,
 template <class GEOM>
 void CheckBRepLagrSegmentOnCircle() {
   // create a segment that spans the quarter of a circle:
-  test_utils::CurveCircle circle(Eigen::Vector3d(1, 2, 0), 1.);
+  auto circle =
+      std::make_shared<test_utils::CurveCircle>(Eigen::Vector3d(1, 2, 0), 1.);
   Eigen::MatrixXd nodes(3, GEOM::LagrangeNodes().cols());
   nodes.row(0).array() =
       (GEOM::LagrangeNodes().array() * base::kPi / 2).cos() + 1.;
   nodes.row(1).array() =
       (GEOM::LagrangeNodes().array() * base::kPi / 2).sin() + 2.;
   nodes.row(2).setZero();
-  auto geom = std::make_unique<BrepLagrSegment<GEOM>>(GEOM{nodes}, &circle, 0,
+  auto geom = std::make_unique<BrepLagrSegment<GEOM>>(GEOM{nodes}, circle, 0,
                                                       base::kPi / 2);
 
   // check the geometry

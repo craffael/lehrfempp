@@ -19,7 +19,8 @@ namespace lf::brep::geom {
  */
 class BrepSurfaceSegment : public interface::BrepCurve {
  public:
-  BrepSurfaceSegment(const interface::BrepSurface* surface,
+  BrepSurfaceSegment(std::shared_ptr<const interface::BrepSurface> surface,
+
                      const Eigen::Matrix<double, 2, 2>& surface_local_coords)
       : surface_(surface),
         local_direction_(surface_local_coords.col(1) -
@@ -55,7 +56,7 @@ class BrepSurfaceSegment : public interface::BrepCurve {
   [[nodiscard]] bool IsInside(double local) const override;
 
  private:
-  const interface::BrepSurface* surface_;
+  std::shared_ptr<const interface::BrepSurface> surface_;
   Eigen::Vector2d local_direction_;
   Eigen::Vector2d local_offset_;
 };

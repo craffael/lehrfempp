@@ -20,8 +20,10 @@ template <class GEOM_TRIA, class GEOM_SEGMENT>
 class BrepLagrTria : public geometry::Geometry {
  public:
   explicit BrepLagrTria(
-      GEOM_TRIA tria, const interface::BrepSurface* surface,
+      GEOM_TRIA tria, std::shared_ptr<const BrepSurface> surface,
+
       const Eigen::Matrix<double, 2, 3>& surface_coords,
+
       const std::array<
           std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>&
           curves);
@@ -47,7 +49,7 @@ class BrepLagrTria : public geometry::Geometry {
 
  private:
   GEOM_TRIA geom_;
-  // Pointer to the surface paramterization, can be null!
+  // Pointer to the surface parameterization, can be null!
   const brep::interface::BrepSurface* surface_;
   // contains the surface coordinates of the tria corners
   Eigen::Matrix<double, 2, 3> surface_coords_;
@@ -55,14 +57,18 @@ class BrepLagrTria : public geometry::Geometry {
   // contains the three edge parametrizations (first) and the local coordinates
   // of the endpoints w.r.t. these parametrizations.
   // Note that the vector can be nullptr!
-  std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
+  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+                       Eigen::RowVector2d>,
+             3>
       curves_;
 };
 
 template <class GEOM_TRIA, class GEOM_SEGMENT>
 BrepLagrTria<GEOM_TRIA, GEOM_SEGMENT>::BrepLagrTria(
-    GEOM_TRIA tria, const interface::BrepSurface* surface,
+    GEOM_TRIA tria, std::shared_ptr<const BrepSurface> surface,
+
     const Eigen::Matrix<double, 2, 3>& surface_coords,
+
     const std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>,
                      3>& curves)
     : geom_(tria),
