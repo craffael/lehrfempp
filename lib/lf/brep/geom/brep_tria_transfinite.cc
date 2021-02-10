@@ -358,6 +358,7 @@ Eigen::MatrixXd BrepTriaTransfinite::Global(
 
 Eigen::MatrixXd BrepTriaTransfinite::Jacobian(
     const Eigen::MatrixXd& local) const {
+  LF_ASSERT_MSG(local.rows() == 2, "expected 2d coordinate pairs");
   Eigen::MatrixXd result(DimGlobal(), 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
     auto g0 = [&](double x) {

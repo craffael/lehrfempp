@@ -17,8 +17,8 @@ TEST(lf_brep_testUtils, CurveCircleTest) {
   double radius = 5;
   CurveCircle cc(origin, radius);
 
-  auto global = Eigen::RowVectorXd::LinSpaced(10, -base::kPi, base::kPi);
+  auto local = Eigen::RowVectorXd::LinSpaced(10, -base::kPi, base::kPi);
 
-  CheckBrepGeometry(cc, global);
+  CheckBrepGeometry(cc, local);
 }
 }  // namespace lf::brep::test_utils::test

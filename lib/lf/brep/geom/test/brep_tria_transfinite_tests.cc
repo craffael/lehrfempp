@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <lf/brep/geom/geom.h>
 #include <lf/brep/test_utils/curve_circle.h>
+#include <lf/brep/test_utils/curve_straight_segment.h>
 #include <lf/geometry/test_utils/test_utils.h>
 #include <lf/quad/quad.h>
 
@@ -79,15 +80,78 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleTest) {
   }
 }
 
+/**
+ * @brief Here we make a triangle that occupies the space [0,1]^2\UnitCircle.
+ *        This is a quite hard test case because the determinant of the mapping
+ *        becomes extremely small/zero in large part of the domain.
+ *        The "problem" is that the two straight line segments are tangential to
+ * the circle arc and hence form a cusp.
+ */
 TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest) {
   Eigen::Vector3d origin(0, 0, 0);
   test_utils::CurveCircle circle(origin, 1);
 
+  test_utils::CurveStraightLine line0({1, 0, 0}, {1, 1, 0});
+  test_utils::CurveStraightLine line1({0, 1, 0}, {1, 1, 0});
+
   using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
-      p_t{&circle, Eigen::RowVector2d(0., base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 3 * base::kPi / 2.)},
-      p_t{&circle, Eigen::RowVector2d(-base::kPi / 2., 0.0)}};
+      p_t{&line0, Eigen::RowVector2d(0., 1.)},
+      p_t{&line1, Eigen::RowVector2d(1., 0.)},
+      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
+  BrepTriaTransfinite tria(curves, {false, false, false});
+
+  auto qr = quad::make_QuadRule(base::RefEl::kTria(), 40);
+
+  auto jac = tria.Jacobian(qr.Points());
+  for (int i = 0; i < qr.NumPoints(); ++i) {
+    auto t = (jac.block(0, 2 * i, 3, 2).transpose() * jac.block(0, 2 * i, 3, 2))
+                 .determinant();
+    EXPECT_GT(t, 0);
+  }
+
+  // Make sure all the points lie within the expected area:
+  // (Due to roundoff errors, the tolerance is quite low.)
+  auto global = tria.Global(qr.Points());
+  for (int i = 0; i < global.cols(); ++i) {
+    EXPECT_GT(global.col(i).norm(), 1 - 1e-2);
+    EXPECT_LT(global(0, i), 1 + 1e-2);
+    EXPECT_LT(global(1, i), 1 + 1e-2);
+    EXPECT_GT(global(0, i), -1e-2);
+    EXPECT_GT(global(1, i), -1e-2);
+  }
+
+  double volume = tria.IntegrationElement(qr.Points()).dot(qr.Weights());
+  EXPECT_NEAR(volume, 1 - base::kPi / 4., 0.02);
+
+  // Note that the tolerance for the volume check is quite high.
+  // Thats because numerical roundoff errors make it very hard to integrate the
+  // volume correctly.
+  // (Not even Mathematica can do it correctly)
+}
+
+/**
+ * @brief This is a test case similar to BrepTriaTransfiniteCircleCutoutTest but
+ * much more well-conditioned because the two straight line segments are not
+ * tangential to the circle
+ */
+TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest2) {
+  Eigen::Vector3d origin(0, 0, 0);
+  test_utils::CurveCircle circle(origin, 1);
+
+  test_utils::CurveStraightLine line0({1, 0, 0}, {2, 2, 0});
+  test_utils::CurveStraightLine line1({0, 1, 0}, {2, 2, 0});
+
+  using p_t = std::pair<const interface::BrepCurve*, Eigen::RowVector2d>;
+  std::array<p_t, 3> curves{
+      p_t{&line0, Eigen::RowVector2d(0., 1.)},
+      p_t{&line1, Eigen::RowVector2d(1., 0.)},
+      p_t{&circle, Eigen::RowVector2d(base::kPi / 2., 0.0)}};
+  BrepTriaTransfinite tria(curves, {false, false, false});
+
+  auto qr = quad::make_QuadRule(base::RefEl::kTria(), 40);
+  double volume = tria.IntegrationElement(qr.Points()).dot(qr.Weights());
+  EXPECT_NEAR(volume, 4 - 2 - base::kPi / 4., 1e-6);
 }
 
 }  // namespace lf::brep::geom::tests
