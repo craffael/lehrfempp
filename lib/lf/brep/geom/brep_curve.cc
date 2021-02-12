@@ -9,19 +9,21 @@
 #include "brep_curve.h"
 
 namespace lf::brep::geom {
-BrepCurve::BrepCurve(std::shared_ptr<const interface::BrepCurve> curve,
+BrepCurve::BrepCurve(std::shared_ptr<const interface::BrepGeometry> curve,
                      Eigen::RowVector2d curve_param)
     : curve_(curve),
       offset_(curve_param(0)),
-      slope_(curve_param(1) - curve_param(0)) {}
+      slope_(curve_param(1) - curve_param(0)) {
+  LF_ASSERT_MSG(curve->DimLocal() == 1, "curve is not a curve.");
+}
 
 Eigen::MatrixXd BrepCurve::Global(const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(local.rows() == 1, "unexpected # of rows.");
-  return curve_->GlobalMulti((slope_ * local.array() + offset_).matrix());
+  return curve_->Global((slope_ * local.array() + offset_).matrix());
 }
 
 Eigen::MatrixXd BrepCurve::Jacobian(const Eigen::MatrixXd& local) const {
-  return curve_->JacobianMulti((slope_ * local.array() + offset_).matrix()) *
+  return curve_->Jacobian((slope_ * local.array() + offset_).matrix()) *
          slope_;
 }
 
@@ -39,6 +41,9 @@ Eigen::VectorXd BrepCurve::IntegrationElement(
 
 std::unique_ptr<geometry::Geometry> BrepCurve::SubGeometry(dim_t codim,
                                                            dim_t i) const {
+  auto make11Matrix = [](double value) {
+    return (Eigen::MatrixXd(1, 1) << value).finished();
+  };
   LF_ASSERT_MSG(codim >= 0 && codim <= 1, "codim out of bounds.");
   if (codim == 0) {
     LF_ASSERT_MSG(i == 0, "subidx out of bounds.");
@@ -46,10 +51,11 @@ std::unique_ptr<geometry::Geometry> BrepCurve::SubGeometry(dim_t codim,
   }
   LF_ASSERT_MSG(i >= 0 && i <= 1, "subidx out of bounds.");
   if (i == 0) {
-    return std::make_unique<geometry::Point>(curve_->GlobalSingle(offset_));
+    return std::make_unique<geometry::Point>(
+        curve_->Global(make11Matrix(offset_)));
   }
   return std::make_unique<geometry::Point>(
-      curve_->GlobalSingle(offset_ + slope_));
+      curve_->Global(make11Matrix(offset_ + slope_)));
 }
 
 std::vector<std::unique_ptr<geometry::Geometry>> BrepCurve::ChildGeometry(

@@ -4,11 +4,17 @@ set(src
   brep_lagr_segment.cc
   brep_lagr_tria.h
   brep_curve.h
+  brep_curve_2d.h
+  brep_curve_2d.cc
   brep_curve.cc
+  brep_mesh_factory_transfinite.h
+  brep_mesh_factory_transfinite.cc
   brep_surface_segment.h
   brep_surface_segment.cc
   brep_tria_transfinite.h
   brep_tria_transfinite.cc
+  curve_straight_segment.h
+  curve_straight_segment.cc
 )
 
 add_library(lf.brep.geom ${src})

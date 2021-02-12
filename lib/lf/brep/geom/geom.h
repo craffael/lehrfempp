@@ -11,7 +11,10 @@
 
 #include "brep_curve.h"
 #include "brep_lagr_segment.h"
+#include "brep_mesh_factory_transfinite.h"
+#include "brep_surface_segment.h"
 #include "brep_tria_transfinite.h"
+#include "curve_straight_segment.h"
 
 namespace lf::brep::geom {}
 

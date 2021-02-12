@@ -27,20 +27,24 @@ class BrepModel {
   BrepModel& operator=(BrepModel&&) = delete;
   virtual ~BrepModel() = default;
 
+  /**
+   * @brief Finds all curves that goe through the given point (i.e. such that
+   * BrepGeometry::IsInside() == true)
+   */
   [[nodiscard]] virtual std::vector<
-      std::pair<std::shared_ptr<const BrepCurve>, double>>
+      std::pair<std::shared_ptr<const BrepGeometry>, double>>
   FindCurves(const Eigen::Vector3d& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<std::shared_ptr<const BrepCurve>, Eigen::RowVectorXd>>
+      std::pair<std::shared_ptr<const BrepGeometry>, Eigen::RowVectorXd>>
   FindCurvesMulti(const Eigen::Matrix3Xd& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<std::shared_ptr<const BrepSurface>, Eigen::Vector2d>>
+      std::pair<std::shared_ptr<const BrepGeometry>, Eigen::Vector2d>>
   FindSurfaces(const Eigen::Vector3d& global) const = 0;
 
   [[nodiscard]] virtual std::vector<
-      std::pair<std::shared_ptr<const BrepSurface>, Eigen::Matrix2Xd>>
+      std::pair<std::shared_ptr<const BrepGeometry>, Eigen::Matrix2Xd>>
   FindSurfacesMulti(const Eigen::Matrix3Xd& global) const = 0;
 
   [[nodiscard]] virtual base::size_type NumCurves() const = 0;

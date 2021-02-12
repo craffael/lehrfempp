@@ -69,28 +69,28 @@ OcctBrepModel::OcctBrepModel(std::string_view filename) {
   }
 }
 
-std::vector<std::pair<std::shared_ptr<const interface::BrepCurve>, double>>
+std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>, double>>
 OcctBrepModel::FindCurves(const Eigen::Vector3d& global) const {
-  std::vector<std::pair<std::shared_ptr<interface::BrepCurve const>, double>>
+  std::vector<std::pair<std::shared_ptr<interface::BrepGeometry const>, double>>
       result;
   for (const auto& e : edges_) {
-    if (!e->IsInBoundingBoxSingle(global)) {
+    if (!e->IsInBoundingBox(global)[0]) {
       continue;
     }
     auto [dist, param] = e->Project(global);
     if (dist <= 1e-5 && e->IsInside(param)) {
-      result.emplace_back(e, param);
+      result.emplace_back(e, param(0));
     }
   }
   return result;
 }
 
-inline std::vector<
-    std::pair<std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
+inline std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>,
+                             Eigen::RowVectorXd>>
 OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
   LF_ASSERT_MSG(global.cols() > 0, "global must contain at least one column.");
 
-  std::vector<std::pair<std::shared_ptr<const interface::BrepCurve>,
+  std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVectorXd>>
       result;
 
@@ -100,7 +100,7 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
     // 1) Check if all points are inside the bounding box:
     if ([&]() {
           for (int i = 0; i < global.cols(); ++i) {
-            if (!e->IsInBoundingBoxSingle(global.col(i))) {
+            if (!e->IsInBoundingBox(global.col(i))[0]) {
               return true;
             }
           }
@@ -121,7 +121,7 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
         result_coord.resize(1, global.cols());
       }
 
-      result_coord(0, i) = param;
+      result_coord.col(i) = param;
       if (i + 1 == global.cols()) {
         result.emplace_back(e, std::move(result_coord));
         result_coord = Eigen::RowVectorXd();
@@ -133,13 +133,13 @@ OcctBrepModel::FindCurvesMulti(const Eigen::Matrix3Xd& global) const {
 }
 
 std::vector<
-    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
+    std::pair<std::shared_ptr<const interface::BrepGeometry>, Eigen::Vector2d>>
 OcctBrepModel::FindSurfaces(const Eigen::Vector3d& global) const {
-  std::vector<
-      std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
+  std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>,
+                        Eigen::Vector2d>>
       result;
   for (const auto& f : faces_) {
-    if (!f->IsInBoundingBox(global)) {
+    if (!f->IsInBoundingBox(global)[0]) {
       continue;
     }
     auto [dist, param] = f->Project(global);
@@ -151,9 +151,9 @@ OcctBrepModel::FindSurfaces(const Eigen::Vector3d& global) const {
 }
 
 std::vector<
-    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
+    std::pair<std::shared_ptr<const interface::BrepGeometry>, Eigen::Matrix2Xd>>
 OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
-  std::vector<std::pair<std::shared_ptr<const interface::BrepSurface>,
+  std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::Matrix2Xd>>
       result;
   Eigen::Matrix2Xd result_coord;
@@ -161,7 +161,7 @@ OcctBrepModel::FindSurfacesMulti(const Eigen::Matrix3Xd& global) const {
     // 1) Check if all points are inside the bounding box:
     if ([&]() {
           for (int i = 0; i < global.cols(); ++i) {
-            if (!f->IsInBoundingBox(global.col(i))) {
+            if (!f->IsInBoundingBox(global.col(i))[0]) {
               return true;
             }
           }

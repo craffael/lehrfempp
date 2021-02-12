@@ -17,12 +17,12 @@ namespace lf::brep::occt::test {
  * @brief Checks that all Curves returned by FindCurvesMulti are contained in
  * the result of FindCurves()
  */
-std::vector<
-    std::pair<std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
+std::vector<std::pair<std::shared_ptr<const interface::BrepGeometry>,
+                      Eigen::RowVectorXd>>
 FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindCurvesMulti(global);
   for (auto& [c, param] : all) {
-    EXPECT_TRUE(c->GlobalMulti(param).isApprox(global));
+    EXPECT_TRUE(c->Global(param).isApprox(global));
     test_utils::CheckBrepGeometry(*c, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
@@ -36,11 +36,11 @@ FindCurves(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
 }
 
 std::vector<
-    std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
+    std::pair<std::shared_ptr<const interface::BrepGeometry>, Eigen::Matrix2Xd>>
 FindSurfaces(const OcctBrepModel& model, const Eigen::Matrix3Xd& global) {
   auto all = model.FindSurfacesMulti(global);
   for (auto& [s, param] : all) {
-    EXPECT_TRUE(s->GlobalMulti(param).isApprox(global));
+    EXPECT_TRUE(s->Global(param).isApprox(global));
     test_utils::CheckBrepGeometry(*s, param);
   }
   for (int i = 0; i < global.cols(); ++i) {
@@ -72,6 +72,7 @@ TEST(occt, rotatedCubeTest) {
   auto find_result = FindCurves(*model, global);
   EXPECT_EQ(find_result.size(), 1);
   EXPECT_TRUE(find_result[0].first);
+  EXPECT_EQ(find_result[0].first->Periods()(0), 0);
 
   // try to retrieve an edge that is outside of the parameter bounds:
   // clang-format off
@@ -94,9 +95,10 @@ TEST(occt, rotatedCubeTest) {
   EXPECT_TRUE(find_surfaces[0].first);
   EXPECT_EQ(find_surfaces[0].second.rows(), 2);
   EXPECT_EQ(find_surfaces[0].second.cols(), 4);
-  EXPECT_TRUE(find_surfaces[0]
-                  .first->GlobalMulti(find_surfaces[0].second)
-                  .isApprox(global));
+  EXPECT_TRUE(
+      find_surfaces[0].first->Global(find_surfaces[0].second).isApprox(global));
+  EXPECT_EQ(find_surfaces[0].first->Periods()(0), 0);
+  EXPECT_EQ(find_surfaces[0].first->Periods()(1), 0);
 
   // try to retrieve a face that is outside the parameter bounds:
   // clang-format off
@@ -124,7 +126,7 @@ TEST(occt, bSpline2dTest) {
 
   // find the b-spline curve (which is not linear):
   Eigen::Vector3d midpoint = global.rowwise().sum() / 2;
-  std::shared_ptr<const interface::BrepCurve> bspline;
+  std::shared_ptr<const interface::BrepGeometry> bspline;
   Eigen::RowVectorXd bspline_param;
   for (auto& g : find_result) {
     auto [distance, parameter] = g.first->Project(midpoint);
@@ -141,8 +143,8 @@ TEST(occt, bSpline2dTest) {
   local(0, 0) =
       bspline_param(0, 0) - (bspline_param(0, 1) - bspline_param(0, 0)) / 100.;
 
-  auto temp = bspline->GlobalMulti(local);
-  EXPECT_TRUE(bspline->IsInBoundingBoxMulti(temp)[0]);
+  auto temp = bspline->Global(local);
+  EXPECT_TRUE(bspline->IsInBoundingBox(temp)[0]);
   auto temp_result = FindCurves(*model, temp);
   EXPECT_EQ(temp_result.size(), 0);
 

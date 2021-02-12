@@ -18,7 +18,22 @@ TEST(lf_brep_testUtils, CurveCircleTest) {
   CurveCircle cc(origin, radius);
 
   auto local = Eigen::RowVectorXd::LinSpaced(10, -base::kPi, base::kPi);
-
+  EXPECT_NEAR(cc.Periods()(0), 2 * base::kPi, 1e-6);
   CheckBrepGeometry(cc, local);
+
+  // Check projection of origin:
+  auto [dist, param] = cc.Project(origin);
+  ASSERT_EQ(dist, 5);
+}
+
+TEST(lf_brep_testUtils, UnitCircleTest) {
+  Eigen::Vector3d origin(0, 0, 0);
+  double radius = 1.;
+
+  CurveCircle cc(origin, radius);
+
+  // Check projection of origin:
+  auto [dist, param] = cc.Project(origin);
+  ASSERT_EQ(dist, 1);
 }
 }  // namespace lf::brep::test_utils::test

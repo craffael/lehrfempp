@@ -7,13 +7,13 @@
  */
 
 #include "occt_brep_curve.h"
+
+#include <BRepBndLib.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomAPI_ProjectPointOnCurve.hxx>
 
 #include "lf/mesh/utils/all_codim_mesh_data_set.h"
 #include "occt_details.h"
-
-#include <BRepBndLib.hxx>
 
 namespace lf::brep::occt {
 namespace /* anonymous */ {}  // namespace
@@ -26,47 +26,41 @@ OcctBrepCurve::OcctBrepCurve(TopoDS_Edge &&edge) : edge_(edge) {
                 "Unexpected: there is no curve associated with this edge.");
 }
 
-Eigen::MatrixXd OcctBrepCurve::GlobalMulti(const Eigen::MatrixXd &local) const {
+Eigen::MatrixXd OcctBrepCurve::Global(const Eigen::MatrixXd &local) const {
   LF_ASSERT_MSG(local.rows() == 1,
                 "local must have exactly one row because this is a curve (1D).")
   Eigen::MatrixXd result(3, local.cols());
   for (int i = 0; i < local.cols(); ++i) {
-    result.col(i) = GlobalSingle(local(0, i));
+    gp_Pnt p;
+    curve_->D0(local(0, i), p);
+    result.col(i) = detail::ToVector(p);
   }
   return result;
 }
 
-Eigen::Vector3d OcctBrepCurve::GlobalSingle(double local) const {
-  gp_Pnt p;
-  curve_->D0(local, p);
-  return detail::ToVector(p);
-}
-
-Eigen::MatrixXd OcctBrepCurve::JacobianMulti(
-    const Eigen::MatrixXd &local) const {
+Eigen::MatrixXd OcctBrepCurve::Jacobian(const Eigen::MatrixXd &local) const {
   LF_ASSERT_MSG(local.rows() == 1,
                 "local must have exactly one row because this is a curve (1D).")
   Eigen::MatrixXd result(3, local.cols());
   for (int i = 0; i < local.cols(); ++i) {
-    result.col(i) = JacobianSingle(local(0, i));
+    gp_Pnt p;
+    gp_Vec v;
+    curve_->D1(local(0, i), p, v);
+    result.col(i) = detail::ToVector(v);
   }
   return result;
 }
 
-Eigen::Vector3d OcctBrepCurve::JacobianSingle(double local) const {
-  gp_Pnt p;
-  gp_Vec v;
-  curve_->D1(local, p, v);
-  return detail::ToVector(v);
-}
-
-std::pair<double, double> OcctBrepCurve::Project(
-    const Eigen::Vector3d &global) const {
+std::pair<double, Eigen::VectorXd> OcctBrepCurve::Project(
+    const Eigen::VectorXd &global) const {
+  LF_ASSERT_MSG(global.rows() == 3, "Unexpected #rows in global.");
   GeomAPI_ProjectPointOnCurve proj(detail::ToPoint(global), curve_);
-  return {proj.LowerDistance(), proj.LowerDistanceParameter()};
+  Eigen::VectorXd param(1);
+  param(0) = proj.LowerDistanceParameter();
+  return {proj.LowerDistance(), std::move(param)};
 }
 
-std::vector<bool> OcctBrepCurve::IsInBoundingBoxMulti(
+std::vector<bool> OcctBrepCurve::IsInBoundingBox(
     const Eigen::MatrixXd &global) const {
   LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.")
 
@@ -77,14 +71,20 @@ std::vector<bool> OcctBrepCurve::IsInBoundingBoxMulti(
   return result;
 }
 
-bool OcctBrepCurve::IsInBoundingBoxSingle(
-    const Eigen::Vector3d &global) const {
-  return !obb_.IsOut(detail::ToPoint(global));
+bool OcctBrepCurve::IsInside(const Eigen::VectorXd &local) const {
+  LF_ASSERT_MSG(local.rows() == 1, "local should have exactly 1 row.");
+  return (umin_ - local(0) < Precision::PApproximation()) &&
+         (local(0) - umax_ < Precision::PApproximation());
 }
 
-bool OcctBrepCurve::IsInside(double local) const {
-  return (umin_ - local < Precision::PApproximation()) &&
-         (local - umax_ < Precision::PApproximation());
+Eigen::VectorXd OcctBrepCurve::Periods() const {
+  Eigen::VectorXd result(1);
+  if (curve_->IsPeriodic()) {
+    result(0) = curve_->Period();
+  } else {
+    result(0) = 0;
+  }
+  return result;
 }
 
 }  // namespace lf::brep::occt

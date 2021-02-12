@@ -1,5 +1,5 @@
-/** 
- * @file 
+/**
+ * @file
  * @brief Test implementation of OcctBrepSurface
  * @author Raffael Casagrande
  * @date   2020-11-23 01:04:03
@@ -7,7 +7,6 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <lf/brep/occt/occt.h>
 
 #include "utils.h"
@@ -24,18 +23,20 @@ TEST(occt, cubeSurfaceProjection) {
   auto surf_result = model->FindSurfacesMulti(global);
   ASSERT_EQ(surf_result.size(), 1);
   auto surface = surf_result[0].first;
+  ASSERT_EQ(surface->Periods()(0), 0);
+  ASSERT_EQ(surface->Periods()(1), 0);
 
   // project the point (5,10,5):
   Eigen::Vector3d p(5, 10, 5);
   auto [dist, param] = surface->Project(p);
   EXPECT_LT(dist, 1e-6);
-  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(p));
+  EXPECT_TRUE(surface->Global(param).isApprox(p));
 
   // Project the point (5,15,5):
   p = Eigen::Vector3d(5, 15, 5);
   std::tie(dist, param) = surface->Project(p);
   EXPECT_LT(std::abs(dist - 5), 1e-5);
-  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(Eigen::Vector3d(5,10,5)));
+  EXPECT_TRUE(surface->Global(param).isApprox(Eigen::Vector3d(5, 10, 5)));
 
   // project a point that lies slightly outside:
   p = Eigen::Vector3d(11, 10, 0);
@@ -51,24 +52,21 @@ TEST(OCCT, hollowHemiespherSurfProjection) {
   auto surface_result = model->FindSurfaces(Eigen::Vector3d(0, 0, -5));
   ASSERT_EQ(surface_result.size(), 1);
   auto surface = surface_result[0].first;
+  ASSERT_EQ(surface->Periods()(0), 0);
+  ASSERT_EQ(surface->Periods()(1), 0);
 
   // Project point (-6,-6,-6) onto the surface:
   Eigen::Vector3d p(-6, -6, -6);
   auto [dist, param] = surface->Project(p);
   EXPECT_GT(dist, 1);
-  EXPECT_TRUE(surface->GlobalSingle(param).isApprox(p / p.norm() * 5));
+  EXPECT_TRUE(surface->Global(param).isApprox(p / p.norm() * 5));
 
   // Project point (6,6,6) onto the surface:
-  // -> Here it's not clear if a point within the parameter bounds will be returned or not.
+  // -> Here it's not clear if a point within the parameter bounds will be
+  // returned or not.
   p = Eigen::Vector3d(6, 6, 6);
   std::tie(dist, param) = surface->Project(p);
-  //std::cout << surface->Global(param) << std::endl;
-  //EXPECT_TRUE(surface->IsInside(param));
-
-
+  // std::cout << surface->Global(param) << std::endl;
+  // EXPECT_TRUE(surface->IsInside(param));
 }
-}
-
-
-
-
+}  // namespace lf::brep::occt::test

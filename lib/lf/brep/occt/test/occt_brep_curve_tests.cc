@@ -9,9 +9,14 @@
 #include <gtest/gtest.h>
 #include <lf/brep/occt/occt.h>
 
+#include "lf/brep/test_utils/check_brep_geometry.h"
 #include "utils.h"
 
 namespace lf::brep::occt::test {
+
+auto make11Matrix = [](double value) {
+  return (Eigen::VectorXd(1) << value).finished();
+};
 
 TEST(occt, curveProjectionCube) {
   auto model = LoadModel("cube.brep");
@@ -23,12 +28,13 @@ TEST(occt, curveProjectionCube) {
   auto find_curve = model->FindCurvesMulti(global);
   EXPECT_EQ(find_curve.size(), 1);
   auto curve = find_curve[0].first;
+  ASSERT_EQ(curve->Periods()(0), 0);
 
   // project point (10,10,10) onto curve
   auto [dist, local] = curve->Project(Eigen::Vector3d(10, 10, 10));
   ASSERT_GE(dist, 0);
   ASSERT_LT(dist, 1e-6);
-  ASSERT_TRUE(curve->GlobalSingle(local).isApprox(Eigen::Vector3d(10, 10, 10)));
+  ASSERT_TRUE(curve->Global(local).isApprox(Eigen::Vector3d(10, 10, 10)));
 
   // project point (10,10,20) onto curve:
   std::tie(dist, local) = curve->Project(Eigen::Vector3d(10, 10, 20));
@@ -39,6 +45,13 @@ TEST(occt, curveProjectionCube) {
   std::tie(dist, local) = curve->Project(Eigen::Vector3d(12, 10, 5));
   ASSERT_LE(std::abs(dist - 2), 1e-6);
   ASSERT_TRUE(curve->IsInside(local));
+
+  // Check rest of the geometry:
+  // -> First find the the local coordinates:
+  auto [dista, parama] = curve->Project(Eigen::Vector3d(10, 10, 10));
+  auto [distb, paramb] = curve->Project(Eigen::Vector3d(10, 10, 0));
+  test_utils::CheckBrepGeometry(
+      *curve, Eigen::RowVectorXd::LinSpaced(11, parama(0), paramb(0)));
 }
 
 TEST(occt, curveProjectionBSpline) {
@@ -46,7 +59,7 @@ TEST(occt, curveProjectionBSpline) {
 
   // find b-spline curve:
   auto find_curve = model->FindCurves(Eigen::Vector3d(-10, -10, 0));
-  std::shared_ptr<interface::BrepCurve const> curve;
+  std::shared_ptr<interface::BrepGeometry const> curve;
   double curve_param;
   for (auto [c, param] : find_curve) {
     if (c->Project(Eigen::Vector3d(-11.5, -8, 0)).first > 1e-3) {
@@ -56,6 +69,7 @@ TEST(occt, curveProjectionBSpline) {
     }
   }
   ASSERT_TRUE(curve);
+  ASSERT_EQ(curve->Periods()(0), 0);
 
   // project point (-13,-6,0) (other endpoint)
   auto [dist, local] = curve->Project(Eigen::Vector3d(-13, -6, 0));
@@ -66,8 +80,9 @@ TEST(occt, curveProjectionBSpline) {
   std::tie(dist, local) = curve->Project(Eigen::Vector3d(-15, -7, 0));
   ASSERT_GT(dist, 1);
   ASSERT_TRUE(
-      std::abs(dist - (curve->GlobalSingle(local) - Eigen::Vector3d(-15, -7, 0))
-                          .norm()) < 1e-6);
+      std::abs(dist -
+               (curve->Global(local) - Eigen::Vector3d(-15, -7, 0)).norm()) <
+      1e-6);
   ASSERT_TRUE(curve->IsInside(local));
   // std::cout << curve->Global(local) << std::endl;
 
@@ -75,20 +90,20 @@ TEST(occt, curveProjectionBSpline) {
   Eigen::Vector3d p(-13 - 1e-7, -6, 0);
   std::tie(dist, local) = curve->Project(p);
 
-  ASSERT_TRUE(std::abs(dist - (curve->GlobalSingle(local) - p).norm()) < 1e-6);
+  ASSERT_TRUE(std::abs(dist - (curve->Global(local) - p).norm()) < 1e-6);
   // std::cout << curve->Global(local) << std::endl;
   ASSERT_LT(dist, 1e-7);
   ASSERT_TRUE(curve->IsInside(local));
 
   // now map a point that lies slightly inside the bspline and project it back:
-  ASSERT_TRUE(curve->IsInside(curve_param + 1e-3));
-  p = curve->GlobalSingle(curve_param + 1e-3);
+  ASSERT_TRUE(curve->IsInside(make11Matrix(curve_param + 1e-3)));
+  p = curve->Global(make11Matrix(curve_param + 1e-3));
   std::tie(dist, local) = curve->Project(p);
   ASSERT_LT(dist, 0.1);
 
   // now map a point that lies slightly outside the bpsline and project it back:
-  ASSERT_FALSE(curve->IsInside(curve_param - 1e-3));
-  p = curve->GlobalSingle(curve_param - 1e-3);
+  ASSERT_FALSE(curve->IsInside(make11Matrix(curve_param - 1e-3)));
+  p = curve->Global(make11Matrix(curve_param - 1e-3));
   std::tie(dist, local) = curve->Project(p);
   EXPECT_GT(dist, 1);  // in this case we have no guarantee, and here the
                        // distance is actually much bigger
@@ -106,38 +121,39 @@ TEST(occt, curveCircleTest) {
 
   ASSERT_EQ(circle->DimLocal(), 1);
   ASSERT_EQ(circle->DimGlobal(), 3);
+  ASSERT_EQ(circle->Periods()(0), 2 * base::kPi);
 
   // Test global:
   Eigen::RowVectorXd local =
       Eigen::RowVectorXd::LinSpaced(10, 0, 2 * base::kPi);
-  auto global = circle->GlobalMulti(local);
+  auto global = circle->Global(local);
   for (int i = 0; i < global.cols(); ++i) {
     ASSERT_NEAR((global.col(i) - origin).norm(), 2, 1e-7);
   }
 
   // test bounding box:
-  auto in_box = circle->IsInBoundingBoxMulti(global);
+  auto in_box = circle->IsInBoundingBox(global);
   for (int i = 0; i < global.cols(); ++i) {
     ASSERT_TRUE(in_box[i]);
   }
 
-  ASSERT_TRUE(circle->IsInBoundingBoxSingle(origin));
-  ASSERT_FALSE(circle->IsInBoundingBoxSingle(Eigen::Vector3d(4, 2, 0)));
+  ASSERT_TRUE(circle->IsInBoundingBox(origin)[0]);
+  ASSERT_FALSE(circle->IsInBoundingBox(Eigen::Vector3d(4, 2, 0))[0]);
 
   // test IsInside:
-  ASSERT_TRUE(circle->IsInside(0.));
-  ASSERT_TRUE(circle->IsInside(2 * base::kPi));
+  ASSERT_TRUE(circle->IsInside(make11Matrix(0.)));
+  ASSERT_TRUE(circle->IsInside(make11Matrix(2 * base::kPi)));
 
   // even though circle is periodic, not all values are inside:
-  ASSERT_FALSE(circle->IsInside(2.1 * base::kPi));
-  ASSERT_FALSE(circle->IsInside(-0.1));
+  ASSERT_FALSE(circle->IsInside(make11Matrix(2.1 * base::kPi)));
+  ASSERT_FALSE(circle->IsInside(make11Matrix(-0.1)));
 
   // test projection by projecting points on the circle:
   for (int i = 0; i < global.cols() - 1;
        ++i) {  // leave out the last point as it projects onto 0
     auto [dist, p] = circle->Project(global.col(i));
     ASSERT_LT(dist, 1e-7);
-    ASSERT_NEAR(p, local[i], 1e-7);
+    ASSERT_NEAR(p(0, 0), local[i], 1e-7);
     ASSERT_TRUE(circle->IsInside(p));
   }
 
@@ -151,7 +167,7 @@ TEST(occt, curveCircleTest) {
   auto [dist, p] = circle->Project(global2);
   ASSERT_TRUE(circle->IsInside(p));
   ASSERT_NEAR(dist, (global2 - global2_proj).norm(), 1e-7);
-  ASSERT_TRUE(circle->GlobalSingle(p).isApprox(global2_proj));
+  ASSERT_TRUE(circle->Global(p).isApprox(global2_proj));
 }
 
 }  // namespace lf::brep::occt::test

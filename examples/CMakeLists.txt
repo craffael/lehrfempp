@@ -3,6 +3,7 @@
 
 add_subdirectory(assemble)
 add_subdirectory(base)
+add_subdirectory(brep)
 add_subdirectory(ellbvp_linfe)
 add_subdirectory(ellbvp_msh)
 add_subdirectory(fe)

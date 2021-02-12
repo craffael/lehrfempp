@@ -18,7 +18,7 @@ class BrepTriaTransfinite : public geometry::Geometry {
  public:
   BrepTriaTransfinite(const BrepTriaTransfinite&) = default;
   BrepTriaTransfinite(
-      std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+      std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                            Eigen::RowVector2d>,
                  3>
           curves);
@@ -46,7 +46,7 @@ class BrepTriaTransfinite : public geometry::Geometry {
       lf::base::dim_t codim) const override;
 
  private:
-  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+  std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                        Eigen::RowVector2d>,
              3>
       curves_;
@@ -57,7 +57,7 @@ class BrepTriaTransfinitePerronnet : public geometry::Geometry {
  public:
   BrepTriaTransfinitePerronnet(const BrepTriaTransfinitePerronnet&) = default;
   BrepTriaTransfinitePerronnet(
-      std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+      std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                            Eigen::RowVector2d>,
                  3>
           curves);
@@ -84,7 +84,7 @@ class BrepTriaTransfinitePerronnet : public geometry::Geometry {
       lf::base::dim_t codim) const override;
 
  private:
-  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+  std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                        Eigen::RowVector2d>,
              3>
       curves_;

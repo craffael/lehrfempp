@@ -14,7 +14,7 @@ CurveCircle::CurveCircle(const Eigen::Vector3d& origin, double radius)
   LF_ASSERT_MSG(radius_ > 0, "Radius must be positive.");
 }
 
-Eigen::MatrixXd CurveCircle::GlobalMulti(const Eigen::MatrixXd& local) const {
+Eigen::MatrixXd CurveCircle::Global(const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(local.rows() == 1, "expected exactly one row.");
   Eigen::MatrixXd result(3, local.cols());
   result.row(0).array() = local.array().cos() * radius_ + origin_.x();
@@ -23,7 +23,7 @@ Eigen::MatrixXd CurveCircle::GlobalMulti(const Eigen::MatrixXd& local) const {
   return result;
 }
 
-Eigen::MatrixXd CurveCircle::JacobianMulti(const Eigen::MatrixXd& local) const {
+Eigen::MatrixXd CurveCircle::Jacobian(const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(3, local.cols());
   result.row(0).array() = -local.array().sin() * radius_;
   result.row(1).array() = local.array().cos() * radius_;
@@ -31,7 +31,7 @@ Eigen::MatrixXd CurveCircle::JacobianMulti(const Eigen::MatrixXd& local) const {
   return result;
 }
 
-std::vector<bool> CurveCircle::IsInBoundingBoxMulti(
+std::vector<bool> CurveCircle::IsInBoundingBox(
     const Eigen::MatrixXd& global) const {
   std::vector<bool> result(global.cols());
   constexpr double eps = 1e-7;
@@ -45,33 +45,27 @@ std::vector<bool> CurveCircle::IsInBoundingBoxMulti(
   return result;
 }
 
-Eigen::Vector3d CurveCircle::GlobalSingle(double local) const {
-  return GlobalMulti((Eigen::Matrix<double, 1, 1>() << local).finished())
-      .col(0);
-}
-
-Eigen::Vector3d CurveCircle::JacobianSingle(double local) const {
-  return JacobianMulti((Eigen::Matrix<double, 1, 1>() << local).finished())
-      .col(0);
-}
-
-std::pair<double, double> CurveCircle::Project(
-    const Eigen::Vector3d& global) const {
+std::pair<double, Eigen::VectorXd> CurveCircle::Project(
+    const Eigen::VectorXd& global) const {
+  LF_ASSERT_MSG(global.rows() == 3, "expected global to have 3 rows.");
   auto temp = (global - origin_).topRows(2).eval();
   Eigen::Vector3d globalp;
-  globalp.topRows(2) = temp.normalized() * radius_ + origin_.topRows(2);
+  if (temp.squaredNorm() > 0) {
+    globalp.topRows(2) = temp.normalized() * radius_ + origin_.topRows(2);
+  } else {
+    globalp.topRows(2) =
+        Eigen::Vector2d::UnitX() * radius_ + origin_.topRows(2);
+  }
   globalp(2) = origin_.z();
 
-  return {(global - globalp).norm(), std::atan2(temp.y(), temp.x())};
+  return {(global - globalp).norm(),
+          (Eigen::VectorXd(1) << std::atan2(temp.y(), temp.x())).finished()};
 }
 
-bool CurveCircle::IsInBoundingBoxSingle(const Eigen::Vector3d& global) const {
-  return IsInBoundingBoxMulti(global)[0];
-}
-
-bool CurveCircle::IsInside(double local) const {
+bool CurveCircle::IsInside(const Eigen::VectorXd& local) const {
+  LF_ASSERT_MSG(local.rows() == 1, "local should have exactly 1 row.");
   constexpr double eps = 1e-7;
-  return local >= -base::kPi - eps && local <= base::kPi + eps;
+  return local(0) >= -base::kPi - eps && local(0) <= base::kPi + eps;
 }
 
 }  // namespace lf::brep::test_utils

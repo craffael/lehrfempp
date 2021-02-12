@@ -16,7 +16,7 @@
 
 namespace lf::brep::geom {
 
-class BrepTriaTransfiniteCurve : public interface::BrepCurve {
+class BrepTriaTransfiniteCurve : public interface::BrepGeometry {
  public:
   BrepTriaTransfiniteCurve(const BrepTriaTransfinite& base_tria,
                            const Eigen::Matrix2d& curve_ends)
@@ -26,13 +26,13 @@ class BrepTriaTransfiniteCurve : public interface::BrepCurve {
     return base_tria_.DimGlobal();
   }
   [[nodiscard]] base::dim_t DimLocal() const override { return 1; }
-  [[nodiscard]] Eigen::MatrixXd GlobalMulti(
+  [[nodiscard]] Eigen::MatrixXd Global(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(local.rows() == 1, "Expected exactly 1 row.");
     return base_tria_.Global(curve_ends_.col(0) * (1 - local.array()).matrix() +
                              curve_ends_.col(1) * local);
   }
-  [[nodiscard]] Eigen::MatrixXd JacobianMulti(
+  [[nodiscard]] Eigen::MatrixXd Jacobian(
       const Eigen::MatrixXd& local) const override {
     LF_ASSERT_MSG(local.rows() == 1, "Expected exactly 1 row.");
     auto jac =
@@ -45,25 +45,20 @@ class BrepTriaTransfiniteCurve : public interface::BrepCurve {
     }
     return result;
   }
-  [[nodiscard]] std::vector<bool> IsInBoundingBoxMulti(
+  [[nodiscard]] std::vector<bool> IsInBoundingBox(
       const Eigen::MatrixXd& global) const override {
     LF_VERIFY_MSG(false, "not implemented.");
   }
-  [[nodiscard]] Eigen::Vector3d GlobalSingle(double local) const override {
-    return GlobalMulti((Eigen::Matrix<double, 1, 1>() << local).finished());
-  }
-  [[nodiscard]] Eigen::Vector3d JacobianSingle(double local) const override {
-    return JacobianMulti((Eigen::Matrix<double, 1, 1>() << local).finished());
-  }
-  [[nodiscard]] std::pair<double, double> Project(
-      const Eigen::Vector3d& global) const override {
+
+  [[nodiscard]] std::pair<double, Eigen::VectorXd> Project(
+      const Eigen::VectorXd& global) const override {
     LF_VERIFY_MSG(false, "not implemented.");
   }
-  [[nodiscard]] bool IsInBoundingBoxSingle(
-      const Eigen::Vector3d& global) const override {
-    LF_VERIFY_MSG(false, "Not implemented.");
+  [[nodiscard]] bool IsInside(const Eigen::VectorXd& local) const override {
+    LF_VERIFY_MSG(false, "not implemented.");
   }
-  [[nodiscard]] bool IsInside(double local) const override {
+
+  [[nodiscard]] Eigen::VectorXd Periods() const override {
     LF_VERIFY_MSG(false, "not implemented.");
   }
 
@@ -228,7 +223,8 @@ class TriaInFather : public geometry::Geometry {
     if (codim == 2) {
       return std::make_unique<geometry::Point>(
           Global(base::RefEl::kTria().NodeCoords().col(i)));
-    } else if (codim == 1) {
+    }
+    if (codim == 1) {
       Eigen::Matrix2d nodes_in_father;
       nodes_in_father.col(0) = base::RefEl::kTria().NodeCoords().col(
           base::RefEl::kTria().SubSubEntity2SubEntity(1, i, 1, 0));
@@ -280,7 +276,7 @@ class TriaInFather : public geometry::Geometry {
 };
 
 BrepTriaTransfinite::BrepTriaTransfinite(
-    std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+    std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                          Eigen::RowVector2d>,
                3>
         curves)
@@ -289,32 +285,42 @@ BrepTriaTransfinite::BrepTriaTransfinite(
       curves_[0].first->DimGlobal() == curves_[1].first->DimGlobal() &&
           curves_[0].first->DimGlobal() == curves_[2].first->DimGlobal(),
       "Inconsistent global dimension.");
+  LF_ASSERT_MSG(curves_[0].first->DimLocal() == 1, "curves[0] is not a curve.");
+  LF_ASSERT_MSG(curves_[1].first->DimLocal() == 1, "curves[0] is not a curve.");
+  LF_ASSERT_MSG(curves_[2].first->DimLocal() == 1, "curves[0] is not a curve.");
+
+  /*LF_ASSERT_MSG(
+      curves_[0].first != curves_[1].first ||
+          curves_[1].first != curves_[2].first,
+      "All three boundaing curves of this triangle are the same curve. This is "
+      "not allowed because it yields a degenerate triangle.");*/
+
   // Make sure the curves agree at the endpoints:
   LF_ASSERT_MSG(
       curves_[0]
-          .first->GlobalSingle(curves_[0].second(1))
-          .isApprox(curves_[1].first->GlobalSingle(curves_[1].second(0))),
+          .first->Global(curves_[0].second.col(1))
+          .isApprox(curves_[1].first->Global(curves_[1].second.col(0))),
       "curves don't match in node 1: \n"
-          << curves_[0].first->GlobalSingle(curves_[0].second(1)).transpose()
+          << curves_[0].first->Global(curves_[0].second.col(1)).transpose()
           << " <-> "
-          << curves_[1].first->GlobalSingle(curves_[1].second(0)).transpose());
+          << curves_[1].first->Global(curves_[1].second.col(0)).transpose());
   LF_ASSERT_MSG(
       curves_[1]
-          .first->GlobalSingle(curves_[1].second(1))
-          .isApprox(curves_[2].first->GlobalSingle(curves_[2].second(0))),
+          .first->Global(curves_[1].second.col(1))
+          .isApprox(curves_[2].first->Global(curves_[2].second.col(0))),
       "curves don't match in node 2:\n"
-          << curves_[1].first->GlobalSingle(curves_[1].second(1)).transpose()
+          << curves_[1].first->Global(curves_[1].second.col(1)).transpose()
           << " <-> "
-          << curves_[2].first->GlobalSingle(curves_[2].second(0)).transpose());
+          << curves_[2].first->Global(curves_[2].second.col(0)).transpose());
   LF_ASSERT_MSG(
       curves_[2]
-          .first->GlobalSingle(curves_[2].second(1))
-          .isApprox(curves_[0].first->GlobalSingle(curves_[0].second(0))),
+          .first->Global(curves_[2].second.col(1))
+          .isApprox(curves_[0].first->Global(curves_[0].second.col(0))),
       "curves don't match in node 0:\n"
-          << curves_[2].first->GlobalSingle(curves_[2].second(1)).transpose()
+          << curves_[2].first->Global(curves_[2].second.col(1)).transpose()
           << " <-> "
-          << curves_[0].first->GlobalSingle(curves_[0].second(0)).transpose());
-  node0_ = curves_[0].first->GlobalSingle(curves_[0].second(0));
+          << curves_[0].first->Global(curves_[0].second.col(0)).transpose());
+  node0_ = curves_[0].first->Global(curves_[0].second.col(0));
 }
 
 Eigen::MatrixXd BrepTriaTransfinite::Global(
@@ -322,27 +328,27 @@ Eigen::MatrixXd BrepTriaTransfinite::Global(
   auto g0 = [&](auto& x) {
     return curves_[0]
         .first
-        ->GlobalMulti((curves_[0].second(0) +
-                       (curves_[0].second(1) - curves_[0].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[0].second(0) +
+                  (curves_[0].second(1) - curves_[0].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
   auto g1 = [&](auto& x) {
     return curves_[1]
         .first
-        ->GlobalMulti((curves_[1].second(0) +
-                       (curves_[1].second(1) - curves_[1].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[1].second(0) +
+                  (curves_[1].second(1) - curves_[1].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
   auto g2 = [&](auto& x) {
     return curves_[2]
         .first
-        ->GlobalMulti((curves_[2].second(0) +
-                       (curves_[2].second(1) - curves_[2].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[2].second(0) +
+                  (curves_[2].second(1) - curves_[2].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
@@ -363,37 +369,37 @@ Eigen::MatrixXd BrepTriaTransfinite::Jacobian(
   Eigen::MatrixXd result(DimGlobal(), 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
     auto g0 = [&](double x) {
-      return curves_[0].first->GlobalSingle(
-          curves_[0].second(0) +
-          (curves_[0].second(1) - curves_[0].second(0)) * x);
+      return curves_[0].first->Global(
+          curves_[0].second.col(0) +
+          (curves_[0].second.col(1) - curves_[0].second.col(0)) * x);
     };
     auto g1 = [&](double x) {
-      return curves_[1].first->GlobalSingle(
-          curves_[1].second(0) +
-          (curves_[1].second(1) - curves_[1].second(0)) * x);
+      return curves_[1].first->Global(
+          curves_[1].second.col(0) +
+          (curves_[1].second.col(1) - curves_[1].second.col(0)) * x);
     };
     auto g2 = [&](double x) {
-      return curves_[2].first->GlobalSingle(
-          curves_[2].second(0) +
-          (curves_[2].second(1) - curves_[2].second(0)) * x);
+      return curves_[2].first->Global(
+          curves_[2].second.col(0) +
+          (curves_[2].second.col(1) - curves_[2].second.col(0)) * x);
     };
-    auto Dg0 = [&](double x) -> Eigen::Vector3d {
-      return curves_[0].first->JacobianSingle(
-                 curves_[0].second(0) +
-                 (curves_[0].second(1) - curves_[0].second(0)) * x) *
+    auto Dg0 = [&](double x) -> Eigen::VectorXd {
+      return curves_[0].first->Jacobian(
+                 curves_[0].second.col(0) +
+                 (curves_[0].second.col(1) - curves_[0].second.col(0)) * x) *
              (curves_[0].second(1) - curves_[0].second(0));
     };
-    auto Dg1 = [&](double x) -> Eigen::Vector3d {
-      return curves_[1].first->JacobianSingle(
-                 curves_[1].second(0) +
-                 (curves_[1].second(1) - curves_[1].second(0)) * x) *
-             (curves_[1].second(1) - curves_[1].second(0));
+    auto Dg1 = [&](double x) -> Eigen::VectorXd {
+      return curves_[1].first->Jacobian(
+                 curves_[1].second.col(0) +
+                 (curves_[1].second.col(1) - curves_[1].second.col(0)) * x) *
+             (curves_[1].second.col(1) - curves_[1].second.col(0));
     };
-    auto Dg2 = [&](double x) -> Eigen::Vector3d {
-      return curves_[2].first->JacobianSingle(
-                 curves_[2].second(0) +
-                 (curves_[2].second(1) - curves_[2].second(0)) * x) *
-             (curves_[2].second(1) - curves_[2].second(0));
+    auto Dg2 = [&](double x) -> Eigen::VectorXd {
+      return curves_[2].first->Jacobian(
+                 curves_[2].second.col(0) +
+                 (curves_[2].second.col(1) - curves_[2].second.col(0)) * x) *
+             (curves_[2].second.col(1) - curves_[2].second.col(0));
     };
     auto x = local(0, i);
     auto y = local(1, i);
@@ -451,7 +457,7 @@ std::unique_ptr<geometry::Geometry> BrepTriaTransfinite::SubGeometry(
     return std::make_unique<geometry::Point>(node0_);
   } else {
     return std::make_unique<geometry::Point>(
-        curves_[i].first->GlobalSingle(curves_[i].second(0)));
+        curves_[i].first->Global(curves_[i].second.col(0)));
   }
 }
 
@@ -489,7 +495,7 @@ BrepTriaTransfinite::ChildGeometry(const geometry::RefinementPattern& ref_pat,
   return result;
 }
 BrepTriaTransfinitePerronnet::BrepTriaTransfinitePerronnet(
-    std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+    std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                          Eigen::RowVector2d>,
                3>
         curves)
@@ -498,35 +504,45 @@ BrepTriaTransfinitePerronnet::BrepTriaTransfinitePerronnet(
       curves_[0].first->DimGlobal() == curves_[1].first->DimGlobal() &&
           curves_[0].first->DimGlobal() == curves_[2].first->DimGlobal(),
       "Inconsistent global dimension.");
+  LF_ASSERT_MSG(curves_[0].first->DimLocal() == 1, "curves[0] is not a curve.");
+  LF_ASSERT_MSG(curves_[1].first->DimLocal() == 1, "curves[0] is not a curve.");
+  LF_ASSERT_MSG(curves_[2].first->DimLocal() == 1, "curves[0] is not a curve.");
+
+  /*LF_ASSERT_MSG(
+      curves_[0].first != curves_[1].first ||
+          curves_[1].first != curves_[2].first,
+      "All three boundaing curves of this triangle are the same curve. This is "
+      "not allowed because it yields a degenerate triangle.");*/
+
   // Make sure the curves agree at the endpoints:
   LF_ASSERT_MSG(
-      curves_[0]
-          .first->GlobalSingle(curves_[0].second(1))
-          .isApprox(curves_[1].first->GlobalSingle(curves_[1].second(0))),
+      (curves_[0].first->Global(curves_[0].second.col(1)) -
+       curves_[1].first->Global(curves_[1].second.col(0)))
+              .norm() < 1e-6,
       "curves don't match in node 1: \n"
-          << curves_[0].first->GlobalSingle(curves_[0].second(1)).transpose()
+          << curves_[0].first->Global(curves_[0].second.col(1)).transpose()
           << " <-> "
-          << curves_[1].first->GlobalSingle(curves_[1].second(0)).transpose());
+          << curves_[1].first->Global(curves_[1].second.col(0)).transpose());
   LF_ASSERT_MSG(
-      curves_[1]
-          .first->GlobalSingle(curves_[1].second(1))
-          .isApprox(curves_[2].first->GlobalSingle(curves_[2].second(0))),
+      (curves_[1].first->Global(curves_[1].second.col(1)) -
+       curves_[2].first->Global(curves_[2].second.col(0)))
+              .norm() < 1e-6,
       "curves don't match in node 2:\n"
-          << curves_[1].first->GlobalSingle(curves_[1].second(1)).transpose()
+          << curves_[1].first->Global(curves_[1].second.col(1)).transpose()
           << " <-> "
-          << curves_[2].first->GlobalSingle(curves_[2].second(0)).transpose());
+          << curves_[2].first->Global(curves_[2].second.col(0)).transpose());
   LF_ASSERT_MSG(
-      curves_[2]
-          .first->GlobalSingle(curves_[2].second(1))
-          .isApprox(curves_[0].first->GlobalSingle(curves_[0].second(0))),
+      (curves_[2].first->Global(curves_[2].second.col(1)) -
+       curves_[0].first->Global(curves_[0].second.col(0)))
+              .norm() < 1e-6,
       "curves don't match in node 0:\n"
-          << curves_[2].first->GlobalSingle(curves_[2].second(1)).transpose()
+          << curves_[2].first->Global(curves_[2].second.col(1)).transpose()
           << " <-> "
-          << curves_[0].first->GlobalSingle(curves_[0].second(0)).transpose());
+          << curves_[0].first->Global(curves_[0].second.col(0)).transpose());
 
-  nodes_.col(0) = curves_[0].first->GlobalSingle(curves_[0].second(0));
-  nodes_.col(1) = curves_[1].first->GlobalSingle(curves_[1].second(0));
-  nodes_.col(2) = curves_[2].first->GlobalSingle(curves_[2].second(0));
+  nodes_.col(0) = curves_[0].first->Global(curves_[0].second.col(0));
+  nodes_.col(1) = curves_[1].first->Global(curves_[1].second.col(0));
+  nodes_.col(2) = curves_[2].first->Global(curves_[2].second.col(0));
 }
 
 Eigen::MatrixXd BrepTriaTransfinitePerronnet::Global(
@@ -534,27 +550,27 @@ Eigen::MatrixXd BrepTriaTransfinitePerronnet::Global(
   auto g0 = [&](auto& x) {
     return curves_[0]
         .first
-        ->GlobalMulti((curves_[0].second(0) +
-                       (curves_[0].second(1) - curves_[0].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[0].second(0) +
+                  (curves_[0].second(1) - curves_[0].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
   auto g1 = [&](auto& x) {
     return curves_[1]
         .first
-        ->GlobalMulti((curves_[1].second(0) +
-                       (curves_[1].second(1) - curves_[1].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[1].second(0) +
+                  (curves_[1].second(1) - curves_[1].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
   auto g2 = [&](auto& x) {
     return curves_[2]
         .first
-        ->GlobalMulti((curves_[2].second(0) +
-                       (curves_[2].second(1) - curves_[2].second(0)) * x)
-                          .matrix())
+        ->Global((curves_[2].second(0) +
+                  (curves_[2].second(1) - curves_[2].second(0)) * x)
+                     .matrix())
         .array()
         .eval();
   };
@@ -578,37 +594,37 @@ Eigen::MatrixXd BrepTriaTransfinitePerronnet::Jacobian(
   Eigen::MatrixXd result(DimGlobal(), 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
     auto g0 = [&](double x) {
-      return curves_[0].first->GlobalSingle(
-          curves_[0].second(0) +
-          (curves_[0].second(1) - curves_[0].second(0)) * x);
+      return curves_[0].first->Global(
+          curves_[0].second.col(0) +
+          (curves_[0].second.col(1) - curves_[0].second.col(0)) * x);
     };
     auto g1 = [&](double x) {
-      return curves_[1].first->GlobalSingle(
-          curves_[1].second(0) +
-          (curves_[1].second(1) - curves_[1].second(0)) * x);
+      return curves_[1].first->Global(
+          curves_[1].second.col(0) +
+          (curves_[1].second.col(1) - curves_[1].second.col(0)) * x);
     };
     auto g2 = [&](double x) {
-      return curves_[2].first->GlobalSingle(
-          curves_[2].second(0) +
-          (curves_[2].second(1) - curves_[2].second(0)) * x);
+      return curves_[2].first->Global(
+          curves_[2].second.col(0) +
+          (curves_[2].second.col(1) - curves_[2].second.col(0)) * x);
     };
-    auto Dg0 = [&](double x) -> Eigen::Vector3d {
-      return curves_[0].first->JacobianSingle(
-                 curves_[0].second(0) +
-                 (curves_[0].second(1) - curves_[0].second(0)) * x) *
+    auto Dg0 = [&](double x) -> Eigen::VectorXd {
+      return curves_[0].first->Jacobian(
+                 curves_[0].second.col(0) +
+                 (curves_[0].second.col(1) - curves_[0].second.col(0)) * x) *
              (curves_[0].second(1) - curves_[0].second(0));
     };
-    auto Dg1 = [&](double x) -> Eigen::Vector3d {
-      return curves_[1].first->JacobianSingle(
-                 curves_[1].second(0) +
-                 (curves_[1].second(1) - curves_[1].second(0)) * x) *
-             (curves_[1].second(1) - curves_[1].second(0));
+    auto Dg1 = [&](double x) -> Eigen::VectorXd {
+      return curves_[1].first->Jacobian(
+                 curves_[1].second.col(0) +
+                 (curves_[1].second.col(1) - curves_[1].second.col(0)) * x) *
+             (curves_[1].second.col(1) - curves_[1].second.col(0));
     };
-    auto Dg2 = [&](double x) -> Eigen::Vector3d {
-      return curves_[2].first->JacobianSingle(
-                 curves_[2].second(0) +
-                 (curves_[2].second(1) - curves_[2].second(0)) * x) *
-             (curves_[2].second(1) - curves_[2].second(0));
+    auto Dg2 = [&](double x) -> Eigen::VectorXd {
+      return curves_[2].first->Jacobian(
+                 curves_[2].second.col(0) +
+                 (curves_[2].second.col(1) - curves_[2].second.col(0)) * x) *
+             (curves_[2].second.col(1) - curves_[2].second.col(0));
     };
     auto x = local(0, i);
     auto y = local(1, i);

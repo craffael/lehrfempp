@@ -9,7 +9,6 @@
 #include <gtest/gtest.h>
 #include <lf/brep/geom/geom.h>
 #include <lf/brep/test_utils/curve_circle.h>
-#include <lf/brep/test_utils/curve_straight_segment.h>
 #include <lf/geometry/test_utils/test_utils.h>
 #include <lf/quad/quad.h>
 
@@ -20,7 +19,7 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleTest) {
   auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
   std::vector<std::unique_ptr<geometry::Geometry>> geometries;
-  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+  using p_t = std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
       p_t{circle, Eigen::RowVector2d(0., base::kPi / 2.)},
@@ -91,12 +90,12 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest) {
   Eigen::Vector3d origin(0, 0, 0);
   auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line0 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{1, 1, 0});
-  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line1 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{1, 1, 0});
 
-  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+  using p_t = std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
       p_t{line0, Eigen::RowVector2d(0., 1.)},
@@ -142,12 +141,12 @@ TEST(lf_brep_geom, BrepTriaTransfiniteCircleCutoutTest2) {
   Eigen::Vector3d origin(0, 0, 0);
   auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line0 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{2, 2, 0});
-  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line1 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{2, 2, 0});
 
-  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+  using p_t = std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
       p_t{line0, Eigen::RowVector2d(0., 1.)},
@@ -165,7 +164,7 @@ TEST(lf_brep_geom, BrepTriaTransfinitePerronnetCircleTest) {
   auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
   std::vector<std::unique_ptr<geometry::Geometry>> geometries;
-  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+  using p_t = std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
       p_t{circle, Eigen::RowVector2d(0., base::kPi / 2.)},
@@ -238,12 +237,12 @@ TEST(lf_brep_geom, BrepTriaTransfinitePerronnetCircleCutoutTest) {
   Eigen::Vector3d origin(0, 0, 0);
   auto circle = std::make_shared<test_utils::CurveCircle>(origin, 1);
 
-  auto line0 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line0 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{1, 0, 0}, Eigen::Vector3d{1, 1, 0});
-  auto line1 = std::make_shared<test_utils::CurveStraightLine>(
+  auto line1 = std::make_shared<geom::CurveStraightLine<3>>(
       Eigen::Vector3d{0, 1, 0}, Eigen::Vector3d{1, 1, 0});
 
-  using p_t = std::pair<std::shared_ptr<const interface::BrepCurve>,
+  using p_t = std::pair<std::shared_ptr<const interface::BrepGeometry>,
                         Eigen::RowVector2d>;
   std::array<p_t, 3> curves{
       p_t{line0, Eigen::RowVector2d(0., 1.)},

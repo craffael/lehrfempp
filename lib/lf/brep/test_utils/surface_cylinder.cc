@@ -39,14 +39,14 @@ SurfaceCylinder::SurfaceCylinder(Eigen::Vector3d base,
 #endif
 }
 
-Eigen::MatrixXd SurfaceCylinder::GlobalMulti(
+Eigen::MatrixXd SurfaceCylinder::Global(
     const Eigen::MatrixXd& local) const {
   return mat_.col(0) * local.row(0).array().cos().matrix() +
          mat_.col(1) * local.row(0).array().sin().matrix() +
          mat_.col(2) * local.row(1) + base_.replicate(1, local.cols());
 }
 
-Eigen::MatrixXd SurfaceCylinder::JacobianMulti(
+Eigen::MatrixXd SurfaceCylinder::Jacobian(
     const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(3, 2 * local.cols());
   for (std::size_t i = 0; i < local.cols(); ++i) {
@@ -57,7 +57,7 @@ Eigen::MatrixXd SurfaceCylinder::JacobianMulti(
   return result;
 }
 
-std::vector<bool> SurfaceCylinder::IsInBoundingBoxMulti(
+std::vector<bool> SurfaceCylinder::IsInBoundingBox(
     const Eigen::MatrixXd& global) const {
   double rsquared = mat_.col(0).squaredNorm();
   Eigen::MatrixXd local = Eigen::Vector3d(1. / rsquared, 1. / rsquared,
@@ -75,23 +75,9 @@ std::vector<bool> SurfaceCylinder::IsInBoundingBoxMulti(
   return result;
 }
 
-Eigen::Vector3d SurfaceCylinder::GlobalSingle(
-    const Eigen::Vector2d& local) const {
-  return mat_.col(0) * std::cos(local(0)) + mat_.col(1) * std::sin(local(0)) +
-         mat_.col(2) * local(1) + base_;
-}
-
-Eigen::Matrix<double, 3, 2> SurfaceCylinder::JacobianSingle(
-    const Eigen::Vector2d& local) const {
-  Eigen::Matrix<double, 3, 2> result;
-  result.col(0) =
-      -mat_.col(0) * std::sin(local(0)) + mat_.col(1) * std::cos(local(0));
-  result.col(1) = mat_.col(2);
-  return result;
-}
-
-std::pair<double, Eigen::Vector2d> SurfaceCylinder::Project(
-    const Eigen::Vector3d& global) const {
+std::pair<double, Eigen::VectorXd> SurfaceCylinder::Project(
+    const Eigen::VectorXd& global) const {
+  LF_ASSERT_MSG(global.rows() == 3, "Unexpected #rows in global.");
   double rsquared = mat_.col(0).squaredNorm();
   Eigen::Vector3d local = Eigen::Vector3d(1. / rsquared, 1. / rsquared,
                                           1. / mat_.col(2).squaredNorm())
@@ -100,22 +86,12 @@ std::pair<double, Eigen::Vector2d> SurfaceCylinder::Project(
   std::pair<double, Eigen::Vector2d> result;
   result.second(0) = std::atan2(local.y(), local.x());
   result.second(1) = local.z();
-  result.first = (GlobalSingle(result.second) - global).norm();
+  result.first = (Global(result.second) - global).norm();
   return result;
 }
 
-bool SurfaceCylinder::IsInBoundingBox(const Eigen::Vector3d& global) const {
-  double rsquared = mat_.col(0).squaredNorm();
-  Eigen::Vector3d local = Eigen::Vector3d(1. / rsquared, 1. / rsquared,
-                                          1. / mat_.col(2).squaredNorm())
-                              .asDiagonal() *
-                          mat_.transpose() * (global - base_);
-  constexpr double eps = 1e-6;
-  return local(0) >= -1 - eps && local(0) <= 1 + eps && local(1) >= -1 - eps &&
-         local(1) <= 1 + eps && local(2) >= -eps && local(2) <= 1 + eps;
-}
-
-bool SurfaceCylinder::IsInside(const Eigen::Vector2d& local) const {
+bool SurfaceCylinder::IsInside(const Eigen::VectorXd& local) const {
+  LF_ASSERT_MSG(local.rows() == 2, "Unexpected #rows in local.");
   constexpr double eps = 1e-6;
   return local(0) >= -base::kPi - eps && local(0) <= base::kPi &&
          local(1) >= -eps && local(1) <= 1 + eps;

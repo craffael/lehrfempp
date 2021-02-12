@@ -24,7 +24,7 @@ OcctBrepSurface::OcctBrepSurface(TopoDS_Face&& face) : face_(std::move(face)) {
                 "Unexpected: there is no surface associated with this face.");
 }
 
-Eigen::MatrixXd OcctBrepSurface::GlobalMulti(
+Eigen::MatrixXd OcctBrepSurface::Global(
     const Eigen::MatrixXd& local) const {
   LF_ASSERT_MSG(
       local.rows() == 2,
@@ -32,36 +32,26 @@ Eigen::MatrixXd OcctBrepSurface::GlobalMulti(
   Eigen::MatrixXd result(3, local.cols());
 
   for (int i = 0; i < local.cols(); ++i) {
-    result.col(i) = GlobalSingle(local.col(i));
+    result.col(i) = detail::ToVector(surface_->Value(local(0, i), local(1, i)));
   }
   return result;
 }
 
-Eigen::Vector3d OcctBrepSurface::GlobalSingle(
-    const Eigen::Vector2d& local) const {
-  return detail::ToVector(surface_->Value(local.x(), local.y()));
-}
-
-Eigen::MatrixXd OcctBrepSurface::JacobianMulti(
+Eigen::MatrixXd OcctBrepSurface::Jacobian(
     const Eigen::MatrixXd& local) const {
   Eigen::MatrixXd result(3, 2 * local.cols());
   for (int i = 0; i < local.cols(); ++i) {
-    result.block<3, 2>(0, 2 * i) = JacobianSingle(local.col(i));
+    gp_Pnt p;
+    surface_->D1(local(0, i), local(1, i), p,
+                 *reinterpret_cast<gp_Vec*>(&result(0, 2 * i)),
+                 *reinterpret_cast<gp_Vec*>(&result(0, 2 * i + 1)));
   }
   return result;
 }
 
-Eigen::Matrix<double, 3, 2> OcctBrepSurface::JacobianSingle(
-    const Eigen::Vector2d& local) const {
-  Eigen::Matrix<double, 3, 2> result;
-  gp_Pnt p;
-  surface_->D1(local(0), local(1), p, *reinterpret_cast<gp_Vec*>(result.data()),
-               *reinterpret_cast<gp_Vec*>(result.data() + 3));
-  return result;
-}
-
-std::pair<double, Eigen::Vector2d> OcctBrepSurface::Project(
-    const Eigen::Vector3d& global) const {
+std::pair<double, Eigen::VectorXd> OcctBrepSurface::Project(
+    const Eigen::VectorXd& global) const {
+  LF_ASSERT_MSG(global.rows() == 3, "Unexpected number of global points.");
   GeomAPI_ProjectPointOnSurf proj(detail::ToPoint(global), surface_);
 
   Eigen::Vector2d v;
@@ -69,7 +59,7 @@ std::pair<double, Eigen::Vector2d> OcctBrepSurface::Project(
   return {proj.LowerDistance(), v};
 }
 
-std::vector<bool> OcctBrepSurface::IsInBoundingBoxMulti(
+std::vector<bool> OcctBrepSurface::IsInBoundingBox(
     const Eigen::MatrixXd& global) const {
   LF_ASSERT_MSG(global.rows() == 3, "global must have 3 rows.");
 
@@ -80,11 +70,8 @@ std::vector<bool> OcctBrepSurface::IsInBoundingBoxMulti(
   return result;
 }
 
-bool OcctBrepSurface::IsInBoundingBox(const Eigen::Vector3d& global) const {
-  return !obb_.IsOut(detail::ToPoint(global));
-}
-
-bool OcctBrepSurface::IsInside(const Eigen::Vector2d& local) const {
+bool OcctBrepSurface::IsInside(const Eigen::VectorXd& local) const {
+  LF_ASSERT_MSG(local.rows() == 2, "Illegal number of rows in local.");
   auto state =
       IntTools_Tools::ClassifyPointByFace(face_, detail::ToPoint2d(local));
   return (state == TopAbs_IN || state == TopAbs_ON);

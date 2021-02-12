@@ -30,7 +30,7 @@ class OcctBrepModel : public interface::BrepModel {
    * @brief Find all Curves that go through the given point.
    */
   [[nodiscard]] std::vector<
-      std::pair<std::shared_ptr<const interface::BrepCurve>, double>>
+      std::pair<std::shared_ptr<const interface::BrepGeometry>, double>>
   FindCurves(const Eigen::Vector3d &global) const override;
 
   /**
@@ -38,14 +38,14 @@ class OcctBrepModel : public interface::BrepModel {
    * vectors).
    */
   [[nodiscard]] std::vector<std::pair<
-      std::shared_ptr<const interface::BrepCurve>, Eigen::RowVectorXd>>
+      std::shared_ptr<const interface::BrepGeometry>, Eigen::RowVectorXd>>
   FindCurvesMulti(const Eigen::Matrix3Xd &global) const override;
 
   /**
    * @brief Find all Surfaces that contain the given point.
    */
-  [[nodiscard]] std::vector<
-      std::pair<std::shared_ptr<const interface::BrepSurface>, Eigen::Vector2d>>
+  [[nodiscard]] std::vector<std::pair<
+      std::shared_ptr<const interface::BrepGeometry>, Eigen::Vector2d>>
   FindSurfaces(const Eigen::Vector3d &global) const override;
 
   /**
@@ -53,7 +53,7 @@ class OcctBrepModel : public interface::BrepModel {
    * vectors)
    */
   [[nodiscard]] std::vector<std::pair<
-      std::shared_ptr<const interface::BrepSurface>, Eigen::Matrix2Xd>>
+      std::shared_ptr<const interface::BrepGeometry>, Eigen::Matrix2Xd>>
   FindSurfacesMulti(const Eigen::Matrix3Xd &global) const override;
 
   /**

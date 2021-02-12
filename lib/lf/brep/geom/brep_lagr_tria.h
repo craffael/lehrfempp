@@ -20,13 +20,11 @@ template <class GEOM_TRIA, class GEOM_SEGMENT>
 class BrepLagrTria : public geometry::Geometry {
  public:
   explicit BrepLagrTria(
-      GEOM_TRIA tria, std::shared_ptr<const BrepSurface> surface,
-
+      GEOM_TRIA tria, std::shared_ptr<const interface::BrepGeometry> surface,
       const Eigen::Matrix<double, 2, 3>& surface_coords,
-
-      const std::array<
-          std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>&
-          curves);
+      const std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
+                                 Eigen::RowVector2d>,
+                       3>& curves);
 
   [[nodiscard]] dim_t DimLocal() const override { return 2; }
   [[nodiscard]] dim_t DimGlobal() const override { return geom_.DimGlobal(); }
@@ -50,14 +48,14 @@ class BrepLagrTria : public geometry::Geometry {
  private:
   GEOM_TRIA geom_;
   // Pointer to the surface parameterization, can be null!
-  const brep::interface::BrepSurface* surface_;
+  std::shared_ptr<const brep::interface::BrepGeometry> surface_;
   // contains the surface coordinates of the tria corners
   Eigen::Matrix<double, 2, 3> surface_coords_;
 
   // contains the three edge parametrizations (first) and the local coordinates
   // of the endpoints w.r.t. these parametrizations.
   // Note that the vector can be nullptr!
-  std::array<std::pair<std::shared_ptr<const interface::BrepCurve>,
+  std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
                        Eigen::RowVector2d>,
              3>
       curves_;
@@ -65,11 +63,12 @@ class BrepLagrTria : public geometry::Geometry {
 
 template <class GEOM_TRIA, class GEOM_SEGMENT>
 BrepLagrTria<GEOM_TRIA, GEOM_SEGMENT>::BrepLagrTria(
-    GEOM_TRIA tria, std::shared_ptr<const BrepSurface> surface,
+    GEOM_TRIA tria, std::shared_ptr<const interface::BrepGeometry> surface,
 
     const Eigen::Matrix<double, 2, 3>& surface_coords,
 
-    const std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>,
+    const std::array<std::pair<std::shared_ptr<const interface::BrepGeometry>,
+                               Eigen::RowVector2d>,
                      3>& curves)
     : geom_(tria),
       surface_(surface),
@@ -81,7 +80,7 @@ BrepLagrTria<GEOM_TRIA, GEOM_SEGMENT>::BrepLagrTria(
   // geometry
   if (surface != nullptr) {
     LF_ASSERT_MSG(geom_.Global(base::RefEl::kTria().NodeCoords())
-                      .isApprox(surface_->GlobalMulti(surface_coords_)),
+                      .isApprox(surface_->Global(surface_coords_)),
                   "Corners of Geometry do not agree with surface mapping.");
     LF_ASSERT_MSG(curves_[0].first != nullptr && curves_[1].first != nullptr &&
                       curves_[2].first != nullptr,
@@ -177,14 +176,14 @@ BrepLagrTria<GEOM_TRIA, GEOM_SEGMENT>::ChildGeometry(
            surface_coords_.col(2) * local.row(2);
   };
   auto mapSurfaceGlobal = [&](const auto& local) {
-    return surface_->GlobalMulti(mapSurfaceLocal(local));
+    return surface_->Global(mapSurfaceLocal(local));
   };
   auto mapEdgeLocal = [&](int index, const auto& local) {
     return curves_[index].second.col(0) * (1 - local.array()).matrix() +
            curves_[index].second.col(1) * local;
   };
   auto mapEdgeGlobal = [&](int index, const auto& local) {
-    return curves_[index].first->GlobalMulti(mapEdgeLocal(local));
+    return curves_[index].first->Global(mapEdgeLocal(local));
   };
   auto make11Matrix = [](double value) {
     return (Eigen::Matrix<double, 1, 1>() << value).finished();
@@ -307,7 +306,8 @@ BrepLagrTria<GEOM_TRIA, GEOM_SEGMENT>::ChildGeometry(
            lattice_const)
               .eval();
 
-      std::array<std::pair<const interface::BrepCurve*, Eigen::RowVector2d>, 3>
+      std::array<std::pair<const interface::BrepGeometry*, Eigen::RowVector2d>,
+                 3>
           curves;
       curves[0].first =
 

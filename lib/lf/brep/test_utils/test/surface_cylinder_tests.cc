@@ -20,6 +20,8 @@ TEST(lf_brep_testUtils, SurfaceCylinderTest) {
   Eigen::Vector3d axis(0, 3, 0);
 
   SurfaceCylinder cylinder(origin, axis, radius);
+  ASSERT_NEAR(cylinder.Periods()[0], 2 * base::kPi, 1e-6);
+  ASSERT_EQ(cylinder.Periods()[1], 0);
   Eigen::MatrixXd local(2, 100);
   local.row(0) = Eigen::KroneckerProduct(
       Eigen::RowVectorXd::LinSpaced(10, -base::kPi, base::kPi),
@@ -30,9 +32,9 @@ TEST(lf_brep_testUtils, SurfaceCylinderTest) {
   CheckBrepGeometry(cylinder, local);
 
   // check projection:
-  auto [dist, p] = cylinder.Project({1, 3, 3});
+  auto [dist, p] = cylinder.Project(Eigen::Vector3d{1, 3, 3});
   EXPECT_NEAR(dist, 0, 1e-6);
-  std::tie(dist, p) = cylinder.Project({1, 3, 4});
+  std::tie(dist, p) = cylinder.Project(Eigen::Vector3d{1, 3, 4});
   EXPECT_NEAR(dist, 1, 1e-6);
 }
 }  // namespace lf::brep::test_utils::test

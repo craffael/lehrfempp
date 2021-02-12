@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Utility functions to unit test BrepCurves.
+ * @brief Utility functions to unit test BrepGeometries.
  * @author Raffael Casagrande
  * @date   2021-01-29 10:13:02
  * @copyright MIT License

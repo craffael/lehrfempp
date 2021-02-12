@@ -18,7 +18,7 @@ template <class GEOMETRY>
 class BrepLagrSegment : public geometry::Geometry {
  public:
   BrepLagrSegment(GEOMETRY segment,
-                  std::shared_ptr<const interface::BrepCurve> curve,
+                  std::shared_ptr<const interface::BrepGeometry> curve,
                   double curve_coord_p0, double curve_coord_p1);
   BrepLagrSegment(const BrepLagrSegment& other) = default;
 
@@ -61,21 +61,20 @@ class BrepLagrSegment : public geometry::Geometry {
 
  private:
   GEOMETRY geom_;
-  std::shared_ptr<const brep::interface::BrepCurve> curve_;
+  std::shared_ptr<const brep::interface::BrepGeometry> curve_;
   double curve_coord_p0_;
   double curve_coord_p1_;
 };
 
 template <class GEOMETRY>
 BrepLagrSegment<GEOMETRY>::BrepLagrSegment(
-    GEOMETRY segment, std::shared_ptr<const interface::BrepCurve> curve,
-    double curve_coord_p0,
-
-    double curve_coord_p1)
+    GEOMETRY segment, std::shared_ptr<const interface::BrepGeometry> curve,
+    double curve_coord_p0, double curve_coord_p1)
     : geom_(std::move(segment)),
       curve_(curve),
       curve_coord_p0_(curve_coord_p0),
       curve_coord_p1_(curve_coord_p1) {
+  LF_ASSERT_MSG(curve->DimLocal() == 1, "curve is not a curve.");
   LF_ASSERT_MSG(geom_.RefEl() == base::RefEl::kSegment(),
                 "BrepLagrSegment can only wrap a geometry of type segment.");
   LF_ASSERT_MSG((geom_.LagrangeNodes().array() >= 0.).all() &&
@@ -86,11 +85,11 @@ BrepLagrSegment<GEOMETRY>::BrepLagrSegment(
   LF_ASSERT_MSG(std::abs(geom_.LagrangeNodes()(1) - 1) < 1e-6,
                 "lagr_nodes(1) must coincide with right segment end.");
   LF_ASSERT_MSG(
-      curve->GlobalSingle(curve_coord_p0_)
+      curve->Global((Eigen::MatrixXd(1, 1) << curve_coord_p0_).finished())
           .isApprox(geom_.Global((Eigen::Matrix<double, 1, 1>::Constant(0.)))),
       "curve(curve_coord_p0) != geom(0)");
   LF_ASSERT_MSG(
-      curve->GlobalSingle(curve_coord_p1_)
+      curve->Global((Eigen::MatrixXd(1, 1) << curve_coord_p1_).finished())
           .isApprox(geom_.Global((Eigen::Matrix<double, 1, 1>::Constant(1.)))),
       "curve(curve_coord_p1) != geom(1)");
 }
@@ -115,7 +114,7 @@ BrepLagrSegment<GEOMETRY>::ChildGeometry(
            curve_coord_p0_)
               .eval();
       result.push_back(std::make_unique<BrepLagrSegment<GEOMETRY>>(
-          GEOMETRY(curve_->GlobalMulti(curve_local.matrix())), curve_,
+          GEOMETRY(curve_->Global(curve_local.matrix())), curve_,
           curve_local(0), curve_local(1)));
     }
   } else {
@@ -126,8 +125,8 @@ BrepLagrSegment<GEOMETRY>::ChildGeometry(
       double curve_local =
           (curve_coord_p1_ - curve_coord_p0_) / lattice_const * child(0) +
           curve_coord_p0_;
-      result.push_back(
-          std::make_unique<geometry::Point>(curve_->GlobalSingle(curve_local)));
+      result.push_back(std::make_unique<geometry::Point>(curve_->Global(
+          (Eigen::MatrixXd(1, 1) << curve_local).finished())));
     }
   }
   return result;

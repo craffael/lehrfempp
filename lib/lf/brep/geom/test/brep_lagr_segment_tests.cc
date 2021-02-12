@@ -16,8 +16,9 @@
 namespace lf::brep::geom::test {
 
 template <class GEOM>
-void CheckBrepLagrSegment(const BrepLagrSegment<GEOM>& geom,
-                          std::shared_ptr<const interface::BrepCurve> curve) {
+void CheckBrepLagrSegment(
+    const BrepLagrSegment<GEOM>& geom,
+    std::shared_ptr<const interface::BrepGeometry> curve) {
   // check ChildGeometry(codim=1)
   std::vector<std::unique_ptr<geometry::Geometry>> point_children =
       geom.ChildGeometry(SegmentRefPat{}, 1);
