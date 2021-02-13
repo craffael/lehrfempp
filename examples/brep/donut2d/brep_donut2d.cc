@@ -75,12 +75,12 @@ void CheckMesh(const mesh::Mesh& mesh, int level) {
 
 int main(int argc, char* argv[]) {
   po::options_description desc;
-  desc.add_options()("brep",
-                     po::value<std::string>()->default_value("donut2d.brep"),
-                     "filename of Brep file")(
-      "mesh", po::value<std::string>()->default_value("donut2d.msh"),
-      "mesh filename.")("help", "produce this help message");
-
+  // clang-format off
+  desc.add_options()
+  ("brep",po::value<std::string>()->default_value("donut2d.brep"),"filename of Brep file")
+  ("mesh", po::value<std::string>()->default_value("donut2d.msh"),"mesh filename.")
+  ("help", "produce this help message");
+  //clang-format on
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
   for (auto level = 0; level < mh_transfinite.NumLevels(); ++level) {
     std::string filename = path.stem().string() + ".vtk";
 
-    io::VtkWriter vtk(mh_transfinite.getMesh(level),
-                      filename + "_" + std::to_string(level) + ".vtk", 0, 3);
+    io::VtkWriter vtk(mh_plain.getMesh(level),
+                      filename + "_" + std::to_string(level) + ".vtk", 0, 2);
   }
 }
