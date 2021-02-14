@@ -13,7 +13,7 @@
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
-#include <lf/uscalfe/uscalfe.h>
+#include <lf/uscalfe/uscalfe.h>        
 
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -304,7 +304,7 @@ int main(int argc, char **argv) {
 
   // clang-format off
    desc.add_options()
-  ("help,h", "-h -v -f <filename> -s <selection>")
+  ("help,h", "-h -v -f <filename> -s <selection> -r <# ref lev> -b <test case>")
   ("filename,f", "File to load coarse mesh from ")
   ("selector,s", po::value<int>()->default_value(0), "Selection of test mesh")
   ("reflevels,r", po::value<int>()->default_value(2), "Number of refinement levels")
@@ -327,7 +327,7 @@ int main(int argc, char **argv) {
   // (https://github.com/cpp-pm/hunter/pull/260) this can be achieved by
   // setting the environment variable `SPDLOG_LEVEL=trace` or
   // `SPDLOG_LEVEL="info,lf::assemble::AssembleMatrixLogger=trace"`
-  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::trace);
+  lf::assemble::AssembleMatrixLogger()->set_level(spdlog::level::info);
 
   std::cout << "AssembleMatrixLogger level "
             << lf::assemble::AssembleMatrixLogger()->level() << "\n";
