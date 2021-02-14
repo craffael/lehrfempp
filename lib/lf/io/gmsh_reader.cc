@@ -200,7 +200,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
     size_type mi;
     if (dim_world == 2) {
       LF_ASSERT_MSG(
-          n.second(2) == 0,
+          std::abs(n.second(2)) < 1e-6,
           "In a 2D GmshMesh, the z-coordinate of every node must be zero");
       mi = mesh_factory_->AddPoint(n.second.topRows(2));
     } else {

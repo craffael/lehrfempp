@@ -4,8 +4,9 @@ With this example we can demonstrate two things:
 1) Approximation of a donut geometry
 2) Approximation of a arctan like geometry which shows the superiority 
    of the transfinite approach vs. 2.nd order geometry approximation
+3) Trying to approximate a pig shape with transfinite interpolation.
 
-In both cases, the code loads the mesh and
+In all cases, the code loads the mesh and
 - Computes the volume of all mesh elements and compares it to the exact 
   volume of the donut (also for the arctan example)
 - Checks that the edges of every mesh element intersect only at the corners.
@@ -49,3 +50,19 @@ This is much better because in this case the first order mesh is fine
 ### 2.2 Bonus
 It seems that 2nd and 3rd order mesh both don't work for the ArcTan geometry.
 In both cases Gmsh outputs a warning about negativ jacobians :)
+
+## 3. Pig shape
+Command line:
+```
+./examples.brep.donut2d --mesh=pig.msh --brep=pig_exploded.brep
+```
+
+Trying to load the transfinite mesh with the pig shape gives an error because
+there are many triangles in the mesh where all three points lie on the same curve.
+In that case the current implementation of the brep module doesn't know which
+edges should be approximated transfinitely and which not. 
+
+**This shows an important limitation of the current approach**. In order to
+resolve this problem, we have to get additional information from the mesh file
+that tells us on which brep-curve a given edge segment lies.
+Without this information, the current approach is severly limited!
