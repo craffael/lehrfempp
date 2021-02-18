@@ -20,7 +20,9 @@
 // This file defines a number of macros which can be used in 
 // formulas of the doxygen documentation.
 MathJax.Hub.Config({
+  jax: ["input/TeX", "output/CommonHTML", "output/HTML-CSS"],
   TeX: {
+    extensions: ['AMSsymbols.js'],
     Macros: {
       vec: ["\\boldsymbol{#1}", 1],
       grad: "\\vec{\\operatorname{grad}}",
@@ -105,7 +107,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8f14085dedf1bf466e582788310b56ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor creating an "invalid quadrature rule".  <a href="classlf_1_1quad_1_1_quad_rule.html#a8f14085dedf1bf466e582788310b56ff">More...</a><br /></td></tr>
 <tr class="separator:a8f14085dedf1bf466e582788310b56ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0612956292516f9dc8561c4332c5a918"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1quad_1_1_quad_rule.html#a0612956292516f9dc8561c4332c5a918">QuadRule</a> (<a class="el" href="classlf_1_1base_1_1_ref_el.html">base::RefEl</a> ref_el, Eigen::MatrixXd points, Eigen::VectorXd weights, <a class="el" href="namespacelf_1_1quad.html#a82ced7ee27edc229ee4f03e2ebbc9d06">quadDegree_t</a> degree)</td></tr>
-<tr class="memdesc:a0612956292516f9dc8561c4332c5a918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new quadrature rule by specifying reference element, points, weights and order explicitly.  <a href="classlf_1_1quad_1_1_quad_rule.html#a0612956292516f9dc8561c4332c5a918">More...</a><br /></td></tr>
+<tr class="memdesc:a0612956292516f9dc8561c4332c5a918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new quadrature rule by specifying reference element, points, weights and degree of exactness explicitly.  <a href="classlf_1_1quad_1_1_quad_rule.html#a0612956292516f9dc8561c4332c5a918">More...</a><br /></td></tr>
 <tr class="separator:a0612956292516f9dc8561c4332c5a918"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54d132f3ccb2497e9421d5d6a5489c6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlf_1_1base_1_1_ref_el.html">base::RefEl</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1quad_1_1_quad_rule.html#a54d132f3ccb2497e9421d5d6a5489c6f">RefEl</a> () const</td></tr>
 <tr class="memdesc:a54d132f3ccb2497e9421d5d6a5489c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The reference element \( \hat{K} \) over which this <a class="el" href="classlf_1_1quad_1_1_quad_rule.html" title="Represents a Quadrature Rule over one of the Reference Elements.">QuadRule</a> integrates.  <a href="classlf_1_1quad_1_1_quad_rule.html#a54d132f3ccb2497e9421d5d6a5489c6f">More...</a><br /></td></tr>
@@ -366,7 +368,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Construct a new quadrature rule by specifying reference element, points, weights and order explicitly. </p>
+<p>Construct a new quadrature rule by specifying reference element, points, weights and degree of exactness explicitly. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ref_el</td><td>The reference element for which the quadrature rule is. </td></tr>
@@ -409,7 +411,7 @@ Private Attributes</h2></td></tr>
 
 <p>Return the degree of exactness of this Quadrature Rule. </p>
 <p>The degree of exactness a quadrature rule is defined as the largest integer \(k\) such that </p><p class="formulaDsp">
-\[ \forall p \in \mathbb{P}_k, \quad \int_K p(\vec{x}) \, d\vec{x} = \sum_{i=0}^{n-1} \omega_i f(\vec{\xi_i}) \]
+\[ \forall p \in \mathbb{P}_k, \quad \int_K p(\vec{x}) \, d\vec{x} = \sum_{i=0}^{n-1} \omega_i p(\vec{\xi_i}) \]
 </p>
 <p> here the polynomial space \(\mathbb{P}_k\) is defined differently for every reference element:</p>
 <ul>
