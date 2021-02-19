@@ -142,7 +142,8 @@ int main(int /*argc*/, const char** /*argv*/) {
   // solving a boundary value problem on a mesh read from file.
   // ======================================================================
 
-  // Helper object: mesh factory
+  // The following code also illustrates the role of a MeshFactory
+  // Create helper object: mesh factory
   std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
@@ -158,19 +159,20 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::array<double, 2>({0.15, 0.75 }),
   std::array<double, 2>({0.4 , 0.75 })};
   // clang-format on
+  // Add nodes to the mesh via the MeshFactory object
   for (const auto& node : node_coord) {
     mesh_factory_ptr->AddPoint(coord_t({node[0], node[1]}));
   }
-
-  // Initialize triangles
+  // Add plain triangles to the mesh, defined by their vertex nodes.
+  // Since no particular geometry is specified, the triangles are assumed to
+  // have straght edges.
   mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
                               std::vector<size_type>({3, 1, 4}),
                               std::unique_ptr<lf::geometry::Geometry>(nullptr));
   mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
                               std::vector<size_type>({7, 6, 2}),
                               std::unique_ptr<lf::geometry::Geometry>(nullptr));
-
-  // Create general quadrilateral
+  // Create a general quadrilateral with straight edges.
   std::array<size_type, 4> quad_nodes{5, 4, 7, 6};
   Eigen::Matrix<double, 2, 4> quad_coord;
   for (int n_pt = 0; n_pt < 4; ++n_pt) {
@@ -180,8 +182,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   mesh_factory_ptr->AddEntity(
       lf::base::RefEl::kQuad(), std::vector<size_type>({5, 4, 7, 6}),
       std::make_unique<lf::geometry::QuadO1>(quad_coord));
-
-  // Create parallelogram
+  // Create parallelogram.
   std::array<size_type, 4> parg_nodes{0, 3, 4, 5};
   for (int n_pt = 0; n_pt < 4; ++n_pt) {
     quad_coord(0, n_pt) = node_coord[parg_nodes[n_pt]][0];
@@ -217,7 +218,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   // Vector for keeping error norms
   std::vector<std::tuple<size_type, double, double>> errs{};
 
-  // Do computations on all levels
+  // LEVEL LOOP: Do computations on all levels
   for (size_type level = 0; level < L; ++level) {
     mesh_p = multi_mesh.getMesh(level);
     // Set up global FE space; lowest order Lagrangian finite elements
