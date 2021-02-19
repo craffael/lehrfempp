@@ -323,8 +323,43 @@
 
 \section{Dual Basis}
 
+    The dual basis is used to find the basis function coefficients from a set of function evaluations at a predefined set of locations. This must be implemented this way, as a simple matrix inversion to solve for the coefficients is not stable enough for higher polynomial degrees.
+    
+    We again differentiate between the dual basis associated with the vertices, the edges, and the interior of a cell. It is important to notice that the dual bases must be orthogonalized with respect to the dual bases on the lower dimensional subentities. This is done using Gram-Schmidt and is omitted in the following.
+
 
 \subsection{Segment}
+
+    \begin{thm}[Vertex Dual Basis]
+        The vertex dual basis on the reference segment is given by
+        \begin{align*}
+            \lambda_0^{\cdot}[f] &:= f(0) \\
+            \lambda_1^{\cdot}[f] &:= f(1)
+        \end{align*}
+    \end{thm}
+    \begin{proof}
+        We plug the vertex basis functions into the dual basis to obtain
+        \begin{align*}
+            &\lambda_0^{\cdot}[\widehat{b_0^{\cdot}}] = \widehat{b_0^{\cdot}}(0) = 1, &\lambda_0^{\cdot}[\widehat{b_1^{\cdot}}] = \widehat{b_1^{\cdot}}(0) = 0 \\
+            &\lambda_1^{\cdot}[\widehat{b_0^{\cdot}}] = \widehat{b_0^{\cdot}}(0) = 0, &\lambda_1^{\cdot}[\widehat{b_1^{\cdot}}] = \widehat{b_1^{\cdot}}(0) = 1
+        \end{align*}
+    \end{proof}
+
+    \begin{thm}[Edge Dual Basis]
+        The edge dual basis on the reference segment is given by
+        \begin{equation*}
+            \lambda_n^{-}[f] = (2n-1) \left( P_{n-1}(1)f(1) - P_{n-1}(0)f(0) - \int_0^1\! P_{n-1}'(x)f(x) \,\mathrm{d}x \right)
+        \end{equation*}
+    \end{thm}
+    \begin{proof}
+        Plugging in the edge basis functions gives
+        \begin{align*}
+            \frac{1}{2n-1}\lambda_n^{-}[\widehat{b_m^{-}}] &= \frac{1}{2n-1}\lambda_n^{-}[L_m] = P_{n-1}(1)L_m(1) - P_{n-1}(0)L_m(0) - \int_0^1\! P_{n-1}'(x)L_m(x) \,\mathrm{d}x \\
+            &= \int_0^1\! P_{n-1}(x)L_m'(x) \,\mathrm{d}x = \int_0^1\! P_{n-1}(x)P_{m-1}(x) \,\mathrm{d}x = \frac{1}{2n-1}\delta_{n,m}
+        \end{align*}
+    \end{proof}
+
+    Note that for the edge dual basis there is no need to orthogonalize with respect to the vertex basis functions because of the orthogonality of the Legendre polynomials.
 
 
 \subsection{Quadrilateral}
