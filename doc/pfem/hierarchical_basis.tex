@@ -46,9 +46,15 @@
     \begin{defn}[Integrated Shifted Legendre Polynomials]
         We define the Integrated Shifted Legendre Polynomials $L_n(\cdot;t) : [0, t] \to \mathbb{R}$ of degree $n \in \mathbb{N}$ as
         \begin{equation*}
-            L_n(x;t) := \int_0^x\! P_{n-1}(\xi;t) \,\mathrm{d}x
+            L_n(x;t) := \int_0^x\! P_{n-1}(\xi;t) \,\mathrm{d}\xi
         \end{equation*}
     \end{defn}
+
+    We observe that due to the orthogonality condition of the Legendre Polynomials, the Integrated Legendre Polynomials of order $n \geq 2$ are zero at $x \in \{0, t\}$:
+    \begin{align*}
+        L_n(0;t) &= \int_0^0\! P_{n-1}(\xi;t) \,\mathrm{d}\xi = 0 \\
+        L_n(t;t) &= \int_0^t\! P_{n-1}(\xi;t) \,\mathrm{d}\xi = \int_0^t\! P_{n-1}(\xi;t)P_0(\xi;t) \,\mathrm{d}\xi = 0, \mbox{ for } n \geq 2
+    \end{align*}
     
 %    \begin{thm}
 %        A recurrence relation for the \textit{Shifted Legendre Polynomials} $P_n(x;t) : [0,t] \to \mathbb{R}$ is given by
@@ -189,7 +195,7 @@
     \end{figure}
     
     \begin{defn}[Vertex Basis Functions]
-        We define the vertex basis functions of the segment as
+        We define the vertex basis functions on the reference segment as
         \begin{align*}
             \widehat{b_0^{\cdot}}(x) &:= 1 - x \\
             \widehat{b_1^{\cdot}}(x) &:= x
@@ -197,7 +203,7 @@
     \end{defn}
 
     \begin{defn}[Edge Basis Functions]
-        We define the edge basis functions of the segment as
+        We define the edge basis functions on the reference segment as
         \begin{equation*}
             \widehat{b_n^{-}}(x) := L_n(x) \mbox{ for } n \geq 2
         \end{equation*}
@@ -229,8 +235,90 @@
         \label{fig:ref_quad}
     \end{figure}
 
+    Each basis function on the quadrilateral is given by the product of two 1D basis functions of the segment. We obtain the following set of basis functions.
+    
+    \begin{defn}[Vertex Basis Functions]
+        We define the vertex basis functions on the reference quadrilateral as
+        \begin{align*}
+            \widehat{b_0^{\cdot}}(x,y) &:= (1-x)(1-y) \\
+            \widehat{b_1^{\cdot}}(x,y) &:= x(1-y) \\
+            \widehat{b_2^{\cdot}}(x,y) &:= xy \\
+            \widehat{b_3^{\cdot}}(x,y) &:= (1-x)y
+        \end{align*}
+    \end{defn}
+
+    \begin{defn}[Edge Basis Functions]
+        We define the edge basis functions $\widehat{b_{e,n}^{-}}(x,y)$ where $e \in \{0,1,2,3\}$ is the index of the edge and $n \geq 2$ the degree of the basis function as
+        \begin{align*}
+            \widehat{b_{0,n}^{-}}(x,y) &:= (1-y)L_n(x) \\
+            \widehat{b_{1,n}^{-}}(x,y) &:= xL_n(y) \\
+            \widehat{b_{2,n}^{-}}(x,y) &:= yL_n(x) \\
+            \widehat{b_{3,n}^{-}}(x,y) &:= (1-x)L_n(y)
+        \end{align*}
+    \end{defn}
+
+    \begin{defn}[Face Bubbles]
+        We define the face bubbles on the reference quadrilateral as
+        \begin{equation*}
+            \widehat{b_{n,m}^{\square}}(x,y) := L_n(x)L_m(y)
+        \end{equation*}
+        where $n \geq 2$, $m\geq 2$.
+    \end{defn}
+
 
 \subsection{Triangle}
+
+    \begin{figure}[ht!]
+        \center
+        \begin{tikzpicture}
+            % Edges
+            \draw[] (0,0) -- (2,0) -- (0,2) -- cycle;
+            \node[anchor=north] at (1,0) {0};
+            \node[anchor=west] at (1,1) {1};
+            \node[anchor=east] at (0,1) {2};
+            % Vertices
+            \node at (0,0) {\textbullet};
+            \node[anchor=north east] at (0,0) {0};
+            \node at (2,0) {\textbullet};
+            \node[anchor=north west] at (2,0) {1};
+            \node at (0,2) {\textbullet};
+            \node[anchor=south east] at (0,2) {2};
+        \end{tikzpicture}
+        \caption{Reference Element for the Triangle}
+        \label{fig:ref_tria}
+    \end{figure}
+
+    For the ease of notation, we make use of the Barycentric Coordinates given by
+    \begin{equation*}
+        \lambda_0 = 1-x-y,\quad \lambda_1 = x,\quad \lambda_2 = y.
+    \end{equation*}
+    
+    \begin{defn}[Vertex Basis Functions]
+        We define the vertex basis functions on the reference triangle as
+        \begin{align*}
+            \widehat{b_0^{\cdot}}(x,y) &:= \lambda_0 \\
+            \widehat{b_1^{\cdot}}(x,y) &:= \lambda_1 \\
+            \widehat{b_2^{\cdot}}(x,y) &:= \lambda_2 \\
+        \end{align*}
+    \end{defn}
+
+    \begin{defn}[Edge Basis Functions]
+        We define the edge basis functions $\widehat{b_{e,n}^{-}}(x,y)$ where $e \in \{0,1,2\}$ is the index of the edge and $n \geq 2$ the degree of the basis function as
+        \begin{align*}
+            \widehat{b_{0,n}^{-}}(x,y) &:= L_n(\lambda_1 ; \lambda_0+\lambda_1) \\
+            \widehat{b_{1,n}^{-}}(x,y) &:= L_n(\lambda_2 ; \lambda_1+\lambda_2) \\
+            \widehat{b_{2,n}^{-}}(x,y) &:= L_n(\lambda_0 ; \lambda_2+\lambda_0) \\
+        \end{align*}
+        Note that due to the scaling, the basis functions are only nonzero on the edge they are associated with. Furthermore, they are zero on all vertices.
+    \end{defn}
+
+    \begin{defn}[Face Bubbles]
+        We define the face bubbles on the reference triangle as the product of an edge basis function with a blending polynomial.
+        \begin{equation*}
+            \widehat{b_{n,m}^{\triangle}}(x,y) := L_m^{2n}(\lambda_2)L_n(\lambda_1 ; \lambda_0+\lambda_1)
+        \end{equation*}
+        where $n \geq 2$, $m \geq 1$ and $n+m \leq q+1$ where $q$ is the interior degree of the basis functions.
+    \end{defn}
 
 
 \section{Dual Basis}
