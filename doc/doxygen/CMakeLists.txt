@@ -65,4 +65,6 @@ if(DOXYGEN_FOUND)
 
   endif()
   
-  add_subdirectory(snippets)
+  if(LF_BUILD_DOC)
+    add_subdirectory(snippets)
+  endif()
