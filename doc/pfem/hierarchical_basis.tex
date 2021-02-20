@@ -9,6 +9,7 @@
 \usepackage{amsthm}
 \usepackage{tikz}
 \usepackage{subcaption}
+\usepackage{aligned-overset}
 \usepackage[margin=2cm]{geometry}
 
 
@@ -333,8 +334,8 @@
     \begin{thm}[Vertex Dual Basis]
         The vertex dual basis on the reference segment is given by
         \begin{align*}
-            \lambda_0^{\cdot}[f] &:= f(0) \\
-            \lambda_1^{\cdot}[f] &:= f(1)
+            \lambda_0^{\cdot}[f] &= f(0) \\
+            \lambda_1^{\cdot}[f] &= f(1)
         \end{align*}
     \end{thm}
     \begin{proof}
@@ -364,7 +365,97 @@
 
 \subsection{Quadrilateral}
 
+    All basis functions on the quadrilateral are the tensor product of two basis functions on the segment. We can therefore reuse the segment dual basis to construct a dual basis for the quadrilateral.
+    
+    \begin{thm}
+        Let $f : [0,1]^2 \to \mathbb{R}$ be a function to which we want to apply the dual basis. We define the function $f_y : [0,1] \to \mathbb{R}$ indexed by $y \in [0,1]$ to be $x \mapsto f(x, y)$. Applying the dual basis on the segment to this function, we are left with $g : [0,1] \to \mathbb{R}$ given by $g(y) = \lambda_n[f_y]$. We finally apply the dual basis of the segment to this function $g$ to obtain the result of applying the quadrilateral dual basis to $f$.
+    \end{thm}
+    \begin{proof}
+        Let $\widehat{b^{\square}} : [0,1]^2 \to \mathbb{R}$ be an arbitrary basis function on the quadrilateral. As the quadrilateral basis is the tensor product of the basis on the segment, the function is separable into two basis functions on the segment $\widehat{b_i^{-}}$ and $\widehat{b_j^{-}}$ such that $\widehat{b^{\square}}(x,y) = \widehat{b_i^{-}}(x)\widehat{b_j^{-}}(y)$. We then have that
+        \begin{equation*}
+            g(y) = \lambda_m[f_y] = \lambda_m[\widehat{b_i^{-}}(x)\widehat{b_j^{-}}(y)] = \widehat{b_i^{-}}(x)\lambda_m[\widehat{b_j^{-}}(y)] = \widehat{b_i^{-}}(x)\delta_{j,m}
+        \end{equation*}
+        where $\lambda_n[\cdot]$ is an element of the dual basis of the segment. Finally applying the dual basis of the segment to the resulting $g(y)$, we see that
+        \begin{equation*}
+            \lambda_n[g(y)] = \lambda_n[\widehat{b_i^{-}}(x)\delta_{j,m}] = \lambda_n[\widehat{b_i^{-}}(x)]\delta_{j,m} = \delta_{i,n}\delta_{j,m}
+        \end{equation*}
+        proving that the given procedure yields a dual basis on the quadrilateral.
+    \end{proof}
+
+    For the same reason as in the case of the segment, we do not need to orthogonalize the resulting dual basis for the quadrilateral.
+
 
 \subsection{Triangle}
+
+    \begin{thm}[Vertex Dual Basis]
+        The vertex dual basis on the reference triangle is given by
+        \begin{align*}
+            \lambda_0^{\cdot}[f] &= f(0,0) \\
+            \lambda_1^{\cdot}[f] &= f(1,0) \\
+            \lambda_2^{\cdot}[f] &= f(0,1)
+        \end{align*}
+    \end{thm}
+    \begin{proof}
+        We simply plug the vertex basis functions into the dual basis to obtain
+        \begin{align*}
+            \lambda_0^{\cdot}[\widehat{b_0^{\cdot}}] = \widehat{b_0^{\cdot}}(0,0) = 1,\quad \lambda_0^{\cdot}[\widehat{b_1^{\cdot}}] = \widehat{b_1^{\cdot}}(0,0) = 0,\quad \lambda_0^{\cdot}[\widehat{b_2^{\cdot}}] = \widehat{b_2^{\cdot}}(0,0) = 0 \\
+            \lambda_1^{\cdot}[\widehat{b_0^{\cdot}}] = \widehat{b_0^{\cdot}}(1,0) = 0,\quad \lambda_1^{\cdot}[\widehat{b_1^{\cdot}}] = \widehat{b_1^{\cdot}}(1,0) = 1,\quad \lambda_1^{\cdot}[\widehat{b_2^{\cdot}}] = \widehat{b_2^{\cdot}}(1,0) = 0 \\
+            \lambda_2^{\cdot}[\widehat{b_0^{\cdot}}] = \widehat{b_0^{\cdot}}(0,1) = 0,\quad \lambda_2^{\cdot}[\widehat{b_1^{\cdot}}] = \widehat{b_1^{\cdot}}(0,1) = 0,\quad \lambda_2^{\cdot}[\widehat{b_2^{\cdot}}] = \widehat{b_2^{\cdot}}(0,1) = 1
+        \end{align*}
+    \end{proof}
+
+    \begin{thm}[Edge Dual Basis]
+        The edge dual basis $\lambda_{e,n}[\cdot]$ on the reference triangle where $e \in \{0,1,2\}$ is the index of the edge is given by the segment dual basis applied along the edge. It is given by
+        \begin{align*}
+            \lambda_{0,n}^{-}[f] &= (2n-1)\left( P_{n-1}(1)f(1,0) - P_{n-1}(0)f(0,0) - \int_0^1\! p_{n-1}'(x)f(x,0) \,\mathrm{d}x \right) \\
+            \lambda_{1,n}^{-}[f] &= (2n-1)\left( P_{n-1}(1)f(0,1) - P_{n-1}(0)f(1,0) - \int_0^1\! p_{n-1}'(x)f(1-x,x) \,\mathrm{d}x \right) \\
+            \lambda_{2,n}^{-}[f] &= (2n-1)\left( P_{n-1}(1)f(0,1) - P_{n-1}(0)f(0,0) - \int_0^1\! p_{n-1}'(x)f(0,1-x) \,\mathrm{d}x \right)
+        \end{align*}
+    \end{thm}
+    \begin{proof}
+        We observe that the triangle basis functions parametrized along an edge reduce to the segment basis functions.
+        \begin{align*}
+            \widehat{b_{0,n}^{-}}(x,0) &= L_n(x;(1-x)+x) L_n(x;1) = L_n(x) \\
+            \widehat{b_{1,n}^{-}}(1-x,x) &= L_n(x;(1-x)+x) = L_n(x;1) = L_n(x) \\
+            \widehat{b_{2,n}^{-}}(0,1-x) &= L_n(1-(1-x);(1-x)+(1-(1-x))) = L_n(x;1) = L_n(x).
+        \end{align*}
+        Therefore, the proof is reduced to the proof for the dual basis of the segment.
+    \end{proof}
+
+    \begin{thm}[Face Dual Basis]
+        The dual basis for the face bubbles on the reference triangle is given by
+        \begin{equation*}
+            \lambda_{n,m}^{\triangle}[f] = (2n-1)(2n+2m-1)\left( \int_0^1\!\int_0^{1-y}\! f(x,y)\left((1-y)^{i-1}{L_m^{2n}}''(y)-2n(1-y)^{n-2}{L_m^{2n}}'(y)\right)L_n''\left(\frac{x}{1-y}\right) \,\mathrm{d}x\mathrm{d}y \right)
+        \end{equation*}
+        for $n \geq 2$, $m \geq 1$ and $n+m \leq q+1$ where $q$ is the degree of the basis functions.
+    \end{thm}
+    \begin{proof}
+        Plugging in the face bubbles while ignoring the normalization factor $(2n-1)(2n+2m-1)$ gives
+        \begin{align*}
+            \lambda_{n,m}^{\triangle}[\widehat{b_{i,j}^{\triangle}}] &= \int_0^1\!\int_0^{1-y}\! L_j^{2i}(y)L_i(x;1-y)\left((1-y)^{n-1}{L_m^{2n}}''(y)-2n(1-y)^{n-2}{L_m^{2n}}'(y)\right)L_n''\left(\frac{x}{1-y}\right) \,\mathrm{d}x\mathrm{d}y \\
+            &= \int_0^1\!\int_0^{1-y}\! L_j^{2i}(y)L_i\left(\frac{x}{1-y}\right)\left((1-y)^{2n-1}{L_m^{2n}}''(y)-2n(1-y)^{2n-2}{L_m^{2n}}'(y)\right)L_n''\left(\frac{x}{1-y}\right) \,\mathrm{d}x\mathrm{d}y \\
+            \overset{z=\frac{x}{1-y}}&{=} \int_0^1\!\int_0^1\! L_j^{2i}(y)L_i(z)\left((1-y)^{2n}{L_m^{2n}}''(y)-2n(1-y)^{2n-1}{L_m^{2n}}'(y)\right)L_n''(z)) \,\mathrm{d}z\mathrm{d}y \\
+            &= \underbrace{\left( \int_0^1\! L_j^{2i}(y)\left((1-y)^{2n}{L_m^{2n}}''(y)-2n(1-y)^{2n-1}{L_m^{2n}}'(y)\right) \,\mathrm{d}y \right)}_{\text{\textcircled{1}}} \underbrace{\left( \int_0^1\! L_i(z)L_n''(z) \,\mathrm{d}z \right)}_{\text{\textcircled{2}}}.
+        \end{align*}
+        Further simplifying \textcircled{1} by partial integration yields
+        \begin{align*}
+            \text{\textcircled{1}} &= \int_0^1\! L_j^{2i}(y)\left((1-y)^{2n}{L_m^{2n}}''(y)-2n(1-y)^{2n-1}{L_m^{2n}}'(y)\right) \,\mathrm{d}y \\
+            &= \left[ L_j^{2i}(y)(1-y)^{2n}{L_m^{2n}}'(y) \right]_{y=0}^1 - \int_0^1\! (1-y)^{2n}{L_j^{2i}}'(y){L_m^{2n}}'(y) \,\mathrm{d}y \\
+            &= -\int_0^1\! (1-y)^{2n}{L_j^{2i}}'(y){L_m^{2n}}'(y) \,\mathrm{d}y = -\int_0^1\! (1-y)^{2n}P_{j-1}^{2i}(y)P_{m-1}^{2n}(y) \,\mathrm{d}y \\
+            &= -(2n+2m-1)\delta_{j,m} \mbox{ if } i = n.
+        \end{align*}
+        For the term \textcircled{2}, we obtain by partial integration
+        \begin{align*}
+            \text{\textcircled{2}} &= \int_0^1\! L_i(z)L_n''(z) \,\mathrm{d}z = \left[ L_i(z)L_n'(z) \right]_{z=0}^1 - \int_0^1\! L_i'(z)L_n'(z) \,\mathrm{d}z \\
+            &= -\int_0^1\! P_{i-1}(z)P_{n-1}(z) \,\mathrm{d}z = -(2n-1)\delta_{i,n}.
+        \end{align*}
+        Multiplying \textcircled{1} and \textcircled{2} finally gives the expected result
+        \begin{equation*}
+            \text{\textcircled{1}}\text{\textcircled{2}} = (2n-1)(2n+2m-1)\delta_{i,n}\delta{j,m}.
+        \end{equation*}
+    \end{proof}
+    
+    Please note that this face bubble dual basis is not orthogonal onto the vertex and edge dual bases. One has to apply Gram-Schmidt in order to orthogonalize them. This could in theory be done analytically, however, the size of the formulas one has to juggle with explode and make it not worth the effort. For this reason, we decided to implement the Gram-Schmidt orthogonalization numerically directly in the LehrFEM++ code.
+
     
 \end{document}
