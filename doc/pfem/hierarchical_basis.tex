@@ -194,7 +194,11 @@
         \label{fig:orientation_problem}
     \end{figure}
 
-    When using Lagrangian Finite Elements, we rely on the so called "glueing" in order to have a function space containing only continuous functions. This continuity is achieved by having a local numbering of DOFs as illustrated in \autoref{fig:orientation_problem} on the left. A single DOF may have different indices in the neighboring cells. Because the DOFs are symmetrically distributed on the edge, the two local basis functions of the neighboring cells will conveniently be continuous along the shared edge. However, if we do not use Lagrangian FEM, as is the case for Hierarchical FEM where the $n$-th edge DOF is the basis function coefficient for a polynomial of degree $n$, we no longer have continuity along the mesh edges (\autoref{fig:orientation_problem} on the right). In order to fix this, we must introduce a global ordering of the edge DOFs, as well as a global orientation of the edges. This is not a big problem though, as LehrFem++ mesh entities provide a function to access the global orientation of their edges. In the case the local orientation is flipped, we simply also flip the order of the local DOFs and the local coordinates at which we evaluate the edge basis functions. In the following sections, we will ignore this ordering problem and one simply has to apply the aforementioned transformations in order to obtain the basis on an arbitrary mesh entity.
+    When using Finite Elements, we rely on the so called "glueing" in order to have a function space containing only continuous functions. In the case of Lagrangian FEM, this continuity is achieved by having a local numbering of DOFs as illustrated in \autoref{fig:orientation_problem} on the left. A single DOF may have different indices in the neighboring cells. Because the DOFs are symmetrically distributed on the edge, the two local basis functions of the neighboring cells will conveniently be continuous along the shared edge.
+    
+    The DOF Handlers in LehrFEM++ are specialized for Lagrangian FEM and thus automatically reorder the edge DOFs according to the local orientation of an edge. However, if we do not use Lagrangian FEM, as is the case for Hierarchical FEM where the $n$-th edge DOF is the basis function coefficient for a polynomial of degree $n$, this makes it such that we no longer have continuity along the mesh edges (\autoref{fig:orientation_problem} on the right). In order to fix this, we must introduce a global ordering of the edge DOFs, as well as a global orientation of the edges. This is not a big problem though, as LehrFem++ mesh entities provide a function to access the global orientation of their edges. In the case the local orientation is flipped, we simply also flip the order of the local DOFs and the local coordinates at which we evaluate the edge basis functions. The consequence of this strategy is that we need to introduce a slightly different reference element for each combination of local edge orientations of a given mesh entity.
+    
+    In the following sections, we will ignore this ordering problem and one simply has to apply the aforementioned transformations in order to obtain the basis on an arbitrary mesh entity.
 
 
 \section{Basis Functions}
@@ -277,8 +281,8 @@
         \begin{align*}
             \widehat{b_{0,n}^{-}}(x,y) &:= (1-y)L_n(x) \\
             \widehat{b_{1,n}^{-}}(x,y) &:= xL_n(y) \\
-            \widehat{b_{2,n}^{-}}(x,y) &:= yL_n(x) \\
-            \widehat{b_{3,n}^{-}}(x,y) &:= (1-x)L_n(y)
+            \widehat{b_{2,n}^{-}}(x,y) &:= yL_n(1-x) \\
+            \widehat{b_{3,n}^{-}}(x,y) &:= (1-x)L_n(1-y)
         \end{align*}
     \end{defn}
 
@@ -479,7 +483,11 @@
         \end{equation*}
     \end{proof}
     
-    Please note that this face bubble dual basis is not orthogonal onto the vertex and edge dual bases. One has to apply Gram-Schmidt in order to orthogonalize them. This could in theory be done analytically, however, the size of the formulas one has to juggle with explode and make it not worth the effort. For this reason, we decided to implement the Gram-Schmidt orthogonalization numerically directly in the LehrFEM++ code.
+    Please note that this face bubble dual basis is not orthogonal onto the vertex and edge dual bases. One has to apply Gram-Schmidt in order to orthogonalize them. This could in theory be done analytically, however, the size of the formulas one has to juggle with explode and make it not worth the effort. For this reason, we decided to implement the Gram-Schmidt orthogonalization numerically directly in the LehrFEM++ code. The resulting orthogonalized dual basis $\tilde{\lambda}_{n,m}^{\triangle}$ for the face bubbles is then given by
+    \begin{equation*}
+        \tilde{\lambda}_{n,m}^{\triangle}[f] := \lambda_{n,m}^{\triangle}[f] - \sum_{e=0}^2 \sum_{k=2}^{p_e} \lambda_{n,m}^{\triangle}[\widehat{b_{e,k}^{-}}]\lambda_{e,k}^{-}[f] - \sum_{e=0}^2 \lambda_{n,m}^{\triangle}[\widehat{b_e^{\cdot}}]\lambda_e^{\cdot}[f]
+    \end{equation*}
+    where $p_e$ is the degree of the basis on the $e$-th edge.
     
 \section{Further Information}
     
