@@ -15,6 +15,7 @@
 
 \newtheorem{defn}{Definition}
 \newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
 
 
 \author{Tobias Rohner}
@@ -57,45 +58,45 @@
         L_n(t;t) &= \int_0^t\! P_{n-1}(\xi;t) \,\mathrm{d}\xi = \int_0^t\! P_{n-1}(\xi;t)P_0(\xi;t) \,\mathrm{d}\xi = 0, \mbox{ for } n \geq 2
     \end{align*}
     
-%    \begin{thm}
-%        A recurrence relation for the \textit{Shifted Legendre Polynomials} $P_n(x;t) : [0,t] \to \mathbb{R}$ is given by
-%        \begin{align*}
-%            P_0(x;t) &= 1 \\
-%            P_1(x;t) &= 2x - t \\
-%            nP_n(x;t) &= (2n-1)(2x-t)P_{n-1}(x;t) - (n-1)t^2P_{n-2}(x;t) \mbox{ for } n \geq 2
-%        \end{align*}
-%    \end{thm}
-%
-%    \begin{thm}
-%        A recurrence relation for the derivative of the \textit{Scaled Shifted Legendre Polynomials} $\partial_x P_n(x;t) : [0,t] \to \mathbb{R}$ is given by
-%        \begin{align*}
-%            \partial_x P_0(x;t) &= 0 \\
-%            \partial_x P_n(x;t) &= 2nP_{n-1}(x;t) + (2x-t)\partial_xP_{n-1}(x;t) \mbox{ for } n \geq 1
-%        \end{align*}
-%    \end{thm}
-%
-%    \begin{thm}
-%        A recurrence relation for the \textit{Integrated Shifted Legendre Polynomials} $L_n(\cdot;t) : [0, t] \to \mathbb{R}$ is given by
-%        \begin{align*}
-%            L_1(x;t) &= x \\
-%            2(2n-1)L_n(x;t) &= P_n(x;t) - t^2P_{n-2}(x;t) \mbox{ for } n \geq 2
-%        \end{align*}
-%    \end{thm}
-%
-%    \begin{thm}
-%        The derivative w.r.t. $x$ of the Integrated Shifted Legendre Polynomials is given by
-%        \begin{equation*}
-%            \partial_x L_n(x;t) = P_{n-1}(x;t)
-%        \end{equation*}
-%    \end{thm}
-%
-%    \begin{thm}
-%        A recurrence relation of the derivative w.r.t. $t$ of the Integrated Shifted Legendre Polynomials is given by
-%        \begin{align*}
-%            \partial_t L_1(x;t) &= 0 \\
-%            \partial_t L_n(x;t) &= -\frac{1}{2} \left( P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \mbox{ for } n \geq 2
-%        \end{align*}
-%    \end{thm}
+    \begin{prop}
+        A recurrence relation for the \textit{Shifted Legendre Polynomials} $P_n(x;t) : [0,t] \to \mathbb{R}$ is given by
+        \begin{align*}
+            P_0(x;t) &= 1 \\
+            P_1(x;t) &= 2x - t \\
+            nP_n(x;t) &= (2n-1)(2x-t)P_{n-1}(x;t) - (n-1)t^2P_{n-2}(x;t) \mbox{ for } n \geq 2
+        \end{align*}
+    \end{prop}
+
+    \begin{prop}
+        A recurrence relation for the derivative of the \textit{Scaled Shifted Legendre Polynomials} $\partial_x P_n(x;t) : [0,t] \to \mathbb{R}$ is given by
+        \begin{align*}
+            \partial_x P_0(x;t) &= 0 \\
+            \partial_x P_n(x;t) &= 2nP_{n-1}(x;t) + (2x-t)\partial_xP_{n-1}(x;t) \mbox{ for } n \geq 1
+        \end{align*}
+    \end{prop}
+
+    \begin{prop}
+        A recurrence relation for the \textit{Integrated Shifted Legendre Polynomials} $L_n(\cdot;t) : [0, t] \to \mathbb{R}$ is given by
+        \begin{align*}
+            L_1(x;t) &= x \\
+            2(2n-1)L_n(x;t) &= P_n(x;t) - t^2P_{n-2}(x;t) \mbox{ for } n \geq 2
+        \end{align*}
+    \end{prop}
+
+    \begin{prop}
+        The derivative w.r.t. $x$ of the Integrated Shifted Legendre Polynomials is given by
+        \begin{equation*}
+            \partial_x L_n(x;t) = P_{n-1}(x;t)
+        \end{equation*}
+    \end{prop}
+
+    \begin{prop}
+        A recurrence relation of the derivative w.r.t. $t$ of the Integrated Shifted Legendre Polynomials is given by
+        \begin{align*}
+            \partial_t L_1(x;t) &= 0 \\
+            \partial_t L_n(x;t) &= -\frac{1}{2} \left( P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \mbox{ for } n \geq 2
+        \end{align*}
+    \end{prop}
     
     
 \subsection{Jacobi Polynomials}
@@ -125,6 +126,29 @@
     \begin{equation*}
         P_n^{\alpha}(x) := P_n^{(\alpha,0)}(x), \quad L_n^{\alpha}(x) := L_n^{(\alpha,0)}(x)
     \end{equation*}
+    
+    \begin{prop}
+        A recurrence relation for the non-shifted Jacobi Polynomials is given by
+        \begin{align*}
+            \tilde{P}_0^{(\alpha,\beta)}(x) &= 1 \\
+            \tilde{P}_1^{(\alpha,\beta)}(x) &= \frac{1}{2} \left( \alpha - \beta + (\alpha+\beta+2)x \right) \\
+            \tilde{P}_{n+1}^{(\alpha,\beta)}(x) &= \frac{1}{a_n} \left( (b_n+c_nx)P_n^{(\alpha,\beta)}(x) - d_nP_{n-1}^{(\alpha,\beta)}(x) \right)
+        \end{align*}
+        where
+        \begin{align*}
+            a_n &= 2(n+1)(n+\alpha+\beta+1)(2n+\alpha+\beta) \\
+            b_n &= (2n+\alpha+\beta+1)(\alpha^2-\beta^2) \\
+            c_n &= (2n+\alpha+\beta)(2n+\alpha+\beta+1)(2n+\alpha+\beta+2) \\
+            d_n &= 2(n+\alpha)(n+\beta)(2n+\alpha+\beta+2).
+        \end{align*}
+    \end{prop}
+
+    \begin{prop}
+        The derivative of the $n$-th degree Shifted Jacobi Polynomial with $\beta = 0$ is given by
+        \begin{equation*}
+            \partial_x P_n^{\alpha}(x) = \frac{\alpha+n+1}{2} P_{n-1}^{(\alpha+1,1)}(x).
+        \end{equation*}
+    \end{prop}
 
 
 \section{Orientation Problems}
@@ -456,6 +480,10 @@
     \end{proof}
     
     Please note that this face bubble dual basis is not orthogonal onto the vertex and edge dual bases. One has to apply Gram-Schmidt in order to orthogonalize them. This could in theory be done analytically, however, the size of the formulas one has to juggle with explode and make it not worth the effort. For this reason, we decided to implement the Gram-Schmidt orthogonalization numerically directly in the LehrFEM++ code.
+    
+\section{Further Information}
+    
+    The basis functions have been taken form \href{https://arxiv.org/pdf/1504.03025.pdf}{this paper}. Please look there for further information on the subject. 
 
     
 \end{document}
