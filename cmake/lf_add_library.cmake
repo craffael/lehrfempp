@@ -85,10 +85,10 @@ function(lf_add_library _args)
     #add_custom_target(${_libname}. SOURCES ${${_libname}_h})
     #set(_scope INTERFACE)
     
-    add_library(${_libname} ${sources} ${_path2lf}/cmake/dummy.cpp)
+    add_library(${_libname} ${_sources} ${_path2lf}/cmake/dummy.cpp)
     set(_scope PUBLIC)
   else()
-    add_library(${_libname} ${sources})
+    add_library(${_libname} ${_sources})
     set(_scope PUBLIC)
   endif()
   target_include_directories(${_libname} PUBLIC
