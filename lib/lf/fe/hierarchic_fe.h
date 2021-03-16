@@ -24,6 +24,7 @@
 
 namespace lf::fe {
 
+// clang-format off
 /**
  * @brief computes the `n`-th degree scaled Legendre Polynomial \f$ P_n(x;t)
  *\f$
@@ -38,8 +39,10 @@ namespace lf::fe {
  *	    nP_n(x;t) &= (2n-1)(2x-t)P_{n-1}(x;t) - (n-1)t^2P_{p-2}(x;t)
  * \end{aligned} \f]
  */
+// clang-format on
 double legendre(unsigned n, double x, double t = 1);
 
+// clang-format off
 /**
  * @brief computes the integral of the (n-1)-th degree scaled Legendre
  *Polynomial
@@ -55,8 +58,10 @@ double legendre(unsigned n, double x, double t = 1);
  *	\end{aligned}
  * \f]
  */
+// clang-format on
 double ilegendre(unsigned n, double x, double t = 1);
 
+// clang-format off
 /**
  * @brief Computes \f$ \frac{\partial}{\partial x} L(x;t) \f$
  * @param n The degree of the integrated scaled Legendre polynomial
@@ -66,8 +71,10 @@ double ilegendre(unsigned n, double x, double t = 1);
  * The derivative is simply given by \f$ \frac{\partial}{\partial x} L_n(x;t) =
  * P_{n-1}(x;t) \f$
  */
+// clang-format on
 double ilegendre_dx(unsigned n, double x, double t = 1);
 
+// clang-format off
 /**
  * @brief Computes \f$ \frac{\partial}{\partial t} L(x;t) \f$
  * @param n The degree of the integrated scaled Legendre polynomial
@@ -81,8 +88,10 @@ double ilegendre_dx(unsigned n, double x, double t = 1);
  *	    \frac{\partial}{\partial t} L_n(x;t) &= -\frac{1}{2} \left(
  *P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \end{aligned} \f]
  */
+// clang-format on
 double ilegendre_dt(unsigned n, double x, double t = 1);
 
+// clang-format off
 /**
  * @brief Computes the derivative of the n-th degree scaled Legendre polynomial
  * @param n The degree of the polynomial
@@ -96,8 +105,10 @@ double ilegendre_dt(unsigned n, double x, double t = 1);
  *	    \frac{\partial}{\partial x} L_n(x;t) &= 2nP_{n-1}(x;t) +
  *(2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
  */
+// clang-format on
 double legendre_dx(unsigned n, double x, double t = 1);
 
+// clang-format off
 /**
  * @brief Computes the n-th degree shifted Jacobi polynomial
  * @param n The degree of the polynomial
@@ -120,8 +131,10 @@ double legendre_dx(unsigned n, double x, double t = 1);
  *	\end{aligned}
  * \f]
  */
+// clang-format on
 double jacobi(unsigned n, double alpha, double beta, double x);
 
+// clang-format off
 /**
  * @brief Computes the n-th degree shifted Jacobi polynomial for \f$ \beta = 0
  * \f$
@@ -129,8 +142,10 @@ double jacobi(unsigned n, double alpha, double beta, double x);
  * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
  * @param x The evaluation coordinate
  */
+// clang-format on
 double jacobi(unsigned n, double alpha, double x);
 
+// clang-format off
 /**
  * @brief Evaluate the integral of the (n-1)-th degree Jacobi Polynomial for \f$
  *\beta = 0 \f$
@@ -152,8 +167,10 @@ double jacobi(unsigned n, double alpha, double x);
  *	\end{aligned}
  * \f]
  */
+// clang-format on
 double ijacobi(unsigned n, double alpha, double x);
 
+// clang-format off
 /**
  * @brief Computes the derivative of the n-th integrated scaled Jacobi
  * polynomial
@@ -164,8 +181,10 @@ double ijacobi(unsigned n, double alpha, double x);
  * The derivative is simply given by \f$ \frac{\partial}{\partial x}
  * L_n^{(\alpha,0)}(x) = P_{n-1}^{(\alpha,0)}(x) \f$
  */
+// clang-format on
 double ijacobi_dx(unsigned n, double alpha, double x);
 
+// clang-format off
 /**
  * @brief Computes the derivative of the n-th degree Jacobi Polynomial for \f$
  *\beta = 0 \f$
@@ -178,8 +197,10 @@ double ijacobi_dx(unsigned n, double alpha, double x);
  *	{P^{(\alpha,0)}_n}'(x) = \frac{\alpha+n+1}{2} P^{(\alpha+1,1)}_{n-1}(x)
  * \f]
  */
+// clang-format on
 double jacobi_dx(unsigned n, double alpha, double x);
 
+// clang-format off
 /**
  * @headerfile lf/fe/fe.h
  * @brief Hierarchic Finite Elements of arbitrary degree on segments
@@ -218,6 +239,7 @@ double jacobi_dx(unsigned n, double alpha, double x);
  *
  * @see ScalarReferenceFiniteElement
  */
+// clang-format on
 template <typename SCALAR>
 class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
@@ -329,6 +351,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     return qr_dual_->NumPoints() + 2;
   }
 
+  // clang-format off
   /**
    * @brief Maps function evaluations to basis function coefficients
    * @param nodevals The value of the function at the evaluation nodes
@@ -340,8 +363,9 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
    *	f(0) &\mbox{ for } i = 0 \\
    *	f(1) &\mbox{ for } i = 1 \\
    *	\frac{1}{2i - 1} \left [P_{i-1}(1)f(1) - P_{i-1}(0)f(0) - \int_0^1\!
-   *P_{i-1}'(x)f(x) \,\mathrm{d}x \right] &\mbox{ for } i \geq 2 \end{cases} \f]
+   * P_{i-1}'(x)f(x) \,\mathrm{d}x \right] &\mbox{ for } i \geq 2 \end{cases} \f]
    */
+  // clang-format on
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
     Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(NumRefShapeFunctions());
@@ -371,6 +395,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
   const lf::quad::QuadRule *qr_dual_;
 };
 
+// clang-format off
 /**
  * @headerfile lf/fe/fe.h
  * @brief Hierarchic Finite Elements of arbitrary degree on triangles
@@ -446,6 +471,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  *
  * @see ScalarReferenceFiniteElement
  */
+// clang-format on
 template <typename SCALAR>
 class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
@@ -1063,6 +1089,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 };
 
+// clang-format off
 /**
  * @headerfile lf/fe/fe.h
  * @brief Hierarchic Finite Elements of arbitrary degree on quadrilaterals
@@ -1109,6 +1136,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
  *
  * @see ScalarReferenceFiniteElement
  */
+// clang-format on
 template <typename SCALAR>
 class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
  public:
