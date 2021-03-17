@@ -76,7 +76,7 @@ class QuadRule {
 
   /**
    * @brief Construct a new quadrature rule by specifying reference element,
-   * points, weights and order explicitly.
+   * points, weights and degree of exactness explicitly.
    *
    * @param ref_el The reference element for which the quadrature rule is.
    * @param points The points of the quadrature rule, a matrix of size
@@ -110,7 +110,7 @@ class QuadRule {
    * the largest integer \f$k\f$ such that
    * \f[
    * \forall p \in \mathbb{P}_k, \quad \int_K p(\vec{x}) \,
-   * d\vec{x} = \sum_{i=0}^{n-1} \omega_i f(\vec{\xi_i})
+   * d\vec{x} = \sum_{i=0}^{n-1} \omega_i p(\vec{\xi_i})
    * \f]
    * here the polynomial space \f$\mathbb{P}_k\f$ is defined differently for
    * every reference element:
