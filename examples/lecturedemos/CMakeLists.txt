@@ -31,7 +31,25 @@ set_target_properties(examples.lecturedemo PROPERTIES FOLDER "examples")
 add_custom_target(examples.lecturedemo_run COMMAND examples.lecturedemo)
 add_dependencies(examples_run examples.lecturedemo_run)
 set_target_properties(examples.lecturedemo_run PROPERTIES FOLDER "examples")
-  
+
+add_executable(examples.cblfdemo cblfdemo.cc)
+
+target_link_libraries(examples.cblfdemo
+  PUBLIC Eigen3::Eigen
+  Boost::program_options
+  lf.mesh
+  lf.mesh.test_utils
+  lf.mesh.utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.io
+  lf.quad
+  lf.assemble
+  )
+set_target_properties(examples.cblfdemo PROPERTIES FOLDER "examples")
+
+
+
 
   
 
