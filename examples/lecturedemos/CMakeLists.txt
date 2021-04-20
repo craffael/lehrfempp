@@ -32,9 +32,9 @@ add_custom_target(examples.lecturedemo_run COMMAND examples.lecturedemo)
 add_dependencies(examples_run examples.lecturedemo_run)
 set_target_properties(examples.lecturedemo_run PROPERTIES FOLDER "examples")
 
-add_executable(examples.cblfdemo cblfdemo.cc)
+add_executable(examples.cdblfdemo cdblfdemo.cc)
 
-target_link_libraries(examples.cblfdemo
+target_link_libraries(examples.cdblfdemo
   PUBLIC Eigen3::Eigen
   Boost::program_options
   lf.mesh
@@ -46,7 +46,7 @@ target_link_libraries(examples.cblfdemo
   lf.quad
   lf.assemble
   )
-set_target_properties(examples.cblfdemo PROPERTIES FOLDER "examples")
+set_target_properties(examples.cdblfdemo PROPERTIES FOLDER "examples")
 
 
 

@@ -76,11 +76,11 @@ Eigen::Matrix<double, 1, 3> CDBLFElemMatProvider<MeshFunction>::Eval(
   // Get values of vector field in midpoints of edges
   const Eigen::MatrixXd refqrnodes{
       (Eigen::MatrixXd(2, 3) << 0.5, 0.5, 0.0, 0.0, 0.5, 0.5).finished()};
-  auto av_values{av_(tria, refqrnodes)};
+  std::vector<Eigen::Vector2d> av_values{av_(tria, refqrnodes)};
   Eigen::Matrix<double, 1, 3> elmat{Eigen::Matrix<double, 1, 3>::Zero()};
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      elmat(0, i) += grad_bary_coords.col(i).dot(av_values[j]);
+      elmat(0, i) += (grad_bary_coords.col(i)).transpose()*av_values[j];
     }
   }
   return (area / 3) * elmat;
@@ -89,9 +89,9 @@ Eigen::Matrix<double, 1, 3> CDBLFElemMatProvider<MeshFunction>::Eval(
 double testCDBLF(std::shared_ptr<lf::mesh::Mesh> mesh_p, Eigen::Vector2d a,
                  Eigen::Vector2d b) {
   // Build linear mesh functions
-  auto lin_a = [a](Eigen::Vector2d x) -> double { return a.dot(x); };
+  auto vec_a = [a](Eigen::Vector2d /*x*/) -> Eigen::Vector2d { return a; };
   auto lin_b = [b](Eigen::Vector2d x) -> double { return b.dot(x); };
-  const lf::mesh::utils::MeshFunctionGlobal MF_a(lin_a);
+  const lf::mesh::utils::MeshFunctionGlobal MF_va(vec_a);
   const lf::mesh::utils::MeshFunctionGlobal MF_b(lin_b);
   // DofHandler for linear Lagrangian FE space
   lf::assemble::UniformFEDofHandler dh_linfe(mesh_p,
@@ -104,7 +104,7 @@ double testCDBLF(std::shared_ptr<lf::mesh::Mesh> mesh_p, Eigen::Vector2d a,
   const unsigned int N_constfe = dh_constfe.NumDofs();
   lf::assemble::COOMatrix<double> mat(N_constfe, N_linfe);
   // Initialize Galerkin matrix
-  CDBLFElemMatProvider cdblfelmatprovider(MF_a);
+  CDBLFElemMatProvider cdblfelmatprovider(MF_va);
   mat = lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
       0, dh_linfe, dh_constfe, cdblfelmatprovider);
 
@@ -128,7 +128,7 @@ int main(int /*argc*/, char** /*argv*/) {
   const Eigen::Vector2d a(1.0, 2.0);
   const Eigen::Vector2d b(3.0, 2.0);
   // Run test computation
-  double itg = testCDBLF(mesh_p,a,b);
+  double itg = cblfdemo::testCDBLF(mesh_p,a,b);
   std::cout << "Integral = " << itg << std::endl; 
   return 0;
 }
