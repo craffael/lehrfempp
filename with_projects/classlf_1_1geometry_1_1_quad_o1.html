@@ -131,7 +131,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7a9815e9ae967c24540dea30603a9c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the jacobian of the mapping simultaneously at <code>numPoints</code> points.  <a href="classlf_1_1geometry_1_1_quad_o1.html#a7a9815e9ae967c24540dea30603a9c2f">More...</a><br /></td></tr>
 <tr class="separator:a7a9815e9ae967c24540dea30603a9c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a04d0660db00dea4dcec218f665f94a"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">JacobianInverseGramian</a> (const Eigen::MatrixXd &amp;local) const override</td></tr>
-<tr class="memdesc:a7a04d0660db00dea4dcec218f665f94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the Jacobian * Inverse Gramian ( \( J (J^T J)^{-1}\)) simulatanesouly at <code>numPoints</code>.  <a href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">More...</a><br /></td></tr>
+<tr class="memdesc:a7a04d0660db00dea4dcec218f665f94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the Jacobian * Inverse Gramian ( \( J (J^T J)^{-1}\)) simultaneously at <code>numPoints</code>.  <a href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">More...</a><br /></td></tr>
 <tr class="separator:a7a04d0660db00dea4dcec218f665f94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a609ea63d96a153f91782680e842b6db1"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#a609ea63d96a153f91782680e842b6db1">IntegrationElement</a> (const Eigen::MatrixXd &amp;local) const override</td></tr>
 <tr class="memdesc:a609ea63d96a153f91782680e842b6db1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The integration element (factor appearing in integral transformation formula, see below) at number of evaluation points (specified in local coordinates).  <a href="classlf_1_1geometry_1_1_quad_o1.html#a609ea63d96a153f91782680e842b6db1">More...</a><br /></td></tr>
@@ -551,7 +551,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Evaluate the Jacobian * Inverse Gramian ( \( J (J^T J)^{-1}\)) simulatanesouly at <code>numPoints</code>. </p>
+<p>Evaluate the Jacobian * Inverse Gramian ( \( J (J^T J)^{-1}\)) simultaneously at <code>numPoints</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">local</td><td>A Matrix of size <code><a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#afd5be6cbaaeb47be2b996fbffa9061ac" title="Dimension of the domain of this mapping.">DimLocal()</a> x numPoints</code> that contains the evaluation points as column vectors. </td></tr>
@@ -563,7 +563,7 @@ Additional Inherited Members</h2></td></tr>
 <h3>Example for recovering a single transposed inverse Jacobian.</h3>
 <p>If both dimensions agree and have the value D, then the method returns the transposed of the inverse Jacobians of the transformation at the passed points. These are square DxD matrices.</p>
 <p>To retrieve the j-th inverse transposed Jacobian from the returned matrix, use the <code>block</code> methdod of <code>Eigen</code> (case <code>(D = <a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#afd5be6cbaaeb47be2b996fbffa9061ac" title="Dimension of the domain of this mapping.">DimLocal()</a>) == <a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#a7ea62e809d2cc7c093c42ed5a8c79d47" title="Dimension of the image of this mapping.">DimGlobal()</a></code>) </p><div class="fragment"><div class="line"><a class="code" href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">JacobianInverseGramian</a>(local).block(0,i*D,D,D)</div>
-<div class="ttc" id="aclasslf_1_1geometry_1_1_quad_o1_html_a7a04d0660db00dea4dcec218f665f94a"><div class="ttname"><a href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">lf::geometry::QuadO1::JacobianInverseGramian</a></div><div class="ttdeci">Eigen::MatrixXd JacobianInverseGramian(const Eigen::MatrixXd &amp;local) const override</div><div class="ttdoc">Evaluate the Jacobian * Inverse Gramian ( ) simulatanesouly at numPoints.</div><div class="ttdef"><b>Definition:</b> <a href="quad__o1_8cc_source.html#l00106">quad_o1.cc:106</a></div></div>
+<div class="ttc" id="aclasslf_1_1geometry_1_1_quad_o1_html_a7a04d0660db00dea4dcec218f665f94a"><div class="ttname"><a href="classlf_1_1geometry_1_1_quad_o1.html#a7a04d0660db00dea4dcec218f665f94a">lf::geometry::QuadO1::JacobianInverseGramian</a></div><div class="ttdeci">Eigen::MatrixXd JacobianInverseGramian(const Eigen::MatrixXd &amp;local) const override</div><div class="ttdoc">Evaluate the Jacobian * Inverse Gramian ( ) simultaneously at numPoints.</div><div class="ttdef"><b>Definition:</b> <a href="quad__o1_8cc_source.html#l00106">quad_o1.cc:106</a></div></div>
 </div><!-- fragment --> <div class="image">
 <img src="jiglfpp.png" alt=""/>
 </div>
