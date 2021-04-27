@@ -179,7 +179,7 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * valued function that should be projected
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
- * @param fe_space a uniform Lagrangian finite element space, providing
+ * @param fe_space a scalar finite element space, providing
  * finite element specifications for the cells of the mesh
  * @param u functor object supplying a scalar-valued function that is to be
  * projected

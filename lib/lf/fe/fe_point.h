@@ -15,7 +15,7 @@ namespace lf::fe {
 
 /**
  * @headerfile lf/fe/fe.h
- * @brief Linear finite element on a point
+ * @brief Finite element on a point
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
  * of dimension 0, which is exactly one scalar value. It is an ingredient

@@ -98,15 +98,12 @@ class DiffusionElementMatrixProvider final {
   /** @} */
 
   /**
-   * @brief Constructor: cell-independent precomputations
+   * @brief Constructor
    *
    * @param fe_space collection of specifications for scalar-valued parametric
    * reference elements
    * @param alpha mesh function for the (possibly matrix-valued) diffusion
    * coefficient
-   *
-   * This constructor uses local quadature rules with double the degree of
-   * exactness as the polynomial degree of the finite element space.
    *
    * @note If your `fe_space` is from lf::uscalfe, please consider using the
    * lf::uscalfe::DiffusionElementMatrixProvider provided there, as that is
@@ -250,6 +247,10 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * - SCALAR must be a type like `double`
  * - REACTION_COEFF should be compatible with a scalar-valued \ref mesh_function
  *
+ * @note If you intend to use this matrix provider with FE Spaces from
+ * `lf::uscalfe` please consider switching to
+ * `lf::uscalfe::MassEdgeMatrixProvider` provided there,
+ * as it is specifically optimized for uniform FE Spaces.
  */
 template <typename SCALAR, typename REACTION_COEFF>
 class MassElementMatrixProvider final {
@@ -404,6 +405,10 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
+ * @note If you intend to use this matrix provider with FE Spaces from
+ * `lf::uscalfe` please consider switching to
+ * `lf::uscalfe::ReactionDiffusionElementMatrixProvider` provided there,
+ * as it is specifically optimized for uniform FE Spaces.
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider final {
@@ -552,6 +557,15 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function assemble::AssembleVectorLocally().
+ *
+ * ### Example usage
+ * The following code snippet computes the solution of the BVP
+ * \f{align}
+ * - \Delta u &= 1 && \text{on }\Omega := [0,1]^2 \\
+ * u &= 0 && \text{on }\partial \Omega
+ * \f}
+ *
+ * @snippet hierarchic_scalar_fe_space_snippets.cc Laplace
  */
 template <typename SCALAR, typename MESH_FUNCTION>
 class ScalarLoadElementVectorProvider final {
@@ -686,7 +700,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * @headerfile lf/fe/fe.h
  * @brief Local edge contributions to element vector
  *
- * @tparam SCALAR underlying scalar type of the FESpace, usually double or
+ * @tparam SCALAR underlying scalar type of the ScalarFESpace, usually double or
  *                complex<double>
  * @tparam FUNCTOR `SCALAR` valued \ref mesh_function "MeshFunction" which
  *                 defines the function \f$ g \f$

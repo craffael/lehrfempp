@@ -27,7 +27,7 @@ namespace lf::fe {
 // clang-format off
 /**
  * @brief computes the `n`-th degree scaled Legendre Polynomial \f$ P_n(x;t)
- *\f$
+ * \f$
  * @param n The degree of the polynomial
  * @param x The evaluation coordinate
  * @param t The scaling parameter
@@ -45,7 +45,7 @@ double legendre(unsigned n, double x, double t = 1);
 // clang-format off
 /**
  * @brief computes the integral of the (n-1)-th degree scaled Legendre
- *Polynomial
+ * Polynomial
  * @param n The degree of the integrated polynomial
  * @param x The evaluation coordinate
  * @param t The scaling parameter
@@ -63,7 +63,7 @@ double ilegendre(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
- * @brief Computes \f$ \frac{\partial}{\partial x} L(x;t) \f$
+ * @brief Computes \f$ \frac{\partial}{\partial x} L_n(x;t) \f$
  * @param n The degree of the integrated scaled Legendre polynomial
  * @param x The evaluation coordinate
  * @param t The scaling parameter
@@ -76,7 +76,7 @@ double ilegendre_dx(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
- * @brief Computes \f$ \frac{\partial}{\partial t} L(x;t) \f$
+ * @brief Computes \f$ \frac{\partial}{\partial t} L_n(x;t) \f$
  * @param n The degree of the integrated scaled Legendre polynomial
  * @param x The evaluation coordinate
  * @param t The scaling parameter
@@ -86,7 +86,7 @@ double ilegendre_dx(unsigned n, double x, double t = 1);
  *	\begin{aligned}
  *	    \frac{\partial}{\partial t} L_1(x;t) &= 0 \\
  *	    \frac{\partial}{\partial t} L_n(x;t) &= -\frac{1}{2} \left(
- *P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \end{aligned} \f]
+ * P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \end{aligned} \f]
  */
 // clang-format on
 double ilegendre_dt(unsigned n, double x, double t = 1);
@@ -103,7 +103,7 @@ double ilegendre_dt(unsigned n, double x, double t = 1);
  *	\begin{aligned}
  *	    \frac{\partial}{\partial x} L_0(x;t) &= 0 \\
  *	    \frac{\partial}{\partial x} L_n(x;t) &= 2nP_{n-1}(x;t) +
- *(2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
+ * (2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
  */
 // clang-format on
 double legendre_dx(unsigned n, double x, double t = 1);
@@ -121,9 +121,9 @@ double legendre_dx(unsigned n, double x, double t = 1);
  *	\begin{aligned}
  *	    P_0^{(\alpha,\beta)}(x) &= 1 \\
  *	    P_1^{(\alpha,\beta)}(x) &= \frac{1}{2} \left( \alpha - \beta +
- *(\alpha + \beta + 2)x \right) \\ P_{n+1}^{(\alpha,\beta)}(x) &= \frac{1}{a_n}
- *\left( (b_n+c_nx)P_n^{(\alpha,\beta)}(x) - d_nP_{n-1}^{(\alpha,\beta)}(x)
- *\right) \end{aligned} \f] where \f[ \begin{aligned}
+ * (\alpha + \beta + 2)x \right) \\ P_{n+1}^{(\alpha,\beta)}(x) &= \frac{1}{a_n}
+ * \left( (b_n+c_nx)P_n^{(\alpha,\beta)}(x) - d_nP_{n-1}^{(\alpha,\beta)}(x)
+ * \right) \end{aligned} \f] where \f[ \begin{aligned}
  *	    a_n &= 2(n+1)(n+\alpha+\beta+1)(2n+\alpha+\beta) \\
  *	    b_n &= (2n+\alpha+\beta+1)(\alpha^2-\beta^2) \\
  *	    c_n &= (2n+\alpha+\beta)(2n+\alpha+\beta+1)(2n+\alpha+\beta+2) \\
@@ -148,7 +148,7 @@ double jacobi(unsigned n, double alpha, double x);
 // clang-format off
 /**
  * @brief Evaluate the integral of the (n-1)-th degree Jacobi Polynomial for \f$
- *\beta = 0 \f$
+ * \beta = 0 \f$
  * @param n The degree of the integrated polynomial
  * @param alpha The \f$ \alpha \f$ parameter of the Jacobi polynomial
  * @param x The evaluation coordinate
@@ -158,7 +158,7 @@ double jacobi(unsigned n, double alpha, double x);
  *	\begin{aligned}
  *	    L_1^\alpha(x) &= x \\
  *	    L_p^\alpha(x) &= a_pP_p^\alpha(x) + b_pP_{p-1}^\alpha(x) -
- *c_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
+ * c_pP_{p-2}^\alpha(x) \end{aligned} \f] where the coefficients are defined as
  * \f[
  *	\begin{aligned}
  *	    a_p &= \frac{p+\alpha}{(2p+\alpha-1)(2p+\alpha)} \\
@@ -187,7 +187,7 @@ double ijacobi_dx(unsigned n, double alpha, double x);
 // clang-format off
 /**
  * @brief Computes the derivative of the n-th degree Jacobi Polynomial for \f$
- *\beta = 0 \f$
+ * \beta = 0 \f$
  * @param n The degree of the differentiated polynomial
  * @param alpha The \f$ \alpha \f$ parameter of the Jacobi Polynomial
  * @param x The evaluation coordinate
@@ -217,11 +217,11 @@ double jacobi_dx(unsigned n, double alpha, double x);
  * \f[
  *  \widehat{b^-}^i(x) = L_i(x) = \int_0^{x}\!
  *  P_{i-1}(\xi) \,\mathrm{d}\xi \quad\mbox{ for }\quad i= 2, \cdots, p \f] where
- *\f$P_i : [0, 1] \to \mathbb{R}\f$ is the shifted Legendre polynomial of degree
- *\f$i\f$.
+ * \f$P_i : [0, 1] \to \mathbb{R}\f$ is the shifted Legendre polynomial of degree
+ * \f$i\f$.
  *
  * To compute the basis function coefficients from point evaluations of a
- *function, we make use of the dual basis given by \f[ \lambda_i^-[f] =
+ * function, we make use of the dual basis given by \f[ \lambda_i^-[f] =
  * \begin{cases}
  *	f(0) &\mbox{ for } i = 0 \\
  *	f(1) &\mbox{ for } i = 1 \\
@@ -229,13 +229,13 @@ double jacobi_dx(unsigned n, double alpha, double x);
  *	P_{i-1}'(x)f(x) \,\mathrm{d}x \right] &\mbox{ for } i \geq 2 \end{cases} \f]
  *
  * @attention Note that the local coordinate \f$\widehat{x}\f$ may be flipped by
- *applying an affine transformation \f$\widehat{x} \mapsto 1 - \widehat{x}\f$.
+ * applying an affine transformation \f$\widehat{x} \mapsto 1 - \widehat{x}\f$.
  * This must be done if the relative orientation of the edge is
  *`lf::mesh::Orientation::negative` in order to keep a global ordering of DOFs
- *on the cell interfaces.
+ * on the cell interfaces.
  *
  * A complete description of the basis functions and dual basis can be found
- * <a href="hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
+ * <a href="https://raw.githubusercontent.com/craffael/lehrfempp/master/doc/pfem/hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -401,7 +401,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  * @brief Hierarchic Finite Elements of arbitrary degree on triangles
  *
  * The shape functions associated with the vertices are given by the barycentric
- *coordinates \f[ \begin{align*}
+ * coordinates \f[ \begin{align*}
  *	\widehat{b^{\cdot}}^1(\widehat{x}, \widehat{y}) &= \lambda_1 = 1 -
  * \widehat{x} - \widehat{y} \\
  *	\widehat{b^{\cdot}}^2(\widehat{x}, \widehat{y}) &= \lambda_2 =
@@ -409,7 +409,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  * \widehat{y} \end{align*} \f]
  *
  * The basis functions associated with the triangle edges are given by the
- *homogenized integrated Legendre polynomials \f[ \begin{align*}
+ * homogenized integrated Legendre polynomials \f[ \begin{align*}
  *	\widehat{b^-}^i(\widehat{x}, \widehat{y}) &= (\lambda_1 + \lambda_2)^i
  * L_i\left(\frac{\lambda_2}{\lambda_1+\lambda_2}\right) &\mbox{ for edge 1 and }
  * i = 2, \cdots, p \\
@@ -417,35 +417,35 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  * L_i\left(\frac{\lambda_3}{\lambda_2+\lambda_3}\right) &\mbox{ for edge 2 and }
  * i = 2, \cdots, p \\ \widehat{b^-}^i(\widehat{x}, \widehat{y}) &= (\lambda_3 +
  * \lambda_1)^i L_i\left(\frac{\lambda_1}{\lambda_3+\lambda_1}\right) &\mbox{ for
- *edge 3 and } i = 2, \cdots, p \end{align*} \f] Note that the basis function on
- *a specific edge is always zero on the other two edges. This is needed to
- *guarantee continuity of the function space.
+ * edge 3 and } i = 2, \cdots, p \end{align*} \f] Note that the basis function on
+ * a specific edge is always zero on the other two edges. This is needed to
+ * guarantee continuity of the function space.
  *
  * The basis functions associated with the interior of the triangle are given by
- *the edge basis functions multiplied with an integrated Jacobi polynomial to
- *force the value of the basis function to be zero on all edges. \f[
+ * the edge basis functions multiplied with an integrated Jacobi polynomial to
+ * force the value of the basis function to be zero on all edges. \f[
  *  \widehat{b^{\triangle}}^{ij}(\widehat{x}, \widehat{y}) = (\lambda_1 +
  * \lambda_2)^i L_i\left(\frac{\lambda_2}{\lambda_1+\lambda_2}\right)
  * L_j^{2i}(\lambda_3) \quad\mbox{ for } i \geq 2, j \geq 1, i+j = 3, \cdots, p
  * \f]
  * where \f$L_i : [0, 1] \to \mathbb{R}\f$ and \f$L_i^{\alpha} : [0, 1] \to
  * \mathbb{R}\f$ are the integrated shifted Legendre and integrated shifted
- *Jacobi polynomials respectively: \f[ \begin{align*}
+ * Jacobi polynomials respectively: \f[ \begin{align*}
  *	L_i(x) &= \int_0^x\! P_{i-1}(\xi) \,\mathrm{d}\xi \\
  *	L_i^{\alpha}(x) &= \int_0^x\! P_{i-1}^{(\alpha, 0)}(\xi) \,\mathrm{d}\xi
  *  \end{align*}
  * \f]
  *
- * To compute the basis function coefficientsfrom point evaluations of a
- *function, we make use of the dual basis. For the vertices it is simply given
- *by \f[ \lambda_i^{\cdot}[f] = \begin{cases}
+ * To compute the basis function coefficients from point evaluations of a
+ * function, we make use of the dual basis. For the vertices it is simply given
+ * by \f[ \lambda_i^{\cdot}[f] = \begin{cases}
  *	f(0, 0) &\mbox{ for } i = 1 \\
  *	f(1, 0) &\mbox{ for } i = 2 \\
  *	f(0, 1) &\mbox{ for } i = 3
  *  \end{cases}
  * \f]
  * For the dual basis on the edges, we simply apply the segment dual basis along
- *the edges of the triangle \f[ \lambda_i^-[f] = \begin{cases}
+ * the edges of the triangle \f[ \lambda_i^-[f] = \begin{cases}
  *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(1, 0) - P_{i-1}(0)f(0, 0) - \int_0^1\!
  * P_{i-1}'(x)f(x, 0) \,\mathrm{d}x \right] &\mbox{ for edge 1} \\
  *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(0, 1) - P_{i-1}(0)f(1, 0) - \int_0^1\!
@@ -453,21 +453,21 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
  *	\frac{1}{2i-1} \left[ P_{i-1}(1)f(0, 0) - P_{i-1}(0)f(0, 1) - \int_0^1\!
  * P_{i-1}'(x)f(0, 1-x) \,\mathrm{d}x \right] &\mbox{ for edge 2} \end{cases} \f]
  * The dual basis for the interior shape functions is quite a bit more involved.
- *It is given by \f[ \lambda_{ij}^{\triangle}[f] = \frac{1}{(2i-1)(2i+2j-1)}
+ * It is given by \f[ \lambda_{ij}^{\triangle}[f] = \frac{1}{(2i-1)(2i+2j-1)}
  * \left[ \int_0^1\! \int_0^{1-y}\! f(x, y) \left( (1-y)^{i-1}{L_j^{2i}}''(y) -
  * 2i(1-y)^{i-2}{L_j^{2i}}'(y) \right) L_{j+1}''\left(\frac{x}{1-y}\right)
  * \,\mathrm{d}x \,\mathrm{d}y \right] \f] and must additionally be
- *orthogonalized with respect to the dual basis on the vertices and edges of the
- *triangle by subtracting them accordingly.
+ * orthogonalized with respect to the dual basis on the vertices and edges of the
+ * triangle by Gram Schmidt.
  *
  * @attention Note that for the basis functions associated with the edges,
- *depending on the `lf::mesh::Orientation` of the according edge, the local
- *coordinate may be flipped to ensure continuity of the function space over the
- *cell interfaces of the mesh. The basis functions and the dual basis must be
+ * depending on the `lf::mesh::Orientation` of the according edge, the local
+ * coordinate may be flipped to ensure continuity of the function space over the
+ * cell interfaces of the mesh. The basis functions and the dual basis must be
  * adjusted accordingly in this case.
  *
  * A complete description of the basis functions and dual basis can be found
- * <a href="hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
+ * <a href="https://raw.githubusercontent.com/craffael/lehrfempp/master/doc/pfem/hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
  *
  * @see ScalarReferenceFiniteElement
  */
@@ -1126,13 +1126,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
  * apply the dual basis to the resulting 1d function.
  *
  * @attention Note that for the basis functions associated with the edges,
- *depending on the `lf::mesh::Orientation` of the according edge, the local
- *coordinate may be flipped to ensure continuity of the function space over the
- *cell interfaces of the mesh. The basis functions and the dual basis must be
+ * depending on the `lf::mesh::Orientation` of the according edge, the local
+ * coordinate may be flipped to ensure continuity of the function space over the
+ * cell interfaces of the mesh. The basis functions and the dual basis must be
  * adjusted accordingly in this case.
  *
  * A complete description of the basis functions and dual basis can be found
- * <a href="hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
+ * <a href="https://raw.githubusercontent.com/craffael/lehrfempp/master/doc/pfem/hierarchical_basis.pdf" target="_blank"><b>here</b></a>.
  *
  * @see ScalarReferenceFiniteElement
  */
