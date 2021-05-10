@@ -33,7 +33,7 @@ MeshFactory::size_type MeshFactory::AddPoint(
   // geometry information supplied for edges or cells.
   // Hence the next assertion should be removed in the medium run.
   LF_ASSERT_MSG(geometry != nullptr,
-                "No creation of a point without a valid geoetry");
+                "No creation of a point without a valid geometry");
   LF_ASSERT_MSG(geometry->DimGlobal() == dim_world_,
                 "geometry->DimGlobal() != dim_world_");
   LF_ASSERT_MSG(geometry->RefEl() == lf::base::RefEl::kPoint(),
