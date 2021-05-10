@@ -220,7 +220,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * argument ENTITY_MATRIX_PROVIDER of the function
  * lf::assemble::AssembleMatrixLocally().
  *
- * The element matrix is corresponds to the (local) bilinear form
+ * The element matrix corresponds to the (local) bilinear form
  * @f[
     (u,v)
  \mapsto\int\limits_{K}\gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
