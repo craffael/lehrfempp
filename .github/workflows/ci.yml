@@ -161,28 +161,29 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [clang-format]
     env:
-      CXX: "clang++-7"
+      CXX: "g++-10"
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install packages
-        run: sudo apt remove clang-10 clang-8 llvm-8 llvm-10 && sudo apt-get install graphviz g++-8 flex bison libclang-9-dev libclang-cpp9 expect
+      # - name: Setup tmate session
+        # uses: mxschmitt/action-tmate@v3
+      - name: install packages
+        run: sudo apt remove clang-12 libclang-cpp12 clang-11 libclang-cpp11  && sudo apt-get install libclang-10-dev expect
       - name: Restore cache
         uses: actions/cache@v2
         with:
           path: |
             ${{ env.DEPS_DIR }}
             ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-g++-8-Doxygen-${{ github.run_id }}
+          key:  ${{ runner.os }}-g++-10-Doxygen-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-g++-8-Doxygen-
-            ${{ runner.os }}-g++-8-Debug-
+            ${{ runner.os }}-g++-10-Doxygen-
+            ${{ runner.os }}-g++-10-Debug-
       - name: doxygen 
         run: |
           . ./ci/install_doxygen.sh
           cd $GITHUB_WORKSPACE
-          export CXX=g++-8
           cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
           cd Build
           make doxygen
