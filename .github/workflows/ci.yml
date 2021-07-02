@@ -8,16 +8,16 @@ env:
   HUNTER_ROOT: ${{ github.workspace}}/hunter
 
 jobs:
-  clang-format:
-    name: clang-format-10
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install clang-format
-        run: sudo apt-get install clang-format-10
-      - name: clang-format
-        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-10 --color always ./lib/ ./projects/ ./examples/"
+  # clang-format:
+    # name: clang-format-10
+    # runs-on: ubuntu-20.04
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Install clang-format
+        # run: sudo apt-get install clang-format-10
+      # - name: clang-format
+        # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-10 --color always ./lib/ ./projects/ ./examples/"
   # clang-tidy:
     # name: clang-tidy-10 ${{ matrix.name }}
     # needs: clang-format
@@ -159,51 +159,53 @@ jobs:
   doxygen:
     name: doxygen
     runs-on: ubuntu-20.04
-    needs: [clang-format]
+    # needs: [clang-format]
     env:
       CXX: "g++-10"
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install packages
-        run: sudo apt remove clang-9 clang-format-9 libclang-cpp9 libclang-common-9-dev clang-11 clang-format-11 libclang-cpp11 libclang-common-11-dev  && sudo apt-get install libclang-10-dev expect
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{ env.DEPS_DIR }}
-            ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-g++-10-Doxygen-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-g++-10-Doxygen-
-            ${{ runner.os }}-g++-10-Debug-
-      - name: doxygen 
-        run: |
-          . ./ci/install_doxygen.sh
-          cd $GITHUB_WORKSPACE
-          cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-          cd Build
-          make doxygen
-          cd doc/doxygen/html
-          mkdir with_projects
-          shopt -s extglob
-          mv !(with_projects) with_projects
-          cd ../../..
-          cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-          unbuffer make doxygen 2>&1 | tee output
-          if grep -q "warning:" "output"; then
-            echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
-            grep "warning:" "output"
-            exit 1
-          fi
-      - name: deploy
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        if: github.ref == 'refs/heads/master'
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: "./Build/doc/doxygen/html"
-          CLEAN: true 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      # - name: Install packages
+        # run: sudo apt remove clang-9 clang-format-9 libclang-cpp9 libclang-common-9-dev clang-11 clang-format-11 libclang-cpp11 libclang-common-11-dev  && sudo apt-get install libclang-10-dev expect
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: |
+            # ${{ env.DEPS_DIR }}
+            # ${{ env.HUNTER_ROOT }}
+          # key:  ${{ runner.os }}-g++-10-Doxygen-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-g++-10-Doxygen-
+            # ${{ runner.os }}-g++-10-Debug-
+      # - name: doxygen 
+        # run: |
+          # . ./ci/install_doxygen.sh
+          # cd $GITHUB_WORKSPACE
+          # cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+          # cd Build
+          # make doxygen
+          # cd doc/doxygen/html
+          # mkdir with_projects
+          # shopt -s extglob
+          # mv !(with_projects) with_projects
+          # cd ../../..
+          # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+          # unbuffer make doxygen 2>&1 | tee output
+          # if grep -q "warning:" "output"; then
+            # echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
+            # grep "warning:" "output"
+            # exit 1
+          # fi
+      # - name: deploy
+        # uses: JamesIves/github-pages-deploy-action@3.7.1
+        # if: github.ref == 'refs/heads/master'
+        # with:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # BRANCH: gh-pages
+          # FOLDER: "./Build/doc/doxygen/html"
+          # CLEAN: true 
 
 
