@@ -182,7 +182,7 @@ jobs:
         run: |
           . ./ci/install_doxygen.sh
           cd $GITHUB_WORKSPACE
-          export CXX=g++-8
+          export CXX=g++-10
           cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
           cd Build
           make doxygen
