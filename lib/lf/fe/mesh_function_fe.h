@@ -20,7 +20,7 @@ namespace lf::fe {
  * @headerfile lf/fe/fe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing an element from a
- * ScalarUniformFESpace (e.g. solution of BVP)
+ * ScalarFESpace (e.g. solution of BVP)
  * @tparam SCALAR_FE The scalar type of the finite element basis functions.
  * @tparam SCALAR_COEFF The scalar type of the coefficient vector
  *
