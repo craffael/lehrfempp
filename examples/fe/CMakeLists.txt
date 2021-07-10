@@ -1,1 +1,2 @@
 add_subdirectory(hp_fem_L_shape)
+add_subdirectory(visualize_basis_functions)
