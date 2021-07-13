@@ -255,14 +255,14 @@ void MeshHierarchy::RefineMarked() {
             refinement_complete = false;
           } else if (split_status ==
                      std::tuple<bool, bool, bool>({true, true, true})) {
-	    // All edges of the triangle are to be split
-	    // If the implementation relies on quadsection refinement, the the child
-	    // triangles may become  more and more distorted!
-	    // Thus it is advisable to employ regular refinement. 
+            // All edges of the triangle are to be split
+            // If the implementation relies on quadsection refinement, the the
+            // child triangles may become  more and more distorted! Thus it is
+            // advisable to employ regular refinement.
             LF_VERIFY_MSG(split_edge_cnt == 3, "Wrong number of split edges");
-	    // OLD IMPLEMENTATION
+            // OLD IMPLEMENTATION
             // finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
-	    // NEW IMPLEMENTATION
+            // NEW IMPLEMENTATION
             finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_regular;
           } else if (split_status ==
                      std::tuple<bool, bool, bool>({false, true, true})) {
@@ -363,7 +363,8 @@ void MeshHierarchy::RefineMarked() {
   initGeometryInParent();
 }  // end RefineMarked
 
-// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
+// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size,
+// readability-function-size)
 void MeshHierarchy::PerformRefinement() {
   SPDLOG_LOGGER_DEBUG(Logger(),
                       "Entering MeshHierarchy::PerformRefinement: {} levels",
