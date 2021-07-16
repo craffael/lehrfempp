@@ -436,7 +436,7 @@ Additional Inherited Members</h2></td></tr>
 \[ g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|} \]
 </p>
 <p>More information also related to the use of lovcal quadrature rules is given in <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.5.24.</p>
-<p>The formulas are discussed in Example 2.8.3.16. </p>
+<p>The formulas are discussed in Example 2.8.3.17. </p>
 
 <p>Implements <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a80112cf5cfa9314cb44e61756299607d">lf::geometry::Geometry</a>.</p>
 
@@ -517,7 +517,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A Matrix of size <code><a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#a7ea62e809d2cc7c093c42ed5a8c79d47" title="Dimension of the image of this mapping.">DimGlobal()</a> x (<a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#afd5be6cbaaeb47be2b996fbffa9061ac" title="Dimension of the domain of this mapping.">DimLocal()</a> * numPoints)</code> that contains the jacobians at the evaluation points.</dd></dl>
 <p>This method allows access to the derivative of the parametrization mapping in a number of points, passed as the columns of a dynamic matrix. The derivative of the parametrization in a point is a Jacobian matrix of size &lsquo;<a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#a7ea62e809d2cc7c093c42ed5a8c79d47" title="Dimension of the image of this mapping.">DimGlobal()</a> x <a class="el" href="classlf_1_1geometry_1_1_quad_o1.html#afd5be6cbaaeb47be2b996fbffa9061ac" title="Dimension of the domain of this mapping.">DimLocal()</a>&rsquo;. For the sake of efficiency, these matrices are stacked horizontally and returned as one big dynamic matrix. Use Eigen's &lsquo;block()&rsquo; method of <code>Eigen::MatrixXd</code> to extract the individual Jacobians from the returned matrix.</p>
-<p>The formulas are discussed in Example 2.8.3.16. </p>
+<p>The formulas are discussed in Example 2.8.3.17. </p>
 
 <p>Implements <a class="el" href="classlf_1_1geometry_1_1_geometry.html#ac665d163a4692af4a1dc7cc54e98315f">lf::geometry::Geometry</a>.</p>
 
@@ -567,8 +567,8 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- fragment --> <div class="image">
 <img src="jiglfpp.png" alt=""/>
 </div>
-<p>More explanations in Paragraph 2.8.3.13.</p>
-<p>The formulas are discussed in Example 2.8.3.16. </p>
+<p>More explanations in Paragraph 2.8.3.14.</p>
+<p>The formulas are discussed in Example 2.8.3.17. </p>
 
 <p>Implements <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a7cb2b572966d7492522acb1b127cbbd0">lf::geometry::Geometry</a>.</p>
 

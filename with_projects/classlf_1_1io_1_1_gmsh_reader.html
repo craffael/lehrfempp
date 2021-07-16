@@ -98,7 +98,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Reads a <a href="http://gmsh.info/">Gmsh</a> <code>*.msh</code> file into a <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html">mesh::MeshFactory</a> and provides a link between <a class="el" href="classlf_1_1mesh_1_1_entity.html" title="Interface class representing a topological entity in a cellular complex">mesh::Entity</a> objects and the gmsh's physical entities.  
+<p>Reads a <a href="http://gmsh.info/">Gmsh</a> <code>*.msh</code> file into a <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html" title="Interface class for initialization of a mesh object.">mesh::MeshFactory</a> and provides a link between <a class="el" href="classlf_1_1mesh_1_1_entity.html" title="Interface class representing a topological entity in a cellular complex">mesh::Entity</a> objects and the gmsh's physical entities.  
  <a href="classlf_1_1io_1_1_gmsh_reader.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="gmsh__reader_8h_source.html">lf/io/gmsh_reader.h</a>&gt;</code></p>
@@ -167,7 +167,7 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a8c9ae2649e624aa6018ced8e52b4a420"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Reads a <a href="http://gmsh.info/">Gmsh</a> <code>*.msh</code> file into a <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html">mesh::MeshFactory</a> and provides a link between <a class="el" href="classlf_1_1mesh_1_1_entity.html" title="Interface class representing a topological entity in a cellular complex">mesh::Entity</a> objects and the gmsh's physical entities. </p>
+<div class="textblock"><p>Reads a <a href="http://gmsh.info/">Gmsh</a> <code>*.msh</code> file into a <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html" title="Interface class for initialization of a mesh object.">mesh::MeshFactory</a> and provides a link between <a class="el" href="classlf_1_1mesh_1_1_entity.html" title="Interface class representing a topological entity in a cellular complex">mesh::Entity</a> objects and the gmsh's physical entities. </p>
 <p>In order to import the <code>*.msh</code> file successfully make sure that:</p><ul>
 <li>Save the mesh in Gmsh's proprietary <code>*.msh</code> file format (<code>Version 2 ASCII</code>, <code>Version 2 Binary</code>, <code>Version 4 ASCII</code> or <code>Version 4 Binary</code>)</li>
 <li>If you have specified physical entities in Gmsh and you want to export them, make sure you don't tick <code>Save all (ignore physical groups)</code> and make sure that every surface (2d) / volume (3d) belongs to at least one physical entity. (Otherwise the corresponding mesh elements are not exported by Gmsh)</li>
@@ -286,7 +286,7 @@ Private Attributes</h2></td></tr>
 <p>Create a new <a class="el" href="classlf_1_1io_1_1_gmsh_reader.html" title="Reads a Gmsh *.msh file into a mesh::MeshFactory and provides a link between mesh::Entity objects and...">GmshReader</a> from the given MshFile (advanced usage) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">factory</td><td>The <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html">mesh::MeshFactory</a> that is used to construct the mesh. </td></tr>
+    <tr><td class="paramname">factory</td><td>The <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html" title="Interface class for initialization of a mesh object.">mesh::MeshFactory</a> that is used to construct the mesh. </td></tr>
     <tr><td class="paramname">msh_file</td><td>A LehrFEM++ specific representation of a GmshFile.</td></tr>
   </table>
   </dd>
@@ -328,7 +328,7 @@ Private Attributes</h2></td></tr>
 <p>Create a new <a class="el" href="classlf_1_1io_1_1_gmsh_reader.html" title="Reads a Gmsh *.msh file into a mesh::MeshFactory and provides a link between mesh::Entity objects and...">GmshReader</a> by reading from the specified file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">factory</td><td>The <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html">mesh::MeshFactory</a> that is used to construct the mesh. </td></tr>
+    <tr><td class="paramname">factory</td><td>The <a class="el" href="classlf_1_1mesh_1_1_mesh_factory.html" title="Interface class for initialization of a mesh object.">mesh::MeshFactory</a> that is used to construct the mesh. </td></tr>
     <tr><td class="paramname">filename</td><td>The filename of the <code>.msh</code> file that is read.</td></tr>
   </table>
   </dd>
