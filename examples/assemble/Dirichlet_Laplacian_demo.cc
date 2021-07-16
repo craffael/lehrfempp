@@ -13,7 +13,7 @@
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 #include <lf/refinement/refinement.h>
-#include <lf/uscalfe/uscalfe.h>        
+#include <lf/uscalfe/uscalfe.h>
 
 #include <boost/program_options.hpp>
 #include <cmath>

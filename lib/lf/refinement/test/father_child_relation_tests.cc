@@ -17,7 +17,7 @@ TEST(lf_refinement, FatherChildRelations) {
   auto gmsh_reader =
       io::test_utils::getGmshReader("two_element_hybrid_2d.msh", 2);
   auto base_mesh = gmsh_reader.mesh();
-  // Initialize mesh hierarchy with coarsest mesh 
+  // Initialize mesh hierarchy with coarsest mesh
   MeshHierarchy mh(base_mesh, std::make_unique<mesh::hybrid2d::MeshFactory>(2));
 
   // mark all edges of the triangle for refinement:
@@ -25,13 +25,13 @@ TEST(lf_refinement, FatherChildRelations) {
   const auto *triangle = std::find_if(
       base_mesh->Entities(0).begin(), base_mesh->Entities(0).end(),
       [](const auto e) { return e->RefEl() == base::RefEl::kTria(); });
-  // Visit all edges of the triangle 
+  // Visit all edges of the triangle
   for (const auto *edge : (*triangle)->SubEntities(1)) {
     (*marks)(*edge) = true;
   }
-  // Mark all edges of the triangle 
-  mh.MarkEdges([&](auto &/*mesh*/, auto &e) { return (*marks)(e); });
-  // Invoke local refinement 
+  // Mark all edges of the triangle
+  mh.MarkEdges([&](auto & /*mesh*/, auto &e) { return (*marks)(e); });
+  // Invoke local refinement
   mh.RefineMarked();
   {
     // For debugging purposes: print the meshs into a vtk file
