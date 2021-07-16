@@ -32,31 +32,6 @@ add_custom_target(examples.lecturedemo_run COMMAND examples.lecturedemo)
 add_dependencies(examples_run examples.lecturedemo_run)
 set_target_properties(examples.lecturedemo_run PROPERTIES FOLDER "examples")
 
-set(demomixedbc
-  demomixedboundaryconditions.h
-  demomixedboundaryconditions.cc)
-
-add_executable(examples.demomixedbdc ${demomixedbc})
-
-target_link_libraries(examples.demomixedbdc
-  PUBLIC Eigen3::Eigen
-  Boost::program_options
-  lf.mesh
-  lf.mesh.test_utils
-  lf.mesh.utils
-  lf.mesh.hybrid2d
-  lf.refinement
-  lf.io
-  lf.quad
-  lf.assemble
-  lf.uscalfe
-  )
-
-set_target_properties(examples.demomixedbdc PROPERTIES FOLDER "examples")
-add_custom_target(examples.demomixedbdc_run COMMAND examples.demomixedbdc)
-add_dependencies(examples_run examples.demomixedbdc_run)
-set_target_properties(examples.demomixedbdc_run PROPERTIES FOLDER "examples")
-
 
   
 
