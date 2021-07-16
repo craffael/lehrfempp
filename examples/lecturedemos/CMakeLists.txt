@@ -31,6 +31,8 @@ set_target_properties(examples.lecturedemo PROPERTIES FOLDER "examples")
 add_custom_target(examples.lecturedemo_run COMMAND examples.lecturedemo)
 add_dependencies(examples_run examples.lecturedemo_run)
 set_target_properties(examples.lecturedemo_run PROPERTIES FOLDER "examples")
+
+
   
 
   

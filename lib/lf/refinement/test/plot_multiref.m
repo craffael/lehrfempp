@@ -66,34 +66,34 @@ print -dpdf -bestfit 'multiref_L4_pi.pdf'
 display('#### Mixed local/global refinement ######');
 
 display('Level 0');
-opts = []; ; plot_lf_mesh(@mixedref_L0,opts);
+opts = []; ; plot_lf_mesh(@mixedref_0_L0,opts);
 title(sprintf('Multirev level %i',0));
-print -dpdf -bestfit 'mixedref_L0.pdf'
+print -dpdf -bestfit 'mixedref_0_L0.pdf'
 
 display('Level 1');
-opts = []; ; plot_lf_mesh(@mixedref_L1,opts);
+opts = []; ; plot_lf_mesh(@mixedref_0_L1,opts);
 title(sprintf('Multirev level %i',1));
-print -dpdf -bestfit 'mixedref_L1.pdf'
-opts = []; opts.parents = @mixedref_L1_pi; plot_lf_mesh(@mixedref_L1,opts);
+print -dpdf -bestfit 'mixedref_0_L1.pdf'
+opts = []; opts.parents = @mixedref_0_L1_pi; plot_lf_mesh(@mixedref_0_L1,opts);
 title(sprintf('Multirev parent info %i',1));
 
 display('Level 2');
-opts = []; ; plot_lf_mesh(@mixedref_L2,opts);
+opts = []; ; plot_lf_mesh(@mixedref_0_L2,opts);
 title(sprintf('Multirev level %i',2));
-print -dpdf -bestfit 'mixedref_L2.pdf'
-opts = []; opts.parents = @mixedref_L2_pi; plot_lf_mesh(@mixedref_L2,opts);
+print -dpdf -bestfit 'mixedref_0_L2.pdf'
+opts = []; opts.parents = @mixedref_0_L2_pi; plot_lf_mesh(@mixedref_0_L2,opts);
 title(sprintf('Multirev parent info %i',2));
 
 display('Level 3');
-opts = []; ; plot_lf_mesh(@mixedref_L3,opts);
+opts = []; ; plot_lf_mesh(@mixedref_0_L3,opts);
 title(sprintf('Multirev level %i',3));
-print -dpdf -bestfit 'mixedref_L3.pdf'
-opts = []; opts.parents = @mixedref_L3_pi; plot_lf_mesh(@mixedref_L3,opts);
+print -dpdf -bestfit 'mixedref_0_L3.pdf'
+opts = []; opts.parents = @mixedref_0_L3_pi; plot_lf_mesh(@mixedref_0_L3,opts);
 title(sprintf('Multirev parent info %i',3));
 
 display('Level 4');
-opts = []; ; plot_lf_mesh(@mixedref_L4,opts);
+opts = []; ; plot_lf_mesh(@mixedref_0_L4,opts);
 title(sprintf('Multirev level %i',4));
-print -dpdf -bestfit 'mixedref_L4.pdf'
-opts = []; opts.parents = @mixedref_L4_pi; plot_lf_mesh(@mixedref_L4,opts);
+print -dpdf -bestfit 'mixedref_0_L4.pdf'
+opts = []; opts.parents = @mixedref_0_L4_pi; plot_lf_mesh(@mixedref_0_L4,opts);
 title(sprintf('Multirev parent info %i',4));
