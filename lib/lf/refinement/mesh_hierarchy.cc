@@ -363,8 +363,7 @@ void MeshHierarchy::RefineMarked() {
   initGeometryInParent();
 }  // end RefineMarked
 
-// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size,
-// readability-function-size)
+// NOLINTNEXTLINE
 void MeshHierarchy::PerformRefinement() {
   SPDLOG_LOGGER_DEBUG(Logger(),
                       "Entering MeshHierarchy::PerformRefinement: {} levels",

@@ -165,7 +165,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   }
   // Add plain triangles to the mesh, defined by their vertex nodes.
   // Since no particular geometry is specified, the triangles are assumed to
-  // have straght edges.
+  // have straight edges.
   mesh_factory_ptr->AddEntity(lf::base::RefEl::kTria(),
                               std::vector<size_type>({3, 1, 4}),
                               std::unique_ptr<lf::geometry::Geometry>(nullptr));
