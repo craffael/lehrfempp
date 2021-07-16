@@ -20,10 +20,10 @@ int main() {
                          std::array<lf::base::size_type, 3>{0, 1, 2}, nullptr);
 
   auto mesh = mesh_factory.Build();
-  auto edge0 = mesh->EntityByIndex(1, 0);
-  auto edge1 = mesh->EntityByIndex(1, 1);
-  auto edge2 = mesh->EntityByIndex(1, 2);
-  auto tria = mesh->EntityByIndex(0, 0);
+  const auto* edge0 = mesh->EntityByIndex(1, 0);
+  const auto* edge1 = mesh->EntityByIndex(1, 1);
+  const auto* edge2 = mesh->EntityByIndex(1, 2);
+  const auto* tria = mesh->EntityByIndex(0, 0);
 
   auto degree_mds = lf::mesh::utils::AllCodimMeshDataSet<unsigned>(mesh);
   degree_mds(*edge0) = 1;
