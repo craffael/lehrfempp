@@ -40,7 +40,6 @@ int main(int /*argc*/, const char** /*argv*/) {
   // ======================================================================
 
   // Coefficients:
-  /*
  auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
    return Eigen::Matrix<double, 2, 2>::Identity();
  };
@@ -53,8 +52,8 @@ int main(int /*argc*/, const char** /*argv*/) {
             std::sin(M_PI * x(0)) * std::cos(M_PI * x(1)))
                .finished());
  };
- auto f = [&u](Eigen::Vector2d x) -> double { return (M_PI * M_PI * u(x)); };
- */
+ auto f = [&u](Eigen::Vector2d x) -> double { return (2.0*M_PI * M_PI * u(x)); };
+ /*
   auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
     return Eigen::Matrix<double, 2, 2>::Identity();
   };
@@ -68,7 +67,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   };
   auto f = [](Eigen::Vector2d x) -> double {
     return 2 * (x[1] * (1 - x[1]) + x[0] * (1 - x[0]));
-  };
+    }; */
 
   // Wrap diffusion coefficient into a MeshFunction
   lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
