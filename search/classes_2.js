@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['diffusionelementmatrixprovider_863',['DiffusionElementMatrixProvider',['../classlf_1_1fe_1_1_diffusion_element_matrix_provider.html',1,'lf::fe']]],
-  ['dofhandler_864',['DofHandler',['../classlf_1_1assemble_1_1_dof_handler.html',1,'lf::assemble']]],
-  ['dynamicfedofhandler_865',['DynamicFEDofHandler',['../classlf_1_1assemble_1_1_dynamic_f_e_dof_handler.html',1,'lf::assemble']]]
+  ['cellchildinfo_879',['CellChildInfo',['../structlf_1_1refinement_1_1_cell_child_info.html',1,'lf::refinement']]],
+  ['codimmeshdataset_880',['CodimMeshDataSet',['../classlf_1_1mesh_1_1utils_1_1_codim_mesh_data_set.html',1,'lf::mesh::utils']]],
+  ['complexscalarreferencefiniteelement_881',['ComplexScalarReferenceFiniteElement',['../classlf_1_1fe_1_1test__utils_1_1_complex_scalar_reference_finite_element.html',1,'lf::fe::test_utils']]],
+  ['coomatrix_882',['COOMatrix',['../classlf_1_1assemble_1_1_c_o_o_matrix.html',1,'lf::assemble']]],
+  ['cpu_5ftimes_883',['cpu_times',['../structlf_1_1base_1_1_timer_1_1cpu__times.html',1,'lf::base::Timer']]]
 ];

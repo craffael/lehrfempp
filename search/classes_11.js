@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['variantvisitor_965',['VariantVisitor',['../class_variant_visitor.html',1,'']]],
-  ['vectordata_966',['VectorData',['../classlf_1_1io_1_1_vtk_file_1_1_vector_data.html',1,'lf::io::VtkFile']]],
-  ['vtkfile_967',['VtkFile',['../classlf_1_1io_1_1_vtk_file.html',1,'lf::io']]],
-  ['vtkwriter_968',['VtkWriter',['../classlf_1_1io_1_1_vtk_writer.html',1,'lf::io']]]
+  ['uniformfedofhandler_996',['UniformFEDofHandler',['../classlf_1_1assemble_1_1_uniform_f_e_dof_handler.html',1,'lf::assemble']]],
+  ['uniformscalarfespace_997',['UniformScalarFESpace',['../classlf_1_1uscalfe_1_1_uniform_scalar_f_e_space.html',1,'lf::uscalfe']]],
+  ['unstructuredgrid_998',['UnstructuredGrid',['../classlf_1_1io_1_1_vtk_file_1_1_unstructured_grid.html',1,'lf::io::VtkFile']]]
 ];

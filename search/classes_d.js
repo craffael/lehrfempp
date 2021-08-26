@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['reactiondiffusionelementmatrixprovider_940',['ReactionDiffusionElementMatrixProvider',['../classlf_1_1uscalfe_1_1_reaction_diffusion_element_matrix_provider.html',1,'lf::uscalfe']]],
-  ['refel_941',['RefEl',['../classlf_1_1base_1_1_ref_el.html',1,'lf::base']]],
-  ['refinementpattern_942',['RefinementPattern',['../classlf_1_1geometry_1_1_refinement_pattern.html',1,'lf::geometry']]]
+  ['quado1_964',['QuadO1',['../classlf_1_1geometry_1_1_quad_o1.html',1,'lf::geometry']]],
+  ['quado2_965',['QuadO2',['../classlf_1_1geometry_1_1_quad_o2.html',1,'lf::geometry']]],
+  ['quadrilateral_966',['Quadrilateral',['../classlf_1_1mesh_1_1hybrid2d_1_1_quadrilateral.html',1,'lf::mesh::hybrid2d']]],
+  ['quadrule_967',['QuadRule',['../classlf_1_1quad_1_1_quad_rule.html',1,'lf::quad']]],
+  ['quadrulecache_968',['QuadRuleCache',['../classlf_1_1quad_1_1_quad_rule_cache.html',1,'lf::quad']]]
 ];
