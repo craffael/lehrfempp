@@ -10,7 +10,7 @@
 
 namespace lf::fe {
 
-double legendre(unsigned n, double x, double t) {
+double Legendre(unsigned n, double x, double t) {
   if (n == 0) {
     return 1;
   }
@@ -28,35 +28,35 @@ double legendre(unsigned n, double x, double t) {
   return Pi;
 }
 
-double ilegendre(unsigned n, double x, double t) {
+double ILegendre(unsigned n, double x, double t) {
   if (n == 1) {
     return x;
   }
-  return (legendre(n, x, t) - t * t * legendre(n - 2, x, t)) /
+  return (Legendre(n, x, t) - t * t * Legendre(n - 2, x, t)) /
          (2 * (2 * n - 1));
 }
 
-double ilegendre_dx(unsigned n, double x, double t) {
-  return legendre(n - 1, x, t);
+double ILegendreDx(unsigned n, double x, double t) {
+  return Legendre(n - 1, x, t);
 }
 
-double ilegendre_dt(unsigned n, double x, double t) {
+double ILegendreDt(unsigned n, double x, double t) {
   if (n == 1) {
     return 0;
   }
-  return -0.5 * (legendre(n - 1, x, t) + t * legendre(n - 2, x, t));
+  return -0.5 * (Legendre(n - 1, x, t) + t * Legendre(n - 2, x, t));
 }
 
-double legendre_dx(unsigned n, double x, double t) {
+double LegendreDx(unsigned n, double x, double t) {
   if (n == 0) {
     return 0;
   }
   // This has quadratic complexity and could be improved to linear
   // but I don't think that's necessary
-  return 2 * n * legendre(n - 1, x, t) + (2 * x - t) * legendre_dx(n - 1, x, t);
+  return 2 * n * Legendre(n - 1, x, t) + (2 * x - t) * LegendreDx(n - 1, x, t);
 }
 
-double jacobi(unsigned n, double alpha, double beta, double x) {
+double Jacobi(unsigned n, double alpha, double beta, double x) {
   // The recurrence relation is for the non-shifted Jacobi Polynomials
   // We thus map [0, 1] onto [-1, 1]
   x = 2 * x - 1;
@@ -85,11 +85,11 @@ double jacobi(unsigned n, double alpha, double beta, double x) {
   return p2;
 }
 
-double jacobi(unsigned n, double alpha, double x) {
-  return jacobi(n, alpha, 0, x);
+double Jacobi(unsigned n, double alpha, double x) {
+  return Jacobi(n, alpha, 0, x);
 }
 
-double ijacobi(unsigned n, double alpha, double x) {
+double IJacobi(unsigned n, double alpha, double x) {
   if (n == 0) {
     return -1;
   }
@@ -126,15 +126,15 @@ double ijacobi(unsigned n, double alpha, double x) {
   return anL * Pj + bnL * Pjm1 - cnL * Pjm2;
 }
 
-double ijacobi_dx(unsigned n, double alpha, double x) {
-  return jacobi(n - 1, alpha, x);
+double IJacobiDx(unsigned n, double alpha, double x) {
+  return Jacobi(n - 1, alpha, x);
 }
 
-double jacobi_dx(unsigned n, double alpha, double x) {
+double JacobiDx(unsigned n, double alpha, double x) {
   if (n == 0) {
     return 0;
   }
-  return jacobi(n - 1, alpha + 1, 1, x) * (alpha + n + 1);
+  return Jacobi(n - 1, alpha + 1, 1, x) * (alpha + n + 1);
 }
 
 }  // end namespace lf::fe

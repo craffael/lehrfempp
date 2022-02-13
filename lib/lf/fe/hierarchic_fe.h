@@ -40,7 +40,7 @@ namespace lf::fe {
  * \end{aligned} \f]
  */
 // clang-format on
-double legendre(unsigned n, double x, double t = 1);
+double Legendre(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
@@ -59,7 +59,7 @@ double legendre(unsigned n, double x, double t = 1);
  * \f]
  */
 // clang-format on
-double ilegendre(unsigned n, double x, double t = 1);
+double ILegendre(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
@@ -72,7 +72,7 @@ double ilegendre(unsigned n, double x, double t = 1);
  * P_{n-1}(x;t) \f$
  */
 // clang-format on
-double ilegendre_dx(unsigned n, double x, double t = 1);
+double ILegendreDx(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
@@ -89,7 +89,7 @@ double ilegendre_dx(unsigned n, double x, double t = 1);
  * P_{n-1}(x;t) + tP_{n-2}(x;t) \right) \end{aligned} \f]
  */
 // clang-format on
-double ilegendre_dt(unsigned n, double x, double t = 1);
+double ILegendreDt(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
@@ -106,7 +106,7 @@ double ilegendre_dt(unsigned n, double x, double t = 1);
  * (2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
  */
 // clang-format on
-double legendre_dx(unsigned n, double x, double t = 1);
+double LegendreDx(unsigned n, double x, double t = 1);
 
 // clang-format off
 /**
@@ -132,7 +132,7 @@ double legendre_dx(unsigned n, double x, double t = 1);
  * \f]
  */
 // clang-format on
-double jacobi(unsigned n, double alpha, double beta, double x);
+double Jacobi(unsigned n, double alpha, double beta, double x);
 
 // clang-format off
 /**
@@ -143,7 +143,7 @@ double jacobi(unsigned n, double alpha, double beta, double x);
  * @param x The evaluation coordinate
  */
 // clang-format on
-double jacobi(unsigned n, double alpha, double x);
+double Jacobi(unsigned n, double alpha, double x);
 
 // clang-format off
 /**
@@ -168,7 +168,7 @@ double jacobi(unsigned n, double alpha, double x);
  * \f]
  */
 // clang-format on
-double ijacobi(unsigned n, double alpha, double x);
+double IJacobi(unsigned n, double alpha, double x);
 
 // clang-format off
 /**
@@ -182,7 +182,7 @@ double ijacobi(unsigned n, double alpha, double x);
  * L_n^{(\alpha,0)}(x) = P_{n-1}^{(\alpha,0)}(x) \f$
  */
 // clang-format on
-double ijacobi_dx(unsigned n, double alpha, double x);
+double IJacobiDx(unsigned n, double alpha, double x);
 
 // clang-format off
 /**
@@ -198,7 +198,7 @@ double ijacobi_dx(unsigned n, double alpha, double x);
  * \f]
  */
 // clang-format on
-double jacobi_dx(unsigned n, double alpha, double x);
+double JacobiDx(unsigned n, double alpha, double x);
 
 // clang-format off
 /**
@@ -305,7 +305,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr(
-          [&](double x) -> SCALAR { return ilegendre(i + 2, x); });
+          [&](double x) -> SCALAR { return ILegendre(i + 2, x); });
     }
     return result;
   }
@@ -324,7 +324,7 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     // Get the shape functions associated with the interior of the segment
     for (int i = 0; i < degree_ - 1; ++i) {
       result.row(i + 2) = refcoords.unaryExpr(
-          [&](double x) -> SCALAR { return ilegendre_dx(i + 2, x); });
+          [&](double x) -> SCALAR { return ILegendreDx(i + 2, x); });
     }
     return result;
   }
@@ -374,11 +374,11 @@ class FeHierarchicSegment final : public ScalarReferenceFiniteElement<SCALAR> {
     dofs[1] = nodevals[1];
     // Compute the other basis function coefficients
     for (lf::base::size_type i = 2; i < NumRefShapeFunctions(); ++i) {
-      const SCALAR P0 = ilegendre_dx(i, 0);
-      const SCALAR P1 = ilegendre_dx(i, 1);
+      const SCALAR P0 = ILegendreDx(i, 0);
+      const SCALAR P1 = ILegendreDx(i, 1);
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
           qr_dual_->Points().unaryExpr(
-              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+              [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
       // Evaluate the integral from the dual basis
       const SCALAR integ =
           (qr_dual_->Weights().transpose().array() * psidd.array() *
@@ -598,13 +598,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       if (rel_orient_[0] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_2 ; \lambda_1+\lambda_2)
         for (long j = 0; j < refcoords.cols(); ++j) {
-          result(3 + i, j) = ilegendre(i + 2, l2[j], l1[j] + l2[j]);
+          result(3 + i, j) = ILegendre(i + 2, l2[j], l1[j] + l2[j]);
         }
       } else {
         // L_{i+2}(\lambda_1 ; \lambda_1+\lambda_2)
         for (long j = 0; j < refcoords.cols(); ++j) {
           result(edge_degrees_[0] + 1 - i, j) =
-              ilegendre(i + 2, l1[j], l1[j] + l2[j]);
+              ILegendre(i + 2, l1[j], l1[j] + l2[j]);
         }
       }
     }
@@ -615,13 +615,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       if (rel_orient_[1] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_3 ; \lambda_2+\lambda_3)
         for (long j = 0; j < refcoords.cols(); ++j) {
-          result(current_dof + i, j) = ilegendre(i + 2, l3[j], l2[j] + l3[j]);
+          result(current_dof + i, j) = ILegendre(i + 2, l3[j], l2[j] + l3[j]);
         }
       } else {
         // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3)
         for (long j = 0; j < refcoords.cols(); ++j) {
           result(current_dof + edge_degrees_[1] - 2 - i, j) =
-              ilegendre(i + 2, l2[j], l2[j] + l3[j]);
+              ILegendre(i + 2, l2[j], l2[j] + l3[j]);
         }
       }
     }
@@ -632,13 +632,13 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       if (rel_orient_[2] == lf::mesh::Orientation::positive) {
         // L_{i+2}(\lambda_1 ; \lambda_3+\lambda_1)
         for (long j = 0; j < refcoords.cols(); ++j) {
-          result(current_dof + i, j) = ilegendre(i + 2, l1[j], l3[j] + l1[j]);
+          result(current_dof + i, j) = ILegendre(i + 2, l1[j], l3[j] + l1[j]);
         }
       } else {
         // L_{i+2}(\lambda_3 ; \lambda_3+\lambda_1)
         for (long j = 0; j < refcoords.cols(); ++j) {
           result(current_dof + edge_degrees_[2] - 2 - i, j) =
-              ilegendre(i + 2, l3[j], l3[j] + l1[j]);
+              ILegendre(i + 2, l3[j], l3[j] + l1[j]);
         }
       }
     }
@@ -654,9 +654,9 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
         Eigen::Array<SCALAR, 1, Eigen::Dynamic> edge(refcoords.cols());
         for (Eigen::Index j = 0; j < refcoords.cols(); ++j) {
           if (rel_orient_[0] == mesh::Orientation::positive) {
-            edge(j) = ilegendre(i + 2, l2[j], l1[j] + l2[j]);
+            edge(j) = ILegendre(i + 2, l2[j], l1[j] + l2[j]);
           } else {
-            edge(j) = ilegendre(i + 2, l1[j], l1[j] + l2[j]);
+            edge(j) = ILegendre(i + 2, l1[j], l1[j] + l2[j]);
           }
         }
 
@@ -668,14 +668,14 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
             // P_{j+1}^{2i+4}(\lambda_1)
             result.row(current_dof++) =
                 (edge * l3.array().unaryExpr([&](double x) -> SCALAR {
-                  return ijacobi(j + 1, 2 * i + 4, x);
+                  return IJacobi(j + 1, 2 * i + 4, x);
                 })).matrix();
           } else {
             // L_{i+2}(\lambda_2 ; \lambda_2+\lambda_3) *
             // P_{j+1}^{2i+4}(\lambda_1)
             result.row(current_dof++) =
                 (edge * l3.array().unaryExpr([&](double x) -> SCALAR {
-                  return ijacobi(j + 1, 2 * i + 4, x);
+                  return IJacobi(j + 1, 2 * i + 4, x);
                 })).matrix();
           }
         }
@@ -723,18 +723,18 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       for (int j = 0; j < edge_degrees_[0] - 1; ++j) {
         if (rel_orient_[0] == lf::mesh::Orientation::positive) {
           result(current_dof + j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dx[i] +
-              ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
+              ILegendreDx(j + 2, l2[i], l1[i] + l2[i]) * l2_dx[i] +
+              ILegendreDt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
           result(current_dof + j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dy[i] +
-              ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
+              ILegendreDx(j + 2, l2[i], l1[i] + l2[i]) * l2_dy[i] +
+              ILegendreDt(j + 2, l2[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
         } else {
           result(current_dof + edge_degrees_[0] - 2 - j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dx[i] +
-              ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
+              ILegendreDx(j + 2, l1[i], l1[i] + l2[i]) * l1_dx[i] +
+              ILegendreDt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dx[i] + l2_dx[i]);
           result(current_dof + edge_degrees_[0] - 2 - j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dy[i] +
-              ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
+              ILegendreDx(j + 2, l1[i], l1[i] + l2[i]) * l1_dy[i] +
+              ILegendreDt(j + 2, l1[i], l1[i] + l2[i]) * (l1_dy[i] + l2_dy[i]);
         }
       }
       current_dof += edge_degrees_[0] - 1;
@@ -743,18 +743,18 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       for (int j = 0; j < edge_degrees_[1] - 1; ++j) {
         if (rel_orient_[1] == lf::mesh::Orientation::positive) {
           result(current_dof + j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l3[i], l2[i] + l3[i]) * l3_dx[i] +
-              ilegendre_dt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
+              ILegendreDx(j + 2, l3[i], l2[i] + l3[i]) * l3_dx[i] +
+              ILegendreDt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
           result(current_dof + j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l3[i], l2[i] + l3[i]) * l3_dy[i] +
-              ilegendre_dt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
+              ILegendreDx(j + 2, l3[i], l2[i] + l3[i]) * l3_dy[i] +
+              ILegendreDt(j + 2, l3[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
         } else {
           result(current_dof + edge_degrees_[1] - 2 - j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l2[i], l2[i] + l3[i]) * l2_dx[i] +
-              ilegendre_dt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
+              ILegendreDx(j + 2, l2[i], l2[i] + l3[i]) * l2_dx[i] +
+              ILegendreDt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dx[i] + l3_dx[i]);
           result(current_dof + edge_degrees_[1] - 2 - j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l2[i], l2[i] + l3[i]) * l2_dy[i] +
-              ilegendre_dt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
+              ILegendreDx(j + 2, l2[i], l2[i] + l3[i]) * l2_dy[i] +
+              ILegendreDt(j + 2, l2[i], l2[i] + l3[i]) * (l2_dy[i] + l3_dy[i]);
         }
       }
       current_dof += edge_degrees_[1] - 1;
@@ -763,18 +763,18 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
       for (int j = 0; j < edge_degrees_[2] - 1; ++j) {
         if (rel_orient_[2] == lf::mesh::Orientation::positive) {
           result(current_dof + j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l1[i], l3[i] + l1[i]) * l1_dx[i] +
-              ilegendre_dt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
+              ILegendreDx(j + 2, l1[i], l3[i] + l1[i]) * l1_dx[i] +
+              ILegendreDt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
           result(current_dof + j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l1[i], l3[i] + l1[i]) * l1_dy[i] +
-              ilegendre_dt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
+              ILegendreDx(j + 2, l1[i], l3[i] + l1[i]) * l1_dy[i] +
+              ILegendreDt(j + 2, l1[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
         } else {
           result(current_dof + edge_degrees_[2] - 2 - j, 2 * i + 0) =
-              ilegendre_dx(j + 2, l3[i], l3[i] + l1[i]) * l3_dx[i] +
-              ilegendre_dt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
+              ILegendreDx(j + 2, l3[i], l3[i] + l1[i]) * l3_dx[i] +
+              ILegendreDt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dx[i] + l1_dx[i]);
           result(current_dof + edge_degrees_[2] - 2 - j, 2 * i + 1) =
-              ilegendre_dx(j + 2, l3[i], l3[i] + l1[i]) * l3_dy[i] +
-              ilegendre_dt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
+              ILegendreDx(j + 2, l3[i], l3[i] + l1[i]) * l3_dy[i] +
+              ILegendreDt(j + 2, l3[i], l3[i] + l1[i]) * (l3_dy[i] + l1_dy[i]);
         }
       }
       current_dof += edge_degrees_[2] - 1;
@@ -787,25 +787,25 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
           SCALAR edge_dx;
           SCALAR edge_dy;
           if (rel_orient_[0] == lf::mesh::Orientation::positive) {
-            edge_eval = ilegendre(j + 2, l2[i], l1[i] + l2[i]);
-            edge_dx = ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dx[i] +
-                      ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) *
+            edge_eval = ILegendre(j + 2, l2[i], l1[i] + l2[i]);
+            edge_dx = ILegendreDx(j + 2, l2[i], l1[i] + l2[i]) * l2_dx[i] +
+                      ILegendreDt(j + 2, l2[i], l1[i] + l2[i]) *
                           (l1_dx[i] + l2_dx[i]);
-            edge_dy = ilegendre_dx(j + 2, l2[i], l1[i] + l2[i]) * l2_dy[i] +
-                      ilegendre_dt(j + 2, l2[i], l1[i] + l2[i]) *
+            edge_dy = ILegendreDx(j + 2, l2[i], l1[i] + l2[i]) * l2_dy[i] +
+                      ILegendreDt(j + 2, l2[i], l1[i] + l2[i]) *
                           (l1_dy[i] + l2_dy[i]);
           } else {
-            edge_eval = ilegendre(j + 2, l1[i], l1[i] + l2[i]);
-            edge_dx = ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dx[i] +
-                      ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) *
+            edge_eval = ILegendre(j + 2, l1[i], l1[i] + l2[i]);
+            edge_dx = ILegendreDx(j + 2, l1[i], l1[i] + l2[i]) * l1_dx[i] +
+                      ILegendreDt(j + 2, l1[i], l1[i] + l2[i]) *
                           (l1_dx[i] + l2_dx[i]);
-            edge_dy = ilegendre_dx(j + 2, l1[i], l1[i] + l2[i]) * l1_dy[i] +
-                      ilegendre_dt(j + 2, l1[i], l1[i] + l2[i]) *
+            edge_dy = ILegendreDx(j + 2, l1[i], l1[i] + l2[i]) * l1_dy[i] +
+                      ILegendreDt(j + 2, l1[i], l1[i] + l2[i]) *
                           (l1_dy[i] + l2_dy[i]);
           }
           for (unsigned k = 0; k < interior_degree_ - j - 2; ++k) {
-            SCALAR jackinte = ijacobi(k + 1, 2 * j + 4, l3[i]);
-            SCALAR jackeval = ijacobi_dx(k + 1, 2 * j + 4, l3[i]);
+            SCALAR jackinte = IJacobi(k + 1, 2 * j + 4, l3[i]);
+            SCALAR jackeval = IJacobiDx(k + 1, 2 * j + 4, l3[i]);
             result(current_dof, 2 * i + 0) =
                 jackinte * edge_dx + edge_eval * jackeval * l3_dx[i];
             result(current_dof++, 2 * i + 1) =
@@ -955,11 +955,11 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 
     // first edge:
     for (base::size_type i = 2; i < edge_degrees_[0] + 1; ++i) {
-      const SCALAR P0 = ilegendre_dx(i, 0);
-      const SCALAR P1 = ilegendre_dx(i, 1);
+      const SCALAR P0 = ILegendreDx(i, 0);
+      const SCALAR P1 = ILegendreDx(i, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
           qr_dual_edge_[0]->Points().unaryExpr(
-              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+              [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
 
       const SCALAR integ1 = (qr_dual_edge_[0]->Weights().transpose().array() *
                              psidd.array() * nodevals.segment(3, Ns0).array())
@@ -975,11 +975,11 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 
     // Compute the basis function coefficients for the second edge
     for (base::size_type i = 2; i < edge_degrees_[1] + 1; ++i) {
-      const SCALAR P0 = ilegendre_dx(i, 0);
-      const SCALAR P1 = ilegendre_dx(i, 1);
+      const SCALAR P0 = ILegendreDx(i, 0);
+      const SCALAR P1 = ILegendreDx(i, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
           qr_dual_edge_[1]->Points().unaryExpr(
-              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+              [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
 
       const SCALAR integ2 =
           (qr_dual_edge_[1]->Weights().transpose().array() * psidd.array() *
@@ -996,11 +996,11 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
 
     // Compute the basis function coefficients for the second edge
     for (base::size_type i = 2; i < edge_degrees_[2] + 1; ++i) {
-      const SCALAR P0 = ilegendre_dx(i, 0);
-      const SCALAR P1 = ilegendre_dx(i, 1);
+      const SCALAR P0 = ILegendreDx(i, 0);
+      const SCALAR P1 = ILegendreDx(i, 1);
       Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
           qr_dual_edge_[2]->Points().unaryExpr(
-              [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+              [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
 
       const SCALAR integ3 =
           (qr_dual_edge_[2]->Weights().transpose().array() * psidd.array() *
@@ -1060,16 +1060,16 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
                 .matrix();
         const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
             xnorm_adj.unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(i + 1, x); });
+                [&](double x) -> SCALAR { return LegendreDx(i + 1, x); });
         // j is the degree of the blending Jacobi polynomial
         for (unsigned j = 0; j < interior_degree_ - i - 2; ++j) {
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacdd =
               qr_dual_tria_->Points().row(1).unaryExpr([&](double y) -> SCALAR {
-                return jacobi_dx(j, 2 * i + 4, y);
+                return JacobiDx(j, 2 * i + 4, y);
               });
           const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> jacd =
               qr_dual_tria_->Points().row(1).unaryExpr([&](double y) -> SCALAR {
-                return ijacobi_dx(j + 1, 2 * i + 4, y);
+                return IJacobiDx(j + 1, 2 * i + 4, y);
               });
           dofs[idx] =
               (qr_dual_tria_->Weights().transpose().array() *
@@ -1560,14 +1560,14 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     // Compute the basis function coefficients on the edges
     // by applying the dual basis of the segment
     for (lf::base::size_type i = 2; i < Degree() + 1; ++i) {
-      const SCALAR P0 = ilegendre_dx(i, 0);
-      const SCALAR P1 = ilegendre_dx(i, 1);
+      const SCALAR P0 = ILegendreDx(i, 0);
+      const SCALAR P1 = ILegendreDx(i, 1);
 
       // Compute the basis function coefficients for the first edge
       if (i <= edge_degrees_[0]) {
         Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
             qr_dual_edge_[0]->Points().unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+                [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
         const SCALAR integ1 = (qr_dual_edge_[0]->Weights().transpose().array() *
                                psidd.array() * nodevals.segment(4, Ne0).array())
                                   .sum();
@@ -1583,7 +1583,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         // Compute the basis function coefficients for the second edge
         Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
             qr_dual_edge_[1]->Points().unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+                [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
         const SCALAR integ2 =
             (qr_dual_edge_[1]->Weights().transpose().array() * psidd.array() *
              nodevals.segment(4 + Ne0, Ne1).array())
@@ -1600,7 +1600,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         // Compute the basis function coefficients for the third edge
         Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
             qr_dual_edge_[2]->Points().unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+                [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
         const SCALAR integ3 =
             (qr_dual_edge_[2]->Weights().transpose().array() * psidd.array() *
              nodevals.segment(4 + Ne0 + Ne1, Ne2).array())
@@ -1618,7 +1618,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
         // Compute the basis function coefficients for the fourth edge
         Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> psidd =
             qr_dual_edge_[3]->Points().unaryExpr(
-                [&](double x) -> SCALAR { return legendre_dx(i - 1, x); });
+                [&](double x) -> SCALAR { return LegendreDx(i - 1, x); });
         const SCALAR integ4 =
             (qr_dual_edge_[3]->Weights().transpose().array() * psidd.array() *
              nodevals.segment(4 + Ne0 + Ne1 + Ne2, Ne3).array())
