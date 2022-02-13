@@ -20,8 +20,8 @@
 #include <boost/fusion/support/tag_of.hpp>
 #include <boost/fusion/support/tag_of_fwd.hpp>
 #include <boost/mpl/minus.hpp>
-#include <boost/phoenix/function/adapt_function.hpp>
 #include <boost/phoenix/core.hpp>
+#include <boost/phoenix/function/adapt_function.hpp>
 #include <boost/phoenix/object.hpp>
 #include <boost/phoenix/operator.hpp>
 #include <boost/phoenix/stl.hpp>
