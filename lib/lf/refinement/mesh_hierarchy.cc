@@ -131,7 +131,7 @@ void MeshHierarchy::RefineMarked() {
   for (const mesh::Entity *point : finest_mesh.Entities(2)) {
     const glb_idx_t point_index = finest_mesh.Index(*point);
     PointChildInfo &pt_child_info(finest_point_ci[point_index]);
-    // Set the information about a points children except the child pointer
+    // Set the information about a point's children except the child pointer
     pt_child_info.ref_pat = RefPat::rp_copy;
   }
 
@@ -255,9 +255,15 @@ void MeshHierarchy::RefineMarked() {
             refinement_complete = false;
           } else if (split_status ==
                      std::tuple<bool, bool, bool>({true, true, true})) {
-            // Quadsection refinement, no extra splitting of edges
+            // All edges of the triangle are to be split
+            // If the implementation relies on quadsection refinement, the the
+            // child triangles may become  more and more distorted! Thus it is
+            // advisable to employ regular refinement.
             LF_VERIFY_MSG(split_edge_cnt == 3, "Wrong number of split edges");
-            finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
+            // OLD IMPLEMENTATION
+            // finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_quadsect;
+            // NEW IMPLEMENTATION
+            finest_cell_ci[cell_index].ref_pat_ = RefPat::rp_regular;
           } else if (split_status ==
                      std::tuple<bool, bool, bool>({false, true, true})) {
             // Quadsection refinement requiring splitting of refinement edge
@@ -357,7 +363,7 @@ void MeshHierarchy::RefineMarked() {
   initGeometryInParent();
 }  // end RefineMarked
 
-// NOLINTNEXTLINE(google-readability-function-size, hicpp-function-size, readability-function-size)
+// NOLINTNEXTLINE
 void MeshHierarchy::PerformRefinement() {
   SPDLOG_LOGGER_DEBUG(Logger(),
                       "Entering MeshHierarchy::PerformRefinement: {} levels",

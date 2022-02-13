@@ -29,15 +29,15 @@
  > mkdir cmake
  ```
  2. Create the empty file `getting_started/main.cc`. Later on, we will add the `main()` function to this file and call LehrFEM++ from there.
- 3. Download the [`HunterGate.cmake`](https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake) file into `getting_started/cmake`
+ 3. Download the [`HunterGate.cmake`](https://raw.githubusercontent.com/cpp-pm/gate/master/cmake/HunterGate.cmake) file into `getting_started/cmake`
  ```
  > cd cmake
- > wget https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ > wget https://raw.githubusercontent.com/cpp-pm/gate/master/cmake/HunterGate.cmake
  ```
 On Mac OSX use curl instead:
  ```
  > cd cmake
- > curl -O https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
+ > curl -O https://raw.githubusercontent.com/cpp-pm/gate/master/cmake/HunterGate.cmake
  ```
    This file is needed to setup the hunter package manager (which runs completly inside CMake).
  4. Create the file `getting_started/CMakeLists.txt` with the following content
@@ -47,8 +47,8 @@ cmake_minimum_required(VERSION 3.10)
 ### Hunter package manager ###
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.288.tar.gz"
-    SHA1 "6c9b2bc606d86ae31f96a62fc68f0a593024815b"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.307.tar.gz"
+    SHA1 "093bd9aab70893cf93470f20d87844938c1546ab"
 )
 
 ### Setup CMake Project ###

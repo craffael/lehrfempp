@@ -522,7 +522,7 @@ Eigen::MatrixXd AuxNodesTria(unsigned char order) {
       // assign interior points recursively:
       auto points = AuxNodesTria(order - 3);
       result.block(0, 3 * order - 9, 2, points.cols()) =
-          AuxNodesTria(order - 3) * (order - 5.) / order +
+          AuxNodesTria(order - 3) * (order - 6.) / order +
           Eigen::Vector2d(2. / order, 2. / order) *
               Eigen::MatrixXd::Ones(1, points.cols());
     }

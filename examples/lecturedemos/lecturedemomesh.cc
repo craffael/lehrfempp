@@ -124,9 +124,9 @@ void lecturedemomesh() {
 
   // clang-format off
   /* SAM_LISTING_BEGIN_5 */
-  // Create a 2D mesh data structure from the information contained in the file
-  // \texttt{mesh\_file}. A \com{factory object} is in charge of creating mesh
-  // entities and has to be initialized first.
+  // Create a 2D mesh data structure from the information contained in
+  // the file \texttt{mesh\_file}. A \com{factory object} is in charge of
+  // creating mesh entities and has to be initialized first.
   auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);// \Label[line]{lgm:1}
   lf::io::GmshReader reader(std::move(factory), mesh_file.string()); // \Label[line]{lgm:2}
   // Obtain pointer to read only mesh from the mesh reader object

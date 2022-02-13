@@ -15,6 +15,13 @@
 
 namespace lf::mesh {
 
+/** @brief Interface class for initialization of a mesh object
+ *
+ * This class implements a factory pattern in order to make it possible for mesh
+ * builder facilities like those in the io module to generate different mesh
+ * objects. An example of a class that relies on the service of a MeshFactory
+ * object is @ref lf::io::GmshReader, see also @lref{ex:extgmr}
+ */
 class MeshFactory {
  protected:
   MeshFactory() = default;

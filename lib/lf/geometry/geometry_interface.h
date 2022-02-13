@@ -103,7 +103,7 @@ class Geometry {
 
   /**
    * @brief Evaluate the Jacobian * Inverse Gramian (\f$ J (J^T J)^{-1}\f$)
-   *        simulatanesouly at `numPoints`.
+   *        simultaneously at `numPoints`.
    * @param local A Matrix of size `DimLocal() x numPoints` that contains the
    *              evaluation points as column vectors.
    * @return A Matrix of size `DimGlobal() x (DimLocal() * numPoints)` that
