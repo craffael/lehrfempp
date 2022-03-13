@@ -65,3 +65,6 @@ doc/doxygen/filter.cache
 #emacs backup files
 *~
 
+# visual studio code
+.vscode
+
