@@ -1,8 +1,6 @@
 
 set(sources sphere_triag_mesh_builder.h
 	    sphere_triag_mesh_builder.cc
-	    utils.h
-	    utils.cc
 )
 
 add_library(projects.hldo_sphere.mesh ${sources})
