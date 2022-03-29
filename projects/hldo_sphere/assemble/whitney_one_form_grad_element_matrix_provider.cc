@@ -35,9 +35,9 @@ Eigen::MatrixXd WhitneyOneFormGradElementMatrixProvider::Eval(
 
   // create whitney 1-Form basis functions only the constants
   Eigen::MatrixXd bs(grad.rows(), 3);
-  bs.col(0) = grad.col(0) - grad.col(1);
-  bs.col(1) = grad.col(1) - grad.col(2);
-  bs.col(2) = grad.col(2) - grad.col(0);
+  bs.col(0) = grad.col(1) - grad.col(0);
+  bs.col(1) = grad.col(2) - grad.col(1);
+  bs.col(2) = grad.col(0) - grad.col(2);
 
   // correct for orientation
   auto edgeOrientations = entity.RelativeOrientations();
