@@ -47,7 +47,7 @@ Eigen::MatrixXd WhitneyOneFormGradElementMatrixProvider::Eval(
 
   // fill the element matrix
   Eigen::MatrixXd elem_mat(3, 3);
-  elem_mat = grad.transpose() * bs;
+  elem_mat = bs.transpose() * grad;
 
   // correct for integral
   elem_mat *= lf::geometry::Volume(*geom) / 3.0;

@@ -3,10 +3,10 @@
 
 /**
  * @file whitney_one_form_curl_element_matrix_provider.h
- * @brief An element matrix provider for vector valued piecewise linear basis
- * functions and the bilinear form
+ * @brief An element matrix provider for a vector valued piecewise linear basis
+ * function and a picewise linear function
  * @f[
- * \int curl_{\Gamma}(u) curl_{\Gamma}(v) dx
+ * \int grad_{\Gamma}(u) v dx
  * @f]
  */
 
@@ -22,12 +22,11 @@ namespace assemble {
  * @brief Element matrix provider for the bilinear form
  *
  * @f[
- * \int curl_{\Gamma}(u) curl_{\Gamma}(v) dx
+ * \int grad_{\Gamma}(u) v dx
  * @f]
  *
- * As basis functions, the Whitney 1-forms, surface edge elements are used
- *
- * @note Currently, only triangular meshes are supported
+ * Basis functions are the Whitney 1-forms, surface edge elements for v
+ * and the barycentric basis function for u
  *
  */
 class WhitneyOneFormGradElementMatrixProvider {
