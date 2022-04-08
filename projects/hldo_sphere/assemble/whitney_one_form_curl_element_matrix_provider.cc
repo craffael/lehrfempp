@@ -20,8 +20,21 @@ Eigen::MatrixXd WhitneyOneFormCurlElementMatrixProvider::Eval(
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
+  // compute the orientations
+  auto edgeOrientations = entity.RelativeOrientations();
+  Eigen::VectorXd s(3);
+  for (int i = 0; i < 3; i++) {
+    s(i) = lf::mesh::to_sign(edgeOrientations[i]);
+  }
+
   // fill the element matrix
   Eigen::MatrixXd elem_mat = Eigen::MatrixXd::Ones(3, 3);
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      elem_mat(i, j) = s(i) * s(j);
+    }
+  }
+
   elem_mat *= 1 / lf::geometry::Volume(*geom);
 
   return elem_mat;
