@@ -4,8 +4,8 @@ set(sources
     curl_element_vector_provider.cc
     rot_w_one_form_dot_element_matrix_provider.h
     rot_w_one_form_dot_element_matrix_provider.cc
-    rot_w_one_form_div_w_two_form_element_matrix_provider.h
-    rot_w_one_form_div_w_two_form_element_matrix_provider.cc
+    rot_w_one_form_div_element_matrix_provider.h
+    rot_w_one_form_div_element_matrix_provider.cc
     whitney_one_form_curl_element_matrix_provider.h
     whitney_one_form_curl_element_matrix_provider.cc
     whitney_one_form_grad_element_matrix_provider.h

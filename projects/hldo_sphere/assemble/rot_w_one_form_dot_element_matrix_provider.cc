@@ -71,11 +71,6 @@ Eigen::MatrixXd RotWOneFormDotElementMatrixProvider::Eval(
     for (int k = 0; k < 3; k++) {
       elem_mats[0](i, k) *=
           (grads.col(index(i + 1)).transpose() * grads.col(index(k + 1)));
-      std::cout << "\ngrad(" << index(i + 1) << ") times "
-                << "\ngrad(" << index(k + 1) << ") equals "
-                << (grads.col(index(i + 1)).transpose() *
-                    grads.col(index(k + 1)))
-                << "\n\n\n";
       elem_mats[0](i, k) *= s(i) * s(k);
     }
   }
