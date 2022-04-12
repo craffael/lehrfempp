@@ -1,5 +1,5 @@
 #ifndef THESIS_DISCRETIZATION_WHITNEY_ZERO_HODGE_LAPLACE_H
-#define THESIS_DISCRETIZATION_WHITNEY_ZERO_H
+#define THESIS_DISCRETIZATION_WHITNEY_ZERO_HODEE_LAPLACE_H
 
 /**
  * @file rot_w_one_form_w_two_form_element_matrix_provider.h
@@ -10,6 +10,7 @@
  * @f]
  */
 
+#include <lf/assemble/assembler.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/mesh/entity.h>
@@ -48,7 +49,8 @@ class WhitneyZeroHodgeLaplace {
    * creates zerovalued function f
    *
    */
-  WhitneyZeroHodgeLaplace() : coo_matrix_p_(nullptr) {
+  WhitneyZeroHodgeLaplace()
+      : coo_matrix_(lf::assemble::COOMatrix<double>(1, 1)) {
     // create mesh factory for basic mesh
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
@@ -61,14 +63,6 @@ class WhitneyZeroHodgeLaplace {
     sphere->setRadius(1);
 
     mesh_p_ = sphere->Build();
-
-    // create basic dof_handler
-    const lf::assemble::UniformFEDofHandler dof_handler(
-        mesh_p_, {{lf::base::RefEl::kPoint(), 1}});
-
-    // set dof_handler
-    dof_handler_p_ =
-        std::shared_ptr<const lf::assemble::UniformFEDofHandler>{&dof_handler};
 
     // create basic function
     auto f = [](Eigen::VectorXd x) -> double { return 0; };
@@ -105,14 +99,6 @@ class WhitneyZeroHodgeLaplace {
 
     // set mesh
     mesh_p_ = mesh_p;
-
-    // create dof_handler
-    const lf::assemble::UniformFEDofHandler dof_handler(
-        mesh_p_, {{lf::base::RefEl::kPoint(), 1}});
-
-    // set dof_handler
-    dof_handler_p_ =
-        std::shared_ptr<const lf::assemble::UniformFEDofHandler>{&dof_handler};
   }
 
   /**
@@ -148,13 +134,12 @@ class WhitneyZeroHodgeLaplace {
    * this funciton
    *
    */
-  lf::assemble::COOMatrix<double> GetGalerkinMatrix() { return *coo_matrix_p_; }
+  lf::assemble::COOMatrix<double> GetGalerkinMatrix() { return coo_matrix_; }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::shared_ptr<const lf::assemble::UniformFEDofHandler> dof_handler_p_;
   std::function<double(const Eigen::Vector3d&)> f_;
-  std::shared_ptr<lf::assemble::COOMatrix<double>> coo_matrix_p_;
+  lf::assemble::COOMatrix<double> coo_matrix_;
   Eigen::VectorXd phi_;
 };
 
@@ -162,4 +147,4 @@ class WhitneyZeroHodgeLaplace {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_DISCRETIZATION_WHITNEY_ZERO_H
+#endif  // THESIS_DISCRETIZATION_WHITNEY_ZERO_HODGE_LAPLACE_H

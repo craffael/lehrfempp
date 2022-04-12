@@ -13,4 +13,4 @@ target_compile_features(projects.hldo_sphere.discretization PUBLIC cxx_std_17)
 
 
 # Include the tests
-# add_subdirectory(test)
+add_subdirectory(test)
