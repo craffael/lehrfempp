@@ -2,6 +2,12 @@
 set(sources 
     curl_element_vector_provider.h
     curl_element_vector_provider.cc
+    laplace_element_matrix_provider.h
+    laplace_element_matrix_provider.cc
+    load_element_vector_provider.h
+    load_element_vector_provider.cc
+    mass_element_matrix_provider.h
+    mass_element_matrix_provider.cc
     rot_w_one_form_dot_element_matrix_provider.h
     rot_w_one_form_dot_element_matrix_provider.cc
     rot_w_one_form_div_element_matrix_provider.h
