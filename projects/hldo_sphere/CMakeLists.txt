@@ -6,3 +6,4 @@ set_target_properties(projects.hldo_sphere.plots PROPERTIES FOLDER "projects/hld
 add_subdirectory(mesh)
 add_subdirectory(examples)
 add_subdirectory(assemble)
+add_subdirectory(discretization)
