@@ -6,6 +6,7 @@ set(sources
     whitney_one_hodge_laplacian.cc
     whitney_two_hodge_laplacian.h
     whitney_two_hodge_laplacian.cc
+    dirac_operator.h
 )
 
 add_library(projects.hldo_sphere.discretization ${sources})
