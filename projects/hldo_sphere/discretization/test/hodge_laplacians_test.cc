@@ -4,6 +4,19 @@
 #include <array>
 #include <cmath>
 
+/**
+ *
+ * @brief Test the hodge laplacian source problem
+ *
+ * The test tests the source problem
+ *
+ * @f[
+ * - \Delta_0 u + k^2 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ */
 TEST(projects_hldo_sphere_discretization, hodge_laplacian_zero_basic_test) {
   // Build LSE
   projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
@@ -70,6 +83,19 @@ TEST(projects_hldo_sphere_discretization, hodge_laplacian_zero_basic_test) {
   }
 }
 
+/**
+ *
+ * @brief Test the hodge laplacian source problem
+ *
+ * The test tests the source problem
+ *
+ * @f[
+ * - \Delta_1 u + k^2 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ */
 TEST(projects_hldo_sphere_discretization,
      hodge_laplacians_one_form_basic_test) {
   // Build LSE
@@ -103,7 +129,7 @@ TEST(projects_hldo_sphere_discretization,
                  0,  0,  0, -1,  0, -1,  0,  0,  0,  1,  0,  1,    0,  0,  0,  0,  0,  0,
                  0,  0,  0,  0,  0,  0,  1,  0, -1,  0, -1, -1,    0,  0,  0,  0,  0,  0;
   // clang-format on
-  Ae_anal *= -1. / std::sqrt(3);
+  Ae_anal *= 1. / std::sqrt(3);
 
   Eigen::MatrixXd Ae_anal_mass_zero(6, 6);
   // clang-format off
@@ -114,7 +140,7 @@ TEST(projects_hldo_sphere_discretization,
                           1, 1, 0, 1, 4, 1, 
                           0, 1, 1, 1, 1, 4;
   // clang-format on
-  Ae_anal_mass_zero *= -1. / std::sqrt(3) / 4.;
+  Ae_anal_mass_zero *= 1. / std::sqrt(3) / 4.;
   Ae_anal.bottomRightCorner(6, 6) = Ae_anal_mass_zero;
 
   Eigen::MatrixXd Ae_anal_mass_one(12, 12);
@@ -177,6 +203,19 @@ TEST(projects_hldo_sphere_discretization,
   }
 }
 
+/**
+ *
+ * @brief Test the hodge laplacian source problem
+ *
+ * The test tests the source problem
+ *
+ * @f[
+ * - \Delta_2 u + k^2 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ */
 TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
   // Build LSE
   projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
@@ -213,7 +252,7 @@ TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
             0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,  1,     0,  0,  0,  0,  0,  0,  0,  0;
   // clang-format on
   Ae_anal.topLeftCorner(12, 12) *= 1. / std::sqrt(3) / 12.;
-  Ae_anal *= -1.;
+  Ae_anal.bottomLeftCorner(8, 12) *= -1.;
 
   Eigen::MatrixXd Ae_anal_mass_two = Eigen::MatrixXd::Identity(8, 8);
   Ae_anal_mass_two *= sqrt(3) / 2.;

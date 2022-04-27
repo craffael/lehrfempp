@@ -1,19 +1,23 @@
-#include "curl_element_vector_provider.h"
+#include "whitney_one_vector_provider.h"
 
 #include <lf/base/base.h>
+#include <lf/quad/quad.h>
+#include <lf/quad/quad_rule.h>
 #include <lf/uscalfe/lagr_fe.h>
 
 #include <iostream>
 
 namespace projects::hldo_sphere::assemble {
 
-CurlElementVectorProvider::CurlElementVectorProvider(
-    std::function<Eigen::Vector3d(const Eigen::Vector3d &)> f,
-    lf::quad::QuadRule quadrule)
-    : f_(std::move(f)), quadrule_(std::move(quadrule)) {}
+WhitneyOneVectorProvider::WhitneyOneVectorProvider(
+    std::function<Eigen::Vector3d(const Eigen::Vector3d &)> f)
+    : f_(std::move(f)) {}
 
-Eigen::VectorXd CurlElementVectorProvider::Eval(
+Eigen::VectorXd WhitneyOneVectorProvider::Eval(
     const lf::mesh::Entity &entity) const {
+  LF_ASSERT_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
+                "Only Triangles are supported no " << entity.RefEl());
+
   const auto *const geom = entity.Geometry();
 
   // Compute the global vertex coordinates
@@ -25,6 +29,9 @@ Eigen::VectorXd CurlElementVectorProvider::Eval(
                 "The norms of the vertices have to be equal");
 
   double r = vertices.col(0).norm();
+
+  // define quad rule with sufficiantly high degree
+  lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
 
   // Construct the whitney one form basis functions
   const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
@@ -53,6 +60,9 @@ Eigen::VectorXd CurlElementVectorProvider::Eval(
     return b_hat;
   };
 
+  // returns evaluation of $\bm{f} * \bm{b}$ for at a given point on the
+  // reference triangle f is evaluated at the global coordinates of the triangle
+  // radially projected on the sphere
   const auto f_tilde_hat = [&](Eigen::Vector2d x_hat) -> Eigen::Vector3d {
     Eigen::Vector3d x = geom->Global(x_hat);
     const Eigen::Vector3d x_scaled = x / x.norm() * r;
@@ -62,11 +72,11 @@ Eigen::VectorXd CurlElementVectorProvider::Eval(
 
   // Compute the elements of the vector with given quadrature rule
   Eigen::Vector3d element_vector;
-  const Eigen::MatrixXd points = quadrule_.Points();
+  const Eigen::MatrixXd points = quadrule.Points();
   const Eigen::VectorXd weights =
-      (geom->IntegrationElement(points).array() * quadrule_.Weights().array())
+      (geom->IntegrationElement(points).array() * quadrule.Weights().array())
           .matrix();
-  for (lf::base::size_type n = 0; n < quadrule_.NumPoints(); ++n) {
+  for (lf::base::size_type n = 0; n < quadrule.NumPoints(); ++n) {
     const Eigen::Vector3d f_eval = f_tilde_hat(points.col(n));
     element_vector += weights[n] * f_eval;
   }

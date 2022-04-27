@@ -3,10 +3,8 @@
 
 /**
  * @file dirac_operator.h
- * @brief Class to discretise the dirac_operator.
  */
 
-#include <curl_element_vector_provider.h>
 #include <lf/assemble/assembler.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -15,11 +13,12 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_interface.h>
 #include <lf/quad/quad.h>
-#include <load_element_vector_provider.h>
-#include <rot_w_one_form_div_element_matrix_provider.h>
+#include <load_vector_provider.h>
+#include <rot_whitney_one_div_matrix_provider.h>
 #include <sphere_triag_mesh_builder.h>
-#include <whitney_one_form_grad_element_matrix_provider.h>
-#include <whitney_two_element_vector_provider.h>
+#include <whitney_one_grad_matrix_provider.h>
+#include <whitney_one_vector_provider.h>
+#include <whitney_two_vector_provider.h>
 
 #include <Eigen/Dense>
 #include <cmath>
@@ -31,7 +30,24 @@ namespace projects::hldo_sphere {
 namespace discretization {
 
 /**
- * @brief Computes the Galerkin LSE for the Dirac Operator
+ * @brief Computes the Galerkin LSE for the Dirac Operator and its load vector
+ *
+ * @f[
+ *   \begin{pmatrix}
+ *       & \int_{\partial \mathbb{S}} \bm{u} \ grad_{\Gamma} v \, dS & \li
+ *       \int_{\partial \mathbb{S}} grad_{\Gamma} u \cdot \bm{v} \, dS
+ *       & &
+ *       \int_{\partial \mathbb{S}} \mu \ curl_{\Gamma} \bm{v} \, dS  \li
+ *       & \int_{\partial \mathbb{S}} curl_{\Gamma} \bm{u} \ \nu \, dS &
+ *   \end{pmatrix}
+ *   &=
+ *   \begin{pmatrix}
+ *      \int_{\partial \mathbb{S}} f v \, dS \li
+ *      \int_{\partial \mathbb{S}} \bm{f} \cdot \bm{v} \, dS \li
+ *      \int_{\partial \mathbb{S}} \varphi \nu \, dS
+ *   \end{pmatrix}
+ *   @f]
+ *
  *
  * @note Only triangular meshes are supported
  *
@@ -41,7 +57,6 @@ class DiracOperator {
   /**
    * @brief Constructor
    * creates basic mesh (Octaeder with radius 1.0)
-   * creates uniform dofhandler
    * creates zerovalued function f
    *
    */
@@ -81,9 +96,9 @@ class DiracOperator {
    */
   void Compute() {
     // create element matrix provider
-    projects::hldo_sphere::assemble::WhitneyOneFormGradElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneGradMatrixProvider
         matrix_grad_provider;
-    projects::hldo_sphere::assemble::RotWOneFormDivElementMatrixProvider
+    projects::hldo_sphere::assemble::RotWhitneyOneDivMatrixProvider
         matrix_div_provider;
 
     const lf::assemble::DofHandler &dof_handler_vert =
@@ -158,20 +173,14 @@ class DiracOperator {
 
     coo_matrix_ = full_matrix;
 
-    // define quad rule with sufficiantly high degree since the
-    // baricentric coordinate functions and whitney one form basis functions
-    // have degree 1
-    lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
-
     // create element vector provider
-    projects::hldo_sphere::assemble::LoadElementVectorProvider
-        vector_provider_0(f0_);
+    projects::hldo_sphere::assemble::LoadVectorProvider vector_provider_0(f0_);
 
-    projects::hldo_sphere::assemble::CurlElementVectorProvider
-        vector_provider_1(f1_, quadrule);
+    projects::hldo_sphere::assemble::WhitneyOneVectorProvider vector_provider_1(
+        f1_);
 
-    projects::hldo_sphere::assemble::WhitneyTwoElementVectorProvider
-        vector_provider_2(f2_, quadrule);
+    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider vector_provider_2(
+        f2_);
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi0(n_dofs_vert);

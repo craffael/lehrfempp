@@ -1,4 +1,4 @@
-#include "mass_element_matrix_provider.h"
+#include "mass_matrix_provider.h"
 
 #include <lf/uscalfe/lagr_fe.h>
 
@@ -8,8 +8,7 @@
 
 namespace projects::hldo_sphere::assemble {
 
-Eigen::MatrixXd MassElementMatrixProvider::Eval(
-    const lf::mesh::Entity &entity) const {
+Eigen::MatrixXd MassMatrixProvider::Eval(const lf::mesh::Entity &entity) const {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
                 "Unsupported cell type " << entity.RefEl());

@@ -7,7 +7,6 @@
  * a given mesh with a given loadfunction.
  */
 
-#include <curl_element_vector_provider.h>
 #include <lf/assemble/assembler.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -16,12 +15,13 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_interface.h>
 #include <lf/quad/quad.h>
-#include <load_element_vector_provider.h>
-#include <mass_element_matrix_provider.h>
-#include <rot_w_one_form_div_element_matrix_provider.h>
-#include <rot_w_one_form_dot_element_matrix_provider.h>
+#include <load_vector_provider.h>
+#include <mass_matrix_provider.h>
+#include <rot_whitney_one_div_matrix_provider.h>
 #include <sphere_triag_mesh_builder.h>
-#include <whitney_two_element_vector_provider.h>
+#include <whitney_one_mass_matrix_provider.h>
+#include <whitney_one_vector_provider.h>
+#include <whitney_two_vector_provider.h>
 
 #include <Eigen/Dense>
 #include <cmath>
@@ -51,7 +51,6 @@ class WhitneyTwoHodgeLaplace {
   /**
    * @brief Constructor
    * creates basic mesh (Octaeder with radius 1.0)
-   * creates uniform dofhandler
    * creates zerovalued function f
    *
    */
@@ -84,9 +83,9 @@ class WhitneyTwoHodgeLaplace {
    */
   void Compute() {
     // create element matrix provider
-    projects::hldo_sphere::assemble::RotWOneFormDotElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneMassMatrixProvider
         matrix_dot_provider;
-    projects::hldo_sphere::assemble::RotWOneFormDivElementMatrixProvider
+    projects::hldo_sphere::assemble::RotWhitneyOneDivMatrixProvider
         matrix_curl_provider;
 
     const lf::assemble::DofHandler &dof_handler_div =
@@ -141,19 +140,14 @@ class WhitneyTwoHodgeLaplace {
       full_matrix.AddToEntry(row, col, val);
 
       // Add A_21
-      full_matrix.AddToEntry(col, row, val);
+      full_matrix.AddToEntry(col, row, -val);
     }
 
     coo_matrix_ = full_matrix;
 
-    // define quad rule with sufficiantly high degree since the
-    // baricentric coordinate functions and whitney one form basis functions
-    // have degree 1
-    lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
-
     // create element vector provider
-    projects::hldo_sphere::assemble::WhitneyTwoElementVectorProvider
-        vector_provider(f_, quadrule);
+    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider vector_provider(
+        f_);
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs_const);

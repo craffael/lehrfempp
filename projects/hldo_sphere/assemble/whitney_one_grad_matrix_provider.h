@@ -1,13 +1,8 @@
-#ifndef THESIS_ASSEMBLE_WHITNEY_ONE_FORM_GRAD_ELEMENT_MATRIX_PROVIDER_H
-#define THESIS_ASSEMBLE_WHITNEY_ONE_FORM_GRAD_ELEMENT_MATRIX_PROVIDER_H
+#ifndef THESIS_ASSEMBLE_WHITNEY_ONE_GRAD_MATRIX_PROVIDER_H
+#define THESIS_ASSEMBLE_WHITNEY_ONE_GRAD_MATRIX_PROVIDER_H
 
 /**
- * @file whitney_one_form_curl_element_matrix_provider.h
- * @brief An element matrix provider for a vector valued piecewise linear basis
- * function and a picewise linear function
- * @f[
- * \int grad_{\Gamma}(u) v dx
- * @f]
+ * @file whitney_one_grad_matrix_provider.h
  */
 
 #include <lf/mesh/entity.h>
@@ -28,20 +23,22 @@ namespace assemble {
  * Basis functions are the Whitney 1-forms, surface edge elements for v
  * and the barycentric basis function for u
  *
+ * @note Only triangluar meshes are supported
+ *
  */
-class WhitneyOneFormGradElementMatrixProvider {
+class WhitneyOneGradMatrixProvider {
  public:
   /**
    * @brief Constructor
    */
-  WhitneyOneFormGradElementMatrixProvider(){};
+  WhitneyOneGradMatrixProvider(){};
 
   /**
    * @brief Compute the element matrix for some cell of a mesh
    * @param entity The mesh cell to compute the element matrix for
    * @returns The 3 by 3 element matrix of the cell
    *
-   * @note This function only works for triangles
+   * @note Only triangluar cells are supported
    */
   Eigen::MatrixXd Eval(const lf::mesh::Entity &entity) const;
 
@@ -57,4 +54,4 @@ class WhitneyOneFormGradElementMatrixProvider {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_ASSEMBLE_WHITNEY_ONE_FORM_GRAD_ELEMENT_MATRIX_PROVIDER_H
+#endif  // THESIS_ASSEMBLE_WHITNEY_ONE_GRAD_MATRIX_PROVIDER_H

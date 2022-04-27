@@ -1,13 +1,8 @@
-#ifndef THESIS_ASSEMBLE_WHITNEY_ONE_FORM_CURL_ELEMENT_MATRIX_PROVIDER_H
-#define THESIS_ASSEMBLE_WHITNEY_ONE_FORM_CURL_ELEMENT_MATRIX_PROVIDER_H
+#ifndef THESIS_ASSEMBLE_WHITNEY_ONE_CURL_CURL_MATRIX_PROVIDER_H
+#define THESIS_ASSEMBLE_WHITNEY_ONE_CURL_CURL_MATRIX_PROVIDER_H
 
 /**
  * @file whitney_one_form_curl_element_matrix_provider.h
- * @brief An element matrix provider for vector valued piecewise linear basis
- * functions and the bilinear form
- * @f[
- * \int curl_{\Gamma}(u) curl_{\Gamma}(v) dx
- * @f]
  */
 
 #include <lf/mesh/entity.h>
@@ -30,19 +25,19 @@ namespace assemble {
  * @note Currently, only triangular meshes are supported
  *
  */
-class WhitneyOneFormCurlElementMatrixProvider {
+class WhitneyOneCurlCurlMatrixProvider {
  public:
   /**
    * @brief Constructor
    */
-  WhitneyOneFormCurlElementMatrixProvider(){};
+  WhitneyOneCurlCurlMatrixProvider(){};
 
   /**
-   * @brief Compute the element matrix for some cell of a mesh
-   * @param entity The mesh cell to compute the element matrix for
-   * @returns The 3 by 3 element matrix of the cell
+   * @brief Compute the element matrix for some triangle of a mesh
+   * @param entity The mesh triangle to compute the element matrix for
+   * @returns The 3 by 3 element matrix of the triangle
    *
-   * @note This function only works for triangles
+   * @note Currently, only triangular cells are supported
    */
   Eigen::MatrixXd Eval(const lf::mesh::Entity &entity) const;
 
@@ -58,4 +53,4 @@ class WhitneyOneFormCurlElementMatrixProvider {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_ASSEMBLE_WHITNEY_ONE_FORM_CURL_ELEMENT_MATRIX_PROVIDER_H
+#endif  // THESIS_ASSEMBLE_WHITNEY_ONE_CURL_CURL_MATRIX_PROVIDER_H

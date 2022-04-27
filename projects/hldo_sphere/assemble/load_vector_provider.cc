@@ -1,4 +1,4 @@
-#include "load_element_vector_provider.h"
+#include "load_vector_provider.h"
 
 #include <lf/base/base.h>
 #include <lf/quad/quad.h>
@@ -9,13 +9,16 @@
 
 namespace projects::hldo_sphere::assemble {
 
-LoadElementVectorProvider::LoadElementVectorProvider(
+LoadVectorProvider::LoadVectorProvider(
     std::function<double(const Eigen::Vector3d &)> f)
     : f_(f) {}
 
-Eigen::VectorXd LoadElementVectorProvider::Eval(
-    const lf::mesh::Entity &entity) const {
+Eigen::VectorXd LoadVectorProvider::Eval(const lf::mesh::Entity &entity) const {
   const auto *const geom = entity.Geometry();
+
+  // Only triangles are supported
+  LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
+                "Unsupported cell type " << entity.RefEl());
 
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
@@ -36,6 +39,9 @@ Eigen::VectorXd LoadElementVectorProvider::Eval(
     return hat_func.EvalReferenceShapeFunctions(x_hat);
   };
 
+  // returns evaluation of $f * \lambda$ for at a given point on the reference
+  // triangle f is evaluated at the global coordinates of the triangle radially
+  // projected on the sphere
   const auto f_tilde_hat = [&](Eigen::Vector2d x_hat) -> Eigen::MatrixXd {
     Eigen::Vector3d x = geom->Global(x_hat);
     const Eigen::Vector3d x_scaled = x / x.norm() * r;

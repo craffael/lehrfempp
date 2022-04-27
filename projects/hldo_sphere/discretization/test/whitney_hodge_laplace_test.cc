@@ -6,6 +6,22 @@
 #include <array>
 #include <cmath>
 
+/**
+ *
+ * @brief Test the zero hodge laplacian
+ *
+ * The test tests the discretiation of the problem problem
+ *
+ * @f[
+ * - \Delta_0 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ * But not the solution of the system is tested only the buildingblocks
+ * that is, only the galerkin matrix and the load vector
+ *
+ */
 TEST(projects_hldo_sphere_discretization,
      whitney_zero_hodge_laplace_basic_test) {
   // Build LSE
@@ -45,6 +61,22 @@ TEST(projects_hldo_sphere_discretization,
   }
 }
 
+/**
+ *
+ * @brief Test the one hodge laplacian
+ *
+ * The test tests the discretiation of the problem problem
+ *
+ * @f[
+ * - \Delta_1 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ * But not the solution of the system is tested only the buildingblocks
+ * that is, only the galerkin matrix and the load vector
+ *
+ */
 TEST(projects_hldo_sphere_discretization,
      whitney_one_hodge_laplace_basic_test) {
   // Build LSE
@@ -110,6 +142,22 @@ TEST(projects_hldo_sphere_discretization,
   }
 }
 
+/**
+ *
+ * @brief Test the two hodge laplacian
+ *
+ * The test tests the discretiation of the problem problem
+ *
+ * @f[
+ * - \Delta_2 u = 0
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ * But not the solution of the system is tested only the buildingblocks
+ * that is, only the galerkin matrix and the load vector
+ *
+ */
 TEST(projects_hldo_sphere_discretization,
      whitney_two_hodge_laplace_basic_test) {
   // Build LSE
@@ -144,6 +192,7 @@ TEST(projects_hldo_sphere_discretization,
             0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,  1,     0,  0,  0,  0,  0,  0,  0,  0;
   // clang-format on
   Ae_anal.topLeftCorner(12, 12) *= 1. / std::sqrt(3) / 12.;
+  Ae_anal.bottomLeftCorner(8, 12) *= -1.;
   // Assert that the two matrices are approximately equal
   ASSERT_EQ(Ae.rows(), Ae_anal.rows());
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());

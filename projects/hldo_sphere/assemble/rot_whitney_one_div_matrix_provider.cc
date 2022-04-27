@@ -1,4 +1,4 @@
-#include "rot_w_one_form_div_element_matrix_provider.h"
+#include "rot_whitney_one_div_matrix_provider.h"
 
 #include <lf/uscalfe/lagr_fe.h>
 
@@ -8,7 +8,7 @@
 
 namespace projects::hldo_sphere::assemble {
 
-Eigen::MatrixXd RotWOneFormDivElementMatrixProvider::Eval(
+Eigen::MatrixXd RotWhitneyOneDivMatrixProvider::Eval(
     const lf::mesh::Entity &entity) const {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),

@@ -4,6 +4,31 @@
 #include <array>
 #include <cmath>
 
+/**
+ * @brief Test the Galerkin LSE for the Dirac Operator and its load vector
+ *
+ * @f[
+ *   \begin{pmatrix}
+ *       & \int_{\partial \mathbb{S}} \bm{u} \ grad_{\Gamma} v \, dS & \li
+ *       \int_{\partial \mathbb{S}} grad_{\Gamma} u \cdot \bm{v} \, dS
+ *       & &
+ *       \int_{\partial \mathbb{S}} \mu \ curl_{\Gamma} \bm{v} \, dS  \li
+ *       & \int_{\partial \mathbb{S}} curl_{\Gamma} \bm{u} \ \nu \, dS &
+ *   \end{pmatrix}
+ *   &=
+ *   \begin{pmatrix}
+ *      \int_{\partial \mathbb{S}} f v \, dS \li
+ *      \int_{\partial \mathbb{S}} \bm{f} \cdot \bm{v} \, dS \li
+ *      \int_{\partial \mathbb{S}} \varphi \nu \, dS
+ *   \end{pmatrix}
+ *   @f]
+ *
+ *
+ * On the octaeder with radius 1
+ *
+ * And load function equal to 0
+ *
+ */
 TEST(projects_hldo_sphere_discretization, dirac_operator_test) {
   // Build LSE
 

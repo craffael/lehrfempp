@@ -15,12 +15,12 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_interface.h>
 #include <lf/quad/quad.h>
-#include <load_element_vector_provider.h>
-#include <mass_element_matrix_provider.h>
-#include <rot_w_one_form_dot_element_matrix_provider.h>
+#include <load_vector_provider.h>
+#include <mass_matrix_provider.h>
 #include <sphere_triag_mesh_builder.h>
-#include <whitney_one_form_curl_element_matrix_provider.h>
-#include <whitney_one_form_grad_element_matrix_provider.h>
+#include <whitney_one_curl_curl_matrix_provider.h>
+#include <whitney_one_grad_matrix_provider.h>
+#include <whitney_one_mass_matrix_provider.h>
 #include <whitney_two_mass_matrix_provider.h>
 
 #include <Eigen/Dense>
@@ -89,7 +89,7 @@ class DiracOperatorSourceProblem {
   }
 
   /**
-   * @brief Computes the Galerkin LSE for all three source problems
+   * @brief Computes the Galerkin LSE for the dirac operator source problem
    *
    * @f[
    *   D \vec{u} + \imath k \vec{u} = \vec{f}
@@ -119,7 +119,7 @@ class DiracOperatorSourceProblem {
     //**********************
 
     // Zero form mass matrix
-    projects::hldo_sphere::assemble::MassElementMatrixProvider
+    projects::hldo_sphere::assemble::MassMatrixProvider
         mass_matrix_provider_zero;
 
     const lf::assemble::DofHandler &dof_handler_zero =
@@ -140,7 +140,7 @@ class DiracOperatorSourceProblem {
     };
 
     // one form mass matrix
-    projects::hldo_sphere::assemble::RotWOneFormDotElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneMassMatrixProvider
         mass_matrix_provider_one;
     const lf::assemble::DofHandler &dof_handler_one =
         lf::assemble::UniformFEDofHandler(mesh_p_,
@@ -238,7 +238,7 @@ class DiracOperatorSourceProblem {
   /**
    * @brief Sets the load functions
    * @param f0 load function in L^2
-   * @param f1 load functions in L^2_t vector valued
+   * @param f1 load functions in L^2_t tangential vector field on the sphere
    * @param f2 load functions in L^2
    */
   void SetLoadFunctions(

@@ -5,6 +5,16 @@
 #include <cmath>
 #include <complex>
 
+/**
+ * @brief Tests the Galerkin LSE for all three source problems
+ *
+ * @f[
+ *   D \vec{u} + \imath k \vec{u} = 0
+ * @f]
+ *
+ * On the octaeder with radius 1
+ *
+ */
 TEST(projects_hldo_sphere_discretization,
      dirac_operator_source_problem_basic_test) {
   // Build LSE

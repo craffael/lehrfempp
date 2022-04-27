@@ -1,25 +1,25 @@
 
 set(sources 
-    curl_element_vector_provider.h
-    curl_element_vector_provider.cc
-    laplace_element_matrix_provider.h
-    laplace_element_matrix_provider.cc
-    load_element_vector_provider.h
-    load_element_vector_provider.cc
-    mass_element_matrix_provider.h
-    mass_element_matrix_provider.cc
+    laplace_matrix_provider.h
+    laplace_matrix_provider.cc
+    mass_matrix_provider.h
+    mass_matrix_provider.cc
+    load_vector_provider.h
+    load_vector_provider.cc
+    whitney_one_curl_curl_matrix_provider.h
+    whitney_one_curl_curl_matrix_provider.cc
+    whitney_one_grad_matrix_provider.h
+    whitney_one_grad_matrix_provider.cc
+    whitney_one_mass_matrix_provider.h
+    whitney_one_mass_matrix_provider.cc
+    whitney_one_vector_provider.h
+    whitney_one_vector_provider.cc
     whitney_two_mass_matrix_provider.h
     whitney_two_mass_matrix_provider.cc
-    rot_w_one_form_dot_element_matrix_provider.h
-    rot_w_one_form_dot_element_matrix_provider.cc
-    rot_w_one_form_div_element_matrix_provider.h
-    rot_w_one_form_div_element_matrix_provider.cc
-    whitney_one_form_curl_element_matrix_provider.h
-    whitney_one_form_curl_element_matrix_provider.cc
-    whitney_one_form_grad_element_matrix_provider.h
-    whitney_one_form_grad_element_matrix_provider.cc
-    whitney_two_element_vector_provider.h
-    whitney_two_element_vector_provider.cc
+    rot_whitney_one_div_matrix_provider.h
+    rot_whitney_one_div_matrix_provider.cc
+    whitney_two_vector_provider.h
+    whitney_two_vector_provider.cc
 )
 
 add_library(projects.hldo_sphere.assemble ${sources})

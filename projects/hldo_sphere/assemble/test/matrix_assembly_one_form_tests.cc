@@ -9,12 +9,33 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
-#include <whitney_one_form_curl_element_matrix_provider.h>
-#include <whitney_one_form_grad_element_matrix_provider.h>
+#include <whitney_one_curl_curl_matrix_provider.h>
+#include <whitney_one_grad_matrix_provider.h>
 
 #include <array>
 #include <cmath>
 
+/**
+ *
+ * @brief Test the element matrix provider for the whitney one form
+ *
+ * Test the element vector provider on the triangle
+ * ((0,0,1), (5,-1,1), (3,2,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = 1, s_2 = 1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ curl_{\Gamma}v curl_{\Gamma}u \,\mathrm{d}x, \quad u, v \in
+ * \bm{H}(curl_{\Gamma}, \partial\mathbb{S})
+ * @f]
+ *
+ * Using the whitney one forms
+ *
+ */
 TEST(projects_hldo_sphere_assembly,
      whitney_one_form_curl_matrix_assembler_test_two) {
   // Build Mesh
@@ -60,8 +81,8 @@ TEST(projects_hldo_sphere_assembly,
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
-  const auto elem_mat_provider = projects::hldo_sphere::assemble::
-      WhitneyOneFormCurlElementMatrixProvider();
+  const auto elem_mat_provider =
+      projects::hldo_sphere::assemble::WhitneyOneCurlCurlMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(3, 3);
@@ -82,6 +103,27 @@ TEST(projects_hldo_sphere_assembly,
   }
 }
 
+/**
+ *
+ * @brief Test the element matrix provider for the the whitney one form
+ *
+ * Test the element vector provider on the triangle
+ * ((0,0,5), (5,0,1), (2,1,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = 1, s_1 = -1, s_2 = 1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ curl_{\Gamma}v curl_{\Gamma}u \,\mathrm{d}x, \quad u, v \in
+ * \bm{H}(curl_{\Gamma}, \partial\mathbb{S})
+ * @f]
+ *
+ * Using the whitney one forms
+ *
+ */
 TEST(projects_hldo_sphere_assembly,
      whitney_one_form_curl_matrix_assembler_test_one) {
   // Build Mesh
@@ -128,8 +170,8 @@ TEST(projects_hldo_sphere_assembly,
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
-  const auto elem_mat_provider = projects::hldo_sphere::assemble::
-      WhitneyOneFormCurlElementMatrixProvider();
+  const auto elem_mat_provider =
+      projects::hldo_sphere::assemble::WhitneyOneCurlCurlMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(3, 3);
@@ -150,6 +192,28 @@ TEST(projects_hldo_sphere_assembly,
   }
 }
 
+/**
+ *
+ * @brief Test the element matrix provider for the whitney one form
+ *
+ * Test the element vector provider on the triangle
+ * ((0,0), (1,0), (0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = 1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ \bm{u} grad_{\Gamma}v \,\mathrm{d}x, \quad u \in
+ * \bm{H}(curl_{\Gamma}, \partial\mathbb{S})
+ * , v \in H^1
+ * @f]
+ *
+ * Using the whitney one forms form u and the barycentric basis function for v
+ *
+ */
 TEST(projects_hldo_sphere_assembly,
      whitney_one_form_grad_matrix_assembler_test_ref_2d) {
   // Build Mesh
@@ -194,8 +258,8 @@ TEST(projects_hldo_sphere_assembly,
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
-  const auto elem_mat_provider = projects::hldo_sphere::assemble::
-      WhitneyOneFormGradElementMatrixProvider();
+  const auto elem_mat_provider =
+      projects::hldo_sphere::assemble::WhitneyOneGradMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal = Eigen::MatrixXd::Ones(3, 3);
@@ -216,6 +280,28 @@ TEST(projects_hldo_sphere_assembly,
   }
 }
 
+/**
+ *
+ * @brief Test the element matrix provider for the whitney one form
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = 1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ \bm{u} grad_{\Gamma}v \,\mathrm{d}x, \quad u \in
+ * \bm{H}(curl_{\Gamma}, \partial\mathbb{S})
+ * , v \in H^1
+ * @f]
+ *
+ * Using the whitney one forms form u and the barycentric basis function for v
+ *
+ */
 TEST(projects_hldo_sphere_assembly,
      whitney_one_form_grad_matrix_assembler_test_3d) {
   // Build Mesh
@@ -262,8 +348,8 @@ TEST(projects_hldo_sphere_assembly,
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
-  const auto elem_mat_provider = projects::hldo_sphere::assemble::
-      WhitneyOneFormGradElementMatrixProvider();
+  const auto elem_mat_provider =
+      projects::hldo_sphere::assemble::WhitneyOneGradMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(3, 3);

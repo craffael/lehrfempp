@@ -3,9 +3,7 @@
 
 /**
  * @file whitney_one_hodge_laplace.h
- * @brief Class to discretise the hodge laplacian for the zero form.
  */
-#include <curl_element_vector_provider.h>
 #include <lf/assemble/assembler.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -14,11 +12,12 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_interface.h>
 #include <lf/quad/quad.h>
-#include <load_element_vector_provider.h>
-#include <mass_element_matrix_provider.h>
+#include <load_vector_provider.h>
+#include <mass_matrix_provider.h>
 #include <sphere_triag_mesh_builder.h>
-#include <whitney_one_form_curl_element_matrix_provider.h>
-#include <whitney_one_form_grad_element_matrix_provider.h>
+#include <whitney_one_curl_curl_matrix_provider.h>
+#include <whitney_one_grad_matrix_provider.h>
+#include <whitney_one_vector_provider.h>
 
 #include <Eigen/Dense>
 #include <cmath>
@@ -49,7 +48,6 @@ class WhitneyOneHodgeLaplace {
   /**
    * @brief Constructor
    * creates basic mesh (Octaeder with radius 1.0)
-   * creates uniform dofhandler
    * creates zerovalued function f
    *
    */
@@ -84,12 +82,11 @@ class WhitneyOneHodgeLaplace {
    */
   void Compute() {
     // create element matrix provider
-    projects::hldo_sphere::assemble::WhitneyOneFormCurlElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneCurlCurlMatrixProvider
         matrix_curl_provider;
-    projects::hldo_sphere::assemble::WhitneyOneFormGradElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneGradMatrixProvider
         matrix_grad_provider;
-    projects::hldo_sphere::assemble::MassElementMatrixProvider
-        matrix_mass_provider;
+    projects::hldo_sphere::assemble::MassMatrixProvider matrix_mass_provider;
 
     const lf::assemble::DofHandler &dof_handler_curl =
         lf::assemble::UniformFEDofHandler(mesh_p_,
@@ -163,14 +160,9 @@ class WhitneyOneHodgeLaplace {
 
     coo_matrix_ = full_matrix;
 
-    // define quad rule with sufficiantly high degree since the
-    // baricentric coordinate functions and whitney one form basis functions
-    // have degree 1
-    lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
-
     // create element vector provider
-    projects::hldo_sphere::assemble::CurlElementVectorProvider vector_provider(
-        f_, quadrule);
+    projects::hldo_sphere::assemble::WhitneyOneVectorProvider vector_provider(
+        f_);
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs_curl);

@@ -1,4 +1,4 @@
-#include "whitney_one_form_grad_element_matrix_provider.h"
+#include "laplace_matrix_provider.h"
 
 #include <lf/uscalfe/lagr_fe.h>
 
@@ -8,7 +8,7 @@
 
 namespace projects::hldo_sphere::assemble {
 
-Eigen::MatrixXd WhitneyOneFormGradElementMatrixProvider::Eval(
+Eigen::MatrixXd LaplaceMatrixProvider::Eval(
     const lf::mesh::Entity &entity) const {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
@@ -22,35 +22,26 @@ Eigen::MatrixXd WhitneyOneFormGradElementMatrixProvider::Eval(
 
   // Construct the basis functions from curl of the standard hat functions
   const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
+
   // The gradients are constant on the triangle
   const Eigen::MatrixXd ref_grads =
       hat_func.GradientsReferenceShapeFunctions(Eigen::VectorXd::Zero(2))
           .transpose();
+
   // The JacobianInverseGramian is constant on the triangle
   const Eigen::MatrixXd J_inv_trans =
       geom->JacobianInverseGramian(Eigen::VectorXd::Zero(2));
 
-  // get the gradients
-  const Eigen::MatrixXd grad = J_inv_trans * ref_grads;
+  // Compute gradients
+  Eigen::MatrixXd grads = J_inv_trans * ref_grads;
 
-  // create whitney 1-Form basis functions only the constants
-  Eigen::MatrixXd bs(grad.rows(), 3);
-  bs.col(0) = grad.col(1) - grad.col(0);
-  bs.col(1) = grad.col(2) - grad.col(1);
-  bs.col(2) = grad.col(0) - grad.col(2);
-
-  // correct for orientation
-  auto edgeOrientations = entity.RelativeOrientations();
-  bs.col(0) *= lf::mesh::to_sign(edgeOrientations[0]);
-  bs.col(1) *= lf::mesh::to_sign(edgeOrientations[1]);
-  bs.col(2) *= lf::mesh::to_sign(edgeOrientations[2]);
-
-  // fill the element matrix
+  // Compute the element matrix for the product of baricentric functions
   Eigen::MatrixXd elem_mat(3, 3);
-  elem_mat = bs.transpose() * grad;
+
+  elem_mat = grads.transpose() * grads;
 
   // correct for integral
-  elem_mat *= lf::geometry::Volume(*geom) / 3.0;
+  elem_mat *= lf::geometry::Volume(*geom);
 
   return elem_mat;
 }

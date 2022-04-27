@@ -10,7 +10,7 @@
  * @f]
  */
 
-#include <laplace_element_matrix_provider.h>
+#include <laplace_matrix_provider.h>
 #include <lf/assemble/assembler.h>
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -18,7 +18,7 @@
 #include <lf/mesh/hybrid2d/mesh.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh_interface.h>
-#include <load_element_vector_provider.h>
+#include <load_vector_provider.h>
 #include <sphere_triag_mesh_builder.h>
 
 #include <Eigen/Dense>
@@ -50,7 +50,6 @@ class WhitneyZeroHodgeLaplace {
   /**
    * @brief Constructor
    * creates basic mesh (Octaeder with radius 1.0)
-   * creates uniform dofhandler
    * creates zerovalued function f
    *
    */
@@ -83,8 +82,7 @@ class WhitneyZeroHodgeLaplace {
    */
   void Compute() {
     // create element matrix provider
-    projects::hldo_sphere::assemble::LaplaceElementMatrixProvider
-        matrix_provider;
+    projects::hldo_sphere::assemble::LaplaceMatrixProvider matrix_provider;
 
     const lf::assemble::DofHandler& dof_handler =
         lf::assemble::UniformFEDofHandler(mesh_p_,
@@ -100,8 +98,7 @@ class WhitneyZeroHodgeLaplace {
         0, dof_handler, dof_handler, matrix_provider, coo_mat);
 
     // create element vector provider
-    projects::hldo_sphere::assemble::LoadElementVectorProvider vector_provider{
-        f_};
+    projects::hldo_sphere::assemble::LoadVectorProvider vector_provider{f_};
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(dof_handler.NumDofs());

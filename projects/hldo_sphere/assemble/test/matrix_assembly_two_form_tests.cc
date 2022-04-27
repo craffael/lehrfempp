@@ -9,14 +9,38 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
-#include <rot_w_one_form_div_element_matrix_provider.h>
-#include <rot_w_one_form_dot_element_matrix_provider.h>
+#include <rot_whitney_one_div_matrix_provider.h>
+#include <whitney_one_mass_matrix_provider.h>
 #include <whitney_two_mass_matrix_provider.h>
 
 #include <array>
 #include <cmath>
 
-TEST(projects_hldo_sphere_assembly, rot_w_div_form_dot_matrix_assembler_test) {
+/**
+ *
+ * @brief Test the element matrix provider for the whitney one form mass matrix
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = 1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ \bm{u} \cdot \bm{v} \,\mathrm{d}x, \quad u, v \in
+ * \bm{H}(curl_{\Gamma}, \partial\mathbb{S})
+ * @f]
+ *
+ * Using the whitney one forms
+ *
+ * @note the matrix can as well be used for the rotated whitney one forms
+ * instead of the whitney one forms
+ *
+ */
+TEST(projects_hldo_sphere_assembly, whitney_one_mass_matrix_assembler_test) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();
   const auto seg = lf::base::RefEl::kSegment();
@@ -62,7 +86,7 @@ TEST(projects_hldo_sphere_assembly, rot_w_div_form_dot_matrix_assembler_test) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
   const auto elem_mat_provider =
-      projects::hldo_sphere::assemble::RotWOneFormDotElementMatrixProvider();
+      projects::hldo_sphere::assemble::WhitneyOneMassMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(3, 3);
@@ -83,6 +107,28 @@ TEST(projects_hldo_sphere_assembly, rot_w_div_form_dot_matrix_assembler_test) {
   }
 }
 
+/**
+ *
+ * @brief Test the element matrix provider for the whitney two form
+ *
+ * Test the element vector provider on the triangle
+ * ((5,1,0), (4,0,1), (10,30,2))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = -1, s_2 = 1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ div(u) v \,\mathrm{d}x, \quad \bm{u} \in
+ * \bm{H}(div_{\Gamma}, \partial\mathbb{S})
+ * v \in L^2(\partial \mathbb{S})
+ * @f]
+ *
+ * Using the rotated whitney one forms for u and the whitney two forms for v
+ *
+ */
 TEST(projects_hldo_sphere_assembly, rot_w_one_form_div_matrix_assembler_test) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();
@@ -129,7 +175,7 @@ TEST(projects_hldo_sphere_assembly, rot_w_one_form_div_matrix_assembler_test) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
   const auto elem_mat_provider =
-      projects::hldo_sphere::assemble::RotWOneFormDivElementMatrixProvider();
+      projects::hldo_sphere::assemble::RotWhitneyOneDivMatrixProvider();
   const Eigen::MatrixXd Ae = elem_mat_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::MatrixXd Ae_anal(3, 1);
@@ -144,6 +190,27 @@ TEST(projects_hldo_sphere_assembly, rot_w_one_form_div_matrix_assembler_test) {
   }
 }
 
+/**
+ *
+ * @brief Test the element matrix provider for the whitney two mass matrix
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = -1, s_2 = 1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ u\ v \,\mathrm{d}x, \quad
+ * u, v \in L^2(\partial \mathbb{S})
+ * @f]
+ *
+ * Using the whitney two forms
+ *
+ */
 TEST(projects_hldo_sphere_assembly, whitney_two_mass_matrix_assembler_test) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();

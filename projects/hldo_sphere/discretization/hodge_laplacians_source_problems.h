@@ -6,9 +6,9 @@
  * @brief Class to discretise the hodge_laplacian source problems
  */
 
-#include <mass_element_matrix_provider.h>
-#include <rot_w_one_form_dot_element_matrix_provider.h>
+#include <mass_matrix_provider.h>
 #include <whitney_one_hodge_laplacian.h>
+#include <whitney_one_mass_matrix_provider.h>
 #include <whitney_two_hodge_laplacian.h>
 #include <whitney_two_mass_matrix_provider.h>
 #include <whitney_zero_hodge_laplacian.h>
@@ -110,7 +110,7 @@ class HodgeLaplaciansSourceProblems {
 
     // create mass Matrix
 
-    projects::hldo_sphere::assemble::MassElementMatrixProvider
+    projects::hldo_sphere::assemble::MassMatrixProvider
         mass_matrix_provider_zero;
 
     const lf::assemble::DofHandler &dof_handler_zero =
@@ -153,12 +153,12 @@ class HodgeLaplaciansSourceProblems {
     for (Eigen::Triplet<double> triplet : coo_mat_one_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = -triplet.value();
+      double val = triplet.value();
       coo_mat_one.AddToEntry(row, col, val);
     }
 
     // create mass Matrix
-    projects::hldo_sphere::assemble::RotWOneFormDotElementMatrixProvider
+    projects::hldo_sphere::assemble::WhitneyOneMassMatrixProvider
         mass_matrix_provider_one;
     const lf::assemble::DofHandler &dof_handler_one =
         lf::assemble::UniformFEDofHandler(mesh_p_,
@@ -199,7 +199,7 @@ class HodgeLaplaciansSourceProblems {
     for (Eigen::Triplet<double> triplet : coo_mat_two_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = -triplet.value();
+      double val = triplet.value();
       coo_mat_two.AddToEntry(row, col, val);
     }
 
@@ -350,10 +350,7 @@ class HodgeLaplaciansSourceProblems {
    * called before the result is available
    *
    */
-  Eigen::Matrix<double, Eigen::Dynamic, 1> GetMuZero() {
-    std::cout << "\n size of mu[" << 0 << "] is " << mu_[0].rows() << "\n";
-    return mu_[0];
-  }
+  Eigen::Matrix<double, Eigen::Dynamic, 1> GetMuZero() { return mu_[0]; }
 
   /**
    * @brief retunrs the basis expansion coefficiants for

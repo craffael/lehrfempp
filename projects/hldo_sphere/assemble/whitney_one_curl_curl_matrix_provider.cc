@@ -1,4 +1,4 @@
-#include "whitney_one_form_curl_element_matrix_provider.h"
+#include "whitney_one_curl_curl_matrix_provider.h"
 
 #include <lf/uscalfe/lagr_fe.h>
 
@@ -8,7 +8,7 @@
 
 namespace projects::hldo_sphere::assemble {
 
-Eigen::MatrixXd WhitneyOneFormCurlElementMatrixProvider::Eval(
+Eigen::MatrixXd WhitneyOneCurlCurlMatrixProvider::Eval(
     const lf::mesh::Entity &entity) const {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),

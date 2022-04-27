@@ -1,4 +1,3 @@
-#include <curl_element_vector_provider.h>
 #include <gtest/gtest.h>
 #include <lf/assemble/assemble.h>
 #include <lf/assemble/coomatrix.h>
@@ -12,12 +11,40 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <lf/quad/quad_rule.h>
-#include <load_element_vector_provider.h>
-#include <whitney_two_element_vector_provider.h>
+#include <load_vector_provider.h>
+#include <whitney_one_vector_provider.h>
+#include <whitney_two_vector_provider.h>
 
 #include <array>
 #include <cmath>
 
+/**
+ *
+ * @brief Test the element vector provider with the one-form
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in \bm{H}(div_{\Gamma},
+ * \partial\mathbb{S})
+ * @f]
+ *
+ * using the load function
+ *
+ * @f[
+ *  f((x_0,x_1, x_2)) = (1, 1, x_0)
+ * @f]
+ *
+ * and the whithey one form basis functions
+ *
+ */
 TEST(projects_hldo_sphere_assembly, element_vector_provider_one_form) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();
@@ -70,13 +97,10 @@ TEST(projects_hldo_sphere_assembly, element_vector_provider_one_form) {
     return res;
   };
 
-  // define quad rule
-  lf::quad::QuadRule quad{lf::quad::make_TriaQR_EdgeMidpointRule()};
-
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::CurlElementVectorProvider(f, quad);
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);
@@ -94,6 +118,32 @@ TEST(projects_hldo_sphere_assembly, element_vector_provider_one_form) {
   }
 }
 
+/**
+ *
+ * @brief Test the element vector provider for the two-form
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in H^1
+ * @f]
+ *
+ * using the load function
+ *
+ * @f[
+ *  f((x_0,x_1, x_2)) = x_0
+ * @f]
+ *
+ * And the cellwise constant basis functions
+ *
+ */
 TEST(projects_hldo_sphere_assembly, element_vector_provider_two_form) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();
@@ -140,13 +190,10 @@ TEST(projects_hldo_sphere_assembly, element_vector_provider_two_form) {
   // Define function f
   auto f = [&](const Eigen::Vector3d x) -> double { return x(0); };
 
-  // define quad rule
-  lf::quad::QuadRule quad{lf::quad::make_TriaQR_EdgeMidpointRule()};
-
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::WhitneyTwoElementVectorProvider(f, quad);
+      projects::hldo_sphere::assemble::WhitneyTwoVectorProvider(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(1);
@@ -160,6 +207,32 @@ TEST(projects_hldo_sphere_assembly, element_vector_provider_two_form) {
   EXPECT_DOUBLE_EQ(Ae(0), Ae_anal(0)) << "mismatch in entry (0)";
 }
 
+/**
+ *
+ * @brief Test the element vector provider for the zero-form
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in H^1
+ * @f]
+ *
+ * using the load function
+ *
+ * @f[
+ *  f((x_0,x_1, x_2)) = x_0
+ * @f]
+ *
+ * And the barycentric basis functions
+ *
+ */
 TEST(projects_hldo_sphere_assembly, load_vector_provider_zero_form) {
   // Build Mesh
   const auto trig = lf::base::RefEl::kTria();
@@ -209,7 +282,7 @@ TEST(projects_hldo_sphere_assembly, load_vector_provider_zero_form) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::LoadElementVectorProvider(f);
+      projects::hldo_sphere::assemble::LoadVectorProvider(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);
