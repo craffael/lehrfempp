@@ -23,10 +23,13 @@ Eigen::VectorXd LoadVectorProvider::Eval(const lf::mesh::Entity &entity) const {
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
-  double eps = 1e-20;
+  double eps = 1e-13;
   LF_ASSERT_MSG(vertices.col(0).norm() - vertices.col(1).norm() < eps &&
                     vertices.col(0).norm() - vertices.col(2).norm() < eps,
-                "The norms of the vertices have to be equal");
+                "The norms of the vertices have to be equal difference is "
+                    << vertices.col(0).norm() - vertices.col(1).norm()
+                    << " and "
+                    << vertices.col(0).norm() - vertices.col(2).norm());
 
   double r = vertices.col(0).norm();
 
