@@ -58,7 +58,7 @@ class MeshFunctionWhitneyTwo {
    *
    */
   std::vector<double> operator()(const lf::mesh::Entity& e,
-                                 const Eigen::MatrixXd& local) {
+                                 const Eigen::MatrixXd& local) const {
     // Only triangles are supported
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
                   "Unsupported cell type " << e.RefEl());

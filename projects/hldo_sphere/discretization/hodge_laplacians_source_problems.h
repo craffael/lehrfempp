@@ -95,6 +95,8 @@ class HodgeLaplaciansSourceProblems {
 
     // get the Hodge laplacian for the zero form and take the negative
     projects::hldo_sphere::discretization::WhitneyZeroHodgeLaplace zero_builder;
+    zero_builder.SetMesh(mesh_p_);
+    zero_builder.SetLoadFunction(f0_);
     zero_builder.Compute();
     lf::assemble::COOMatrix<double> coo_mat_zero_pos =
         zero_builder.GetGalerkinMatrix();
@@ -144,6 +146,8 @@ class HodgeLaplaciansSourceProblems {
 
     // get the Hodge laplacian for the one form and take the negative
     projects::hldo_sphere::discretization::WhitneyOneHodgeLaplace one_builder;
+    one_builder.SetMesh(mesh_p_);
+    one_builder.SetLoadFunction(f1_);
     one_builder.Compute();
     lf::assemble::COOMatrix<double> coo_mat_one_pos =
         one_builder.GetGalerkinMatrix();
@@ -190,6 +194,8 @@ class HodgeLaplaciansSourceProblems {
 
     // get the Hodge laplacian for the one form and take the negative
     projects::hldo_sphere::discretization::WhitneyTwoHodgeLaplace two_builder;
+    two_builder.SetMesh(mesh_p_);
+    two_builder.SetLoadFunction(f2_);
     two_builder.Compute();
     lf::assemble::COOMatrix<double> coo_mat_two_pos =
         two_builder.GetGalerkinMatrix();

@@ -101,7 +101,7 @@ class WhitneyZeroHodgeLaplace {
     projects::hldo_sphere::assemble::LoadVectorProvider vector_provider{f_};
 
     // create load vector
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi(dof_handler.NumDofs());
+    Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs);
     phi.setZero();
 
     // assemble the global vector over entities with codim=0:
@@ -145,7 +145,7 @@ class WhitneyZeroHodgeLaplace {
    * @f]
    */
   void SetLoadFunction(
-      std::function<double(const Eigen::Matrix<double, 3, 1>&)> f) {
+      std::function<double(const Eigen::Matrix<double, 3, 1>&)>& f) {
     f_ = f;
   }
 

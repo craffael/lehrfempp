@@ -24,8 +24,8 @@ class MeshFunctionWhitneyZero {
                           const std::shared_ptr<const lf::mesh::Mesh> mesh)
       : mu_(mu), mesh_(mesh) {
     // make sure mu has the right size
-    lf::base::size_type n = mesh->NumEntities(2);
-    int mu_size = mu.size();
+    const lf::base::size_type n = mesh->NumEntities(2);
+    const int mu_size = mu.size();
     LF_VERIFY_MSG(
         n == mu_size,
         "Not the right number of basis expansion coefficiants in mu expected: "
@@ -61,7 +61,7 @@ class MeshFunctionWhitneyZero {
    *
    */
   std::vector<double> operator()(const lf::mesh::Entity& e,
-                                 const Eigen::MatrixXd& local) {
+                                 const Eigen::MatrixXd& local) const {
     // Only triangles are supported
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
                   "Unsupported cell type " << e.RefEl());
