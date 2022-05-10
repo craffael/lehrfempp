@@ -64,7 +64,7 @@ class HodgeLaplaciansSourceProblems {
 
     mu_ = std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>>(3);
 
-    // create basic function
+    // create zero functions as default
     auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
     auto f_1 =
         [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<double, 3, 1> {
@@ -106,6 +106,7 @@ class HodgeLaplaciansSourceProblems {
     for (Eigen::Triplet<double> triplet : coo_mat_zero_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
+      // we need the negative laplacian
       double val = -triplet.value();
       coo_mat_zero.AddToEntry(row, col, val);
     }
@@ -119,16 +120,19 @@ class HodgeLaplaciansSourceProblems {
         lf::assemble::UniformFEDofHandler(mesh_p_,
                                           {{lf::base::RefEl::kPoint(), 1}});
     const lf::assemble::size_type n_dofs_zero(dof_handler_zero.NumDofs());
+
+    // prepare matrix
     lf::assemble::COOMatrix<double> coo_mass_mat_zero(n_dofs_zero, n_dofs_zero);
     coo_mass_mat_zero.setZero();
+
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
         0, dof_handler_zero, dof_handler_zero, mass_matrix_provider_zero,
         coo_mass_mat_zero);
 
     // merge whitney zero for with k^2 * mass Matrix
     for (Eigen::Triplet<double> triplet : coo_mass_mat_zero.triplets()) {
-      int col = triplet.col();
       int row = triplet.row();
+      int col = triplet.col();
       double val = k_ * k_ * triplet.value();
       coo_mat_zero.AddToEntry(row, col, val);
     };
@@ -433,7 +437,7 @@ class HodgeLaplaciansSourceProblems {
   std::vector<lf::assemble::COOMatrix<double>> coo_matrix_;
   std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>> phi_;
   std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>> mu_;
-  double k_ = 1;
+  double k_;
 };
 
 }  // namespace discretization

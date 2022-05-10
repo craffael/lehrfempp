@@ -37,7 +37,7 @@ namespace discretization {
  * form
  *
  * @f[
- * -\Delta_2 u = div_{\Gamma} \circ grad_{\Gamma}
+ *  \Delta_2 u = div_{\Gamma} \circ grad_{\Gamma}
  * @f]
  *
  * Basis functions are the rotated Whitney 1-forms and the cellwise

@@ -32,14 +32,14 @@ namespace discretization {
 
 /**
  * @brief Computes the Galerkin LSE for the Hodge Laplacian of the whitney zero
- * form
+ * form and the source problem
  *
  * @f[
- * -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
- *  u := \Delta_0^{-1} f
+ *   \Delta_0 = div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
+ *   \Delta_0 u + k^2 u =   f
  * @f]
  *
- * As basis functions, the rotatedrotated  Whitney 1-forms, surface edge
+ * As basis functions, the barycentric basis functions are used
  * elements are used
  *
  * @note Only triangular meshes are supported
@@ -145,7 +145,7 @@ class WhitneyZeroHodgeLaplace {
    * @f]
    */
   void SetLoadFunction(
-      std::function<double(const Eigen::Matrix<double, 3, 1>&)>& f) {
+      std::function<double(const Eigen::Matrix<double, 3, 1>&)> f) {
     f_ = f;
   }
 
