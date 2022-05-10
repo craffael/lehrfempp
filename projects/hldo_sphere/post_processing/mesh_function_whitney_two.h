@@ -23,7 +23,7 @@ class MeshFunctionWhitneyTwo {
   MeshFunctionWhitneyTwo(const Eigen::VectorXd& mu,
                          const std::shared_ptr<const lf::mesh::Mesh> mesh)
       : mu_(mu), mesh_(mesh) {
-    // make sure mu has the right size
+    // make sure mu has the same size as number of cells
     lf::base::size_type n = mesh->NumEntities(0);
     int mu_size = mu.size();
     LF_VERIFY_MSG(
@@ -63,6 +63,9 @@ class MeshFunctionWhitneyTwo {
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
                   "Unsupported cell type " << e.RefEl());
 
+    // accoring to the lehrfem documentation the mesh index corresponds to the
+    // dofhandler if all basis function are associated with entities off the
+    // same codomain
     lf::base::size_type global_index = mesh_->Index(e);
 
     std::vector<double> vals(local.cols());

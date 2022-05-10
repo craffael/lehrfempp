@@ -3,6 +3,7 @@
 #include <lf/mesh/utils/utils.h>
 #include <lf/quad/quad.h>
 #include <norms.h>
+#include <sphere_triag_mesh_builder.h>
 
 #include <Eigen/Dense>
 
@@ -91,4 +92,78 @@ TEST(projects_hldo_sphere_post_processing, norm_l2_scalar_const) {
                                                      decltype(sq_f)>(
           mesh, mf_f_const, sq_f, qr);
   ASSERT_NEAR(L2_const, sqrt(sqrt(0.75) * 2 * 25.0), 1e-10);
+}
+
+/**
+ *
+ * Tests the L2_norm on the Sphere with the function
+ *
+ * f(x) = (I - x x^T / x^Tx) (x(1)^2, x(2)^2, x(0)^2)
+ *
+ * For which the analytical squared integral over the sphere is
+ * 72 \pi / 25 = 6.4627...
+ *
+ */
+TEST(projects_hldo_sphere_post_processing, norm_l2_vector_field) {
+  std::unique_ptr<lf::mesh::MeshFactory> factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
+
+  projects::hldo_sphere::mesh::SphereTriagMeshBuilder sphere =
+      projects::hldo_sphere::mesh::SphereTriagMeshBuilder(std::move(factory));
+
+  sphere.setRadius(1);
+
+  sphere.setRefinementLevel(5);
+
+  const std::shared_ptr<lf::mesh::Mesh> mesh = sphere.Build();
+
+  // create function f
+  auto Power = [](double a, double b) -> double { return pow(a, b); };
+  auto Abs = [](double a) -> double { return abs(a); };
+  auto f = [&](Eigen::Vector3d x_) -> Eigen::VectorXd {
+    // scale x_ up to the sphere
+    x_ = x_ / x_.norm();
+
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
+
+    Eigen::VectorXd res(3);
+    res << -((Power(x, 3) * z) /
+             (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2))) -
+               (x * y * Power(z, 2)) /
+                   (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2)) +
+               Power(y, 2) *
+                   (1 - Power(x, 2) / (Power(Abs(x), 2) + Power(Abs(y), 2) +
+                                       Power(Abs(z), 2))),
+        -((x * Power(y, 3)) /
+          (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2))) -
+            (Power(x, 2) * y * z) /
+                (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2)) +
+            Power(z, 2) *
+                (1 - Power(y, 2) / (Power(Abs(x), 2) + Power(Abs(y), 2) +
+                                    Power(Abs(z), 2))),
+        -((x * Power(y, 2) * z) /
+          (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2))) -
+            (y * Power(z, 3)) /
+                (Power(Abs(x), 2) + Power(Abs(y), 2) + Power(Abs(z), 2)) +
+            Power(x, 2) *
+                (1 - Power(z, 2) / (Power(Abs(x), 2) + Power(Abs(y), 2) +
+                                    Power(Abs(z), 2)));
+    return res;
+  };
+  lf::mesh::utils::MeshFunctionGlobal<decltype(f)> mf_f(f);
+
+  // create the square funciton of scalar values
+  auto sq_f = [](Eigen::Vector3d x) -> double { return x.squaredNorm(); };
+
+  // create the quadrature rule which is exact for cosnt functions
+  lf::quad::QuadRule qr = lf::quad::make_TriaQR_EdgeMidpointRule();
+
+  // Compute the L2 norm of the function constant zero on the mesh
+  const double L2 =
+      projects::hldo_sphere::post_processing::L2norm<decltype(mf_f),
+                                                     decltype(sq_f)>(mesh, mf_f,
+                                                                     sq_f, qr);
+  ASSERT_NEAR(L2, 2.54218506, 1e-3);
 }
