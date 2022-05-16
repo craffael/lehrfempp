@@ -14,13 +14,18 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief An element matrix provider piecewise linear (barycentric) basis
- * functions
+ * @brief An element matrix provider for piecewise linear (barycentric) basis
+ * functions in a 3 dimensional world with 2 dimensional triangular cells
  *
  * The bilinear form is locally evaluated for the basis functions.
+ * The locally evaluated bilinear form is
  * @f[
- * \int_{\Omega} u v dx
+ * (u,v) \mapsto \int\limits_{K} u \, v\, dx
  * @f]
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * @note Only triangular meshes are supported
  *
@@ -33,10 +38,10 @@ class MassMatrixProvider {
   MassMatrixProvider(){};
 
   /**
-   * @brief Compute the element matrix for a given triangle of a mesh
-   * @param entity The mesh triangle on which the element matrix will be
+   * @brief Compute the element matrix for a given cell of a mesh
+   * @param entity The mesh cell on which the element matrix will be
    * computed
-   * @returns The 3 by 3 element matrix of the triangle
+   * @returns The 3 by 3 element matrix of the cell
    *
    * @note Only triangular cells are supported
    */

@@ -23,16 +23,6 @@ Eigen::VectorXd LoadVectorProvider::Eval(const lf::mesh::Entity &entity) const {
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
-  double eps = 1e-13;
-  LF_ASSERT_MSG(vertices.col(0).norm() - vertices.col(1).norm() < eps &&
-                    vertices.col(0).norm() - vertices.col(2).norm() < eps,
-                "The norms of the vertices have to be equal difference is "
-                    << vertices.col(0).norm() - vertices.col(1).norm()
-                    << " and "
-                    << vertices.col(0).norm() - vertices.col(2).norm());
-
-  double r = vertices.col(0).norm();
-
   // define quad rule with sufficiantly high degree since the
   // baricentric coordinate functions have degree 1
   lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
@@ -42,13 +32,11 @@ Eigen::VectorXd LoadVectorProvider::Eval(const lf::mesh::Entity &entity) const {
     return hat_func.EvalReferenceShapeFunctions(x_hat);
   };
 
-  // returns evaluation of $f * \lambda$ for at a given point on the reference
-  // triangle f is evaluated at the global coordinates of the triangle radially
-  // projected on the sphere
+  // returns evaluation of @f$ \lambda @f$ for at a given point on the reference
+  // triangle f is evaluated at the global coordinates
   const auto f_tilde_hat = [&](Eigen::Vector2d x_hat) -> Eigen::MatrixXd {
     Eigen::Vector3d x = geom->Global(x_hat);
-    const Eigen::Vector3d x_scaled = x / x.norm() * r;
-    return lambda_hat(x_hat) * f_(x_scaled);
+    return lambda_hat(x_hat) * f_(x);
   };
 
   // Compute the elements of the vector with given quadrature rule
