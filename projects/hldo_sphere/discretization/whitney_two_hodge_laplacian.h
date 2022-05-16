@@ -37,7 +37,8 @@ namespace discretization {
  * form
  *
  * @f[
- *  \Delta_2 u = div_{\Gamma} \circ grad_{\Gamma}
+ *   \Delta_2 = div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
+ *   \Delta_2 u + k^2 u =   f
  * @f]
  *
  * Basis functions are the rotated Whitney 1-forms and the cellwise
@@ -64,6 +65,7 @@ class WhitneyTwoHodgeLaplace {
         sphere = std::make_shared<
             projects::hldo_sphere::mesh::SphereTriagMeshBuilder>(
             std::move(factory));
+
     sphere->setRefinementLevel(0);
     sphere->setRadius(1);
 
@@ -85,12 +87,14 @@ class WhitneyTwoHodgeLaplace {
     // create element matrix provider
     projects::hldo_sphere::assemble::WhitneyOneMassMatrixProvider
         matrix_dot_provider;
+
     projects::hldo_sphere::assemble::RotWhitneyOneDivMatrixProvider
         matrix_curl_provider;
 
     const lf::assemble::DofHandler &dof_handler_div =
         lf::assemble::UniformFEDofHandler(mesh_p_,
                                           {{lf::base::RefEl::kSegment(), 1}});
+
     const lf::assemble::DofHandler &dof_handler_const =
         lf::assemble::UniformFEDofHandler(mesh_p_,
                                           {{lf::base::RefEl::kTria(), 1}});
@@ -119,6 +123,7 @@ class WhitneyTwoHodgeLaplace {
     // entries
     const std::vector<Eigen::Triplet<double>> triplets_A_11 =
         coo_A_11.triplets();
+
     const std::vector<Eigen::Triplet<double>> triplets_A_12 =
         coo_A_12.triplets();
 
@@ -132,15 +137,16 @@ class WhitneyTwoHodgeLaplace {
 
     // Add A_12 and A_21
     for (Eigen::Triplet<double> triplet : triplets_A_12) {
-      int col = triplet.col() + n_dofs_div;
       int row = triplet.row();
+      int col = triplet.col() + n_dofs_div;
       double val = triplet.value();
 
       // Add A_12
       full_matrix.AddToEntry(row, col, val);
 
-      // Add A_21
-      full_matrix.AddToEntry(col, row, -val);
+      // Add A_21 positive because we compute the laplacian here and not the
+      // negative laplacian
+      full_matrix.AddToEntry(col, row, val);
     }
 
     coo_matrix_ = full_matrix;
@@ -161,7 +167,7 @@ class WhitneyTwoHodgeLaplace {
     Eigen::Matrix<double, Eigen::Dynamic, 1> full_vec(n_dofs_div +
                                                       n_dofs_const);
     full_vec.setZero();
-    full_vec.tail(n_dofs_const) = -phi;
+    full_vec.tail(n_dofs_const) = phi;
 
     // set the class attributes
     phi_ = full_vec;
@@ -195,12 +201,12 @@ class WhitneyTwoHodgeLaplace {
    * @param f load function
    *
    * @f[
-   * -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
-   *  u := \Delta_0^{-1} f
+   *  -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
+   *  u := -\Delta_0^{-1} f
    * @f]
    */
   void SetLoadFunction(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f) {
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f) {
     f_ = f;
   }
 

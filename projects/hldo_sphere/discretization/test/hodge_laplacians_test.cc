@@ -252,7 +252,8 @@ TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
             0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,  1,     0,  0,  0,  0,  0,  0,  0,  0;
   // clang-format on
   Ae_anal.topLeftCorner(12, 12) *= 1. / std::sqrt(3) / 12.;
-  Ae_anal.bottomLeftCorner(8, 12) *= -1.;
+  // the sign of the top 12 rows doesnt matter since phi is equalt to zero there
+  Ae_anal *= -1;
 
   Eigen::MatrixXd Ae_anal_mass_two = Eigen::MatrixXd::Identity(8, 8);
   Ae_anal_mass_two *= sqrt(3) / 2.;

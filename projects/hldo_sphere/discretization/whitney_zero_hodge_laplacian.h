@@ -2,12 +2,9 @@
 #define THESIS_DISCRETIZATION_WHITNEY_ZERO_HODEE_LAPLACE_H
 
 /**
- * @file rot_w_one_form_w_two_form_element_matrix_provider.h
+ * @file whitney_zero_hodge_laplace.h
  * @brief An element matrix provider for one vector valued piecewise linear
  * basis functions and one piecewise constant basis function
- * @f[
- * \int div_{\Gamma}(u) dx
- * @f]
  */
 
 #include <laplace_matrix_provider.h>

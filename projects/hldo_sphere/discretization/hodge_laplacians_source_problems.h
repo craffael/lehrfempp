@@ -201,16 +201,18 @@ class HodgeLaplaciansSourceProblems {
     two_builder.SetMesh(mesh_p_);
     two_builder.SetLoadFunction(f2_);
     two_builder.Compute();
+
     lf::assemble::COOMatrix<double> coo_mat_two_pos =
         two_builder.GetGalerkinMatrix();
     lf::assemble::COOMatrix<double> coo_mat_two(coo_mat_two_pos.rows(),
                                                 coo_mat_two_pos.cols());
+
     coo_mat_two.setZero();
     for (Eigen::Triplet<double> triplet : coo_mat_two_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      coo_mat_two.AddToEntry(row, col, val);
+      coo_mat_two.AddToEntry(row, col, -val);
     }
 
     // create mass Matrix

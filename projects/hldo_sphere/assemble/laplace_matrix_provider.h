@@ -16,12 +16,16 @@ namespace assemble {
 
 /**
  * @brief An element matrix provider for piecewise linear (barycentric) basis
- * functions
+ * functions in a 3 dimensional world with 2 dimensional triangular cells
  *
  * The locally evaluated bilinear form is
  * @f[
- * \int_{K} grad_{\Gamma}(u) grad_{\Gamma}(v) dx
+ * (u,v) \mapsto \int_{K} \mathbf{grad}_{\Gamma}(u) \cdot
+ * \mathbf{grad}_{\Gamma}(v) dx
  * @f]
+ *
+ * Where \f$ \mathbf{grad}_{\Gamma} \f$ denotes the tangential
+ * gradient on the triangle.
  *
  *
  * @note Only triangular meshes are supported
