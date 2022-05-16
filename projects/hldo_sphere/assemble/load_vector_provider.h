@@ -17,13 +17,21 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element vector provider for barycentric coorinate functions
+ * @brief An element vector provider for piecewise linear (barycentric) basis
+ * functions in a 3 dimensional world with 2 dimensional triangular cells
  *
- *
- * The locally evaluated linear form is given as
+ * The locally evaluated linear form is
  * @f[
- *  \int_{\Omega}\ f \cdot v \, dx, \quad f, v \in H^1
+ *  \int\limits_{K}\ f(\mathbf{x}) \cdot v(\mathbf{x}) \, dx, \quad f, v \in
+ * H^1(\Omega)
  * @f]
+ *
+ * Evaluates the function values on the cell.
+ *
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_VECTOR_PROVIDER of the function
+ * lf::assemble::AssembleVectorLocally().
  *
  * @note Only triangular meshes are supported
  *
@@ -37,9 +45,9 @@ class LoadVectorProvider {
   LoadVectorProvider(std::function<double(const Eigen::Vector3d &)> f);
 
   /**
-   * @brief Compute the element vector for some triangle on the mesh
-   * @param entity the mesh triangle to compute the element vector for
-   * @returns The element vector of the given triangle
+   * @brief Compute the element vector for some cell on the mesh
+   * @param entity the mesh cell to compute the element vector for
+   * @returns The element vector of the given cell
    *
    * @note Only triangular cells are supported
    */
