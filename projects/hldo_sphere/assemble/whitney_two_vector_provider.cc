@@ -24,16 +24,6 @@ Eigen::VectorXd WhitneyTwoVectorProvider::Eval(
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
-  double eps = 1e-13;
-  LF_ASSERT_MSG(vertices.col(0).norm() - vertices.col(1).norm() < eps &&
-                    vertices.col(0).norm() - vertices.col(2).norm() < eps,
-                "The norms of the vertices have to be equal difference is "
-                    << vertices.col(0).norm() - vertices.col(1).norm()
-                    << " and "
-                    << vertices.col(0).norm() - vertices.col(2).norm());
-
-  double r = vertices.col(0).norm();
-
   // define quad rule with sufficiantly high degree since the
   // baricentric coordinate functions have degree 1
   lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
@@ -47,8 +37,8 @@ Eigen::VectorXd WhitneyTwoVectorProvider::Eval(
 
   double sum = 0;
   for (lf::base::size_type n = 0; n < quadrule.NumPoints(); ++n) {
-    Eigen::VectorXd x = geom->Global(points.col(n));
-    sum += weights[n] * f_(x / x.norm() * r);
+    Eigen::VectorXd x = points.col(n);
+    sum += weights[n] * f_(x);
   }
 
   Eigen::VectorXd element_vector(1);

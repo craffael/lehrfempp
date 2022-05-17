@@ -23,8 +23,15 @@ namespace assemble {
  *
  * The linear form is given by
  * @f[
- *  \int_K\!  f q \,\mathrm{d}x, \quad f, q \in L^2(\partial \mathbb{S})
+ *  \int\limits_K\!  f\, q \,\mathrm{d}x, \quad f, q \in L^2(\partial
+ * \mathbb{S})
  * @f]
+ *
+ * As basis functions for q we use the cellwise constant functions.
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_VECTOR_PROVIDER of the function
+ * lf::assemble::AssembleVectorLocally().
  *
  * @note Only triangular meshes are supported
  */
