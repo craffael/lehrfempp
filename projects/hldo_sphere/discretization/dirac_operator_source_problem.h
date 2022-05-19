@@ -33,8 +33,14 @@ namespace projects::hldo_sphere {
 
 namespace discretization {
 
+using SCALAR = std::complex<double>;
+
 /**
  * @brief Computes the Galerkin LSE for the Dirac Operator source problem
+ *
+ * @f[
+ *  D \vec{u} + \imath k \vec{u} = \vec{f}
+ * @f]
  *
  * The computation must be complex valued since the problem definition involves
  * a complex i
@@ -42,7 +48,6 @@ namespace discretization {
  * @note Only triangular meshes are supported
  *
  */
-using SCALAR = std::complex<double>;
 class DiracOperatorSourceProblem {
  public:
   /**
@@ -95,8 +100,8 @@ class DiracOperatorSourceProblem {
    *   D \vec{u} + \imath k \vec{u} = \vec{f}
    * @f]
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix`
-   * The load vector will be accessable with `get_load_vector`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
+   * The load vector will be accessable with GetLoadVector()
    *
    */
   void Compute() {
@@ -188,13 +193,13 @@ class DiracOperatorSourceProblem {
    *
    * @brief solves the linear systems build in Compute
    *
-   * Uses the Matrices stored in `coo_matrix_` and
-   * the righthandside vectors stored in `phi_`
+   * Uses the Matrices stored in coo_matrix_ and
+   * the righthandside vectors stored in phi_
    * to compute the basis expansion
    * coefficiants mu_ approximating
    *
-   * @note the method `Compute` has to be called prior to
-   * calling `Solve`
+   * @note the method Compute() has to be called prior to
+   * calling Solve()
    *
    * @f[
    *   D \vec{u} + \imath k \vec{u} = \vec{f}
@@ -237,9 +242,10 @@ class DiracOperatorSourceProblem {
 
   /**
    * @brief Sets the load functions
-   * @param f0 load function in L^2
-   * @param f1 load functions in L^2_t tangential vector field on the sphere
-   * @param f2 load functions in L^2
+   * @param f0 load function in @f$ L^2 @f$
+   * @param f1 load functions in @f$ L^2_t @f$ tangential vector field on the
+   * sphere
+   * @param f2 load functions in @f$ L^2 @f$
    */
   void SetLoadFunctions(
       std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
@@ -301,13 +307,29 @@ class DiracOperatorSourceProblem {
    * The last number of cells basis expansion coefficiants
    * are with respect to the cellwise constant basis functions
    *
+   * @param index of the basis (0 -> barycentric basis, 1 -> Whitney 1-forms,
+   * surface edge elements, 2 -> cellwise constant)
+   *
    * @returns basis expansion coefficiants
    *
-   * @note the methods `Compute` and `Solve` must be
+   * @note the methods Compute() and Solve() must be
    * called before the result is available
    *
    */
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetMu() { return mu_; }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetMu(int index) {
+    LF_ASSERT_MSG(index < 3 && index >= 0,
+                  "Index must be in {0,1,2}, given " << index);
+
+    Eigen::Vector3d n;
+    Eigen::Vector3d s;
+    n(0) = mesh_p_->NumEntities(0);
+    s(0) = 0;
+    n(1) = mesh_p_->NumEntities(1);
+    s(1) = n(0);
+    n(2) = mesh_p_->NumEntities(2);
+    s(2) = s(1) + n(1);
+    return mu_.segment(s(index), n(index));
+  }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;

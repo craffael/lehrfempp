@@ -30,21 +30,21 @@ namespace projects::hldo_sphere {
 namespace discretization {
 
 /**
- * @brief Computes the Galerkin LSE for the Dirac Operator and its load vector
+ * @brief Computes the Galerkin LSE for the Dirac Operator and the load vector
  *
  * @f[
  *   \begin{pmatrix}
- *       & \int_{\partial \mathbb{S}} \bm{u} \ grad_{\Gamma} v \, dS & \li
- *       \int_{\partial \mathbb{S}} grad_{\Gamma} u \cdot \bm{v} \, dS
- *       & &
- *       \int_{\partial \mathbb{S}} \mu \ curl_{\Gamma} \bm{v} \, dS  \li
- *       & \int_{\partial \mathbb{S}} curl_{\Gamma} \bm{u} \ \nu \, dS &
- *   \end{pmatrix}
- *   &=
+ *       & \int\limits_{\partial \mathbf{S}} \mathbf{u} \cdot
+ * \mathbf{grad}_{\Gamma} v \, dS & \\ \int_{\partial \mathbf{S}}
+ * \mathbf{grad}_{\Gamma} u \cdot \mathbf{v} \, dS & & \int\limits_{\partial
+ * \mathbf{S}} \mu \ \ \text{curl}_{\Gamma} \mathbf{v} \, dS  \\ &
+ * \int\limits_{\partial \mathbf{S}} \text{curl}_{\Gamma} \mathbf{u} \ \ \nu \,
+ * dS & \end{pmatrix}
+ *   ,
  *   \begin{pmatrix}
- *      \int_{\partial \mathbb{S}} f v \, dS \li
- *      \int_{\partial \mathbb{S}} \bm{f} \cdot \bm{v} \, dS \li
- *      \int_{\partial \mathbb{S}} \varphi \nu \, dS
+ *      \int\limits_{\partial \mathbf{S}} f v \, dS \\
+ *      \int\limits_{\partial \mathbf{S}} \mathbf{f} \cdot \mathbf{v} \, dS \\
+ *      \int\limits_{\partial \mathbf{S}} \varphi \nu \, dS
  *   \end{pmatrix}
  *   @f]
  *
@@ -90,8 +90,8 @@ class DiracOperator {
   /**
    * @brief Computes the Galerkin LSE
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix`
-   * The load vector will be accessable with `get_load_vector`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
+   * The load vector will be accessable with GetLoadVector()
    *
    */
   void Compute() {
@@ -233,9 +233,9 @@ class DiracOperator {
 
   /**
    * @brief Sets the load functions
-   * @param f0 load function in L^2
-   * @param f1 load functions in L^2_t vector valued
-   * @param f2 load functions in L^2
+   * @param f0 load function in @f$ L^2 @f$
+   * @param f1 load functions in @f$ L^2_t @f$ vector valued
+   * @param f2 load functions in @f$ L^2 @f$
    */
   void SetLoadFunctions(
       std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
@@ -253,7 +253,7 @@ class DiracOperator {
    *
    * This is the righthandside of the LSE
    *
-   * @note The loadvector must be computed with `Compute` before calling
+   * @note The loadvector must be computed with Compute() before calling
    * this function
    *
    */
@@ -266,7 +266,7 @@ class DiracOperator {
    *
    * This is the Matrix of the LSE
    *
-   * @note The Galerkin matrix must be computed with `Compute` before
+   * @note The Galerkin matrix must be computed with Compute() before
    * calling this funciton
    *
    */

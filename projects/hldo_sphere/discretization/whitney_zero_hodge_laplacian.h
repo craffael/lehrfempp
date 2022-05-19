@@ -32,12 +32,11 @@ namespace discretization {
  * form and the source problem
  *
  * @f[
- *   \Delta_0 = div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
+ *   \Delta_0 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
  *   \Delta_0 u + k^2 u =   f
  * @f]
  *
  * As basis functions, the barycentric basis functions are used
- * elements are used
  *
  * @note Only triangular meshes are supported
  *
@@ -45,9 +44,10 @@ namespace discretization {
 class WhitneyZeroHodgeLaplace {
  public:
   /**
-   * @brief Constructor
-   * creates basic mesh (Octaeder with radius 1.0)
-   * creates zerovalued function f
+   * @brief Basic Constructor
+   *
+   * initializes basic mesh (Octaeder with radius 1.0)
+   * initializes zerovalued function f
    *
    */
   WhitneyZeroHodgeLaplace()
@@ -73,8 +73,8 @@ class WhitneyZeroHodgeLaplace {
   /**
    * @brief Computes the Galerkin LSE
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix`
-   * The load vector will be accessable with `get_load_vector`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
+   * The load vector will be accessable with GetLoadVector
    *
    */
   void Compute() {
@@ -110,7 +110,8 @@ class WhitneyZeroHodgeLaplace {
   }
 
   /**
-   * @brief Sets the mesh and creates dof_handler
+   * @brief Sets the mesh for later computations
+   *
    * @param mesh_p pointer to the mesh
    *
    * requries all cells in the mesh are triangles
@@ -133,12 +134,12 @@ class WhitneyZeroHodgeLaplace {
   }
 
   /**
-   * @brief Sets the load function
+   * @brief Sets the load function for later computations
    * @param f load function
    *
    * @f[
-   * -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
-   *  u := \Delta_0^{-1} f
+   *   \Delta_0 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
+   *   \Delta_0 u + k^2 u =   f
    * @f]
    */
   void SetLoadFunction(
@@ -151,7 +152,7 @@ class WhitneyZeroHodgeLaplace {
    *
    * This is the righthandside of the LSE
    *
-   * @note The loadvector must be computed with `Compute` before calling this
+   * @note The loadvector must be computed with Compute() before calling this
    * function
    *
    */
@@ -162,7 +163,7 @@ class WhitneyZeroHodgeLaplace {
    *
    * This is the Matrix of the LSE
    *
-   * @note The Galerkin matrix must be computed with `Compute` before calling
+   * @note The Galerkin matrix must be computed with Compute() before calling
    * this funciton
    *
    */

@@ -37,11 +37,11 @@ namespace discretization {
  * form
  *
  * @f[
- *   \Delta_2 = div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
+ *   \Delta_2 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
  *   \Delta_2 u + k^2 u =   f
  * @f]
  *
- * Basis functions are the rotated Whitney 1-forms and the cellwise
+ * Basis functions used are the rotated Whitney 1-forms and the cellwise
  * constant functions
  *
  * @note Only triangular meshes are supported
@@ -51,8 +51,8 @@ class WhitneyTwoHodgeLaplace {
  public:
   /**
    * @brief Constructor
-   * creates basic mesh (Octaeder with radius 1.0)
-   * creates zerovalued function f
+   * initializes basic mesh (Octaeder with radius 1.0)
+   * initializes zerovalued function f
    *
    */
   WhitneyTwoHodgeLaplace()
@@ -79,8 +79,8 @@ class WhitneyTwoHodgeLaplace {
   /**
    * @brief Computes the Galerkin LSE
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix`
-   * The load vector will be accessable with `get_load_vector`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
+   * The load vector will be accessable with GetLoadVector()
    *
    */
   void Compute() {
@@ -201,8 +201,8 @@ class WhitneyTwoHodgeLaplace {
    * @param f load function
    *
    * @f[
-   *  -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
-   *  u := -\Delta_0^{-1} f
+   *   \Delta_2 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
+   *   \Delta_2 u + k^2 u =   f
    * @f]
    */
   void SetLoadFunction(
@@ -215,7 +215,7 @@ class WhitneyTwoHodgeLaplace {
    *
    * This is the righthandside of the LSE
    *
-   * @note The loadvector must be computed with `Compute` before calling this
+   * @note The loadvector must be computed with Compute() before calling this
    * function
    *
    */
@@ -226,7 +226,7 @@ class WhitneyTwoHodgeLaplace {
    *
    * This is the Matrix of the LSE
    *
-   * @note The Galerkin matrix must be computed with `Compute` before calling
+   * @note The Galerkin matrix must be computed with Compute() before calling
    * this funciton
    *
    */

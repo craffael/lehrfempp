@@ -30,12 +30,12 @@ class HodgeLaplaciansSourceProblems {
  public:
   /**
    * @brief Constructor
-   * creates basic mesh (Octaeder with radius 1.0)
+   * initializes basic mesh (Octaeder with radius 1.0)
    *
    * set k to 1
    *
    * For all three Hodge Laplacians
-   * creates zerovalued functions f
+   * initializes zerovalued functions f
    *
    */
   HodgeLaplaciansSourceProblems() {
@@ -83,9 +83,8 @@ class HodgeLaplaciansSourceProblems {
    * - \Delta_l u + k^2 u = f_l \qquad l = 0, 1, 2
    * @f]
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix(int
-   * index)` The load vector will be accessable with `get_load_vector(int
-   * index)`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix(int index)
+   * The load vector will be accessable with GetLoadVector(int index)
    *
    */
   void Compute() {
@@ -103,12 +102,13 @@ class HodgeLaplaciansSourceProblems {
     lf::assemble::COOMatrix<double> coo_mat_zero(coo_mat_zero_pos.rows(),
                                                  coo_mat_zero_pos.cols());
     coo_mat_zero.setZero();
+
     for (Eigen::Triplet<double> triplet : coo_mat_zero_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
       // we need the negative laplacian
-      double val = -triplet.value();
-      coo_mat_zero.AddToEntry(row, col, val);
+      double val = triplet.value();
+      coo_mat_zero.AddToEntry(row, col, -val);
     }
 
     // create mass Matrix
@@ -158,11 +158,12 @@ class HodgeLaplaciansSourceProblems {
     lf::assemble::COOMatrix<double> coo_mat_one(coo_mat_one_pos.rows(),
                                                 coo_mat_one_pos.cols());
     coo_mat_one.setZero();
+
     for (Eigen::Triplet<double> triplet : coo_mat_one_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      coo_mat_one.AddToEntry(row, col, val);
+      coo_mat_one.AddToEntry(row, col, -val);
     }
 
     // create mass Matrix
@@ -174,6 +175,7 @@ class HodgeLaplaciansSourceProblems {
     const lf::assemble::size_type n_dofs_one(dof_handler_one.NumDofs());
     lf::assemble::COOMatrix<double> coo_mass_mat_one(n_dofs_one, n_dofs_one);
     coo_mass_mat_one.setZero();
+
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
         0, dof_handler_one, dof_handler_one, mass_matrix_provider_one,
         coo_mass_mat_one);
@@ -250,13 +252,13 @@ class HodgeLaplaciansSourceProblems {
    *
    * @brief solves the linear systems build in Compute
    *
-   * Uses the Matrices stored in `coo_matrix_` and
-   * the righthandside vectors stored in `phi_`
+   * Uses the Matrices stored in coo_matrix_ and
+   * the righthandside vectors stored in phi_
    * to compute the basis expansion
    * coefficiants mu_ approximating
    *
-   * @note the method `Compute` has to be called prior to
-   * calling `Solve`
+   * @note the method Compute() has to be called prior to
+   * calling Solve()
    *
    * @f[
    * - \Delta_l u + k^2 u = f_l \qquad l = 0, 1, 2
@@ -341,7 +343,7 @@ class HodgeLaplaciansSourceProblems {
    *
    * This is the Matrix of the LSE with index `index`
    *
-   * @note The Galerkin matrix must be computed with `Compute` before
+   * @note The Galerkin matrix must be computed with Compute() before
    * calling this funciton
    *
    */
@@ -358,7 +360,7 @@ class HodgeLaplaciansSourceProblems {
    *
    * @returns basis expansion coefficiants of zero form
    *
-   * @note the methods `Compute` and `Solve` must be
+   * @note the methods Compute() and Solve() must be
    * called before the result is available
    *
    */
@@ -377,12 +379,12 @@ class HodgeLaplaciansSourceProblems {
    * coefficiants with respect to to the barycentric
    * basis functions. They represent the approximation
    * for
-   * @f[ p := div_{\Gamma}(u) @f]
+   * @f[ p := \text{div}_{\Gamma}(u) @f]
    * on the mesh.
    *
    * @returns basis expansion coefficiants of one form
    *
-   * @note the methods `Compute` and `Solve` must be
+   * @note the methods Compute() and Solve() must be
    * called before the result is available
    *
    */
@@ -404,7 +406,7 @@ class HodgeLaplaciansSourceProblems {
    * coefficiants with respect to rotated
    * (90 degree colckwise) whitney one form
    * basis function. They represent an approximation of
-   * @f[ j = grad_{\Gamma}(u) @f]
+   * @f[ j = \textbf{grad}_{\Gamma}(u) @f]
    *
    * The second vector of the return value are the
    * coefficiants with respect to to the piecewise constant
@@ -415,7 +417,7 @@ class HodgeLaplaciansSourceProblems {
    *
    * @returns basis expansion coefficiants of two form
    *
-   * @note the methods `Compute` and `Solve` must be
+   * @note the methods Compute() and Solve() must be
    * called before the result is available
    *
    */

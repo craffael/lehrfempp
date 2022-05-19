@@ -29,12 +29,13 @@ namespace projects::hldo_sphere {
 namespace discretization {
 
 /**
- * @brief Computes the Galerkin LSE for the Hodge Laplacian of the whitney zero
+ * @brief Computes the Galerkin LSE for the Hodge Laplacian of the whitney one
  * form
  *
  * @f[
- * -\Delta_1 u = \bm{curl}_{\Gamma} \circ curl_{\Gamma} - \bm{grad}_{\Gamma}
- * \circ div_{\Gamma} \li u := \Delta_1^{-1} f
+ *    \Delta_1 u = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} +
+ *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \\
+ *     -\Delta_1 u + k^2 u =  f
  * @f]
  *
  * Basis functions are the Whitney 1-forms and the barycentric
@@ -47,8 +48,8 @@ class WhitneyOneHodgeLaplace {
  public:
   /**
    * @brief Constructor
-   * creates basic mesh (Octaeder with radius 1.0)
-   * creates zerovalued function f
+   * initializes basic mesh (Octaeder with radius 1.0)
+   * initializes zerovalued function f
    *
    */
   WhitneyOneHodgeLaplace()
@@ -76,8 +77,8 @@ class WhitneyOneHodgeLaplace {
   /**
    * @brief Computes the Galerkin LSE
    *
-   * The Galerkin matrix will be accessable with `get_galerkin_matrix`
-   * The load vector will be accessable with `get_load_vector`
+   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
+   * The load vector will be accessable with GetLoadVector()
    *
    */
   void Compute() {
@@ -209,8 +210,9 @@ class WhitneyOneHodgeLaplace {
    * @param f load function
    *
    * @f[
-   * -\Delta_0 u = -div_{\Gamma} \circ \bm{grad}_{\Gamma} \li
-   *  u := \Delta_0^{-1} f
+   *    \Delta_1 u = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} +
+   *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \\
+   *     -\Delta_1 u + k^2 u =  f
    * @f]
    */
   void SetLoadFunction(std::function<Eigen::Matrix<double, 3, 1>(
@@ -224,7 +226,7 @@ class WhitneyOneHodgeLaplace {
    *
    * This is the righthandside of the LSE
    *
-   * @note The loadvector must be computed with `Compute` before calling this
+   * @note The loadvector must be computed with Compute() before calling this
    * function
    *
    */
@@ -235,7 +237,7 @@ class WhitneyOneHodgeLaplace {
    *
    * This is the Matrix of the LSE
    *
-   * @note The Galerkin matrix must be computed with `Compute` before calling
+   * @note The Galerkin matrix must be computed with Compute() before calling
    * this funciton
    *
    */
