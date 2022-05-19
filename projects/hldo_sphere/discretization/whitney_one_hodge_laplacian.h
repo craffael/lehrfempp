@@ -134,7 +134,7 @@ class WhitneyOneHodgeLaplace {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      full_matrix.AddToEntry(row, col, val);
+      full_matrix.AddToEntry(row, col, -val);
     }
 
     // Add A_12 and A_21
@@ -144,18 +144,18 @@ class WhitneyOneHodgeLaplace {
       double val = triplet.value();
 
       // Add A_12
-      full_matrix.AddToEntry(row, col, -val);
+      full_matrix.AddToEntry(row, col, val);
 
-      // Add A_21
-      full_matrix.AddToEntry(col, row, val);
+      // Add A_21 here the sign of value just has to be the same as in A_22
+      full_matrix.AddToEntry(col, row, -val);
     }
 
-    // Add A_22
+    // Add A_22 needs
     for (Eigen::Triplet<double> triplet : triplets_A_22) {
       int col = triplet.col() + n_dofs_curl;
       int row = triplet.row() + n_dofs_curl;
       double val = triplet.value();
-      full_matrix.AddToEntry(row, col, val);
+      full_matrix.AddToEntry(row, col, -val);
     }
 
     coo_matrix_ = full_matrix;

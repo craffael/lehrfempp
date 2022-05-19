@@ -208,6 +208,7 @@ TEST(projects_hldo_sphere_discretization,
                  0,  0,  0,  0,  0,  0,  1,  0, -1,  0, -1, -1,    0,  0,  0,  0,  0,  0;
   // clang-format on
   Ae_anal *= 1. / std::sqrt(3);
+  Ae_anal *= -1.;
 
   Eigen::MatrixXd Ae_anal_mass(6, 6);
   // clang-format off
@@ -218,8 +219,9 @@ TEST(projects_hldo_sphere_discretization,
                      1, 1, 0, 1, 4, 1, 
                      0, 1, 1, 1, 1, 4;
   // clang-format on
-  Ae_anal_mass *= 1. / std::sqrt(3) / 4.;
+  Ae_anal_mass *= -1. / std::sqrt(3) / 4.;
   Ae_anal.bottomRightCorner(6, 6) = Ae_anal_mass;
+
   // Assert that the two matrices are approximately equal
   ASSERT_EQ(Ae.rows(), Ae_anal.rows());
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());
