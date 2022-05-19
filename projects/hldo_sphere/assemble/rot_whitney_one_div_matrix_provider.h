@@ -17,12 +17,27 @@ namespace assemble {
  * @brief Element matrix provider for rotated whitney one form
  *
  * @f[
- * \int div_{\Gamma}(v) u dx
+ * \int\limits_K \text{div}_{\Gamma}(v)\, u \ dx
  * @f]
  *
  * As basis functions, the rotatedrotated  Whitney 1-forms, surface edge
  * elements are used for v
  * and the cellwise constant basis functions are used for u
+ *
+ * The whitney 1-forms, surface edge elements are associated with
+ * edges and defined as
+ *
+ * @f[
+ *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+ * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ * @f]
+ *
+ * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
+ * of the function based on the relative orientation of the edge in the mesh.
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * @note Only triangular meshes are supported
  *

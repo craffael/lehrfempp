@@ -23,16 +23,6 @@ Eigen::VectorXd WhitneyOneVectorProvider::Eval(
   // Compute the global vertex coordinates
   Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
-  double eps = 1e-13;
-  LF_ASSERT_MSG(vertices.col(0).norm() - vertices.col(1).norm() < eps &&
-                    vertices.col(0).norm() - vertices.col(2).norm() < eps,
-                "The norms of the vertices have to be equal difference is "
-                    << vertices.col(0).norm() - vertices.col(1).norm()
-                    << " and "
-                    << vertices.col(0).norm() - vertices.col(2).norm());
-
-  double r = vertices.col(0).norm();
-
   // define quad rule with sufficiantly high degree
   lf::quad::QuadRule quadrule{lf::quad::make_TriaQR_EdgeMidpointRule()};
 
@@ -68,8 +58,7 @@ Eigen::VectorXd WhitneyOneVectorProvider::Eval(
   // radially projected on the sphere
   const auto f_tilde_hat = [&](Eigen::Vector2d x_hat) -> Eigen::Vector3d {
     Eigen::Vector3d x = geom->Global(x_hat);
-    const Eigen::Vector3d x_scaled = x / x.norm() * r;
-    Eigen::Vector3d result = b_hat(x_hat).transpose() * f_(x_scaled);
+    Eigen::Vector3d result = b_hat(x_hat).transpose() * f_(x);
     return result;
   };
 

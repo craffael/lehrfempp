@@ -10,7 +10,7 @@
 namespace projects::hldo_sphere::post_processing {
 /**
  *
- * @brief Computes the L2Norm of some MeshFunction (type MF) f
+ * @brief Computes the squared L2Norm of some MeshFunction (type MF) f
  *
  * @tparam MF type of the mesh function to take to norm form
  * @tparam SQ_F type of the square function sq_f

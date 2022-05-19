@@ -22,10 +22,15 @@ namespace assemble {
  * @brief Element matrix provider for the bilinear form
  *
  * @f[
- * \int_{\Omega} u v dx
+ * \int\limits_{K} u \, v \ dx
  * @f]
  *
  * Basis functions are the piecewise constant functions
+ * Hence the retuned matrix is of size 1x1 and contains the area of the cell
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * @note Only triangular meshes are supported
  *
@@ -40,9 +45,9 @@ class WhitneyTwoMassMatrixProvider {
   /**
    * @brief Compute the element matrix for some cell of a mesh
    * @param entity The mesh cell to compute the element matrix for
-   * @returns The 3 by 3 element matrix of the cell
+   * @returns The 1 by 1 element matrix of the cell
    *
-   * @note This function only works for triangles
+   * @note Only triangluar meshes are supported
    */
   Eigen::MatrixXd Eval(const lf::mesh::Entity &entity) const;
 

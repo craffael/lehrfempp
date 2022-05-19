@@ -17,11 +17,26 @@ namespace assemble {
  * @brief Element matrix provider for the bilinear form
  *
  * @f[
- * \int grad_{\Gamma}(u) v dx
+ * \int\limits_K \mathbf{grad}_{\Gamma}(u) \, v \ dx
  * @f]
  *
  * Basis functions are the Whitney 1-forms, surface edge elements for v
- * and the barycentric basis function for u
+ * and the barycentric basis functions for u
+ *
+ * The whitney 1-forms, surface edge elements are associated with
+ * edges and defined as
+ *
+ * @f[
+ *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+ * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ * @f]
+ *
+ * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
+ * of the function based on the relative orientation of the edge in the mesh.
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * @note Only triangluar meshes are supported
  *

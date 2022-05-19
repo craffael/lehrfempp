@@ -23,11 +23,25 @@ namespace assemble {
  *
  * The linear form is given by
  * @f[
- *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in \bm{H}(div_{\Gamma},
- * \partial\mathbb{S})
+ *  \int\limits_K f \cdot v \,\mathrm{d}x, \quad f, v \in
+ * \mathbf{H}(\text{curl}_{\Gamma}, \partial\mathbf{S})
  * @f]
- * The basis functions used for the discretization are the
- * whitney one forms
+ *
+ * Basis functions are the Whitney 1-forms, surface edge elements for v
+ *
+ * The whitney 1-forms, surface edge elements are associated with
+ * edges and defined as
+ *
+ * @f[
+ *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+ * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ * @f]
+ *
+ * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
+ * of the function based on the relative orientation of the edge in the mesh.
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_VECTOR_PROVIDER of the function
+ * lf::assemble::AssembleVectorLocally().
  *
  * @note Only triangular meshes are supported
  */

@@ -18,11 +18,26 @@ namespace assemble {
  * that is the dot product of two whitney one basis functions
  *
  * @f[
- * \int_{\Omega} \bm{u} \cdot \bm{v} dx
+ * \int\limits_{\Omega} \bm{u} \cdot \bm{v} dx
  * @f]
  *
  * As basis functions, the Whitney 1-forms, surface edge elements are
- * used
+ * used.
+ *
+ * The whitney 1-forms, surface edge elements are associated with
+ * edges and defined as
+ *
+ * @f[
+ *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+ * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ * @f]
+ *
+ * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
+ * of the function based on the relative orientation of the edge in the mesh.
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
  *
  * @note Only triangular meshes are supported
  *
@@ -35,9 +50,9 @@ class WhitneyOneMassMatrixProvider {
   WhitneyOneMassMatrixProvider(){};
 
   /**
-   * @brief Compute the element matrix for a given triangle of a mesh
-   * @param entity The mesh triangle to compute the element matrix for
-   * @returns The 3 by 3 element matrix of the triangle
+   * @brief Compute the element matrix for a given cell of a mesh
+   * @param entity The mesh cell to compute the element matrix for
+   * @returns The 3 by 3 element matrix of the cell
    *
    * @note Only triangular cells are supported
    */
