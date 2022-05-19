@@ -18,12 +18,14 @@ namespace post_processing {
 
 /**
  * @brief Extract the basis function coefficients from the solution vector
+ *
  * @param mesh A shared pointer to the corresponding mesh
  * @param solution The solution vector obtained from solving the PDE
+ *
  * @returns A mesh data set mapping cells of the mesh to the basis function
  * coefficient associated with them
  */
-lf::mesh::utils::CodimMeshDataSet<double> extractSolution(
+lf::mesh::utils::CodimMeshDataSet<double> extractTwoFormSolution(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const Eigen::VectorXd &solution);
 

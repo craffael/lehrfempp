@@ -77,21 +77,23 @@ TEST(projects_hldo_sphere_post_processing, norm_l2_scalar_const) {
   lf::quad::QuadRule qr = lf::quad::make_TriaQR_EdgeMidpointRule();
 
   // Compute the L2 norm of the function constant zero on the mesh
-  const double L2_zero =
+  const std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> out_zero =
       projects::hldo_sphere::post_processing::L2norm<decltype(mf_f_zero),
                                                      decltype(sq_f)>(
           mesh, mf_f_zero, sq_f, qr);
+  double L2_zero = std::get<0>(out_zero);
   ASSERT_NEAR(L2_zero, 0, 1e-10);
 
   // create function f
   auto f_const = [](Eigen::Vector3d x) -> double { return 5.0; };
   lf::mesh::utils::MeshFunctionGlobal<decltype(f_const)> mf_f_const(f_const);
   // Compute the L2 norm of the function constant zero on the mesh
-  const double L2_const =
+  const std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> out_const =
       projects::hldo_sphere::post_processing::L2norm<decltype(mf_f_const),
                                                      decltype(sq_f)>(
           mesh, mf_f_const, sq_f, qr);
-  ASSERT_NEAR(L2_const, sqrt(sqrt(0.75) * 2 * 25.0), 1e-10);
+  double L2_const = std::sqrt(std::get<0>(out_const));
+  ASSERT_NEAR(L2_const, sqrt(sqrt(0.75) * 2 * 25.0), 1e-12);
 }
 
 /**
@@ -113,7 +115,7 @@ TEST(projects_hldo_sphere_post_processing, norm_l2_vector_field) {
 
   sphere.setRadius(1);
 
-  sphere.setRefinementLevel(5);
+  sphere.setRefinementLevel(6);
 
   const std::shared_ptr<lf::mesh::Mesh> mesh = sphere.Build();
 
@@ -161,9 +163,10 @@ TEST(projects_hldo_sphere_post_processing, norm_l2_vector_field) {
   lf::quad::QuadRule qr = lf::quad::make_TriaQR_EdgeMidpointRule();
 
   // Compute the L2 norm of the function constant zero on the mesh
-  const double L2 =
+  const std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> out_norm =
       projects::hldo_sphere::post_processing::L2norm<decltype(mf_f),
                                                      decltype(sq_f)>(mesh, mf_f,
                                                                      sq_f, qr);
+  const double L2 = std::sqrt(std::get<0>(out_norm));
   ASSERT_NEAR(L2, 2.54218506, 1e-3);
 }

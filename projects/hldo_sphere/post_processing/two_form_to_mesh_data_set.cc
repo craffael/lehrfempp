@@ -2,7 +2,7 @@
 
 namespace projects::hldo_sphere::post_processing {
 
-lf::mesh::utils::CodimMeshDataSet<double> extractSolution(
+lf::mesh::utils::CodimMeshDataSet<double> extractTwoFormSolution(
     const std::shared_ptr<const lf::mesh::Mesh> &mesh,
     const Eigen::VectorXd &solution) {
   lf::mesh::utils::CodimMeshDataSet<double> coefficients(mesh, 0);
