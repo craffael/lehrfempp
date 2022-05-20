@@ -133,7 +133,10 @@ TEST(projects_hldo_sphere_discretization,
 
   // Check result mu
   Eigen::VectorXcd mu_anal = Eigen::VectorXcd::Zero(26);
-  Eigen::VectorXcd mu = lse_builder.GetMu();
+  Eigen::VectorXcd mu(26);
+  mu.head(6) = lse_builder.GetMu(0);
+  mu.segment(6, 12) = lse_builder.GetMu(1);
+  mu.tail(8) = lse_builder.GetMu(2);
   ASSERT_EQ(mu.rows(), mu_anal.rows());
   for (int j = 0; j < mu_anal.rows(); ++j) {
     EXPECT_NEAR(mu(j).imag(), mu_anal(j).imag(), 1e-12)

@@ -50,7 +50,9 @@ struct ProblemSolution {
 };
 
 /**
- * @brief Prints the L2 norm errors of the experiment
+ * @brief Prints the L2 norm errors and the Supremum of the experiment and
+ * creates vtk plots
+ *
  */
 int main(int argc, char *argv[]) {
   if (argc != 4) {

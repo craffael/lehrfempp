@@ -21,7 +21,7 @@ namespace projects::hldo_sphere {
 namespace discretization {
 
 /**
- * @brief Creates and solves the Discretised Hodge Laplacian source problems
+ * @brief Creates and solves the discretised Hodge Laplacian source problems
  *
  * @note Only triangular meshes are supported
  *
