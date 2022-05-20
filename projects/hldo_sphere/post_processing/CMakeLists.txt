@@ -6,6 +6,7 @@ set(sources
         mesh_function_whitney_two.h
         two_form_to_mesh_data_set.h
         two_form_to_mesh_data_set.cc
+        results_processing.h
 )
 
 add_library(projects.hldo_sphere.post_processing ${sources})
