@@ -296,6 +296,8 @@ class DiracOperatorSourceProblem {
    * @brief retunrs the basis expansion coefficiants for
    * the solution of the source problem
    *
+   * BUT ONLY THE REAL PART
+   *
    * The basis expansion coefficiants for the first
    * number of vertices entries are with respect to the
    * barycentric basis functions on the mesh.
@@ -316,19 +318,19 @@ class DiracOperatorSourceProblem {
    * called before the result is available
    *
    */
-  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetMu(int index) {
+  Eigen::Matrix<double, Eigen::Dynamic, 1> GetMu(int index) {
     LF_ASSERT_MSG(index < 3 && index >= 0,
                   "Index must be in {0,1,2}, given " << index);
 
     Eigen::Vector3d n;
     Eigen::Vector3d s;
-    n(0) = mesh_p_->NumEntities(0);
+    n(0) = mesh_p_->NumEntities(2);
     s(0) = 0;
     n(1) = mesh_p_->NumEntities(1);
     s(1) = n(0);
-    n(2) = mesh_p_->NumEntities(2);
+    n(2) = mesh_p_->NumEntities(0);
     s(2) = s(1) + n(1);
-    return mu_.segment(s(index), n(index));
+    return mu_.segment(s(index), n(index)).real();
   }
 
  private:
