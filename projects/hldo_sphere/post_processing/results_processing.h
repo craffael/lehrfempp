@@ -4,7 +4,7 @@
 /**
  * @file result_processing
  *
- * @brief takes a list of results and creates vtk files, plots and tables
+ * @brief takes a list of results and creates vtk files and tables
  */
 
 #include <lf/io/vtk_writer.h>
@@ -18,6 +18,7 @@
 #include <Eigen/Dense>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -78,6 +79,20 @@ void process_results(std::string name, std::vector<ProblemSolution> &results,
   // prepare output
   int table_width = 15;
   int precision = 4;
+
+  // create csv file
+  std::ofstream csv_file;
+  csv_file.open(concat("result_", name, ".csv"));
+  csv_file << "numCells,"
+           << "numEdges,"
+           << "numVerts,"
+           << "hMax,"
+           << "SupErrorZero,"
+           << "SupErrorOne,"
+           << "SupErrorTwo,"
+           << "L2ErrorZero,"
+           << "L2ErrorOne,"
+           << "L2ErrorTwo\n";
 
   // print all the errors
   std::cout << std::endl
@@ -201,7 +216,26 @@ void process_results(std::string name, std::vector<ProblemSolution> &results,
               << error_sup_zero << std::setw(table_width) << error_sup_one
               << std::setw(table_width) << error_sup_two << std::endl
               << std::endl;
+
+    /******************************
+     * write new line in csv file
+     ******************************/
+
+    // compute meshwidth
+    double h_max = 0;
+    for (const lf::mesh::Entity *e : sol.mesh->Entities(1)) {
+      double h = lf::geometry::Volume(*(e->Geometry()));
+      if (h > h_max) h_max = h;
+    }
+    csv_file << sol.mesh->NumEntities(0) << "," << sol.mesh->NumEntities(1)
+             << "," << sol.mesh->NumEntities(2) << "," << h_max << ","
+             << error_sup_zero << "," << error_sup_one << "," << error_sup_two
+             << "," << error_zero << "," << error_one << "," << error_two
+             << "\n";
   }
+
+  // close csv file
+  csv_file.close();
 }
 
 }  // end namespace post_processing

@@ -15,3 +15,5 @@ target_link_libraries(${PROJECT_NAME}.constant PUBLIC Eigen3::Eigen projects.hld
 set_target_properties(${PROJECT_NAME}.constant PROPERTIES FOLDER "projects/hldo_sphere")
 target_compile_features(${PROJECT_NAME}.constant PUBLIC cxx_std_17)
 
+# copy plot file
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plot.py ${CMAKE_CURRENT_BINARY_DIR}/plot.py COPYONLY)
