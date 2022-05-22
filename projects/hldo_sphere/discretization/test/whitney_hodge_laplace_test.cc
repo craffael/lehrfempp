@@ -391,3 +391,48 @@ TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test) {
     EXPECT_NEAR(Vec(j), Vec_anal(j), 0.1) << "mismatch in entry (" << j << ")";
   }
 }
+
+/**
+ *
+ * @brief Test the two hodge laplacian
+ *
+ * The test tests the discretiation of the Element Matrix for
+ *
+ * @f[
+ *   \Delta_0 \\
+ *   f = 4^2 * 5.2
+ * @f]
+ *
+ * On the Octaeder with radius 1
+ *
+ * But not the solution of the system is tested only the buildingblocks
+ * that is, only the galerkin matrix and the load vector
+ *
+ */
+TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test_const) {
+  // Build LSE
+  // righthandside for the zero and two form
+  projects::hldo_sphere::discretization::WhitneyTwoHodgeLaplace lse_builder;
+  auto f = [](const Eigen::Vector3d& x_vec) -> double {
+    double ret = pow(4, 2) * 5.2;
+    return ret;
+  };
+  std::function<double(const Eigen::Matrix<double, 3, 1>&)> f0_ = f;
+  lse_builder.SetLoadFunction(f0_);
+  lse_builder.Compute();
+
+  Eigen::VectorXd Vec = lse_builder.GetLoadVector();
+  Eigen::VectorXd Vec_anal(20);
+  Vec_anal.setZero();
+  // clang-format off
+  double c = 16. * sqrt(1.5) * sqrt(0.5) * 5.2;
+  Vec_anal.tail(8) << c,c,c,c,c,c,c,c;
+
+
+  std::cout << "Mat\n" << lse_builder.GetGalerkinMatrix().makeDense() << "\n\nLoad vec \n" << Vec << "\n\n";
+                      
+
+  for (int j = 0; j < Vec_anal.cols(); ++j) {
+    EXPECT_NEAR(Vec(j), Vec_anal(j), 0.1) << "mismatch in entry (" << j << ")";
+  }
+}

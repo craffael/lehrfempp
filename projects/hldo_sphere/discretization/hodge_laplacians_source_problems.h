@@ -308,10 +308,11 @@ class HodgeLaplaciansSourceProblems {
    * @param f2 load functions in L^2
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f0,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)> &f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f2) {
+          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          f1,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;
@@ -425,8 +426,8 @@ class HodgeLaplaciansSourceProblems {
   GetMuTwo() {
     lf::base::size_type numCells = mesh_p_->NumEntities(0);
     lf::base::size_type numEdges = mesh_p_->NumEntities(1);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> j = mu_[1].head(numEdges);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> u = mu_[1].tail(numCells);
+    Eigen::Matrix<double, Eigen::Dynamic, 1> j = mu_[2].head(numEdges);
+    Eigen::Matrix<double, Eigen::Dynamic, 1> u = mu_[2].tail(numCells);
     return std::make_tuple(j, u);
   }
 
