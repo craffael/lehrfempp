@@ -7,11 +7,11 @@ from matplotlib import pyplot as plt
 
 @click.command()
 @click.option('-f', '--file', required=True, help='csv file containing the results to plot')
-@click.option('--l2_norm',show_default=True, default=True, help='plot l2 Error Norm')
-@click.option('--sup_norm',show_default=True, default=True, help='plot Supremum Error Norm')
-@click.option('--zero_form',show_default=True, default=True, help='plot results for zero form')
-@click.option('--one_form',show_default=True, default=True, help='plot results for one form')
-@click.option('--two_form',show_default=True, default=True, help='plot results for two form')
+@click.option('--l2_norm',show_default=True, default=False, help='plot l2 Error Norm')
+@click.option('--sup_norm',show_default=True, default=False, help='plot Supremum Error Norm')
+@click.option('--zero_form',show_default=True, default=False, help='plot results for zero form')
+@click.option('--one_form',show_default=True, default=False, help='plot results for one form')
+@click.option('--two_form',show_default=True, default=False, help='plot results for two form')
 @click.option('--scale',show_default=True,type=click.Choice(["linear", "semilog", "loglog"], case_sensitive=False),  default="linear", help='choose scales of the axis')
 def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
 
@@ -40,9 +40,14 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
     m = len(kind_index)
     n = len(form_index)
 
-    if n <= 0 or m <= 0:
-        print("At least one norm and one form has to be selected")
-        return
+    # if non is selected select all
+    if m <= 0:
+        kind_index = range(2)
+        m = 2
+
+    if n <= 0:
+        form_index = range(3)
+        n = 3
 
     fig, axs = plt.subplots(m,n)
     for i in range(m):
@@ -54,7 +59,7 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
             df_col_idx = kind_index[i] * n + form_index[j]
             y = df_y.loc[:, norm_names[df_col_idx]].to_numpy()
             if scale.lower() == 'semilog':
-                curr_axs.semilog(x,y)
+                curr_axs.semilogy(x,y)
             if scale.lower() == 'loglog':
                 curr_axs.loglog(x,y)
             if scale.lower() == 'linear':
