@@ -37,8 +37,8 @@ namespace discretization {
  * form
  *
  * @f[
- *   \Delta_2 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
- *   \Delta_2 u + k^2 u =   f
+ *   -\Delta_2 = -\text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
+ *   -\Delta_2 u + k^2 u =   f
  * @f]
  *
  * Basis functions used are the rotated Whitney 1-forms and the cellwise
@@ -56,7 +56,9 @@ class WhitneyTwoHodgeLaplace {
    *
    */
   WhitneyTwoHodgeLaplace()
-      : coo_matrix_(lf::assemble::COOMatrix<double>(1, 1)) {
+      : coo_matrix_(lf::assemble::COOMatrix<double>(1, 1)),
+        f_([](Eigen::Matrix<double, 3, 1> x) -> double { return 0; }),
+        phi_(Eigen::VectorXd::Zero(0)) {
     // create mesh factory for basic mesh
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
@@ -70,10 +72,6 @@ class WhitneyTwoHodgeLaplace {
     sphere->setRadius(1);
 
     mesh_p_ = sphere->Build();
-
-    // create basic function
-    auto f = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
-    f_ = f;
   }
 
   /**
@@ -144,9 +142,8 @@ class WhitneyTwoHodgeLaplace {
       // Add A_12
       full_matrix.AddToEntry(row, col, val);
 
-      // Add A_21 positive because we compute the laplacian here and not the
-      // negative laplacian
-      full_matrix.AddToEntry(col, row, val);
+      // Add A_21
+      full_matrix.AddToEntry(col, row, -val);
     }
 
     coo_matrix_ = full_matrix;
@@ -224,7 +221,7 @@ class WhitneyTwoHodgeLaplace {
   /**
    * @brief returns the Galerkin Matrix
    *
-   * This is the Matrix of the LSE
+   * This is the Matrix of the LSE containing the negative laplacian
    *
    * @note The Galerkin matrix must be computed with Compute() before calling
    * this funciton

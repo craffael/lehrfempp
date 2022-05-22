@@ -108,7 +108,7 @@ class HodgeLaplaciansSourceProblems {
       int row = triplet.row();
       // we need the negative laplacian
       double val = triplet.value();
-      coo_mat_zero.AddToEntry(row, col, -val);
+      coo_mat_zero.AddToEntry(row, col, val);
     }
 
     // create mass Matrix
@@ -163,7 +163,7 @@ class HodgeLaplaciansSourceProblems {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      coo_mat_one.AddToEntry(row, col, -val);
+      coo_mat_one.AddToEntry(row, col, val);
     }
 
     // create mass Matrix
@@ -214,7 +214,7 @@ class HodgeLaplaciansSourceProblems {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      coo_mat_two.AddToEntry(row, col, -val);
+      coo_mat_two.AddToEntry(row, col, val);
     }
 
     // create mass Matrix
@@ -308,11 +308,10 @@ class HodgeLaplaciansSourceProblems {
    * @param f2 load functions in L^2
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
-          f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2) {
+          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)> &f1,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;

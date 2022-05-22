@@ -36,7 +36,7 @@ TEST(projects_hldo_sphere_discretization, hodge_laplacian_zero_basic_test) {
                 -2, -2,  0, -2,  8, -2,
                  0, -2, -2, -2, -2,  8;
   // clang-format on
-  Ae_anal *= -1. / 2. / std::sqrt(3);
+  Ae_anal *= 1. / 2. / std::sqrt(3);
   Eigen::MatrixXd Ae_mass(6, 6);
   // clang-format off
   Ae_mass <<     8,  2,  2,  2,  2,  0,
@@ -220,6 +220,7 @@ TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
   // Build LSE
   projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
       lse_builder;
+  lse_builder.SetK(4);
   lse_builder.Compute();
   lse_builder.Solve();
 
@@ -227,38 +228,47 @@ TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
       lse_builder.GetGalerkinMatrix(2).makeSparse();
 
   Eigen::MatrixXd Ae_anal(20, 20);
-  // clang-format off
-  Ae_anal <<  
-           10, -1,  0, -1, -1,  1,  0,  0,  0,  0,  0,  0,    -1,  0,  0,  0,  0,  0,  1,  0,
-           -1, 10,  1,  0, -1,  0,  0,  1,  0,  0,  0,  0,    -1,  0,  1,  0,  0,  0,  0,  0,
-            0,  1, 10,  1,  0,  0,  0, -1,  0,  1,  0,  0,     0,  0, -1,  0,  1,  0,  0,  0,
-           -1,  0,  1, 10,  0,  1,  0,  0,  0, -1,  0,  0,     0,  0,  0,  0, -1,  0,  1,  0,
-           -1, -1,  0,  0, 10,  0,  1,  0,  1,  0,  0,  0,    -1,  1,  0,  0,  0,  0,  0,  0, 
-            1,  0,  0,  1,  0, 10, -1,  0,  0,  0,  0, -1,     0,  0,  0,  0,  0,  0, -1,  1,
-            0,  0,  0,  0,  1, -1, 10,  0, -1,  0,  0, -1,     0, -1,  0,  0,  0,  0,  0,  1,
-            0,  1, -1,  0,  0,  0,  0, 10, -1,  0,  1,  0,     0,  0, -1,  1,  0,  0,  0,  0,
-            0,  0,  0,  0,  1,  0, -1, -1, 10,  0,  1,  0,     0, -1,  0,  1,  0,  0,  0,  0,
-            0,  0,  1, -1,  0,  0,  0,  0,  0, 10, -1,  1,     0,  0,  0,  0, -1,  1,  0,  0, 
-            0,  0,  0,  0,  0,  0,  0,  1,  1, -1, 10,  1,     0,  0,  0, -1,  0,  1,  0,  0,
-            0,  0,  0,  0,  0, -1, -1,  0,  0,  1,  1, 10,     0,  0,  0,  0,  0, -1,  0,  1,
+  Eigen::MatrixXd Ae_anal_A11(12, 12);
+  Eigen::MatrixXd Ae_anal_A12(12, 8);
+  Ae_anal.setZero();
 
-           -1, -1,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  0,  0,  1,  0, -1,  0, -1,  0,  0,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  1, -1,  0,  0,  0,  0, -1,  0,  0,  0,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  0,  0,  0,  0,  0,  1,  1,  0, -1,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  1, -1,  0,  0,  0,  0,  0, -1,  0,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1, -1,     0,  0,  0,  0,  0,  0,  0,  0,
-            1,  0,  0,  1,  0, -1,  0,  0,  0,  0,  0,  0,     0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,  1,     0,  0,  0,  0,  0,  0,  0,  0;
+  // clang-format off
+  Ae_anal_A11 <<  
+           10, -1,  0, -1, -1,  1,  0,  0,  0,  0,  0,  0,
+           -1, 10,  1,  0, -1,  0,  0,  1,  0,  0,  0,  0,
+            0,  1, 10,  1,  0,  0,  0, -1,  0,  1,  0,  0,
+           -1,  0,  1, 10,  0,  1,  0,  0,  0, -1,  0,  0,
+           -1, -1,  0,  0, 10,  0,  1,  0,  1,  0,  0,  0,
+            1,  0,  0,  1,  0, 10, -1,  0,  0,  0,  0, -1,
+            0,  0,  0,  0,  1, -1, 10,  0, -1,  0,  0, -1,
+            0,  1, -1,  0,  0,  0,  0, 10, -1,  0,  1,  0,
+            0,  0,  0,  0,  1,  0, -1, -1, 10,  0,  1,  0,
+            0,  0,  1, -1,  0,  0,  0,  0,  0, 10, -1,  1,
+            0,  0,  0,  0,  0,  0,  0,  1,  1, -1, 10,  1,
+            0,  0,  0,  0,  0, -1, -1,  0,  0,  1,  1, 10;
+  Ae_anal_A12 <<  
+           -1,  0,  0,  0,  0,  0,  1,  0,
+           -1,  0,  1,  0,  0,  0,  0,  0,
+            0,  0, -1,  0,  1,  0,  0,  0,
+            0,  0,  0,  0, -1,  0,  1,  0,
+           -1,  1,  0,  0,  0,  0,  0,  0, 
+            0,  0,  0,  0,  0,  0, -1,  1,
+            0, -1,  0,  0,  0,  0,  0,  1,
+            0,  0, -1,  1,  0,  0,  0,  0,
+            0, -1,  0,  1,  0,  0,  0,  0,
+            0,  0,  0,  0, -1,  1,  0,  0, 
+            0,  0,  0, -1,  0,  1,  0,  0,
+            0,  0,  0,  0,  0, -1,  0,  1;
   // clang-format on
-  Ae_anal.topLeftCorner(12, 12) *= 1. / std::sqrt(3) / 12.;
-  // the sign of the top 12 rows doesnt matter since phi is equalt to zero there
-  Ae_anal *= -1;
+  Ae_anal_A11 *= 1. / std::sqrt(3) / 12.;
+  Ae_anal.topLeftCorner(12, 12) = Ae_anal_A11;
+  Ae_anal.topRightCorner(12, 8) = Ae_anal_A12;
+  Ae_anal.bottomLeftCorner(8, 12) = -Ae_anal_A12.transpose();
 
   Eigen::MatrixXd Ae_anal_mass_two = Eigen::MatrixXd::Identity(8, 8);
   Ae_anal_mass_two *= sqrt(3) / 2.;
 
-  Ae_anal.bottomRightCorner(8, 8) = Ae_anal_mass_two;
+  Ae_anal.bottomRightCorner(8, 8) = 4 * 4 * Ae_anal_mass_two;
 
   // Assert that the two matrices are approximately equal
   ASSERT_EQ(Ae.rows(), Ae_anal.rows());

@@ -102,8 +102,8 @@ class WhitneyOneHodgeLaplace {
 
     lf::assemble::COOMatrix<double> coo_A_11(n_dofs_curl, n_dofs_curl);
     coo_A_11.setZero();
-    lf::assemble::COOMatrix<double> coo_A_12(n_dofs_curl, n_dofs_bary);
-    coo_A_12.setZero();
+    lf::assemble::COOMatrix<double> coo_A_21(n_dofs_curl, n_dofs_bary);
+    coo_A_21.setZero();
     lf::assemble::COOMatrix<double> coo_A_22(n_dofs_bary, n_dofs_bary);
     coo_A_22.setZero();
 
@@ -111,7 +111,7 @@ class WhitneyOneHodgeLaplace {
         0, dof_handler_curl, dof_handler_curl, matrix_curl_provider, coo_A_11);
 
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
-        0, dof_handler_bary, dof_handler_curl, matrix_grad_provider, coo_A_12);
+        0, dof_handler_bary, dof_handler_curl, matrix_grad_provider, coo_A_21);
 
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
         0, dof_handler_bary, dof_handler_bary, matrix_mass_provider, coo_A_22);
@@ -125,8 +125,8 @@ class WhitneyOneHodgeLaplace {
     // entries
     const std::vector<Eigen::Triplet<double>> triplets_A_11 =
         coo_A_11.triplets();
-    const std::vector<Eigen::Triplet<double>> triplets_A_12 =
-        coo_A_12.triplets();
+    const std::vector<Eigen::Triplet<double>> triplets_A_21 =
+        coo_A_21.triplets();
     const std::vector<Eigen::Triplet<double>> triplets_A_22 =
         coo_A_22.triplets();
 
@@ -135,28 +135,28 @@ class WhitneyOneHodgeLaplace {
       int col = triplet.col();
       int row = triplet.row();
       double val = triplet.value();
-      full_matrix.AddToEntry(row, col, -val);
+      full_matrix.AddToEntry(row, col, val);
     }
 
     // Add A_12 and A_21
-    for (Eigen::Triplet<double> triplet : triplets_A_12) {
+    for (Eigen::Triplet<double> triplet : triplets_A_21) {
       int col = triplet.col() + n_dofs_curl;
       int row = triplet.row();
       double val = triplet.value();
 
       // Add A_12
-      full_matrix.AddToEntry(row, col, val);
+      full_matrix.AddToEntry(row, col, -val);
 
-      // Add A_21 here the sign of value just has to be the same as in A_22
-      full_matrix.AddToEntry(col, row, -val);
+      // Add A_21
+      full_matrix.AddToEntry(col, row, val);
     }
 
-    // Add A_22 needs
+    // Add A_22
     for (Eigen::Triplet<double> triplet : triplets_A_22) {
       int col = triplet.col() + n_dofs_curl;
       int row = triplet.row() + n_dofs_curl;
       double val = triplet.value();
-      full_matrix.AddToEntry(row, col, -val);
+      full_matrix.AddToEntry(row, col, val);
     }
 
     coo_matrix_ = full_matrix;
