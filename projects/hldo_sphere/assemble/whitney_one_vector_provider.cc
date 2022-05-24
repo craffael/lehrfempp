@@ -47,9 +47,11 @@ Eigen::VectorXd WhitneyOneVectorProvider::Eval(
     Eigen::VectorXd lambda_hat = hat_func.EvalReferenceShapeFunctions(x_hat);
     for (int i = 0; i < 3; i++) {
       int ip1 = (i + 1) % 3;
+
       b_hat.col(i) = s(i) * (lambda_hat(i) * grads.col(ip1) -
                              lambda_hat(ip1) * grads.col(i));
     }
+
     return b_hat;
   };
 
@@ -58,12 +60,14 @@ Eigen::VectorXd WhitneyOneVectorProvider::Eval(
   // radially projected on the sphere
   const auto f_tilde_hat = [&](Eigen::Vector2d x_hat) -> Eigen::Vector3d {
     Eigen::Vector3d x = geom->Global(x_hat);
+    Eigen::MatrixXd b_hat_out = b_hat(x_hat);
     Eigen::Vector3d result = b_hat(x_hat).transpose() * f_(x);
     return result;
   };
 
   // Compute the elements of the vector with given quadrature rule
   Eigen::Vector3d element_vector;
+  element_vector.setZero();
   const Eigen::MatrixXd points = quadrule.Points();
   const Eigen::VectorXd weights =
       (geom->IntegrationElement(points).array() * quadrule.Weights().array())

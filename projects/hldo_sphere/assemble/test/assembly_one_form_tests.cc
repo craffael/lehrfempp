@@ -9,6 +9,7 @@
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
+#include <sphere_triag_mesh_builder.h>
 #include <whitney_one_curl_curl_matrix_provider.h>
 #include <whitney_one_grad_matrix_provider.h>
 #include <whitney_one_mass_matrix_provider.h>
@@ -387,6 +388,75 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_regular) {
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());
   for (int i = 0; i < Ae_anal.rows(); ++i) {
     EXPECT_DOUBLE_EQ(Ae(i), Ae_anal(i)) << "mismatch in entry (" << i << ")";
+  }
+}
+
+// Additional  tests for the funciton
+//
+// @f[
+// f(\vec{x}) = \begin{pmatrix} -k^2 x_2
+// - \frac{2x_2}{\|\vec{x}\|} \\-k^2 x_1 - \frac{2x_1}{\|\vec{x}\|} \\ 0
+// \begin{pmatrix}
+// @f]
+//
+// for all triagles on the octacon with radius 1
+TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_octacon) {
+  // Build Mesh
+  std::unique_ptr<lf::mesh::MeshFactory> factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
+
+  projects::hldo_sphere::mesh::SphereTriagMeshBuilder sphere =
+      projects::hldo_sphere::mesh::SphereTriagMeshBuilder(std::move(factory));
+
+  sphere.setRefinementLevel(0);
+  sphere.setRadius(1);
+
+  std::shared_ptr<const lf::mesh::Mesh> mesh = sphere.Build();
+
+  // Define function f
+  double k = 0.1;
+  auto f = [&](const Eigen::Vector3d x) -> Eigen::Vector3d {
+    Eigen::VectorXd res(3);
+    res(0) = -k * k * x(1) - 2 * x(1) / x.squaredNorm();
+    res(1) = k * k * x(0) + 2 * x(0) / x.squaredNorm();
+    res(2) = 0;
+    return res / x.norm();
+  };
+
+  // Compute the element vec for the triangle
+  const auto elem_vec_provider =
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider(f);
+
+  // Get solutions
+  // the mesh (octacon) conatains 8 cells
+  std::vector<Eigen::VectorXd> Aes(8);
+  for (int i = 0; i < 8; i++) {
+    std::cout << "\nEval Triag " << i << "\n";
+    const auto element = mesh->EntityByIndex(0, i);
+    Aes[i] = elem_vec_provider.Eval(*element);
+    std::cout << "\nEnd Eval Triag " << i << "\n";
+  }
+
+  // Construct the analytically computed solutions with mathematica
+  std::vector<Eigen::Vector3d> Ae_anal(8);
+  // clang-format off
+  Ae_anal[0] << 1.3642297039667421,-0.2728459407933484,-0.2728459407933484;
+  Ae_anal[1] << 0.2728459407933484,0.2728459407933484,1.3642297039667421;
+  Ae_anal[2] << 1.3642297039667421,-0.2728459407933484,0.2728459407933484;
+  Ae_anal[3] << -0.2728459407933484,0.2728459407933484,1.3642297039667421;
+  Ae_anal[4] << 1.3642297039667421,-0.2728459407933484,0.2728459407933484;
+  Ae_anal[5] << -0.2728459407933484,0.2728459407933484,1.3642297039667421;
+  Ae_anal[6] << 1.3642297039667421,0.2728459407933484,0.2728459407933484;
+  Ae_anal[7] << -0.2728459407933484,-0.2728459407933484,1.3642297039667421;
+  // clang-format on
+  // Assert that the two matrices are approximately equal
+  for (int k = 0; k < 8; k++) {
+    ASSERT_EQ(Aes[k].rows(), Ae_anal[k].rows());
+    ASSERT_EQ(Aes[k].cols(), Ae_anal[k].cols());
+    for (int i = 0; i < Ae_anal[k].rows(); ++i) {
+      EXPECT_DOUBLE_EQ(Aes[k](i), Ae_anal[k](i))
+          << "mismatch in entry (" << i << ") of triangle " << k;
+    }
   }
 }
 
