@@ -1,6 +1,7 @@
 /**
  * @file hodge_laplacian_constant.cc
- * @brief Solve hodge laplacian source problem for fixed function u = 5.2
+ * @brief Solve hodge laplacian source problem for fixed function u = 5.2 for
+ * the zero and two form  for the zero and two form
  *
  */
 
@@ -24,7 +25,12 @@ using lf::uscalfe::operator-;
 
 /**
  * @brief Prints the L2 norm errors and the Supremum of the experiment and
- * creates vtk plots for a constant function u = 5.2
+ * creates vtk plots for a constant function u = 5.2 for the zero and the two
+ * form
+ *
+ * For the one form we take the tangential vector field @f$ \vec{u}(\vec{x}) =
+ * \begin{pmatrix} -x_2 \\ x_1 \\ 0 \end{pmatrix} @f$
+ *
  */
 int main(int argc, char *argv[]) {
   if (argc != 4) {
@@ -39,6 +45,8 @@ int main(int argc, char *argv[]) {
   sscanf(argv[2], "%lf", &k);
   sscanf(argv[3], "%lf", &r);
   std::cout << "max_refinement_level : " << refinement_level << std::endl;
+  std::cout << "k : " << k << std::endl;
+  std::cout << "radius : " << r << std::endl;
 
   // Read the mesh from the gmsh file
   std::unique_ptr<lf::mesh::MeshFactory> factory =
@@ -50,6 +58,13 @@ int main(int argc, char *argv[]) {
   // we always take the same radius
   sphere.setRadius(r);
 
+  // mathematica function output requries the following helpers auto Power =
+  // [](double a, double b) -> double { return std::pow(a, b); };
+  auto Sin = [](double a) -> double { return std::sin(a); };
+  auto Cos = [](double a) -> double { return std::cos(a); };
+  auto Sqrt = [](double a) -> double { return std::sqrt(a); };
+  auto Power = [](double a, double b) -> double { return std::pow(a, b); };
+
   // righthandside for the zero and two form
   auto f_zero = [&](const Eigen::Vector3d &x_vec) -> double {
     return k * k * 5.2;
@@ -57,7 +72,18 @@ int main(int argc, char *argv[]) {
 
   // righthandside for the one form
   auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXd {
-    return Eigen::VectorXd::Constant(3, k * k * 5.2);
+    // first scale to the sphere
+    Eigen::Vector3d x_ = x_vec / x_vec.norm() * r;
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
+
+    Eigen::VectorXd ret(3);
+
+    ret << -(Power(k, 2) * y) -
+               (2 * y) / (Power(x, 2) + Power(y, 2) + Power(z, 2)),
+        x * (Power(k, 2) + 2 / (Power(x, 2) + Power(y, 2) + Power(z, 2))), 0;
+    return ret;
   };
 
   // Compute the analytic solution of the problem
@@ -65,7 +91,17 @@ int main(int argc, char *argv[]) {
 
   // Compute the analytic solution of the problem
   auto u_one = [&](const Eigen::Vector3d x_vec) -> Eigen::Vector3d {
-    return Eigen::VectorXd::Constant(3, 5.2);
+    // first scale to the sphere
+    Eigen::Vector3d x_ = x_vec / x_vec.norm() * r;
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
+
+    Eigen::VectorXd ret(3);
+
+    ret << -y, x, 0;
+
+    return ret;
   };
 
   // Solve the problem for each mesh in the hierarchy
