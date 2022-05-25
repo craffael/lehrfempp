@@ -81,9 +81,9 @@ class LoadVectorProvider {
 
     // returns evaluation of @f$ \lambda @f$ for at a given point on the
     // reference triangle f is evaluated at the global coordinates
-    const auto f_tilde_hat = [&](Eigen::Vector2d x_hat)
-        -> Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> {
-      Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> x = geom->Global(x_hat);
+    const auto f_tilde_hat =
+        [&](Eigen::Vector2d x_hat) -> Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> {
+      Eigen::MatrixXd x = geom->Global(x_hat);
       return lambda_hat(x_hat) * f_(x);
     };
 

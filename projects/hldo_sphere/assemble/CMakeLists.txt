@@ -12,7 +12,6 @@ set(sources
     whitney_one_mass_matrix_provider.h
     whitney_one_mass_matrix_provider.cc
     whitney_one_vector_provider.h
-    whitney_one_vector_provider.cc
     whitney_two_mass_matrix_provider.h
     whitney_two_mass_matrix_provider.cc
     rot_whitney_one_div_matrix_provider.h

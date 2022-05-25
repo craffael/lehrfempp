@@ -18,6 +18,8 @@
 #include <array>
 #include <cmath>
 
+using complex = std::complex<double>;
+
 /*********************************************************************
  * TESTS ON REGULAR TRIANGLE ((1,0,0), (0, 1, 0), (0, 0, 1))
  *********************************************************************/
@@ -374,7 +376,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_regular) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::WhitneyOneVectorProvider(f);
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider<double>(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);
@@ -388,6 +390,115 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_regular) {
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());
   for (int i = 0; i < Ae_anal.rows(); ++i) {
     EXPECT_DOUBLE_EQ(Ae(i), Ae_anal(i)) << "mismatch in entry (" << i << ")";
+  }
+}
+
+/**
+ *
+ * @brief Test the element vector provider with the one-form complex valued
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = 1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in \bm{H}(div_{\Gamma},
+ * \partial\mathbb{S})
+ * @f]
+ *
+ * using the load function
+ *
+ * @f[
+ *  f((x_0,x_1, x_2)) = (x_0 j, x_1 j, x_0)
+ * @f]
+ *
+ * and the whithey one form basis functions
+ *
+ */
+TEST(projects_hldo_sphere_assembly,
+     vector_provider_one_form_test_regular_complex) {
+  // Build Mesh
+  const auto trig = lf::base::RefEl::kTria();
+  const auto seg = lf::base::RefEl::kSegment();
+
+  // Define Vertices
+  Eigen::MatrixXd vertices(3, 3);
+  // clang-format off
+  vertices << 1, 0, 0,
+              0, 1, 0,
+              0, 0, 1;
+  // clang-format on
+  lf::mesh::hybrid2d::MeshFactory factory(3);
+  factory.AddPoint(vertices.col(0));
+  factory.AddPoint(vertices.col(1));
+  factory.AddPoint(vertices.col(2));
+
+  // Build Segments
+  // First define directions
+  std::vector<std::array<lf::mesh::MeshFactory::size_type, 2>> edge_nodes(3);
+  edge_nodes[0] = {0, 1};
+  edge_nodes[1] = {1, 2};
+  edge_nodes[2] = {0, 2};
+
+  // Build segments based on directions
+  std::vector<Eigen::MatrixXd> edge_endpoints(3);
+  std::vector<std::unique_ptr<lf::geometry::Geometry>> edge_geom(3);
+  for (int i = 0; i < 3; i++) {
+    edge_endpoints[i] = Eigen::MatrixXd::Zero(3, 2);
+    edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
+    edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
+    edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
+    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+                      std::move(edge_geom[i]));
+  }
+
+  // Build triangle
+  std::unique_ptr<lf::geometry::Geometry> geom =
+      std::make_unique<lf::geometry::TriaO1>(vertices);
+  const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
+  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  const auto mesh = factory.Build();
+
+  // Define function f
+  auto f = [&](const Eigen::Vector3d x) -> Eigen::Vector3cd {
+    Eigen::VectorXcd res(3);
+    res(0) = x(0) * complex(0, 1);
+    res(1) = x(1) * complex(0, 1);
+    res(2) = x(0);
+    return res;
+  };
+
+  const auto element = mesh->EntityByIndex(0, 0);
+  // Compute the element vec for the triangle
+  const auto elem_vec_provider =
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider<complex>(f);
+  const Eigen::VectorXcd Ae = elem_vec_provider.Eval(*element);
+  // Construct the analytically computed element matrix
+  Eigen::VectorXcd Ae_anal(3);
+
+  auto Complex = [](double a, double b) -> complex { return complex(a, b); };
+  auto Sqrt = [](double a) -> double { return sqrt(a); };
+
+  // clang-format off
+  Ae_anal <<
+    -0.041666666666666664*1/Sqrt(3),
+   Complex(0.125,-0.16666666666666666)/Sqrt(3),
+   Complex(0.20833333333333334,
+     -0.16666666666666666)/Sqrt(3);
+  // clang-format on
+  // Assert that the two matrices are approximately equal
+  ASSERT_EQ(Ae.rows(), Ae_anal.rows());
+  ASSERT_EQ(Ae.cols(), Ae_anal.cols());
+  for (int i = 0; i < Ae_anal.rows(); ++i) {
+    EXPECT_DOUBLE_EQ(Ae(i).real(), Ae_anal(i).real())
+        << "mismatch in entry (" << i << ")";
+    EXPECT_DOUBLE_EQ(Ae(i).imag(), Ae_anal(i).imag())
+        << "mismatch in entry (" << i << ")";
   }
 }
 
@@ -425,7 +536,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_octacon) {
 
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::WhitneyOneVectorProvider(f);
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider<double>(f);
 
   // Get solutions
   // the mesh (octacon) conatains 8 cells
@@ -813,7 +924,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_flat) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::WhitneyOneVectorProvider(f);
+      projects::hldo_sphere::assemble::WhitneyOneVectorProvider<double>(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);

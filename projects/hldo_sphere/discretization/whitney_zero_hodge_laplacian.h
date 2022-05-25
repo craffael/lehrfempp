@@ -95,7 +95,8 @@ class WhitneyZeroHodgeLaplace {
         0, dof_handler, dof_handler, matrix_provider, coo_mat);
 
     // create element vector provider
-    projects::hldo_sphere::assemble::LoadVectorProvider vector_provider{f_};
+    projects::hldo_sphere::assemble::LoadVectorProvider<double> vector_provider{
+        f_};
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs);
