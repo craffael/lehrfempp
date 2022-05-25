@@ -431,10 +431,8 @@ TEST(projects_hldo_sphere_assembly, vector_provider_one_form_test_octacon) {
   // the mesh (octacon) conatains 8 cells
   std::vector<Eigen::VectorXd> Aes(8);
   for (int i = 0; i < 8; i++) {
-    std::cout << "\nEval Triag " << i << "\n";
     const auto element = mesh->EntityByIndex(0, i);
     Aes[i] = elem_vec_provider.Eval(*element);
-    std::cout << "\nEnd Eval Triag " << i << "\n";
   }
 
   // Construct the analytically computed solutions with mathematica

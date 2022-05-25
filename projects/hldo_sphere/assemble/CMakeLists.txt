@@ -5,7 +5,6 @@ set(sources
     mass_matrix_provider.h
     mass_matrix_provider.cc
     load_vector_provider.h
-    load_vector_provider.cc
     whitney_one_curl_curl_matrix_provider.h
     whitney_one_curl_curl_matrix_provider.cc
     whitney_one_grad_matrix_provider.h

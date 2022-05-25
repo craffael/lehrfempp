@@ -273,8 +273,8 @@ TEST(projects_hldo_sphere_assembly, load_vector_provider_test_regular) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::LoadVectorProvider(f);
-  const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
+      projects::hldo_sphere::assemble::LoadVectorProvider<double>(f);
+  const Eigen::MatrixXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);
   // clang-format off
@@ -545,7 +545,7 @@ TEST(projects_hldo_sphere_assembly, load_vector_provider_test_flat) {
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle
   const auto elem_vec_provider =
-      projects::hldo_sphere::assemble::LoadVectorProvider(f);
+      projects::hldo_sphere::assemble::LoadVectorProvider<double>(f);
   const Eigen::VectorXd Ae = elem_vec_provider.Eval(*element);
   // Construct the analytically computed element matrix
   Eigen::VectorXd Ae_anal(3);
