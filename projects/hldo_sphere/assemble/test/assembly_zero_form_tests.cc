@@ -16,6 +16,8 @@
 #include <array>
 #include <cmath>
 
+using complex = std::complex<double>;
+
 /**
  *
  * @brief Test the element matrix provider for the mass matrix of
@@ -288,6 +290,110 @@ TEST(projects_hldo_sphere_assembly, load_vector_provider_test_regular) {
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());
   for (int i = 0; i < Ae_anal.rows(); ++i) {
     EXPECT_DOUBLE_EQ(Ae(i), Ae_anal(i)) << "mismatch in entry (" << i << ")";
+  }
+}
+
+/**
+ *
+ * @brief Test the element vector provider for the zero-form
+ *
+ * Test the element vector provider on the triangle
+ * ((1,0,0), (0,1,0), (0,0,1))
+ *
+ * with relative edge orientations
+ *
+ * s_0 = -1, s_1 = 1, s_2 = -1
+ *
+ * And the linear form
+ *
+ * @f[
+ *  \int_K\ f \cdot v \,\mathrm{d}x, \quad f, v \in H^1
+ * @f]
+ *
+ * using the load function
+ *
+ * @f[
+ *  f((x_0,x_1, x_2)) = i x_0 / \|x\|
+ * @f]
+ *
+ * And the barycentric basis functions
+ *
+ * For analytical solution see assemby.pdf
+ *
+ */
+TEST(projects_hldo_sphere_assembly, load_vector_provider_test_regular_complex) {
+  // Build Mesh
+  const auto trig = lf::base::RefEl::kTria();
+  const auto seg = lf::base::RefEl::kSegment();
+
+  // Define Vertices
+  Eigen::MatrixXd vertices(3, 3);
+  // clang-format off
+  vertices << 1, 0, 0,
+              0, 1, 0,
+              0, 0, 1;
+  // clang-format on
+  lf::mesh::hybrid2d::MeshFactory factory(3);
+  factory.AddPoint(vertices.col(0));
+  factory.AddPoint(vertices.col(1));
+  factory.AddPoint(vertices.col(2));
+
+  // Build Segments
+  // First define directions
+  std::vector<std::array<lf::mesh::MeshFactory::size_type, 2>> edge_nodes(3);
+  edge_nodes[0] = {1, 0};
+  edge_nodes[1] = {1, 2};
+  edge_nodes[2] = {0, 2};
+
+  // Build segments based on directions
+  std::vector<Eigen::MatrixXd> edge_endpoints(3);
+  std::vector<std::unique_ptr<lf::geometry::Geometry>> edge_geom(3);
+  for (int i = 0; i < 3; i++) {
+    edge_endpoints[i] = Eigen::MatrixXd::Zero(3, 2);
+    edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
+    edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
+    edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
+    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+                      std::move(edge_geom[i]));
+  }
+
+  // Build triangle
+  std::unique_ptr<lf::geometry::Geometry> geom =
+      std::make_unique<lf::geometry::TriaO1>(vertices);
+  const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
+  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  const auto mesh = factory.Build();
+
+  // Define function f
+  auto f = [&](const Eigen::Vector3d x) -> complex {
+    return (complex(0, 1) * x(0) + x(1)) / x.norm();
+  };
+
+  const auto element = mesh->EntityByIndex(0, 0);
+  // Compute the element vec for the triangle
+  const auto elem_vec_provider =
+      projects::hldo_sphere::assemble::LoadVectorProvider<complex>(f);
+  const Eigen::MatrixXcd Ae = elem_vec_provider.Eval(*element);
+  // Construct the analytically computed element matrix
+  Eigen::VectorXcd Ae_anal(3);
+
+  auto Complex = [](double a, double b) -> complex { return complex(a, b); };
+  auto Sqrt = [](double a) -> double { return sqrt(a); };
+
+  // clang-format off
+  Ae_anal <<
+    Complex(0.25,0.5)/Sqrt(6),
+    Complex(0.5,0.25)/Sqrt(6),
+    Complex(0.25,0.25)/Sqrt(6);
+  // clang-format on
+  // Assert that the two matrices are approximately equal
+  ASSERT_EQ(Ae.rows(), Ae_anal.rows());
+  ASSERT_EQ(Ae.cols(), Ae_anal.cols());
+  for (int i = 0; i < Ae_anal.rows(); ++i) {
+    EXPECT_DOUBLE_EQ(Ae(i).real(), Ae_anal(i).real())
+        << "mismatch in entry (" << i << ")";
+    EXPECT_DOUBLE_EQ(Ae(i).imag(), Ae_anal(i).imag())
+        << "mismatch in entry (" << i << ")";
   }
 }
 
