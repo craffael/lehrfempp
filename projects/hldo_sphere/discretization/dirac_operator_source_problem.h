@@ -82,12 +82,12 @@ class DiracOperatorSourceProblem {
     mu_ = Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>(1);
 
     // create basic function
-    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     auto f_1 =
-        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<double, 3, 1> {
-      return Eigen::Matrix<double, 3, 1>::Zero();
+        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<SCALAR, 3, 1> {
+      return Eigen::Matrix<SCALAR, 3, 1>::Zero();
     };
-    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     f0_ = f_0;
     f1_ = f_1;
     f2_ = f_2;
@@ -248,11 +248,11 @@ class DiracOperatorSourceProblem {
    * @param f2 load functions in @f$ L^2 @f$
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2) {
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;
@@ -263,12 +263,7 @@ class DiracOperatorSourceProblem {
    *
    * @param k real valued parameter scaling the mass matrix
    */
-  void SetK(SCALAR k) {
-    // check if real valued
-    LF_ASSERT_MSG(std::abs(k.imag()) < 1e-13,
-                  "K must be real but has imaginary part" << k.imag());
-    k_ = k;
-  }
+  void SetK(double k) { k_ = std::complex<double>(k, 0); }
 
   /**
    * @brief returns the Loadvector
@@ -335,11 +330,11 @@ class DiracOperatorSourceProblem {
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f0_;
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f1_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f2_;
   lf::assemble::COOMatrix<SCALAR> coo_matrix_;
   Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_;
   Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> mu_;

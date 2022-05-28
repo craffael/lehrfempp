@@ -6,11 +6,14 @@
 /**
  * @file mesh_function_whitney_one.h
  *
+ * @tparam SCALAR type of the return vector
+ *
  * @brief Provides utilities for the evaluation of errors
  */
 
 namespace projects::hldo_sphere::post_processing {
 
+template <typename SCALAR>
 class MeshFunctionWhitneyOne {
  public:
   /**
@@ -20,7 +23,7 @@ class MeshFunctionWhitneyOne {
    * global ordering
    * @param mesh containing the mesh on which to evaluate
    */
-  MeshFunctionWhitneyOne(const Eigen::VectorXd& mu,
+  MeshFunctionWhitneyOne(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                          const std::shared_ptr<const lf::mesh::Mesh> mesh)
       : mu_(mu), mesh_(mesh) {
     // make sure mu has the right size
@@ -70,8 +73,8 @@ class MeshFunctionWhitneyOne {
    * @note only triangles are supported
    *
    */
-  std::vector<Eigen::VectorXd> operator()(const lf::mesh::Entity& e,
-                                          const Eigen::MatrixXd& local) const {
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>> operator()(
+      const lf::mesh::Entity& e, const Eigen::MatrixXd& local) const {
     // Only triangles are supported
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
                   "Unsupported cell type " << e.RefEl());
@@ -83,28 +86,30 @@ class MeshFunctionWhitneyOne {
     Eigen::MatrixXd vertices = geom->Global(e.RefEl().NodeCoords());
 
     // get the lambdas
-    const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
+    const lf::uscalfe::FeLagrangeO1Tria<SCALAR> hat_func;
 
     // The gradients are constant on the triangle
-    const Eigen::MatrixXd ref_grads =
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> ref_grads =
         hat_func.GradientsReferenceShapeFunctions(Eigen::VectorXd::Zero(2))
             .transpose();
 
     // The JacobianInverseGramian is constant on the triangle
-    const Eigen::MatrixXd J_inv_trans =
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> J_inv_trans =
         geom->JacobianInverseGramian(Eigen::VectorXd::Zero(2));
 
     // get the gradients
-    const Eigen::MatrixXd grad = J_inv_trans * ref_grads;
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> grad =
+        J_inv_trans * ref_grads;
 
     // get lambda values
-    const Eigen::MatrixXd lambda = hat_func.EvalReferenceShapeFunctions(local);
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> lambda =
+        hat_func.EvalReferenceShapeFunctions(local);
 
     // correct for orientation
     auto edgeOrientations = e.RelativeOrientations();
 
     // define return vector
-    std::vector<Eigen::VectorXd> vals(local.cols());
+    std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>> vals(local.cols());
 
     // get global indices of the edges
     std::vector<lf::base::size_type> global_indices(3);
@@ -116,7 +121,7 @@ class MeshFunctionWhitneyOne {
     // for each point evaluate the basis functions and add the
     // values together
     for (int i = 0; i < local.cols(); i++) {
-      Eigen::MatrixXd bs(grad.rows(), 3);
+      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> bs(grad.rows(), 3);
       bs.col(0) = lambda(0, i) * grad.col(1) - lambda(1, i) * grad.col(0);
       bs.col(1) = lambda(1, i) * grad.col(2) - lambda(2, i) * grad.col(1);
       bs.col(2) = lambda(2, i) * grad.col(0) - lambda(0, i) * grad.col(2);
@@ -134,7 +139,7 @@ class MeshFunctionWhitneyOne {
   }
 
  private:
-  const Eigen::VectorXd& mu_;
+  const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu_;
   const std::shared_ptr<const lf::mesh::Mesh> mesh_;
 };
 

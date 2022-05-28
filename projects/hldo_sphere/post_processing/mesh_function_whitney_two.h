@@ -6,11 +6,14 @@
 /**
  * @file mesh_function_whitney_two.h
  *
+ * @tparam SCALAR type of the return vector
+ *
  * @brief Provides utilities for the evaluation of errors
  */
 
 namespace projects::hldo_sphere::post_processing {
 
+template <typename SCALAR>
 class MeshFunctionWhitneyTwo {
  public:
   /**
@@ -20,7 +23,7 @@ class MeshFunctionWhitneyTwo {
    * global ordering
    * @param mesh containing the mesh on which to evaluate
    */
-  MeshFunctionWhitneyTwo(const Eigen::VectorXd& mu,
+  MeshFunctionWhitneyTwo(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                          const std::shared_ptr<const lf::mesh::Mesh> mesh)
       : mu_(mu), mesh_(mesh) {
     // make sure mu has the same size as number of cells
@@ -57,7 +60,7 @@ class MeshFunctionWhitneyTwo {
    * @note only triangles are supported
    *
    */
-  std::vector<double> operator()(const lf::mesh::Entity& e,
+  std::vector<SCALAR> operator()(const lf::mesh::Entity& e,
                                  const Eigen::MatrixXd& local) const {
     // Only triangles are supported
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
@@ -68,7 +71,7 @@ class MeshFunctionWhitneyTwo {
     // same codomain
     lf::base::size_type global_index = mesh_->Index(e);
 
-    std::vector<double> vals(local.cols());
+    std::vector<SCALAR> vals(local.cols());
     for (int i = 0; i < local.cols(); i++) {
       vals[i] = mu_(global_index);
     }
@@ -77,7 +80,7 @@ class MeshFunctionWhitneyTwo {
   }
 
  private:
-  const Eigen::VectorXd& mu_;
+  const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu_;
   const std::shared_ptr<const lf::mesh::Mesh> mesh_;
 };
 

@@ -149,8 +149,8 @@ class WhitneyTwoHodgeLaplace {
     coo_matrix_ = full_matrix;
 
     // create element vector provider
-    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider vector_provider(
-        f_);
+    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider<double>
+        vector_provider(f_);
 
     // create load vector
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs_const);

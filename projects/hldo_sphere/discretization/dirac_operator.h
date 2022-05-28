@@ -29,6 +29,8 @@ namespace projects::hldo_sphere {
 
 namespace discretization {
 
+using SCALAR = std::complex<double>;
+
 /**
  * @brief Computes the Galerkin LSE for the Dirac Operator and the load vector
  *
@@ -38,8 +40,8 @@ namespace discretization {
  * \mathbf{grad}_{\Gamma} v \, dS & \\ \int_{\partial \mathbf{S}}
  * \mathbf{grad}_{\Gamma} u \cdot \mathbf{v} \, dS & & \int\limits_{\partial
  * \mathbf{S}} \mu \ \ \text{curl}_{\Gamma} \mathbf{v} \, dS  \\ &
- * \int\limits_{\partial \mathbf{S}} \text{curl}_{\Gamma} \mathbf{u} \ \ \nu \,
- * dS & \end{pmatrix}
+ * \int\limits_{\partial \mathbf{S}} \text{curl}_{\Gamma} \mathbf{u} \ \ \nu
+ * \, dS & \end{pmatrix}
  *   ,
  *   \begin{pmatrix}
  *      \int\limits_{\partial \mathbf{S}} f v \, dS \\
@@ -60,8 +62,7 @@ class DiracOperator {
    * creates zerovalued function f
    *
    */
-  DiracOperator()
-      : coo_matrix_(lf::assemble::COOMatrix<std::complex<double>>(1, 1)) {
+  DiracOperator() : coo_matrix_(lf::assemble::COOMatrix<SCALAR>(1, 1)) {
     // create mesh factory for basic mesh
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
@@ -76,12 +77,12 @@ class DiracOperator {
     mesh_p_ = sphere->Build();
 
     // create basic function
-    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     auto f_1 =
-        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<double, 3, 1> {
-      return Eigen::Matrix<double, 3, 1>::Zero();
+        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<SCALAR, 3, 1> {
+      return Eigen::Matrix<SCALAR, 3, 1>::Zero();
     };
-    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     f0_ = f_0;
     f1_ = f_1;
     f2_ = f_2;
@@ -132,7 +133,7 @@ class DiracOperator {
         0, dof_handler_cell, dof_handler_edge, matrix_div_provider, coo_A_23_m);
 
     // create full matrix
-    lf::assemble::COOMatrix<std::complex<double>> full_matrix(
+    lf::assemble::COOMatrix<SCALAR> full_matrix(
         n_dofs_vert + n_dofs_edge + n_dofs_cell,
         n_dofs_vert + n_dofs_edge + n_dofs_cell);
 
@@ -149,7 +150,7 @@ class DiracOperator {
     for (Eigen::Triplet<double> triplet : triplets_A_21) {
       int col = triplet.col();
       int row = triplet.row();
-      std::complex<double> val = std::complex<double>(triplet.value(), 0.);
+      SCALAR val = SCALAR(triplet.value(), 0.);
       // A_21
       full_matrix.AddToEntry(row + n_dofs_vert, col, val);
       // A_12
@@ -160,7 +161,7 @@ class DiracOperator {
     for (Eigen::Triplet<double> triplet : triplets_A_23_m) {
       int col = triplet.col();
       int row = triplet.row();
-      std::complex<double> val = std::complex<double>(-triplet.value(), 0.);
+      SCALAR val = SCALAR(-triplet.value(), 0.);
 
       // Add A_23
       full_matrix.AddToEntry(row + n_dofs_vert, col + n_dofs_vert + n_dofs_edge,
@@ -174,20 +175,21 @@ class DiracOperator {
     coo_matrix_ = full_matrix;
 
     // create element vector provider
-    projects::hldo_sphere::assemble::LoadVectorProvider vector_provider_0(f0_);
+    projects::hldo_sphere::assemble::LoadVectorProvider<SCALAR>
+        vector_provider_0(f0_);
 
-    projects::hldo_sphere::assemble::WhitneyOneVectorProvider vector_provider_1(
-        f1_);
+    projects::hldo_sphere::assemble::WhitneyOneVectorProvider<SCALAR>
+        vector_provider_1(f1_);
 
-    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider vector_provider_2(
-        f2_);
+    projects::hldo_sphere::assemble::WhitneyTwoVectorProvider<SCALAR>
+        vector_provider_2(f2_);
 
     // create load vector
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi0(n_dofs_vert);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi0(n_dofs_vert);
     phi0.setZero();
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi1(n_dofs_edge);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi1(n_dofs_edge);
     phi1.setZero();
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi2(n_dofs_cell);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi2(n_dofs_cell);
     phi2.setZero();
 
     // assemble the global vector over entities with codim=0:
@@ -196,13 +198,12 @@ class DiracOperator {
     AssembleVectorLocally(0, dof_handler_cell, vector_provider_2, phi2);
 
     // create full vector
-    Eigen::Matrix<std::complex<double>, Eigen::Dynamic, 1> full_vec(
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> full_vec(
         n_dofs_vert + n_dofs_edge + n_dofs_cell);
     full_vec.setZero();
-    full_vec.head(n_dofs_vert) = phi0.cast<std::complex<double>>();
-    full_vec.segment(n_dofs_vert, n_dofs_edge) =
-        phi1.cast<std::complex<double>>();
-    full_vec.tail(n_dofs_cell) = phi2.cast<std::complex<double>>();
+    full_vec.head(n_dofs_vert) = phi0;
+    full_vec.segment(n_dofs_vert, n_dofs_edge) = phi1;
+    full_vec.tail(n_dofs_cell) = phi2;
 
     // set the class attributes
     phi_ = full_vec;
@@ -238,11 +239,11 @@ class DiracOperator {
    * @param f2 load functions in @f$ L^2 @f$
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2) {
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;
@@ -257,9 +258,7 @@ class DiracOperator {
    * this function
    *
    */
-  Eigen::Matrix<std::complex<double>, Eigen::Dynamic, 1> GetLoadVector() {
-    return phi_;
-  }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetLoadVector() { return phi_; }
 
   /**
    * @brief returns the Galerkin Matrix
@@ -270,19 +269,17 @@ class DiracOperator {
    * calling this funciton
    *
    */
-  lf::assemble::COOMatrix<std::complex<double>> GetGalerkinMatrix() {
-    return coo_matrix_;
-  }
+  lf::assemble::COOMatrix<SCALAR> GetGalerkinMatrix() { return coo_matrix_; }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f0_;
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f1_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2_;
-  lf::assemble::COOMatrix<std::complex<double>> coo_matrix_;
-  Eigen::Matrix<std::complex<double>, Eigen::Dynamic, 1> phi_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f2_;
+  lf::assemble::COOMatrix<SCALAR> coo_matrix_;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_;
 };
 
 }  // namespace discretization

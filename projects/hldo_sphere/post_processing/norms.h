@@ -97,9 +97,9 @@ std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> SupNorm(
     auto values = f(*e, loc_points);
 
     // compute local quadrature of the squared norm
-    double loc_max = 0;
+    double loc_max = 0.;
     for (lf::base::size_type i = 0; i < n_points; i++) {
-      int temp = sq_f(values[i]);
+      double temp = sq_f(values[i]);
       if (temp > loc_max) loc_max = temp;
       if (temp > glob_max) glob_max = temp;
     }

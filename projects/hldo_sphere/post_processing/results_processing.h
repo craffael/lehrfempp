@@ -38,11 +38,12 @@ using lf::uscalfe::operator-;
  * @tparam U_ONE functor for the analytical solution of the one form
  * @tparam U_TWO functor for the analytical solution of the two form
  */
+template <typename SCALAR>
 struct ProblemSolution {
   std::shared_ptr<const lf::mesh::Mesh> mesh;
-  Eigen::VectorXd mu_zero;
-  Eigen::VectorXd mu_one;
-  Eigen::VectorXd mu_two;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> mu_zero;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> mu_one;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> mu_two;
 };
 
 /**
@@ -64,6 +65,7 @@ static std::string concat(Args &&...args) {
  * @tparam U_ZERO functor for the analytical solution of the zero form
  * @tparam U_ONE functor for the analytical solution of the one form
  * @tparam U_TWO functor for the analytical solution of the two form
+ * @tparam SCALAR type of the resultvectors
  *
  * @param name identifying the experiment (used to name the outputs)
  * @param results contains a list of ProblemSolution structs, each containing a
@@ -71,8 +73,9 @@ static std::string concat(Args &&...args) {
  * approximate solution
  *
  */
-template <typename U_ZERO, typename U_ONE, typename U_TWO>
-void process_results(std::string name, std::vector<ProblemSolution> &results,
+template <typename U_ZERO, typename U_ONE, typename U_TWO, typename SCALAR>
+void process_results(std::string name,
+                     std::vector<ProblemSolution<SCALAR>> &results,
                      U_ZERO &u_zero, U_ONE u_one, U_TWO u_two) {
   int n = results.size();
 
@@ -128,16 +131,12 @@ void process_results(std::string name, std::vector<ProblemSolution> &results,
     lf::io::VtkWriter writer(sol.mesh,
                              concat("result_", name, "_", lvl, ".vtk"));
 
-    // write the points out to the result vtk
-    // first get dataset
-    lf::mesh::utils::CodimMeshDataSet<double> data_set_solution_zero =
-        projects::hldo_sphere::post_processing::extractTwoFormSolution(
-            sol.mesh, sol.mu_two);
-    writer.WriteCellData(concat("mf_two_", lvl), data_set_solution_zero);
-
     // define square functions
-    auto square_scalar = [](double a) -> double { return a * a; };
-    auto square_vector = [](Eigen::VectorXd a) -> double {
+    auto square_scalar = [](SCALAR a) -> double {
+      return std::abs(a) * std::abs(a);
+    };
+    auto square_vector =
+        [](Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> a) -> double {
       return a.squaredNorm();
     };
 

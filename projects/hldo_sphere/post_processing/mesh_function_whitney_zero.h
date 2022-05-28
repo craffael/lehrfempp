@@ -6,11 +6,14 @@
 /**
  * @file mesh_function_whitney_zero.h
  *
+ * @tparam SCALAR type of the solution vector
+ *
  * @brief Provides utilities for the evaluation of errors
  */
 
 namespace projects::hldo_sphere::post_processing {
 
+template <typename SCALAR>
 class MeshFunctionWhitneyZero {
  public:
   /**
@@ -20,7 +23,7 @@ class MeshFunctionWhitneyZero {
    * global ordering
    * @param mesh containing the mesh on which to evaluate
    */
-  MeshFunctionWhitneyZero(const Eigen::VectorXd& mu,
+  MeshFunctionWhitneyZero(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                           const std::shared_ptr<const lf::mesh::Mesh> mesh)
       : mu_(mu), mesh_(mesh) {
     // make sure mu has the right size
@@ -60,20 +63,21 @@ class MeshFunctionWhitneyZero {
    * @note only triangles are supported
    *
    */
-  std::vector<double> operator()(const lf::mesh::Entity& e,
+  std::vector<SCALAR> operator()(const lf::mesh::Entity& e,
                                  const Eigen::MatrixXd& local) const {
     // Only triangles are supported
     LF_VERIFY_MSG(e.RefEl() == lf::base::RefEl::kTria(),
                   "Unsupported cell type " << e.RefEl());
 
     // get the lambdas
-    const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;
+    const lf::uscalfe::FeLagrangeO1Tria<SCALAR> hat_func;
 
     // get lambda values
-    const Eigen::MatrixXd lambda = hat_func.EvalReferenceShapeFunctions(local);
+    const Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> lambda =
+        hat_func.EvalReferenceShapeFunctions(local);
 
     // define return vector
-    std::vector<double> vals(local.cols());
+    std::vector<SCALAR> vals(local.cols());
 
     // get global indices of the edges
     std::vector<lf::base::size_type> global_indices(3);
@@ -94,7 +98,7 @@ class MeshFunctionWhitneyZero {
   }
 
  private:
-  const Eigen::VectorXd& mu_;
+  const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu_;
   const std::shared_ptr<const lf::mesh::Mesh> mesh_;
 };
 

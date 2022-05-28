@@ -428,10 +428,6 @@ TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test_co
   double c = 16. * sqrt(1.5) * sqrt(0.5) * 5.2;
   Vec_anal.tail(8) << c,c,c,c,c,c,c,c;
 
-
-  std::cout << "Mat\n" << lse_builder.GetGalerkinMatrix().makeDense() << "\n\nLoad vec \n" << Vec << "\n\n";
-                      
-
   for (int j = 0; j < Vec_anal.cols(); ++j) {
     EXPECT_NEAR(Vec(j), Vec_anal(j), 0.1) << "mismatch in entry (" << j << ")";
   }
