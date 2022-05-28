@@ -44,28 +44,32 @@ int main(int argc, char *argv[]) {
   sphere.setRadius(r);
 
   // righthandside for the zero and two form
-  auto f_zero = [&](const Eigen::Vector3d &x_vec) -> double { return 0; };
+  auto f_zero = [&](const Eigen::Vector3d &x_vec) -> std::complex<double> {
+    return 0;
+  };
 
   // righthandside for the one form
-  auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXd {
-    Eigen::VectorXd ret(3);
+  auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXcd {
+    Eigen::VectorXcd ret(3);
     ret << 0, 0, 0;
     return ret;
   };
 
   // Compute the analytic solution of the problem
-  auto u_zero = [&](const Eigen::Vector3d &x_vec) -> double { return 0; };
+  auto u_zero = [&](const Eigen::Vector3d &x_vec) -> std::complex<double> {
+    return 0;
+  };
 
   // Compute the analytic solution of the problem
-  auto u_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::Vector3d {
-    Eigen::VectorXd ret(3);
-
-    ret << 0, 0, 0;
+  auto u_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::Vector3cd {
+    Eigen::VectorXcd ret(3);
+    ret.setZero();
     return ret;
   };
 
   // Solve the problem for each mesh in the hierarchy
-  std::vector<projects::hldo_sphere::post_processing::ProblemSolution>
+  std::vector<projects::hldo_sphere::post_processing::ProblemSolution<
+      std::complex<double>>>
       solutions(refinement_level + 1);
 
   projects::hldo_sphere::discretization::DiracOperatorSourceProblem lse_builder;
@@ -154,8 +158,8 @@ int main(int argc, char *argv[]) {
             << " [s]\n";
 
   projects::hldo_sphere::post_processing::process_results<
-      decltype(u_zero), decltype(u_one), decltype(u_zero)>(
-      "zero", solutions, u_zero, u_one, u_zero);
+      decltype(u_zero), decltype(u_one), decltype(u_zero),
+      std::complex<double>>("zero", solutions, u_zero, u_one, u_zero);
 
   return 0;
 }
