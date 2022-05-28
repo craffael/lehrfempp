@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   };
 
   // Solve the problem for each mesh in the hierarchy
-  std::vector<projects::hldo_sphere::post_processing::ProblemSolution>
+  std::vector<projects::hldo_sphere::post_processing::ProblemSolution<double>>
       solutions(refinement_level + 1);
 
   projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
             << " [s]\n";
 
   projects::hldo_sphere::post_processing::process_results<
-      decltype(u_zero), decltype(u_one), decltype(u_zero)>(
+      decltype(u_zero), decltype(u_one), decltype(u_zero), double>(
       "zero", solutions, u_zero, u_one, u_zero);
 
   return 0;

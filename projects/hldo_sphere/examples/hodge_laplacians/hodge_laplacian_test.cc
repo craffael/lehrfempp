@@ -1,5 +1,5 @@
 /**
- * @file hodge_laplacians.cc
+ * @file hodge_laplacian_test.cc
  * @brief Solve hodge laplacian source problem for fixed function f and variable
  * k
  */
@@ -134,53 +134,20 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd ret(3);
 
     // mathematica autocompute
-    ret << (2 * z * (-Power(x, 2) + Power(y, 2) + Power(z, 2)) * Cos(x) +
-            2 * y * (-Power(x, 2) + Power(y, 2) + Power(z, 2)) * Cos(y) -
-            4 * x * y * z * Cos(z) - 2 * x * z * Sin(x) -
-            x * Power(y, 2) * z * Sin(x) - x * Power(z, 3) * Sin(x) +
-            2 * Power(y, 2) * Sin(y) + Power(x, 2) * Power(y, 2) * Sin(y) +
-            2 * Power(z, 2) * Sin(y) + Power(x, 2) * Power(z, 2) * Sin(y) +
-            Power(y, 2) * Power(z, 2) * Sin(y) + Power(z, 4) * Sin(y) -
-            2 * x * y * Sin(z) - Power(x, 3) * y * Sin(z) -
-            x * Power(y, 3) * Sin(z) +
-            Power(k, 2) * (Power(x, 2) + Power(y, 2) + Power(z, 2)) *
-                (-(x * z * Sin(x)) + (Power(y, 2) + Power(z, 2)) * Sin(y) -
-                 x * y * Sin(z))) /
-               Power(Power(x, 2) + Power(y, 2) + Power(z, 2), 2),
-        (-4 * x * y * z * Cos(x) +
-         2 * x * (Power(x, 2) - Power(y, 2) + Power(z, 2)) * Cos(y) +
-         2 * Power(x, 2) * z * Cos(z) - 2 * Power(y, 2) * z * Cos(z) +
-         2 * Power(z, 3) * Cos(z) - 2 * y * z * Sin(x) -
-         Power(y, 3) * z * Sin(x) - y * Power(z, 3) * Sin(x) -
-         2 * x * y * Sin(y) - Power(x, 3) * y * Sin(y) -
-         x * y * Power(z, 2) * Sin(y) + 2 * Power(x, 2) * Sin(z) +
-         Power(x, 4) * Sin(z) + Power(x, 2) * Power(y, 2) * Sin(z) +
-         2 * Power(z, 2) * Sin(z) + Power(x, 2) * Power(z, 2) * Sin(z) +
-         Power(y, 2) * Power(z, 2) * Sin(z) +
-         Power(k, 2) * (Power(x, 2) + Power(y, 2) + Power(z, 2)) *
-             (-(y * z * Sin(x)) - x * y * Sin(y) +
-              (Power(x, 2) + Power(z, 2)) * Sin(z))) /
-            Power(Power(x, 2) + Power(y, 2) + Power(z, 2), 2),
-        (2 * x * (Power(x, 2) + Power(y, 2) - Power(z, 2)) * Cos(x) -
-         4 * x * y * z * Cos(y) + 2 * Power(x, 2) * y * Cos(z) +
-         2 * Power(y, 3) * Cos(z) - 2 * y * Power(z, 2) * Cos(z) +
-         2 * Power(x, 2) * Sin(x) + 2 * Power(y, 2) * Sin(x) +
-         Power(x, 2) * Power(y, 2) * Sin(x) + Power(y, 4) * Sin(x) +
-         Power(x, 2) * Power(z, 2) * Sin(x) +
-         Power(y, 2) * Power(z, 2) * Sin(x) - 2 * x * z * Sin(y) -
-         Power(x, 3) * z * Sin(y) - x * Power(z, 3) * Sin(y) -
-         2 * y * z * Sin(z) - Power(x, 2) * y * z * Sin(z) -
-         Power(y, 3) * z * Sin(z) +
-         Power(k, 2) * (Power(x, 2) + Power(y, 2) + Power(z, 2)) *
-             ((Power(x, 2) + Power(y, 2)) * Sin(x) -
-              z * (x * Sin(y) + y * Sin(z)))) /
-            Power(Power(x, 2) + Power(y, 2) + Power(z, 2), 2);
+    ret << (-(x * z * Sin(x)) + (Power(y, 2) + Power(z, 2)) * Sin(y) -
+            x * y * Sin(z)) /
+               (Power(x, 2) + Power(y, 2) + Power(z, 2)),
+        (-(y * z * Sin(x)) - x * y * Sin(y) +
+         (Power(x, 2) + Power(z, 2)) * Sin(z)) /
+            (Power(x, 2) + Power(y, 2) + Power(z, 2)),
+        ((Power(x, 2) + Power(y, 2)) * Sin(x) - z * (x * Sin(y) + y * Sin(z))) /
+            (Power(x, 2) + Power(y, 2) + Power(z, 2));
 
     return ret;
   };
 
   // Solve the problem for each mesh in the hierarchy
-  std::vector<projects::hldo_sphere::post_processing::ProblemSolution>
+  std::vector<projects::hldo_sphere::post_processing::ProblemSolution<double>>
       solutions(refinement_level + 1);
 
   projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
@@ -270,7 +237,7 @@ int main(int argc, char *argv[]) {
             << " [s]\n";
 
   projects::hldo_sphere::post_processing::process_results<
-      decltype(u_zero), decltype(u_one), decltype(u_zero)>(
+      decltype(u_zero), decltype(u_one), decltype(u_zero), double>(
       "test", solutions, u_zero, u_one, u_zero);
 
   return 0;
