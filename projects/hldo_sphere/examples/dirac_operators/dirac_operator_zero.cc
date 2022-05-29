@@ -3,15 +3,7 @@
  * @brief Solve Dirac Operator source problem for fixed function u = 0 and
  */
 
-#include <dirac_operator_source_problem.h>
-#include <lf/mesh/hybrid2d/mesh_factory.h>
-#include <lf/mesh/utils/utils.h>
-#include <lf/refinement/refinement.h>
-#include <norms.h>
-#include <results_processing.h>
-#include <sphere_triag_mesh_builder.h>
-
-#include <chrono>
+#include <dirac_operator_example.h>
 
 using lf::uscalfe::operator-;
 
@@ -20,28 +12,35 @@ using lf::uscalfe::operator-;
  * creates vtk plots for a constant function u = 0
  */
 int main(int argc, char *argv[]) {
-  if (argc != 4) {
-    std::cerr << "Usage: " << argv[0] << " max_refinement_level k radius"
-              << std::endl;
+  if (argc != 4 && argc != 5) {
+    std::cerr << "Usage: " << argv[0]
+              << " max_refinement_level min_k max_k step=0.1 " << std::endl;
     exit(1);
   }
 
-  double k;
+  double min_k;
+  double max_k;
+  double step = 0.1;
   const unsigned refinement_level = atoi(argv[1]);
-  double r;
-  sscanf(argv[2], "%lf", &k);
-  sscanf(argv[3], "%lf", &r);
+  sscanf(argv[2], "%lf", &min_k);
+  sscanf(argv[3], "%lf", &max_k);
+  if (argc == 5) sscanf(argv[4], "%lf", &step);
   std::cout << "max_refinement_level : " << refinement_level << std::endl;
+  std::cout << "min_k : " << min_k << ", max_k = " << max_k
+            << " step = " << step << std::endl;
 
-  // Read the mesh from the gmsh file
-  std::unique_ptr<lf::mesh::MeshFactory> factory =
-      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
+  // needs to be a reference such that it can be reassigned
+  double &k = min_k;
 
-  projects::hldo_sphere::mesh::SphereTriagMeshBuilder sphere =
-      projects::hldo_sphere::mesh::SphereTriagMeshBuilder(std::move(factory));
+  std::vector<unsigned> refinement_levels(refinement_level + 1);
+  for (int i = 0; i < refinement_level + 1; i++) {
+    refinement_levels[i] = i;
+  }
 
-  // we always take the same radius
-  sphere.setRadius(r);
+  std::vector<double> ks;
+  for (double i = min_k; i <= max_k; i += step) {
+    ks.push_back(i);
+  }
 
   // righthandside for the zero and two form
   auto f_zero = [&](const Eigen::Vector3d &x_vec) -> std::complex<double> {
@@ -67,99 +66,10 @@ int main(int argc, char *argv[]) {
     return ret;
   };
 
-  // Solve the problem for each mesh in the hierarchy
-  std::vector<projects::hldo_sphere::post_processing::ProblemSolution<
-      std::complex<double>>>
-      solutions(refinement_level + 1);
+  projects::hldo_sphere::examples::DiracOperatorExample example(
+      u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
 
-  projects::hldo_sphere::discretization::DiracOperatorSourceProblem lse_builder;
-  lse_builder.SetLoadFunctions(f_zero, f_one, f_zero);
-
-  // start timer for total time
-  std::chrono::steady_clock::time_point start_time_total =
-      std::chrono::steady_clock::now();
-
-  for (lf::base::size_type lvl = 0; lvl < refinement_level + 1; ++lvl) {
-    std::cout << "\nStart computation of refinement_level " << lvl << " "
-              << std::flush;
-
-    // start timer
-    std::chrono::steady_clock::time_point start_time =
-        std::chrono::steady_clock::now();
-
-    // get mesh
-    sphere.setRefinementLevel(lvl);
-    const std::shared_ptr<lf::mesh::Mesh> mesh = sphere.Build();
-
-    // end timer
-    std::chrono::steady_clock::time_point end_time =
-        std::chrono::steady_clock::now();
-    double elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             end_time - start_time)
-                             .count() /
-                         1000.;
-
-    std::cout << " -> Built Mesh " << elapsed_sec << " [s] " << std::flush;
-
-    auto &sol = solutions[lvl];
-    sol.mesh = mesh;
-
-    // setup the problem
-    lse_builder.SetMesh(mesh);
-    lse_builder.SetK(k);
-
-    // start timer
-    start_time = std::chrono::steady_clock::now();
-
-    // compute the system
-    lse_builder.Compute();
-
-    // end timer
-    end_time = std::chrono::steady_clock::now();
-    elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      end_time - start_time)
-                      .count() /
-                  1000.;
-
-    std::cout << " -> Computed LSE " << elapsed_sec << " [s] " << std::flush;
-
-    // start timer
-    start_time = std::chrono::steady_clock::now();
-
-    // solve the system
-    lse_builder.Solve();
-
-    // end timer
-    end_time = std::chrono::steady_clock::now();
-
-    elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      end_time - start_time)
-                      .count() /
-                  1000.;
-
-    std::cout << " -> Solved System " << elapsed_sec << " [s] " << std::flush;
-
-    // store solutions
-    sol.mu_zero = lse_builder.GetMu(0);
-    sol.mu_one = lse_builder.GetMu(1);
-    sol.mu_two = lse_builder.GetMu(2);
-  }
-
-  // end timer total
-  std::chrono::steady_clock::time_point end_time_total =
-      std::chrono::steady_clock::now();
-  double elapsed_sec_total =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end_time_total -
-                                                            start_time_total)
-          .count() /
-      1000.;
-
-  std::cout << "\nTotal computation time for all levels " << elapsed_sec_total
-            << " [s]\n";
-
-  projects::hldo_sphere::post_processing::process_results<
-      decltype(u_zero), decltype(u_one), decltype(u_zero),
-      std::complex<double>>("zero", solutions, u_zero, u_one, u_zero);
+  example.Compute(refinement_levels, ks);
 
   return 0;
 }

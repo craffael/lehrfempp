@@ -131,8 +131,10 @@ class DiracOperatorSourceProblem {
         lf::assemble::UniformFEDofHandler(mesh_p_,
                                           {{lf::base::RefEl::kPoint(), 1}});
     const lf::assemble::size_type n_dofs_zero(dof_handler_zero.NumDofs());
+
     lf::assemble::COOMatrix<SCALAR> coo_mass_mat_zero(n_dofs_zero, n_dofs_zero);
     coo_mass_mat_zero.setZero();
+
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<SCALAR>>(
         0, dof_handler_zero, dof_handler_zero, mass_matrix_provider_zero,
         coo_mass_mat_zero);
@@ -209,7 +211,9 @@ class DiracOperatorSourceProblem {
   void Solve() {
     Eigen::SparseLU<Eigen::SparseMatrix<SCALAR>> solver;
     Eigen::SparseMatrix<SCALAR> sparse_mat = coo_matrix_.makeSparse();
-    solver.compute(sparse_mat);
+    sparse_mat.makeCompressed();
+    solver.analyzePattern(sparse_mat);
+    solver.factorize(sparse_mat);
     if (solver.info() != Eigen::Success) {
       throw std::runtime_error("Could not decompose the matrix");
     }
