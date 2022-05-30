@@ -167,8 +167,20 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
     std::replace(kstr.begin(), kstr.end(), '.', '_');
     std::filesystem::create_directory(concat("k_", kstr));
   }
-
   std::cout << std::endl;
+  csv_file << std::endl;
+
+  // write the k values to the csv file
+  csv_file << ","
+           << ","
+           << ",";
+  for (int i = 0; i < nk; i++) {
+    csv_file << "," << results.k[i] << "," << results.k[i] << ","
+             << results.k[i] << "," << results.k[i] << "," << results.k[i]
+             << "," << results.k[i] << "," << results.k[i] << ","
+             << results.k[i] << "," << results.k[i] << "," << results.k[i]
+             << "," << results.k[i] << "," << results.k[i];
+  }
   csv_file << std::endl;
 
   // loop over all levels contained in the solution
@@ -323,7 +335,7 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
        * append solution of the current k in the outputs
        ******************************/
 
-      csv_file << SupErrorZero(lvl, ik) << "," << supRateZero << ","
+      csv_file << "," << SupErrorZero(lvl, ik) << "," << supRateZero << ","
                << SupErrorOne(lvl, ik) << "," << supRateOne << ","
                << SupErrorTwo(lvl, ik) << "," << supRateTwo << ","
                << L2ErrorZero(lvl, ik) << "," << l2RateZero << ","
