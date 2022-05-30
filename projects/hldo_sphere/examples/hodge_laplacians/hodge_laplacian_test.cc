@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   };
 
   projects::hldo_sphere::examples::HodgeLaplacianExample example(
-      u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
+      u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "test");
 
   example.Compute(refinement_levels, ks);
 
