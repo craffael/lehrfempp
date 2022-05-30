@@ -211,7 +211,7 @@ class HodgeLaplacianExample {
 
     projects::hldo_sphere::post_processing::process_results<
         decltype(u_zero_), decltype(u_one_), decltype(u_zero_), double>(
-        "zero", solutions, u_zero_, u_one_, u_zero_, k_);
+        name_, solutions, u_zero_, u_one_, u_zero_, k_);
   }
 
  private:

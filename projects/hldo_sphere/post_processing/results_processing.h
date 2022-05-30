@@ -90,6 +90,10 @@ static std::string concat(Args &&...args) {
 template <typename U_ZERO, typename U_ONE, typename U_TWO, typename SCALAR>
 void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
                      U_ZERO &u_zero, U_ONE &u_one, U_TWO &u_two, double &k) {
+  // create results direcotry
+  std::string main_dir = "results";
+  std::filesystem::create_directory(main_dir);
+
   // each containing number of k values
   int nk = results.k.size();
   int nl = results.levels.size();
@@ -98,9 +102,15 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
   int table_width = 13;
   int precision = 4;
 
+  // name the csv file accoring to min and max k
+  double min_k = results.k[0];
+  double max_k = results.k[nk - 1];
+
   // create csv file
   std::ofstream csv_file;
-  csv_file.open(concat("result_", name, ".csv"));
+  std::string csv_name = concat("result_", name, "_", min_k, "-", max_k);
+  std::replace(csv_name.begin(), csv_name.end(), '.', '_');
+  csv_file.open(concat(main_dir, "/", csv_name, ".csv"));
   csv_file << "numCells,"
            << "numEdges,"
            << "numVerts,"
@@ -164,7 +174,7 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
     // create direcotries for each k
     std::string kstr = concat(results.k[i]);
     std::replace(kstr.begin(), kstr.end(), '.', '_');
-    std::filesystem::create_directory(concat("k_", kstr));
+    std::filesystem::create_directory(concat(main_dir, "/k_", kstr));
   }
   std::cout << std::endl;
   csv_file << std::endl;
@@ -205,7 +215,7 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
     for (int ik = 0; ik < nk; ik++) {
       std::string kstr = concat(results.k[ik]);
       std::replace(kstr.begin(), kstr.end(), '.', '_');
-      std::string folder = concat("k_", kstr);
+      std::string folder = concat(main_dir, "/k_", kstr);
 
       projects::hldo_sphere::post_processing::MeshFunctionWhitneyZero mf_zero(
           sol_mus.mu_zero[ik], sol_mesh);

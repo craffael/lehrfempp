@@ -18,8 +18,9 @@ from matplotlib.ticker import FormatStrFormatter
 def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
 
     df = pd.read_csv(file)
-    print(df.iloc[1:, 4::2].head())
     df_y = df.iloc[1:,4:]
+    # print table
+    #print(df.iloc[1:, 4::2].head())
 
     num_k = df_y.shape[1] // 12
     ks = df.iloc[0,4::12].to_numpy()
@@ -48,10 +49,10 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
     m = len(kind_index)
     n = len(form_index)
 
-    # if non is selected select all
+    # if non is selected select only l2
     if m <= 0:
-        kind_index = range(2)
-        m = 2
+        kind_index = [1]
+        m = 1
 
     if n <= 0:
         form_index = range(3)
@@ -72,7 +73,6 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
             for k in range(num_k):
                 df_col_idx = 2 * (kind_index[i] * n + form_index[j]) + 2 * k * n * m
                 y = df_y.iloc[:, df_col_idx].to_numpy()
-                print("at index i ", i, " j ", j, " k ", k, " y = ", y); 
                 if scale.lower() == 'semilog':
                     curr_axs.semilogy(x,y)
                 if scale.lower() == 'loglog':
