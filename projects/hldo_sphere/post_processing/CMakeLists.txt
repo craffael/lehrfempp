@@ -4,8 +4,6 @@ set(sources
         mesh_function_whitney_zero.h
         mesh_function_whitney_one.h
         mesh_function_whitney_two.h
-        two_form_to_mesh_data_set.h
-        two_form_to_mesh_data_set.cc
         results_processing.h
 )
 
