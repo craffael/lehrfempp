@@ -79,6 +79,7 @@ static std::string concat(Args &&...args) {
  * triangle). Moreover it contains the l2 error and the Supremum error as well
  * as the approximate orders for every value of k and all three forms.
  *
+ *
  * @tparam U_ZERO functor for the analytical solution of the zero form
  * @tparam U_ONE functor for the analytical solution of the one form
  * @tparam U_TWO functor for the analytical solution of the two form
@@ -131,7 +132,7 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
   };
 
   // define quadrule for norms
-  lf::quad::QuadRule qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 2);
+  lf::quad::QuadRule qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4);
 
   // create solution matrix with levels on rows and ks in colums
   Eigen::MatrixXd SupErrorZero = Eigen::MatrixXd::Zero(nl, nk);

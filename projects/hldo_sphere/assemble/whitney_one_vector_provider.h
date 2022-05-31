@@ -58,7 +58,7 @@ class WhitneyOneVectorProvider {
    * @param f a tangential vector field on the sphere
    */
   WhitneyOneVectorProvider(
-      std::function<Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Vector3d &)> f)
+      std::function<Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Vector3d &)> &f)
       : f_(std::move(f)) {}
 
   /**

@@ -64,54 +64,8 @@ int main(int argc, char *argv[]) {
     double x = x_vec(0);
     double y = x_vec(1);
     double z = x_vec(2);
-    return (Power(x, 8) *
-                (-2. * z + Complex(0., 5.2) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(y, 8) *
-                (-2. * z + Complex(0., 5.2) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(z, 8) *
-                (-2. * z + Complex(0., 5.2) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(y, 6) * Power(z, 2) *
-                (-8. * z + Complex(0., 20.8) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(y, 2) * Power(z, 6) *
-                (-8. * z + Complex(0., 20.8) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(x, 6) * (Power(y, 2) + Power(z, 2)) *
-                (-8. * z + Complex(0., 20.8) * k *
-                               Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(y, 4) * Power(z, 4) *
-                (-12. * z + Complex(0., 31.200000000000003) * k *
-                                Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-            Power(x, 4) *
-                (Power(y, 4) * (-12. * z + Complex(0., 31.200000000000003) * k *
-                                               Sqrt(Power(x, 2) + Power(y, 2) +
-                                                    Power(z, 2))) +
-                 Power(z, 4) * (-12. * z + Complex(0., 31.200000000000003) * k *
-                                               Sqrt(Power(x, 2) + Power(y, 2) +
-                                                    Power(z, 2))) +
-                 Power(y, 2) * Power(z, 2) *
-                     (-24. * z +
-                      Complex(0., 62.400000000000006) * k *
-                          Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2)))) +
-            Power(x, 2) *
-                (Power(y, 6) * (-8. * z + Complex(0., 20.8) * k *
-                                              Sqrt(Power(x, 2) + Power(y, 2) +
-                                                   Power(z, 2))) +
-                 Power(z, 6) * (-8. * z + Complex(0., 20.8) * k *
-                                              Sqrt(Power(x, 2) + Power(y, 2) +
-                                                   Power(z, 2))) +
-                 Power(y, 4) * Power(z, 2) *
-                     (-24. * z +
-                      Complex(0., 62.400000000000006) * k *
-                          Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))) +
-                 Power(y, 2) * Power(z, 4) *
-                     (-24. * z +
-                      Complex(0., 62.400000000000006) * k *
-                          Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2))))) /
-           Power(Power(x, 2) + Power(y, 2) + Power(z, 2), 4.5);
+    return Complex(0., 5.2) * k -
+           (2 * z) / Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2));
   };
 
   // Compute the analytic solution of the problem

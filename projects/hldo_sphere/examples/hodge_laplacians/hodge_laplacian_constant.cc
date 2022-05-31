@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
   // righthandside for the one form
   auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXd {
     // first scale to the sphere
-    Eigen::Vector3d x_ = x_vec / x_vec.norm() * r;
+    Eigen::Vector3d x_ = x_vec;
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
   // Compute the analytic solution of the problem
   auto u_one = [&](const Eigen::Vector3d x_vec) -> Eigen::Vector3d {
     // first scale to the sphere
-    Eigen::Vector3d x_ = x_vec / x_vec.norm() * r;
+    Eigen::Vector3d x_ = x_vec;
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);

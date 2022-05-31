@@ -20,7 +20,7 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
     df = pd.read_csv(file)
     df_y = df.iloc[1:,4:]
     # print table
-    #print(df.iloc[1:, 4::2].head())
+    print(df.iloc[1:, 12::12].head())
 
     num_k = df_y.shape[1] // 12
     ks = df.iloc[0,4::12].to_numpy()
@@ -59,7 +59,11 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
         n = 3
 
     fig, axs = plt.subplots(m,n)
+
+    # loop over the chosen norms 
     for i in range(m):
+
+        # loop over the chosen forms
         for j in range(n):
             if m == 1 or n == 1:
                 curr_axs = axs[i + j]
@@ -70,6 +74,7 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
             curr_axs.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
             curr_axs.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
+            # loop over the k values in the formula -\Delta u + k^2 u = f
             for k in range(num_k):
                 df_col_idx = 2 * (kind_index[i] * n + form_index[j]) + 2 * k * n * m
                 y = df_y.iloc[:, df_col_idx].to_numpy()

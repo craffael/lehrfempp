@@ -216,8 +216,7 @@ class WhitneyOneHodgeLaplace {
    * @f]
    */
   void SetLoadFunction(std::function<Eigen::Matrix<double, 3, 1>(
-                           const Eigen::Matrix<double, 3, 1> &)>
-                           f) {
+                           const Eigen::Matrix<double, 3, 1> &)> &f) {
     f_ = f;
   }
 

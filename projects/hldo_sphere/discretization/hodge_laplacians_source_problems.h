@@ -308,11 +308,10 @@ class HodgeLaplaciansSourceProblems {
    * @param f2 load functions in L^2
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
-          f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2) {
+          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)> &f1,
+      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;

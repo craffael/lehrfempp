@@ -144,7 +144,7 @@ class WhitneyZeroHodgeLaplace {
    * @f]
    */
   void SetLoadFunction(
-      std::function<double(const Eigen::Matrix<double, 3, 1>&)> f) {
+      std::function<double(const Eigen::Matrix<double, 3, 1>&)>& f) {
     f_ = f;
   }
 
