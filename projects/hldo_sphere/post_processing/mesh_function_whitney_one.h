@@ -19,9 +19,23 @@ class MeshFunctionWhitneyOne {
   /**
    * @brief basic constructor
    *
+   * Mesh Function on the global mesh built using the basis expansion
+   * coefficiants passed in the argument and the whitney 1-form basis functions.
+   *
+   * The whitney 1-forms, surface edge elements are associated with
+   * edges and defined as
+   *
+   * @f[
+   *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+   * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+   * @f]
+   *
    * @param mu vector containing the basis function expansion coefficiants in
    * global ordering
+   *
    * @param mesh containing the mesh on which to evaluate
+   *
+   * @note Only triangular meshes are supported
    */
   MeshFunctionWhitneyOne(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                          const std::shared_ptr<const lf::mesh::Mesh> mesh)

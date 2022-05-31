@@ -72,7 +72,12 @@ static std::string concat(Args &&...args) {
 }
 
 /**
- * @brief Generate vtk files containing meshdata, plots and tables with results
+ * @brief Generate vtk files containing meshdata and a csv table with results
+ *
+ * The Table contains for each refinement level, the number of cells, edges and
+ * vetices, as well as the global mesh width (the maximum edgelenght of a
+ * triangle). Moreover it contains the l2 error and the Supremum error as well
+ * as the approximate orders for every value of k and all three forms.
  *
  * @tparam U_ZERO functor for the analytical solution of the zero form
  * @tparam U_ONE functor for the analytical solution of the one form
@@ -116,13 +121,6 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
            << "numVerts,"
            << "hMax";
 
-  // print all the errors
-  std::cout << std::endl
-            << std::endl
-            << std::endl
-            << std::setw(table_width) << "Ref. level" << std::setw(table_width)
-            << "Num Cells";
-
   // define square functions for norms
   auto square_scalar = [](SCALAR a) -> double {
     return std::abs(a) * std::abs(a);
@@ -155,28 +153,11 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
              << ",RateL2ErrorOne_" << results.k[i] << ",L2ErrorTwo_"
              << results.k[i] << ",RateL2ErrorTwo_" << results.k[i];
 
-    std::cout
-        << std::setprecision(3)
-
-        //     << std::setw(table_width) << concat("SupZero_", results.k[i])
-        //     << std::setw(table_width) << concat("RateSup0_", results.k[i])
-        //     << std::setw(table_width) << concat("SupOne_", results.k[i])
-        //     << std::setw(table_width) << concat("RateSup1_", results.k[i])
-        //     << std::setw(table_width) << concat("SupTwo_", results.k[i])
-        //     << std::setw(table_width) << concat("RageSup2_", results.k[i])
-        << std::setw(table_width) << concat("L2Zero_", results.k[i])
-        << std::setw(table_width) << concat("RateL20_", results.k[i])
-        << std::setw(table_width) << concat("L2One_", results.k[i])
-        << std::setw(table_width) << concat("RateL21_", results.k[i])
-        << std::setw(table_width) << concat("L2Two_", results.k[i])
-        << std::setw(table_width) << concat("RateL22_", results.k[i]);
-
     // create direcotries for each k
     std::string kstr = concat(results.k[i]);
     std::replace(kstr.begin(), kstr.end(), '.', '_');
     std::filesystem::create_directory(concat(main_dir, "/k_", kstr));
   }
-  std::cout << std::endl;
   csv_file << std::endl;
 
   // write the k values to the csv file
@@ -205,9 +186,6 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
     }
 
     // print level and mesh informations
-    std::cout << std::setw(table_width) << lvl << std::setw(table_width)
-              << sol_mesh->NumEntities(0);
-
     csv_file << sol_mesh->NumEntities(0) << "," << sol_mesh->NumEntities(1)
              << "," << sol_mesh->NumEntities(2) << "," << hMax(lvl);
 
@@ -237,8 +215,8 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
       auto mf_diff_two = mf_two - mf_two_ana;
 
       // Perform post processing on the data
-      lf::io::VtkWriter writer(
-          sol_mesh, concat(folder, "/result_", name, "_", lvl, ".vtk"));
+      lf::io::VtkWriter writer(sol_mesh, concat(folder, "/result_", name, "_",
+                                                lvl, "_k_", kstr, ".vtk"));
 
       // get error for zero form
       const std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>>
@@ -324,22 +302,6 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
             (hMax(lvl) - hMax(lvl - 1));
       }
 
-      // print all the sup errors
-      std::cout
-
-          //          << std::setw(table_width) << SupErrorZero(lvl, ik)
-          //          << std::setw(table_width) << supRateZero <<
-          //          std::setw(table_width)
-          //          << SupErrorOne(lvl, ik) << std::setw(table_width) <<
-          //          supRateOne
-          //          << std::setw(table_width) << SupErrorTwo(lvl, ik)
-          //          << std::setw(table_width) << supRateTwo
-          << std::setw(table_width) << L2ErrorZero(lvl, ik)
-          << std::setw(table_width) << l2RateZero << std::setw(table_width)
-          << L2ErrorOne(lvl, ik) << std::setw(table_width) << l2RateOne
-          << std::setw(table_width) << L2ErrorTwo(lvl, ik)
-          << std::setw(table_width) << l2RateTwo;
-
       /******************************
        * append solution of the current k in the outputs
        ******************************/
@@ -354,7 +316,6 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
     }  // end loop over k
 
     csv_file << "\n";
-    std::cout << "\n";
   }  // end loop over levels
 
   // close csv file

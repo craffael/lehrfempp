@@ -18,11 +18,8 @@ namespace assemble {
  * that is the dot product of two whitney one basis functions
  *
  * @f[
- * \int\limits_{\Omega} \bm{u} \cdot \bm{v} dx
+ * \int\limits_{\Omega} \textbf{u} \cdot \textbf{v} dx
  * @f]
- *
- * As basis functions, the Whitney 1-forms, surface edge elements are
- * used.
  *
  * The whitney 1-forms, surface edge elements are associated with
  * edges and defined as

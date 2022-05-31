@@ -11,13 +11,14 @@ namespace projects::hldo_sphere::post_processing {
 
 /**
  *
- * @brief Computes the squared L2Norm of some MeshFunction (type MF) f
+ * @brief Computes the L2Norm of some MeshFunction (type MF) f
  *
  * @tparam MF type of the mesh function to take to norm form
  * @tparam SQ_F type of the square function sq_f
  * @param mesh_p pointer to the mesh
  * @param f meshfunction to evaluate
- * @param sq_f square function for the output of f @f$sq_f(x) \mapsto |x|^2@f$
+ * @param sq_f square function for the output of f @f$sq\_f(x) \mapsto
+ * \|x\|^2@f$
  * @param quadrule quadrature rule used for each cell in the mesh
  *
  * @returns pair with the squared norm of the inputfunction f on the mesh and
@@ -53,11 +54,11 @@ std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> L2norm(
     for (lf::base::size_type i = 0; i < n_points; i++) {
       cell_error += det[i] * weights[i] * sq_f(values[i]);
     }
-    cellErrors(*e) = cell_error;
+    cellErrors(*e) = std::sqrt(cell_error);
     squared_sum += cell_error;
   }
 
-  return std::make_pair(squared_sum, cellErrors);
+  return std::make_pair(sqrt(squared_sum), cellErrors);
 }
 
 /**
@@ -69,12 +70,13 @@ std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> L2norm(
  * @tparam SQ_F type of the square function sq_f
  * @param mesh_p pointer to the mesh
  * @param f meshfunction to evaluate
- * @param sq_f square function for the output of f @f$ sq_f(x) \mapsto \|x\|^2
+ * @param sq_f square function for the output of f @f$ sq\_f(x) \mapsto \|x\|^2
  * @f$
  * @param quadrule quadrature rule only used to determine the evalueation points
  *
- * @returns pair with the supremum norm of the squared input function f on the
- * mesh and CodimMeshDataSet containing the cellwise squared supremums
+ * @returns pair with the supremum norm of the root of the input function
+ * sq\_f(f(x)) on the mesh and CodimMeshDataSet containing the cellwise
+ * supremums
  *
  */
 template <typename MF, typename SQ_F>
@@ -103,10 +105,10 @@ std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> SupNorm(
       if (temp > loc_max) loc_max = temp;
       if (temp > glob_max) glob_max = temp;
     }
-    cellErrors(*e) = loc_max;
+    cellErrors(*e) = sqrt(loc_max);
   }
 
-  return std::make_pair(glob_max, cellErrors);
+  return std::make_pair(sqrt(glob_max), cellErrors);
 }
 
 }  // namespace projects::hldo_sphere::post_processing

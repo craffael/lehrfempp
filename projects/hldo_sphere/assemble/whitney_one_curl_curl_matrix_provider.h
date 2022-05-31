@@ -14,15 +14,26 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element matrix provider for the bilinear form
+ * @brief An element matrix provider for piecewise linear (Whitney 1-Forms)
+ * basis functions in a 3 dimensional world with 2 dimensional triangular cells
  *
  * @f[
- * \int curl_{\Gamma}(u) curl_{\Gamma}(v) dx
+ * \int\limits_K \text{curl}_{\Gamma}(u) \ \text{curl}_{\Gamma}(v) dx
  * @f]
  *
- * As basis functions, the Whitney 1-forms, surface edge elements are used
+ * The whitney 1-forms, surface edge elements are associated with
+ * edges and defined as
  *
- * @note Currently, only triangular meshes are supported
+ * @f[
+ *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
+ * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ * @f]
+ *
+ * @note This class complies with the type requirements for the template
+ * argument ENTITY_MATRIX_PROVIDER of the function
+ * lf::assemble::AssembleMatrixLocally().
+ *
+ * @note Only triangular meshes are supported
  *
  */
 class WhitneyOneCurlCurlMatrixProvider {

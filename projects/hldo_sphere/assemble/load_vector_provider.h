@@ -44,8 +44,11 @@ template <typename SCALAR>
 class LoadVectorProvider {
  public:
   /**
+   *
    * @brief Constructor
+   *
    * @param f a realvalued function defined on the surface of the sphere
+   *
    */
   LoadVectorProvider(std::function<SCALAR(const Eigen::Vector3d &)> f)
       : f_(f) {}

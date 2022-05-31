@@ -19,9 +19,16 @@ class MeshFunctionWhitneyTwo {
   /**
    * @brief basic constructor
    *
+   * Mesh Function on the global mesh built using the basis expansion
+   * coefficiants passed in the argument and the cellwise constant basis
+   * functions.
+   *
    * @param mu vector containing the basis function expansion coefficiants in
    * global ordering
+   *
    * @param mesh containing the mesh on which to evaluate
+   *
+   * @note Only triangular meshes are supported
    */
   MeshFunctionWhitneyTwo(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                          const std::shared_ptr<const lf::mesh::Mesh> mesh)

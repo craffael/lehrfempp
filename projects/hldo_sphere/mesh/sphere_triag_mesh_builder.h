@@ -18,10 +18,10 @@ namespace mesh {
  * @brief A mesh builder for regular 3-Sphere
  *
  * The diameter of the hole is controlled by the value passed to
- * `setRadius(r)`.
- * The refinement level can be set with `setRefinementLevel(n)`.
+ * setRadius().
+ * The refinement level can be set with setRefinementLevel().
  * The refinement level indicates by how many times the edges of the
- * inital structure (icosahedron, see https://en.wikipedia.org/wiki/Icosahedron)
+ * inital structure (octahedron, see https://de.wikipedia.org/wiki/Octahedron)
  * will be regualarly split. Note that this is only conceptual, the
  * implementation does not split egdes but directly build the desired sphere.
  * The radius defaults to 1.0 while refinement level defaults to 0.

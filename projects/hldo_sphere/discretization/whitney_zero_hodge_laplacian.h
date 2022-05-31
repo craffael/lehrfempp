@@ -32,7 +32,7 @@ namespace discretization {
  * form and the source problem
  *
  * @f[
- *   -\Delta_0 = -\text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \li
+ *   -\Delta_0 = -\text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
  *   -\Delta_0 u + k^2 u =   f
  * @f]
  *

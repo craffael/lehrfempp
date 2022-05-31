@@ -9,6 +9,7 @@
  * @tparam SCALAR type of the solution vector
  *
  * @brief Provides utilities for the evaluation of errors
+ *
  */
 
 namespace projects::hldo_sphere::post_processing {
@@ -19,9 +20,16 @@ class MeshFunctionWhitneyZero {
   /**
    * @brief basic constructor
    *
+   * Mesh Function on the global mesh built using the basis expansion
+   * coefficiants passed in the argument and the cellwise linear (barycentric)
+   * basis functions.
+   *
    * @param mu vector containing the basis function expansion coefficiants in
    * global ordering
+   *
    * @param mesh containing the mesh on which to evaluate
+   *
+   * @note Only triangular meshes are supported
    */
   MeshFunctionWhitneyZero(const Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>& mu,
                           const std::shared_ptr<const lf::mesh::Mesh> mesh)
