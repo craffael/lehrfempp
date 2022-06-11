@@ -10,6 +10,7 @@
 #include <lf/mesh/utils/all_codim_mesh_data_set.h>
 #include <lf/mesh/utils/utils.h>
 #include <rot_whitney_one_div_matrix_provider.h>
+#include <sphere_triag_mesh_builder.h>
 #include <whitney_one_mass_matrix_provider.h>
 #include <whitney_two_mass_matrix_provider.h>
 #include <whitney_two_vector_provider.h>
@@ -466,6 +467,73 @@ TEST(projects_hldo_sphere_assembly,
   ASSERT_EQ(Ae.cols(), Ae_anal.cols());
   EXPECT_DOUBLE_EQ(Ae(0).real(), Ae_anal(0).real()) << "mismatch in entry (0)";
   EXPECT_DOUBLE_EQ(Ae(0).imag(), Ae_anal(0).real()) << "mismatch in entry (0)";
+}
+
+// Additional  tests for the funciton
+//
+// @f[
+// f(\vec{x}) = k^2 (\sin (x)+\sin (y)+\cos (z))+\frac{x^2 \sin (y)+x^2 \cos
+// (z)+y^2 \sin(x) + z ^ 2 \sin(x) + 2 x \cos(x) + y ^ 2 \cos(z) + z ^ 2 \sin(y)
+// + 2 y \cos(y) - 2 z \sin(z) } {x ^ 2 + y ^ 2 + z ^ 2} \\
+// k = 0.4
+// @f]
+//
+// for all triagles on the octacon with radius 1
+TEST(projects_hldo_sphere_assembly, vector_provider_two_form_test_octacon) {
+  // Build Mesh
+  std::unique_ptr<lf::mesh::MeshFactory> factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
+
+  projects::hldo_sphere::mesh::SphereTriagMeshBuilder sphere =
+      projects::hldo_sphere::mesh::SphereTriagMeshBuilder(std::move(factory));
+
+  sphere.setRefinementLevel(0);
+  sphere.setRadius(1);
+
+  std::shared_ptr<const lf::mesh::Mesh> mesh = sphere.Build();
+
+  // Define function f
+  double k = 0.4;
+  const auto f = [&](const Eigen::Vector3d x_) -> double {
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
+    return pow(k, 2) * (cos(z) + sin(x) + sin(y)) +
+           (2 * x * cos(x) + 2 * y * cos(y) + pow(x, 2) * cos(z) +
+            pow(y, 2) * cos(z) + pow(y, 2) * sin(x) + pow(z, 2) * sin(x) +
+            pow(x, 2) * sin(y) + pow(z, 2) * sin(y) - 2 * z * sin(z)) /
+               (pow(x, 2) + pow(y, 2) + pow(z, 2));
+  };
+
+  // Compute the element vec for the triangle
+  const auto elem_vec_provider =
+      projects::hldo_sphere::assemble::WhitneyTwoVectorProvider<double>(f);
+
+  // Get solutions
+  // the mesh (octacon) conatains 8 cells
+  std::vector<Eigen::VectorXd> Aes(8);
+  for (int i = 0; i < 8; i++) {
+    const auto element = mesh->EntityByIndex(0, i);
+    Aes[i] = elem_vec_provider.Eval(*element);
+  }
+
+  // Construct the analytically computed solutions with mathematica
+  Eigen::VectorXd Ae_anal(8);
+  // clang-format off
+  Ae_anal << 2.5077355428475516,
+             2.5077355428475516,
+             0.1156740972976757,
+             0.1156740972976757,
+             -2.2763873482522,
+             -2.2763873482522,
+             0.11567409729767561,
+             0.1156740972976757;
+  // clang-format on
+  // Assert that the two matrices are approximately equal
+  for (int k = 0; k < 8; k++) {
+    EXPECT_NEAR(Aes[k](0), Ae_anal[k], 1e-10)
+        << "mismatch in entry (0) of triangle " << k;
+  }
 }
 
 /**
