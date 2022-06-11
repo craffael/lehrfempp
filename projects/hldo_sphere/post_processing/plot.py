@@ -20,7 +20,7 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
     df = pd.read_csv(file)
     df_y = df.iloc[1:,4:]
     # print table
-    print(df.iloc[1:, 12::12].head())
+    print(df.iloc[1:, 14::12].head())
 
     num_k = df_y.shape[1] // 12
     ks = df.iloc[0,4::12].to_numpy()
@@ -66,7 +66,10 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
         # loop over the chosen forms
         for j in range(n):
             if m == 1 or n == 1:
-                curr_axs = axs[i + j]
+                if m == 1 and n == 1:
+                    curr_axs = axs
+                else:
+                    curr_axs = axs[i + j]
             else:
                 curr_axs = axs[i, j]
 
@@ -84,6 +87,7 @@ def plot(file, l2_norm, sup_norm, zero_form, one_form, two_form, scale):
                     curr_axs.loglog(x,y)
                 if scale.lower() == 'linear':
                     curr_axs.plot(x,y)
+            # set labels and swap the x direction to get decreasing error
             curr_axs.set(ylabel=names[kind_index[i] * n + form_index[j]], xlabel=df_x_label, xlim=(max(x), min(x)))
             curr_axs.legend(ks)
 
