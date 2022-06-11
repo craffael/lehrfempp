@@ -3,6 +3,7 @@
 #include <lf/mesh/entity.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/mesh.h>
+#include <lf/mesh/utils/utils.h>
 #include <sphere_triag_mesh_builder.h>
 
 std::shared_ptr<lf::mesh::Mesh> buildSphere(
@@ -31,8 +32,6 @@ TEST(projects_hldo_sphere_mesh, mesh_properties) {
   // Vertex count must be equal to cell count - 2
   EXPECT_EQ(mesh->NumEntities(0), 2 * (mesh->NumEntities(2) - 2))
       << "The cell count is not equal to the 2 * (vextex count - 2)";
-
-  // TODO rewrite tests with closed form formulas
 
   // we create four new cells out of one in a refinement step and we start with
   // 8 cells
@@ -119,7 +118,7 @@ TEST(projects_hldo_sphere_mesh, vertex_adjacent_edges) {
 
       EXPECT_NEAR(0.0, min_rel_error, (v_coords.norm()) * 1e-12)
           << "The vertex at " << v_coords << " with global index " << v_idx
-          << " only has 4 adjacent cells but is not at one of the basic vertex "
+          << " only has 4 adjacent cells but is not one of the basic vertex "
              "positions";
 
     } else if (adjacent_cell_count[v_idx] == 6) {
@@ -127,7 +126,41 @@ TEST(projects_hldo_sphere_mesh, vertex_adjacent_edges) {
     } else {
       EXPECT_TRUE(false) << "The vertex at " << v_coords
                          << " with global index " << v_idx
-                         << " only has not 4 not 6 adjacent cells";
+                         << " only doesn't have 6 adjacent cells";
+    }
+  }
+}
+
+TEST(projects_hldo_sphere_mesh, local_edge_directions) {
+  const lf::base::size_type refinement_level = 5;
+  const double radius = 1.0;
+
+  for (int l = 0; l < refinement_level; l++) {
+    // Optain sphere mesh
+    const std::shared_ptr<lf::mesh::Mesh> mesh =
+        buildSphere(refinement_level, radius);
+
+    // compute for all edges if the local direction add up to 0
+    //
+    // loop over all cells and add the values for the edge orientations (they
+    // sould cancel out)
+    // initialized to 0
+    lf::mesh::utils::CodimMeshDataSet<double> edgeSums(mesh, 1, 0);
+    for (const lf::mesh::Entity* e : mesh->Entities(0)) {
+      auto edgeOrientations = e->RelativeOrientations();
+      Eigen::VectorXd s(3);
+      auto localEdges = e->SubEntities(1);
+      for (int i = 0; i < 3; i++) {
+        edgeSums(*localEdges[i]) += lf::mesh::to_sign(edgeOrientations[i]);
+      }
+    }
+
+    // loop over edges and check
+    for (const lf::mesh::Entity* e : mesh->Entities(1)) {
+      int index = mesh->Index(*e);
+      EXPECT_EQ(0, edgeSums(*e))
+          << "The local edge orientation of the edge with index " << index
+          << " do not add up to 0";
     }
   }
 }

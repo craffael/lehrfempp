@@ -24,15 +24,16 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
       2 + 4 * (ring_count / 2) +
       4 * ((ring_count - 2) / 2 + 1) * ((ring_count - 2) / 2);
 
-  // difference in angle between the rings
+  // difference in angle between the rings (could as well be formulated as z
+  // coordinate)
   const double d_theta = M_PI / (ring_count - 1);
 
-  // stores the mappings form the global vertex indices to the local ones on the
-  // rings including the corresponding ring
-  // The vector will be filled lazy, hence
-  // USE `local_vert_idx` intstead of querying the vector
+  // cache that  stores the mappings form the global vertex indices to the local
+  // ones on the rings including the corresponding ring The vector will be
+  // filled lazy, hence USE local_vert_idx() intstead of accessing the vector
+  // directly
   std::vector<std::pair<lf::base::size_type, lf::base::size_type>>
-      vertex_loc_glob_map_vector(vertex_count, std::make_pair(0, 0));
+      vertex_loc_glob_map_vector_cache(vertex_count, std::make_pair(0, 0));
 
   // returns the ring index with respect to the middle.
   // This means the first and the last ring will have index 0 and the second and
@@ -78,7 +79,7 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
       return zero_pair;
     }
 
-    if (vertex_loc_glob_map_vector[v_idx] == zero_pair) {
+    if (vertex_loc_glob_map_vector_cache[v_idx] == zero_pair) {
       // subtract the one because it is not the first index
       lf::base::size_type v_idx_rest = v_idx - 1;
       lf::base::size_type r_idx = 1;
@@ -88,10 +89,11 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
       }
 
       // fill the vector
-      vertex_loc_glob_map_vector[v_idx] = std::make_pair(r_idx, v_idx_rest);
+      vertex_loc_glob_map_vector_cache[v_idx] =
+          std::make_pair(r_idx, v_idx_rest);
     }
 
-    return vertex_loc_glob_map_vector[v_idx];
+    return vertex_loc_glob_map_vector_cache[v_idx];
   };
 
   // returns the global index of a vertex given the ring_index on which the
@@ -106,7 +108,6 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     LF_ASSERT_MSG(0 <= v_local_idx && v_local_idx < vert_count_on_ring(r_idx),
                   "vertex index out of range");
 
-    // TODO implement with closed form formula
     lf::base::size_type v_idx = 0;
     for (lf::base::size_type r = 0; r < r_idx; ++r) {
       v_idx += vert_count_on_ring(r);
@@ -183,18 +184,20 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     lf::base::size_type v2;
     lf::base::size_type v3;
 
-    // construct upper triangle
     if (vert_count_on_ring(r_idx) > vert_count_on_ring(r_idx - 1)) {
+      // construct upper triangle for upper half of the sphere
       v1 = i;
       v2 =
           global_vert_idx(r_idx, (v_local_idx + 1) % vert_count_on_ring(r_idx));
       v3 = global_vert_idx(
           r_idx - 1, (v_local_idx - quarter) % vert_count_on_ring(r_idx - 1));
+
     } else {
+      // construct upper triangle for lower half of the sphere
       v1 = i;
-      v2 = global_vert_idx(r_idx - 1, v_local_idx + 1 + quarter);
-      v3 =
+      v2 =
           global_vert_idx(r_idx, (v_local_idx + 1) % vert_count_on_ring(r_idx));
+      v3 = global_vert_idx(r_idx - 1, v_local_idx + 1 + quarter);
     }
 
     const std::array<lf::base::size_type, 3> upper_trig = {v1, v2, v3};
@@ -208,14 +211,15 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     mesh_factory_->AddEntity(ref_el, nonstd::span(upper_trig.data(), 3),
                              std::move(upper_geom));
 
-    // construct lower triangle
     if (vert_count_on_ring(r_idx) > vert_count_on_ring(r_idx + 1)) {
+      // construct lower triangle for upper half of the sphere
       v1 = i;
       v2 = global_vert_idx(
           r_idx + 1, (v_local_idx - quarter) % vert_count_on_ring(r_idx + 1));
       v3 =
           global_vert_idx(r_idx, (v_local_idx + 1) % vert_count_on_ring(r_idx));
     } else {
+      // construct lower triangle for lower half of the sphere
       v1 = i;
       v2 = global_vert_idx(r_idx + 1, v_local_idx + 1 + quarter);
       v3 =
