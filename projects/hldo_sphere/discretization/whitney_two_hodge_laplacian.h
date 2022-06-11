@@ -20,7 +20,6 @@
 #include <rot_whitney_one_div_matrix_provider.h>
 #include <sphere_triag_mesh_builder.h>
 #include <whitney_one_mass_matrix_provider.h>
-#include <whitney_one_vector_provider.h>
 #include <whitney_two_vector_provider.h>
 
 #include <Eigen/Dense>
@@ -117,7 +116,7 @@ class WhitneyTwoHodgeLaplace {
                                                 n_dofs_div + n_dofs_const);
     full_matrix.setZero();
 
-    // iterate over all triplets of the previously computed matrice and add up
+    // iterate over all triplets of the previously computed matrices and add up
     // entries
     const std::vector<Eigen::Triplet<double>> triplets_A_11 =
         coo_A_11.triplets();

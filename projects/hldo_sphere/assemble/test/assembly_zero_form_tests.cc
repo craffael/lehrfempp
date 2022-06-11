@@ -646,7 +646,9 @@ TEST(projects_hldo_sphere_assembly, load_vector_provider_test_flat) {
   const auto mesh = factory.Build();
 
   // Define function f
-  auto f = [&](const Eigen::Vector3d x) -> double { return sin(x(0) + x(1)); };
+  const auto f = [&](const Eigen::Vector3d &x) -> double {
+    return sin(x(0) + x(1));
+  };
 
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element vec for the triangle

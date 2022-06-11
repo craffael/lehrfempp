@@ -45,7 +45,8 @@ class WhitneyTwoVectorProvider {
    * @param f A scalar valued function defined on the surface of the sphere
    * linear form
    */
-  WhitneyTwoVectorProvider(std::function<SCALAR(const Eigen::Vector3d &)> &f)
+  WhitneyTwoVectorProvider(
+      const std::function<SCALAR(const Eigen::Vector3d &)> &f)
       : f_(std::move(f)) {}
 
   /**
