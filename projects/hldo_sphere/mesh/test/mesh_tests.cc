@@ -6,6 +6,9 @@
 #include <lf/mesh/utils/utils.h>
 #include <sphere_triag_mesh_builder.h>
 
+/**
+ * Method to create a mesh with desired parameters
+ */
 std::shared_ptr<lf::mesh::Mesh> buildSphere(
     const lf::base::size_type refinement_level, const double radius) {
   // prepare needed objects
@@ -21,6 +24,10 @@ std::shared_ptr<lf::mesh::Mesh> buildSphere(
   return sphere.Build();
 }
 
+/**
+ * Check the mesh with refinement level 5
+ * on the number of cells, edges and vertices.
+ */
 TEST(projects_hldo_sphere_mesh, mesh_properties) {
   const lf::base::size_type refinement_level = 5;
   const double radius = 2.0;
@@ -68,6 +75,11 @@ TEST(projects_hldo_sphere_mesh, mesh_properties) {
       << "Expected number of vertices doesn't match the outcome";
 }
 
+/**
+ *
+ * Checks if the vertices have the right number of ajacent cells
+ *
+ */
 TEST(projects_hldo_sphere_mesh, vertex_adjacent_edges) {
   const lf::base::size_type refinement_level = 2;
   const double radius = 2.0;
@@ -131,6 +143,12 @@ TEST(projects_hldo_sphere_mesh, vertex_adjacent_edges) {
   }
 }
 
+/**
+ *
+ * Checks if all edges are locally oriented in the same direction.
+ * making sure that the sums of relative orientations are zero.
+ *
+ */
 TEST(projects_hldo_sphere_mesh, local_edge_directions) {
   const lf::base::size_type refinement_level = 5;
   const double radius = 1.0;

@@ -10,7 +10,9 @@ target_include_directories(projects.hldo_sphere.mesh PUBLIC ${CMAKE_CURRENT_SOUR
 
 target_compile_features(projects.hldo_sphere.mesh PUBLIC cxx_std_17)
 
-
 # Include the tests
 add_subdirectory(test)
+
+# Include example meshs
+add_subdirectory(examples)
 
