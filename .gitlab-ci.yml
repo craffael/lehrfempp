@@ -1,9 +1,0 @@
-image: alpine
-
-pages:
-  script:
-  - apk update && apk add doxygen graphviz ttf-freefont
-  - cd test
-  - doxygen Doxyfile
-  only:
-  - sphere_project
