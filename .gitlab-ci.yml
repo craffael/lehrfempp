@@ -6,4 +6,4 @@ pages:
   - cd test
   - doxygen Doxyfile
   only:
-  - hldo-sphere/sphere-project
+  - sphere_project
