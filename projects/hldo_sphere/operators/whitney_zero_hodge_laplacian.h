@@ -33,7 +33,7 @@ namespace operators {
  *
  * @f[
  *   -\Delta_0 = -\text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
- *   -\Delta_0 u + k^2 u =   f
+ *   -\Delta_0 u  =   f
  * @f]
  *
  * As basis functions, the barycentric basis functions are used

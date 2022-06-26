@@ -35,7 +35,7 @@ namespace operators {
  * @f[
  *    \Delta_1 u = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} +
  *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \\
- *     -\Delta_1 u + k^2 u =  f
+ *     -\Delta_1 u  =  f
  * @f]
  *
  * Basis functions are the Whitney 1-forms and the barycentric
