@@ -1,5 +1,5 @@
-#ifndef THESIS_ASSEMBLE_LOAD_VECTOR_PROVIDER_H
-#define THESIS_ASSEMBLE_LOAD_VECTOR_PROVIDER_H
+#ifndef HLDO_SPHERE_ASSEMBLE_LOAD_VECTOR_PROVIDER_H
+#define HLDO_SPHERE_ASSEMBLE_LOAD_VECTOR_PROVIDER_H
 
 /**
  * @file load_vector_provider.h
@@ -122,4 +122,4 @@ class LoadVectorProvider {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_ASSEMBLE_LOAD_VECTOR_PROVIDER_H
+#endif  // HLDO_SPHERE_ASSEMBLE_LOAD_VECTOR_PROVIDER_H

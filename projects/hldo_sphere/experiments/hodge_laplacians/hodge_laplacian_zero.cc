@@ -4,7 +4,7 @@
  * variable k
  */
 
-#include <hodge_laplacian_example.h>
+#include <hodge_laplacian_experiment.h>
 
 /**
  * @brief Prints the L2 norm errors and the Supremum of the experiment and
@@ -62,10 +62,10 @@ int main(int argc, char *argv[]) {
     return ret;
   };
 
-  projects::hldo_sphere::examples::HodgeLaplacianExample example(
+  projects::hldo_sphere::experiments::HodgeLaplacianExperiment experiment(
       u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
 
-  example.Compute(refinement_levels, ks);
+  experiment.Compute(refinement_levels, ks);
 
   return 0;
 }

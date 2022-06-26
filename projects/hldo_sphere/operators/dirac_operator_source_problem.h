@@ -31,7 +31,7 @@
 
 namespace projects::hldo_sphere {
 
-namespace discretization {
+namespace operators {
 
 using SCALAR = std::complex<double>;
 
@@ -106,7 +106,7 @@ class DiracOperatorSourceProblem {
    */
   void Compute() {
     // get Dirac Operator Matrix
-    projects::hldo_sphere::discretization::DiracOperator dirac_operator;
+    projects::hldo_sphere::operators::DiracOperator dirac_operator;
     dirac_operator.SetLoadFunctions(f0_, f1_, f2_);
     dirac_operator.SetMesh(mesh_p_);
     dirac_operator.Compute();
@@ -345,7 +345,7 @@ class DiracOperatorSourceProblem {
   SCALAR k_;
 };
 
-}  // namespace discretization
+}  // namespace operators
 
 }  // namespace projects::hldo_sphere
 

@@ -1,5 +1,5 @@
-#ifndef THESIS_DISCRETIZATION_DIRAC_OPERATOR_H
-#define THESIS_DISCRETIZATION_DIRAC_OPERATOR_H
+#ifndef THESIS_OPERATORS_DIRAC_OPERATOR_H
+#define THESIS_OPERATORS_DIRAC_OPERATOR_H
 
 /**
  * @file dirac_operator.h
@@ -27,7 +27,7 @@
 
 namespace projects::hldo_sphere {
 
-namespace discretization {
+namespace operators {
 
 using SCALAR = std::complex<double>;
 
@@ -282,8 +282,8 @@ class DiracOperator {
   Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_;
 };
 
-}  // namespace discretization
+}  // namespace operators
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_DISCRETIZATION_WHITNEY_ONE_HODGE_LAPLACE_H
+#endif  // THESIS_OPERATORS_WHITNEY_ONE_HODGE_LAPLACE_H

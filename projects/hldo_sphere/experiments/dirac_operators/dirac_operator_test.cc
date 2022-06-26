@@ -4,7 +4,7 @@
  * k
  */
 
-#include <dirac_operator_example.h>
+#include <dirac_operator_experiment.h>
 
 using lf::uscalfe::operator-;
 using complex = std::complex<double>;
@@ -163,10 +163,10 @@ int main(int argc, char *argv[]) {
     return Cos(z) + Sin(x) + Sin(y);
   };
 
-  projects::hldo_sphere::examples::DiracOperatorExample example(
+  projects::hldo_sphere::experiments::DiracOperatorExperiment experiment(
       u_zero, u_one, u_two, f_zero, f_one, f_two, k, "test");
 
-  example.Compute(refinement_levels, ks);
+  experiment.Compute(refinement_levels, ks);
 
   return 0;
 }

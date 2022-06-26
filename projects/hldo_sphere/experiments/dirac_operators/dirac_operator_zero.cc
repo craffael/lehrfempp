@@ -3,7 +3,7 @@
  * @brief Solve Dirac Operator source problem for fixed function u = 0 and
  */
 
-#include <dirac_operator_example.h>
+#include <dirac_operator_experiment.h>
 
 using lf::uscalfe::operator-;
 
@@ -66,10 +66,10 @@ int main(int argc, char *argv[]) {
     return ret;
   };
 
-  projects::hldo_sphere::examples::DiracOperatorExample example(
+  projects::hldo_sphere::experiments::DiracOperatorExperiment experiment(
       u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
 
-  example.Compute(refinement_levels, ks);
+  experiment.Compute(refinement_levels, ks);
 
   return 0;
 }

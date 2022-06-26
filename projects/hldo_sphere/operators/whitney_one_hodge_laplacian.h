@@ -1,5 +1,5 @@
-#ifndef THESIS_DISCRETIZATION_WHITNEY_ONE_HODGE_LAPLACE_H
-#define THESIS_DISCRETIZATION_WHITNEY_ONE_HODGE_LAPLACE_H
+#ifndef THESIS_OPERATORS_WHITNEY_ONE_HODGE_LAPLACE_H
+#define THESIS_OPERATORS_WHITNEY_ONE_HODGE_LAPLACE_H
 
 /**
  * @file whitney_one_hodge_laplace.h
@@ -26,7 +26,7 @@
 
 namespace projects::hldo_sphere {
 
-namespace discretization {
+namespace operators {
 
 /**
  * @brief Computes the Galerkin LSE for the Hodge Laplacian of the whitney one
@@ -251,8 +251,8 @@ class WhitneyOneHodgeLaplace {
   Eigen::Matrix<double, Eigen::Dynamic, 1> phi_;
 };
 
-}  // namespace discretization
+}  // namespace operators
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_DISCRETIZATION_WHITNEY_ONE_HODGE_LAPLACE_H
+#endif  // THESIS_OPERATORS_WHITNEY_ONE_HODGE_LAPLACE_H

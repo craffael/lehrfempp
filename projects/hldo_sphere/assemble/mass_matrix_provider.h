@@ -1,5 +1,5 @@
-#ifndef THESIS_ASSEMBLE_MASS_MATRIX_PROVIDER_H
-#define THESIS_ASSEMBLE_MASS_MATRIX_PROVIDER_H
+#ifndef HLDO_SPHERE_ASSEMBLE_MASS_MATRIX_PROVIDER_H
+#define HLDO_SPHERE_ASSEMBLE_MASS_MATRIX_PROVIDER_H
 
 /**
  * @file mass_matrix_provider.h
@@ -62,4 +62,4 @@ class MassMatrixProvider {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_ASSEMBLE_LAPLACE_MATRIX_PROVIDER_H
+#endif  // HLDO_SPHERE_ASSEMBLE_LAPLACE_MATRIX_PROVIDER_H

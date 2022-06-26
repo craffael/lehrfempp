@@ -17,10 +17,9 @@
  * On the Octaeder with radius 1
  *
  */
-TEST(projects_hldo_sphere_discretization, hodge_laplacian_zero_basic_test) {
+TEST(projects_hldo_sphere_operators, hodge_laplacian_zero_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
-      lse_builder;
+  projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems lse_builder;
   lse_builder.Compute();
   lse_builder.Solve();
 
@@ -96,11 +95,9 @@ TEST(projects_hldo_sphere_discretization, hodge_laplacian_zero_basic_test) {
  * On the Octaeder with radius 1
  *
  */
-TEST(projects_hldo_sphere_discretization,
-     hodge_laplacians_one_form_basic_test) {
+TEST(projects_hldo_sphere_operators, hodge_laplacians_one_form_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
-      lse_builder;
+  projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems lse_builder;
   lse_builder.Compute();
   lse_builder.Solve();
 
@@ -216,10 +213,9 @@ TEST(projects_hldo_sphere_discretization,
  * On the Octaeder with radius 1
  *
  */
-TEST(projects_hldo_sphere_discretization, hodge_laplace_two_form_basic_test) {
+TEST(projects_hldo_sphere_operators, hodge_laplace_two_form_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
-      lse_builder;
+  projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems lse_builder;
   lse_builder.SetK(4);
   lse_builder.Compute();
   lse_builder.Solve();

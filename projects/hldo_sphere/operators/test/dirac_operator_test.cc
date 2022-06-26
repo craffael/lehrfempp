@@ -29,10 +29,10 @@
  * And load function equal to 0
  *
  */
-TEST(projects_hldo_sphere_discretization, dirac_operator_test) {
+TEST(projects_hldo_sphere_operators, dirac_operator_test) {
   // Build LSE
 
-  projects::hldo_sphere::discretization::DiracOperator lse_builder;
+  projects::hldo_sphere::operators::DiracOperator lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<std::complex<double>> Ae =

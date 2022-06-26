@@ -1,13 +1,13 @@
-#ifndef THESIS_EXAMPLES_HODGE_LAPLACIAN_H
-#define THESIS_EXAMPLES_HODGE_LAPLACIAN_H
+#ifndef THESIS_EXPERIMENTS_DIRAC_OPERATOR_EXAMPLE_H
+#define THESIS_EXPERIMENTS_DIRAC_OPERATOR_EXAMPLE_H
 
 /**
- * @file hodge_laplacian_example.h
+ * @file dirac_operator_example.h
  *
  * @brief provides a function for generating solutions, given the validation and
  * load functions
  */
-#include <hodge_laplacians_source_problems.h>
+#include <dirac_operator_source_problem.h>
 #include <lf/io/vtk_writer.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
 #include <lf/mesh/utils/tp_triag_mesh_builder.h>
@@ -28,14 +28,15 @@
 #include <string>
 #include <vector>
 
-namespace projects::hldo_sphere::examples {
+namespace projects::hldo_sphere::experiments {
 
 /**
- * @brief Creates and solves the discretised Hodge Laplacian source problems for
+ * @brief Creates and solves the discretised Dirac Operator source problems for
  * a given list of levels and values of k
  *
  */
-class HodgeLaplacianExample {
+using complex = std::complex<double>;
+class DiracOperatorExperiment {
  public:
   /**
    *
@@ -53,17 +54,17 @@ class HodgeLaplacianExample {
    * the results)
    *
    */
-  HodgeLaplacianExample(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_zero,
+  DiracOperatorExperiment(
+      std::function<complex(const Eigen::Matrix<double, 3, 1> &)> u_zero,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<complex, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           u_one,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_two,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_zero,
+      std::function<complex(const Eigen::Matrix<double, 3, 1> &)> u_two,
+      std::function<complex(const Eigen::Matrix<double, 3, 1> &)> f_zero,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<complex, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           f_one,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_two,
+      std::function<complex(const Eigen::Matrix<double, 3, 1> &)> f_two,
       double &k, std::string name)
       : u_zero_(u_zero),
         u_one_(u_one),
@@ -89,20 +90,19 @@ class HodgeLaplacianExample {
     int nk = ks.size();
 
     // Initialize solution wrapper
-    projects::hldo_sphere::post_processing::ProblemSolutionWrapper<double>
+    projects::hldo_sphere::post_processing::ProblemSolutionWrapper<complex>
         solutions;
     solutions.k = ks;
     solutions.levels = refinement_levels;
     solutions.mesh = std::vector<std::shared_ptr<const lf::mesh::Mesh>>(nl);
     solutions.solutions = std::vector<
-        projects::hldo_sphere::post_processing::ProblemSolution<double>>(nl);
+        projects::hldo_sphere::post_processing::ProblemSolution<complex>>(nl);
 
-    projects::hldo_sphere::discretization::HodgeLaplaciansSourceProblems
-        lse_builder;
+    projects::hldo_sphere::operators::DiracOperatorSourceProblem lse_builder;
 
     // functions are passed by reference hence changing the k still influences
     // the functions
-    lse_builder.SetLoadFunctions(f_zero_, f_one_, f_two_);
+    lse_builder.SetLoadFunctions(f_zero_, f_one_, f_zero_);
 
     // Read the mesh from the gmsh file
     std::unique_ptr<lf::mesh::MeshFactory> factory =
@@ -189,11 +189,9 @@ class HodgeLaplacianExample {
                   << std::flush;
 
         // store solutions
-        solutions.solutions[lvl].mu_zero[ik] = lse_builder.GetMuZero();
-        solutions.solutions[lvl].mu_one[ik] =
-            std::get<0>(lse_builder.GetMuOne());
-        solutions.solutions[lvl].mu_two[ik] =
-            std::get<1>(lse_builder.GetMuTwo());
+        solutions.solutions[lvl].mu_zero[ik] = lse_builder.GetMu(0);
+        solutions.solutions[lvl].mu_one[ik] = lse_builder.GetMu(1);
+        solutions.solutions[lvl].mu_two[ik] = lse_builder.GetMu(2);
       }  // end loop k
     }    // end loop level
 
@@ -210,25 +208,25 @@ class HodgeLaplacianExample {
               << " [s]\n";
 
     projects::hldo_sphere::post_processing::process_results<
-        decltype(u_zero_), decltype(u_one_), decltype(u_two_), double>(
-        name_, solutions, u_zero_, u_one_, u_two_, k_);
+        decltype(u_zero_), decltype(u_one_), decltype(u_zero_), complex>(
+        name_, solutions, u_zero_, u_one_, u_zero_, k_);
   }
 
  private:
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_zero_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<complex(const Eigen::Matrix<double, 3, 1> &)> u_zero_;
+  std::function<Eigen::Matrix<complex, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       u_one_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_two_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_zero_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<complex(const Eigen::Matrix<double, 3, 1> &)> u_two_;
+  std::function<complex(const Eigen::Matrix<double, 3, 1> &)> f_zero_;
+  std::function<Eigen::Matrix<complex, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f_one_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_two_;
+  std::function<complex(const Eigen::Matrix<double, 3, 1> &)> f_two_;
   double &k_;
   std::string name_;
 };
 
-}  // namespace projects::hldo_sphere::examples
+}  // namespace projects::hldo_sphere::experiments
 
-#endif  // THESIS_EXAMPLES_HODGE_LAPLACIAN_H
+#endif  // THESIS_EXPERIMENTS_DIRAC_OPERATOR_EXAMPLE_H

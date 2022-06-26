@@ -23,10 +23,9 @@
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization,
-     whitney_zero_hodge_laplace_basic_test) {
+TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::WhitneyZeroHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -66,7 +65,7 @@ TEST(projects_hldo_sphere_discretization,
  *
  * @brief Test the zero hodge laplacian
  *
- * The test tests the discretiation of the Element Matrix for
+ * The test tests the operators of the Element Matrix for
  *
  * @f[
  *   \Delta_0 \\
@@ -81,11 +80,10 @@ TEST(projects_hldo_sphere_discretization,
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization,
-     whitney_zero_hodge_laplace_load_test) {
+TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_load_test) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::discretization::WhitneyZeroHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     auto Power = [](double a, double b) -> double { return pow(a, b); };
     auto Cos = [](double a) -> double { return cos(a); };
@@ -145,27 +143,9 @@ TEST(projects_hldo_sphere_discretization,
 
 /**
  *
- * @brief Test the zero hodge laplacian
- *
- * The test tests the discretiation of the Element Matrix for
- *
- * @f[
- *   \Delta_0 \\
- *   f = 0
- * @f]
- *
- * On the Octaeder with radius 1
- *
- * But not the solution of the system is tested only the buildingblocks
- * that is, only the galerkin matrix and the load vector
- *
- */
-
-/**
- *
  * @brief Test the one hodge laplacian
  *
- * The test tests the discretiation of the problem problem
+ * The test tests the operators of the problem problem
  *
  * @f[
  * - \Delta_1 u = 0
@@ -177,10 +157,9 @@ TEST(projects_hldo_sphere_discretization,
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization,
-     whitney_one_hodge_laplace_basic_test) {
+TEST(projects_hldo_sphere_operators, whitney_one_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::WhitneyOneHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyOneHodgeLaplace lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -254,7 +233,7 @@ TEST(projects_hldo_sphere_discretization,
  *
  * @brief Test the two hodge laplacian
  *
- * The test tests the discretiation of the problem problem
+ * The test tests the operators of the problem problem
  *
  * @f[
  *  -\Delta_2 u = 0
@@ -266,10 +245,9 @@ TEST(projects_hldo_sphere_discretization,
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization,
-     whitney_two_hodge_laplace_basic_test) {
+TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::discretization::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -337,7 +315,7 @@ TEST(projects_hldo_sphere_discretization,
  *
  * @brief Test the two hodge laplacian
  *
- * The test tests the discretiation of the Element Matrix for
+ * The test tests the operators of the Element Matrix for
  *
  * @f[
  *   \Delta_0 \\
@@ -352,10 +330,10 @@ TEST(projects_hldo_sphere_discretization,
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test) {
+TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::discretization::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     auto Power = [](double a, double b) -> double { return pow(a, b); };
     auto Cos = [](double a) -> double { return cos(a); };
@@ -396,7 +374,7 @@ TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test) {
  *
  * @brief Test the two hodge laplacian
  *
- * The test tests the discretiation of the Element Matrix for
+ * The test tests the operators of the Element Matrix for
  *
  * @f[
  *   \Delta_0 \\
@@ -409,10 +387,10 @@ TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test) {
  * that is, only the galerkin matrix and the load vector
  *
  */
-TEST(projects_hldo_sphere_discretization, whitney_two_hodge_laplace_load_test_const) {
+TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test_const) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::discretization::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     double ret = pow(4, 2) * 5.2;
     return ret;
