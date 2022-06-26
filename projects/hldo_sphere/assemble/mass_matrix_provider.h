@@ -14,8 +14,11 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief An element matrix provider for piecewise linear (barycentric) basis
- * functions in a 3 dimensional world with 2 dimensional triangular cells
+ * @brief Element Matrix Provider for the mass matrix using picewise linear
+ * barycentric basis functions.
+ *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
  *
  * The bilinear form is locally evaluated for the basis functions.
  * The locally evaluated bilinear form is

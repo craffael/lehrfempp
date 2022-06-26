@@ -3,11 +3,6 @@
 
 /**
  * @file whitney_two_mass_matrix_provider.h
- * @brief An element matrix provider for vector valued piecewise constant basis
- * functions and the bilinear form
- * @f[
- * \int_{\Omega} u v dx
- * @f]
  */
 
 #include <lf/mesh/entity.h>
@@ -19,11 +14,15 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element matrix provider for the bilinear form
+ * @brief Element matrix provider for the bilinear form with cellwise constant
+ * basis functions
  *
  * @f[
- * \int\limits_{K} u \, v \ dx
+ * (u, v)  \mapsto \int\limits_{K} u \, v \ dx
  * @f]
+ *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
  *
  * Basis functions are the piecewise constant functions
  * Hence the retuned matrix is of size 1x1 and contains the area of the cell

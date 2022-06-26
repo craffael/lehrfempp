@@ -1,5 +1,5 @@
-#ifndef THESIS_MESH_SHPERE_TRIAG_MESH_BUILDER_H
-#define THESIS_MESH_SHPERE_TRIAG_MESH_BUILDER_H
+#ifndef HLDO_SPHERE_MESH_BUILDER_H
+#define HLDO_SPHERE_MESH_BUILDER_H
 
 /**
  * @file sphere_triag_mesh_builder.h
@@ -12,18 +12,18 @@
 
 namespace projects::hldo_sphere {
 
+/**
+ * @brief Contains a generator for triangluations of the surface of the 3-sphere
+ */
 namespace mesh {
 
 /**
  * @brief A mesh builder for regular 3-Sphere
  *
- * The diameter of the hole is controlled by the value passed to
- * setRadius().
+ * The radius of the Sphere is controlled by setRadius().
  * The refinement level can be set with setRefinementLevel().
- * The refinement level indicates by how many times the edges of the
+ * The refinement level indicates how fine the mesh should be
  * inital structure (octahedron, see https://de.wikipedia.org/wiki/Octahedron)
- * will be regualarly split. Note that this is only conceptual, the
- * implementation does not split egdes but directly build the desired sphere.
  * The radius defaults to 1.0 while refinement level defaults to 0.
  */
 class SphereTriagMeshBuilder {
@@ -56,11 +56,25 @@ class SphereTriagMeshBuilder {
    * @brief Set the refinement level
    * @param n The nummber of refinements
    *
-   * The refinement level indicates by how many times the edges of the
-   * inital structure (icosahedron, see
-   * https://en.wikipedia.org/wiki/Icosahedron) will be split regualarly. Note
-   * that this is only conceptual, the implementation does not split egdes but
-   * directly build the desired sphere.
+   * The refinement level indicates by how fine the mesh should become.
+   * Inital structure (octahedron, see
+   * https://en.wikipedia.org/wiki/Octahedron) on which new vertices are
+   * introduced for every refinement level.
+   *
+   * For refinement level l the mesh will have
+   * @f$
+   *    8\cdot 4^l
+   * @f$
+   * cells,
+   * @f$
+   *    12 \cdot 2^l + 24 \cdot (2^{2\, l - 1} - 2^{l -1})
+   * @f$
+   * edges and
+   * @f$
+   *    14 + 12 \cdot (2^l - 1) + 6 \cdot 2^{2\, l -1} - 18 \cdot 2^{l -1}
+   * @f$
+   * vertices.
+   *
    */
   void setRefinementLevel(lf::base::size_type n) { refinement_level_ = n; }
 
@@ -82,4 +96,4 @@ class SphereTriagMeshBuilder {
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_MESH_SPHERE_TRIAG_MESH_BUILDER_H
+#endif  // HLDO_SPHERE_MESH_BUILDER_H

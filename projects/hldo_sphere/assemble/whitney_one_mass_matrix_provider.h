@@ -17,8 +17,12 @@ namespace assemble {
  * @brief Element matrix provider for the whitney one mass matrix
  * that is the dot product of two whitney one basis functions
  *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
+ *
  * @f[
- * \int\limits_{\Omega} \textbf{u} \cdot \textbf{v} dx
+ * (\textbf{u}, \textbf{v}) \mapto \int\limits_{\K} \textbf{u} \cdot
+ * \textbf{v} dx
  * @f]
  *
  * The whitney 1-forms, surface edge elements are associated with

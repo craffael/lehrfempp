@@ -17,6 +17,7 @@ set(sources
     rot_whitney_one_div_matrix_provider.h
     rot_whitney_one_div_matrix_provider.cc
     whitney_two_vector_provider.h
+    assemble.h
 )
 
 add_library(projects.hldo_sphere.assemble ${sources})

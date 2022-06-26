@@ -25,9 +25,13 @@ namespace assemble {
  *
  * The linear form is given by
  * @f[
- *  \int\limits_K f \cdot v \,\mathrm{d}x, \quad f, v \in
+ *  (\mathbf{v}) \mapsto \int\limits_K \mathbf{f} \cdot \mathbf{v}
+ * \,\mathrm{d}x, \quad \mathbf{f}, \mathbf{v} \in
  * \mathbf{H}(\text{curl}_{\Gamma}, \partial\mathbf{S})
  * @f]
+ *
+ * The element vector provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
  *
  * Basis functions are the Whitney 1-forms, surface edge elements for v
  *
@@ -55,7 +59,9 @@ class WhitneyOneVectorProvider {
    *
    * @tparam SCALAR representing the scalar field, on which the codomain is
    * based on
-   * @param f a tangential vector field on the sphere
+   *
+   * @param f a tangential vector field functor required to be defined on the
+   * mesh
    */
   WhitneyOneVectorProvider(
       const std::function<Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Vector3d &)>

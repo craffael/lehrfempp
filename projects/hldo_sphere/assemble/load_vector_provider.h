@@ -19,15 +19,19 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief An element vector provider for piecewise linear (barycentric) basis
- * functions in a 3 dimensional world with 2 dimensional triangular cells
+ *
+ * @brief Element Vector Provider for scalar valued load functions using
+ * picewise linear barycentric basis functions.
+ *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
  *
  * @tparam SCALAR either double or std::complex
  *
  * The locally evaluated linear form is
  * @f[
- *  \int\limits_{K}\ f(\mathbf{x}) \cdot v(\mathbf{x}) \, dx, \quad f, v \in
- * H^1(\Omega)
+ * v \mapsto \int\limits_{K}\ f(\mathbf{x}) \cdot v(\mathbf{x}) \, dx, \quad f,
+ * v \in H^1(\Omega)
  * @f]
  *
  * Evaluates the function values on the cell.
@@ -47,7 +51,8 @@ class LoadVectorProvider {
    *
    * @brief Constructor
    *
-   * @param f a realvalued function defined on the surface of the sphere
+   * @param f a `SCALAR` valued functor defined on the Mesh on which `Eval`
+   * will be called
    *
    */
   LoadVectorProvider(const std::function<SCALAR(const Eigen::Vector3d &)> &f)

@@ -14,10 +14,9 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element Matrix Provider for the laplace operator using picewise linear
- * barycentric basis functions.
+ * @brief
  *
- * The element matrix provider works in a 3 dimensional world with 2
+ * The element matrix provider works 3 dimensional world with 2
  * dimensional triangular cells.
  *
  * The locally evaluated bilinear form is

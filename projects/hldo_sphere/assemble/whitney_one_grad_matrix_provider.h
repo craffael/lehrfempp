@@ -14,10 +14,13 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element matrix provider for the bilinear form
+ * @brief Element matrix provider whitney one forms, surface vector fields
  *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells. And evaluates the bilinear form
  * @f[
- * \int\limits_K \mathbf{grad}_{\Gamma}(u) \, v \ dx
+ * (u, \mathbf{v}) \mapsto \int\limits_K \mathbf{grad}_{\Gamma}(u) \, \mathbf{v}
+ * \ dx
  * @f]
  *
  * Basis functions are the Whitney 1-forms, surface edge elements for v

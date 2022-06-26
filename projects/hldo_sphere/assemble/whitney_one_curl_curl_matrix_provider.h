@@ -14,11 +14,15 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief An element matrix provider for piecewise linear (Whitney 1-Forms)
- * basis functions in a 3 dimensional world with 2 dimensional triangular cells
+ * @brief An elment matrix provider computed with the whitney one form, a vector
+ * valued basis function
+ *
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
  *
  * @f[
- * \int\limits_K \text{curl}_{\Gamma}(u) \ \text{curl}_{\Gamma}(v) dx
+ * (\mathbf{u}, \mathbf{v})  \mapto \int\limits_K
+ * \text{curl}_{\Gamma}(\mathbf{u}) \ \text{curl}_{\Gamma}(\mathbf{v}) dx
  * @f]
  *
  * The whitney 1-forms, surface edge elements are associated with

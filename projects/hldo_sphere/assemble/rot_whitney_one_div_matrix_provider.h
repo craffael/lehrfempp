@@ -17,10 +17,14 @@ namespace assemble {
  * @brief Element matrix provider for rotated whitney one form
  *
  * @f[
- * \int\limits_K \text{div}_{\Gamma}(v)\, u \ dx
+ * (\mathbf{v}, u) \mapsto \int\limits_K \text{div}_{\Gamma}(\mathbf{v})\, u
+ * \ dx
  * @f]
  *
- * As basis functions, the rotatedrotated  Whitney 1-forms, surface edge
+ * The element matrix provider works in a 3 dimensional world with 2
+ * dimensional triangular cells.
+ *
+ * As basis functions, the rotated  Whitney 1-forms, surface edge
  * elements are used for v
  * and the cellwise constant basis functions are used for u
  *
