@@ -101,9 +101,10 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Element matrix provider for rotated whitney one form. </p>
 <p class="formulaDsp">
-\[ \int\limits_K \text{div}_{\Gamma}(v)\, u \ dx \]
+\[ (\mathbf{v}, u) \mapsto \int\limits_K \text{div}_{\Gamma}(\mathbf{v})\, u \ dx \]
 </p>
-<p >As basis functions, the rotatedrotated Whitney 1-forms, surface edge elements are used for v and the cellwise constant basis functions are used for u</p>
+<p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells.</p>
+<p >As basis functions, the rotated Whitney 1-forms, surface edge elements are used for v and the cellwise constant basis functions are used for u</p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
 <p class="formulaDsp">
 \[ b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
@@ -113,7 +114,7 @@ Public Member Functions</h2></td></tr>
 <dd>
 Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00045">45</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00049">49</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a34512f863d11294893c3e6ee82ac0805" name="a34512f863d11294893c3e6ee82ac0805"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a34512f863d11294893c3e6ee82ac0805">&#9670;&nbsp;</a></span>RotWhitneyOneDivMatrixProvider()</h2>
@@ -140,7 +141,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>Constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00050">50</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00054">54</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +204,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00064">64</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00068">68</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 
 </div>
 </div>

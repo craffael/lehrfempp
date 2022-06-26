@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>LehrFEM++: /home/nico/bildung/SemVI/thesis/lehrfempp/projects/hldo_sphere/hldo_sphere.h Source File</title>
+<title>LehrFEM++: /home/nico/bildung/SemVI/thesis/lehrfempp/projects/hldo_sphere/assemble/assemble.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,19 +70,32 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_a9ec1ef424966475f993eb98877e3088.html">projects</a></li><li class="navelem"><a class="el" href="dir_8000aec3a283b50868eb4cddc778b346.html">hldo_sphere</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_a9ec1ef424966475f993eb98877e3088.html">projects</a></li><li class="navelem"><a class="el" href="dir_8000aec3a283b50868eb4cddc778b346.html">hldo_sphere</a></li><li class="navelem"><a class="el" href="dir_2e67a38bf421c680edd7e70a8e43d8f1.html">assemble</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">hldo_sphere.h</div></div>
+  <div class="headertitle"><div class="title">assemble.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef HLDO_SPHERE_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define HLDO_SPHERE_H</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef HLDO_SPHERE_ASSEMBLE_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define HLDO_SPHERE_ASSEMBLE_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceprojects_1_1hldo__sphere.html">projects::hldo_sphere</a> {}</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#endif  </span><span class="comment">// HLDO_SPHERE_H</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;laplace_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;load_vector_provider.h&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;mass_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;rot_whitney_one_div_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;whitney_one_curl_curl_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;whitney_one_grad_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;whitney_one_mass_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;whitney_one_vector_provider.h&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;whitney_two_mass_matrix_provider.h&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;whitney_two_vector_provider.h&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere.html">   15</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceprojects_1_1hldo__sphere.html">projects::hldo_sphere</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere_1_1assemble.html">   19</a></span><span class="keyword">namespace </span>assemble {}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace projects::hldo_sphere</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif  </span><span class="comment">// HLDO_SPHERE_ASSEMBLE_H</span></div>
 <div class="ttc" id="anamespaceprojects_1_1hldo__sphere_html"><div class="ttname"><a href="namespaceprojects_1_1hldo__sphere.html">projects::hldo_sphere</a></div><div class="ttdoc">Implementation of Thesis Hogde Laplacians and Dirac Operators on the surface of the 3-Sphere.</div><div class="ttdef"><b>Definition:</b> <a href="projects_2hldo__sphere_2assemble_2assemble_8h_source.html#l00015">assemble.h:15</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

@@ -95,7 +95,7 @@ $(function() {
 <div class="line">/home/raffael/lehrfempp/lib/<a class="code hl_namespace" href="namespacelf.html">lf</a>/base/lf_assert.h:82:2: warning: <span class="stringliteral">&quot;Eigen has been included before LehrFEM++ and LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace!&quot;</span> [-W#warnings]</div>
 <div class="line"><span class="preprocessor">#warning \</span></div>
 <div class="line"><span class="preprocessor"> ^</span></div>
-<div class="ttc" id="anamespacelf_html"><div class="ttname"><a href="namespacelf.html">lf</a></div><div class="ttdef"><b>Definition:</b> <a href="assemble_8h_source.html#l00030">assemble.h:30</a></div></div>
+<div class="ttc" id="anamespacelf_html"><div class="ttname"><a href="namespacelf.html">lf</a></div><div class="ttdef"><b>Definition:</b> <a href="lib_2lf_2assemble_2assemble_8h_source.html#l00030">assemble.h:30</a></div></div>
 </div><!-- fragment --><p >You can then follow the include hierarchy from the beginning (<code><a class="el" href="gmsh__file__v4__binary_8cc_source.html">gmsh_file_v4_binary.cc</a></code>) until you reach <code><a class="el" href="lf__assert_8h_source.html">lf_assert.h</a></code>. At every step you should check if any Eigen header is <code>#include</code>d before a LehrFEM++ header.</p>
 <h3>2. Tell LehrFEM++ to not override the <code>eigen_assert</code> macro</h3>
 <p >LehrFEM++ has the cmake option <code>LF_REDIRECT_ASSERTS</code> which is by default enabled. You can disable this option and thereby tell LehrFEM++ to not redirect eigen and boost asserts to <code>LF_ASSERT_MSG</code>.</p>

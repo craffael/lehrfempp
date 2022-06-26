@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>An element matrix provider for piecewise linear (Whitney 1-Forms) basis functions in a 3 dimensional world with 2 dimensional triangular cells.  
+<p>An elment matrix provider computed with the whitney one form, a vector valued basis function.  
  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_whitney_one_curl_curl_matrix_provider.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>&gt;</code></p>
@@ -99,9 +99,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4cb455f3dc1cf26a0bef86db92d9731d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >An element matrix provider for piecewise linear (Whitney 1-Forms) basis functions in a 3 dimensional world with 2 dimensional triangular cells. </p>
+<div class="textblock"><p >An elment matrix provider computed with the whitney one form, a vector valued basis function. </p>
+<p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells.</p>
 <p class="formulaDsp">
-\[ \int\limits_K \text{curl}_{\Gamma}(u) \ \text{curl}_{\Gamma}(v) dx \]
+\[ (\mathbf{u}, \mathbf{v}) \mapto \int\limits_K \text{curl}_{\Gamma}(\mathbf{u}) \ \text{curl}_{\Gamma}(\mathbf{v}) dx \]
 </p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
 <p class="formulaDsp">
@@ -111,7 +112,7 @@ Public Member Functions</h2></td></tr>
 <dd>
 Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00039">39</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00043">43</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af888a2a6c929c8808ba0a450f828ec76" name="af888a2a6c929c8808ba0a450f828ec76"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af888a2a6c929c8808ba0a450f828ec76">&#9670;&nbsp;</a></span>WhitneyOneCurlCurlMatrixProvider()</h2>
@@ -138,7 +139,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>Constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00044">44</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00048">48</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
 
 </div>
 </div>
@@ -201,7 +202,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00058">58</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html#l00062">62</a> of file <a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">whitney_one_curl_curl_matrix_provider.h</a>.</p>
 
 </div>
 </div>

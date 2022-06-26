@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Element matrix provider for the bilinear form.  
+<p>Element matrix provider whitney one forms, surface vector fields.  
  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_whitney_one_grad_matrix_provider.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>&gt;</code></p>
@@ -99,9 +99,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7df67e729bb4590d7916ecb6a35c98f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Element matrix provider for the bilinear form. </p>
-<p class="formulaDsp">
-\[ \int\limits_K \mathbf{grad}_{\Gamma}(u) \, v \ dx \]
+<div class="textblock"><p >Element matrix provider whitney one forms, surface vector fields. </p>
+<p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells. And evaluates the bilinear form </p><p class="formulaDsp">
+\[ (u, \mathbf{v}) \mapsto \int\limits_K \mathbf{grad}_{\Gamma}(u) \, \mathbf{v} \ dx \]
 </p>
 <p >Basis functions are the Whitney 1-forms, surface edge elements for v and the barycentric basis functions for u</p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
@@ -113,7 +113,7 @@ Public Member Functions</h2></td></tr>
 <dd>
 Only triangluar meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00044">44</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00047">47</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aea8747f15fcaac7986aacbb7d7793f9f" name="aea8747f15fcaac7986aacbb7d7793f9f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aea8747f15fcaac7986aacbb7d7793f9f">&#9670;&nbsp;</a></span>WhitneyOneGradMatrixProvider()</h2>
@@ -140,7 +140,7 @@ Only triangluar meshes are supported </dd></dl>
 
 <p>Constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00049">49</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00052">52</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +203,7 @@ Only triangluar meshes are supported </dd></dl>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00063">63</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html#l00066">66</a> of file <a class="el" href="whitney__one__grad__matrix__provider_8h_source.html">whitney_one_grad_matrix_provider.h</a>.</p>
 
 </div>
 </div>
