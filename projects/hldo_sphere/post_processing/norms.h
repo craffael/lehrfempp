@@ -13,7 +13,8 @@ namespace projects::hldo_sphere::post_processing {
  *
  * @brief Computes the L2Norm of some MeshFunction (type MF) f
  *
- * @tparam MF type of the mesh function to take to norm form
+ * @tparam MF type of the mesh function to take to norm form is required to be
+ * defined on the mesh
  * @tparam SQ_F type of the square function sq_f
  * @param mesh_p pointer to the mesh
  * @param f meshfunction to evaluate
@@ -21,7 +22,7 @@ namespace projects::hldo_sphere::post_processing {
  * \|x\|^2@f$
  * @param quadrule quadrature rule used for each cell in the mesh
  *
- * @returns pair with the squared norm of the inputfunction f on the mesh and
+ * @returns pair with the norm of the inputfunction f on the mesh and
  *  CodimMeshDataSet containing the cellwise integrals over the squared errors
  *
  * Iterates over all cells in the mesh and compute the

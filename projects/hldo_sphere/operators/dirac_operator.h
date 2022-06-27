@@ -63,20 +63,19 @@ class DiracOperator {
    *
    */
   DiracOperator() : coo_matrix_(lf::assemble::COOMatrix<SCALAR>(1, 1)) {
-    // create mesh factory for basic mesh
+    // create mesh factory for basic mesh only because empty values do not
+    // complile
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
-
     std::shared_ptr<projects::hldo_sphere::mesh::SphereTriagMeshBuilder>
         sphere = std::make_shared<
             projects::hldo_sphere::mesh::SphereTriagMeshBuilder>(
             std::move(factory));
     sphere->setRefinementLevel(0);
     sphere->setRadius(1);
-
     mesh_p_ = sphere->Build();
 
-    // create basic function
+    // create basic function everyting 0 valued by default
     auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     auto f_1 =
         [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<SCALAR, 3, 1> {
@@ -91,14 +90,16 @@ class DiracOperator {
   /**
    * @brief Computes the Galerkin LSE
    *
-   * The Galerkin matrix will be accessable with GetGalerkinMatrix()
-   * The load vector will be accessable with GetLoadVector()
+   * The Galerkin matrix can be accessable with GetGalerkinMatrix()
+   * The load vector can be accessable with GetLoadVector()
    *
    */
   void Compute() {
-    // create element matrix provider
+    // create element matrix provider for the matrices A12, A21
     projects::hldo_sphere::assemble::WhitneyOneGradMatrixProvider
         matrix_grad_provider;
+
+    // create matrix provider for  -A23, -A32
     projects::hldo_sphere::assemble::RotWhitneyOneDivMatrixProvider
         matrix_div_provider;
 
@@ -126,9 +127,11 @@ class DiracOperator {
     lf::assemble::COOMatrix<double> coo_A_23_m(n_dofs_edge, n_dofs_cell);
     coo_A_23_m.setZero();
 
+    // create s matrix with n_dofs_edge rows and n_dofs_vert columns
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
         0, dof_handler_vert, dof_handler_edge, matrix_grad_provider, coo_A_21);
 
+    // create matrix with n_dof_edge_rows and n_dof_cell columns
     lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
         0, dof_handler_cell, dof_handler_edge, matrix_div_provider, coo_A_23_m);
 
