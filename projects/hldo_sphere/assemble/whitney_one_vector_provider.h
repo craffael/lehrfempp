@@ -126,8 +126,6 @@ class WhitneyOneVectorProvider {
     const auto f_tilde_hat =
         [&](Eigen::Vector2d x_hat) -> Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> {
       Eigen::Vector3d x = geom->Global(x_hat);
-      Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> b_hat_out =
-          b_hat(x_hat);
       Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> result =
           b_hat(x_hat).transpose() * f_(x);
       return result;

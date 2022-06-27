@@ -287,20 +287,20 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
       if (lvl > 0) {
         l2RateZero =
             (log(L2ErrorZero(lvl, ik)) - log(L2ErrorZero(lvl - 1, ik))) /
-            (hMax(lvl) - hMax(lvl - 1));
+            (log(hMax(lvl) / hMax(lvl - 1)));
         l2RateOne = (log(L2ErrorOne(lvl, ik)) - log(L2ErrorOne(lvl - 1, ik))) /
-                    (hMax(lvl) - hMax(lvl - 1));
+                    (log(hMax(lvl) / hMax(lvl - 1)));
         l2RateTwo = (log(L2ErrorTwo(lvl, ik)) - log(L2ErrorTwo(lvl - 1, ik))) /
-                    (hMax(lvl) - hMax(lvl - 1));
+                    (log(hMax(lvl) / hMax(lvl - 1)));
         supRateZero =
             (log(SupErrorZero(lvl, ik)) - log(SupErrorZero(lvl - 1, ik))) /
-            (hMax(lvl) - hMax(lvl - 1));
+            (log(hMax(lvl) / hMax(lvl - 1)));
         supRateOne =
             (log(SupErrorOne(lvl, ik)) - log(SupErrorOne(lvl - 1, ik))) /
-            (hMax(lvl) - hMax(lvl - 1));
+            (log(hMax(lvl) / hMax(lvl - 1)));
         supRateTwo =
             (log(SupErrorTwo(lvl, ik)) - log(SupErrorTwo(lvl - 1, ik))) /
-            (hMax(lvl) - hMax(lvl - 1));
+            (log(hMax(lvl) / hMax(lvl - 1)));
       }
 
       /******************************

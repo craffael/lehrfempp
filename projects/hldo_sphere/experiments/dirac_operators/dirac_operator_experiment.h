@@ -102,7 +102,7 @@ class DiracOperatorExperiment {
 
     // functions are passed by reference hence changing the k still influences
     // the functions
-    lse_builder.SetLoadFunctions(f_zero_, f_one_, f_zero_);
+    lse_builder.SetLoadFunctions(f_zero_, f_one_, f_two_);
 
     // Read the mesh from the gmsh file
     std::unique_ptr<lf::mesh::MeshFactory> factory =
@@ -208,8 +208,8 @@ class DiracOperatorExperiment {
               << " [s]\n";
 
     projects::hldo_sphere::post_processing::process_results<
-        decltype(u_zero_), decltype(u_one_), decltype(u_zero_), complex>(
-        name_, solutions, u_zero_, u_one_, u_zero_, k_);
+        decltype(u_zero_), decltype(u_one_), decltype(u_two_), complex>(
+        name_, solutions, u_zero_, u_one_, u_two_, k_);
   }
 
  private:
