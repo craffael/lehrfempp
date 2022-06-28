@@ -1,5 +1,5 @@
-#ifndef THESIS_POST_PROCESSING_RESULTS_PROCESSING_H
-#define THESIS_POST_PROCESSING_RESULTS_PROCESSING_H
+#ifndef HLDO_SPHERE_POST_PROCESSING_RESULTS_PROCESSING_H
+#define HLDO_SPHERE_POST_PROCESSING_RESULTS_PROCESSING_H
 
 /**
  * @file result_processing
@@ -327,4 +327,4 @@ void process_results(std::string name, ProblemSolutionWrapper<SCALAR> &results,
 
 }  // namespace projects::hldo_sphere
 
-#endif  // THESIS_POST_PROCESSING_RESULTS_PROCESSING_H
+#endif  // HLDO_SPHERE_POST_PROCESSING_RESULTS_PROCESSING_H

@@ -1,5 +1,5 @@
-#ifndef THESIS_NORMS_L2NORM_H
-#define THESIS_NORMS_L2NORM_H
+#ifndef HLDO_SPHERE_NORMS_L2NORM_H
+#define HLDO_SPHERE_NORMS_L2NORM_H
 
 /**
  * @file norms.h
@@ -113,4 +113,4 @@ std::pair<double, lf::mesh::utils::CodimMeshDataSet<double>> SupNorm(
 }
 
 }  // namespace projects::hldo_sphere::post_processing
-#endif  // THESIS_NORMS_L2NORM_H
+#endif  // HLDO_SPHERE_NORMS_L2NORM_H
