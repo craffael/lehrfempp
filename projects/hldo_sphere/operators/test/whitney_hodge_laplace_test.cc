@@ -79,6 +79,7 @@ TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_basic_test) {
  * But not the solution of the system is tested only the buildingblocks
  * that is, only the galerkin matrix and the load vector
  *
+ *
  */
 TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_load_test) {
   // Build LSE
@@ -329,6 +330,9 @@ TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_basic_test) {
  * But not the solution of the system is tested only the buildingblocks
  * that is, only the galerkin matrix and the load vector
  *
+ * The computations of the analytical solution can be found in the doucument
+ * HodgeLaplaceTest.nb
+ *
  */
 TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test) {
   // Build LSE
@@ -373,6 +377,7 @@ TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test) {
 /**
  *
  * @brief Test the two hodge laplacian
+ *
  *
  * The test tests the operators of the Element Matrix for
  *
