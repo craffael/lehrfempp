@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
   for (double i = min_k; i <= max_k; i += step) {
     ks.push_back(i);
   }
+
   // righthandside for the zero
   auto f_zero = [&](const Eigen::Vector3d &x_vec) -> complex {
     return complex(0, k * 5.2);
