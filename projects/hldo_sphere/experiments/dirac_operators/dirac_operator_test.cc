@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   // righthandside for the zero and two form
   auto f_zero = [&](const Eigen::Vector3d &x_vec) -> complex {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   // righthandside for the one form
   auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXcd {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
   // righthandside for the two form
   auto f_two = [&](const Eigen::Vector3d &x_vec) -> complex {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
   // Compute the analytic solution of the problem
   auto u_zero = [&](const Eigen::Vector3d x_vec) -> complex {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   // Compute the analytic solution of the problem
   auto u_one = [&](const Eigen::Vector3d x_vec) -> Eigen::Vector3cd {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
   // Compute the analytic solution of the problem
   auto u_two = [&](const Eigen::Vector3d x_vec) -> complex {
     // first scale to the circle
-    Eigen::Vector3d x_ = x_vec;
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
     double x = x_(0);
     double y = x_(1);
     double z = x_(2);

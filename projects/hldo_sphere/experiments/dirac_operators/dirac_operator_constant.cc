@@ -51,8 +51,12 @@ int main(int argc, char *argv[]) {
 
   // righthandside for the one form
   auto f_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::VectorXcd {
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
     Eigen::Vector3cd ret;
-    ret << complex(0, -k * x_vec(1)), complex(0, k * x_vec(0)), 0;
+    ret << complex(0, -k * y), complex(0, k * x), 0;
     return ret;
   };
 
@@ -62,9 +66,10 @@ int main(int argc, char *argv[]) {
 
   // righthandside for the two form
   auto f_two = [&](const Eigen::Vector3d &x_vec) -> complex {
-    double x = x_vec(0);
-    double y = x_vec(1);
-    double z = x_vec(2);
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
     return Complex(0., 5.2) * k -
            (2 * z) / Sqrt(Power(x, 2) + Power(y, 2) + Power(z, 2));
   };
@@ -75,9 +80,10 @@ int main(int argc, char *argv[]) {
 
   // Compute the analytic solution of the problem
   auto u_one = [&](const Eigen::Vector3d x_vec) -> Eigen::Vector3cd {
-    double x = x_vec(0);
-    double y = x_vec(1);
-    double z = x_vec(2);
+    Eigen::Vector3d x_ = x_vec / x_vec.norm();
+    double x = x_(0);
+    double y = x_(1);
+    double z = x_(2);
     Eigen::Vector3cd ret;
     ret << -y, x, 0;
     return ret;
