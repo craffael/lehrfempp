@@ -59,8 +59,8 @@ TEST(projects_hldo_sphere_operators, dirac_operator_source_problem_basic_test) {
 
   Ae_anal.block(0, 6, 6, 12) *= 1. / std::sqrt(3);
   Ae_anal.block(6, 0, 12, 6) *= -1. / std::sqrt(3);
-  Ae_anal.block(6, 18, 12, 8) *= -1;
-  Ae_anal.block(18, 6, 8, 12) *= -1;
+  Ae_anal.block(6, 18, 12, 8) *= 1;
+  Ae_anal.block(18, 6, 8, 12) *= 1;
   Eigen::MatrixXcd Ae_anal_cd = Ae_anal.cast<std::complex<double>>();
 
   Eigen::MatrixXd Ae_anal_mass_zero(6, 6);
