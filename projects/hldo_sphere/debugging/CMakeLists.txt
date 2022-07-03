@@ -2,6 +2,8 @@
 set(sources 
     dirac_convergence_test.h
     dirac_convergence_test.cc
+    whitney_one_basis_expansion_coeffs.h
+    whitney_one_curl_test.h
 )
 
 add_library(projects.hldo_sphere.debugging ${sources})

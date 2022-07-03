@@ -177,7 +177,7 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
   csv_file << std::endl;
 
   // loop over all levels contained in the solution
-  for (lf::base::size_type lvl = 0; lvl < refinement_levels; ++lvl) {
+  for (lf::base::size_type lvl = 0; lvl <= refinement_levels; ++lvl) {
     // create mesh Functions for solutions the level
     auto &sol_mesh = meshs[lvl];
 
@@ -236,6 +236,9 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
              << "," << l2RateTwo;
     csv_file << "\n";
   }  // end loop over levels
+
+  // close csv file
+  csv_file.close();
 };
 
 }  // namespace debugging
