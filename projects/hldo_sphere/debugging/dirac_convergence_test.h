@@ -43,8 +43,17 @@ struct SolutionList {
 };
 
 /**
- * @brief Creates and solves the discretised Dirac Operator source problems for
- * a given list of levels and values of k
+ * @brief Class to test the convergence of the Dirac operator
+ *
+ * This test does only test convergence but not the convergence to a specific
+ * value. Morespecifically its used to test
+ * @f[
+ *  |\|u_k\| - \|u_{k-1}\|| \to 0
+ *  @f]
+ *
+ * The method Compute() computes a list of values stored in
+ * ./results/result_dirac_convergence_`refimement_level`.csv that can be used
+ * for plots
  *
  */
 class DiracConvergenceTest {
@@ -53,16 +62,11 @@ class DiracConvergenceTest {
    *
    * @brief Constructor setting all the functions and the reference k
    *
-   * @param u_zero analytical soltions corresponding to the load function f_zero
-   * @param u_one analytical soltions corresponding to the load function f_one
-   * @param u_two analytical soltions corresponding to the load function f_two
    * @param f_zero load function corresponding to the analytical solution u_zero
    * @param f_one load function corresponding to the analytical solution u_one
    * @param f_two load function corresponding to the analytical solution u_two
    * @param k reference used in all the functions such that changes of k affect
    * the functions
-   * @param name identifier of the example (cretes a folder with this name for
-   * the results)
    *
    */
   DiracConvergenceTest(
@@ -76,11 +80,10 @@ class DiracConvergenceTest {
 
   /**
    *
-   * @brief Solves the dirac opeartor source problems and computes a list of
-   * theirs passed refinement levels and ks
+   * @brief Solves the dirac opeartor source problems up to the given
+   * refinement_level
    *
-   * @param refinement_levels integer list containig all the levels
-   * @param ks list of all ks to be used
+   * @param refinement_levels integer maximal refinement level to compute
    *
    */
   void Compute(unsigned refinement_levels);
@@ -96,4 +99,4 @@ class DiracConvergenceTest {
 }  // namespace debugging
 }  // namespace projects::hldo_sphere
 
-#endif  // HDO_SPHERE_DEBUG_DIRAC_CONVERGENCE_H
+#endif  // HLDO_SPHERE_DEBUG_DIRAC_CONVERGENCE_H

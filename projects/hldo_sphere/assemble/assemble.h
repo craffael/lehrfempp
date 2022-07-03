@@ -15,6 +15,9 @@
 namespace projects::hldo_sphere {
 /**
  * @brief Collection of matrix and vector element providers
+ *
+ * Containing all necessary matrix and vector providers for the
+ * Hodge Laplacians and the Dirac operator
  */
 namespace assemble {}
 }  // namespace projects::hldo_sphere

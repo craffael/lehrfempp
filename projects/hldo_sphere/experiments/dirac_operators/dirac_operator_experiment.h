@@ -30,12 +30,13 @@
 
 namespace projects::hldo_sphere::experiments {
 
+using complex = std::complex<double>;
+
 /**
  * @brief Creates and solves the discretised Dirac Operator source problems for
  * a given list of levels and values of k
  *
  */
-using complex = std::complex<double>;
 class DiracOperatorExperiment {
  public:
   /**

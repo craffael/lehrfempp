@@ -101,8 +101,8 @@ class WhitneyOneCurlTest {
           std::chrono::steady_clock::now();
 
       // get mesh
-      sphere.setrefinementlevel(lvl);
-      const std::shared_ptr<lf::mesh::mesh> mesh = sphere.build();
+      sphere.setRefinementLevel(lvl);
+      const std::shared_ptr<lf::mesh::Mesh> mesh = sphere.Build();
       meshs_[lvl] = mesh;
 
       // end timer
@@ -120,50 +120,50 @@ class WhitneyOneCurlTest {
       start_time = std::chrono::steady_clock::now();
 
       // computes the assemby matrix
-      const lf::assemble::dofhandler &dof_handler_edge =
-          lf::assemble::uniformfedofhandler(mesh,
-                                            {{lf::base::refel::ksegment(), 1}});
-      const lf::assemble::dofhandler &dof_handler_cell =
-          lf::assemble::uniformfedofhandler(mesh,
-                                            {{lf::base::refel::ktria(), 1}});
+      const lf::assemble::DofHandler &dof_handler_edge =
+          lf::assemble::UniformFEDofHandler(mesh,
+                                            {{lf::base::RefEl::kSegment(), 1}});
+      const lf::assemble::DofHandler &dof_handler_cell =
+          lf::assemble::UniformFEDofHandler(mesh,
+                                            {{lf::base::RefEl::kTria(), 1}});
 
       // create coo matrix
-      const lf::assemble::size_type n_dofs_edge(dof_handler_edge.numdofs());
-      const lf::assemble::size_type n_dofs_cell(dof_handler_cell.numdofs());
+      const lf::assemble::size_type n_dofs_edge(dof_handler_edge.NumDofs());
+      const lf::assemble::size_type n_dofs_cell(dof_handler_cell.NumDofs());
 
       // note that the rotwoneformdivelementmatrixprovider returns the
-      lf::assemble::coomatrix<double> coo_mat(n_dofs_edge, n_dofs_cell);
-      coo_mat.setzero();
+      lf::assemble::COOMatrix<double> coo_mat(n_dofs_edge, n_dofs_cell);
+      coo_mat.setZero();
 
       // create matrix with n_dofs_edge_rows and n_dofs_cell columns
-      lf::assemble::assemblematrixlocally<lf::assemble::coomatrix<double>>(
+      lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
           0, dof_handler_cell, dof_handler_edge, matrix_div_provider, coo_mat);
 
       // compute basis expansion coefficients
-      whitneyonebasisexpansioncoeffs one_coeffs;
-      one_coeffs.setmesh(mesh);
-      one_coeffs.setfunction(u_);
-      one_coeffs.compute();
-      eigen::matrix<double, eigen::dynamic, 1> u_h(n_dofs_edge);
-      u_h = one_coeffs.getmu();
+      WhitneyOneBasisExpansionCoeffs one_coeffs;
+      one_coeffs.SetMesh(mesh);
+      one_coeffs.SetFunction(u_);
+      one_coeffs.Compute();
+      Eigen::Matrix<double, Eigen::Dynamic, 1> u_h(n_dofs_edge);
+      u_h = one_coeffs.GetMu();
 
       // get analytical values at the cell midpoints for the expansion
       // coefficients of v
-      eigen::matrix<double, eigen::dynamic, 1> v_h(n_dofs_cell);
-      for (const lf::mesh::entity *c : mesh->entities(0)) {
-        eigen::matrixxd points(3, 3);
-        points = lf::geometry::corners(*(c->geometry()));
-        eigen::vectorxd midpoint =
+      Eigen::Matrix<double, Eigen::Dynamic, 1> v_h(n_dofs_cell);
+      for (const lf::mesh::Entity *c : mesh->Entities(0)) {
+        Eigen::MatrixXd points(3, 3);
+        points = lf::geometry::Corners(*(c->Geometry()));
+        Eigen::VectorXd midpoint =
             (points.col(0) + points.col(1) + points.col(2)) / 3.;
 
         // scale up on sphere
         midpoint = midpoint / midpoint.norm();
 
-        unsigned glob_idx = mesh->index(*c);
+        unsigned glob_idx = mesh->Index(*c);
         v_h(glob_idx) = v_(midpoint);
       }
 
-      discrete_sols_[lvl] = u_h.transpose() * coo_mat.makesparse() * v_h;
+      discrete_sols_[lvl] = u_h.transpose() * coo_mat.makeSparse() * v_h;
 
       // end timer
       end_time = std::chrono::steady_clock::now();
@@ -241,7 +241,7 @@ class WhitneyOneCurlTest {
   /**
    * @brief Sets the value of the analytical solution @f$b(u,v)@f$
    * @param sol value of the analytical soltion
-   * @ Note the solution has to comply with the functions u and v, which are
+   * @note the solution has to comply with the functions u and v, which are
    * passed as functors
    */
   void SetAnaSol(double sol) { ana_sol_ = sol; }

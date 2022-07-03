@@ -1,19 +1,20 @@
-#ifndef THESIS_MESH_FUNCTION_WHITNEY_ZERO_H
-#define THESIS_MESH_FUNCTION_WHITNEY_ZERO_H
-
-#include <lf/uscalfe/uscalfe.h>
-
-/**
- * @file mesh_function_whitney_zero.h
- *
- * @tparam SCALAR type of the solution vector
- *
- * @brief Provides utilities for the evaluation of errors
- *
+#ifndef HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ZERO_H
+#define HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ZERO_H
+/*
+ *@file mesh_function_whitney_zero.h
  */
+#include <lf/uscalfe/uscalfe.h>
 
 namespace projects::hldo_sphere::post_processing {
 
+/**
+ * @brief Provides Mesh Function for basis expansion coefficients of the zero
+ * form
+ *
+ * @tparam SCALAR type of the solution vector
+ *
+ *
+ */
 template <typename SCALAR>
 class MeshFunctionWhitneyZero {
  public:
@@ -37,16 +38,16 @@ class MeshFunctionWhitneyZero {
     // make sure mu has the right size
     const lf::base::size_type n = mesh->NumEntities(2);
     const int mu_size = mu.size();
-    LF_VERIFY_MSG(
-        n == mu_size,
-        "Not the right number of basis expansion coefficiants in mu expected: "
-            << n << " given: " << mu_size);
+    LF_VERIFY_MSG(n == mu_size,
+                  "Not the right number of basis expansion coefficiants in "
+                  "mu expected: "
+                      << n << " given: " << mu_size);
   };
 
   /**
    *
-   * @brief Evaluates the whitney one form basis function at reference points on
-   * a given cell
+   * @brief Evaluates the whitney one form basis function at reference points
+   * on a given cell
    *
    * @param e on which to evaluate
    * @param local coordinates on the reference triangle for the
@@ -54,8 +55,8 @@ class MeshFunctionWhitneyZero {
    *
    *
    * @returns a vector of doubles containing the results for the
-   * evaluation of the linear combination of barycentric basis functions at the
-   * input coordintes in `local`.
+   * evaluation of the linear combination of barycentric basis functions at
+   * the input coordintes in `local`.
    *
    *
    * And returns a vector containing the values as follows
@@ -111,4 +112,4 @@ class MeshFunctionWhitneyZero {
 };
 
 }  // namespace projects::hldo_sphere::post_processing
-#endif  // THESIS_MESH_FUNCTION_WHITNEY_ONE_H
+#endif  // HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ONE_H

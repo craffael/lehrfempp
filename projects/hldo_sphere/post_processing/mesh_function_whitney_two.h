@@ -1,18 +1,19 @@
-#ifndef THESIS_MESH_FUNCTION_WHITNEY_TWO_H
-#define THESIS_MESH_FUNCTION_WHITNEY_TWO_H
+#ifndef HLDO_SPHERE_MESH_FUNCTION_WHITNEY_TWO_H
+#define HLDO_SPHERE_MESH_FUNCTION_WHITNEY_TWO_H
+/*
+ * @file mesh_function_whitney_two.h
+ */
 
 #include <lf/uscalfe/uscalfe.h>
 
+namespace projects::hldo_sphere::post_processing {
+
 /**
- * @file mesh_function_whitney_two.h
+ * @brief Provides Mesh Function for Whitney two basis expansion coefficients
  *
  * @tparam SCALAR type of the return vector
  *
- * @brief Provides utilities for the evaluation of errors
  */
-
-namespace projects::hldo_sphere::post_processing {
-
 template <typename SCALAR>
 class MeshFunctionWhitneyTwo {
  public:
@@ -92,4 +93,4 @@ class MeshFunctionWhitneyTwo {
 };
 
 }  // namespace projects::hldo_sphere::post_processing
-#endif  // THESIS_MESH_FUNCTION_WHITNEY_TWO_H
+#endif  // HLDO_SPHERE_MESH_FUNCTION_WHITNEY_TWO_H

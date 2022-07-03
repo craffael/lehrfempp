@@ -93,14 +93,20 @@ $(function() {
   <div class="headertitle"><div class="title">projects::hldo_sphere::post_processing Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Postprocessing such as computing norms and Mesh Functions and plot scripts.  
+<a href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_one.html">MeshFunctionWhitneyOne</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides Mesh Function for given basis expansion coefficients.  <a href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_one.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_two.html">MeshFunctionWhitneyTwo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides Mesh Function for Whitney two basis expansion coefficients.  <a href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_two.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_zero.html">MeshFunctionWhitneyZero</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides Mesh Function for basis expansion coefficients of the zero form.  <a href="classprojects_1_1hldo__sphere_1_1post__processing_1_1_mesh_function_whitney_zero.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution.html">ProblemSolution</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">stores solutions for several k and one refinement level  <a href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution.html#details">More...</a><br /></td></tr>
@@ -128,7 +134,9 @@ Functions</h2></td></tr>
 <tr class="memdesc:a2981efe1a22dd8c025cd774c150c4495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate vtk files containing meshdata and a csv table with results.  <a href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a2981efe1a22dd8c025cd774c150c4495">More...</a><br /></td></tr>
 <tr class="separator:a2981efe1a22dd8c025cd774c150c4495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Postprocessing such as computing norms and Mesh Functions and plot scripts. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="a183e69f414a861533e070bf89ef627c8" name="a183e69f414a861533e070bf89ef627c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a183e69f414a861533e070bf89ef627c8">&#9670;&nbsp;</a></span>concat()</h2>
 
@@ -213,7 +221,7 @@ template&lt;typename MF , typename SQ_F &gt; </div>
 <p>Computes the L2Norm of some MeshFunction (type MF) f. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">MF</td><td>type of the mesh function to take to norm form </td></tr>
+    <tr><td class="paramname">MF</td><td>type of the mesh function to take to norm form is required to be defined on the mesh </td></tr>
     <tr><td class="paramname">SQ_F</td><td>type of the square function sq_f </td></tr>
   </table>
   </dd>
@@ -227,14 +235,14 @@ template&lt;typename MF , typename SQ_F &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>pair with the squared norm of the inputfunction f on the mesh and CodimMeshDataSet containing the cellwise integrals over the squared errors</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>pair with the norm of the inputfunction f on the mesh and CodimMeshDataSet containing the cellwise integrals over the squared errors</dd></dl>
 <p>Iterates over all cells in the mesh and compute the squared integral locally, then add up and square </p>
 
-<p class="definition">Definition at line <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00032">32</a> of file <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html">norms.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00033">33</a> of file <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html">norms.h</a>.</p>
 
 <p class="reference">References <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>, and <a class="el" href="quad__rule_8h_source.html#l00152">lf::quad::QuadRule::Weights()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00097">process_results()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00215">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::GetL2Error()</a>, and <a class="el" href="results__processing_8h_source.html#l00097">process_results()</a>.</p>
 
 </div>
 </div>
@@ -315,9 +323,9 @@ template&lt;typename U_ZERO , typename U_ONE , typename U_TWO , typename SCALAR 
 
 <p class="definition">Definition at line <a class="el" href="results__processing_8h_source.html#l00097">97</a> of file <a class="el" href="results__processing_8h_source.html">results_processing.h</a>.</p>
 
-<p class="reference">References <a class="el" href="results__processing_8h_source.html#l00068">concat()</a>, <a class="el" href="results__processing_8h_source.html#l00055">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::k</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00032">L2norm()</a>, <a class="el" href="results__processing_8h_source.html#l00054">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::levels</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00021">lf::quad::make_QuadRule()</a>, <a class="el" href="results__processing_8h_source.html#l00057">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::mesh</a>, <a class="el" href="results__processing_8h_source.html#l00058">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::solutions</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00083">SupNorm()</a>, <a class="el" href="geometry__interface_8cc_source.html#l00011">lf::geometry::Volume()</a>, and <a class="el" href="vtk__writer_8cc_source.html#l00860">lf::io::VtkWriter::WriteCellData()</a>.</p>
+<p class="reference">References <a class="el" href="results__processing_8h_source.html#l00068">concat()</a>, <a class="el" href="results__processing_8h_source.html#l00055">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::k</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00033">L2norm()</a>, <a class="el" href="results__processing_8h_source.html#l00054">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::levels</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00021">lf::quad::make_QuadRule()</a>, <a class="el" href="results__processing_8h_source.html#l00057">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::mesh</a>, <a class="el" href="results__processing_8h_source.html#l00058">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::solutions</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00084">SupNorm()</a>, <a class="el" href="geometry__interface_8cc_source.html#l00011">lf::geometry::Volume()</a>, and <a class="el" href="vtk__writer_8cc_source.html#l00860">lf::io::VtkWriter::WriteCellData()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, and <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00086">projects::hldo_sphere::experiments::HodgeLaplacianExperiment::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, and <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00086">projects::hldo_sphere::experiments::HodgeLaplacianExperiment::Compute()</a>.</p>
 
 </div>
 </div>
@@ -380,7 +388,7 @@ template&lt;typename MF , typename SQ_F &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>pair with the supremum norm of the root of the input function sq_f(f(x)) on the mesh and CodimMeshDataSet containing the cellwise supremums </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00083">83</a> of file <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html">norms.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00084">84</a> of file <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html">norms.h</a>.</p>
 
 <p class="reference">References <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, and <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>.</p>
 

@@ -33,9 +33,11 @@ namespace operators {
  * form
  *
  * @f[
- *    \Delta_1 u = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} +
- *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \\
- *     -\Delta_1 u  =  f
+ *    \Delta_1 \mathbf{u} = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma}
+ * \, \mathbf{u}
+ * +
+ *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \, \mathbf{u} \\
+ *     -\Delta_1 \mathbf{u} =  \mathbf{f}
  * @f]
  *
  * Basis functions are the Whitney 1-forms and the barycentric
@@ -210,9 +212,11 @@ class WhitneyOneHodgeLaplace {
    * @param f load function
    *
    * @f[
-   *    \Delta_1 u = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} +
-   *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \\
-   *     -\Delta_1 u + k^2 u =  f
+   *    \Delta_1 \mathbf{u} = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma}
+   * \, \mathbf{u}
+   * +
+   *     \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \, \mathbf{u} \\
+   *     -\Delta_1 \mathbf{u} =  \mathbf{f}
    * @f]
    */
   void SetLoadFunction(std::function<Eigen::Matrix<double, 3, 1>(

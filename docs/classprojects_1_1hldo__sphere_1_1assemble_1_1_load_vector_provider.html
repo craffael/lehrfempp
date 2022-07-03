@@ -103,7 +103,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ade40be9a617f189bfd7d5effe3f21896"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#ade40be9a617f189bfd7d5effe3f21896">LoadVectorProvider</a> (const std::function&lt; SCALAR(const Eigen::Vector3d &amp;)&gt; &amp;f)</td></tr>
-<tr class="memdesc:ade40be9a617f189bfd7d5effe3f21896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#ade40be9a617f189bfd7d5effe3f21896">More...</a><br /></td></tr>
+<tr class="memdesc:ade40be9a617f189bfd7d5effe3f21896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor setting the load function.  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#ade40be9a617f189bfd7d5effe3f21896">More...</a><br /></td></tr>
 <tr class="separator:ade40be9a617f189bfd7d5effe3f21896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9c3c8ae4342fa3a5c87b05bb0d3c2b9"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; SCALAR, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#aa9c3c8ae4342fa3a5c87b05bb0d3c2b9">Eval</a> (const <a class="el" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;entity) const</td></tr>
 <tr class="memdesc:aa9c3c8ae4342fa3a5c87b05bb0d3c2b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the element vector for some cell on the mesh.  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#aa9c3c8ae4342fa3a5c87b05bb0d3c2b9">More...</a><br /></td></tr>
@@ -130,12 +130,11 @@ class projects::hldo_sphere::assemble::LoadVectorProvider&lt; SCALAR &gt;</div><
 <p>The locally evaluated linear form is </p><p class="formulaDsp">
 \[ v \mapsto \int\limits_{K}\ f(\mathbf{x}) \cdot v(\mathbf{x}) \, dx, \quad f, v \in H^1(\Omega) \]
 </p>
-<p >Evaluates the function values on the cell.</p>
 <dl class="section note"><dt>Note</dt><dd>This class complies with the type requirements for the template argument ENTITY_VECTOR_PROVIDER of the function <a class="el" href="group__assemble__vector__locally.html#ga2a6379f1b9b83f9f9589a6d2379ae3dc" title="entity-local assembly of (right-hand-side) vectors from element vectors">lf::assemble::AssembleVectorLocally()</a>.</dd>
 <dd>
 Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00048">48</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00045">45</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ade40be9a617f189bfd7d5effe3f21896" name="ade40be9a617f189bfd7d5effe3f21896"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade40be9a617f189bfd7d5effe3f21896">&#9670;&nbsp;</a></span>LoadVectorProvider()</h2>
@@ -163,15 +162,15 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Constructor. </p>
+<p>Constructor setting the load function. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>a <code>SCALAR</code> valued functor defined on the Mesh on which <code>Eval</code> will be called </td></tr>
+    <tr><td class="paramname">f</td><td>a SCALAR valued functor defined on the Mesh on which <a class="el" href="classprojects_1_1hldo__sphere_1_1assemble_1_1_load_vector_provider.html#aa9c3c8ae4342fa3a5c87b05bb0d3c2b9" title="Compute the element vector for some cell on the mesh.">Eval()</a> will be called </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00058">58</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00055">55</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
 
 </div>
 </div>
@@ -212,9 +211,9 @@ template&lt;typename SCALAR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>The element vector of the given cell</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Only triangular cells are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00068">68</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00065">65</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
 
-<p class="reference">References <a class="el" href="lagr__fe_8h_source.html#l00104">lf::uscalfe::FeLagrangeO1Tria&lt; SCALAR &gt;::EvalReferenceShapeFunctions()</a>, <a class="el" href="load__vector__provider_8h_source.html#l00118">projects::hldo_sphere::assemble::LoadVectorProvider&lt; SCALAR &gt;::f_</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#a7e38f16a9723f82a1ea06cc3ac3aa3f1">lf::mesh::Entity::Geometry()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00172">lf::quad::make_TriaQR_EdgeMidpointRule()</a>, <a class="el" href="ref__el_8h_source.html#l00238">lf::base::RefEl::NodeCoords()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="lagr__fe_8h_source.html#l00104">lf::uscalfe::FeLagrangeO1Tria&lt; SCALAR &gt;::EvalReferenceShapeFunctions()</a>, <a class="el" href="load__vector__provider_8h_source.html#l00115">projects::hldo_sphere::assemble::LoadVectorProvider&lt; SCALAR &gt;::f_</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#a7e38f16a9723f82a1ea06cc3ac3aa3f1">lf::mesh::Entity::Geometry()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00172">lf::quad::make_TriaQR_EdgeMidpointRule()</a>, <a class="el" href="ref__el_8h_source.html#l00238">lf::base::RefEl::NodeCoords()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
 
 </div>
 </div>
@@ -246,7 +245,7 @@ template&lt;typename SCALAR &gt; </div>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00115">115</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00112">112</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
 
 </div>
 </div>
@@ -273,9 +272,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00118">118</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="load__vector__provider_8h_source.html#l00115">115</a> of file <a class="el" href="load__vector__provider_8h_source.html">load_vector_provider.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="load__vector__provider_8h_source.html#l00068">projects::hldo_sphere::assemble::LoadVectorProvider&lt; SCALAR &gt;::Eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="load__vector__provider_8h_source.html#l00065">projects::hldo_sphere::assemble::LoadVectorProvider&lt; SCALAR &gt;::Eval()</a>.</p>
 
 </div>
 </div>

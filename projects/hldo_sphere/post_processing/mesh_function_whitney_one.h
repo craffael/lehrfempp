@@ -1,18 +1,19 @@
-#ifndef THESIS_MESH_FUNCTION_WHITNEY_ONE_H
-#define THESIS_MESH_FUNCTION_WHITNEY_ONE_H
+#ifndef HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ONE_H
+#define HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ONE_H
+/*
+ * @file mesh_function_whitney_one.h
+ */
 
 #include <lf/uscalfe/uscalfe.h>
 
+namespace projects::hldo_sphere::post_processing {
+
 /**
- * @file mesh_function_whitney_one.h
+ * @brief Provides Mesh Function for given basis expansion coefficients
  *
  * @tparam SCALAR type of the return vector
  *
- * @brief Provides utilities for the evaluation of errors
  */
-
-namespace projects::hldo_sphere::post_processing {
-
 template <typename SCALAR>
 class MeshFunctionWhitneyOne {
  public:
@@ -158,4 +159,4 @@ class MeshFunctionWhitneyOne {
 };
 
 }  // namespace projects::hldo_sphere::post_processing
-#endif  // THESIS_MESH_FUNCTION_WHITNEY_ONE_H
+#endif  // HLDO_SPHERE_MESH_FUNCTION_WHITNEY_ONE_H

@@ -14,7 +14,7 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element matrix provider whitney one forms, surface vector fields
+ * @brief Element matrix provider Whitney one forms, surface vector fields
  *
  * The element matrix provider works in a 3 dimensional world with 2
  * dimensional triangular cells. And evaluates the bilinear form
@@ -23,15 +23,15 @@ namespace assemble {
  * \ dx
  * @f]
  *
- * Basis functions are the Whitney 1-forms, surface edge elements for v
- * and the barycentric basis functions for u
+ * Basis functions are the Whitney 1-forms, surface edge elements for
+ * @f$\mathbf{v}@f$ and the barycentric basis functions for @f$u@f$
  *
  * The whitney 1-forms, surface edge elements are associated with
  * edges and defined as
  *
  * @f[
- *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
- * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ *  \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) -
+ * \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i}))
  * @f]
  *
  * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign

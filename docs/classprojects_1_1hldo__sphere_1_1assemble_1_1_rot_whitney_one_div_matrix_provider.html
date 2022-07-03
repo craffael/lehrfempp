@@ -117,17 +117,21 @@ Public Member Functions</h2></td></tr>
 \[ (\mathbf{v}, u) \mapsto \int\limits_K \text{div}_{\Gamma}(\mathbf{v})\, u \ dx \]
 </p>
 <p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells.</p>
-<p >As basis functions, the rotated Whitney 1-forms, surface edge elements are used for v and the cellwise constant basis functions are used for u</p>
+<p >As basis functions, the rotated Whitney 1-forms, surface edge elements are used for \(\mathbf{v}\) and the cellwise constant basis functions are used for u</p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
 <p class="formulaDsp">
-\[ b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
+\[ \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
 </p>
 <p >with \( \lambda_i \) barycentric basis functions and \( s_i \) is a sign of the function based on the relative orientation of the edge in the mesh.</p>
+<p >The element matrices are equivalent to the element Matrices for </p><p class="formulaDsp">
+\[ (\mathbf{v}&#39;, u) \mapsto \int\limits_K \text{curl}_{\Gamma}(\mathbf{v}&#39;)\, u \ dx \]
+</p>
+<p> with the normal whintey one basis functions for \(\mathbf{v}&#39;\)</p>
 <dl class="section note"><dt>Note</dt><dd>This class complies with the type requirements for the template argument ENTITY_MATRIX_PROVIDER of the function <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3" title="Assembly function for standard assembly of finite element matrices.">lf::assemble::AssembleMatrixLocally()</a>.</dd>
 <dd>
 Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00049">49</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00056">56</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a34512f863d11294893c3e6ee82ac0805" name="a34512f863d11294893c3e6ee82ac0805"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a34512f863d11294893c3e6ee82ac0805">&#9670;&nbsp;</a></span>RotWhitneyOneDivMatrixProvider()</h2>
@@ -154,7 +158,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>Constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00054">54</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00061">61</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 
 </div>
 </div>
@@ -217,7 +221,7 @@ Only triangular meshes are supported </dd></dl>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00068">68</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html#l00075">75</a> of file <a class="el" href="rot__whitney__one__div__matrix__provider_8h_source.html">rot_whitney_one_div_matrix_provider.h</a>.</p>
 
 </div>
 </div>

@@ -1,20 +1,9 @@
 #include "dirac_convergence_test.h"
 
+#include "debugging.h"
+
 namespace projects::hldo_sphere {
 namespace debugging {
-
-/**
- * @brief Concatenate objects defining an operator<<(std::ostream&)
- * @param args A variadic pack of objects implementing
- * `operator<<(std::ostream&)`
- * @returns A string with the objects concatenated
- */
-template <typename... Args>
-static std::string concat(Args &&...args) {
-  std::ostringstream ss;
-  (ss << ... << args);
-  return ss.str();
-}
 
 /**
  *

@@ -14,14 +14,14 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief An elment matrix provider computed with the whitney one form, a vector
+ * @brief An elment matrix provider computed with the Whitney one forms, vector
  * valued basis function
  *
  * The element matrix provider works in a 3 dimensional world with 2
  * dimensional triangular cells.
  *
  * @f[
- * (\mathbf{u}, \mathbf{v})  \mapto \int\limits_K
+ * (\mathbf{u}, \mathbf{v})  \mapsto \int\limits_K
  * \text{curl}_{\Gamma}(\mathbf{u}) \ \text{curl}_{\Gamma}(\mathbf{v}) dx
  * @f]
  *
@@ -29,8 +29,8 @@ namespace assemble {
  * edges and defined as
  *
  * @f[
- *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
- * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ *  \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) -
+ * \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i}))
  * @f]
  *
  * @note This class complies with the type requirements for the template

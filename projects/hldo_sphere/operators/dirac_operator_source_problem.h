@@ -3,7 +3,8 @@
 
 /**
  * @file dirac_operator_source_problem.h
- * @brief Class to discretise the dirac_operator.
+ *
+ * @brief Class to discretize the Dirac operator
  */
 
 #include <dirac_operator.h>
@@ -43,7 +44,7 @@ using complex = std::complex<double>;
  * @f]
  *
  * The computation must be complex valued since the problem definition involves
- * a complex i
+ * a complex @f$\imath@f$
  *
  * @note Only triangular meshes are supported
  *

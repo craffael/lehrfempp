@@ -94,7 +94,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Element matrix provider for the whitney one mass matrix that is the dot product of two whitney one basis functions.  
+<p>Element matrix provider for the Whitney one mass matrix that is the dot product of two Whitney one basis functions.  
  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_whitney_one_mass_matrix_provider.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="whitney__one__mass__matrix__provider_8h_source.html">/home/nico/bildung/SemVI/thesis/lehrfempp/projects/hldo_sphere/assemble/whitney_one_mass_matrix_provider.h</a>&gt;</code></p>
@@ -112,14 +112,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a054670eebef0d92de9eadf3c83fc9a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Element matrix provider for the whitney one mass matrix that is the dot product of two whitney one basis functions. </p>
+<div class="textblock"><p >Element matrix provider for the Whitney one mass matrix that is the dot product of two Whitney one basis functions. </p>
 <p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells.</p>
 <p class="formulaDsp">
-\[ (\textbf{u}, \textbf{v}) \mapto \int\limits_{\K} \textbf{u} \cdot \textbf{v} dx \]
+\[ (\textbf{u}, \textbf{v}) \mapsto \int\limits_{K} \textbf{u} \cdot \textbf{v} dx \]
 </p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
 <p class="formulaDsp">
-\[ b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
+\[ \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
 </p>
 <p >with \( \lambda_i \) barycentric basis functions and \( s_i \) is a sign of the function based on the relative orientation of the edge in the mesh.</p>
 <dl class="section note"><dt>Note</dt><dd>This class complies with the type requirements for the template argument ENTITY_MATRIX_PROVIDER of the function <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3" title="Assembly function for standard assembly of finite element matrices.">lf::assemble::AssembleMatrixLocally()</a>.</dd>

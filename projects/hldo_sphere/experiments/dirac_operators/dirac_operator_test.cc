@@ -1,6 +1,6 @@
 /**
  * @file dirac_operator_test.cc
- * @brief Solve hodge laplacian source problem for fixed function f and variable
+ * @brief Solve Dirac source problem for fixed function f and variable
  * k
  */
 

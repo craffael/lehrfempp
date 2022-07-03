@@ -21,7 +21,7 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element vector provider for whitney one forms
+ * @brief Element vector provider for Whitney one forms
  *
  * The linear form is given by
  * @f[
@@ -33,18 +33,19 @@ namespace assemble {
  * The element vector provider works in a 3 dimensional world with 2
  * dimensional triangular cells.
  *
- * Basis functions are the Whitney 1-forms, surface edge elements for v
+ * Basis functions are the Whitney 1-forms, surface edge elements for @f$v@f$
  *
  * The whitney 1-forms, surface edge elements are associated with
  * edges and defined as
  *
  * @f[
- *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
- * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ *  \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) -
+ * \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i}))
  * @f]
  *
  * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
  * of the function based on the relative orientation of the edge in the mesh.
+ *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_VECTOR_PROVIDER of the function
  * lf::assemble::AssembleVectorLocally().

@@ -198,7 +198,7 @@ class WhitneyTwoHodgeLaplace {
    *
    * @f[
    *   \Delta_2 = \text{div}_{\Gamma} \circ \mathbf{grad}_{\Gamma} \\
-   *   \Delta_2 u + k^2 u =   f
+   *   \Delta_2 u =   f
    * @f]
    */
   void SetLoadFunction(

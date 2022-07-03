@@ -1,6 +1,6 @@
 /**
  * @file hodge_laplacian_constant.cc
- * @brief Solve hodge laplacian source problem for fixed function u = 5.2
+ * @brief Solve dirac source problem for fixed function u = 5.2
  *
  */
 

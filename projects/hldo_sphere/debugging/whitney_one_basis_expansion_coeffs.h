@@ -22,24 +22,13 @@
 #include <iomanip>
 #include <iostream>
 
+#include "debugging.h"
+
 namespace projects::hldo_sphere {
 
 namespace debugging {
 
 using lf::uscalfe::operator-;
-
-/**
- * @brief Concatenate objects defining an operator<<(std::ostream&)
- * @param args A variadic pack of objects implementing
- * `operator<<(std::ostream&)`
- * @returns A string with the objects concatenated
- */
-template <typename... Args>
-static std::string concat(Args &&...args) {
-  std::ostringstream ss;
-  (ss << ... << args);
-  return ss.str();
-}
 
 /**
  * @brief Class to find the "best" basisexpansion coefficients with the

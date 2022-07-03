@@ -327,9 +327,9 @@ class HodgeLaplaciansSourceProblems {
   /**
    * @brief returns the Loadvector
    *
-   * This is the righthandside of LSE with index `index`
+   * This is the righthandside of LSE with index index
    *
-   * @note The loadvector must be computed with `Compute` before calling
+   * @note The loadvector must be computed with Compute before calling
    * this function
    *
    */
@@ -340,7 +340,7 @@ class HodgeLaplaciansSourceProblems {
   /**
    * @brief returns the Galerkin Matrix
    *
-   * This is the Matrix of the LSE with index `index`
+   * This is the Matrix of the LSE with index index
    *
    * @note The Galerkin matrix must be computed with Compute() before
    * calling this funciton

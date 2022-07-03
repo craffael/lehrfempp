@@ -1,5 +1,6 @@
 
 set(sources 
+    debugging.h
     dirac_convergence_test.h
     dirac_convergence_test.cc
     whitney_one_basis_expansion_coeffs.h

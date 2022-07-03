@@ -14,14 +14,14 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element matrix provider for the whitney one mass matrix
- * that is the dot product of two whitney one basis functions
+ * @brief Element matrix provider for the Whitney one mass matrix
+ * that is the dot product of two Whitney one basis functions
  *
  * The element matrix provider works in a 3 dimensional world with 2
  * dimensional triangular cells.
  *
  * @f[
- * (\textbf{u}, \textbf{v}) \mapto \int\limits_{\K} \textbf{u} \cdot
+ * (\textbf{u}, \textbf{v}) \mapsto \int\limits_{K} \textbf{u} \cdot
  * \textbf{v} dx
  * @f]
  *
@@ -29,8 +29,8 @@ namespace assemble {
  * edges and defined as
  *
  * @f[
- *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
- * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ *  \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) -
+ * \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i}))
  * @f]
  *
  * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign

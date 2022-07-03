@@ -23,3 +23,4 @@ target_compile_features(${PROJECT_NAME}.constant PUBLIC cxx_std_17)
 
 # copy plot file
 configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotlaplace.py ${CMAKE_CURRENT_BINARY_DIR}/plotlaplace.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/ploteigenvalues.py ${CMAKE_CURRENT_BINARY_DIR}/ploteigenvalues.py COPYONLY)

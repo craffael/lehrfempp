@@ -59,7 +59,7 @@ class DiracOperator {
   /**
    * @brief Constructor
    * creates basic mesh (Octaeder with radius 1.0)
-   * creates zerovalued function f
+   * and zero valued functions f
    *
    */
   DiracOperator() : coo_matrix_(lf::assemble::COOMatrix<complex>(1, 1)) {

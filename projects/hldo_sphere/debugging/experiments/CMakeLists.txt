@@ -16,4 +16,6 @@ set_target_properties(${PROJECT_NAME}.whitney_one_curl_test PROPERTIES FOLDER "p
 target_compile_features(${PROJECT_NAME}.whitney_one_curl_test PUBLIC cxx_std_17)
 
 # copy plot file
-configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotdirac.py ${CMAKE_CURRENT_BINARY_DIR}/plotdirac.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotwonecurldebug.py ${CMAKE_CURRENT_BINARY_DIR}/plotwonecurldebug.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotconvdebug.py ${CMAKE_CURRENT_BINARY_DIR}/plotconvdebug.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotbasisexpdebug.py ${CMAKE_CURRENT_BINARY_DIR}/plotbasisexpdebug.py COPYONLY)

@@ -94,7 +94,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>An elment matrix provider computed with the whitney one form, a vector valued basis function.  
+<p>An elment matrix provider computed with the Whitney one forms, vector valued basis function.  
  <a href="classprojects_1_1hldo__sphere_1_1assemble_1_1_whitney_one_curl_curl_matrix_provider.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="whitney__one__curl__curl__matrix__provider_8h_source.html">/home/nico/bildung/SemVI/thesis/lehrfempp/projects/hldo_sphere/assemble/whitney_one_curl_curl_matrix_provider.h</a>&gt;</code></p>
@@ -112,14 +112,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4cb455f3dc1cf26a0bef86db92d9731d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >An elment matrix provider computed with the whitney one form, a vector valued basis function. </p>
+<div class="textblock"><p >An elment matrix provider computed with the Whitney one forms, vector valued basis function. </p>
 <p >The element matrix provider works in a 3 dimensional world with 2 dimensional triangular cells.</p>
 <p class="formulaDsp">
-\[ (\mathbf{u}, \mathbf{v}) \mapto \int\limits_K \text{curl}_{\Gamma}(\mathbf{u}) \ \text{curl}_{\Gamma}(\mathbf{v}) dx \]
+\[ (\mathbf{u}, \mathbf{v}) \mapsto \int\limits_K \text{curl}_{\Gamma}(\mathbf{u}) \ \text{curl}_{\Gamma}(\mathbf{v}) dx \]
 </p>
 <p >The whitney 1-forms, surface edge elements are associated with edges and defined as</p>
 <p class="formulaDsp">
-\[ b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
+\[ \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i})) \]
 </p>
 <dl class="section note"><dt>Note</dt><dd>This class complies with the type requirements for the template argument ENTITY_MATRIX_PROVIDER of the function <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3" title="Assembly function for standard assembly of finite element matrices.">lf::assemble::AssembleMatrixLocally()</a>.</dd>
 <dd>

@@ -1,6 +1,6 @@
 /**
  * @file dirac_operator_debug_only_one.cc
- * @brief Solve hodge laplacian source problem for fixed function f and variable
+ * @brief Solve Dirac source problem for fixed function f and variable
  * k
  *
  * The derivations of the funcitons are given in the file testfunctionDirac.nb

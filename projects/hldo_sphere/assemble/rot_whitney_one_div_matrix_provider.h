@@ -25,19 +25,26 @@ namespace assemble {
  * dimensional triangular cells.
  *
  * As basis functions, the rotated  Whitney 1-forms, surface edge
- * elements are used for v
+ * elements are used for @f$\mathbf{v}@f$
  * and the cellwise constant basis functions are used for u
  *
  * The whitney 1-forms, surface edge elements are associated with
  * edges and defined as
  *
  * @f[
- *  b_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) - \lambda_{i+1}
- * \mathbf{grad}_{\Gamma}(\lambda_{i}))
+ *  \mathbf{b}_i = s_i (\lambda_i \mathbf{grad}_{\Gamma}(\lambda_{i+1}) -
+ * \lambda_{i+1} \mathbf{grad}_{\Gamma}(\lambda_{i}))
  * @f]
  *
  * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
  * of the function based on the relative orientation of the edge in the mesh.
+ *
+ * The element matrices are equivalent to the element Matrices for
+ * @f[
+ * (\mathbf{v}', u) \mapsto \int\limits_K \text{curl}_{\Gamma}(\mathbf{v}')\, u
+ * \ dx
+ * @f]
+ * with the normal whintey one basis functions for @f$\mathbf{v}'@f$
  *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_MATRIX_PROVIDER of the function

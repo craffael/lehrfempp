@@ -34,9 +34,6 @@ namespace assemble {
  * v \in H^1(\Omega)
  * @f]
  *
- * Evaluates the function values on the cell.
- *
- *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_VECTOR_PROVIDER of the function
  * lf::assemble::AssembleVectorLocally().
@@ -49,9 +46,9 @@ class LoadVectorProvider {
  public:
   /**
    *
-   * @brief Constructor
+   * @brief Constructor setting the load function
    *
-   * @param f a `SCALAR` valued functor defined on the Mesh on which `Eval`
+   * @param f a SCALAR valued functor defined on the Mesh on which Eval()
    * will be called
    *
    */

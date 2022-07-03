@@ -10,7 +10,7 @@ from matplotlib.ticker import FormatStrFormatter
 @click.option('-f', '--file', required=True, help='csv file containing the results to plot')
 @click.option('-l', '--log', required=False, is_flag=True, help='Indicates if log log plot should be drawn')
 
-def plot(file):
+def plot(file, log):
 
     plt.rcParams.update({
         "text.usetex": True,
@@ -45,8 +45,7 @@ def plot(file):
     yzero = df_y.iloc[:, 0].to_numpy()
     yone = df_y.iloc[:, 2].to_numpy()
     ytwo = df_y.iloc[:, 4].to_numpy()
-    inter = yzero[0]
-    yref = x * inter * inter
+    yref = x 
 
     if(log):
         axs.loglog(x,yref)

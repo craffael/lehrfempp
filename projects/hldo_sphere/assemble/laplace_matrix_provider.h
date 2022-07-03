@@ -14,7 +14,7 @@ namespace projects::hldo_sphere {
 namespace assemble {
 
 /**
- * @brief Element Matrix Provider for the laplace operator using picewise linear
+ * @brief Element Matrix Provider for the Laplace operator using picewise linear
  * barycentric basis functions.
  *
  * The element matrix provider works in a 3 dimensional world with 2
