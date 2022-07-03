@@ -1,10 +1,13 @@
 set(sources 
+    operators.h
     whitney_zero_hodge_laplacian.h
     whitney_one_hodge_laplacian.h
     whitney_two_hodge_laplacian.h
     hodge_laplacians_source_problems.h
     dirac_operator.h
+    dirac_operator.cc
     dirac_operator_source_problem.h
+    dirac_operator_source_problem.cc
 )
 
 add_library(projects.hldo_sphere.operators ${sources})

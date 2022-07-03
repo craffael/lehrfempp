@@ -18,6 +18,7 @@ namespace projects::hldo_sphere {
  * Operators and the correspondig source problems
  */
 namespace operators {}
+
 }  // namespace projects::hldo_sphere
 
 #endif  //  HLDO_SPHERE_OPERATORS_H
