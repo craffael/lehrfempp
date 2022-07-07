@@ -63,15 +63,15 @@ class SphereTriagMeshBuilder {
    *
    * For refinement level l the mesh will have
    * @f$
-   *    8\cdot 4^l
+   *   2^{2l + 3}
    * @f$
    * cells,
    * @f$
-   *    12 \cdot 2^l + 24 \cdot (2^{2\, l - 1} - 2^{l -1})
+   *    3 \cdot 2^{2l + 2}
    * @f$
    * edges and
    * @f$
-   *    14 + 12 \cdot (2^l - 1) + 6 \cdot 2^{2\, l -1} - 18 \cdot 2^{l -1}
+   *    2^{2l + 2} + 2
    * @f$
    * vertices.
    *

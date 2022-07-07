@@ -266,7 +266,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 <p>The refinement level indicates by how fine the mesh should become. Inital structure (octahedron, see <a href="https://en.wikipedia.org/wiki/Octahedron">https://en.wikipedia.org/wiki/Octahedron</a>) on which new vertices are introduced for every refinement level.</p>
-<p >For refinement level l the mesh will have \( 8\cdot 4^l \) cells, \( 12 \cdot 2^l + 24 \cdot (2^{2\, l - 1} - 2^{l -1}) \) edges and \( 14 + 12 \cdot (2^l - 1) + 6 \cdot 2^{2\, l -1} - 18 \cdot 2^{l -1} \) vertices. </p>
+<p >For refinement level l the mesh will have \( 2^{2l + 3} \) cells, \( 3 \cdot 2^{2l + 2} \) edges and \( 2^{2l + 2} + 2 \) vertices. </p>
 
 <p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">79</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 

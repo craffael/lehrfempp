@@ -40,37 +40,18 @@ TEST(projects_hldo_sphere_mesh, mesh_properties) {
   EXPECT_EQ(mesh->NumEntities(0), 2 * (mesh->NumEntities(2) - 2))
       << "The cell count is not equal to the 2 * (vextex count - 2)";
 
-  // we create four new cells out of one in a refinement step and we start with
-  // 8 cells
-  lf::base::size_type c_0 = 8;
-
-  // closed form of the recursion c_r = 4 * c_{r-1}
-  double expected_cell_count = std::pow(4, refinement_level) * c_0;
+  // see thesis appendix C for reference
+  double expected_cell_count = std::pow(2, 2 * refinement_level + 3);
   EXPECT_EQ(mesh->NumEntities(0), expected_cell_count)
       << "Expected number of cells doesn't match the outcome";
 
-  // the expected number of edges is based on the recursion e_r = 2e_{r-1} +
-  // 3c_{r-1} where r is the refinement_level
-  lf::base::size_type e_0 = 12;
-
-  // closed form of the recursion e_r = 2 * e_{r-1} + 3 * c_{r-1} where r is the
-  // refinement_level
-  double expected_edge_count =
-      refinement_level == 0 ? e_0
-                            : std::pow(2, refinement_level) * e_0 +
-                                  3 * c_0 *
-                                      (std::pow(2, 2 * refinement_level - 1) -
-                                       std::pow(2, refinement_level - 1));
+  // see thesis appendix C for reference
+  double expected_edge_count = 3 * pow(2., 2 * refinement_level + 2);
   EXPECT_EQ(mesh->NumEntities(1), expected_edge_count)
       << "Expected number of edges doesn't match the outcome";
 
-  // closed form of the recursion v_r = v_{r-1} + e_{r-1} where r is the
-  // refinement_level
-  lf::base::size_type v_0 = 6;
-  double expected_vertex_count =
-      v_0 + e_0 * (std::pow(2, refinement_level) - 1) + c_0 +
-      c_0 * std::pow(2, 2 * refinement_level - 1) -
-      3 * c_0 * pow(2, refinement_level - 1);
+  // see thesis appendix C for reference
+  double expected_vertex_count = pow(2., 2 * refinement_level + 2) + 2;
   EXPECT_EQ(mesh->NumEntities(2), expected_vertex_count)
       << "Expected number of vertices doesn't match the outcome";
 }
