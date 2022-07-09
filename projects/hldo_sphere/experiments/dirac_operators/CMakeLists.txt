@@ -38,3 +38,4 @@ target_compile_features(${PROJECT_NAME}.debug_only_two PUBLIC cxx_std_17)
 
 # copy plot file
 configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/plotdirac.py ${CMAKE_CURRENT_BINARY_DIR}/plotdirac.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/projects/hldo_sphere/post_processing/ploteigenvaluesdirac.py ${CMAKE_CURRENT_BINARY_DIR}/ploteigenvaluesdirac.py COPYONLY)

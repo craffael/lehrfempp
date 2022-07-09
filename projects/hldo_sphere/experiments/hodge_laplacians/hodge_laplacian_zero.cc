@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
     return ret;
   };
 
-  projects::hldo_sphere::experiments::HodgeLaplacianExperiment experiment(
-      u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
+  projects::hldo_sphere::experiments::HodgeLaplacianExperiment<double>
+      experiment(u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, "zero");
 
   experiment.Compute(refinement_levels, ks);
 

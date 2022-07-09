@@ -26,6 +26,7 @@ namespace operators {
  * @note Only triangular meshes are supported
  *
  */
+template <typename SCALAR>
 class HodgeLaplaciansSourceProblems {
  public:
   /**
@@ -55,22 +56,22 @@ class HodgeLaplaciansSourceProblems {
     k_ = 1.;
 
     // initialize matrix vector
-    coo_matrix_ = std::vector<lf::assemble::COOMatrix<double>>{
-        lf::assemble::COOMatrix<double>(1, 1),
-        lf::assemble::COOMatrix<double>(1, 1),
-        lf::assemble::COOMatrix<double>(1, 1)};
+    coo_matrix_ = std::vector<lf::assemble::COOMatrix<SCALAR>>{
+        lf::assemble::COOMatrix<SCALAR>(1, 1),
+        lf::assemble::COOMatrix<SCALAR>(1, 1),
+        lf::assemble::COOMatrix<SCALAR>(1, 1)};
 
-    phi_ = std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>>(3);
+    phi_ = std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>(3);
 
-    mu_ = std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>>(3);
+    mu_ = std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>(3);
 
     // create zero functions as default
-    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     auto f_1 =
-        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<double, 3, 1> {
+        [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<SCALAR, 3, 1> {
       return Eigen::Matrix<double, 3, 1>::Zero();
     };
-    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     f0_ = f_0;
     f1_ = f_1;
     f2_ = f_2;
@@ -93,21 +94,22 @@ class HodgeLaplaciansSourceProblems {
     //*****************
 
     // get the Hodge laplacian for the zero form and take the negative
-    projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace zero_builder;
+    projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace<SCALAR>
+        zero_builder;
     zero_builder.SetMesh(mesh_p_);
     zero_builder.SetLoadFunction(f0_);
     zero_builder.Compute();
-    lf::assemble::COOMatrix<double> coo_mat_zero_pos =
+    lf::assemble::COOMatrix<SCALAR> coo_mat_zero_pos =
         zero_builder.GetGalerkinMatrix();
-    lf::assemble::COOMatrix<double> coo_mat_zero(coo_mat_zero_pos.rows(),
+    lf::assemble::COOMatrix<SCALAR> coo_mat_zero(coo_mat_zero_pos.rows(),
                                                  coo_mat_zero_pos.cols());
     coo_mat_zero.setZero();
 
-    for (Eigen::Triplet<double> triplet : coo_mat_zero_pos.triplets()) {
+    for (Eigen::Triplet<SCALAR> triplet : coo_mat_zero_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
       // we need the negative laplacian
-      double val = triplet.value();
+      SCALAR val = triplet.value();
       coo_mat_zero.AddToEntry(row, col, val);
     }
 
@@ -133,14 +135,14 @@ class HodgeLaplaciansSourceProblems {
     for (Eigen::Triplet<double> triplet : coo_mass_mat_zero.triplets()) {
       int row = triplet.row();
       int col = triplet.col();
-      double val = k_ * k_ * triplet.value();
+      SCALAR val = k_ * k_ * triplet.value();
       coo_mat_zero.AddToEntry(row, col, val);
     };
 
     coo_matrix_[0] = coo_mat_zero;
 
     // get righthandside
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi_zero =
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_zero =
         zero_builder.GetLoadVector();
     phi_[0] = phi_zero;
 
@@ -149,20 +151,21 @@ class HodgeLaplaciansSourceProblems {
     //*****************
 
     // get the Hodge laplacian for the one form and take the negative
-    projects::hldo_sphere::operators::WhitneyOneHodgeLaplace one_builder;
+    projects::hldo_sphere::operators::WhitneyOneHodgeLaplace<SCALAR>
+        one_builder;
     one_builder.SetMesh(mesh_p_);
     one_builder.SetLoadFunction(f1_);
     one_builder.Compute();
-    lf::assemble::COOMatrix<double> coo_mat_one_pos =
+    lf::assemble::COOMatrix<SCALAR> coo_mat_one_pos =
         one_builder.GetGalerkinMatrix();
-    lf::assemble::COOMatrix<double> coo_mat_one(coo_mat_one_pos.rows(),
+    lf::assemble::COOMatrix<SCALAR> coo_mat_one(coo_mat_one_pos.rows(),
                                                 coo_mat_one_pos.cols());
     coo_mat_one.setZero();
 
-    for (Eigen::Triplet<double> triplet : coo_mat_one_pos.triplets()) {
+    for (Eigen::Triplet<SCALAR> triplet : coo_mat_one_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = triplet.value();
+      SCALAR val = triplet.value();
       coo_mat_one.AddToEntry(row, col, val);
     }
 
@@ -184,13 +187,13 @@ class HodgeLaplaciansSourceProblems {
     for (Eigen::Triplet<double> triplet : coo_mass_mat_one.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = k_ * k_ * triplet.value();
+      SCALAR val = k_ * k_ * triplet.value();
       coo_mat_one.AddToEntry(row, col, val);
     }
     coo_matrix_[1] = coo_mat_one;
 
     // get righthandside
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi_one =
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_one =
         one_builder.GetLoadVector();
     phi_[1] = phi_one;
 
@@ -199,21 +202,22 @@ class HodgeLaplaciansSourceProblems {
     //*****************
 
     // get the Hodge laplacian for the one form and take the negative
-    projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace two_builder;
+    projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace<SCALAR>
+        two_builder;
     two_builder.SetMesh(mesh_p_);
     two_builder.SetLoadFunction(f2_);
     two_builder.Compute();
 
-    lf::assemble::COOMatrix<double> coo_mat_two_pos =
+    lf::assemble::COOMatrix<SCALAR> coo_mat_two_pos =
         two_builder.GetGalerkinMatrix();
-    lf::assemble::COOMatrix<double> coo_mat_two(coo_mat_two_pos.rows(),
+    lf::assemble::COOMatrix<SCALAR> coo_mat_two(coo_mat_two_pos.rows(),
                                                 coo_mat_two_pos.cols());
 
     coo_mat_two.setZero();
-    for (Eigen::Triplet<double> triplet : coo_mat_two_pos.triplets()) {
+    for (Eigen::Triplet<SCALAR> triplet : coo_mat_two_pos.triplets()) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = triplet.value();
+      SCALAR val = triplet.value();
       coo_mat_two.AddToEntry(row, col, val);
     }
 
@@ -236,14 +240,14 @@ class HodgeLaplaciansSourceProblems {
       // dimension of A_{11}
       int col = triplet.col() + n_dofs_one;
       int row = triplet.row() + n_dofs_one;
-      double val = k_ * k_ * triplet.value();
+      SCALAR val = k_ * k_ * triplet.value();
       coo_mat_two.AddToEntry(row, col, val);
     }
 
     coo_matrix_[2] = coo_mat_two;
 
     // get righthandside
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi_two =
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_two =
         two_builder.GetLoadVector();
     phi_[2] = phi_two;
   }
@@ -266,9 +270,9 @@ class HodgeLaplaciansSourceProblems {
    *
    */
   void Solve() {
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+    Eigen::SparseLU<Eigen::SparseMatrix<SCALAR>> solver;
     for (int l = 0; l < 3; l++) {
-      Eigen::SparseMatrix<double> sparse_mat = coo_matrix_[l].makeSparse();
+      Eigen::SparseMatrix<SCALAR> sparse_mat = coo_matrix_[l].makeSparse();
       solver.compute(sparse_mat);
       if (solver.info() != Eigen::Success) {
         throw std::runtime_error("Could not decompose the matrix");
@@ -308,10 +312,10 @@ class HodgeLaplaciansSourceProblems {
    * @param f2 load functions in L^2
    */
   void SetLoadFunctions(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f0,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> &f0,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)> &f1,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> &f2) {
+          Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Matrix<double, 3, 1> &)> &f1,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> &f2) {
     f0_ = f0;
     f1_ = f1;
     f2_ = f2;
@@ -333,7 +337,7 @@ class HodgeLaplaciansSourceProblems {
    * this function
    *
    */
-  Eigen::Matrix<double, Eigen::Dynamic, 1> GetLoadVector(int index) {
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetLoadVector(int index) {
     return phi_[index];
   }
 
@@ -346,7 +350,7 @@ class HodgeLaplaciansSourceProblems {
    * calling this funciton
    *
    */
-  lf::assemble::COOMatrix<double> GetGalerkinMatrix(int index) {
+  lf::assemble::COOMatrix<SCALAR> GetGalerkinMatrix(int index) {
     return coo_matrix_[index];
   }
 
@@ -363,7 +367,7 @@ class HodgeLaplaciansSourceProblems {
    * called before the result is available
    *
    */
-  Eigen::Matrix<double, Eigen::Dynamic, 1> GetMuZero() { return mu_[0]; }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetMuZero() { return mu_[0]; }
 
   /**
    * @brief retunrs the basis expansion coefficiants for
@@ -387,13 +391,13 @@ class HodgeLaplaciansSourceProblems {
    * called before the result is available
    *
    */
-  std::tuple<Eigen::Matrix<double, Eigen::Dynamic, 1>,
-             Eigen::Matrix<double, Eigen::Dynamic, 1>>
+  std::tuple<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>,
+             Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
   GetMuOne() {
     lf::base::size_type numPoints = mesh_p_->NumEntities(2);
     lf::base::size_type numEdges = mesh_p_->NumEntities(1);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> u = mu_[1].head(numEdges);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> p = mu_[1].tail(numPoints);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> u = mu_[1].head(numEdges);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> p = mu_[1].tail(numPoints);
     return std::make_tuple(u, p);
   }
 
@@ -420,26 +424,26 @@ class HodgeLaplaciansSourceProblems {
    * called before the result is available
    *
    */
-  std::tuple<Eigen::Matrix<double, Eigen::Dynamic, 1>,
-             Eigen::Matrix<double, Eigen::Dynamic, 1>>
+  std::tuple<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>,
+             Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>>
   GetMuTwo() {
     lf::base::size_type numCells = mesh_p_->NumEntities(0);
     lf::base::size_type numEdges = mesh_p_->NumEntities(1);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> j = mu_[2].head(numEdges);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> u = mu_[2].tail(numCells);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> j = mu_[2].head(numEdges);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> u = mu_[2].tail(numCells);
     return std::make_tuple(j, u);
   }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f0_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f0_;
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f1_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f2_;
-  std::vector<lf::assemble::COOMatrix<double>> coo_matrix_;
-  std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>> phi_;
-  std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1>> mu_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f2_;
+  std::vector<lf::assemble::COOMatrix<SCALAR>> coo_matrix_;
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>> phi_;
+  std::vector<Eigen::Matrix<SCALAR, Eigen::Dynamic, 1>> mu_;
   double k_;
 };
 

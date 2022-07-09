@@ -41,6 +41,7 @@ namespace operators {
  * @note Only triangular meshes are supported
  *
  */
+template <typename SCALAR>
 class WhitneyZeroHodgeLaplace {
  public:
   /**
@@ -51,7 +52,7 @@ class WhitneyZeroHodgeLaplace {
    *
    */
   WhitneyZeroHodgeLaplace()
-      : coo_matrix_(lf::assemble::COOMatrix<double>(1, 1)) {
+      : coo_matrix_(lf::assemble::COOMatrix<SCALAR>(1, 1)) {
     // create mesh factory for basic mesh
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
@@ -66,7 +67,7 @@ class WhitneyZeroHodgeLaplace {
     mesh_p_ = sphere->Build();
 
     // create basic function
-    auto f = [](Eigen::Matrix<double, 3, 1> x) -> double { return 0; };
+    auto f = [](Eigen::Matrix<double, 3, 1> x) -> SCALAR { return 0; };
     f_ = f;
   }
 
@@ -88,18 +89,18 @@ class WhitneyZeroHodgeLaplace {
     // create COO Matrix
     const lf::assemble::size_type n_dofs(dof_handler.NumDofs());
 
-    lf::assemble::COOMatrix<double> coo_mat(n_dofs, n_dofs);
+    lf::assemble::COOMatrix<SCALAR> coo_mat(n_dofs, n_dofs);
     coo_mat.setZero();
 
-    lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
+    lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<SCALAR>>(
         0, dof_handler, dof_handler, matrix_provider, coo_mat);
 
     // create element vector provider
-    projects::hldo_sphere::assemble::LoadVectorProvider<double> vector_provider{
+    projects::hldo_sphere::assemble::LoadVectorProvider<SCALAR> vector_provider{
         f_};
 
     // create load vector
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi(n_dofs);
     phi.setZero();
 
     // assemble the global vector over entities with codim=0:
@@ -144,7 +145,7 @@ class WhitneyZeroHodgeLaplace {
    * @f]
    */
   void SetLoadFunction(
-      std::function<double(const Eigen::Matrix<double, 3, 1>&)>& f) {
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1>&)>& f) {
     f_ = f;
   }
 
@@ -157,7 +158,7 @@ class WhitneyZeroHodgeLaplace {
    * function
    *
    */
-  Eigen::Matrix<double, Eigen::Dynamic, 1> GetLoadVector() { return phi_; }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetLoadVector() { return phi_; }
 
   /**
    * @brief returns the Galerkin Matrix
@@ -168,13 +169,13 @@ class WhitneyZeroHodgeLaplace {
    * this funciton
    *
    */
-  lf::assemble::COOMatrix<double> GetGalerkinMatrix() { return coo_matrix_; }
+  lf::assemble::COOMatrix<SCALAR> GetGalerkinMatrix() { return coo_matrix_; }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::function<double(const Eigen::Matrix<double, 3, 1>&)> f_;
-  lf::assemble::COOMatrix<double> coo_matrix_;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> phi_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1>&)> f_;
+  lf::assemble::COOMatrix<SCALAR> coo_matrix_;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_;
 };
 
 }  // namespace operators

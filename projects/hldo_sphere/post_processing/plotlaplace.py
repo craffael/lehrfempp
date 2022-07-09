@@ -63,7 +63,7 @@ def plot(file, log):
     axs.legend(["$h$","zero form", "one form", "two form"])
 
 #    plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
-    plt.savefig("hodgelaplacians.png", dpi=300)
+    plt.savefig("hodgelaplacewithdirac.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':

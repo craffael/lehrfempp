@@ -60,7 +60,7 @@ def plot(file, log):
     axs.legend(["$h$","zero component", "one component", "two component"])
 
 #    plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
-    plt.savefig("diracconvergence.png", dpi=300)
+    plt.savefig("diracconvergence.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':

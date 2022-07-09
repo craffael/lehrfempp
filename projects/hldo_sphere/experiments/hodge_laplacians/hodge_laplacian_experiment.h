@@ -35,6 +35,7 @@ namespace projects::hldo_sphere::experiments {
  * a given list of levels and values of k
  *
  */
+template <typename SCALAR>
 class HodgeLaplacianExperiment {
  public:
   /**
@@ -54,16 +55,16 @@ class HodgeLaplacianExperiment {
    *
    */
   HodgeLaplacianExperiment(
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_zero,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> u_zero,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           u_one,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_two,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_zero,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> u_two,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f_zero,
       std::function<
-          Eigen::Matrix<double, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
+          Eigen::Matrix<SCALAR, 3, 1>(const Eigen::Matrix<double, 3, 1> &)>
           f_one,
-      std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_two,
+      std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f_two,
       double &k, std::string name)
       : u_zero_(u_zero),
         u_one_(u_one),
@@ -89,15 +90,16 @@ class HodgeLaplacianExperiment {
     int nk = ks.size();
 
     // Initialize solution wrapper
-    projects::hldo_sphere::post_processing::ProblemSolutionWrapper<double>
+    projects::hldo_sphere::post_processing::ProblemSolutionWrapper<SCALAR>
         solutions;
     solutions.k = ks;
     solutions.levels = refinement_levels;
     solutions.mesh = std::vector<std::shared_ptr<const lf::mesh::Mesh>>(nl);
     solutions.solutions = std::vector<
-        projects::hldo_sphere::post_processing::ProblemSolution<double>>(nl);
+        projects::hldo_sphere::post_processing::ProblemSolution<SCALAR>>(nl);
 
-    projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems lse_builder;
+    projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems<SCALAR>
+        lse_builder;
 
     // functions are passed by reference hence changing the k still influences
     // the functions
@@ -209,21 +211,21 @@ class HodgeLaplacianExperiment {
               << " [s]\n";
 
     projects::hldo_sphere::post_processing::process_results<
-        decltype(u_zero_), decltype(u_one_), decltype(u_two_), double>(
+        decltype(u_zero_), decltype(u_one_), decltype(u_two_), SCALAR>(
         name_, solutions, u_zero_, u_one_, u_two_, k_);
   }
 
  private:
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_zero_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> u_zero_;
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       u_one_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> u_two_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_zero_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> u_two_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f_zero_;
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f_one_;
-  std::function<double(const Eigen::Matrix<double, 3, 1> &)> f_two_;
+  std::function<SCALAR(const Eigen::Matrix<double, 3, 1> &)> f_two_;
   double &k_;
   std::string name_;
 };

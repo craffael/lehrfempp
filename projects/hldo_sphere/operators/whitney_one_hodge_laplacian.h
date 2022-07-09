@@ -46,6 +46,7 @@ namespace operators {
  * @note Only triangular meshes are supported
  *
  */
+template <typename SCALAR>
 class WhitneyOneHodgeLaplace {
  public:
   /**
@@ -55,7 +56,7 @@ class WhitneyOneHodgeLaplace {
    *
    */
   WhitneyOneHodgeLaplace()
-      : coo_matrix_(lf::assemble::COOMatrix<double>(1, 1)) {
+      : coo_matrix_(lf::assemble::COOMatrix<SCALAR>(1, 1)) {
     // create mesh factory for basic mesh
     std::unique_ptr<lf::mesh::MeshFactory> factory =
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
@@ -70,8 +71,8 @@ class WhitneyOneHodgeLaplace {
     mesh_p_ = sphere->Build();
 
     // create basic function
-    auto f = [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<double, 3, 1> {
-      return Eigen::Matrix<double, 3, 1>::Zero();
+    auto f = [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<SCALAR, 3, 1> {
+      return Eigen::Matrix<SCALAR, 3, 1>::Zero();
     };
     f_ = f;
   }
@@ -119,7 +120,7 @@ class WhitneyOneHodgeLaplace {
         0, dof_handler_bary, dof_handler_bary, matrix_mass_provider, coo_A_22);
 
     // create full matrix
-    lf::assemble::COOMatrix<double> full_matrix(n_dofs_curl + n_dofs_bary,
+    lf::assemble::COOMatrix<SCALAR> full_matrix(n_dofs_curl + n_dofs_bary,
                                                 n_dofs_curl + n_dofs_bary);
     full_matrix.setZero();
 
@@ -136,7 +137,7 @@ class WhitneyOneHodgeLaplace {
     for (Eigen::Triplet<double> triplet : triplets_A_11) {
       int col = triplet.col();
       int row = triplet.row();
-      double val = triplet.value();
+      SCALAR val = triplet.value();
       full_matrix.AddToEntry(row, col, val);
     }
 
@@ -144,7 +145,7 @@ class WhitneyOneHodgeLaplace {
     for (Eigen::Triplet<double> triplet : triplets_A_21) {
       int col = triplet.col() + n_dofs_curl;
       int row = triplet.row();
-      double val = triplet.value();
+      SCALAR val = triplet.value();
 
       // Add A_12
       full_matrix.AddToEntry(row, col, -val);
@@ -157,25 +158,25 @@ class WhitneyOneHodgeLaplace {
     for (Eigen::Triplet<double> triplet : triplets_A_22) {
       int col = triplet.col() + n_dofs_curl;
       int row = triplet.row() + n_dofs_curl;
-      double val = triplet.value();
+      SCALAR val = triplet.value();
       full_matrix.AddToEntry(row, col, val);
     }
 
     coo_matrix_ = full_matrix;
 
     // create element vector provider
-    projects::hldo_sphere::assemble::WhitneyOneVectorProvider<double>
+    projects::hldo_sphere::assemble::WhitneyOneVectorProvider<SCALAR>
         vector_provider(f_);
 
     // create load vector
-    Eigen::Matrix<double, Eigen::Dynamic, 1> phi(n_dofs_curl);
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi(n_dofs_curl);
     phi.setZero();
 
     // assemble the global vector over entities with codim=0:
     AssembleVectorLocally(0, dof_handler_curl, vector_provider, phi);
 
     // create full vector
-    Eigen::Matrix<double, Eigen::Dynamic, 1> full_vec(n_dofs_curl +
+    Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> full_vec(n_dofs_curl +
                                                       n_dofs_bary);
     full_vec.setZero();
     full_vec.head(n_dofs_curl) = phi;
@@ -219,7 +220,7 @@ class WhitneyOneHodgeLaplace {
    *     -\Delta_1 \mathbf{u} =  \mathbf{f}
    * @f]
    */
-  void SetLoadFunction(std::function<Eigen::Matrix<double, 3, 1>(
+  void SetLoadFunction(std::function<Eigen::Matrix<SCALAR, 3, 1>(
                            const Eigen::Matrix<double, 3, 1> &)> &f) {
     f_ = f;
   }
@@ -233,7 +234,7 @@ class WhitneyOneHodgeLaplace {
    * function
    *
    */
-  Eigen::Matrix<double, Eigen::Dynamic, 1> GetLoadVector() { return phi_; }
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> GetLoadVector() { return phi_; }
 
   /**
    * @brief returns the Galerkin Matrix
@@ -244,15 +245,15 @@ class WhitneyOneHodgeLaplace {
    * this funciton
    *
    */
-  lf::assemble::COOMatrix<double> GetGalerkinMatrix() { return coo_matrix_; }
+  lf::assemble::COOMatrix<SCALAR> GetGalerkinMatrix() { return coo_matrix_; }
 
  private:
   std::shared_ptr<const lf::mesh::Mesh> mesh_p_;
-  std::function<Eigen::Matrix<double, 3, 1>(
+  std::function<Eigen::Matrix<SCALAR, 3, 1>(
       const Eigen::Matrix<double, 3, 1> &)>
       f_;
-  lf::assemble::COOMatrix<double> coo_matrix_;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> phi_;
+  lf::assemble::COOMatrix<SCALAR> coo_matrix_;
+  Eigen::Matrix<SCALAR, Eigen::Dynamic, 1> phi_;
 };
 
 }  // namespace operators

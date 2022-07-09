@@ -25,7 +25,7 @@
  */
 TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace<double> lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -84,7 +84,7 @@ TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_basic_test) {
 TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_load_test) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace<double> lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     auto Power = [](double a, double b) -> double { return pow(a, b); };
     auto Cos = [](double a) -> double { return cos(a); };
@@ -160,7 +160,7 @@ TEST(projects_hldo_sphere_operators, whitney_zero_hodge_laplace_load_test) {
  */
 TEST(projects_hldo_sphere_operators, whitney_one_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::operators::WhitneyOneHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyOneHodgeLaplace<double> lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -248,7 +248,7 @@ TEST(projects_hldo_sphere_operators, whitney_one_hodge_laplace_basic_test) {
  */
 TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_basic_test) {
   // Build LSE
-  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace<double> lse_builder;
   lse_builder.Compute();
 
   Eigen::SparseMatrix<double> Ae = lse_builder.GetGalerkinMatrix().makeSparse();
@@ -337,7 +337,7 @@ TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_basic_test) {
 TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace<double> lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     auto Power = [](double a, double b) -> double { return pow(a, b); };
     auto Cos = [](double a) -> double { return cos(a); };
@@ -395,7 +395,7 @@ TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test) {
 TEST(projects_hldo_sphere_operators, whitney_two_hodge_laplace_load_test_const) {
   // Build LSE
   // righthandside for the zero and two form
-  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace lse_builder;
+  projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace<double> lse_builder;
   auto f = [](const Eigen::Vector3d& x_vec) -> double {
     double ret = pow(4, 2) * 5.2;
     return ret;

@@ -8,7 +8,7 @@ from matplotlib.ticker import FormatStrFormatter
 
 @click.command()
 @click.option('-f', '--file', required=True, help='csv file containing the results to plot')
-@click.option('-s', '--stat', type=click.Choice(['mean', 'max', 'min'], case_sensitive=False), help='How to determine the convergence rate')
+@click.option('-s', '--stat', type=click.Choice(['mean', 'max', 'min', 'sd'], case_sensitive=False), help='How to determine the convergence rate')
 
 def plot(file, stat):
 
@@ -29,6 +29,8 @@ def plot(file, stat):
         mean_order = np.apply_along_axis(np.max, 0, df_y)
     elif(stat == 'min'):
         mean_order = np.apply_along_axis(np.min, 0, df_y)
+    elif(stat == 'sd'):
+        mean_order = np.apply_along_axis(np.std, 0, df_y)
     else:
         mean_order = np.apply_along_axis(np.mean, 0, df_y)
 
@@ -45,6 +47,7 @@ def plot(file, stat):
     axs.set(ylabel="algebraic order", xlabel="k")
     axs.legend(["zero form", "one form", "two form"])
 
+    plt.savefig("eigenvalslap.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':
