@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
   std::vector<double> ks;
   for (double i = min_k; i <= max_k; i += step) {
-    ks.push_back(i);
+    ks.push_back(sqrt(i));
   }
 
   // mathematica function output requries the following helpers
