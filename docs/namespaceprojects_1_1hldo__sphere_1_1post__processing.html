@@ -129,6 +129,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a183e69f414a861533e070bf89ef627c8"><td class="memTemplItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a183e69f414a861533e070bf89ef627c8">concat</a> (Args &amp;&amp;...args)</td></tr>
 <tr class="memdesc:a183e69f414a861533e070bf89ef627c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenate objects defining an operator&lt;&lt;(std::ostream&amp;)  <a href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a183e69f414a861533e070bf89ef627c8">More...</a><br /></td></tr>
 <tr class="separator:a183e69f414a861533e070bf89ef627c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bfe0178b5276e446cb53ceecbfe34cf"><td class="memTemplParams" colspan="2">template&lt;typename SCALAR &gt; </td></tr>
+<tr class="memitem:a8bfe0178b5276e446cb53ceecbfe34cf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a8bfe0178b5276e446cb53ceecbfe34cf">compare_results</a> (std::string name, <a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html">ProblemSolutionWrapper</a>&lt; SCALAR &gt; &amp;results_lap, <a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html">ProblemSolutionWrapper</a>&lt; SCALAR &gt; &amp;results_dirac)</td></tr>
+<tr class="memdesc:a8bfe0178b5276e446cb53ceecbfe34cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate vtk files containing meshdata and a csv table with results of the comparison of the two given basis expansion coefficients.  <a href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a8bfe0178b5276e446cb53ceecbfe34cf">More...</a><br /></td></tr>
+<tr class="separator:a8bfe0178b5276e446cb53ceecbfe34cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2981efe1a22dd8c025cd774c150c4495"><td class="memTemplParams" colspan="2">template&lt;typename U_ZERO , typename U_ONE , typename U_TWO , typename SCALAR &gt; </td></tr>
 <tr class="memitem:a2981efe1a22dd8c025cd774c150c4495"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a2981efe1a22dd8c025cd774c150c4495">process_results</a> (std::string name, <a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html">ProblemSolutionWrapper</a>&lt; SCALAR &gt; &amp;results, U_ZERO &amp;u_zero, U_ONE &amp;u_one, U_TWO &amp;u_two, double &amp;k)</td></tr>
 <tr class="memdesc:a2981efe1a22dd8c025cd774c150c4495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate vtk files containing meshdata and a csv table with results.  <a href="namespaceprojects_1_1hldo__sphere_1_1post__processing.html#a2981efe1a22dd8c025cd774c150c4495">More...</a><br /></td></tr>
@@ -137,6 +141,64 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Postprocessing such as computing norms and Mesh Functions and plot scripts. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a8bfe0178b5276e446cb53ceecbfe34cf" name="a8bfe0178b5276e446cb53ceecbfe34cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bfe0178b5276e446cb53ceecbfe34cf">&#9670;&nbsp;</a></span>compare_results()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SCALAR &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void projects::hldo_sphere::post_processing::compare_results </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html">ProblemSolutionWrapper</a>&lt; SCALAR &gt; &amp;&#160;</td>
+          <td class="paramname"><em>results_lap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html">ProblemSolutionWrapper</a>&lt; SCALAR &gt; &amp;&#160;</td>
+          <td class="paramname"><em>results_dirac</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate vtk files containing meshdata and a csv table with results of the comparison of the two given basis expansion coefficients. </p>
+<p >The Table contains for each refinement level, the number of cells, edges and vertices, as well as the global mesh width (the maximum edge length of a triangle). Moreover it contains the l2 norm of the difference of the two functions as well as the approximate orders for every value of k and all three forms.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">SCALAR</td><td>base type of the result vectors</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>identifying the experiment (used to name the outputs) </td></tr>
+    <tr><td class="paramname">results_lap</td><td><a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html" title="stores solutions and setupinformation for a list of refinement levels and k values">ProblemSolutionWrapper</a> with the results for all levels and ks computed with the Laplace operator </td></tr>
+    <tr><td class="paramname">results_dirac</td><td><a class="el" href="structprojects_1_1hldo__sphere_1_1post__processing_1_1_problem_solution_wrapper.html" title="stores solutions and setupinformation for a list of refinement levels and k values">ProblemSolutionWrapper</a> with the results for all levels and ks computed with the Dirac operator</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>the parameter results_dirac and results_lap must have results for the same list of k values and the same refinement levels. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="results__processing_8h_source.html#l00096">96</a> of file <a class="el" href="results__processing_8h_source.html">results_processing.h</a>.</p>
+
+<p class="reference">References <a class="el" href="results__processing_8h_source.html#l00068">concat()</a>, <a class="el" href="results__processing_8h_source.html#l00055">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::k</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00033">L2norm()</a>, <a class="el" href="results__processing_8h_source.html#l00054">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::levels</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00021">lf::quad::make_QuadRule()</a>, <a class="el" href="results__processing_8h_source.html#l00057">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::mesh</a>, <a class="el" href="results__processing_8h_source.html#l00058">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::solutions</a>, <a class="el" href="geometry__interface_8cc_source.html#l00011">lf::geometry::Volume()</a>, and <a class="el" href="vtk__writer_8cc_source.html#l00860">lf::io::VtkWriter::WriteCellData()</a>.</p>
+
+</div>
+</div>
 <a id="a183e69f414a861533e070bf89ef627c8" name="a183e69f414a861533e070bf89ef627c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a183e69f414a861533e070bf89ef627c8">&#9670;&nbsp;</a></span>concat()</h2>
 
@@ -174,7 +236,7 @@ template&lt;typename... Args&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="results__processing_8h_source.html#l00068">68</a> of file <a class="el" href="results__processing_8h_source.html">results_processing.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00097">process_results()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00096">compare_results()</a>, and <a class="el" href="results__processing_8h_source.html#l00302">process_results()</a>.</p>
 
 </div>
 </div>
@@ -242,7 +304,7 @@ template&lt;typename MF , typename SQ_F &gt; </div>
 
 <p class="reference">References <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>, and <a class="el" href="quad__rule_8h_source.html#l00152">lf::quad::QuadRule::Weights()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00215">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::GetL2Error()</a>, and <a class="el" href="results__processing_8h_source.html#l00097">process_results()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00096">compare_results()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00215">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::GetL2Error()</a>, and <a class="el" href="results__processing_8h_source.html#l00302">process_results()</a>.</p>
 
 </div>
 </div>
@@ -321,11 +383,11 @@ template&lt;typename U_ZERO , typename U_ONE , typename U_TWO , typename SCALAR 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="results__processing_8h_source.html#l00097">97</a> of file <a class="el" href="results__processing_8h_source.html">results_processing.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="results__processing_8h_source.html#l00302">302</a> of file <a class="el" href="results__processing_8h_source.html">results_processing.h</a>.</p>
 
 <p class="reference">References <a class="el" href="results__processing_8h_source.html#l00068">concat()</a>, <a class="el" href="results__processing_8h_source.html#l00055">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::k</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00033">L2norm()</a>, <a class="el" href="results__processing_8h_source.html#l00054">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::levels</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00021">lf::quad::make_QuadRule()</a>, <a class="el" href="results__processing_8h_source.html#l00057">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::mesh</a>, <a class="el" href="results__processing_8h_source.html#l00058">projects::hldo_sphere::post_processing::ProblemSolutionWrapper&lt; SCALAR &gt;::solutions</a>, <a class="el" href="hldo__sphere_2post__processing_2norms_8h_source.html#l00084">SupNorm()</a>, <a class="el" href="geometry__interface_8cc_source.html#l00011">lf::geometry::Volume()</a>, and <a class="el" href="vtk__writer_8cc_source.html#l00860">lf::io::VtkWriter::WriteCellData()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, and <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00086">projects::hldo_sphere::experiments::HodgeLaplacianExperiment::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, and <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -392,7 +454,7 @@ template&lt;typename MF , typename SQ_F &gt; </div>
 
 <p class="reference">References <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, and <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00097">process_results()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="results__processing_8h_source.html#l00302">process_results()</a>.</p>
 
 </div>
 </div>

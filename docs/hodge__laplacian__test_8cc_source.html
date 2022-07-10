@@ -121,7 +121,7 @@ $(function() {
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  std::vector&lt;double&gt; ks;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">for</span> (<span class="keywordtype">double</span> i = min_k; i &lt;= max_k; i += step) {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    ks.push_back(i);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    ks.push_back(sqrt(i));</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  }</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="comment">// mathematica function output requries the following helpers</span></div>
@@ -239,14 +239,14 @@ $(function() {
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> ret;</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  };</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  <a class="code hl_class" href="classprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment.html">projects::hldo_sphere::experiments::HodgeLaplacianExperiment</a> experiment(</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>      u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, <span class="stringliteral">&quot;test&quot;</span>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  <a class="code hl_class" href="classprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment.html">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt;double&gt;</a></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>      experiment(u_zero, u_one, u_zero, f_zero, f_one, f_zero, k, <span class="stringliteral">&quot;test&quot;</span>);</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  experiment.Compute(refinement_levels, ks);</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>}</div>
-<div class="ttc" id="aclassprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment_html"><div class="ttname"><a href="classprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment.html">projects::hldo_sphere::experiments::HodgeLaplacianExperiment</a></div><div class="ttdoc">Creates and solves the discretised Hodge Laplacian source problems for a given list of levels and val...</div><div class="ttdef"><b>Definition:</b> <a href="hodge__laplacian__experiment_8h_source.html#l00038">hodge_laplacian_experiment.h:38</a></div></div>
+<div class="ttc" id="aclassprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment_html"><div class="ttname"><a href="classprojects_1_1hldo__sphere_1_1experiments_1_1_hodge_laplacian_experiment.html">projects::hldo_sphere::experiments::HodgeLaplacianExperiment</a></div><div class="ttdoc">Creates and solves the discretised Hodge Laplacian source problems for a given list of levels and val...</div><div class="ttdef"><b>Definition:</b> <a href="hodge__laplacian__experiment_8h_source.html#l00039">hodge_laplacian_experiment.h:39</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
