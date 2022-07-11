@@ -49,7 +49,7 @@ def plot(file, log):
 
     if(log):
         axs.loglog(x,yref)
-        axs.loglog(x,yl2)
+        axs.loglog(x,yl2, marker='+')
     else:
         axs.plot(x,yref)
         axs.plot(x,yl2)
@@ -60,7 +60,7 @@ def plot(file, log):
     axs.legend([ "$h^2$","l2 error"])
 
     #plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
-    plt.savefig("whitneyonecurl.png", dpi=300)
+    plt.savefig("whitneyonecurl.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 

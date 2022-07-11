@@ -39,9 +39,9 @@ def plot(file, stat):
     axs.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
     axs.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
-    axs.plot(ks, mean_order[0::3])
-    axs.plot(ks, mean_order[1::3])
-    axs.plot(ks, mean_order[2::3])
+    axs.plot(ks, mean_order[0::3],marker='+')
+    axs.plot(ks, mean_order[1::3],marker='+')
+    axs.plot(ks, mean_order[2::3],marker='+')
 
     # set labels and swap the x direction to get decreasing error
     axs.set(ylabel="algebraic order", xlabel="k")

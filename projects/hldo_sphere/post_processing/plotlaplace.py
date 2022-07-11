@@ -49,9 +49,9 @@ def plot(file, log):
 
     if(log):
         axs.loglog(x,yref)
-        axs.loglog(x,yzero)
-        axs.loglog(x,yone)
-        axs.loglog(x,ytwo)
+        axs.loglog(x,yzero,marker='+')
+        axs.loglog(x,yone,marker='+')
+        axs.loglog(x,ytwo,marker='+')
     else:
         axs.plot(x,yref)
         axs.plot(x,yzero)
@@ -63,7 +63,7 @@ def plot(file, log):
     axs.legend(["$h$","zero form", "one form", "two form"])
 
 #    plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
-    plt.savefig("hodgelaplacewithdirac.png", dpi=300, bbox_inches='tight')
+    plt.savefig("hodgelaplacians.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':

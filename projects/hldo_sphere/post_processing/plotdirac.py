@@ -46,9 +46,9 @@ def plot(file, log):
 
     if(log):
         axs.loglog(x,yref)
-        axs.loglog(x,yzero)
-        axs.loglog(x,yone)
-        axs.loglog(x,ytwo)
+        axs.loglog(x,yzero, marker='+')
+        axs.loglog(x,yone, marker='+')
+        axs.loglog(x,ytwo, marker='+')
     else:
         axs.plot(x,yref)
         axs.plot(x,yzero)

@@ -54,8 +54,8 @@ def plot(file, log):
     if(log):
         axs.loglog(x,yref)
 #        axs.loglog(x,ylin)
-        axs.loglog(x,yl2)
-        axs.loglog(x,yres)
+        axs.loglog(x,yl2,marker='+')
+        axs.loglog(x,yres,marker='+')
     else:
         axs.plot(x,yref)
 #        axs.loglog(x,ylin)
@@ -68,7 +68,7 @@ def plot(file, log):
     axs.legend([ "$h$","l2 error", "sum of squard res"])
 
     #plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
-    plt.savefig("expansioncoeffs.png", dpi=300)
+    plt.savefig("expansioncoeffs.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
