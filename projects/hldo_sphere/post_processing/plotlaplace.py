@@ -9,8 +9,9 @@ from matplotlib.ticker import FormatStrFormatter
 @click.command()
 @click.option('-f', '--file', required=True, help='csv file containing the results to plot')
 @click.option('-l', '--log', required=False, is_flag=True, help='Indicates if log log plot should be drawn')
+@click.option('-n', '--noshow', required=False, is_flag=True, help='Do not show plot after creating image')
 
-def plot(file, log):
+def plot(file, log, noshow):
 
     plt.rcParams.update({
         "text.usetex": True,
@@ -64,7 +65,8 @@ def plot(file, log):
 
 #    plt.title("$L^2$-Error of Hodge Laplacian Source Problems")
     plt.savefig("hodgelaplacians.png", dpi=300, bbox_inches='tight')
-    plt.show()
+    if(noshow == False):
+        plt.show()
 
 if __name__ == '__main__':
     plot()

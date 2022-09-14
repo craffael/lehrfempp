@@ -9,8 +9,9 @@ from matplotlib.ticker import FormatStrFormatter
 @click.command()
 @click.option('-f', '--file', required=True, help='csv file containing the results to plot')
 @click.option('-s', '--stat', type=click.Choice(['mean', 'max', 'min', 'sd'], case_sensitive=False), help='How to determine the convergence rate')
+@click.option('-n', '--noshow', required=False, is_flag=True, help='Do not show plot after creating the png')
 
-def plot(file, stat):
+def plot(file, stat, noshow):
 
     df = pd.read_csv(file)
     df_y = df.iloc[1:,4:]
@@ -48,7 +49,8 @@ def plot(file, stat):
     axs.legend(["zero form", "one form", "two form"])
 
     plt.savefig("eigenvalslap.png", dpi=300, bbox_inches='tight')
-    plt.show()
+    if(noshow == False):
+        plt.show()
 
 if __name__ == '__main__':
     plot()
