@@ -102,25 +102,21 @@ $(function() {
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;all_codim_mesh_data_set.h&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;codim_mesh_data_set.h&quot;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelf_1_1mesh_1_1utils.html">lf::mesh::utils</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>lf::mesh::utils {</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>CodimMeshDataSet&lt;lf::base::size_type&gt; <a class="code hl_function" href="namespacelf_1_1mesh_1_1utils.html#a75732938657f38a5d058965d418e10d2">CountNumSuperEntities</a>(</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> std::shared_ptr&lt;const Mesh&gt;&amp; mesh_p, <a class="code hl_typedef" href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a> codim_sub,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_typedef" href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a> codim_super);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>CodimMeshDataSet&lt;lf::base::size_type&gt; CountNumSuperEntities(</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> std::shared_ptr&lt;const Mesh&gt;&amp; mesh_p, lf::base::dim_t codim_sub,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    lf::base::dim_t codim_super);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>CodimMeshDataSet&lt;bool&gt; <a class="code hl_function" href="namespacelf_1_1mesh_1_1utils.html#a8b5d673cc329a83aabf29e965c727948">flagEntitiesOnBoundary</a>(</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> std::shared_ptr&lt;const Mesh&gt;&amp; mesh_p, <a class="code hl_typedef" href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a> codim);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>CodimMeshDataSet&lt;bool&gt; flagEntitiesOnBoundary(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> std::shared_ptr&lt;const Mesh&gt;&amp; mesh_p, lf::base::dim_t codim);</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>AllCodimMeshDataSet&lt;bool&gt; <a class="code hl_function" href="namespacelf_1_1mesh_1_1utils.html#a8b5d673cc329a83aabf29e965c727948">flagEntitiesOnBoundary</a>(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>AllCodimMeshDataSet&lt;bool&gt; flagEntitiesOnBoundary(</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> std::shared_ptr&lt;const Mesh&gt;&amp; mesh_p);</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}  <span class="comment">// namespace lf::mesh::utils</span></div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="agroup__lftypes_html_ga0f348035fff459797488241bebc1362b"><div class="ttname"><a href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a></div><div class="ttdeci">unsigned int dim_t</div><div class="ttdoc">type for dimensions and co-dimensions and numbers derived from them</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00036">base.h:36</a></div></div>
-<div class="ttc" id="anamespacelf_1_1mesh_1_1utils_html"><div class="ttname"><a href="namespacelf_1_1mesh_1_1utils.html">lf::mesh::utils</a></div><div class="ttdoc">Contains helper functions and classes that all operate on the interface classes defined in lf::mesh.</div><div class="ttdef"><b>Definition:</b> <a href="all__codim__mesh__data__set_8h_source.html#l00019">all_codim_mesh_data_set.h:19</a></div></div>
-<div class="ttc" id="anamespacelf_1_1mesh_1_1utils_html_a75732938657f38a5d058965d418e10d2"><div class="ttname"><a href="namespacelf_1_1mesh_1_1utils.html#a75732938657f38a5d058965d418e10d2">lf::mesh::utils::CountNumSuperEntities</a></div><div class="ttdeci">CodimMeshDataSet&lt; lf::base::size_type &gt; CountNumSuperEntities(const std::shared_ptr&lt; const Mesh &gt; &amp;mesh_p, lf::base::dim_t codim_sub, lf::base::dim_t codim_super)</div><div class="ttdoc">store number of adjacent super-entities</div><div class="ttdef"><b>Definition:</b> <a href="special__entity__sets_8cc_source.html#l00018">special_entity_sets.cc:18</a></div></div>
-<div class="ttc" id="anamespacelf_1_1mesh_1_1utils_html_a8b5d673cc329a83aabf29e965c727948"><div class="ttname"><a href="namespacelf_1_1mesh_1_1utils.html#a8b5d673cc329a83aabf29e965c727948">lf::mesh::utils::flagEntitiesOnBoundary</a></div><div class="ttdeci">CodimMeshDataSet&lt; bool &gt; flagEntitiesOnBoundary(const std::shared_ptr&lt; const Mesh &gt; &amp;mesh_p, lf::base::dim_t codim)</div><div class="ttdoc">flag entities of a specific co-dimension located on the boundary</div><div class="ttdef"><b>Definition:</b> <a href="special__entity__sets_8cc_source.html#l00040">special_entity_sets.cc:40</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

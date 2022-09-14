@@ -98,8 +98,8 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;refinement_pattern.h&quot;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelf_1_1geometry.html">lf::geometry</a> {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespacelf_1_1geometry.html#a6734053e4adff873f389e2c21a935163">   18</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelf_1_1geometry.html#a6734053e4adff873f389e2c21a935163">isParallelogram</a>(</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>lf::geometry {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">bool</span> isParallelogram(</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> Eigen::Matrix&lt;int, Eigen::Dynamic, Eigen::Dynamic&gt; &amp;polygon) {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  LF_ASSERT_MSG(polygon.rows() == 2, <span class="stringliteral">&quot;Only planar polygons supported&quot;</span>);</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="comment">// A parallelogram must have four vertices</span></div>
@@ -110,8 +110,6 @@ $(function() {
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>              .squaredNorm() == 0);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace lf::geometry</span></div>
-<div class="ttc" id="anamespacelf_1_1geometry_html"><div class="ttname"><a href="namespacelf_1_1geometry.html">lf::geometry</a></div><div class="ttdoc">Defines the Geometry interface and provides a number of classes that implement this interface + addit...</div><div class="ttdef"><b>Definition:</b> <a href="compose_8h_source.html#l00013">compose.h:13</a></div></div>
-<div class="ttc" id="anamespacelf_1_1geometry_html_a6734053e4adff873f389e2c21a935163"><div class="ttname"><a href="namespacelf_1_1geometry.html#a6734053e4adff873f389e2c21a935163">lf::geometry::isParallelogram</a></div><div class="ttdeci">bool isParallelogram(const Eigen::Matrix&lt; int, Eigen::Dynamic, Eigen::Dynamic &gt; &amp;polygon)</div><div class="ttdoc">Test whether a lattice polygon describes a logical parallelogram.</div><div class="ttdef"><b>Definition:</b> <a href="refinement__pattern_8cc_source.html#l00018">refinement_pattern.cc:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -93,38 +93,38 @@ $(function() {
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;hybrid2d_refinement_pattern.h&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespacelf_1_1refinement.html">    9</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelf_1_1refinement.html">lf::refinement</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>lf::refinement {</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespacelf_1_1refinement.html#a01c88173bf4f322bd9c8e945a4a9ce6e">   11</a></span>std::ostream &amp;<a class="code hl_function" href="namespacelf_1_1refinement.html#a01c88173bf4f322bd9c8e945a4a9ce6e">operator&lt;&lt;</a>(std::ostream &amp;o, <span class="keyword">const</span> <a class="code hl_enumeration" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5d">RefPat</a> &amp;refpat) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, <span class="keyword">const</span> RefPat &amp;refpat) {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  <span class="keywordflow">switch</span> (refpat) {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5dac6513b67a4ed3792584ff7c2e70142db">rp_nil</a>:</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">case</span> rp_nil:</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_nil&quot;</span>;</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daf758aedf6fd554c7805371670af9d0fd">rp_copy</a>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">case</span> rp_copy:</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_copy&quot;</span>;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da2635be74cf0f1a7aff89e854e090ae08">rp_split</a>:</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">case</span> rp_split:</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_split&quot;</span>;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da9bf14af506f6981c03495f2eadd52541">rp_bisect</a>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">case</span> rp_bisect:</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_bisect&quot;</span>;</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da86c7d80e9f636c68feffed426cf04a60">rp_trisect</a>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">case</span> rp_trisect:</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_trisect&quot;</span>;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da8b16ad12dc10ff824d113777e68aa770">rp_trisect_left</a>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">case</span> rp_trisect_left:</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_trisect_left&quot;</span>;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daa25eb3bd6bfa90d4edb1162858054c8c">rp_quadsect</a>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">case</span> rp_quadsect:</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_quadsect&quot;</span>;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daf003e2c1bfb07df00ebe6136e26e2af0">rp_threeedge</a>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">case</span> rp_threeedge:</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_threeedge&quot;</span>;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da9e04795f066597d1962a6ef04cfd3558">rp_regular</a>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">case</span> rp_regular:</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_regular&quot;</span>;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daa5b73e463fe71ba04c02fdb50fcc7ab2">rp_barycentric</a>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">case</span> rp_barycentric:</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>      o &lt;&lt; <span class="stringliteral">&quot;rp_barycentric&quot;</span>;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  }</div>
@@ -133,14 +133,14 @@ $(function() {
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment">// Implementation for RefinemeentPattern</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a696e58ea79e135afaf4dfd3b2756c713">   49</a></span><a class="code hl_typedef" href="group__lftypes.html#ga7bb93475e139aff6a645cb0c8d2a7c38">lf::base::size_type</a> <a class="code hl_function" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a696e58ea79e135afaf4dfd3b2756c713">Hybrid2DRefinementPattern::NumChildren</a>(</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_typedef" href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a> codim)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  LF_VERIFY_MSG(codim &lt;= <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>.<a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">Dimension</a>(),</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="stringliteral">&quot;Illegal codim = &quot;</span> &lt;&lt; codim &lt;&lt; <span class="stringliteral">&quot; for &quot;</span> &lt;&lt; <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>.<a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ae34e537f48774d1eb824cbf39239f610">ToString</a>());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>lf::base::size_type Hybrid2DRefinementPattern::NumChildren(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    lf::base::dim_t codim)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  LF_VERIFY_MSG(codim &lt;= ref_el_.Dimension(),</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="stringliteral">&quot;Illegal codim = &quot;</span> &lt;&lt; codim &lt;&lt; <span class="stringliteral">&quot; for &quot;</span> &lt;&lt; ref_el_.ToString());</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="comment">// Depending on the type of cell do something different</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">lf::base::RefEl::kPoint</a>(): {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">switch</span> (ref_el_) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">case</span> lf::base::RefEl::kPoint(): {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
@@ -153,10 +153,10 @@ $(function() {
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      }  <span class="comment">// end swtich ref_pat</span></div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }  <span class="comment">// end case of a simple point</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">lf::base::RefEl::kSegment</a>(): {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">case</span> lf::base::RefEl::kSegment(): {</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">case</span> 0: {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            }</div>
@@ -168,7 +168,7 @@ $(function() {
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            }</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for edge!&quot;</span>);</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            }</div>
@@ -176,7 +176,7 @@ $(function() {
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">case</span> 1: {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">case</span> RefPat::rp_nil:</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">case</span> RefPat::rp_copy: {</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>              <span class="keywordflow">return</span> 0;</div>
@@ -186,7 +186,7 @@ $(function() {
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            }</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for edge!&quot;</span>);</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            }</div>
@@ -198,10 +198,10 @@ $(function() {
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      }  <span class="comment">// end switch codim</span></div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }  <span class="comment">// end case of an edge</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">lf::base::RefEl::kTria</a>(): {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">case</span> lf::base::RefEl::kTria(): {</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">case</span> 0: {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            }</div>
@@ -224,7 +224,7 @@ $(function() {
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            }</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for triangle!&quot;</span>);</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            }</div>
@@ -234,7 +234,7 @@ $(function() {
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;invalid codim&quot;</span>);</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        }  <span class="comment">// end case codim = 0</span></div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">case</span> 1: {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keywordflow">case</span> RefPat::rp_nil:</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordflow">case</span> RefPat::rp_copy: {</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>              <span class="keywordflow">return</span> 0;</div>
@@ -255,7 +255,7 @@ $(function() {
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            }</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                                       &lt;&lt; <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                                       &lt;&lt; ref_pat_</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for triangle!&quot;</span>);</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            }</div>
@@ -263,7 +263,7 @@ $(function() {
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        }  <span class="comment">// end case codim = 1</span></div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">case</span> 2: {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>          <span class="keywordflow">if</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_barycentric) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>          <span class="keywordflow">if</span> (ref_pat_ == RefPat::rp_barycentric) {</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>          }</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>          <span class="keywordflow">return</span> 0;</div>
@@ -271,10 +271,10 @@ $(function() {
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>      }  <span class="comment">// end switch codim</span></div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }  <span class="comment">// end case of a triangle</span></div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">lf::base::RefEl::kQuad</a>(): {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">case</span> lf::base::RefEl::kQuad(): {</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">case</span> 0: {</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            }</div>
@@ -298,7 +298,7 @@ $(function() {
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            }</div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                                       &lt;&lt; <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                                       &lt;&lt; ref_pat_</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for quadrilateral!&quot;</span>);</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            }</div>
@@ -306,7 +306,7 @@ $(function() {
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        }</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keywordflow">case</span> 1: {</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            <span class="keywordflow">case</span> RefPat::rp_nil:</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keywordflow">case</span> RefPat::rp_copy: {</div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>              <span class="keywordflow">return</span> 0;</div>
@@ -330,7 +330,7 @@ $(function() {
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            }</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for quadrilateral!&quot;</span>);</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            }</div>
@@ -338,8 +338,8 @@ $(function() {
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        }</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <span class="keywordflow">case</span> 2: {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>          <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_barycentric) ||</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>              (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_regular)) {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>          <span class="keywordflow">if</span> ((ref_pat_ == RefPat::rp_barycentric) ||</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>              (ref_pat_ == RefPat::rp_regular)) {</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>          }</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>          <span class="keywordflow">return</span> 0;</div>
@@ -355,29 +355,29 @@ $(function() {
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>}</div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>std::vector&lt;Eigen::Matrix&lt;int, Eigen::Dynamic, Eigen::Dynamic&gt;&gt;</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a85fc03bcc3fb8e4c824685da528817b4">  271</a></span><a class="code hl_function" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a85fc03bcc3fb8e4c824685da528817b4">Hybrid2DRefinementPattern::ChildPolygons</a>(<a class="code hl_typedef" href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a> codim)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>  LF_VERIFY_MSG(codim &lt;= <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>.<a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">Dimension</a>(),</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                <span class="stringliteral">&quot;Illegal codim = &quot;</span> &lt;&lt; codim &lt;&lt; <span class="stringliteral">&quot; for &quot;</span> &lt;&lt; <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>.<a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ae34e537f48774d1eb824cbf39239f610">ToString</a>());</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>  LF_VERIFY_MSG(codim &lt;= ref_el_.Dimension(),</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                <span class="stringliteral">&quot;Illegal codim = &quot;</span> &lt;&lt; codim &lt;&lt; <span class="stringliteral">&quot; for &quot;</span> &lt;&lt; ref_el_.ToString());</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>  <span class="comment">// Local variable for accumulating information about interior entities</span></div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>  <span class="comment">// created during refinement</span></div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>  std::vector&lt;Eigen::Matrix&lt;int, Eigen::Dynamic, Eigen::Dynamic&gt;&gt; child_poly{};</div>
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>  <span class="comment">// Lattice point coordinates (lattice_const_ should be a multiple of 6)</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_half = <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643">lattice_const_</a> / 2;</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_third = <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643">lattice_const_</a> / 3;</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_one = <a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643">lattice_const_</a>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_half = lattice_const_ / 2;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_third = lattice_const_ / 3;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lt_one = lattice_const_;</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  <span class="comment">// Depending on the type of cell do something different</span></div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">ref_el_</a>) {</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">lf::base::RefEl::kPoint</a>(): {</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> != RefPat::rp_nil) {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  <span class="keywordflow">switch</span> (ref_el_) {</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">case</span> lf::base::RefEl::kPoint(): {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      <span class="keywordflow">if</span> (ref_pat_ != RefPat::rp_nil) {</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        child_poly.emplace_back(0, 1);</div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      }</div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    }                                    <span class="comment">// end case of a simple point</span></div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">lf::base::RefEl::kSegment</a>(): {  <span class="comment">// case of an edge</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordflow">case</span> lf::base::RefEl::kSegment(): {  <span class="comment">// case of an edge</span></div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="keywordflow">case</span> 0: {  <span class="comment">// child entities are segments as well</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            }</div>
@@ -397,7 +397,7 @@ $(function() {
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            }</div>
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for edge!&quot;</span>);</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            }</div>
@@ -405,7 +405,7 @@ $(function() {
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        }          <span class="comment">// case codim = 0</span></div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        <span class="keywordflow">case</span> 1: {  <span class="comment">// child entities are points</span></div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>          <span class="keywordflow">if</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_split) {</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>          <span class="keywordflow">if</span> (ref_pat_ == RefPat::rp_split) {</div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            <span class="comment">// child is the midpoint</span></div>
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            Eigen::Matrix&lt;int, 1, 1&gt; point_ref_coord;</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            point_ref_coord &lt;&lt; lt_half;</div>
@@ -418,7 +418,7 @@ $(function() {
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>      }  <span class="comment">// end switch codim</span></div>
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    }  <span class="comment">// end case of an edge</span></div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">lf::base::RefEl::kTria</a>(): {</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="keywordflow">case</span> lf::base::RefEl::kTria(): {</div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>      <span class="comment">// **********************************************************************</span></div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>      <span class="comment">// Triangle</span></div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>      <span class="comment">// **********************************************************************</span></div>
@@ -432,16 +432,16 @@ $(function() {
 <div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>      lt_midpoint_coords &lt;&lt; lt_half, lt_half, 0, 0, lt_half, lt_half;</div>
 <div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
 <div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>      <span class="comment">// Remap local indices according to anchor values</span></div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_0 = (0 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 3;</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_1 = (1 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 3;</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_2 = (2 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 3;</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_0 = (0 + anchor_) % 3;</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_1 = (1 + anchor_) % 3;</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_2 = (2 + anchor_) % 3;</div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        <span class="keywordflow">case</span> 0: {</div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>          <span class="comment">// For temporary storage of triangular lattice polygon</span></div>
 <div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>          Eigen::MatrixXi child_coords(2, 3);</div>
 <div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            }</div>
@@ -452,7 +452,7 @@ $(function() {
 <div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>            }</div>
 <div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>            <span class="keywordflow">case</span> RefPat::rp_bisect: {</div>
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>                  anchor_set_,</div>
 <div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>                  <span class="stringliteral">&quot;Anchor must be set for bisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>              <span class="comment">// Splitting a triangle in two by bisecting anchor edge</span></div>
 <div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>              child_coords.col(0) = lt_node_coords.col(mod_0);</div>
@@ -468,7 +468,7 @@ $(function() {
 <div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>            }</div>
 <div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>            <span class="keywordflow">case</span> RefPat::rp_trisect: {</div>
 <div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>                  anchor_set_,</div>
 <div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>              <span class="comment">// Bisect through anchor edge first and then bisect through</span></div>
 <div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>              <span class="comment">// edge with the next larger index (mod 3); creates three</span></div>
@@ -491,7 +491,7 @@ $(function() {
 <div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>            }</div>
 <div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>            <span class="keywordflow">case</span> RefPat::rp_trisect_left: {</div>
 <div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                  anchor_set_,</div>
 <div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span> </div>
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>              <span class="comment">// Bisect through anchor edge first and then bisect through</span></div>
@@ -515,7 +515,7 @@ $(function() {
 <div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>            }</div>
 <div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>            <span class="keywordflow">case</span> RefPat::rp_quadsect: {</div>
 <div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>                  anchor_set_,</div>
 <div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>                  <span class="stringliteral">&quot;Anchor must be set for quadsection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>              <span class="comment">// Bisect through the anchor edge first and then</span></div>
 <div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>              <span class="comment">// through the two remaining edges; creates four child</span></div>
@@ -606,7 +606,7 @@ $(function() {
 <div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>            }</div>
 <div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for triangle!&quot;</span>);</div>
 <div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>            }</div>
@@ -621,7 +621,7 @@ $(function() {
 <div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span> </div>
 <div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>          <span class="comment">// Different layout of interior edges for different refinement</span></div>
 <div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>          <span class="comment">// patterns</span></div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>            <span class="keywordflow">case</span> RefPat::rp_nil:</div>
 <div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>            <span class="keywordflow">case</span> RefPat::rp_copy: {</div>
 <div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>              <span class="comment">// No interior edges in these cases</span></div>
@@ -629,7 +629,7 @@ $(function() {
 <div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>            }</div>
 <div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>            <span class="keywordflow">case</span> RefPat::rp_bisect: {</div>
 <div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                  anchor_set_,</div>
 <div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                  <span class="stringliteral">&quot;Anchor must be set for bisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>              <span class="comment">// Splitting a triangle in two by bisecting anchor edge</span></div>
 <div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>              <span class="comment">// One interior edge is created</span></div>
@@ -640,7 +640,7 @@ $(function() {
 <div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            }</div>
 <div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>            <span class="keywordflow">case</span> RefPat::rp_trisect: {</div>
 <div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                  anchor_set_,</div>
 <div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>              <span class="comment">// Bisect through anchor edge first and then bisect through</span></div>
 <div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>              <span class="comment">// edge with the next larger index (mod 3); creates two</span></div>
@@ -656,7 +656,7 @@ $(function() {
 <div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>            }</div>
 <div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>            <span class="keywordflow">case</span> RefPat::rp_trisect_left: {</div>
 <div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                  anchor_set_,</div>
 <div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span> </div>
 <div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>              <span class="comment">// Bisect through anchor edge first and then bisect through</span></div>
@@ -673,7 +673,7 @@ $(function() {
 <div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            }</div>
 <div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            <span class="keywordflow">case</span> RefPat::rp_quadsect: {</div>
 <div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                  anchor_set_,</div>
 <div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>                  <span class="stringliteral">&quot;Anchor must be set for quadsection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>              <span class="comment">// Bisect through the anchor edge first and then</span></div>
 <div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>              <span class="comment">// through the two remaining edges; creates three</span></div>
@@ -743,7 +743,7 @@ $(function() {
 <div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>            }</div>
 <div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for triangle!&quot;</span>);</div>
 <div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>            }</div>
@@ -752,7 +752,7 @@ $(function() {
 <div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>        }  <span class="comment">// end codim = 1</span></div>
 <div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>        <span class="keywordflow">case</span> 2: {</div>
 <div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>          <span class="comment">// Return interior points</span></div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>          <span class="keywordflow">if</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_barycentric) {</div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>          <span class="keywordflow">if</span> (ref_pat_ == RefPat::rp_barycentric) {</div>
 <div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>            <span class="comment">// Only in the case of barycentric refinemnt insert new point</span></div>
 <div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>            <span class="comment">// in the center of gravitfy.</span></div>
 <div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>            child_poly.emplace_back(Eigen::Vector2i({lt_third, lt_third}));</div>
@@ -764,7 +764,7 @@ $(function() {
 <div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>      }  <span class="comment">// end switch codim</span></div>
 <div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>      <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>    }  <span class="comment">// end case of a triangle</span></div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>    <span class="keywordflow">case</span> <a class="code hl_function" href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">lf::base::RefEl::kQuad</a>(): {</div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>    <span class="keywordflow">case</span> lf::base::RefEl::kQuad(): {</div>
 <div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>      <span class="comment">// Lattice coordinates of special points in a quadrilateral</span></div>
 <div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>      <span class="comment">// Here we use knowledge about the conventions underlying node</span></div>
 <div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>      <span class="comment">// and edge numbering in a quadrilateral as defined in RefEl.</span></div>
@@ -776,10 +776,10 @@ $(function() {
 <div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>          lt_half;</div>
 <div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span> </div>
 <div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>      <span class="comment">// Remap local indices according to anchor values</span></div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_0 = (0 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 4;</div>
-<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_1 = (1 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 4;</div>
-<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_2 = (2 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 4;</div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_3 = (3 + <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">anchor_</a>) % 4;</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_0 = (0 + anchor_) % 4;</div>
+<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_1 = (1 + anchor_) % 4;</div>
+<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_2 = (2 + anchor_) % 4;</div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>      <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mod_3 = (3 + anchor_) % 4;</div>
 <div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span> </div>
 <div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>      <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>        <span class="keywordflow">case</span> 0: {</div>
@@ -788,7 +788,7 @@ $(function() {
 <div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>          Eigen::MatrixXi tria_child_coords(2, 3);</div>
 <div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>          <span class="comment">// For temporary storage of 4-node lattice polygon</span></div>
 <div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>          Eigen::MatrixXi quad_child_coords(2, 4);</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            <span class="keywordflow">case</span> RefPat::rp_nil: {</div>
 <div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>            }</div>
@@ -798,7 +798,7 @@ $(function() {
 <div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>            }</div>
 <div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>            <span class="keywordflow">case</span> RefPat::rp_trisect: {</div>
 <div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>                  anchor_set_,</div>
 <div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of quad&quot;</span>);</div>
 <div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span> </div>
 <div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>              <span class="comment">// Partition a quad into three triangle, the anchor edge</span></div>
@@ -821,7 +821,7 @@ $(function() {
 <div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>            }</div>
 <div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>            <span class="keywordflow">case</span> RefPat::rp_quadsect: {</div>
 <div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>                  anchor_set_,</div>
 <div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>                  <span class="stringliteral">&quot;Anchor must be set for quadsection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>              <span class="comment">// Partition a quad into four triangle, thus</span></div>
 <div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>              <span class="comment">// splitting two edges. The one with the smaller sub index is the</span></div>
@@ -849,7 +849,7 @@ $(function() {
 <div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>            }</div>
 <div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>            <span class="keywordflow">case</span> RefPat::rp_bisect:</div>
 <div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>            <span class="keywordflow">case</span> RefPat::rp_split: {</div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>              LF_VERIFY_MSG(<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>              LF_VERIFY_MSG(anchor_set_,</div>
 <div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>                            <span class="stringliteral">&quot;Anchor must be set for splitting of quad&quot;</span>);</div>
 <div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span> </div>
 <div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>              <span class="comment">// Cut a quadrilateral into two</span></div>
@@ -868,7 +868,7 @@ $(function() {
 <div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>            }</div>
 <div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>            <span class="keywordflow">case</span> RefPat::rp_threeedge: {</div>
 <div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>                  anchor_set_,</div>
 <div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>                  <span class="stringliteral">&quot;Anchor must be set for three edge refinement of a quad&quot;</span>);</div>
 <div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span> </div>
 <div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>              <span class="comment">// A quadrilateral with three split edges is decomposed into one</span></div>
@@ -929,7 +929,7 @@ $(function() {
 <div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>            }</div>
 <div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for quadrilateral!&quot;</span>);</div>
 <div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>            }</div>
@@ -939,7 +939,7 @@ $(function() {
 <div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>        <span class="keywordflow">case</span> 1: {</div>
 <div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span>          <span class="comment">// Return information about edges created inside a quadrilateral</span></div>
 <div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span>          Eigen::MatrixXi child_coords(2, 2);</div>
-<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>          <span class="keywordflow">switch</span> (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a>) {</div>
+<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>          <span class="keywordflow">switch</span> (ref_pat_) {</div>
 <div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span>            <span class="keywordflow">case</span> RefPat::rp_nil:</div>
 <div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span>            <span class="keywordflow">case</span> RefPat::rp_copy: {</div>
 <div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>              <span class="comment">// No internal edges in this case</span></div>
@@ -947,7 +947,7 @@ $(function() {
 <div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>            }</div>
 <div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>            <span class="keywordflow">case</span> RefPat::rp_trisect: {</div>
 <div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                  anchor_set_,</div>
 <div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                  <span class="stringliteral">&quot;Anchor must be set for trisection refinement of quad&quot;</span>);</div>
 <div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span> </div>
 <div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>              <span class="comment">// Partition a quad into three triangle, the anchor edge</span></div>
@@ -963,7 +963,7 @@ $(function() {
 <div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>            }</div>
 <div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>            <span class="keywordflow">case</span> RefPat::rp_quadsect: {</div>
 <div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>                  anchor_set_,</div>
 <div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>                  <span class="stringliteral">&quot;Anchor must be set for quadsection refinement of triangle&quot;</span>);</div>
 <div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>              <span class="comment">// Partition a quad into four triangle, thus</span></div>
 <div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>              <span class="comment">// splitting two edges. This spawns three internal edges</span></div>
@@ -982,7 +982,7 @@ $(function() {
 <div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>            }</div>
 <div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>            <span class="keywordflow">case</span> RefPat::rp_bisect:</div>
 <div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>            <span class="keywordflow">case</span> RefPat::rp_split: {</div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>              LF_VERIFY_MSG(<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>              LF_VERIFY_MSG(anchor_set_,</div>
 <div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>                            <span class="stringliteral">&quot;Anchor must be set for splitting of quad&quot;</span>);</div>
 <div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span> </div>
 <div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>              <span class="comment">// Cut a quadrilateral into two.  One interior edge arises</span></div>
@@ -993,7 +993,7 @@ $(function() {
 <div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>            }</div>
 <div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>            <span class="keywordflow">case</span> RefPat::rp_threeedge: {</div>
 <div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>              LF_VERIFY_MSG(</div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                  <a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">anchor_set_</a>,</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                  anchor_set_,</div>
 <div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>                  <span class="stringliteral">&quot;Anchor must be set for three edge refinement of a quad&quot;</span>);</div>
 <div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>              <span class="comment">// Split quadrilateral into one half and three triangles, creating</span></div>
 <div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>              <span class="comment">// three interior edges in the process</span></div>
@@ -1037,7 +1037,7 @@ $(function() {
 <div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>            }</div>
 <div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>            <span class="keywordflow">default</span>: {</div>
 <div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>              LF_VERIFY_MSG(<span class="keyword">false</span>, <span class="stringliteral">&quot;refinement pattern &quot;</span></div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a></div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>                                       &lt;&lt; (<span class="keywordtype">int</span>)ref_pat_</div>
 <div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>                                       &lt;&lt; <span class="stringliteral">&quot;not implemented for quadrilateral!&quot;</span>);</div>
 <div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>              <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>            }</div>
@@ -1047,8 +1047,8 @@ $(function() {
 <div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>        <span class="keywordflow">case</span> 2: {</div>
 <div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>          <span class="comment">// Return location of new interior points</span></div>
 <div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>          <span class="comment">// Those arise only in the case of regular/barycentric refinement</span></div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>          <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_regular) ||</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>              (<a class="code hl_variable" href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">ref_pat_</a> == RefPat::rp_barycentric)) {</div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>          <span class="keywordflow">if</span> ((ref_pat_ == RefPat::rp_regular) ||</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>              (ref_pat_ == RefPat::rp_barycentric)) {</div>
 <div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>            child_poly.emplace_back(Eigen::Vector2i({lt_half, lt_half}));</div>
 <div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>          }</div>
 <div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>          <span class="keywordflow">break</span>;</div>
@@ -1063,34 +1063,6 @@ $(function() {
 <div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>}</div>
 <div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span> </div>
 <div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>}  <span class="comment">// namespace lf::refinement</span></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_a415d06db9dee088b67e47b94bdf53db7"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#a415d06db9dee088b67e47b94bdf53db7">lf::base::RefEl::kSegment</a></div><div class="ttdeci">static constexpr RefEl kSegment()</div><div class="ttdoc">Returns the (1-dimensional) reference segment.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00150">ref_el.h:150</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_a9b2ee915314345e10d1d090145957509"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">lf::base::RefEl::Dimension</a></div><div class="ttdeci">constexpr dim_t Dimension() const</div><div class="ttdoc">Return the dimension of this reference element.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00201">ref_el.h:201</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ab4167c45a6c22d9b8dd49218d4aedc51"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ab4167c45a6c22d9b8dd49218d4aedc51">lf::base::RefEl::kPoint</a></div><div class="ttdeci">static constexpr RefEl kPoint()</div><div class="ttdoc">Returns the (0-dimensional) reference point.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00141">ref_el.h:141</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ac6542f1b3d68028bc0bd8d9a223b35ff"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ac6542f1b3d68028bc0bd8d9a223b35ff">lf::base::RefEl::kTria</a></div><div class="ttdeci">static constexpr RefEl kTria()</div><div class="ttdoc">Returns the reference triangle.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00158">ref_el.h:158</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ae28ad009a99541ecd2ab24999aebcf63"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ae28ad009a99541ecd2ab24999aebcf63">lf::base::RefEl::kQuad</a></div><div class="ttdeci">static constexpr RefEl kQuad()</div><div class="ttdoc">Returns the reference quadrilateral.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00166">ref_el.h:166</a></div></div>
-<div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_ae34e537f48774d1eb824cbf39239f610"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#ae34e537f48774d1eb824cbf39239f610">lf::base::RefEl::ToString</a></div><div class="ttdeci">std::string ToString() const</div><div class="ttdoc">Return a string representation of this Reference element.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00455">ref_el.h:455</a></div></div>
-<div class="ttc" id="aclasslf_1_1geometry_1_1_refinement_pattern_html_a1e5a587b7523f7b4c9eab04b97e90643"><div class="ttname"><a href="classlf_1_1geometry_1_1_refinement_pattern.html#a1e5a587b7523f7b4c9eab04b97e90643">lf::geometry::RefinementPattern::lattice_const_</a></div><div class="ttdeci">lf::base::size_type lattice_const_</div><div class="ttdef"><b>Definition:</b> <a href="refinement__pattern_8h_source.html#l00120">refinement_pattern.h:120</a></div></div>
-<div class="ttc" id="aclasslf_1_1geometry_1_1_refinement_pattern_html_a4564d8f75ff93bca5606f70b7291f3f0"><div class="ttname"><a href="classlf_1_1geometry_1_1_refinement_pattern.html#a4564d8f75ff93bca5606f70b7291f3f0">lf::geometry::RefinementPattern::ref_el_</a></div><div class="ttdeci">lf::base::RefEl ref_el_</div><div class="ttdef"><b>Definition:</b> <a href="refinement__pattern_8h_source.html#l00118">refinement_pattern.h:118</a></div></div>
-<div class="ttc" id="aclasslf_1_1refinement_1_1_hybrid2_d_refinement_pattern_html_a06ff15b1cb561166df241c8412068710"><div class="ttname"><a href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a06ff15b1cb561166df241c8412068710">lf::refinement::Hybrid2DRefinementPattern::ref_pat_</a></div><div class="ttdeci">RefPat ref_pat_</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00253">hybrid2d_refinement_pattern.h:253</a></div></div>
-<div class="ttc" id="aclasslf_1_1refinement_1_1_hybrid2_d_refinement_pattern_html_a696e58ea79e135afaf4dfd3b2756c713"><div class="ttname"><a href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a696e58ea79e135afaf4dfd3b2756c713">lf::refinement::Hybrid2DRefinementPattern::NumChildren</a></div><div class="ttdeci">lf::base::size_type NumChildren(lf::base::dim_t codim) const override</div><div class="ttdoc">provide number of child entities of a given co-dimension to be created by refinement</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8cc_source.html#l00049">hybrid2d_refinement_pattern.cc:49</a></div></div>
-<div class="ttc" id="aclasslf_1_1refinement_1_1_hybrid2_d_refinement_pattern_html_a80aea58f94e43f7dbd0660ae56909dce"><div class="ttname"><a href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a80aea58f94e43f7dbd0660ae56909dce">lf::refinement::Hybrid2DRefinementPattern::anchor_</a></div><div class="ttdeci">lf::base::sub_idx_t anchor_</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00252">hybrid2d_refinement_pattern.h:252</a></div></div>
-<div class="ttc" id="aclasslf_1_1refinement_1_1_hybrid2_d_refinement_pattern_html_a8465b00ce77e09bea42371aa04d79f37"><div class="ttname"><a href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a8465b00ce77e09bea42371aa04d79f37">lf::refinement::Hybrid2DRefinementPattern::anchor_set_</a></div><div class="ttdeci">bool anchor_set_</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00254">hybrid2d_refinement_pattern.h:254</a></div></div>
-<div class="ttc" id="aclasslf_1_1refinement_1_1_hybrid2_d_refinement_pattern_html_a85fc03bcc3fb8e4c824685da528817b4"><div class="ttname"><a href="classlf_1_1refinement_1_1_hybrid2_d_refinement_pattern.html#a85fc03bcc3fb8e4c824685da528817b4">lf::refinement::Hybrid2DRefinementPattern::ChildPolygons</a></div><div class="ttdeci">std::vector&lt; Eigen::Matrix&lt; int, Eigen::Dynamic, Eigen::Dynamic &gt; &gt; ChildPolygons(lf::base::dim_t codim) const override</div><div class="ttdoc">provide lattice reference coordinates of vertices of child polygons</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8cc_source.html#l00271">hybrid2d_refinement_pattern.cc:271</a></div></div>
-<div class="ttc" id="agroup__lftypes_html_ga0f348035fff459797488241bebc1362b"><div class="ttname"><a href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a></div><div class="ttdeci">unsigned int dim_t</div><div class="ttdoc">type for dimensions and co-dimensions and numbers derived from them</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00036">base.h:36</a></div></div>
-<div class="ttc" id="agroup__lftypes_html_ga7bb93475e139aff6a645cb0c8d2a7c38"><div class="ttname"><a href="group__lftypes.html#ga7bb93475e139aff6a645cb0c8d2a7c38">lf::base::size_type</a></div><div class="ttdeci">unsigned int size_type</div><div class="ttdoc">general type for variables related to size of arrays</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00024">base.h:24</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html"><div class="ttname"><a href="namespacelf_1_1refinement.html">lf::refinement</a></div><div class="ttdoc">tools for regular or local refinement of 2D hybrid meshes</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8cc_source.html#l00009">hybrid2d_refinement_pattern.cc:9</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_a01c88173bf4f322bd9c8e945a4a9ce6e"><div class="ttname"><a href="namespacelf_1_1refinement.html#a01c88173bf4f322bd9c8e945a4a9ce6e">lf::refinement::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;o, const RefPat &amp;refpat)</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8cc_source.html#l00011">hybrid2d_refinement_pattern.cc:11</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5d"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5d">lf::refinement::RefPat</a></div><div class="ttdeci">RefPat</div><div class="ttdoc">(possibly incomplete) list of refinement patterns for triangles/quadrilaterals</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00035">hybrid2d_refinement_pattern.h:35</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5da2635be74cf0f1a7aff89e854e090ae08"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da2635be74cf0f1a7aff89e854e090ae08">lf::refinement::rp_split</a></div><div class="ttdeci">@ rp_split</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00038">hybrid2d_refinement_pattern.h:38</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5da86c7d80e9f636c68feffed426cf04a60"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da86c7d80e9f636c68feffed426cf04a60">lf::refinement::rp_trisect</a></div><div class="ttdeci">@ rp_trisect</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00040">hybrid2d_refinement_pattern.h:40</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5da8b16ad12dc10ff824d113777e68aa770"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da8b16ad12dc10ff824d113777e68aa770">lf::refinement::rp_trisect_left</a></div><div class="ttdeci">@ rp_trisect_left</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00041">hybrid2d_refinement_pattern.h:41</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5da9bf14af506f6981c03495f2eadd52541"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da9bf14af506f6981c03495f2eadd52541">lf::refinement::rp_bisect</a></div><div class="ttdeci">@ rp_bisect</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00039">hybrid2d_refinement_pattern.h:39</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5da9e04795f066597d1962a6ef04cfd3558"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5da9e04795f066597d1962a6ef04cfd3558">lf::refinement::rp_regular</a></div><div class="ttdeci">@ rp_regular</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00044">hybrid2d_refinement_pattern.h:44</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5daa25eb3bd6bfa90d4edb1162858054c8c"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daa25eb3bd6bfa90d4edb1162858054c8c">lf::refinement::rp_quadsect</a></div><div class="ttdeci">@ rp_quadsect</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00042">hybrid2d_refinement_pattern.h:42</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5daa5b73e463fe71ba04c02fdb50fcc7ab2"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daa5b73e463fe71ba04c02fdb50fcc7ab2">lf::refinement::rp_barycentric</a></div><div class="ttdeci">@ rp_barycentric</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00046">hybrid2d_refinement_pattern.h:45</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5dac6513b67a4ed3792584ff7c2e70142db"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5dac6513b67a4ed3792584ff7c2e70142db">lf::refinement::rp_nil</a></div><div class="ttdeci">@ rp_nil</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00036">hybrid2d_refinement_pattern.h:36</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5daf003e2c1bfb07df00ebe6136e26e2af0"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daf003e2c1bfb07df00ebe6136e26e2af0">lf::refinement::rp_threeedge</a></div><div class="ttdeci">@ rp_threeedge</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00043">hybrid2d_refinement_pattern.h:43</a></div></div>
-<div class="ttc" id="anamespacelf_1_1refinement_html_aad00cb5a8084400b931b01984d2cdc5daf758aedf6fd554c7805371670af9d0fd"><div class="ttname"><a href="namespacelf_1_1refinement.html#aad00cb5a8084400b931b01984d2cdc5daf758aedf6fd554c7805371670af9d0fd">lf::refinement::rp_copy</a></div><div class="ttdeci">@ rp_copy</div><div class="ttdef"><b>Definition:</b> <a href="hybrid2d__refinement__pattern_8h_source.html#l00037">hybrid2d_refinement_pattern.h:37</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
