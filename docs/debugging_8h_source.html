@@ -94,21 +94,21 @@ $(function() {
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define HLDO_SPHERE_DEBUGGING_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceprojects_1_1hldo__sphere.html">projects::hldo_sphere</a> {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html">   11</a></span><span class="keyword">namespace </span>debugging {</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">   20</a></span><span class="keyword">static</span> std::string <a class="code hl_function" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">concat</a>(Args &amp;&amp;...args) {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  std::ostringstream ss;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  (ss &lt;&lt; ... &lt;&lt; args);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <span class="keywordflow">return</span> ss.str();</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}  <span class="comment">// namespace debugging</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace projects::hldo_sphere</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#endif  </span><span class="comment">//  HLDO_SPHERE_DEBUGGING_H</span></div>
-<div class="ttc" id="anamespaceprojects_1_1hldo__sphere_1_1debugging_html_a7cac76336c6edf968e9b85bb11f5f8cf"><div class="ttname"><a href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">projects::hldo_sphere::debugging::concat</a></div><div class="ttdeci">static std::string concat(Args &amp;&amp;...args)</div><div class="ttdoc">Concatenate objects defining an operator&lt;&lt;(std::ostream&amp;)</div><div class="ttdef"><b>Definition:</b> <a href="debugging_8h_source.html#l00020">debugging.h:20</a></div></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html">   17</a></span><span class="keyword">namespace </span>debugging {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">   26</a></span><span class="keyword">static</span> std::string <a class="code hl_function" href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">concat</a>(Args &amp;&amp;...args) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  std::ostringstream ss;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  (ss &lt;&lt; ... &lt;&lt; args);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordflow">return</span> ss.str();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}  <span class="comment">// namespace debugging</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}  <span class="comment">// namespace projects::hldo_sphere</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif  </span><span class="comment">//  HLDO_SPHERE_DEBUGGING_H</span></div>
+<div class="ttc" id="anamespaceprojects_1_1hldo__sphere_1_1debugging_html_a7cac76336c6edf968e9b85bb11f5f8cf"><div class="ttname"><a href="namespaceprojects_1_1hldo__sphere_1_1debugging.html#a7cac76336c6edf968e9b85bb11f5f8cf">projects::hldo_sphere::debugging::concat</a></div><div class="ttdeci">static std::string concat(Args &amp;&amp;...args)</div><div class="ttdoc">Concatenate objects defining an operator&lt;&lt;(std::ostream&amp;)</div><div class="ttdef"><b>Definition:</b> <a href="debugging_8h_source.html#l00026">debugging.h:26</a></div></div>
 <div class="ttc" id="anamespaceprojects_1_1hldo__sphere_html"><div class="ttname"><a href="namespaceprojects_1_1hldo__sphere.html">projects::hldo_sphere</a></div><div class="ttdoc">Implementation of the thesis Hogde Laplacians and Dirac Operators on the surface of the 3-Sphere.</div><div class="ttdef"><b>Definition:</b> <a href="projects_2hldo__sphere_2assemble_2assemble_8h_source.html#l00015">assemble.h:15</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

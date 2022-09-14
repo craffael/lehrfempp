@@ -139,9 +139,10 @@ class projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;</
 \[ \Delta_1 \mathbf{u} = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} \, \mathbf{u} + \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \, \mathbf{u} \\ -\Delta_1 \mathbf{u} = \mathbf{f} \]
 </p>
 <p >Basis functions are the Whitney 1-forms and the barycentric coordinate functions</p>
+<p >Details regarding the mathematical derivations can be found in the thesis <code>Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.3.2.</p>
 <dl class="section note"><dt>Note</dt><dd>Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00050">50</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00054">54</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9326173a86fcc3fa9a0cc80d14e62000" name="a9326173a86fcc3fa9a0cc80d14e62000"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9326173a86fcc3fa9a0cc80d14e62000">&#9670;&nbsp;</a></span>WhitneyOneHodgeLaplace()</h2>
@@ -170,9 +171,9 @@ template&lt;typename SCALAR &gt; </div>
 
 <p>Constructor initializes basic mesh (Octaeder with radius 1.0) initializes zerovalued function f. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00058">58</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00062">62</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00254">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00251">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
+<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00258">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00083">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
 
 </div>
 </div>
@@ -205,11 +206,11 @@ template&lt;typename SCALAR &gt; </div>
 <p>Computes the Galerkin LSE. </p>
 <p >The Galerkin matrix will be accessable with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_whitney_one_hodge_laplace.html#a0d8f51429594bb2b0a8340bae9a029c5" title="returns the Galerkin Matrix">GetGalerkinMatrix()</a> The load vector will be accessable with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_whitney_one_hodge_laplace.html#a8ef06dcf560d9f5d914d1522d6660ef3" title="returns the Loadvector">GetLoadVector()</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">87</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">91</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00297">lf::assemble::AssembleVectorLocally()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00254">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00251">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00256">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00297">lf::assemble::AssembleVectorLocally()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00259">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00258">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00260">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -242,11 +243,11 @@ template&lt;typename SCALAR &gt; </div>
 <p >This is the Matrix of the LSE</p>
 <dl class="section note"><dt>Note</dt><dd>The Galerkin matrix must be computed with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_whitney_one_hodge_laplace.html#ad90234e24ab8addd6a417d0533c92922" title="Computes the Galerkin LSE.">Compute()</a> before calling this funciton </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00248">248</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00252">252</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::coo_matrix_</a>.</p>
+<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00259">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::coo_matrix_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -279,11 +280,11 @@ template&lt;typename SCALAR &gt; </div>
 <p >This is the righthandside of the LSE</p>
 <dl class="section note"><dt>Note</dt><dd>The loadvector must be computed with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_whitney_one_hodge_laplace.html#ad90234e24ab8addd6a417d0533c92922" title="Computes the Galerkin LSE.">Compute()</a> before calling this function </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00237">237</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00241">241</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00256">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::phi_</a>.</p>
+<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00260">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::phi_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -324,11 +325,11 @@ template&lt;typename SCALAR &gt; </div>
 \[ \Delta_1 \mathbf{u} = -\mathbf{curl}_{\Gamma} \circ \text{curl}_{\Gamma} \, \mathbf{u} + \mathbf{grad}_{\Gamma} \circ \text{div}_{\Gamma} \, \mathbf{u} \\ -\Delta_1 \mathbf{u} = \mathbf{f} \]
 </p>
  
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00223">223</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00227">227</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00254">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>.</p>
+<p class="reference">References <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00258">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::f_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -367,11 +368,11 @@ template&lt;typename SCALAR &gt; </div>
 </dl>
 <p>requries all cells in the mesh are triangles requries mesh global dimension to be 3 </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00195">195</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00199">199</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00251">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -398,9 +399,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">255</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00259">259</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00248">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00252">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>.</p>
 
 </div>
 </div>
@@ -426,9 +427,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00254">254</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00258">258</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00223">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00058">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00227">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00062">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>.</p>
 
 </div>
 </div>
@@ -454,9 +455,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00251">251</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00255">255</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00195">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00058">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00199">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00062">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>.</p>
 
 </div>
 </div>
@@ -482,9 +483,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00256">256</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00260">260</a> of file <a class="el" href="whitney__one__hodge__laplacian_8h_source.html">whitney_one_hodge_laplacian.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00237">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, and <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00241">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>.</p>
 
 </div>
 </div>

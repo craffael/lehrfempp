@@ -158,9 +158,10 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename SCALAR&gt;<br />
 class projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;</div><p >Creates and solves the discretised Hodge Laplacian source problems. </p>
+<p >Details regarding the mathematical derivations can be found in the thesis <code>Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.4.</p>
 <dl class="section note"><dt>Note</dt><dd>Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00030">30</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00034">34</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a98218776feeb2f10e545aeb7fcc9995f" name="a98218776feeb2f10e545aeb7fcc9995f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a98218776feeb2f10e545aeb7fcc9995f">&#9670;&nbsp;</a></span>HodgeLaplaciansSourceProblems()</h2>
@@ -191,9 +192,9 @@ template&lt;typename SCALAR &gt; </div>
 <p >set k to 1</p>
 <p >For all three Hodge Laplacians initializes zerovalued functions f </p>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">42</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">46</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00444">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00439">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00445">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00448">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00451">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00449">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00083">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
 
 </div>
 </div>
@@ -229,9 +230,9 @@ template&lt;typename SCALAR &gt; </div>
 </p>
 <p >The Galerkin matrix will be accessable with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#a3e67893a2a6b4e36941b5a8c1eec9ac8" title="returns the Galerkin Matrix">GetGalerkinMatrix(int index)</a> The load vector will be accessable with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#a32dd4e8f5d32b240ef215362698f457b" title="returns the Loadvector">GetLoadVector(int index)</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">91</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">95</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="coomatrix_8h_source.html#l00087">lf::assemble::COOMatrix&lt; SCALAR &gt;::AddToEntry()</a>, <a class="el" href="coomatrix_8h_source.html#l00072">lf::assemble::COOMatrix&lt; SCALAR &gt;::cols()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00087">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00084">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00081">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00444">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00439">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00248">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00230">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00172">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00237">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00219">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00161">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00445">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00070">lf::assemble::COOMatrix&lt; SCALAR &gt;::rows()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00223">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00205">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00147">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00195">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00180">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00122">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
+<p class="reference">References <a class="el" href="coomatrix_8h_source.html#l00087">lf::assemble::COOMatrix&lt; SCALAR &gt;::AddToEntry()</a>, <a class="el" href="coomatrix_8h_source.html#l00072">lf::assemble::COOMatrix&lt; SCALAR &gt;::cols()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00091">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00088">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00081">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00448">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00252">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00234">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00172">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00241">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00223">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00161">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00451">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00449">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00070">lf::assemble::COOMatrix&lt; SCALAR &gt;::rows()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00227">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00209">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00147">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::SetLoadFunction()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00199">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="whitney__two__hodge__laplacian_8h_source.html#l00184">projects::hldo_sphere::operators::WhitneyTwoHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00122">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::SetMesh()</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
 
 </div>
 </div>
@@ -265,9 +266,9 @@ template&lt;typename SCALAR &gt; </div>
 <p >This is the Matrix of the LSE with index index</p>
 <dl class="section note"><dt>Note</dt><dd>The Galerkin matrix must be computed with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#adeb306d085100c6f10c41fa082e764a1" title="Computes the Galerkin LSE for all three source problems.">Compute()</a> before calling this funciton </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00353">353</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00357">357</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00444">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00448">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>.</p>
 
 </div>
 </div>
@@ -301,9 +302,9 @@ template&lt;typename SCALAR &gt; </div>
 <p >This is the righthandside of LSE with index index</p>
 <dl class="section note"><dt>Note</dt><dd>The loadvector must be computed with Compute before calling this function </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00340">340</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00344">344</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00445">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00449">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>.</p>
 
 </div>
 </div>
@@ -343,9 +344,9 @@ template&lt;typename SCALAR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>basis expansion coefficiants of one form</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>the methods <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#adeb306d085100c6f10c41fa082e764a1" title="Computes the Galerkin LSE for all three source problems.">Compute()</a> and <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#a1a15e9883a38dbb802b13d32c44bbb00" title="solves the linear systems build in Compute">Solve()</a> must be called before the result is available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00396">396</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00400">400</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
 
 </div>
 </div>
@@ -385,9 +386,9 @@ template&lt;typename SCALAR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>basis expansion coefficiants of two form</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>the methods <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#adeb306d085100c6f10c41fa082e764a1" title="Computes the Galerkin LSE for all three source problems.">Compute()</a> and <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#a1a15e9883a38dbb802b13d32c44bbb00" title="solves the linear systems build in Compute">Solve()</a> must be called before the result is available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00429">429</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00433">433</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
 
 </div>
 </div>
@@ -421,9 +422,9 @@ template&lt;typename SCALAR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>basis expansion coefficiants of zero form</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>the methods <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#adeb306d085100c6f10c41fa082e764a1" title="Computes the Galerkin LSE for all three source problems.">Compute()</a> and <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_hodge_laplacians_source_problems.html#a1a15e9883a38dbb802b13d32c44bbb00" title="solves the linear systems build in Compute">Solve()</a> must be called before the result is available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00370">370</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00374">374</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>.</p>
 
 </div>
 </div>
@@ -461,9 +462,9 @@ template&lt;typename SCALAR &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00329">329</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00333">333</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00451">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::k_</a>.</p>
 
 </div>
 </div>
@@ -519,11 +520,11 @@ template&lt;typename SCALAR &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00314">314</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00318">318</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00439">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f0_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f1_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::f2_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00092">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>.</p>
 
 </div>
 </div>
@@ -562,9 +563,9 @@ template&lt;typename SCALAR &gt; </div>
 </dl>
 <p>requries all cells in the mesh are triangles requries mesh global dimension to be 3 </p>
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00292">292</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00296">296</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
 
 </div>
 </div>
@@ -600,9 +601,9 @@ template&lt;typename SCALAR &gt; </div>
 \[ - \Delta_l u + k^2 u = f_l \qquad l = 0, 1, 2 \]
 </p>
  
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00272">272</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00276">276</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00444">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00445">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>.</p>
+<p class="reference">References <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00448">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::coo_matrix_</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::mu_</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00449">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::phi_</a>.</p>
 
 </div>
 </div>
@@ -629,9 +630,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00444">444</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00448">448</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00353">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00272">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00357">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetGalerkinMatrix()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00276">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
 
 </div>
 </div>
@@ -657,9 +658,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00439">439</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">443</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00314">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00318">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -685,9 +686,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">442</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">446</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00314">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00318">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -713,9 +714,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00443">443</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">447</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00314">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00318">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -741,9 +742,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00447">447</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00451">451</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00329">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetK()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00333">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetK()</a>.</p>
 
 </div>
 </div>
@@ -769,9 +770,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00438">438</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00442">442</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00396">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuOne()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00429">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuTwo()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00292">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetMesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00400">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuOne()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00433">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuTwo()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00296">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::SetMesh()</a>.</p>
 
 </div>
 </div>
@@ -797,9 +798,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00446">446</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00450">450</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00396">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuOne()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00429">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuTwo()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00370">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuZero()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00272">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00400">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuOne()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00433">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuTwo()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00374">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetMuZero()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00276">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
 
 </div>
 </div>
@@ -825,9 +826,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00445">445</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00449">449</a> of file <a class="el" href="hodge__laplacians__source__problems_8h_source.html">hodge_laplacians_source_problems.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00091">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00340">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00272">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00095">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00344">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::GetLoadVector()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, and <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00276">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::Solve()</a>.</p>
 
 </div>
 </div>

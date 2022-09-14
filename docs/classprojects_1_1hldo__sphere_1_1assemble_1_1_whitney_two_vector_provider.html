@@ -130,11 +130,13 @@ class projects::hldo_sphere::assemble::WhitneyTwoVectorProvider&lt; SCALAR &gt;<
 \[ \int\limits_K\! f\, q \,\mathrm{d}x, \quad f, q \in L^2(\partial \mathbb{S}) \]
 </p>
 <p >As basis functions for q we use the cellwise constant functions.</p>
+<p >Details regarding the mathematical derivations can be found in the thesis <code>Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.2.7.</p>
+<p >Details regarding the mathematical derivations can be found in the thesis <code>Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.2.10.</p>
 <dl class="section note"><dt>Note</dt><dd>This class complies with the type requirements for the template argument ENTITY_VECTOR_PROVIDER of the function <a class="el" href="group__assemble__vector__locally.html#ga2a6379f1b9b83f9f9589a6d2379ae3dc" title="entity-local assembly of (right-hand-side) vectors from element vectors">lf::assemble::AssembleVectorLocally()</a>.</dd>
 <dd>
 Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00041">41</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00049">49</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a802f0a376a322f72fff96494b24ceefa" name="a802f0a376a322f72fff96494b24ceefa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a802f0a376a322f72fff96494b24ceefa">&#9670;&nbsp;</a></span>WhitneyTwoVectorProvider()</h2>
@@ -170,7 +172,7 @@ template&lt;typename SCALAR &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00048">48</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00056">56</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
 
 </div>
 </div>
@@ -211,9 +213,9 @@ template&lt;typename SCALAR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>The element vector of the given triangle</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Only triangular cells are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00059">59</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00067">67</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
 
-<p class="reference">References <a class="el" href="whitney__two__vector__provider_8h_source.html#l00099">projects::hldo_sphere::assemble::WhitneyTwoVectorProvider&lt; SCALAR &gt;::f_</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#a7e38f16a9723f82a1ea06cc3ac3aa3f1">lf::mesh::Entity::Geometry()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00172">lf::quad::make_TriaQR_EdgeMidpointRule()</a>, <a class="el" href="ref__el_8h_source.html#l00238">lf::base::RefEl::NodeCoords()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="whitney__two__vector__provider_8h_source.html#l00107">projects::hldo_sphere::assemble::WhitneyTwoVectorProvider&lt; SCALAR &gt;::f_</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#a7e38f16a9723f82a1ea06cc3ac3aa3f1">lf::mesh::Entity::Geometry()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="make__quad__rule_8cc_source.html#l00172">lf::quad::make_TriaQR_EdgeMidpointRule()</a>, <a class="el" href="ref__el_8h_source.html#l00238">lf::base::RefEl::NodeCoords()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
 
 </div>
 </div>
@@ -245,7 +247,7 @@ template&lt;typename SCALAR &gt; </div>
 
 <p>All entities are regarded as active. </p>
 
-<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00096">96</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00104">104</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
 
 </div>
 </div>
@@ -272,9 +274,9 @@ template&lt;typename SCALAR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00099">99</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="whitney__two__vector__provider_8h_source.html#l00107">107</a> of file <a class="el" href="whitney__two__vector__provider_8h_source.html">whitney_two_vector_provider.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__two__vector__provider_8h_source.html#l00059">projects::hldo_sphere::assemble::WhitneyTwoVectorProvider&lt; SCALAR &gt;::Eval()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__two__vector__provider_8h_source.html#l00067">projects::hldo_sphere::assemble::WhitneyTwoVectorProvider&lt; SCALAR &gt;::Eval()</a>.</p>
 
 </div>
 </div>

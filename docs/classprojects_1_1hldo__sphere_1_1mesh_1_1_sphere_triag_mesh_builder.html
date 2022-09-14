@@ -126,9 +126,10 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A mesh builder for regular 3-Sphere. </p>
-<p >The radius of the Sphere is controlled by <a class="el" href="classprojects_1_1hldo__sphere_1_1mesh_1_1_sphere_triag_mesh_builder.html#a749c084bd7bfb94d93da6501e3fffc38" title="Sets the radius.">setRadius()</a>. The refinement level can be set with <a class="el" href="classprojects_1_1hldo__sphere_1_1mesh_1_1_sphere_triag_mesh_builder.html#a1922061859dded23dab916fe36948056" title="Set the refinement level.">setRefinementLevel()</a>. The refinement level indicates how fine the mesh should be inital structure (octahedron, see <a href="https://de.wikipedia.org/wiki/Octahedron">https://de.wikipedia.org/wiki/Octahedron</a>) The radius defaults to 1.0 while refinement level defaults to 0. </p>
+<p >The radius of the Sphere is controlled by <a class="el" href="classprojects_1_1hldo__sphere_1_1mesh_1_1_sphere_triag_mesh_builder.html#a749c084bd7bfb94d93da6501e3fffc38" title="Sets the radius.">setRadius()</a>. The refinement level can be set with <a class="el" href="classprojects_1_1hldo__sphere_1_1mesh_1_1_sphere_triag_mesh_builder.html#a1922061859dded23dab916fe36948056" title="Set the refinement level.">setRefinementLevel()</a>. The refinement level indicates how fine the mesh should be inital structure (octahedron, see <a href="https://de.wikipedia.org/wiki/Octahedron">https://de.wikipedia.org/wiki/Octahedron</a>) The radius defaults to 1.0 while refinement level defaults to 0.</p>
+<p >Details regarding the implementation and its concepts can be found in the thesis <code>Hodge Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.1. </p>
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00029">29</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00033">33</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab8c9435687d5b0bf09a45a966ab65316" name="ab8c9435687d5b0bf09a45a966ab65316"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab8c9435687d5b0bf09a45a966ab65316">&#9670;&nbsp;</a></span>SphereTriagMeshBuilder()</h2>
@@ -162,7 +163,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00036">36</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00040">40</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
 </div>
 </div>
@@ -187,9 +188,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">13</a> of file <a class="el" href="sphere__triag__mesh__builder_8cc_source.html">sphere_triag_mesh_builder.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00092">mesh_factory_</a>, <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00090">radius_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00091">refinement_level_</a>.</p>
+<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00096">mesh_factory_</a>, <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00094">radius_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00095">refinement_level_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00095">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, and <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00093">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00099">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00092">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, and <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>.</p>
 
 </div>
 </div>
@@ -226,11 +227,11 @@ Private Attributes</h2></td></tr>
 </dl>
 <p>requries r &gt; 0 </p>
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00050">50</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00054">54</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
-<p class="reference">References <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00090">radius_</a>.</p>
+<p class="reference">References <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00094">radius_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00095">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, and <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00093">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00099">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00092">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, and <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>.</p>
 
 </div>
 </div>
@@ -268,11 +269,11 @@ Private Attributes</h2></td></tr>
 <p>The refinement level indicates by how fine the mesh should become. Inital structure (octahedron, see <a href="https://en.wikipedia.org/wiki/Octahedron">https://en.wikipedia.org/wiki/Octahedron</a>) on which new vertices are introduced for every refinement level.</p>
 <p >For refinement level l the mesh will have \( 2^{2l + 3} \) cells, \( 3 \cdot 2^{2l + 2} \) edges and \( 2^{2l + 2} + 2 \) vertices. </p>
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">79</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00083">83</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
-<p class="reference">References <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00091">refinement_level_</a>.</p>
+<p class="reference">References <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00095">refinement_level_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00088">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00095">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00087">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00065">projects::hldo_sphere::operators::DiracOperator::DiracOperator()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00042">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00053">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::WhitneyOneBasisExpansionCoeffs()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00058">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>, and <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00054">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::WhitneyZeroHodgeLaplace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="whitney__one__curl__test_8h_source.html#l00072">projects::hldo_sphere::debugging::WhitneyOneCurlTest::Compute()</a>, <a class="el" href="dirac__operator__experiment_8h_source.html#l00093">projects::hldo_sphere::experiments::DiracOperatorExperiment::Compute()</a>, <a class="el" href="hodge__and__dirac__experiment_8h_source.html#l00099">projects::hldo_sphere::experiments::HodgeAndDiracExperiment::Compute()</a>, <a class="el" href="hodge__laplacian__experiment_8h_source.html#l00092">projects::hldo_sphere::experiments::HodgeLaplacianExperiment&lt; SCALAR &gt;::Compute()</a>, <a class="el" href="dirac__convergence__test_8cc_source.html#l00017">projects::hldo_sphere::debugging::DiracConvergenceTest::Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00068">projects::hldo_sphere::operators::DiracOperator::DiracOperator()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00249">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::Experiemnt()</a>, <a class="el" href="hodge__laplacians__source__problems_8h_source.html#l00046">projects::hldo_sphere::operators::HodgeLaplaciansSourceProblems&lt; SCALAR &gt;::HodgeLaplaciansSourceProblems()</a>, <a class="el" href="whitney__one__basis__expansion__coeffs_8h_source.html#l00053">projects::hldo_sphere::debugging::WhitneyOneBasisExpansionCoeffs::WhitneyOneBasisExpansionCoeffs()</a>, <a class="el" href="whitney__one__hodge__laplacian_8h_source.html#l00062">projects::hldo_sphere::operators::WhitneyOneHodgeLaplace&lt; SCALAR &gt;::WhitneyOneHodgeLaplace()</a>, and <a class="el" href="whitney__zero__hodge__laplacian_8h_source.html#l00054">projects::hldo_sphere::operators::WhitneyZeroHodgeLaplace&lt; SCALAR &gt;::WhitneyZeroHodgeLaplace()</a>.</p>
 
 </div>
 </div>
@@ -297,7 +298,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00092">92</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00096">96</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">Build()</a>.</p>
 
@@ -323,9 +324,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00090">90</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00094">94</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">Build()</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00050">setRadius()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">Build()</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00054">setRadius()</a>.</p>
 
 </div>
 </div>
@@ -349,9 +350,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00091">91</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00095">95</a> of file <a class="el" href="sphere__triag__mesh__builder_8h_source.html">sphere_triag_mesh_builder.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">Build()</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">setRefinementLevel()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="sphere__triag__mesh__builder_8cc_source.html#l00013">Build()</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00083">setRefinementLevel()</a>.</p>
 
 </div>
 </div>

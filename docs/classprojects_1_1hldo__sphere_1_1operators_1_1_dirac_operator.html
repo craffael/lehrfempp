@@ -141,9 +141,10 @@ Private Attributes</h2></td></tr>
 <p class="formulaDsp">
 \[ \begin{pmatrix} &amp; \int\limits_{\partial \mathbf{S}} \mathbf{u} \cdot \mathbf{grad}_{\Gamma} v \, dS &amp; \\ \int_{\partial \mathbf{S}} \mathbf{grad}_{\Gamma} u \cdot \mathbf{v} \, dS &amp; &amp; \int\limits_{\partial \mathbf{S}} \mu \ \ \text{curl}_{\Gamma} \mathbf{v} \, dS \\ &amp; \int\limits_{\partial \mathbf{S}} \text{curl}_{\Gamma} \mathbf{u} \ \ \nu \, dS &amp; \end{pmatrix} , \begin{pmatrix} \int\limits_{\partial \mathbf{S}} f v \, dS \\ \int\limits_{\partial \mathbf{S}} \mathbf{f} \cdot \mathbf{v} \, dS \\ \int\limits_{\partial \mathbf{S}} \varphi \nu \, dS \end{pmatrix} \]
 </p>
+<p >Details regarding the mathematical derivations can be found in the thesis <code>Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere</code> section 4.3.4.</p>
 <dl class="section note"><dt>Note</dt><dd>Only triangular meshes are supported </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00057">57</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00060">60</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aea9ce2f3c98efe455a87a69f48a8d1d4" name="aea9ce2f3c98efe455a87a69f48a8d1d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aea9ce2f3c98efe455a87a69f48a8d1d4">&#9670;&nbsp;</a></span>DiracOperator()</h2>
@@ -170,9 +171,9 @@ Private Attributes</h2></td></tr>
 
 <p>Constructor creates basic mesh (Octaeder with radius 1.0) and zero valued functions f. </p>
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00065">65</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00068">68</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00149">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00152">f1_</a>, <a class="el" href="dirac__operator_8h_source.html#l00153">f2_</a>, <a class="el" href="dirac__operator_8h_source.html#l00148">mesh_p_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00079">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
+<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00152">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00155">f1_</a>, <a class="el" href="dirac__operator_8h_source.html#l00156">f2_</a>, <a class="el" href="dirac__operator_8h_source.html#l00151">mesh_p_</a>, and <a class="el" href="sphere__triag__mesh__builder_8h_source.html#l00083">projects::hldo_sphere::mesh::SphereTriagMeshBuilder::setRefinementLevel()</a>.</p>
 
 </div>
 </div>
@@ -197,7 +198,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="dirac__operator_8cc_source.html#l00007">7</a> of file <a class="el" href="dirac__operator_8cc_source.html">dirac_operator.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00297">lf::assemble::AssembleVectorLocally()</a>, <a class="el" href="dirac__operator_8h_source.html#l00154">coo_matrix_</a>, <a class="el" href="dirac__operator_8h_source.html#l00149">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00152">f1_</a>, <a class="el" href="dirac__operator_8h_source.html#l00153">f2_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="dirac__operator_8h_source.html#l00148">mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="dirac__operator_8h_source.html#l00155">phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00297">lf::assemble::AssembleVectorLocally()</a>, <a class="el" href="dirac__operator_8h_source.html#l00157">coo_matrix_</a>, <a class="el" href="dirac__operator_8h_source.html#l00152">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00155">f1_</a>, <a class="el" href="dirac__operator_8h_source.html#l00156">f2_</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="dirac__operator_8h_source.html#l00151">mesh_p_</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="dirac__operator_8h_source.html#l00158">phi_</a>, <a class="el" href="coomatrix_8h_source.html#l00098">lf::assemble::COOMatrix&lt; SCALAR &gt;::setZero()</a>, and <a class="el" href="coomatrix_8h_source.html#l00124">lf::assemble::COOMatrix&lt; SCALAR &gt;::triplets()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="dirac__operator__source__problem_8cc_source.html#l00038">projects::hldo_sphere::operators::DiracOperatorSourceProblem::Compute()</a>.</p>
 
@@ -230,9 +231,9 @@ Private Attributes</h2></td></tr>
 <p >This is the Matrix of the LSE</p>
 <dl class="section note"><dt>Note</dt><dd>The Galerkin matrix must be computed with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_dirac_operator.html#aca862a692382914df5f75ff7307d75c9" title="Computes the Galerkin LSE.">Compute()</a> before calling this funciton </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00145">145</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00148">148</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00154">coo_matrix_</a>.</p>
+<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00157">coo_matrix_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="dirac__operator__source__problem_8cc_source.html#l00038">projects::hldo_sphere::operators::DiracOperatorSourceProblem::Compute()</a>.</p>
 
@@ -265,9 +266,9 @@ Private Attributes</h2></td></tr>
 <p >This is the righthandside of the LSE</p>
 <dl class="section note"><dt>Note</dt><dd>The loadvector must be computed with <a class="el" href="classprojects_1_1hldo__sphere_1_1operators_1_1_dirac_operator.html#aca862a692382914df5f75ff7307d75c9" title="Computes the Galerkin LSE.">Compute()</a> before calling this function </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00134">134</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00137">137</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00155">phi_</a>.</p>
+<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00158">phi_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="dirac__operator__source__problem_8cc_source.html#l00038">projects::hldo_sphere::operators::DiracOperatorSourceProblem::Compute()</a>.</p>
 
@@ -323,9 +324,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00114">114</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00117">117</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00149">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00152">f1_</a>, and <a class="el" href="dirac__operator_8h_source.html#l00153">f2_</a>.</p>
+<p class="reference">References <a class="el" href="dirac__operator_8h_source.html#l00152">f0_</a>, <a class="el" href="dirac__operator_8h_source.html#l00155">f1_</a>, and <a class="el" href="dirac__operator_8h_source.html#l00156">f2_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="dirac__operator__source__problem_8cc_source.html#l00038">projects::hldo_sphere::operators::DiracOperatorSourceProblem::Compute()</a>.</p>
 
@@ -358,7 +359,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="dirac__operator_8cc_source.html#l00131">131</a> of file <a class="el" href="dirac__operator_8cc_source.html">dirac_operator.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="dirac__operator_8h_source.html#l00148">mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="dirac__operator_8h_source.html#l00151">mesh_p_</a>, and <a class="el" href="ref__el_8h_source.html#l00172">lf::base::RefEl::RefEl()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="dirac__operator__source__problem_8cc_source.html#l00038">projects::hldo_sphere::operators::DiracOperatorSourceProblem::Compute()</a>.</p>
 
@@ -385,9 +386,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00154">154</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00157">157</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00145">GetGalerkinMatrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00148">GetGalerkinMatrix()</a>.</p>
 
 </div>
 </div>
@@ -411,9 +412,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00149">149</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00152">152</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00065">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00114">SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00068">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00117">SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -437,9 +438,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00152">152</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00155">155</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00065">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00114">SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00068">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00117">SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -463,9 +464,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00153">153</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00156">156</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00065">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00114">SetLoadFunctions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00068">DiracOperator()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00117">SetLoadFunctions()</a>.</p>
 
 </div>
 </div>
@@ -489,9 +490,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00148">148</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00151">151</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00065">DiracOperator()</a>, and <a class="el" href="dirac__operator_8cc_source.html#l00131">SetMesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, <a class="el" href="dirac__operator_8h_source.html#l00068">DiracOperator()</a>, and <a class="el" href="dirac__operator_8cc_source.html#l00131">SetMesh()</a>.</p>
 
 </div>
 </div>
@@ -515,9 +516,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00155">155</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dirac__operator_8h_source.html#l00158">158</a> of file <a class="el" href="dirac__operator_8h_source.html">dirac_operator.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00134">GetLoadVector()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dirac__operator_8cc_source.html#l00007">Compute()</a>, and <a class="el" href="dirac__operator_8h_source.html#l00137">GetLoadVector()</a>.</p>
 
 </div>
 </div>

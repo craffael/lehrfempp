@@ -96,20 +96,20 @@ $(function() {
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;spdlog/pattern_formatter.h&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;spdlog/sinks/stdout_color_sinks.h&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>lf::base {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelf_1_1base.html">lf::base</a> {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>std::shared_ptr&lt;spdlog::logger&gt; InitLogger(<span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespacelf_1_1base.html#ac2da71a920917aa8d751c9ea83945eb8">   16</a></span>std::shared_ptr&lt;spdlog::logger&gt; <a class="code hl_function" href="namespacelf_1_1base.html#ac2da71a920917aa8d751c9ea83945eb8">InitLogger</a>(<span class="keyword">const</span> std::string&amp; name) {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keyword">auto</span> result = spdlog::stdout_color_mt(name);</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  result-&gt;set_formatter(std::make_unique&lt;LineFeedFormatter&gt;(</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>      std::make_unique&lt;spdlog::pattern_formatter&gt;()));</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keywordflow">return</span> result;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>LineFeedFormatter::LineFeedFormatter(</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classlf_1_1base_1_1_line_feed_formatter.html#a655f928c294beeeb1c8b29bf897be45d">   23</a></span><a class="code hl_function" href="classlf_1_1base_1_1_line_feed_formatter.html#a655f928c294beeeb1c8b29bf897be45d">LineFeedFormatter::LineFeedFormatter</a>(</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    std::unique_ptr&lt;spdlog::formatter&gt; wrapped_formatter)</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    : wrapped_formatter_(std::move(wrapped_formatter)) {}</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">void</span> LineFeedFormatter::format(<span class="keyword">const</span> spdlog::details::log_msg&amp; msg,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classlf_1_1base_1_1_line_feed_formatter.html#ad679edd613f32b2f786e7b390dbfdbe9">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classlf_1_1base_1_1_line_feed_formatter.html#ad679edd613f32b2f786e7b390dbfdbe9">LineFeedFormatter::format</a>(<span class="keyword">const</span> spdlog::details::log_msg&amp; msg,</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                               spdlog::memory_buf_t&amp; dest) {</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordtype">int</span> offset = -2;  <span class="comment">// -2: first line, // -1 second line</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keyword">const</span> <span class="keyword">auto</span>* begin = msg.payload.begin();</div>
@@ -125,7 +125,7 @@ $(function() {
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        spdlog::details::log_msg empty_msg(msg.time, msg.source,</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                           msg.logger_name, msg.level,</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                           spdlog::string_view_t());</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        wrapped_formatter_-&gt;format(empty_msg, temp_dest);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_variable" href="classlf_1_1base_1_1_line_feed_formatter.html#a9b01af4d00a07e9b0e8a1511fef198c1">wrapped_formatter_</a>-&gt;format(empty_msg, temp_dest);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        offset = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(temp_dest.size() - 1);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>      }</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
@@ -134,7 +134,7 @@ $(function() {
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                    spdlog::string_view_t(begin, it - begin));</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <span class="keyword">auto</span> old_end = dest.size();</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>      wrapped_formatter_-&gt;format(part, dest);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>      <a class="code hl_variable" href="classlf_1_1base_1_1_line_feed_formatter.html#a9b01af4d00a07e9b0e8a1511fef198c1">wrapped_formatter_</a>-&gt;format(part, dest);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="keywordflow">if</span> (offset &gt; 0) {</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::memset(dest.data() + old_end, <span class="charliteral">&#39; &#39;</span>, offset);</div>
@@ -148,11 +148,17 @@ $(function() {
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>std::unique_ptr&lt;spdlog::formatter&gt; LineFeedFormatter::clone()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keywordflow">return</span> std::make_unique&lt;LineFeedFormatter&gt;(wrapped_formatter_-&gt;clone());</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classlf_1_1base_1_1_line_feed_formatter.html#afbf5c3f0ce82a1a707ac0d5fc3d6a4bd">   66</a></span>std::unique_ptr&lt;spdlog::formatter&gt; <a class="code hl_function" href="classlf_1_1base_1_1_line_feed_formatter.html#afbf5c3f0ce82a1a707ac0d5fc3d6a4bd">LineFeedFormatter::clone</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keywordflow">return</span> std::make_unique&lt;LineFeedFormatter&gt;(<a class="code hl_variable" href="classlf_1_1base_1_1_line_feed_formatter.html#a9b01af4d00a07e9b0e8a1511fef198c1">wrapped_formatter_</a>-&gt;clone());</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}  <span class="comment">// namespace lf::base</span></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_a655f928c294beeeb1c8b29bf897be45d"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#a655f928c294beeeb1c8b29bf897be45d">lf::base::LineFeedFormatter::LineFeedFormatter</a></div><div class="ttdeci">LineFeedFormatter(std::unique_ptr&lt; spdlog::formatter &gt; wrapped_formatter)</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8cc_source.html#l00023">spdlog_utils.cc:23</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_a9b01af4d00a07e9b0e8a1511fef198c1"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#a9b01af4d00a07e9b0e8a1511fef198c1">lf::base::LineFeedFormatter::wrapped_formatter_</a></div><div class="ttdeci">std::unique_ptr&lt; spdlog::formatter &gt; wrapped_formatter_</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8h_source.html#l00092">spdlog_utils.h:92</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_ad679edd613f32b2f786e7b390dbfdbe9"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#ad679edd613f32b2f786e7b390dbfdbe9">lf::base::LineFeedFormatter::format</a></div><div class="ttdeci">void format(const spdlog::details::log_msg &amp;msg, spdlog::memory_buf_t &amp;dest) override</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8cc_source.html#l00027">spdlog_utils.cc:27</a></div></div>
+<div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_afbf5c3f0ce82a1a707ac0d5fc3d6a4bd"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#afbf5c3f0ce82a1a707ac0d5fc3d6a4bd">lf::base::LineFeedFormatter::clone</a></div><div class="ttdeci">std::unique_ptr&lt; formatter &gt; clone() const override</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8cc_source.html#l00066">spdlog_utils.cc:66</a></div></div>
+<div class="ttc" id="anamespacelf_1_1base_html"><div class="ttname"><a href="namespacelf_1_1base.html">lf::base</a></div><div class="ttdoc">Contains basic functionality that is used by other parts of LehrFEM++.</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00015">base.h:15</a></div></div>
+<div class="ttc" id="anamespacelf_1_1base_html_ac2da71a920917aa8d751c9ea83945eb8"><div class="ttname"><a href="namespacelf_1_1base.html#ac2da71a920917aa8d751c9ea83945eb8">lf::base::InitLogger</a></div><div class="ttdeci">std::shared_ptr&lt; spdlog::logger &gt; InitLogger(const std::string &amp;name)</div><div class="ttdoc">Create a spdlog logger, register it in the spdlog registry and initialize it with LehrFEM++ specific ...</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8cc_source.html#l00016">spdlog_utils.cc:16</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
