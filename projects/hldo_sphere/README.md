@@ -5,6 +5,7 @@ thesis *"Hodge Laplacian and Dirac Operators on the surface of
 the 3-Sphere"* by Nico Graf under the supervision of 
 Prof. Dr. Ralf Hiptmair.
 
+Abstract:
 >The thesis discusses the h-convergence of the discrete solutions 
 >for the Dirac operator and the Hodge Laplacians on the surface of 
 >the 3-sphere. At first, it describes the discretization with finite 
@@ -32,21 +33,20 @@ level in the corresponding
 be viewed with e.g. `paraview` and show various measurements on 
 the meshes.
 
-Files called `result_*_x_yz-u_vw.csv` contain the `<experiment>`
+Files called `result_*_x_yz-u_vw.csv` contain the experiment results
 for a list of refinement levels and values $k \in [x.yz, u.vw]$,
 tabulated in `csv` format and they can be displayed using the
 scripts `build/projects/hldo_sphere/experiments/<experiment>/plot*.py`
-Examples of such calls are done in the script main.sh.
+Examples of such calls are provided in the script main.sh.
 
 To generate only partial results (run experiments only on coarse meshes e.g. up
 to refinement level 4 instead of 7)
 pass the option `-s | --short` to the script.
-With this option the code will run
-significantly faster.\
+With this option the code will run significantly faster.\
 To reproduce all the experiment including the ones in the *debugging* section
-of the **THESIS** use the option `-a | --all`. The two option can be
+of the **THESIS** use the option `-a | --all`. The two options can be
 combined to generate only short versions of all experiments.\
-The option `-p | --plot` allows for running the plotting scripts for the hodge laplace
+The option `-p | --plot` allows for running the plotting scripts for the Hodge Laplace
 experiments. This option only works together with `-s`.\
 For more plots plotting scripts are provided in the experiment build folders.
 
