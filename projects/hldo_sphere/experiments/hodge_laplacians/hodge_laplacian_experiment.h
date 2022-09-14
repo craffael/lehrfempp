@@ -6,6 +6,7 @@
  *
  * @brief provides a function for generating solutions, given the validation and
  * load functions
+ *
  */
 #include <hodge_laplacians_source_problems.h>
 #include <lf/io/vtk_writer.h>
@@ -33,6 +34,10 @@ namespace projects::hldo_sphere::experiments {
 /**
  * @brief Creates and solves the discretised Hodge Laplacian source problems for
  * a given list of levels and values of k
+ *
+ * Details about the experiments can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * chapter 6.
  *
  */
 template <typename SCALAR>

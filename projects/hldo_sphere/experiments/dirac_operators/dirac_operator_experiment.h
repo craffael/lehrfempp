@@ -6,6 +6,7 @@
  *
  * @brief provides a function for generating solutions, given the validation and
  * load functions
+ *
  */
 #include <dirac_operator_source_problem.h>
 #include <lf/io/vtk_writer.h>
@@ -35,6 +36,10 @@ using complex = std::complex<double>;
 /**
  * @brief Creates and solves the discretised Dirac Operator source problems for
  * a given list of levels and values of k
+ *
+ * Details about the experiments can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * chapter 6.
  *
  */
 class DiracOperatorExperiment {

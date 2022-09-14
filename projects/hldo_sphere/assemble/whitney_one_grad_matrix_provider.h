@@ -37,6 +37,10 @@ namespace assemble {
  * with @f$ \lambda_i @f$ barycentric basis functions and @f$ s_i @f$ is a sign
  * of the function based on the relative orientation of the edge in the mesh.
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.2.6.
+ *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_MATRIX_PROVIDER of the function
  * lf::assemble::AssembleMatrixLocally().

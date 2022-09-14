@@ -7,6 +7,12 @@ namespace projects::hldo_sphere {
  *
  * This namespace was constructed to chase an error which turned out to be
  * a sign error in the file projects::hldo_sphere::operators::dirac_operator.cc
+ *
+ * Details about the experiments implemented in this section and the reasoning
+ * behind, can be found in the
+ * thesis `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * chapter 5.
+ *
  */
 namespace debugging {
 

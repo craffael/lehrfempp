@@ -43,6 +43,10 @@ namespace operators {
  * Basis functions are the Whitney 1-forms and the barycentric
  * coordinate functions
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.3.2.
+ *
  * @note Only triangular meshes are supported
  *
  */

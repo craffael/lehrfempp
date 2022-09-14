@@ -26,6 +26,10 @@ namespace assemble {
  * (u,v) \mapsto \int\limits_{K} u \, v\, dx
  * @f]
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.2.2.
+ *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_MATRIX_PROVIDER of the function
  * lf::assemble::AssembleMatrixLocally().

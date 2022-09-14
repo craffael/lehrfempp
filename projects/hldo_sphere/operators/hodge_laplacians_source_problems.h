@@ -23,6 +23,10 @@ namespace operators {
 /**
  * @brief Creates and solves the discretised Hodge Laplacian source problems
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.4.
+ *
  * @note Only triangular meshes are supported
  *
  */

@@ -31,6 +31,14 @@ namespace assemble {
  *
  * As basis functions for q we use the cellwise constant functions.
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.2.7.
+ *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.2.10.
+ *
  * @note This class complies with the type requirements for the template
  * argument ENTITY_VECTOR_PROVIDER of the function
  * lf::assemble::AssembleVectorLocally().

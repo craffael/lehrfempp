@@ -15,6 +15,11 @@
 namespace projects::hldo_sphere {
 /**
  * @brief Wrapper classes for experiments
+ *
+ * Details about the experiments implemented in this section can be found in the
+ * thesis `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * chapter 6.
+ *
  */
 namespace experiments {}
 }  // namespace projects::hldo_sphere

@@ -43,6 +43,10 @@ using complex = std::complex<double>;
  *  \Delta\, \vec{u} + k^2\, \vec{u} = D\, \vec{f} - \imath k \, \vec{f}
  * @f]
  *
+ * Details about the experiments can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * chapter 6.
+ *
  */
 class HodgeAndDiracExperiment {
  public:

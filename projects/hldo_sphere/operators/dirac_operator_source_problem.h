@@ -46,6 +46,10 @@ using complex = std::complex<double>;
  * The computation must be complex valued since the problem definition involves
  * a complex @f$\imath@f$
  *
+ * Details regarding the mathematical derivations can be found in the thesis
+ * `Hodge-Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.4.
+ *
  * @note Only triangular meshes are supported
  *
  */

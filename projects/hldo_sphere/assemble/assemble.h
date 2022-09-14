@@ -18,7 +18,11 @@ namespace projects::hldo_sphere {
  *
  * Containing all necessary matrix and vector providers for the
  * Hodge Laplacians and the Dirac operator
+ *
+ * Details for the mathematical derivations can be found in the thesis (linked
+ * in the README.md) chapter 4.
  */
+
 namespace assemble {}
 }  // namespace projects::hldo_sphere
 

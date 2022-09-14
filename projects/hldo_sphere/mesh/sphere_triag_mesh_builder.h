@@ -25,6 +25,10 @@ namespace mesh {
  * The refinement level indicates how fine the mesh should be
  * inital structure (octahedron, see https://de.wikipedia.org/wiki/Octahedron)
  * The radius defaults to 1.0 while refinement level defaults to 0.
+ *
+ * Details regarding the implementation and its concepts can be found in the
+ * thesis `Hodge Laplacians and Dirac Operators on the Surface of the 3-Sphere`
+ * section 4.1.
  */
 class SphereTriagMeshBuilder {
  public:
