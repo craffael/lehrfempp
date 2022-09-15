@@ -6,7 +6,7 @@
 
 help()
 {
-    echo -e "Usage: main.sh [-s | --short] [-a | --all] [-h | --help]\n\
+    echo -e "Usage: main.sh [-s | --short] [-a | --all] [-h | --help] [-p | --plot]\n\
 \tWithout options the method runs all the experiments described in 
 \tthe experiment section of the thesis.\n\n\
 \t-s | --short \trun only short version of the experiments using\n\t\t\tless refinement levels resulting in significant speedup\n\
