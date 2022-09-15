@@ -48,7 +48,7 @@ int main(int arg, char** args) {
 
     // check if verbositiy is activated
     // if so print mesh information of the smallest mesh
-    if (i == 0 && arg == 5 && args[4] == "verbose") {
+    if (i == 0 && arg == 5 && std::string(args[4]) == "verbose") {
       std::cout << "\n\n\nPoint information";
       for (const lf::mesh::Entity* point : mesh->Entities(2)) {
         Eigen::MatrixXd vertex = lf::geometry::Corners(*(point->Geometry()));
