@@ -559,8 +559,9 @@ class ScalarLoadElementVectorProvider {
 
  public:
   /// Scalar type of the element matrix
-  using scalar_t = decltype(
-      SCALAR(0) * mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using scalar_t =
+      decltype(SCALAR(0) *
+               mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
   using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
