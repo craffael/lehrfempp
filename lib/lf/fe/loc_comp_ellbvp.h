@@ -1,5 +1,5 @@
 /**
- * @file
+ * @file 
  * @brief Classes taking care of local computations for scalar 2nd-order
  * elliptic BVPs
  * @author Ralf Hiptmair
