@@ -109,5 +109,5 @@ install(
 set(LOCAL_GENERATED_INCLUDE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 install(EXPORT LFTargets DESTINATION ${config_install_dir} NAMESPACE LF::)
 
-
-
+# LehrFEM++ currently complies with the C++17 standard
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
