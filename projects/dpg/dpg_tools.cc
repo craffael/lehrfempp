@@ -85,7 +85,8 @@ Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
     // Count the number of Jacobian evaluations with a positive determinant.
     int positiveJacobianDeterminantCount = 0;
     for (int i = 0; i < 4; ++i) {
-      Eigen::MatrixXd Jacobian = Jacobians.block(0, 2 * static_cast<Eigen::Index>(i), 2, 2);
+      Eigen::MatrixXd Jacobian =
+          Jacobians.block(0, 2 * static_cast<Eigen::Index>(i), 2, 2);
       double JacobianDeterminant = Jacobian.determinant();
       if (JacobianDeterminant > 0) {
         positiveJacobianDeterminantCount++;
@@ -134,7 +135,8 @@ void PrescribedSignProvider::init() {
     for (const lf::mesh::Entity* const subent : e->SubEntities(1)) {
       LF_ASSERT_MSG(maxElement.DefinedOn(*subent),
                     "maxElement_ not defined on subentity" << *subent);
-      maxElement(*subent) = std::max<int>(maxElement(*subent), lf::base::narrow<int>(entity_idx));
+      maxElement(*subent) =
+          std::max<int>(maxElement(*subent), lf::base::narrow<int>(entity_idx));
     }
   }
 }

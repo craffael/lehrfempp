@@ -26,19 +26,20 @@ void PrintInfo(std::ostream &stream, const RefEl &ref_el, int output_ctrl) {
     for (base::dim_t co_dim = dim_ref_el; co_dim > 0; co_dim--) {
       base::dim_t num_sub_ent = ref_el.NumSubEntities(co_dim);
       stream << "Codimension " << co_dim << " has " << num_sub_ent
-        << " entities of type " << ref_el.SubType(co_dim, 0).ToString()
-        << std::endl;
+             << " entities of type " << ref_el.SubType(co_dim, 0).ToString()
+             << std::endl;
 
       if (output_ctrl > 10) {
         for (; num_sub_ent > 0; num_sub_ent--) {
           std::int32_t sub_ent = static_cast<std::int32_t>(num_sub_ent) - 1;
           stream << " Subentity " << sub_ent << " is of type "
-            << ref_el.SubType(co_dim, 0).ToString();
+                 << ref_el.SubType(co_dim, 0).ToString();
 
           if (ref_el.SubType(co_dim, 0) == RefEl::kPoint() &&
               output_ctrl > 20) {
-            stream << " and has coordinates [" << ref_el.NodeCoords().col(sub_ent)[0]
-              << " " << ref_el.NodeCoords().col(sub_ent)[1] << "]" << std::endl;
+            stream << " and has coordinates ["
+                   << ref_el.NodeCoords().col(sub_ent)[0] << " "
+                   << ref_el.NodeCoords().col(sub_ent)[1] << "]" << std::endl;
           }
           stream << std::endl;
         }

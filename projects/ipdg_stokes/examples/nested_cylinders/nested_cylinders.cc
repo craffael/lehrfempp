@@ -186,8 +186,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
                 [&](Eigen::Triplet<double> &trip) {
                   trip = Eigen::Triplet<double>(
                       lf::base::narrow<int>(dofmap[trip.row()]),
-                      lf::base::narrow<int>(dofmap[trip.col()]),
-                      trip.value());
+                      lf::base::narrow<int>(dofmap[trip.col()]), trip.value());
                 });
   // Apply the mapping to the right hand side vector
   Eigen::VectorXd rhs_mapped = Eigen::VectorXd::Zero(idx);
@@ -224,7 +223,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&...args) {
+static std::string concat(Args &&... args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();

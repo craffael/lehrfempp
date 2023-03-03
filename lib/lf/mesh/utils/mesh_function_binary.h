@@ -111,7 +111,7 @@ struct OperatorAddition {
                                                              u.size());
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
                                                              v.size());
-    std::vector<decltype(U(0) + V(0))> result(u.size()); // NOLINT
+    std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
     // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(
         result.data(), 1, u.size());
@@ -281,7 +281,7 @@ struct OperatorSubtraction {
                                                              u.size());
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
                                                              v.size());
-    std::vector<decltype(U(0) + V(0))> result(u.size()); // NOLINT
+    std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
     // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(
         result.data(), 1, u.size());
@@ -297,7 +297,7 @@ struct OperatorSubtraction {
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
                   int /*unused*/) const {
-    using scalar_t = decltype(S1(0) + S2(0)); // NOLINT
+    using scalar_t = decltype(S1(0) + S2(0));  // NOLINT
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
                   R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // subtract two static size eigen matrices from each other
@@ -473,7 +473,7 @@ struct OperatorMultiplication {
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
                   int /*unused*/) const {
-    using scalar_t = decltype(S1(0) * S2(0)); // NOLINT
+    using scalar_t = decltype(S1(0) * S2(0));                      // NOLINT
     if constexpr (R1 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // The result is fixed size
       static_assert(C1 == Eigen::Dynamic || R2 == Eigen::Dynamic || C1 == R2,

@@ -50,7 +50,7 @@ bool assertNonDegenerateTriangle(
 TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
     : coords_(std::move(coords)),
       jacobian_(coords_.rows(), 2),
-      jacobian_inverse_gramian_(coords_.rows(), 2){
+      jacobian_inverse_gramian_(coords_.rows(), 2) {
   // Make sure that the triangle has a proper shape.
   assertNonDegenerateTriangle(coords_);
   // Precompute constant Jacobian

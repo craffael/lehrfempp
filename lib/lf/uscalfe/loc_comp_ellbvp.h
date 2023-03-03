@@ -368,7 +368,8 @@ class MassEdgeMatrixProvider {
  public:
   /// Scalar type of the element matrix
   using scalar_t =
-      decltype(static_cast<SCALAR>(0) * static_cast<mesh::utils::MeshFunctionReturnType<COEFF>>(0));
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<COEFF>>(0));
   using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @name standard constructors
@@ -560,9 +561,9 @@ class ScalarLoadElementVectorProvider {
 
  public:
   /// Scalar type of the element matrix
-  using scalar_t =
-      decltype(static_cast<SCALAR>(0) *
-               static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(0));
+  using scalar_t = decltype(
+      static_cast<SCALAR>(0) *
+      static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(0));
   using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
@@ -783,7 +784,8 @@ class ScalarLoadEdgeVectorProvider {
   static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
                 "FUNCTOR does not fulfill the concept of a mesh function.");
   using Scalar =
-      decltype(static_cast<SCALAR>(0) * static_cast<mesh::utils::MeshFunctionReturnType<FUNCTOR>>(0));
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<FUNCTOR>>(0));
   using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors

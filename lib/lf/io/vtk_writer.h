@@ -997,7 +997,7 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
                              const Eigen::Matrix<T, ROWS, 1>& in) {
   if constexpr (ROWS == 2) {  // NOLINT
     out.template block<2, 1>(0, 0) = in;
-    out(2) = T(0); // NOLINT
+    out(2) = T(0);                   // NOLINT
   } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
   } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT

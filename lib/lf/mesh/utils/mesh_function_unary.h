@@ -160,8 +160,8 @@ struct UnaryOpSquaredNorm {
       } else if constexpr (R == 1) {  // NOLINT
         Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, C, Eigen::RowMajor>>
             um(&u[0](0, 0), u.size(), C);
-        Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(result.data(), u.size(),
-                                                           1);
+        Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(result.data(),
+                                                           u.size(), 1);
         rm = um.cwiseAbs2().rowwise().sum();
       }
     } else {  // NOLINT

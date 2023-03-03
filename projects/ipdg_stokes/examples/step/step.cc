@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-using lf::uscalfe::operator-; // NOLINT
+using lf::uscalfe::operator-;  // NOLINT
 
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)

@@ -286,7 +286,8 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
-      dofs_[codim].data() + (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
+      dofs_[codim].data() +
+      (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
   const gdof_idx_t *end = begin + no_covered_dofs;
   return {begin, end};
 }
@@ -307,7 +308,8 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
-      dofs_[codim].data() + (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
+      dofs_[codim].data() +
+      (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
   const gdof_idx_t *end = begin + no_covered_dofs;
   begin += (no_covered_dofs - no_loc_dofs);
   return {begin, end};

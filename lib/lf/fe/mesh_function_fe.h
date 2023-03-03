@@ -45,7 +45,7 @@ class MeshFunctionFE {
  public:
   // Why this? Because we can use real-valued finite element spaces to represent
   // complex-valued functions by using complex degrees of freedom!
-  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0)); // NOLINT
+  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  // NOLINT
 
   /**
    * @brief Create a new MeshFunctionFE from a @ref ScalarFESpace and a

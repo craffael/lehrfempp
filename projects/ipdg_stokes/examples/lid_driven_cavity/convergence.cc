@@ -3,7 +3,6 @@
  * @brief Produces h-convergence results for the lid driven cavity experiment
  */
 
-
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
@@ -28,8 +27,8 @@
 #include <sstream>
 #include <string>
 
-using lf::uscalfe::operator-; // NOLINT
-using lf::uscalfe::operator*; // NOLINT
+using lf::uscalfe::operator-;  // NOLINT
+using lf::uscalfe::operator*;  // NOLINT
 
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)

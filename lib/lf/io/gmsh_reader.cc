@@ -241,7 +241,8 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
       }
     } else {
       // gmsh element is not a point -> insert entity:
-      auto num_nodes = base::narrow<Eigen::Index>(end_element.NodeNumbers.size());
+      auto num_nodes =
+          base::narrow<Eigen::Index>(end_element.NodeNumbers.size());
       Eigen::MatrixXd node_coords(dim_world, num_nodes);
       for (Eigen::Index i = 0; i < num_nodes; ++i) {
         auto node_coord =

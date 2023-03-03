@@ -203,7 +203,7 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
   // SCALAR
   using scalarMF_t =
       mesh::utils::MeshFunctionReturnType<std::remove_reference_t<MF>>;
-  using scalar_t = decltype(SCALAR(0) * scalarMF_t(0)); // NOLINT
+  using scalar_t = decltype(SCALAR(0) * scalarMF_t(0));  // NOLINT
   // Return type, type for FE coefficient vector
   using dof_vec_t = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 

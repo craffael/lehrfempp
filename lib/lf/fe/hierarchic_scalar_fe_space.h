@@ -173,17 +173,17 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
   void Init(F &&degree_functor) {
     // Initialize all shape function layouts for nodes
     size_type num_rsf_node = 1;
-    for (const auto* entity : mesh_p_->Entities(2)) {
+    for (const auto *entity : mesh_p_->Entities(2)) {
       ref_el_(*entity) = FePoint<SCALAR>(1);
     }
     // Initialize all shape function layouts for the edges
-    for (const auto* entity : mesh_p_->Entities(1)) {
+    for (const auto *entity : mesh_p_->Entities(1)) {
       FeHierarchicSegment<SCALAR> fe(degree_functor(*entity), qr_cache_);
 
       ref_el_(*entity) = std::move(fe);
     }
     // Initialize all shape function layouts for the cells
-    for (const auto* entity :mesh_p_->Entities(0)) {
+    for (const auto *entity : mesh_p_->Entities(0)) {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria(): {
           std::array<unsigned, 3> edge_degrees{

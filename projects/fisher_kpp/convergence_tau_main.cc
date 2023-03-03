@@ -149,7 +149,7 @@ int main(int /*argc*/, char ** /*argv*/) {
    */
 
   /* Total number of timesteps */
-  Eigen::Matrix<unsigned int, Eigen::Dynamic,1> numSteps(6);
+  Eigen::Matrix<unsigned int, Eigen::Dynamic, 1> numSteps(6);
   numSteps.setZero();
   Eigen::VectorXd tau(6);
   tau.setZero();

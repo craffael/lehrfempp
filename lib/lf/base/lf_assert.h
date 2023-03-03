@@ -26,10 +26,10 @@ void AssertionFailed(const std::string& expr, const std::string& file,
  * for the compiler to analyze and helps to avoid warnings about "control
  * reached end of non-void function"
  */
-#define LF_UNREACHABLE                                              \
-  {                                                                 \
+#define LF_UNREACHABLE                                            \
+  {                                                               \
     ::lf::base::AssertionFailed("false", __FILE__, __LINE__, ""); \
-    std::abort();                                                   \
+    std::abort();                                                 \
   }
 
 /**
@@ -66,7 +66,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      LF_UNREACHABLE;                                                 \
+      LF_UNREACHABLE;                                                   \
     }                                                                   \
   }
 #endif

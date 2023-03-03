@@ -45,7 +45,7 @@ namespace lf::fe {
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionGradFE {
  public:
-  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0)); // NOLINT
+  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  // NOLINT
 
   /**
    * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
