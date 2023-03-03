@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __7967a89f008940088a1784d4776de381
-#define __7967a89f008940088a1784d4776de381
+#ifndef INCG7967a89f008940088a1784d4776de381
+#define INCG7967a89f008940088a1784d4776de381
 
 #include "complex_fe_space.h"
 
@@ -16,4 +16,4 @@
  */
 namespace lf::fe::test_utils {}
 
-#endif  // __7967a89f008940088a1784d4776de381
+#endif  // INCG7967a89f008940088a1784d4776de381

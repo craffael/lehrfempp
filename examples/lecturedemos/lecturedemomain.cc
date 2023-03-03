@@ -22,6 +22,7 @@
 #include "lecturedemorefine.h"
 #include "lecturedemotwonorm.h"
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int argc, char **argv) {
   // We rely on Boost's program_option library for parsing command line
   // arguments

@@ -149,14 +149,14 @@ int main(int /*argc*/, char ** /*argv*/) {
    */
 
   /* Total number of timesteps */
-  Eigen::VectorXd numSteps(6);
+  Eigen::Matrix<unsigned int, Eigen::Dynamic,1> numSteps(6);
   numSteps.setZero();
   Eigen::VectorXd tau(6);
   tau.setZero();
   double T = 1.;
 
   for (int i = 0; i < 6; i++) {
-    numSteps(i) = 80 * std::pow(2, i);
+    numSteps(i) = static_cast<unsigned int>(80 * std::pow(2, i));
     tau(i) = T / numSteps(i);
   }
 

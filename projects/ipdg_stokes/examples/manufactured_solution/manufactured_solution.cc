@@ -3,7 +3,6 @@
  * @brief Determines the h-convergence of the manufactured solution
  */
 
-#define _USE_MATH_DEFINES
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/fe/fe.h>

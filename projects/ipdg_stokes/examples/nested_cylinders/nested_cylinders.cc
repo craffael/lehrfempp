@@ -3,7 +3,6 @@
  * @brief Compute the convergence of the nested cylinders experiment
  */
 
-#define _USE_MATH_DEFINES
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -26,8 +25,6 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-
-using lf::uscalfe::operator-;
 
 /**
  * @brief Solve the nested cylinders problem with zero potential at the boundary
@@ -188,7 +185,9 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   std::for_each(A.triplets().begin(), A.triplets().end(),
                 [&](Eigen::Triplet<double> &trip) {
                   trip = Eigen::Triplet<double>(
-                      dofmap[trip.row()], dofmap[trip.col()], trip.value());
+                      lf::base::narrow<int>(dofmap[trip.row()]),
+                      lf::base::narrow<int>(dofmap[trip.col()]),
+                      trip.value());
                 });
   // Apply the mapping to the right hand side vector
   Eigen::VectorXd rhs_mapped = Eigen::VectorXd::Zero(idx);
@@ -225,7 +224,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
+static std::string concat(Args &&...args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -318,7 +317,7 @@ int main(int argc, char *argv[]) {
     meshes.push_back(reader_irregular_inverted.mesh());
   } else {
     std::cout << desc << std::endl;
-    exit(1);
+    return 1;
   }
 
   // Compute the analytic solution of the problem

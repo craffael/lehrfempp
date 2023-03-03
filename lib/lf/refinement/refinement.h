@@ -1,5 +1,5 @@
-#ifndef _LF_REFINEMENT_H_
-#define _LF_REFINEMENT_H_
+#ifndef INCG_LF_REFINEMENT_H_
+#define INCG_LF_REFINEMENT_H_
 
 /**
  * @file refinement.h

@@ -27,7 +27,7 @@ int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
   std::cout << "Mesh dimension = " << mesh.DimMesh()
             << ", iterating over entities of co-dim. " << codim << ": "
             << mesh.NumEntities(codim) << " exist" << std::endl;
-  size_type cnt = 0;
+  int cnt = 0;
   // Typical loop for running through all entities of a specific co-dimension
   for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
     // Print entity information including its \samemp{unique} index

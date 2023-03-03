@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __818709b0104548a7b5e6f47bdba89f69
-#define __818709b0104548a7b5e6f47bdba89f69
+#ifndef INCG818709b0104548a7b5e6f47bdba89f69
+#define INCG818709b0104548a7b5e6f47bdba89f69
 
 #include <lf/mesh/mesh.h>
 
@@ -106,4 +106,4 @@ class Point : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __818709b0104548a7b5e6f47bdba89f69
+#endif  // INCG818709b0104548a7b5e6f47bdba89f69

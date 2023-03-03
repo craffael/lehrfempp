@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __6f06a5790b0b46cf94fb3cc3cc0cc2d3
-#define __6f06a5790b0b46cf94fb3cc3cc0cc2d3
+#ifndef INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3
+#define INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -127,9 +127,9 @@ struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
   }
 
   template <typename FormatContext>
-  auto format(const MATRIX& m, FormatContext& ctx) {
+  auto format(const MATRIX& matrix, FormatContext& ctx) {
     std::stringstream ss;
-    ss << m.format(clean_fmt);
+    ss << matrix.format(clean_fmt);
 
     auto it = ctx.out();
     auto str = ss.str();
@@ -143,4 +143,4 @@ struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
 };
 /// \endcond
 
-#endif  // __6f06a5790b0b46cf94fb3cc3cc0cc2d3
+#endif  // INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3

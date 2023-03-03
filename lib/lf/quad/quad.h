@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __1f1e78e74a804e5490813ec6a9148231
-#define __1f1e78e74a804e5490813ec6a9148231
+#ifndef INCG1f1e78e74a804e5490813ec6a9148231
+#define INCG1f1e78e74a804e5490813ec6a9148231
 
 #include "make_quad_rule.h"
 #include "make_quad_rule_nodal.h"
@@ -27,4 +27,4 @@
  */
 namespace lf::quad {}
 
-#endif  // __1f1e78e74a804e5490813ec6a9148231
+#endif  // INCG1f1e78e74a804e5490813ec6a9148231

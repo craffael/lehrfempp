@@ -12,8 +12,8 @@
  * @copyright MIT License
  */
 
-#ifndef __7fedf7cf1a0246a98b2bf431cfa34da2
-#define __7fedf7cf1a0246a98b2bf431cfa34da2
+#ifndef INCG7fedf7cf1a0246a98b2bf431cfa34da2
+#define INCG7fedf7cf1a0246a98b2bf431cfa34da2
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
 
@@ -197,4 +197,4 @@ std::variant<GMshFileV2, GMshFileV4> ReadGmshFile(const std::string& filename);
 
 }  // namespace lf::io
 
-#endif  // __7fedf7cf1a0246a98b2bf431cfa34da2
+#endif  // INCG7fedf7cf1a0246a98b2bf431cfa34da2

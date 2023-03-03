@@ -1,5 +1,5 @@
-#ifndef _LF_COOMATRIX_H
-#define _LF_COOMATRIX_H
+#ifndef INCG_LF_COOMATRIX_H
+#define INCG_LF_COOMATRIX_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -58,7 +58,7 @@ class COOMatrix {
 
   /** Set up zero matrix of a given size */
   COOMatrix(size_type num_rows, size_type num_cols)
-      : rows_(num_rows), cols_(num_cols), triplets_() {}
+      : rows_(num_rows), cols_(num_cols) {}
 
   COOMatrix(const COOMatrix &) = default;
   COOMatrix(COOMatrix &&) noexcept = default;
@@ -221,7 +221,7 @@ class COOMatrix {
 
  private:
   size_type rows_, cols_; /**< dimensions of matrix */
-  TripletVec triplets_;   /**< COO format data */
+  TripletVec triplets_{};   /**< COO format data */
 };
 
 // Implementation of output operator

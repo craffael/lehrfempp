@@ -1,5 +1,5 @@
-#ifndef _LF_REFINEMENT_HIER_H_
-#define _LF_REFINEMENT_HIER_H_
+#ifndef INCG_LF_REFINEMENT_HIER_H_
+#define INCG_LF_REFINEMENT_HIER_H_
 
 /**
  * @file

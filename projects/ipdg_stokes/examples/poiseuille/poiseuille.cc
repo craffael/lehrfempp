@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-using lf::uscalfe::operator-;
-
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
  * @param args A variadic pack of objects implementing
@@ -84,7 +82,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "\tirregular: Builds a mesh where the resolution in the "
                  "x-direction is 10 times less than in the y-direction"
               << std::endl;
-    exit(1);
+    return 1;
   }
 
   // Read the mesh from the gmsh file

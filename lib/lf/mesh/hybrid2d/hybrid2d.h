@@ -1,8 +1,6 @@
 #ifndef HYBRID2D_P_H_
 #define HYBRID2D_P_H_
 
-#include "mesh.h"
-#include "mesh_factory.h"
 /**
  * @brief An alternative implementation of a hybrid2d mesh manager that uses
  *        Pointers to store sub-entity relations.

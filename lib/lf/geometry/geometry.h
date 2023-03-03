@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __02a3dfa9ae3a4969b29d4c0ecfaa6ad9
-#define __02a3dfa9ae3a4969b29d4c0ecfaa6ad9
+#ifndef INCG02a3dfa9ae3a4969b29d4c0ecfaa6ad9
+#define INCG02a3dfa9ae3a4969b29d4c0ecfaa6ad9
 
 #include "geometry_interface.h"
 #include "point.h"
@@ -26,4 +26,4 @@
  */
 namespace lf::geometry {}  // namespace lf::geometry
 
-#endif  // __02a3dfa9ae3a4969b29d4c0ecfaa6ad9
+#endif  // INCG02a3dfa9ae3a4969b29d4c0ecfaa6ad9

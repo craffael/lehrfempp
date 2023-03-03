@@ -22,6 +22,7 @@ std::ostream &operator<<(std::ostream &o, const DofHandler &dof_handler) {
   return o;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
                unsigned ctrl) {
   // Obtain pointer to the underlying mesh
@@ -132,6 +133,7 @@ void UniformFEDofHandler::InitTotalNumDofs() {
   num_dofs_[kCellOrd] = std::max(num_dofs_tria_, num_dofs_quad_);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void UniformFEDofHandler::initIndexArrays() {
   // This method assumes a proper initialization
   // of the data in no_loc_dof_* and num_dofs_, num_dof_tria, num_dofs_quad_
@@ -284,7 +286,7 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
-      dofs_[codim].data() + (num_dofs_[codim] * entity_index);
+      dofs_[codim].data() + (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
   const gdof_idx_t *end = begin + no_covered_dofs;
   return {begin, end};
 }
@@ -305,7 +307,7 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
                 "Index " << entity_index << " out of range");
   // Pointers to range of dof indices
   const gdof_idx_t *begin =
-      dofs_[codim].data() + (num_dofs_[codim] * entity_index);
+      dofs_[codim].data() + (static_cast<std::size_t>(num_dofs_[codim]) * entity_index);
   const gdof_idx_t *end = begin + no_covered_dofs;
   begin += (no_covered_dofs - no_loc_dofs);
   return {begin, end};

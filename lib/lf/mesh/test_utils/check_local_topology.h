@@ -1,5 +1,5 @@
-#ifndef __2633e7bf8dd548de839f74075687e81x
-#define __2633e7bf8dd548de839f74075687e81x
+#ifndef INCG2633e7bf8dd548de839f74075687e81x
+#define INCG2633e7bf8dd548de839f74075687e81x
 
 #include <lf/mesh/mesh.h>
 
@@ -26,4 +26,4 @@ void checkRelCodim(const Entity& e);
 
 }  // namespace lf::mesh::test_utils
 
-#endif  // __2633e7bf8dd548de839f74075687e81x
+#endif  // INCG2633e7bf8dd548de839f74075687e81x

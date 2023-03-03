@@ -1,5 +1,5 @@
-#ifndef __7ed6b0d4d9244155819c464fc4eb9bbb
-#define __7ed6b0d4d9244155819c464fc4eb9bbb
+#ifndef INCG7ed6b0d4d9244155819c464fc4eb9bbb
+#define INCG7ed6b0d4d9244155819c464fc4eb9bbb
 
 #include <lf/base/base.h>
 
@@ -264,4 +264,4 @@ inline Eigen::MatrixXd Corners(const Geometry& geo) {
 
 }  // namespace lf::geometry
 
-#endif  // __7ed6b0d4d9244155819c464fc4eb9bbb
+#endif  // INCG7ed6b0d4d9244155819c464fc4eb9bbb

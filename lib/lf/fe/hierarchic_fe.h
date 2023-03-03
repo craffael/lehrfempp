@@ -9,8 +9,6 @@
  * @copyright MIT License
  */
 
-#define _USE_MATH_DEFINES
-
 #include <lf/assemble/assemble.h>
 #include <lf/mesh/mesh.h>
 #include <lf/quad/quad.h>
@@ -553,6 +551,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   EvalReferenceShapeFunctions(const Eigen::MatrixXd &refcoords) const override {
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         NumRefShapeFunctions(), refcoords.cols());
@@ -661,6 +660,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd &refcoords) const override {
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
@@ -1279,6 +1279,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   }
 
   [[nodiscard]] Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic>
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   GradientsReferenceShapeFunctions(
       const Eigen::MatrixXd &refcoords) const override {
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
@@ -1488,6 +1489,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
     return 4 + Ne0 + Ne1 + Ne2 + Ne3 + Nq * Nq;
   }
 
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   [[nodiscard]] Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> NodalValuesToDofs(
       const Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> &nodevals) const override {
     Eigen::Matrix<SCALAR, 1, Eigen::Dynamic> dofs(NumRefShapeFunctions());

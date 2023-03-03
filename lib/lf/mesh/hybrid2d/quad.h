@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __9dc22ac9eb6645d3a27f60a7abcd52a4
-#define __9dc22ac9eb6645d3a27f60a7abcd52a4
+#ifndef INCG9dc22ac9eb6645d3a27f60a7abcd52a4
+#define INCG9dc22ac9eb6645d3a27f60a7abcd52a4
 
 #include <lf/mesh/mesh.h>
 
@@ -125,4 +125,4 @@ class Quadrilateral : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __9dc22ac9eb6645d3a27f60a7abcd52a4
+#endif  // INCG9dc22ac9eb6645d3a27f60a7abcd52a4

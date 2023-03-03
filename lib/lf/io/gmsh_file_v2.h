@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __1fd687af60b74bf6aad50d509ecbc4da
-#define __1fd687af60b74bf6aad50d509ecbc4da
+#ifndef INCG1fd687af60b74bf6aad50d509ecbc4da
+#define INCG1fd687af60b74bf6aad50d509ecbc4da
 
 #include <lf/mesh/mesh.h>
 
@@ -267,4 +267,4 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
 
 }  // namespace lf::io
 
-#endif  // __1fd687af60b74bf6aad50d509ecbc4da
+#endif  // INCG1fd687af60b74bf6aad50d509ecbc4da

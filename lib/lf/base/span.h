@@ -581,7 +581,7 @@ span_DISABLE_MSVC_WARNINGS(26439 26440 26472 26473 26481 26490)
 
 #endif
 
-namespace nonstd {
+namespace nonstd { // NOLINT(modernize-concat-nested-namespaces)
 namespace span_lite {
 
 // [views.constants], constants
@@ -757,7 +757,7 @@ namespace detail {
 /*enum*/ struct enabler {};
 
 template <typename T>
-bool is_positive(T x) {
+bool is_positive(T x) { // NOLINT(readability-identifier-length)
   return std11::is_signed<T>::value ? x >= 0 : true;
 }
 
@@ -1304,7 +1304,8 @@ class span {  // NOLINT
   }
 
   template <typename U>
-  static inline span_constexpr U *to_address(U *p) span_noexcept {
+  // NOLINTNEXTLINE
+  static inline span_constexpr U *to_address(U *p) span_noexcept { 
     return p;
   }
 

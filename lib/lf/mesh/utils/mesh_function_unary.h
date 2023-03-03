@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __b9b63bcccec548419a52fe0b06ffb3fc
-#define __b9b63bcccec548419a52fe0b06ffb3fc
+#ifndef INCGb9b63bcccec548419a52fe0b06ffb3fc
+#define INCGb9b63bcccec548419a52fe0b06ffb3fc
 
 #include <lf/mesh/mesh.h>
 
@@ -54,10 +54,11 @@ struct UnaryOpMinus {
   // minus in front of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
+    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
     std::vector<U> result(u.size());
-    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(&result[0], 1, u.size());
+    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
+                                                       u.size());
     rm = -um;
     return result;
   }
@@ -131,10 +132,11 @@ struct UnaryOpSquaredNorm {
   // squared norm of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
+    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
     std::vector<U> result(u.size());
-    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(&result[0], 1, u.size());
+    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
+                                                       u.size());
     rm = um.cwiseAbs2();
     return result;
   }
@@ -152,13 +154,13 @@ struct UnaryOpSquaredNorm {
       if constexpr (C == 1) {  // NOLINT
         Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
                                                                  u.size());
-        Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0], 1,
+        Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                            u.size());
         rm = um.cwiseAbs2().colwise().sum();
       } else if constexpr (R == 1) {  // NOLINT
         Eigen::Map<const Eigen::Matrix<S, Eigen::Dynamic, C, Eigen::RowMajor>>
             um(&u[0](0, 0), u.size(), C);
-        Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(&result[0], u.size(),
+        Eigen::Map<Eigen::Matrix<S, Eigen::Dynamic, 1>> rm(result.data(), u.size(),
                                                            1);
         rm = um.cwiseAbs2().rowwise().sum();
       }
@@ -212,10 +214,11 @@ struct UnaryOpConjugate {
   // conjugate of scalar type
   template <class U, class = std::enable_if_t<base::is_scalar<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
+    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
     std::vector<U> result(u.size());
-    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(&result[0], 1, u.size());
+    Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
+                                                       u.size());
     rm = um.conjugate();
     return result;
   }
@@ -330,4 +333,4 @@ auto conjugate(const A& a) {
 
 }  // namespace lf::mesh::utils
 
-#endif  // __b9b63bcccec548419a52fe0b06ffb3fc
+#endif  // INCGb9b63bcccec548419a52fe0b06ffb3fc

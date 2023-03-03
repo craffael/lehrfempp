@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __6c48015148ae47f384263808689bdaf3
-#define __6c48015148ae47f384263808689bdaf3
+#ifndef INCG6c48015148ae47f384263808689bdaf3
+#define INCG6c48015148ae47f384263808689bdaf3
 #include "quad_rule.h"
 
 namespace lf::quad {
@@ -23,4 +23,4 @@ QuadRule make_QuadRuleNodal(base::RefEl ref_el);
 
 }  // namespace lf::quad
 
-#endif  // __6c48015148ae47f384263808689bdaf3
+#endif  // INCG6c48015148ae47f384263808689bdaf3

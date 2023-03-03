@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __b9e80d63ee55424493f538a7971df592
-#define __b9e80d63ee55424493f538a7971df592
+#ifndef INCGb9e80d63ee55424493f538a7971df592
+#define INCGb9e80d63ee55424493f538a7971df592
 
 #include <lf/fe/fe.h>
 #include <lf/uscalfe/uscalfe.h>
@@ -86,4 +86,4 @@ MakeComplexLagrangeO1FeSpace(std::shared_ptr<const mesh::Mesh> mesh_p) {
 }
 }  // namespace lf::fe::test_utils
 
-#endif  // __b9e80d63ee55424493f538a7971df592
+#endif  // INCGb9e80d63ee55424493f538a7971df592

@@ -14,6 +14,7 @@
 
 #include <filesystem>
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   // 1) Load the mesh:
   std::filesystem::path path(__FILE__);
@@ -110,7 +111,7 @@ int main() {
     auto lhs = lhs_coo.makeSparse();
 
     std::cout << "Solving level " << level << " with " << num_dof << " dofs";
-    num_dofs(level) = num_dof;
+    num_dofs(level) = lf::base::narrow<int>(num_dof);
     Eigen::SimplicialLLT<decltype(lhs)> solver(lhs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success,
                   "Sparse Cholesky decomposition was not successful.");

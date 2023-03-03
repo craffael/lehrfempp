@@ -177,6 +177,7 @@ std::unique_ptr<Geometry> QuadO1::SubGeometry(dim_t codim, dim_t i) const {
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
     const RefinementPattern& ref_pat, base::dim_t codim) const {
   // The refinement pattern must be for a quadrilateral
@@ -192,7 +193,7 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
-  const int no_children = child_polygons.size();
+  const base::size_type no_children = child_polygons.size();
   // Check consistency of data
   LF_ASSERT_MSG(
       no_children == ref_pat.NumChildren(codim),
@@ -346,6 +347,7 @@ std::unique_ptr<Geometry> Parallelogram::SubGeometry(dim_t codim,
 }  // end SubGeometry
 
 // Essentially a copy of the same code for QuadO1
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
     const RefinementPattern& ref_pat, lf::base::dim_t codim) const {
   // The refinement pattern must be for a quadrilateral
@@ -361,7 +363,7 @@ std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
-  const int no_children = child_polygons.size();
+  const base::size_type no_children = child_polygons.size();
   // Check consistency of data
   LF_ASSERT_MSG(
       no_children == ref_pat.NumChildren(codim),

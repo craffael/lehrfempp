@@ -6,8 +6,6 @@
  * @copyright MIT License
  */
 
-#define _USE_MATH_DEFINES
-
 #include <lf/fe/fe.h>
 #include <lf/io/io.h>
 #include <lf/mesh/hybrid2d/hybrid2d.h>
@@ -348,7 +346,7 @@ int main(int argc, char *argv[]) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("output") == 0 || vm.count("max_p") == 0) {
     std::cout << desc << std::endl;
-    exit(1);
+    return 1;
   }
   const std::string output_file = vm["output"].as<std::string>();
   const unsigned max_p = vm["max_p"].as<unsigned>();

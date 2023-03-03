@@ -386,7 +386,7 @@ using nodePair_t = std::pair<size_type, Eigen::Vector3d>;
 /// header information this is set using attributes.
 // NOLINTNEXTLINE
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
-    lf::io::GMshFileV2, MshFileAdapted,
+    lf::io::GMshFileV2, MshFileAdapted,  // NOLINT
     //(double, VersionNumber)
     //(bool, IsBinary)
     //(int, DoubleSize)

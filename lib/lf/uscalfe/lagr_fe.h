@@ -122,7 +122,7 @@ class FeLagrangeO1Tria final
 
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(
         3, 2 * refcoords.cols());
-    result.row(0) = Eigen::RowVectorXd::Constant(2 * n_pts, -1);
+    result.row(0) = Eigen::RowVectorXd::Constant(2 * static_cast<Eigen::Index>(n_pts), -1);
     result.row(1) = Eigen::RowVector2d(1., 0.).replicate(1, n_pts);
     result.row(2) = Eigen::RowVector2d(0., 1.).replicate(1, n_pts);
     return result;

@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __d0efe6ebb86049268fc644633590ed83
-#define __d0efe6ebb86049268fc644633590ed83
+#ifndef INCGd0efe6ebb86049268fc644633590ed83
+#define INCGd0efe6ebb86049268fc644633590ed83
 #include <exception>
 #include <string>
 #include <utility>
@@ -36,4 +36,4 @@ class LfException : public std::exception {
 
 }  // namespace lf::base
 
-#endif  // __d0efe6ebb86049268fc644633590ed83
+#endif  // INCGd0efe6ebb86049268fc644633590ed83

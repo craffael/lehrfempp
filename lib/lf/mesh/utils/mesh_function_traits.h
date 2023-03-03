@@ -8,8 +8,8 @@
  * @copyright MIT License
  */
 
-#ifndef __7e4ffaa81e244723acbfbbaea68e03b1
-#define __7e4ffaa81e244723acbfbbaea68e03b1
+#ifndef INCG7e4ffaa81e244723acbfbbaea68e03b1
+#define INCG7e4ffaa81e244723acbfbbaea68e03b1
 
 #include <lf/mesh/mesh.h>
 
@@ -82,4 +82,4 @@ using MeshFunctionReturnType =
 
 }  // namespace lf::mesh::utils
 
-#endif  // __7e4ffaa81e244723acbfbbaea68e03b1
+#endif  // INCG7e4ffaa81e244723acbfbbaea68e03b1

@@ -174,6 +174,7 @@ class EndpointIndexPair {
 // EdgeList = std::vector<std::pair<std::array<size_type, 2>, GeometryPtr>>;
 // CellList = std::vector<std::pair<std::array<size_type, 4>, GeometryPtr>>;
 // **********************************************************************
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
            bool check_completeness)
     : dim_world_(dim_world) {
@@ -636,7 +637,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     // A triangle is marked by an invalid node number
     // in the last position (also see above)
     size_type no_of_vertices;
-    if (c_node_indices[3] == size_type(-1)) {
+    if (c_node_indices[3] == static_cast<size_type>(-1)) {
       no_of_vertices = 3;  // triangle
     } else {
       no_of_vertices = 4;  // quadrilateral

@@ -28,7 +28,7 @@ std::vector<lf::quad::QuadRule> BoundaryQuadRule(lf::base::RefEl ref_el,
   }
 
   // query the number of edges
-  int numSegments = ref_el.NumSubEntities(1);
+  lf::base::size_type numSegments = ref_el.NumSubEntities(1);
   std::vector<lf::quad::QuadRule> BoundaryQuadRules(numSegments);
 
   // iterate over edges
@@ -55,8 +55,8 @@ Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
 
   // retrive the corners of the geometry object.
   Eigen::MatrixXd corners = lf::geometry::Corners(geometry);
-  int n_corners = corners.cols();
-  int n_edges = n_corners;
+  lf::base::size_type n_corners = corners.cols();
+  lf::base::size_type n_edges = n_corners;
 
   // determine, if the numbering of corners is
   // counterclockwise or clockwise. This is needed to conclude
@@ -85,7 +85,7 @@ Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
     // Count the number of Jacobian evaluations with a positive determinant.
     int positiveJacobianDeterminantCount = 0;
     for (int i = 0; i < 4; ++i) {
-      Eigen::MatrixXd Jacobian = Jacobians.block(0, 2 * i, 2, 2);
+      Eigen::MatrixXd Jacobian = Jacobians.block(0, 2 * static_cast<Eigen::Index>(i), 2, 2);
       double JacobianDeterminant = Jacobian.determinant();
       if (JacobianDeterminant > 0) {
         positiveJacobianDeterminantCount++;
@@ -130,11 +130,11 @@ void PrescribedSignProvider::init() {
   lf::mesh::utils::CodimMeshDataSet<int>& maxElement = *maxElement_ptr_;
   // find the maximum index of cells to which any given edge belongs.
   for (const lf::mesh::Entity* const e : mesh_ptr_->Entities(0)) {
-    int entity_idx = mesh_ptr_->Index(*e);
+    auto entity_idx = mesh_ptr_->Index(*e);
     for (const lf::mesh::Entity* const subent : e->SubEntities(1)) {
       LF_ASSERT_MSG(maxElement.DefinedOn(*subent),
                     "maxElement_ not defined on subentity" << *subent);
-      maxElement(*subent) = std::max(maxElement(*subent), entity_idx);
+      maxElement(*subent) = std::max<int>(maxElement(*subent), lf::base::narrow<int>(entity_idx));
     }
   }
 }

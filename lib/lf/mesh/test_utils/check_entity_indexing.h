@@ -1,5 +1,5 @@
-#ifndef __2633e7bf8dd548de839f74075687e810
-#define __2633e7bf8dd548de839f74075687e810
+#ifndef INCG2633e7bf8dd548de839f74075687e810
+#define INCG2633e7bf8dd548de839f74075687e810
 
 #include <lf/mesh/mesh.h>
 
@@ -15,4 +15,4 @@ void checkEntityIndexing(const Mesh& mesh);
 
 }  // namespace lf::mesh::test_utils
 
-#endif  // __2633e7bf8dd548de839f74075687e810
+#endif  // INCG2633e7bf8dd548de839f74075687e810

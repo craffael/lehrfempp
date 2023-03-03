@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * @brief Classes taking care of local computations for scalar 2nd-order
  * elliptic BVPs
  * @author Ralf Hiptmair
@@ -179,7 +179,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
   // Fetch the transformation matrices for the gradients
   const Eigen::MatrixXd JinvT(geo_ptr->JacobianInverseGramian(qr.Points()));
-  LF_ASSERT_MSG(JinvT.cols() == 2 * qr.NumPoints(),
+  LF_ASSERT_MSG(JinvT.cols() == static_cast<std::ptrdiff_t>(2) * qr.NumPoints(),
                 "Mismatch " << JinvT.cols() << " <-> " << 2 * qr.NumPoints());
   LF_ASSERT_MSG(JinvT.rows() == world_dim,
                 "Mismatch " << JinvT.rows() << " <-> " << world_dim);
@@ -196,8 +196,10 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
   for (base::size_type k = 0; k < qr.NumPoints(); ++k) {
     const double w = qr.Weights()[k] * determinants[k];
     // Transformed gradient in current quadrature node
-    const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        grsf.block(0, 2 * k, mat.rows(), 2).transpose());
+    const auto trf_grad(
+        JinvT.block(0, static_cast<Eigen::Index>(2) * k, world_dim, 2) *
+        grsf.block(0, static_cast<Eigen::Index>(2) * k, mat.rows(), 2)
+            .transpose());
     // Transformed gradients multiplied with coefficient
     mat += w * trf_grad.adjoint() * (alphaval[k] * trf_grad);
   }
@@ -541,8 +543,10 @@ class ScalarLoadElementVectorProvider final {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using scalar_t = decltype(
-      SCALAR(0) * mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using scalar_t =
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(
+                   0));
   using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors

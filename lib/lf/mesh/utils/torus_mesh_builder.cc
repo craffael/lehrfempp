@@ -6,8 +6,6 @@
  * @copyright MIT License
  */
 
-#define _USE_MATH_DEFINES
-
 #include "torus_mesh_builder.h"
 
 #include <lf/geometry/geometry.h>

@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __feff908010fa4d75a9c006c02b4fafe7
-#define __feff908010fa4d75a9c006c02b4fafe7
+#ifndef INCGfeff908010fa4d75a9c006c02b4fafe7
+#define INCGfeff908010fa4d75a9c006c02b4fafe7
 
 #include <lf/mesh/mesh.h>
 
@@ -124,4 +124,4 @@ class Segment : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __feff908010fa4d75a9c006c02b4fafe7
+#endif  // INCGfeff908010fa4d75a9c006c02b4fafe7

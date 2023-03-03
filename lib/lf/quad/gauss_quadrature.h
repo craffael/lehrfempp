@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __cd0bee55c3bb44e8bda00e45e61f2001
-#define __cd0bee55c3bb44e8bda00e45e61f2001
+#ifndef INCGcd0bee55c3bb44e8bda00e45e61f2001
+#define INCGcd0bee55c3bb44e8bda00e45e61f2001
 #include <tuple>
 
 #include "quad_rule.h"
@@ -37,4 +37,4 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
 
 }  // namespace lf::quad
 
-#endif  // __cd0bee55c3bb44e8bda00e45e61f2001
+#endif  // INCGcd0bee55c3bb44e8bda00e45e61f2001
