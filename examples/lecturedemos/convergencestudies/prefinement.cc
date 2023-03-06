@@ -140,15 +140,18 @@ std::tuple<double, double> computeErrorsSquareDomain(
   // The gradient of the analytic solution
   const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
     Eigen::Vector2d grad;
-    grad[0] = lf::base::kPi * std::cos(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]);
-    grad[1] = lf::base::kPi * std::sin(lf::base::kPi * x[0]) * std::cos(lf::base::kPi * x[1]);
+    grad[0] = lf::base::kPi * std::cos(lf::base::kPi * x[0]) *
+              std::sin(lf::base::kPi * x[1]);
+    grad[1] = lf::base::kPi * std::sin(lf::base::kPi * x[0]) *
+              std::cos(lf::base::kPi * x[1]);
     return grad;
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
 
   // Define the load function of the manufactured solution
   const auto load = [](const Eigen::Vector2d &x) -> double {
-    return 2 * lf::base::kPi * lf::base::kPi * std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]);
+    return 2 * lf::base::kPi * lf::base::kPi * std::sin(lf::base::kPi * x[0]) *
+           std::sin(lf::base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_load(load);
 

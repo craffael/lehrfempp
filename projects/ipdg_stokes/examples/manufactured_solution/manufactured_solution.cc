@@ -61,7 +61,8 @@ Eigen::Matrix2d computeUGrad(int n, Eigen::Vector2d x) {
           2 * lf::base::kPi * n * x[0] * x[0] / r2 * sphi,
       (x[0] * x[1] / r3 - 1. / r) * (1 - cphi) +
           2 * lf::base::kPi * n * x[1] * x[1] / r2 * sphi,
-      -x[0] * x[1] / r3 * (1 - cphi) + 2 * lf::base::kPi * n * x[0] * x[1] / r2 * sphi;
+      -x[0] * x[1] / r3 * (1 - cphi) +
+          2 * lf::base::kPi * n * x[0] * x[1] / r2 * sphi;
   return grad;
 }
 
@@ -73,12 +74,14 @@ Eigen::Matrix2d computeUGrad(int n, Eigen::Vector2d x) {
  */
 Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
   const double r = x.norm();
-  const double f0 = r == 0 ? -6 * n * n * lf::base::kPi * lf::base::kPi
-                           : (1 -
-                              (1 + 4 * n * n * lf::base::kPi * lf::base::kPi * r * r) *
-                                  std::cos(2 * lf::base::kPi * n * r) -
-                              2 * lf::base::kPi * n * r * std::sin(2 * lf::base::kPi * n * r)) /
-                                 (r * r);
+  const double f0 =
+      r == 0
+          ? -6 * n * n * lf::base::kPi * lf::base::kPi
+          : (1 -
+             (1 + 4 * n * n * lf::base::kPi * lf::base::kPi * r * r) *
+                 std::cos(2 * lf::base::kPi * n * r) -
+             2 * lf::base::kPi * n * r * std::sin(2 * lf::base::kPi * n * r)) /
+                (r * r);
   Eigen::Vector2d f;
   f << -x[1], x[0];
   return f0 * f.normalized();
