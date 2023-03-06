@@ -46,7 +46,7 @@ Eigen::VectorXd solvePoisson(
         &fe_space) {
   // Define the load function of the manufactured solution
   const auto load = [](const Eigen::Vector2d &x) -> double {
-    return 2 * M_PI * M_PI * std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    return 2 * lf::base::kPi * lf::base::kPi * std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_load(load);
 
@@ -106,14 +106,14 @@ int main(int argc, char *argv[]) {
 
   // The analytic solution
   const auto u = [](const Eigen::VectorXd &x) -> double {
-    return std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]);
+    return std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]);
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
   // The gradient of the analytic solution
   const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
     Eigen::Vector2d grad;
-    grad[0] = M_PI * std::cos(M_PI * x[0]) * std::sin(M_PI * x[1]);
-    grad[1] = M_PI * std::sin(M_PI * x[0]) * std::cos(M_PI * x[1]);
+    grad[0] = lf::base::kPi * std::cos(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]);
+    grad[1] = lf::base::kPi * std::sin(lf::base::kPi * x[0]) * std::cos(lf::base::kPi * x[1]);
     return grad;
   };
   const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);

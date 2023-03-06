@@ -47,7 +47,7 @@ Eigen::VectorXd solvePoisson(
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     Eigen::Vector2d grad;
     grad[0] = 2. / 3 * std::pow(r, -4. / 3) *

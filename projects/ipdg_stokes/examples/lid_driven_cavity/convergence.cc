@@ -162,7 +162,7 @@ int main() {
     };
     const auto weight =
         lf::mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d &x) {
-          return x[1] >= 0.9 ? (1 - std::cos(M_PI / 0.1 * (1 - x[1]))) / 2 : 1.;
+          return x[1] >= 0.9 ? (1 - std::cos(lf::base::kPi / 0.1 * (1 - x[1]))) / 2 : 1.;
         });
     const auto diff = velocity_fine - velocity_exact;
     const auto diff_weighted = weight * diff;
