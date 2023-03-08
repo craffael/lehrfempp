@@ -674,7 +674,7 @@ $(function() {
 <div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160; </div>
 <div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160; </div>
-<div class="line"><a name="l00584"></a><span class="lineno"><a class="line" href="namespacenonstd.html">  584</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l00584"></a><span class="lineno"><a class="line" href="namespacenonstd.html">  584</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {  <span class="comment">// NOLINT(modernize-concat-nested-namespaces)</span></div>
 <div class="line"><a name="l00585"></a><span class="lineno"><a class="line" href="namespacenonstd_1_1span__lite.html">  585</a></span>&#160;<span class="keyword">namespace </span>span_lite {</div>
 <div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160; </div>
 <div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;<span class="comment">// [views.constants], constants</span></div>
@@ -850,7 +850,7 @@ $(function() {
 <div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;<span class="comment">/*enum*/</span> <span class="keyword">struct </span>enabler {};</div>
 <div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160; </div>
 <div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;<span class="keywordtype">bool</span> is_positive(T x) {</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;<span class="keywordtype">bool</span> is_positive(T x) {  <span class="comment">// NOLINT(readability-identifier-length)</span></div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structnonstd_1_1span__lite_1_1std11_1_1integral__constant.html#ac727895470672d2a6912d1618593c5b2a8012e7753ff01fabc223e67f317f947a">std11::is_signed&lt;T&gt;::value</a> ? x &gt;= 0 : <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;}</div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160; </div>
@@ -1397,538 +1397,539 @@ $(function() {
 <div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;  }</div>
 <div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160; </div>
 <div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> U&gt;</div>
-<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;  <span class="keyword">static</span> <span class="keyword">inline</span> span_constexpr U *to_address(U *p) span_noexcept {</div>
-<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;    <span class="keywordflow">return</span> p;</div>
-<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;  }</div>
-<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160; </div>
-<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Ptr span_REQUIRES_T((!std::is_po<span class="keywordtype">int</span>er&lt;Ptr&gt;::value))&gt;</div>
-<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;  <span class="keyword">static</span> <span class="keyword">inline</span> span_constexpr <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a1472399cf456670de3b4152fca459e27">pointer</a> to_address(Ptr <span class="keyword">const</span> &amp;it) span_noexcept {</div>
-<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;    <span class="keywordflow">return</span> to_address(it.operator-&gt;());</div>
-<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;  }</div>
-<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( ITERATOR_CTOR )</span></div>
-<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160; </div>
-<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;  <span class="comment">// NOLINTNEXTLINE</span></div>
-<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l01319"></a><span class="lineno"><a class="line" href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339"> 1319</a></span>&#160;  <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a1472399cf456670de3b4152fca459e27">pointer</a> <a class="code" href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339">data_</a>;    <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l01320"></a><span class="lineno"><a class="line" href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d"> 1320</a></span>&#160;  <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a00fed6a71b1c828ea7b13941cd964b9f">size_type</a> <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d">size_</a>;  <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;};</div>
-<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160; </div>
-<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;<span class="comment">// class template argument deduction guides:</span></div>
-<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160; </div>
-<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;<span class="preprocessor">#if span_HAVE(DEDUCTION_GUIDES)</span></div>
-<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160; </div>
-<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(T (&amp;)[N]) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, static_cast&lt;extent_t&gt;</a>(N)&gt;;  <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160; </div>
-<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(std::array&lt;T, N&gt; &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, static_cast&lt;extent_t&gt;</a>(N)&gt;;</div>
-<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160; </div>
-<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(std::array&lt;T, N&gt; <span class="keyword">const</span> &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;const T, static_cast&lt;extent_t&gt;</a>(N)&gt;;</div>
-<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160; </div>
-<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;<span class="preprocessor">#if span_HAVE(CONSTRAINED_SPAN_CONTAINER_CTOR)</span></div>
-<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160; </div>
-<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
-<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(Container &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;typename Container::value_type&gt;</a>;</div>
-<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160; </div>
-<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
-<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(Container <span class="keyword">const</span> &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;const typename Container::value_type&gt;</a>;</div>
-<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160; </div>
-<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160; </div>
-<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;<span class="comment">// iterator: constraints: It satisfies contiguous_­iterator.</span></div>
-<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160; </div>
-<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> It, <span class="keyword">class</span> EndOrSize&gt;</div>
-<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(It, EndOrSize) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>&lt;<span class="keyword">typename</span> std11::remove_reference&lt;</div>
-<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;    <span class="keyword">typename</span> std20::iter_reference_t&lt;It&gt; &gt;::type&gt;;</div>
-<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160; </div>
-<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( DEDUCTION_GUIDES )</span></div>
-<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160; </div>
-<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;<span class="comment">// 26.7.3.7 Comparison operators [span.comparison]</span></div>
-<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160; </div>
-<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;<span class="preprocessor">#if span_FEATURE(COMPARISON)</span></div>
-<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
-<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160; </div>
-<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> same(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T1, E1&gt;</a> <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;                                <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T2, E2&gt;</a> <span class="keyword">const</span> &amp;r) span_noexcept {</div>
-<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structnonstd_1_1span__lite_1_1std11_1_1is__same.html">std11::is_same&lt;T1, T2&gt;::value</a> &amp;&amp; l.size() == r.size() &amp;&amp;</div>
-<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;         <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>(l.data()) == r.data();</div>
-<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;}</div>
-<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160; </div>
-<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160; </div>
-<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator==(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T1, E1&gt;</a> <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;                                      <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T2, E2&gt;</a> <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;  <span class="keywordflow">return</span></div>
-<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
-<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;      same(l, r) ||</div>
-<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;      (l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>() == r.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>() &amp;&amp; std::equal(l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a78d914982f1c59e02f8f862e8c236456">begin</a>(), l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a7ab328b3f104b5f54b252d9b1726eece">end</a>(), r.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a78d914982f1c59e02f8f862e8c236456">begin</a>()));</div>
-<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;}</div>
-<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160; </div>
-<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&lt;(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;                                     span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;  <span class="keywordflow">return</span> std::lexicographical_compare(l.begin(), l.end(), r.begin(), r.end());</div>
-<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;}</div>
-<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160; </div>
-<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator!=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;  <span class="keywordflow">return</span> !(l == r);</div>
-<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;}</div>
-<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160; </div>
-<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&lt;=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;  <span class="keywordflow">return</span> !(r &lt; l);</div>
-<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;}</div>
-<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160; </div>
-<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&gt;(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;                                     span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;  <span class="keywordflow">return</span> (r &lt; l);</div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;}</div>
-<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160; </div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&gt;=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
-<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
-<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;  <span class="keywordflow">return</span> !(l &lt; r);</div>
-<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;}</div>
-<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160; </div>
-<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( COMPARISON )</span></div>
-<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160; </div>
-<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;<span class="comment">// 26.7.2.6 views of object representation [span.objectrep]</span></div>
-<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160; </div>
-<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;<span class="preprocessor">#if span_HAVE(BYTE) || span_HAVE(NONSTD_BYTE)</span></div>
-<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160; </div>
-<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;<span class="comment">// Avoid MSVC 14.1 (1910), VS 2017: warning C4307: &#39;*&#39;: integral constant</span></div>
-<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;<span class="comment">// overflow:</span></div>
-<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160; </div>
-<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;<span class="keyword">struct </span>BytesExtent {</div>
-<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER</span></div>
-<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;  <span class="keyword">enum</span> ET : <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> { value = span_sizeof(T) * Extent };</div>
-<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;  <span class="keyword">enum</span> ET { value = span_sizeof(T) * Extent };</div>
-<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;};</div>
-<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160; </div>
-<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;<span class="keyword">struct </span>BytesExtent&lt;T, <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>&gt; {</div>
-<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER</span></div>
-<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;  <span class="keyword">enum</span> ET : <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a>{value = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>};</div>
-<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;  <span class="keyword">enum</span> ET { value = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a> };</div>
-<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;};</div>
-<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160; </div>
-<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;</div>
-<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;as_bytes(span&lt;T, Extent&gt; spn) span_noexcept {</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;<span class="preprocessor">#if 0</span></div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;    <span class="keywordflow">return</span> { <span class="keyword">reinterpret_cast&lt;</span> std17::byte <span class="keyword">const </span>* <span class="keyword">&gt;</span>( spn.data() ), spn.size_bytes() };</div>
-<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;  <span class="keywordflow">return</span> span&lt;const std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;(</div>
-<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte <span class="keyword">const </span>*<span class="keyword">&gt;</span>(spn.data()),</div>
-<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;      spn.size_bytes());  <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;}</div>
-<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160; </div>
-<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;</div>
-<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;as_writable_bytes(span&lt;T, Extent&gt; spn) span_noexcept {</div>
-<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;<span class="preprocessor">#if 0</span></div>
-<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;    <span class="keywordflow">return</span> { <span class="keyword">reinterpret_cast&lt;</span> std17::byte * <span class="keyword">&gt;</span>( spn.data() ), spn.size_bytes() };</div>
-<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;  <span class="keywordflow">return</span> span&lt;std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;(</div>
-<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte *<span class="keyword">&gt;</span>(spn.data()), spn.size_bytes());  <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;}</div>
-<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160; </div>
-<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( BYTE ) || span_HAVE( NONSTD_BYTE )</span></div>
-<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160; </div>
-<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;<span class="comment">// 27.8 Container and view access [iterator.container]</span></div>
-<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160; </div>
-<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> Extent <span class="comment">/*= dynamic_extent*/</span>&gt;</div>
-<div class="line"><a name="l01463"></a><span class="lineno"><a class="line" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07"> 1463</a></span>&#160;span_constexpr std::size_t <a class="code" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">size</a>(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, Extent&gt;</a> <span class="keyword">const</span> &amp;spn) {</div>
-<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(spn.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>());</div>
-<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;}</div>
-<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160; </div>
-<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> Extent <span class="comment">/*= dynamic_extent*/</span>&gt;</div>
-<div class="line"><a name="l01468"></a><span class="lineno"><a class="line" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649"> 1468</a></span>&#160;span_constexpr std::ptrdiff_t <a class="code" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">ssize</a>(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, Extent&gt;</a> <span class="keyword">const</span> &amp;spn) {</div>
-<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(spn.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>());</div>
-<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;}</div>
-<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160; </div>
-<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
-<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160; </div>
-<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;<span class="comment">// make available in nonstd:</span></div>
-<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160; </div>
-<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
-<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160; </div>
-<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">span_lite::dynamic_extent</a>;</div>
-<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160; </div>
-<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;<span class="keyword">using</span> span_lite::span;</div>
-<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160; </div>
-<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">span_lite::with_container</a>;</div>
-<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160; </div>
-<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;<span class="preprocessor">#if span_FEATURE(COMPARISON)</span></div>
-<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
-<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;<span class="keyword">using</span> span_lite::same;</div>
-<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160; </div>
-<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;<span class="keyword">using</span> span_lite::operator==;</div>
-<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;<span class="keyword">using</span> span_lite::operator!=;</div>
-<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;<span class="keyword">using</span> span_lite::operator&lt;;</div>
-<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;<span class="keyword">using</span> span_lite::operator&lt;=;</div>
-<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;<span class="keyword">using</span> span_lite::operator&gt;;</div>
-<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;<span class="keyword">using</span> span_lite::operator&gt;=;</div>
-<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160; </div>
-<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;<span class="preprocessor">#if span_HAVE(BYTE)</span></div>
-<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;<span class="keyword">using</span> span_lite::as_bytes;</div>
-<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;<span class="keyword">using</span> span_lite::as_writable_bytes;</div>
-<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160; </div>
-<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">span_lite::size</a>;</div>
-<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">span_lite::ssize</a>;</div>
-<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160; </div>
-<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160; </div>
-<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160; </div>
-<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;<span class="comment">// make_span() [span-lite extension]:</span></div>
-<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160; </div>
-<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;<span class="preprocessor">#if span_FEATURE(MAKE_SPAN) || span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN) || \</span></div>
-<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;<span class="preprocessor">    span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER)</span></div>
-<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160; </div>
-<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;<span class="preprocessor">#define span_constexpr constexpr</span></div>
-<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;<span class="preprocessor">#define span_noexcept noexcept</span></div>
-<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;<span class="preprocessor">#define span_nullptr nullptr</span></div>
-<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;<span class="preprocessor">#ifndef span_CONFIG_EXTENT_TYPE</span></div>
-<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;<span class="preprocessor">#define span_CONFIG_EXTENT_TYPE std::size_t</span></div>
-<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> = span_CONFIG_EXTENT_TYPE;</div>
-<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160; </div>
-<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
-<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;<span class="keyword">namespace </span>span_lite {</div>
-<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160; </div>
-<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(T* ptr, <span class="keywordtype">size_t</span> count) span_noexcept {</div>
-<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(ptr, count);</div>
-<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;}</div>
-<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160; </div>
-<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(T* first, T* last) span_noexcept {</div>
-<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(first, last);</div>
-<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;}</div>
-<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160; </div>
-<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T, static_cast&lt;extent_t&gt;(N)&gt; make_span(T (&amp;arr)[N])</div>
-<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;    span_noexcept {</div>
-<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;  <span class="keywordflow">return</span> span&lt;T, static_cast&lt;extent_t&gt;(N)&gt;(&amp;arr[0], N);</div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;}</div>
-<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160; </div>
-<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN || span_HAVE(ARRAY)</span></div>
-<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160; </div>
-<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T, static_cast&lt;extent_t&gt;(N)&gt; make_span(</div>
-<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;    std::array&lt;T, N&gt;&amp; arr) span_noexcept {</div>
-<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;  <span class="keywordflow">return</span> span&lt;T, static_cast&lt;extent_t&gt;(N)&gt;(arr);</div>
-<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;}</div>
-<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160; </div>
-<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const T, static_cast&lt;extent_t&gt;(N)&gt; make_span(</div>
-<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;    std::array&lt;T, N&gt; <span class="keyword">const</span>&amp; arr) span_noexcept {</div>
-<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;  <span class="keywordflow">return</span> span&lt;const T, static_cast&lt;extent_t&gt;(N)&gt;(arr);</div>
-<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;}</div>
-<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160; </div>
-<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( ARRAY )</span></div>
-<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160; </div>
-<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160; </div>
-<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
-<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;          <span class="keyword">class </span>EP = decltype(std::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
-<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container&amp; cont) span_noexcept</div>
-<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;    -&gt; span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
-<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;  <span class="keywordflow">return</span> span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
-<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;}</div>
-<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160; </div>
-<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
-<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;          <span class="keyword">class </span>EP = decltype(std::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
-<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container <span class="keyword">const</span>&amp; cont) span_noexcept</div>
-<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;    -&gt; span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
-<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
-<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;}</div>
-<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160; </div>
-<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;<span class="preprocessor">#elif span_HAVE(CONSTRAINED_SPAN_CONTAINER_CTOR) &amp;&amp; span_HAVE(AUTO)</span></div>
-<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160; </div>
-<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
-<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;          <span class="keyword">class </span>EP = decltype(std17::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
-<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container&amp; cont) span_noexcept</div>
-<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;    -&gt; span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
-<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;  <span class="keywordflow">return</span> span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
-<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;}</div>
-<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160; </div>
-<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
-<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;          <span class="keyword">class </span>EP = decltype(std17::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
-<div class="line"><a name="l01587"></a><span class="lineno"> 1587</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container <span class="keyword">const</span>&amp; cont) span_noexcept</div>
-<div class="line"><a name="l01588"></a><span class="lineno"> 1588</span>&#160;    -&gt; span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
-<div class="line"><a name="l01589"></a><span class="lineno"> 1589</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
-<div class="line"><a name="l01590"></a><span class="lineno"> 1590</span>&#160;}</div>
-<div class="line"><a name="l01591"></a><span class="lineno"> 1591</span>&#160; </div>
-<div class="line"><a name="l01592"></a><span class="lineno"> 1592</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01593"></a><span class="lineno"> 1593</span>&#160; </div>
-<div class="line"><a name="l01594"></a><span class="lineno"> 1594</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01595"></a><span class="lineno"> 1595</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(span&lt;T&gt; spn) span_noexcept {</div>
-<div class="line"><a name="l01596"></a><span class="lineno"> 1596</span>&#160;  <span class="keywordflow">return</span> spn;</div>
-<div class="line"><a name="l01597"></a><span class="lineno"> 1597</span>&#160;}</div>
-<div class="line"><a name="l01598"></a><span class="lineno"> 1598</span>&#160; </div>
-<div class="line"><a name="l01599"></a><span class="lineno"> 1599</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Allocator&gt;</div>
-<div class="line"><a name="l01600"></a><span class="lineno"> 1600</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(std::vector&lt;T, Allocator&gt;&amp; cont)</div>
-<div class="line"><a name="l01601"></a><span class="lineno"> 1601</span>&#160;    span_noexcept {</div>
-<div class="line"><a name="l01602"></a><span class="lineno"> 1602</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
-<div class="line"><a name="l01603"></a><span class="lineno"> 1603</span>&#160;}</div>
-<div class="line"><a name="l01604"></a><span class="lineno"> 1604</span>&#160; </div>
-<div class="line"><a name="l01605"></a><span class="lineno"> 1605</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Allocator&gt;</div>
-<div class="line"><a name="l01606"></a><span class="lineno"> 1606</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const T&gt; make_span(</div>
-<div class="line"><a name="l01607"></a><span class="lineno"> 1607</span>&#160;    std::vector&lt;T, Allocator&gt; <span class="keyword">const</span>&amp; cont) span_noexcept {</div>
-<div class="line"><a name="l01608"></a><span class="lineno"> 1608</span>&#160;  <span class="keywordflow">return</span> span&lt;const T&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
-<div class="line"><a name="l01609"></a><span class="lineno"> 1609</span>&#160;}</div>
-<div class="line"><a name="l01610"></a><span class="lineno"> 1610</span>&#160; </div>
-<div class="line"><a name="l01611"></a><span class="lineno"> 1611</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN || ( ... )</span></div>
-<div class="line"><a name="l01612"></a><span class="lineno"> 1612</span>&#160; </div>
-<div class="line"><a name="l01613"></a><span class="lineno"> 1613</span>&#160;<span class="preprocessor">#if !span_USES_STD_SPAN &amp;&amp; span_FEATURE(WITH_CONTAINER)</span></div>
-<div class="line"><a name="l01614"></a><span class="lineno"> 1614</span>&#160; </div>
-<div class="line"><a name="l01615"></a><span class="lineno"> 1615</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
-<div class="line"><a name="l01616"></a><span class="lineno"> 1616</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;typename Container::value_type&gt; make_span(</div>
-<div class="line"><a name="l01617"></a><span class="lineno"> 1617</span>&#160;    with_container_t, Container&amp; cont) span_noexcept {</div>
-<div class="line"><a name="l01618"></a><span class="lineno"> 1618</span>&#160;  <span class="keywordflow">return</span> span&lt;typename Container::value_type&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
-<div class="line"><a name="l01619"></a><span class="lineno"> 1619</span>&#160;}</div>
-<div class="line"><a name="l01620"></a><span class="lineno"> 1620</span>&#160; </div>
-<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
-<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const typename Container::value_type&gt; make_span(</div>
-<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;    with_container_t, Container <span class="keyword">const</span>&amp; cont) span_noexcept {</div>
-<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename Container::value_type&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
-<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;}</div>
-<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160; </div>
-<div class="line"><a name="l01627"></a><span class="lineno"> 1627</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// ! span_USES_STD_SPAN &amp;&amp; span_FEATURE( WITH_CONTAINER )</span></div>
-<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160; </div>
-<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160;<span class="comment">// extensions: non-member views:</span></div>
-<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;<span class="comment">// this feature implies the presence of make_span()</span></div>
-<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160; </div>
-<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN)</span></div>
-<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160; </div>
-<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;span_constexpr span&lt;T, Count&gt; first(span&lt;T, Extent&gt; spn) {</div>
-<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;  <span class="keywordflow">return</span> spn.template first&lt;Count&gt;();</div>
-<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;}</div>
-<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160; </div>
-<div class="line"><a name="l01639"></a><span class="lineno"> 1639</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;span_constexpr span&lt;T&gt; first(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> count) {</div>
-<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;  <span class="keywordflow">return</span> spn.first(count);</div>
-<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;}</div>
-<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160; </div>
-<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;span_constexpr span&lt;T, Count&gt; last(span&lt;T, Extent&gt; spn) {</div>
-<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;  <span class="keywordflow">return</span> spn.template last&lt;Count&gt;();</div>
-<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;}</div>
-<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160; </div>
-<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;span_constexpr span&lt;T&gt; last(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> count) {</div>
-<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;  <span class="keywordflow">return</span> spn.last(count);</div>
-<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;}</div>
-<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160; </div>
-<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> Offset, extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;span_constexpr span&lt;T, Count&gt; subspan(span&lt;T, Extent&gt; spn) {</div>
-<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;  <span class="keywordflow">return</span> spn.template subspan&lt;Offset, Count&gt;();</div>
-<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;}</div>
-<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160; </div>
-<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
-<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;span_constexpr span&lt;T&gt; subspan(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> offset,</div>
-<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;                               <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>) {</div>
-<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;  <span class="keywordflow">return</span> spn.subspan(offset, count);</div>
-<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;}</div>
-<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160; </div>
-<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_SPAN )</span></div>
-<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160; </div>
-<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER) &amp;&amp; span_CPP11_120</span></div>
-<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160; </div>
-<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;span_constexpr <span class="keyword">auto</span> first(T&amp; t)</div>
-<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> first&lt;Count&gt;()) {</div>
-<div class="line"><a name="l01672"></a><span class="lineno"> 1672</span>&#160;  <span class="keywordflow">return</span> make_span(t).template first&lt;Count&gt;();</div>
-<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;}</div>
-<div class="line"><a name="l01674"></a><span class="lineno"> 1674</span>&#160; </div>
-<div class="line"><a name="l01675"></a><span class="lineno"> 1675</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01676"></a><span class="lineno"> 1676</span>&#160;span_constexpr <span class="keyword">auto</span> first(T&amp; t, <span class="keywordtype">size_t</span> count)</div>
-<div class="line"><a name="l01677"></a><span class="lineno"> 1677</span>&#160;    -&gt; decltype(make_span(t).first(count)) {</div>
-<div class="line"><a name="l01678"></a><span class="lineno"> 1678</span>&#160;  <span class="keywordflow">return</span> make_span(t).first(count);</div>
-<div class="line"><a name="l01679"></a><span class="lineno"> 1679</span>&#160;}</div>
-<div class="line"><a name="l01680"></a><span class="lineno"> 1680</span>&#160; </div>
-<div class="line"><a name="l01681"></a><span class="lineno"> 1681</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01682"></a><span class="lineno"> 1682</span>&#160;span_constexpr <span class="keyword">auto</span> last(T&amp; t)</div>
-<div class="line"><a name="l01683"></a><span class="lineno"> 1683</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> last&lt;Count&gt;()) {</div>
-<div class="line"><a name="l01684"></a><span class="lineno"> 1684</span>&#160;  <span class="keywordflow">return</span> make_span(t).template last&lt;Count&gt;();</div>
-<div class="line"><a name="l01685"></a><span class="lineno"> 1685</span>&#160;}</div>
-<div class="line"><a name="l01686"></a><span class="lineno"> 1686</span>&#160; </div>
-<div class="line"><a name="l01687"></a><span class="lineno"> 1687</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01688"></a><span class="lineno"> 1688</span>&#160;span_constexpr <span class="keyword">auto</span> last(T&amp; t, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count)</div>
-<div class="line"><a name="l01689"></a><span class="lineno"> 1689</span>&#160;    -&gt; decltype(make_span(t).last(count)) {</div>
-<div class="line"><a name="l01690"></a><span class="lineno"> 1690</span>&#160;  <span class="keywordflow">return</span> make_span(t).last(count);</div>
-<div class="line"><a name="l01691"></a><span class="lineno"> 1691</span>&#160;}</div>
-<div class="line"><a name="l01692"></a><span class="lineno"> 1692</span>&#160; </div>
-<div class="line"><a name="l01693"></a><span class="lineno"> 1693</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> Offset, extent_t Count = dynamic_extent, <span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01694"></a><span class="lineno"> 1694</span>&#160;span_constexpr <span class="keyword">auto</span> subspan(T&amp; t)</div>
-<div class="line"><a name="l01695"></a><span class="lineno"> 1695</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> subspan&lt;Offset, Count&gt;()) {</div>
-<div class="line"><a name="l01696"></a><span class="lineno"> 1696</span>&#160;  <span class="keywordflow">return</span> make_span(t).template subspan&lt;Offset, Count&gt;();</div>
-<div class="line"><a name="l01697"></a><span class="lineno"> 1697</span>&#160;}</div>
-<div class="line"><a name="l01698"></a><span class="lineno"> 1698</span>&#160; </div>
-<div class="line"><a name="l01699"></a><span class="lineno"> 1699</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01700"></a><span class="lineno"> 1700</span>&#160;span_constexpr <span class="keyword">auto</span> subspan(T&amp; t, <span class="keywordtype">size_t</span> offset,</div>
-<div class="line"><a name="l01701"></a><span class="lineno"> 1701</span>&#160;                            <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>)</div>
-<div class="line"><a name="l01702"></a><span class="lineno"> 1702</span>&#160;    -&gt; decltype(make_span(t).subspan(offset, count)) {</div>
-<div class="line"><a name="l01703"></a><span class="lineno"> 1703</span>&#160;  <span class="keywordflow">return</span> make_span(t).subspan(offset, count);</div>
-<div class="line"><a name="l01704"></a><span class="lineno"> 1704</span>&#160;}</div>
-<div class="line"><a name="l01705"></a><span class="lineno"> 1705</span>&#160; </div>
-<div class="line"><a name="l01706"></a><span class="lineno"> 1706</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_CONTAINER )</span></div>
-<div class="line"><a name="l01707"></a><span class="lineno"> 1707</span>&#160; </div>
-<div class="line"><a name="l01708"></a><span class="lineno"> 1708</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
-<div class="line"><a name="l01709"></a><span class="lineno"> 1709</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01710"></a><span class="lineno"> 1710</span>&#160; </div>
-<div class="line"><a name="l01711"></a><span class="lineno"> 1711</span>&#160;<span class="comment">// make available in nonstd:</span></div>
-<div class="line"><a name="l01712"></a><span class="lineno"> 1712</span>&#160; </div>
-<div class="line"><a name="l01713"></a><span class="lineno"> 1713</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
-<div class="line"><a name="l01714"></a><span class="lineno"> 1714</span>&#160;<span class="keyword">using</span> span_lite::make_span;</div>
-<div class="line"><a name="l01715"></a><span class="lineno"> 1715</span>&#160; </div>
-<div class="line"><a name="l01716"></a><span class="lineno"> 1716</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN) || \</span></div>
-<div class="line"><a name="l01717"></a><span class="lineno"> 1717</span>&#160;<span class="preprocessor">    (span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER) &amp;&amp; span_CPP11_120)</span></div>
-<div class="line"><a name="l01718"></a><span class="lineno"> 1718</span>&#160; </div>
-<div class="line"><a name="l01719"></a><span class="lineno"> 1719</span>&#160;<span class="keyword">using</span> span_lite::first;</div>
-<div class="line"><a name="l01720"></a><span class="lineno"> 1720</span>&#160;<span class="keyword">using</span> span_lite::last;</div>
-<div class="line"><a name="l01721"></a><span class="lineno"> 1721</span>&#160;<span class="keyword">using</span> span_lite::subspan;</div>
-<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160; </div>
-<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_[SPAN|CONTAINER] )</span></div>
-<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160; </div>
-<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160; </div>
-<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// #if span_FEATURE_TO_STD( MAKE_SPAN )</span></div>
-<div class="line"><a name="l01728"></a><span class="lineno"> 1728</span>&#160; </div>
-<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER &amp;&amp; span_FEATURE(BYTE_SPAN) &amp;&amp; \</span></div>
-<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;<span class="preprocessor">    (span_HAVE(BYTE) || span_HAVE(NONSTD_BYTE))</span></div>
-<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160; </div>
-<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
-<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;<span class="keyword">namespace </span>span_lite {</div>
-<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160; </div>
-<div class="line"><a name="l01735"></a><span class="lineno"> 1735</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> byte_span(T&amp; t) span_noexcept</div>
-<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;    -&gt; span&lt;std17::byte, span_sizeof(T)&gt; {</div>
-<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;  <span class="keywordflow">return</span> span&lt;std17::byte, span_sizeof(t)&gt;(<span class="keyword">reinterpret_cast&lt;</span>std17::byte*<span class="keyword">&gt;</span>(&amp;t),</div>
-<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;                                           span_sizeof(T));</div>
-<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;}</div>
-<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160; </div>
-<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l01743"></a><span class="lineno"> 1743</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> byte_span(T <span class="keyword">const</span>&amp; t) span_noexcept</div>
-<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;    -&gt; span&lt;<span class="keyword">const</span> std17::byte, span_sizeof(T)&gt; {</div>
-<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;  <span class="keywordflow">return</span> span&lt;const std17::byte, span_sizeof(t)&gt;(</div>
-<div class="line"><a name="l01746"></a><span class="lineno"> 1746</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte const*<span class="keyword">&gt;</span>(&amp;t), span_sizeof(T));</div>
-<div class="line"><a name="l01747"></a><span class="lineno"> 1747</span>&#160;}</div>
-<div class="line"><a name="l01748"></a><span class="lineno"> 1748</span>&#160; </div>
-<div class="line"><a name="l01749"></a><span class="lineno"> 1749</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
-<div class="line"><a name="l01750"></a><span class="lineno"> 1750</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01751"></a><span class="lineno"> 1751</span>&#160; </div>
-<div class="line"><a name="l01752"></a><span class="lineno"> 1752</span>&#160;<span class="comment">// make available in nonstd:</span></div>
-<div class="line"><a name="l01753"></a><span class="lineno"> 1753</span>&#160; </div>
-<div class="line"><a name="l01754"></a><span class="lineno"> 1754</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
-<div class="line"><a name="l01755"></a><span class="lineno"> 1755</span>&#160;<span class="keyword">using</span> span_lite::byte_span;</div>
-<div class="line"><a name="l01756"></a><span class="lineno"> 1756</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
-<div class="line"><a name="l01757"></a><span class="lineno"> 1757</span>&#160; </div>
-<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( BYTE_SPAN )</span></div>
-<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160; </div>
-<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160;<span class="preprocessor">#if span_HAVE(STRUCT_BINDING)</span></div>
-<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160; </div>
-<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160;<span class="preprocessor">#if span_CPP14_OR_GREATER</span></div>
-<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;<span class="preprocessor">#include &lt;tuple&gt;</span></div>
-<div class="line"><a name="l01764"></a><span class="lineno"> 1764</span>&#160;<span class="preprocessor">#elif span_CPP11_OR_GREATER</span></div>
-<div class="line"><a name="l01765"></a><span class="lineno"> 1765</span>&#160;<span class="preprocessor">#include &lt;tuple&gt;</span></div>
-<div class="line"><a name="l01766"></a><span class="lineno"> 1766</span>&#160;<span class="keyword">namespace </span>std {</div>
-<div class="line"><a name="l01767"></a><span class="lineno"> 1767</span>&#160;<span class="keyword">template</span> &lt;std::<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l01768"></a><span class="lineno"> 1768</span>&#160;<span class="keyword">using</span> tuple_element_t = <span class="keyword">typename</span> tuple_element&lt;I, T&gt;::type;</div>
-<div class="line"><a name="l01769"></a><span class="lineno"> 1769</span>&#160;}</div>
-<div class="line"><a name="l01770"></a><span class="lineno"> 1770</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01771"></a><span class="lineno"> 1771</span>&#160;<span class="keyword">namespace </span>std {</div>
-<div class="line"><a name="l01772"></a><span class="lineno"> 1772</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l01773"></a><span class="lineno"> 1773</span>&#160;<span class="keyword">class </span>tuple_size; <span class="comment">/*undefined*/</span></div>
-<div class="line"><a name="l01774"></a><span class="lineno"> 1774</span>&#160; </div>
-<div class="line"><a name="l01775"></a><span class="lineno"> 1775</span>&#160;<span class="keyword">template</span> &lt;std::<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l01776"></a><span class="lineno"> 1776</span>&#160;<span class="keyword">class </span>tuple_element; <span class="comment">/* undefined */</span></div>
-<div class="line"><a name="l01777"></a><span class="lineno"> 1777</span>&#160;}  <span class="comment">// namespace std</span></div>
-<div class="line"><a name="l01778"></a><span class="lineno"> 1778</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_CPP14_OR_GREATER</span></div>
-<div class="line"><a name="l01779"></a><span class="lineno"> 1779</span>&#160; </div>
-<div class="line"><a name="l01780"></a><span class="lineno"> 1780</span>&#160;<span class="comment">// NOLINTNEXTLINE</span></div>
-<div class="line"><a name="l01781"></a><span class="lineno"> 1781</span>&#160;<span class="keyword">namespace </span>std {</div>
-<div class="line"><a name="l01782"></a><span class="lineno"> 1782</span>&#160; </div>
-<div class="line"><a name="l01783"></a><span class="lineno"> 1783</span>&#160;<span class="comment">// 26.7.X Tuple interface</span></div>
-<div class="line"><a name="l01784"></a><span class="lineno"> 1784</span>&#160; </div>
-<div class="line"><a name="l01785"></a><span class="lineno"> 1785</span>&#160;<span class="comment">// std::tuple_size&lt;&gt;:</span></div>
-<div class="line"><a name="l01786"></a><span class="lineno"> 1786</span>&#160; </div>
-<div class="line"><a name="l01787"></a><span class="lineno"> 1787</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
-<div class="line"><a name="l01788"></a><span class="lineno"> 1788</span>&#160;<span class="keyword">class </span>tuple_size&lt;<a class="code" href="namespacenonstd.html">nonstd</a>::span&lt;ElementType, Extent&gt; &gt;</div>
-<div class="line"><a name="l01789"></a><span class="lineno"> 1789</span>&#160;    : <span class="keyword">public</span> integral_constant&lt;size_t, static_cast&lt;size_t&gt;(Extent)&gt; {};</div>
-<div class="line"><a name="l01790"></a><span class="lineno"> 1790</span>&#160; </div>
-<div class="line"><a name="l01791"></a><span class="lineno"> 1791</span>&#160;<span class="comment">// std::tuple_size&lt;&gt;: Leave undefined for dynamic extent:</span></div>
-<div class="line"><a name="l01792"></a><span class="lineno"> 1792</span>&#160; </div>
-<div class="line"><a name="l01793"></a><span class="lineno"> 1793</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ElementType&gt;</div>
-<div class="line"><a name="l01794"></a><span class="lineno"> 1794</span>&#160;<span class="keyword">class </span>tuple_size&lt;<a class="code" href="namespacenonstd.html">nonstd</a>::span&lt;ElementType, nonstd::dynamic_extent&gt; &gt;;</div>
-<div class="line"><a name="l01795"></a><span class="lineno"> 1795</span>&#160; </div>
-<div class="line"><a name="l01796"></a><span class="lineno"> 1796</span>&#160;<span class="comment">// std::tuple_element&lt;&gt;:</span></div>
-<div class="line"><a name="l01797"></a><span class="lineno"> 1797</span>&#160; </div>
-<div class="line"><a name="l01798"></a><span class="lineno"> 1798</span>&#160;template &lt;size_t I, typename ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
-<div class="line"><a name="l01799"></a><span class="lineno"> 1799</span>&#160;class tuple_element&lt;I, nonstd::span&lt;ElementType, Extent&gt; &gt; {</div>
-<div class="line"><a name="l01800"></a><span class="lineno"> 1800</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l01801"></a><span class="lineno"> 1801</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
-<div class="line"><a name="l01802"></a><span class="lineno"> 1802</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
-<div class="line"><a name="l01803"></a><span class="lineno"> 1803</span>&#160;                <span class="stringliteral">&quot;tuple_element&lt;I,span&gt;: dynamic extent or index out of range&quot;</span>);</div>
-<div class="line"><a name="l01804"></a><span class="lineno"> 1804</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01805"></a><span class="lineno"> 1805</span>&#160;  <span class="keyword">using</span> type = ElementType;</div>
-<div class="line"><a name="l01806"></a><span class="lineno"> 1806</span>&#160;};</div>
-<div class="line"><a name="l01807"></a><span class="lineno"> 1807</span>&#160; </div>
-<div class="line"><a name="l01808"></a><span class="lineno"> 1808</span>&#160;<span class="comment">// std::get&lt;&gt;(), 2 variants:</span></div>
-<div class="line"><a name="l01809"></a><span class="lineno"> 1809</span>&#160; </div>
-<div class="line"><a name="l01810"></a><span class="lineno"> 1810</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
-<div class="line"><a name="l01811"></a><span class="lineno"> 1811</span>&#160;span_constexpr ElementType&amp; get(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">nonstd::span&lt;ElementType, Extent&gt;</a>&amp; spn)</div>
-<div class="line"><a name="l01812"></a><span class="lineno"> 1812</span>&#160;    span_noexcept {</div>
-<div class="line"><a name="l01813"></a><span class="lineno"> 1813</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
-<div class="line"><a name="l01814"></a><span class="lineno"> 1814</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
-<div class="line"><a name="l01815"></a><span class="lineno"> 1815</span>&#160;                <span class="stringliteral">&quot;get&lt;&gt;(span): dynamic extent or index out of range&quot;</span>);</div>
-<div class="line"><a name="l01816"></a><span class="lineno"> 1816</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01817"></a><span class="lineno"> 1817</span>&#160;  <span class="keywordflow">return</span> spn[I];</div>
-<div class="line"><a name="l01818"></a><span class="lineno"> 1818</span>&#160;}</div>
-<div class="line"><a name="l01819"></a><span class="lineno"> 1819</span>&#160; </div>
-<div class="line"><a name="l01820"></a><span class="lineno"> 1820</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
-<div class="line"><a name="l01821"></a><span class="lineno"> 1821</span>&#160;span_constexpr ElementType <span class="keyword">const</span>&amp; get(</div>
-<div class="line"><a name="l01822"></a><span class="lineno"> 1822</span>&#160;    <a class="code" href="classnonstd_1_1span__lite_1_1span.html">nonstd::span&lt;ElementType, Extent&gt;</a> <span class="keyword">const</span>&amp; spn) span_noexcept {</div>
-<div class="line"><a name="l01823"></a><span class="lineno"> 1823</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
-<div class="line"><a name="l01824"></a><span class="lineno"> 1824</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
-<div class="line"><a name="l01825"></a><span class="lineno"> 1825</span>&#160;                <span class="stringliteral">&quot;get&lt;&gt;(span): dynamic extent or index out of range&quot;</span>);</div>
-<div class="line"><a name="l01826"></a><span class="lineno"> 1826</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01827"></a><span class="lineno"> 1827</span>&#160;  <span class="keywordflow">return</span> spn[I];</div>
-<div class="line"><a name="l01828"></a><span class="lineno"> 1828</span>&#160;}</div>
-<div class="line"><a name="l01829"></a><span class="lineno"> 1829</span>&#160; </div>
-<div class="line"><a name="l01830"></a><span class="lineno"> 1830</span>&#160;}  <span class="comment">// end namespace std</span></div>
-<div class="line"><a name="l01831"></a><span class="lineno"> 1831</span>&#160; </div>
-<div class="line"><a name="l01832"></a><span class="lineno"> 1832</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( STRUCT_BINDING )</span></div>
-<div class="line"><a name="l01833"></a><span class="lineno"> 1833</span>&#160; </div>
-<div class="line"><a name="l01834"></a><span class="lineno"> 1834</span>&#160;<span class="preprocessor">#if !span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01835"></a><span class="lineno"> 1835</span>&#160;span_RESTORE_WARNINGS()</div>
-<div class="line"><a name="l01836"></a><span class="lineno"> 1836</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
-<div class="line"><a name="l01837"></a><span class="lineno"> 1837</span>&#160; </div>
-<div class="line"><a name="l01838"></a><span class="lineno"> 1838</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// NONSTD_SPAN_HPP_INCLUDED</span></div>
+<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;  <span class="comment">// NOLINTNEXTLINE</span></div>
+<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;  <span class="keyword">static</span> <span class="keyword">inline</span> span_constexpr U *to_address(U *p) span_noexcept {</div>
+<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;    <span class="keywordflow">return</span> p;</div>
+<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;  }</div>
+<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160; </div>
+<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Ptr span_REQUIRES_T((!std::is_po<span class="keywordtype">int</span>er&lt;Ptr&gt;::value))&gt;</div>
+<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;  <span class="keyword">static</span> <span class="keyword">inline</span> span_constexpr <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a1472399cf456670de3b4152fca459e27">pointer</a> to_address(Ptr <span class="keyword">const</span> &amp;it) span_noexcept {</div>
+<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;    <span class="keywordflow">return</span> to_address(it.operator-&gt;());</div>
+<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;  }</div>
+<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( ITERATOR_CTOR )</span></div>
+<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160; </div>
+<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;  <span class="comment">// NOLINTNEXTLINE</span></div>
+<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l01320"></a><span class="lineno"><a class="line" href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339"> 1320</a></span>&#160;  <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a1472399cf456670de3b4152fca459e27">pointer</a> <a class="code" href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339">data_</a>;    <span class="comment">// NOLINT</span></div>
+<div class="line"><a name="l01321"></a><span class="lineno"><a class="line" href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d"> 1321</a></span>&#160;  <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a00fed6a71b1c828ea7b13941cd964b9f">size_type</a> <a class="code" href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d">size_</a>;  <span class="comment">// NOLINT</span></div>
+<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;};</div>
+<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160; </div>
+<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;<span class="comment">// class template argument deduction guides:</span></div>
+<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160; </div>
+<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;<span class="preprocessor">#if span_HAVE(DEDUCTION_GUIDES)</span></div>
+<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160; </div>
+<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(T (&amp;)[N]) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, static_cast&lt;extent_t&gt;</a>(N)&gt;;  <span class="comment">// NOLINT</span></div>
+<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160; </div>
+<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(std::array&lt;T, N&gt; &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, static_cast&lt;extent_t&gt;</a>(N)&gt;;</div>
+<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160; </div>
+<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(std::array&lt;T, N&gt; <span class="keyword">const</span> &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;const T, static_cast&lt;extent_t&gt;</a>(N)&gt;;</div>
+<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160; </div>
+<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;<span class="preprocessor">#if span_HAVE(CONSTRAINED_SPAN_CONTAINER_CTOR)</span></div>
+<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160; </div>
+<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
+<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(Container &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;typename Container::value_type&gt;</a>;</div>
+<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160; </div>
+<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
+<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(Container <span class="keyword">const</span> &amp;) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;const typename Container::value_type&gt;</a>;</div>
+<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160; </div>
+<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160; </div>
+<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;<span class="comment">// iterator: constraints: It satisfies contiguous_­iterator.</span></div>
+<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160; </div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> It, <span class="keyword">class</span> EndOrSize&gt;</div>
+<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>(It, EndOrSize) -&gt; <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span</a>&lt;<span class="keyword">typename</span> std11::remove_reference&lt;</div>
+<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;    <span class="keyword">typename</span> std20::iter_reference_t&lt;It&gt; &gt;::type&gt;;</div>
+<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160; </div>
+<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( DEDUCTION_GUIDES )</span></div>
+<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160; </div>
+<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;<span class="comment">// 26.7.3.7 Comparison operators [span.comparison]</span></div>
+<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160; </div>
+<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;<span class="preprocessor">#if span_FEATURE(COMPARISON)</span></div>
+<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
+<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160; </div>
+<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> same(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T1, E1&gt;</a> <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;                                <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T2, E2&gt;</a> <span class="keyword">const</span> &amp;r) span_noexcept {</div>
+<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structnonstd_1_1span__lite_1_1std11_1_1is__same.html">std11::is_same&lt;T1, T2&gt;::value</a> &amp;&amp; l.size() == r.size() &amp;&amp;</div>
+<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;         <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>(l.data()) == r.data();</div>
+<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;}</div>
+<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160; </div>
+<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160; </div>
+<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator==(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T1, E1&gt;</a> <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;                                      <a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T2, E2&gt;</a> <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;  <span class="keywordflow">return</span></div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
+<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;      same(l, r) ||</div>
+<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;      (l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>() == r.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>() &amp;&amp; std::equal(l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a78d914982f1c59e02f8f862e8c236456">begin</a>(), l.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a7ab328b3f104b5f54b252d9b1726eece">end</a>(), r.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a78d914982f1c59e02f8f862e8c236456">begin</a>()));</div>
+<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;}</div>
+<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160; </div>
+<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&lt;(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;                                     span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;  <span class="keywordflow">return</span> std::lexicographical_compare(l.begin(), l.end(), r.begin(), r.end());</div>
+<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;}</div>
+<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160; </div>
+<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator!=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;  <span class="keywordflow">return</span> !(l == r);</div>
+<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;}</div>
+<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160; </div>
+<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&lt;=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;  <span class="keywordflow">return</span> !(r &lt; l);</div>
+<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;}</div>
+<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160; </div>
+<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&gt;(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;                                     span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;  <span class="keywordflow">return</span> (r &lt; l);</div>
+<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;}</div>
+<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160; </div>
+<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T1, extent_t E1, <span class="keyword">class</span> T2, extent_t E2&gt;</div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keywordtype">bool</span> operator&gt;=(span&lt;T1, E1&gt; <span class="keyword">const</span> &amp;l,</div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;                                      span&lt;T2, E2&gt; <span class="keyword">const</span> &amp;r) {</div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;  <span class="keywordflow">return</span> !(l &lt; r);</div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;}</div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160; </div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( COMPARISON )</span></div>
+<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160; </div>
+<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;<span class="comment">// 26.7.2.6 views of object representation [span.objectrep]</span></div>
+<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160; </div>
+<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;<span class="preprocessor">#if span_HAVE(BYTE) || span_HAVE(NONSTD_BYTE)</span></div>
+<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160; </div>
+<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;<span class="comment">// Avoid MSVC 14.1 (1910), VS 2017: warning C4307: &#39;*&#39;: integral constant</span></div>
+<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;<span class="comment">// overflow:</span></div>
+<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160; </div>
+<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;<span class="keyword">struct </span>BytesExtent {</div>
+<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER</span></div>
+<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;  <span class="keyword">enum</span> ET : <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> { value = span_sizeof(T) * Extent };</div>
+<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;  <span class="keyword">enum</span> ET { value = span_sizeof(T) * Extent };</div>
+<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;};</div>
+<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160; </div>
+<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;<span class="keyword">struct </span>BytesExtent&lt;T, <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>&gt; {</div>
+<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER</span></div>
+<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;  <span class="keyword">enum</span> ET : <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a>{value = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>};</div>
+<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;  <span class="keyword">enum</span> ET { value = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a> };</div>
+<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;};</div>
+<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160; </div>
+<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;</div>
+<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;as_bytes(span&lt;T, Extent&gt; spn) span_noexcept {</div>
+<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;<span class="preprocessor">#if 0</span></div>
+<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;    <span class="keywordflow">return</span> { <span class="keyword">reinterpret_cast&lt;</span> std17::byte <span class="keyword">const </span>* <span class="keyword">&gt;</span>( spn.data() ), spn.size_bytes() };</div>
+<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;  <span class="keywordflow">return</span> span&lt;const std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;(</div>
+<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte <span class="keyword">const </span>*<span class="keyword">&gt;</span>(spn.data()),</div>
+<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;      spn.size_bytes());  <span class="comment">// NOLINT</span></div>
+<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;}</div>
+<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160; </div>
+<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;</div>
+<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;as_writable_bytes(span&lt;T, Extent&gt; spn) span_noexcept {</div>
+<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;<span class="preprocessor">#if 0</span></div>
+<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;    <span class="keywordflow">return</span> { <span class="keyword">reinterpret_cast&lt;</span> std17::byte * <span class="keyword">&gt;</span>( spn.data() ), spn.size_bytes() };</div>
+<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;  <span class="keywordflow">return</span> span&lt;std17::byte, BytesExtent&lt;T, Extent&gt;::value&gt;(</div>
+<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte *<span class="keyword">&gt;</span>(spn.data()), spn.size_bytes());  <span class="comment">// NOLINT</span></div>
+<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;}</div>
+<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160; </div>
+<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( BYTE ) || span_HAVE( NONSTD_BYTE )</span></div>
+<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160; </div>
+<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;<span class="comment">// 27.8 Container and view access [iterator.container]</span></div>
+<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160; </div>
+<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> Extent <span class="comment">/*= dynamic_extent*/</span>&gt;</div>
+<div class="line"><a name="l01464"></a><span class="lineno"><a class="line" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07"> 1464</a></span>&#160;span_constexpr std::size_t <a class="code" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">size</a>(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, Extent&gt;</a> <span class="keyword">const</span> &amp;spn) {</div>
+<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(spn.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>());</div>
+<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;}</div>
+<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160; </div>
+<div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> Extent <span class="comment">/*= dynamic_extent*/</span>&gt;</div>
+<div class="line"><a name="l01469"></a><span class="lineno"><a class="line" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649"> 1469</a></span>&#160;span_constexpr std::ptrdiff_t <a class="code" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">ssize</a>(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">span&lt;T, Extent&gt;</a> <span class="keyword">const</span> &amp;spn) {</div>
+<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(spn.<a class="code" href="classnonstd_1_1span__lite_1_1span.html#a68af8c1a1b7a7ab1a8902897692adbbc">size</a>());</div>
+<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;}</div>
+<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160; </div>
+<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
+<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160; </div>
+<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;<span class="comment">// make available in nonstd:</span></div>
+<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160; </div>
+<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160; </div>
+<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">span_lite::dynamic_extent</a>;</div>
+<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160; </div>
+<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;<span class="keyword">using</span> span_lite::span;</div>
+<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160; </div>
+<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">span_lite::with_container</a>;</div>
+<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160; </div>
+<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;<span class="preprocessor">#if span_FEATURE(COMPARISON)</span></div>
+<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;<span class="preprocessor">#if span_FEATURE(SAME)</span></div>
+<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;<span class="keyword">using</span> span_lite::same;</div>
+<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160; </div>
+<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;<span class="keyword">using</span> span_lite::operator==;</div>
+<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;<span class="keyword">using</span> span_lite::operator!=;</div>
+<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;<span class="keyword">using</span> span_lite::operator&lt;;</div>
+<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;<span class="keyword">using</span> span_lite::operator&lt;=;</div>
+<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;<span class="keyword">using</span> span_lite::operator&gt;;</div>
+<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;<span class="keyword">using</span> span_lite::operator&gt;=;</div>
+<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160; </div>
+<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;<span class="preprocessor">#if span_HAVE(BYTE)</span></div>
+<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;<span class="keyword">using</span> span_lite::as_bytes;</div>
+<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;<span class="keyword">using</span> span_lite::as_writable_bytes;</div>
+<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160; </div>
+<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">span_lite::size</a>;</div>
+<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">span_lite::ssize</a>;</div>
+<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160; </div>
+<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160; </div>
+<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160; </div>
+<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;<span class="comment">// make_span() [span-lite extension]:</span></div>
+<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160; </div>
+<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;<span class="preprocessor">#if span_FEATURE(MAKE_SPAN) || span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN) || \</span></div>
+<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;<span class="preprocessor">    span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER)</span></div>
+<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160; </div>
+<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;<span class="preprocessor">#define span_constexpr constexpr</span></div>
+<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;<span class="preprocessor">#define span_noexcept noexcept</span></div>
+<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;<span class="preprocessor">#define span_nullptr nullptr</span></div>
+<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;<span class="preprocessor">#ifndef span_CONFIG_EXTENT_TYPE</span></div>
+<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;<span class="preprocessor">#define span_CONFIG_EXTENT_TYPE std::size_t</span></div>
+<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> = span_CONFIG_EXTENT_TYPE;</div>
+<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160; </div>
+<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;<span class="keyword">namespace </span>span_lite {</div>
+<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160; </div>
+<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(T* ptr, <span class="keywordtype">size_t</span> count) span_noexcept {</div>
+<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(ptr, count);</div>
+<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;}</div>
+<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160; </div>
+<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(T* first, T* last) span_noexcept {</div>
+<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(first, last);</div>
+<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;}</div>
+<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160; </div>
+<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T, static_cast&lt;extent_t&gt;(N)&gt; make_span(T (&amp;arr)[N])</div>
+<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;    span_noexcept {</div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;  <span class="keywordflow">return</span> span&lt;T, static_cast&lt;extent_t&gt;(N)&gt;(&amp;arr[0], N);</div>
+<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;}</div>
+<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160; </div>
+<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN || span_HAVE(ARRAY)</span></div>
+<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160; </div>
+<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T, static_cast&lt;extent_t&gt;(N)&gt; make_span(</div>
+<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;    std::array&lt;T, N&gt;&amp; arr) span_noexcept {</div>
+<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;  <span class="keywordflow">return</span> span&lt;T, static_cast&lt;extent_t&gt;(N)&gt;(arr);</div>
+<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;}</div>
+<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160; </div>
+<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, std::<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const T, static_cast&lt;extent_t&gt;(N)&gt; make_span(</div>
+<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;    std::array&lt;T, N&gt; <span class="keyword">const</span>&amp; arr) span_noexcept {</div>
+<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;  <span class="keywordflow">return</span> span&lt;const T, static_cast&lt;extent_t&gt;(N)&gt;(arr);</div>
+<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;}</div>
+<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160; </div>
+<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( ARRAY )</span></div>
+<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160; </div>
+<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;<span class="preprocessor">#if span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160; </div>
+<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
+<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;          <span class="keyword">class </span>EP = decltype(std::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
+<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container&amp; cont) span_noexcept</div>
+<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;    -&gt; span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
+<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;  <span class="keywordflow">return</span> span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
+<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;}</div>
+<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160; </div>
+<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
+<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;          <span class="keyword">class </span>EP = decltype(std::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
+<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container <span class="keyword">const</span>&amp; cont) span_noexcept</div>
+<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;    -&gt; span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
+<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
+<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;}</div>
+<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160; </div>
+<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;<span class="preprocessor">#elif span_HAVE(CONSTRAINED_SPAN_CONTAINER_CTOR) &amp;&amp; span_HAVE(AUTO)</span></div>
+<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160; </div>
+<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
+<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;          <span class="keyword">class </span>EP = decltype(std17::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
+<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container&amp; cont) span_noexcept</div>
+<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;    -&gt; span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
+<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;  <span class="keywordflow">return</span> span&lt;typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
+<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;}</div>
+<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160; </div>
+<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>Container,</div>
+<div class="line"><a name="l01587"></a><span class="lineno"> 1587</span>&#160;          <span class="keyword">class </span>EP = decltype(std17::data(std::declval&lt;Container&amp;&gt;()))&gt;</div>
+<div class="line"><a name="l01588"></a><span class="lineno"> 1588</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> make_span(Container <span class="keyword">const</span>&amp; cont) span_noexcept</div>
+<div class="line"><a name="l01589"></a><span class="lineno"> 1589</span>&#160;    -&gt; span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt; {</div>
+<div class="line"><a name="l01590"></a><span class="lineno"> 1590</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename std::remove_pointer&lt;EP&gt;::type&gt;(cont);</div>
+<div class="line"><a name="l01591"></a><span class="lineno"> 1591</span>&#160;}</div>
+<div class="line"><a name="l01592"></a><span class="lineno"> 1592</span>&#160; </div>
+<div class="line"><a name="l01593"></a><span class="lineno"> 1593</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01594"></a><span class="lineno"> 1594</span>&#160; </div>
+<div class="line"><a name="l01595"></a><span class="lineno"> 1595</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01596"></a><span class="lineno"> 1596</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(span&lt;T&gt; spn) span_noexcept {</div>
+<div class="line"><a name="l01597"></a><span class="lineno"> 1597</span>&#160;  <span class="keywordflow">return</span> spn;</div>
+<div class="line"><a name="l01598"></a><span class="lineno"> 1598</span>&#160;}</div>
+<div class="line"><a name="l01599"></a><span class="lineno"> 1599</span>&#160; </div>
+<div class="line"><a name="l01600"></a><span class="lineno"> 1600</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Allocator&gt;</div>
+<div class="line"><a name="l01601"></a><span class="lineno"> 1601</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;T&gt; make_span(std::vector&lt;T, Allocator&gt;&amp; cont)</div>
+<div class="line"><a name="l01602"></a><span class="lineno"> 1602</span>&#160;    span_noexcept {</div>
+<div class="line"><a name="l01603"></a><span class="lineno"> 1603</span>&#160;  <span class="keywordflow">return</span> span&lt;T&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
+<div class="line"><a name="l01604"></a><span class="lineno"> 1604</span>&#160;}</div>
+<div class="line"><a name="l01605"></a><span class="lineno"> 1605</span>&#160; </div>
+<div class="line"><a name="l01606"></a><span class="lineno"> 1606</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Allocator&gt;</div>
+<div class="line"><a name="l01607"></a><span class="lineno"> 1607</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const T&gt; make_span(</div>
+<div class="line"><a name="l01608"></a><span class="lineno"> 1608</span>&#160;    std::vector&lt;T, Allocator&gt; <span class="keyword">const</span>&amp; cont) span_noexcept {</div>
+<div class="line"><a name="l01609"></a><span class="lineno"> 1609</span>&#160;  <span class="keywordflow">return</span> span&lt;const T&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
+<div class="line"><a name="l01610"></a><span class="lineno"> 1610</span>&#160;}</div>
+<div class="line"><a name="l01611"></a><span class="lineno"> 1611</span>&#160; </div>
+<div class="line"><a name="l01612"></a><span class="lineno"> 1612</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN || ( ... )</span></div>
+<div class="line"><a name="l01613"></a><span class="lineno"> 1613</span>&#160; </div>
+<div class="line"><a name="l01614"></a><span class="lineno"> 1614</span>&#160;<span class="preprocessor">#if !span_USES_STD_SPAN &amp;&amp; span_FEATURE(WITH_CONTAINER)</span></div>
+<div class="line"><a name="l01615"></a><span class="lineno"> 1615</span>&#160; </div>
+<div class="line"><a name="l01616"></a><span class="lineno"> 1616</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
+<div class="line"><a name="l01617"></a><span class="lineno"> 1617</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;typename Container::value_type&gt; make_span(</div>
+<div class="line"><a name="l01618"></a><span class="lineno"> 1618</span>&#160;    with_container_t, Container&amp; cont) span_noexcept {</div>
+<div class="line"><a name="l01619"></a><span class="lineno"> 1619</span>&#160;  <span class="keywordflow">return</span> span&lt;typename Container::value_type&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
+<div class="line"><a name="l01620"></a><span class="lineno"> 1620</span>&#160;}</div>
+<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160; </div>
+<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Container&gt;</div>
+<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;<span class="keyword">inline</span> span_constexpr span&lt;const typename Container::value_type&gt; make_span(</div>
+<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;    with_container_t, Container <span class="keyword">const</span>&amp; cont) span_noexcept {</div>
+<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;  <span class="keywordflow">return</span> span&lt;const typename Container::value_type&gt;(<a class="code" href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">with_container</a>, cont);</div>
+<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160;}</div>
+<div class="line"><a name="l01627"></a><span class="lineno"> 1627</span>&#160; </div>
+<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// ! span_USES_STD_SPAN &amp;&amp; span_FEATURE( WITH_CONTAINER )</span></div>
+<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160; </div>
+<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;<span class="comment">// extensions: non-member views:</span></div>
+<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;<span class="comment">// this feature implies the presence of make_span()</span></div>
+<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160; </div>
+<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN)</span></div>
+<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160; </div>
+<div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;span_constexpr span&lt;T, Count&gt; first(span&lt;T, Extent&gt; spn) {</div>
+<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;  <span class="keywordflow">return</span> spn.template first&lt;Count&gt;();</div>
+<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160;}</div>
+<div class="line"><a name="l01639"></a><span class="lineno"> 1639</span>&#160; </div>
+<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;span_constexpr span&lt;T&gt; first(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> count) {</div>
+<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;  <span class="keywordflow">return</span> spn.first(count);</div>
+<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;}</div>
+<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160; </div>
+<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;span_constexpr span&lt;T, Count&gt; last(span&lt;T, Extent&gt; spn) {</div>
+<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;  <span class="keywordflow">return</span> spn.template last&lt;Count&gt;();</div>
+<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160;}</div>
+<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160; </div>
+<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;span_constexpr span&lt;T&gt; last(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> count) {</div>
+<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;  <span class="keywordflow">return</span> spn.last(count);</div>
+<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160;}</div>
+<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160; </div>
+<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> Offset, extent_t Count, <span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;span_constexpr span&lt;T, Count&gt; subspan(span&lt;T, Extent&gt; spn) {</div>
+<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;  <span class="keywordflow">return</span> spn.template subspan&lt;Offset, Count&gt;();</div>
+<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160;}</div>
+<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160; </div>
+<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, extent_t Extent&gt;</div>
+<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;span_constexpr span&lt;T&gt; subspan(span&lt;T, Extent&gt; spn, <span class="keywordtype">size_t</span> offset,</div>
+<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;                               <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>) {</div>
+<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;  <span class="keywordflow">return</span> spn.subspan(offset, count);</div>
+<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160;}</div>
+<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160; </div>
+<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_SPAN )</span></div>
+<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160; </div>
+<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER) &amp;&amp; span_CPP11_120</span></div>
+<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160; </div>
+<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;span_constexpr <span class="keyword">auto</span> first(T&amp; t)</div>
+<div class="line"><a name="l01672"></a><span class="lineno"> 1672</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> first&lt;Count&gt;()) {</div>
+<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;  <span class="keywordflow">return</span> make_span(t).template first&lt;Count&gt;();</div>
+<div class="line"><a name="l01674"></a><span class="lineno"> 1674</span>&#160;}</div>
+<div class="line"><a name="l01675"></a><span class="lineno"> 1675</span>&#160; </div>
+<div class="line"><a name="l01676"></a><span class="lineno"> 1676</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01677"></a><span class="lineno"> 1677</span>&#160;span_constexpr <span class="keyword">auto</span> first(T&amp; t, <span class="keywordtype">size_t</span> count)</div>
+<div class="line"><a name="l01678"></a><span class="lineno"> 1678</span>&#160;    -&gt; decltype(make_span(t).first(count)) {</div>
+<div class="line"><a name="l01679"></a><span class="lineno"> 1679</span>&#160;  <span class="keywordflow">return</span> make_span(t).first(count);</div>
+<div class="line"><a name="l01680"></a><span class="lineno"> 1680</span>&#160;}</div>
+<div class="line"><a name="l01681"></a><span class="lineno"> 1681</span>&#160; </div>
+<div class="line"><a name="l01682"></a><span class="lineno"> 1682</span>&#160;<span class="keyword">template</span> &lt;extent_t Count, <span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01683"></a><span class="lineno"> 1683</span>&#160;span_constexpr <span class="keyword">auto</span> last(T&amp; t)</div>
+<div class="line"><a name="l01684"></a><span class="lineno"> 1684</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> last&lt;Count&gt;()) {</div>
+<div class="line"><a name="l01685"></a><span class="lineno"> 1685</span>&#160;  <span class="keywordflow">return</span> make_span(t).template last&lt;Count&gt;();</div>
+<div class="line"><a name="l01686"></a><span class="lineno"> 1686</span>&#160;}</div>
+<div class="line"><a name="l01687"></a><span class="lineno"> 1687</span>&#160; </div>
+<div class="line"><a name="l01688"></a><span class="lineno"> 1688</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01689"></a><span class="lineno"> 1689</span>&#160;span_constexpr <span class="keyword">auto</span> last(T&amp; t, <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count)</div>
+<div class="line"><a name="l01690"></a><span class="lineno"> 1690</span>&#160;    -&gt; decltype(make_span(t).last(count)) {</div>
+<div class="line"><a name="l01691"></a><span class="lineno"> 1691</span>&#160;  <span class="keywordflow">return</span> make_span(t).last(count);</div>
+<div class="line"><a name="l01692"></a><span class="lineno"> 1692</span>&#160;}</div>
+<div class="line"><a name="l01693"></a><span class="lineno"> 1693</span>&#160; </div>
+<div class="line"><a name="l01694"></a><span class="lineno"> 1694</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> Offset, extent_t Count = dynamic_extent, <span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01695"></a><span class="lineno"> 1695</span>&#160;span_constexpr <span class="keyword">auto</span> subspan(T&amp; t)</div>
+<div class="line"><a name="l01696"></a><span class="lineno"> 1696</span>&#160;    -&gt; decltype(make_span(t).<span class="keyword">template</span> subspan&lt;Offset, Count&gt;()) {</div>
+<div class="line"><a name="l01697"></a><span class="lineno"> 1697</span>&#160;  <span class="keywordflow">return</span> make_span(t).template subspan&lt;Offset, Count&gt;();</div>
+<div class="line"><a name="l01698"></a><span class="lineno"> 1698</span>&#160;}</div>
+<div class="line"><a name="l01699"></a><span class="lineno"> 1699</span>&#160; </div>
+<div class="line"><a name="l01700"></a><span class="lineno"> 1700</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01701"></a><span class="lineno"> 1701</span>&#160;span_constexpr <span class="keyword">auto</span> subspan(T&amp; t, <span class="keywordtype">size_t</span> offset,</div>
+<div class="line"><a name="l01702"></a><span class="lineno"> 1702</span>&#160;                            <a class="code" href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">extent_t</a> count = <a class="code" href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">dynamic_extent</a>)</div>
+<div class="line"><a name="l01703"></a><span class="lineno"> 1703</span>&#160;    -&gt; decltype(make_span(t).subspan(offset, count)) {</div>
+<div class="line"><a name="l01704"></a><span class="lineno"> 1704</span>&#160;  <span class="keywordflow">return</span> make_span(t).subspan(offset, count);</div>
+<div class="line"><a name="l01705"></a><span class="lineno"> 1705</span>&#160;}</div>
+<div class="line"><a name="l01706"></a><span class="lineno"> 1706</span>&#160; </div>
+<div class="line"><a name="l01707"></a><span class="lineno"> 1707</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_CONTAINER )</span></div>
+<div class="line"><a name="l01708"></a><span class="lineno"> 1708</span>&#160; </div>
+<div class="line"><a name="l01709"></a><span class="lineno"> 1709</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
+<div class="line"><a name="l01710"></a><span class="lineno"> 1710</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01711"></a><span class="lineno"> 1711</span>&#160; </div>
+<div class="line"><a name="l01712"></a><span class="lineno"> 1712</span>&#160;<span class="comment">// make available in nonstd:</span></div>
+<div class="line"><a name="l01713"></a><span class="lineno"> 1713</span>&#160; </div>
+<div class="line"><a name="l01714"></a><span class="lineno"> 1714</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l01715"></a><span class="lineno"> 1715</span>&#160;<span class="keyword">using</span> span_lite::make_span;</div>
+<div class="line"><a name="l01716"></a><span class="lineno"> 1716</span>&#160; </div>
+<div class="line"><a name="l01717"></a><span class="lineno"> 1717</span>&#160;<span class="preprocessor">#if span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_SPAN) || \</span></div>
+<div class="line"><a name="l01718"></a><span class="lineno"> 1718</span>&#160;<span class="preprocessor">    (span_FEATURE(NON_MEMBER_FIRST_LAST_SUB_CONTAINER) &amp;&amp; span_CPP11_120)</span></div>
+<div class="line"><a name="l01719"></a><span class="lineno"> 1719</span>&#160; </div>
+<div class="line"><a name="l01720"></a><span class="lineno"> 1720</span>&#160;<span class="keyword">using</span> span_lite::first;</div>
+<div class="line"><a name="l01721"></a><span class="lineno"> 1721</span>&#160;<span class="keyword">using</span> span_lite::last;</div>
+<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160;<span class="keyword">using</span> span_lite::subspan;</div>
+<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160; </div>
+<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( NON_MEMBER_FIRST_LAST_SUB_[SPAN|CONTAINER] )</span></div>
+<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160; </div>
+<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160; </div>
+<div class="line"><a name="l01728"></a><span class="lineno"> 1728</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// #if span_FEATURE_TO_STD( MAKE_SPAN )</span></div>
+<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160; </div>
+<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;<span class="preprocessor">#if span_CPP11_OR_GREATER &amp;&amp; span_FEATURE(BYTE_SPAN) &amp;&amp; \</span></div>
+<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160;<span class="preprocessor">    (span_HAVE(BYTE) || span_HAVE(NONSTD_BYTE))</span></div>
+<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160; </div>
+<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160;<span class="keyword">namespace </span>span_lite {</div>
+<div class="line"><a name="l01735"></a><span class="lineno"> 1735</span>&#160; </div>
+<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> byte_span(T&amp; t) span_noexcept</div>
+<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;    -&gt; span&lt;std17::byte, span_sizeof(T)&gt; {</div>
+<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;  <span class="keywordflow">return</span> span&lt;std17::byte, span_sizeof(t)&gt;(<span class="keyword">reinterpret_cast&lt;</span>std17::byte*<span class="keyword">&gt;</span>(&amp;t),</div>
+<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;                                           span_sizeof(T));</div>
+<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160;}</div>
+<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160; </div>
+<div class="line"><a name="l01743"></a><span class="lineno"> 1743</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;<span class="keyword">inline</span> span_constexpr <span class="keyword">auto</span> byte_span(T <span class="keyword">const</span>&amp; t) span_noexcept</div>
+<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;    -&gt; span&lt;<span class="keyword">const</span> std17::byte, span_sizeof(T)&gt; {</div>
+<div class="line"><a name="l01746"></a><span class="lineno"> 1746</span>&#160;  <span class="keywordflow">return</span> span&lt;const std17::byte, span_sizeof(t)&gt;(</div>
+<div class="line"><a name="l01747"></a><span class="lineno"> 1747</span>&#160;      <span class="keyword">reinterpret_cast&lt;</span>std17::byte const*<span class="keyword">&gt;</span>(&amp;t), span_sizeof(T));</div>
+<div class="line"><a name="l01748"></a><span class="lineno"> 1748</span>&#160;}</div>
+<div class="line"><a name="l01749"></a><span class="lineno"> 1749</span>&#160; </div>
+<div class="line"><a name="l01750"></a><span class="lineno"> 1750</span>&#160;}  <span class="comment">// namespace span_lite</span></div>
+<div class="line"><a name="l01751"></a><span class="lineno"> 1751</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01752"></a><span class="lineno"> 1752</span>&#160; </div>
+<div class="line"><a name="l01753"></a><span class="lineno"> 1753</span>&#160;<span class="comment">// make available in nonstd:</span></div>
+<div class="line"><a name="l01754"></a><span class="lineno"> 1754</span>&#160; </div>
+<div class="line"><a name="l01755"></a><span class="lineno"> 1755</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacenonstd.html">nonstd</a> {</div>
+<div class="line"><a name="l01756"></a><span class="lineno"> 1756</span>&#160;<span class="keyword">using</span> span_lite::byte_span;</div>
+<div class="line"><a name="l01757"></a><span class="lineno"> 1757</span>&#160;}  <span class="comment">// namespace nonstd</span></div>
+<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160; </div>
+<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_FEATURE( BYTE_SPAN )</span></div>
+<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160; </div>
+<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160;<span class="preprocessor">#if span_HAVE(STRUCT_BINDING)</span></div>
+<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160; </div>
+<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;<span class="preprocessor">#if span_CPP14_OR_GREATER</span></div>
+<div class="line"><a name="l01764"></a><span class="lineno"> 1764</span>&#160;<span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a name="l01765"></a><span class="lineno"> 1765</span>&#160;<span class="preprocessor">#elif span_CPP11_OR_GREATER</span></div>
+<div class="line"><a name="l01766"></a><span class="lineno"> 1766</span>&#160;<span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a name="l01767"></a><span class="lineno"> 1767</span>&#160;<span class="keyword">namespace </span>std {</div>
+<div class="line"><a name="l01768"></a><span class="lineno"> 1768</span>&#160;<span class="keyword">template</span> &lt;std::<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l01769"></a><span class="lineno"> 1769</span>&#160;<span class="keyword">using</span> tuple_element_t = <span class="keyword">typename</span> tuple_element&lt;I, T&gt;::type;</div>
+<div class="line"><a name="l01770"></a><span class="lineno"> 1770</span>&#160;}</div>
+<div class="line"><a name="l01771"></a><span class="lineno"> 1771</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01772"></a><span class="lineno"> 1772</span>&#160;<span class="keyword">namespace </span>std {</div>
+<div class="line"><a name="l01773"></a><span class="lineno"> 1773</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l01774"></a><span class="lineno"> 1774</span>&#160;<span class="keyword">class </span>tuple_size; <span class="comment">/*undefined*/</span></div>
+<div class="line"><a name="l01775"></a><span class="lineno"> 1775</span>&#160; </div>
+<div class="line"><a name="l01776"></a><span class="lineno"> 1776</span>&#160;<span class="keyword">template</span> &lt;std::<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l01777"></a><span class="lineno"> 1777</span>&#160;<span class="keyword">class </span>tuple_element; <span class="comment">/* undefined */</span></div>
+<div class="line"><a name="l01778"></a><span class="lineno"> 1778</span>&#160;}  <span class="comment">// namespace std</span></div>
+<div class="line"><a name="l01779"></a><span class="lineno"> 1779</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_CPP14_OR_GREATER</span></div>
+<div class="line"><a name="l01780"></a><span class="lineno"> 1780</span>&#160; </div>
+<div class="line"><a name="l01781"></a><span class="lineno"> 1781</span>&#160;<span class="comment">// NOLINTNEXTLINE</span></div>
+<div class="line"><a name="l01782"></a><span class="lineno"> 1782</span>&#160;<span class="keyword">namespace </span>std {</div>
+<div class="line"><a name="l01783"></a><span class="lineno"> 1783</span>&#160; </div>
+<div class="line"><a name="l01784"></a><span class="lineno"> 1784</span>&#160;<span class="comment">// 26.7.X Tuple interface</span></div>
+<div class="line"><a name="l01785"></a><span class="lineno"> 1785</span>&#160; </div>
+<div class="line"><a name="l01786"></a><span class="lineno"> 1786</span>&#160;<span class="comment">// std::tuple_size&lt;&gt;:</span></div>
+<div class="line"><a name="l01787"></a><span class="lineno"> 1787</span>&#160; </div>
+<div class="line"><a name="l01788"></a><span class="lineno"> 1788</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
+<div class="line"><a name="l01789"></a><span class="lineno"> 1789</span>&#160;<span class="keyword">class </span>tuple_size&lt;<a class="code" href="namespacenonstd.html">nonstd</a>::span&lt;ElementType, Extent&gt; &gt;</div>
+<div class="line"><a name="l01790"></a><span class="lineno"> 1790</span>&#160;    : <span class="keyword">public</span> integral_constant&lt;size_t, static_cast&lt;size_t&gt;(Extent)&gt; {};</div>
+<div class="line"><a name="l01791"></a><span class="lineno"> 1791</span>&#160; </div>
+<div class="line"><a name="l01792"></a><span class="lineno"> 1792</span>&#160;<span class="comment">// std::tuple_size&lt;&gt;: Leave undefined for dynamic extent:</span></div>
+<div class="line"><a name="l01793"></a><span class="lineno"> 1793</span>&#160; </div>
+<div class="line"><a name="l01794"></a><span class="lineno"> 1794</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ElementType&gt;</div>
+<div class="line"><a name="l01795"></a><span class="lineno"> 1795</span>&#160;<span class="keyword">class </span>tuple_size&lt;<a class="code" href="namespacenonstd.html">nonstd</a>::span&lt;ElementType, nonstd::dynamic_extent&gt; &gt;;</div>
+<div class="line"><a name="l01796"></a><span class="lineno"> 1796</span>&#160; </div>
+<div class="line"><a name="l01797"></a><span class="lineno"> 1797</span>&#160;<span class="comment">// std::tuple_element&lt;&gt;:</span></div>
+<div class="line"><a name="l01798"></a><span class="lineno"> 1798</span>&#160; </div>
+<div class="line"><a name="l01799"></a><span class="lineno"> 1799</span>&#160;template &lt;size_t I, typename ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
+<div class="line"><a name="l01800"></a><span class="lineno"> 1800</span>&#160;class tuple_element&lt;I, nonstd::span&lt;ElementType, Extent&gt; &gt; {</div>
+<div class="line"><a name="l01801"></a><span class="lineno"> 1801</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l01802"></a><span class="lineno"> 1802</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
+<div class="line"><a name="l01803"></a><span class="lineno"> 1803</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
+<div class="line"><a name="l01804"></a><span class="lineno"> 1804</span>&#160;                <span class="stringliteral">&quot;tuple_element&lt;I,span&gt;: dynamic extent or index out of range&quot;</span>);</div>
+<div class="line"><a name="l01805"></a><span class="lineno"> 1805</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01806"></a><span class="lineno"> 1806</span>&#160;  <span class="keyword">using</span> type = ElementType;</div>
+<div class="line"><a name="l01807"></a><span class="lineno"> 1807</span>&#160;};</div>
+<div class="line"><a name="l01808"></a><span class="lineno"> 1808</span>&#160; </div>
+<div class="line"><a name="l01809"></a><span class="lineno"> 1809</span>&#160;<span class="comment">// std::get&lt;&gt;(), 2 variants:</span></div>
+<div class="line"><a name="l01810"></a><span class="lineno"> 1810</span>&#160; </div>
+<div class="line"><a name="l01811"></a><span class="lineno"> 1811</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
+<div class="line"><a name="l01812"></a><span class="lineno"> 1812</span>&#160;span_constexpr ElementType&amp; get(<a class="code" href="classnonstd_1_1span__lite_1_1span.html">nonstd::span&lt;ElementType, Extent&gt;</a>&amp; spn)</div>
+<div class="line"><a name="l01813"></a><span class="lineno"> 1813</span>&#160;    span_noexcept {</div>
+<div class="line"><a name="l01814"></a><span class="lineno"> 1814</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
+<div class="line"><a name="l01815"></a><span class="lineno"> 1815</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
+<div class="line"><a name="l01816"></a><span class="lineno"> 1816</span>&#160;                <span class="stringliteral">&quot;get&lt;&gt;(span): dynamic extent or index out of range&quot;</span>);</div>
+<div class="line"><a name="l01817"></a><span class="lineno"> 1817</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01818"></a><span class="lineno"> 1818</span>&#160;  <span class="keywordflow">return</span> spn[I];</div>
+<div class="line"><a name="l01819"></a><span class="lineno"> 1819</span>&#160;}</div>
+<div class="line"><a name="l01820"></a><span class="lineno"> 1820</span>&#160; </div>
+<div class="line"><a name="l01821"></a><span class="lineno"> 1821</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> I, <span class="keyword">typename</span> ElementType, nonstd::span_lite::extent_t Extent&gt;</div>
+<div class="line"><a name="l01822"></a><span class="lineno"> 1822</span>&#160;span_constexpr ElementType <span class="keyword">const</span>&amp; get(</div>
+<div class="line"><a name="l01823"></a><span class="lineno"> 1823</span>&#160;    <a class="code" href="classnonstd_1_1span__lite_1_1span.html">nonstd::span&lt;ElementType, Extent&gt;</a> <span class="keyword">const</span>&amp; spn) span_noexcept {</div>
+<div class="line"><a name="l01824"></a><span class="lineno"> 1824</span>&#160;<span class="preprocessor">#if span_HAVE(STATIC_ASSERT)</span></div>
+<div class="line"><a name="l01825"></a><span class="lineno"> 1825</span>&#160;  static_assert(Extent != nonstd::dynamic_extent &amp;&amp; I &lt; Extent,</div>
+<div class="line"><a name="l01826"></a><span class="lineno"> 1826</span>&#160;                <span class="stringliteral">&quot;get&lt;&gt;(span): dynamic extent or index out of range&quot;</span>);</div>
+<div class="line"><a name="l01827"></a><span class="lineno"> 1827</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01828"></a><span class="lineno"> 1828</span>&#160;  <span class="keywordflow">return</span> spn[I];</div>
+<div class="line"><a name="l01829"></a><span class="lineno"> 1829</span>&#160;}</div>
+<div class="line"><a name="l01830"></a><span class="lineno"> 1830</span>&#160; </div>
+<div class="line"><a name="l01831"></a><span class="lineno"> 1831</span>&#160;}  <span class="comment">// end namespace std</span></div>
+<div class="line"><a name="l01832"></a><span class="lineno"> 1832</span>&#160; </div>
+<div class="line"><a name="l01833"></a><span class="lineno"> 1833</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_HAVE( STRUCT_BINDING )</span></div>
+<div class="line"><a name="l01834"></a><span class="lineno"> 1834</span>&#160; </div>
+<div class="line"><a name="l01835"></a><span class="lineno"> 1835</span>&#160;<span class="preprocessor">#if !span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01836"></a><span class="lineno"> 1836</span>&#160;span_RESTORE_WARNINGS()</div>
+<div class="line"><a name="l01837"></a><span class="lineno"> 1837</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// span_USES_STD_SPAN</span></div>
+<div class="line"><a name="l01838"></a><span class="lineno"> 1838</span>&#160; </div>
+<div class="line"><a name="l01839"></a><span class="lineno"> 1839</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// NONSTD_SPAN_HPP_INCLUDED</span></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html">nonstd::span_lite::span</a></div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00914">span.h:914</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a00fed6a71b1c828ea7b13941cd964b9f"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a00fed6a71b1c828ea7b13941cd964b9f">nonstd::span_lite::span::size_type</a></div><div class="ttdeci">size_t size_type</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00926">span.h:926</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a0738156cf001d42bae695b41f59c53d8"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a0738156cf001d42bae695b41f59c53d8">nonstd::span_lite::span::extent_type</a></div><div class="ttdeci">extent_t extent_type</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00927">span.h:927</a></div></div>
@@ -1939,7 +1940,7 @@ $(function() {
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a165ef6ae693c2c20c570f27e8b4ec93a"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a165ef6ae693c2c20c570f27e8b4ec93a">nonstd::span_lite::span::size_bytes</a></div><div class="ttdeci">span_constexpr size_type size_bytes() const span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01165">span.h:1165</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a1abc07de6b7ef8ed22ac5f39d8b7f5f2"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a1abc07de6b7ef8ed22ac5f39d8b7f5f2">nonstd::span_lite::span::const_reverse_iterator</a></div><div class="ttdeci">std::reverse_iterator&lt; const_iterator &gt; const_reverse_iterator</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00935">span.h:935</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2a58df60812a8160ad16ebfed89f84e1"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2a58df60812a8160ad16ebfed89f84e1">nonstd::span_lite::span::cbegin</a></div><div class="ttdeci">span_constexpr const_iterator cbegin() const span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01260">span.h:1260</a></div></div>
-<div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2b7e249b7cb7a78a3970342e8e26b92d"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d">nonstd::span_lite::span::size_</a></div><div class="ttdeci">size_type size_</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01320">span.h:1320</a></div></div>
+<div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2b7e249b7cb7a78a3970342e8e26b92d"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2b7e249b7cb7a78a3970342e8e26b92d">nonstd::span_lite::span::size_</a></div><div class="ttdeci">size_type size_</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01321">span.h:1321</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2d0332aed761528f2808b95889801cd1"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2d0332aed761528f2808b95889801cd1">nonstd::span_lite::span::subspan</a></div><div class="ttdeci">span_constexpr_exp span&lt; element_type, Count &gt; subspan() const</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01112">span.h:1112</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2f0df008d3fe5e9c31f47bc52b528463"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2f0df008d3fe5e9c31f47bc52b528463">nonstd::span_lite::span::last</a></div><div class="ttdeci">span_constexpr_exp span&lt; element_type, Count &gt; last() const</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01101">span.h:1101</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_a2f18f96c3b414ab2e3a9f2f5d4f4a61b"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#a2f18f96c3b414ab2e3a9f2f5d4f4a61b">nonstd::span_lite::span::rend</a></div><div class="ttdeci">span_constexpr reverse_iterator rend() const span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01283">span.h:1283</a></div></div>
@@ -1965,7 +1966,7 @@ $(function() {
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_aa07f5c364fa0a0d6fb1070ee1658ed82"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#aa07f5c364fa0a0d6fb1070ee1658ed82">nonstd::span_lite::span::const_pointer</a></div><div class="ttdeci">T const * const_pointer</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00923">span.h:923</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_aaac3be112aee3ad1b7edffafd8836847"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#aaac3be112aee3ad1b7edffafd8836847">nonstd::span_lite::span::span</a></div><div class="ttdeci">span_constexpr span(span const &amp;other) span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01065">span.h:1065</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_aab8791b21fb7406a89b92fd7b6239585"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#aab8791b21fb7406a89b92fd7b6239585">nonstd::span_lite::span::subspan</a></div><div class="ttdeci">span_constexpr_exp span&lt; element_type, dynamic_extent &gt; subspan(size_type offset, size_type count=static_cast&lt; size_type &gt;(dynamic_extent)) const</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01141">span.h:1141</a></div></div>
-<div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_ab4247d90d176ac3966bb718634f37339"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339">nonstd::span_lite::span::data_</a></div><div class="ttdeci">pointer data_</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01319">span.h:1319</a></div></div>
+<div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_ab4247d90d176ac3966bb718634f37339"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#ab4247d90d176ac3966bb718634f37339">nonstd::span_lite::span::data_</a></div><div class="ttdeci">pointer data_</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01320">span.h:1320</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_ac1beb9c2223c831442b9a39cc209c87c"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#ac1beb9c2223c831442b9a39cc209c87c">nonstd::span_lite::span::crbegin</a></div><div class="ttdeci">span_constexpr const_reverse_iterator crbegin() const span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01288">span.h:1288</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_ac4f755d149395833b6f90526f2596980"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#ac4f755d149395833b6f90526f2596980">nonstd::span_lite::span::front</a></div><div class="ttdeci">span_constexpr_exp reference front() const span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01213">span.h:1213</a></div></div>
 <div class="ttc" id="aclassnonstd_1_1span__lite_1_1span_html_acd8a93f6a17ecf9da3ce4ad94d3a9a25"><div class="ttname"><a href="classnonstd_1_1span__lite_1_1span.html#acd8a93f6a17ecf9da3ce4ad94d3a9a25">nonstd::span_lite::span::span</a></div><div class="ttdeci">span_constexpr_exp span(span&lt; OtherElementType, OtherExtent &gt; const &amp;other) span_noexcept</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01083">span.h:1083</a></div></div>
@@ -1982,8 +1983,8 @@ $(function() {
 <div class="ttc" id="anamespacenonstd_1_1span__lite_html_a657cb9fce6e9bb976a8e6ed1097c0c67"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#a657cb9fce6e9bb976a8e6ed1097c0c67">nonstd::span_lite::extent_t</a></div><div class="ttdeci">span_CONFIG_EXTENT_TYPE extent_t</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00589">span.h:589</a></div></div>
 <div class="ttc" id="anamespacenonstd_1_1span__lite_html_a733b456a62bde9916e4c950b2c678e08"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#a733b456a62bde9916e4c950b2c678e08">nonstd::span_lite::with_container</a></div><div class="ttdeci">const span_constexpr with_container_t with_container</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00604">span.h:604</a></div></div>
 <div class="ttc" id="anamespacenonstd_1_1span__lite_html_a9494c73590a8b0d85e6545a1660a87a3"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#a9494c73590a8b0d85e6545a1660a87a3">nonstd::span_lite::dynamic_extent</a></div><div class="ttdeci">span_constexpr const extent_t dynamic_extent</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00592">span.h:592</a></div></div>
-<div class="ttc" id="anamespacenonstd_1_1span__lite_html_ab3f36b312d69715362b4104d27e47a07"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">nonstd::span_lite::size</a></div><div class="ttdeci">span_constexpr std::size_t size(span&lt; T, Extent &gt; const &amp;spn)</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01463">span.h:1463</a></div></div>
-<div class="ttc" id="anamespacenonstd_1_1span__lite_html_ad327ae2eb5759b5d084e6d37531bb649"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">nonstd::span_lite::ssize</a></div><div class="ttdeci">span_constexpr std::ptrdiff_t ssize(span&lt; T, Extent &gt; const &amp;spn)</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01468">span.h:1468</a></div></div>
+<div class="ttc" id="anamespacenonstd_1_1span__lite_html_ab3f36b312d69715362b4104d27e47a07"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#ab3f36b312d69715362b4104d27e47a07">nonstd::span_lite::size</a></div><div class="ttdeci">span_constexpr std::size_t size(span&lt; T, Extent &gt; const &amp;spn)</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01464">span.h:1464</a></div></div>
+<div class="ttc" id="anamespacenonstd_1_1span__lite_html_ad327ae2eb5759b5d084e6d37531bb649"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#ad327ae2eb5759b5d084e6d37531bb649">nonstd::span_lite::ssize</a></div><div class="ttdeci">span_constexpr std::ptrdiff_t ssize(span&lt; T, Extent &gt; const &amp;spn)</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l01469">span.h:1469</a></div></div>
 <div class="ttc" id="anamespacenonstd_1_1span__lite_html_aee8aa839c6564624d8bfecef1c433bd7"><div class="ttname"><a href="namespacenonstd_1_1span__lite.html#aee8aa839c6564624d8bfecef1c433bd7">nonstd::span_lite::to_size</a></div><div class="ttdeci">span_constexpr size_t to_size(T size)</div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00906">span.h:906</a></div></div>
 <div class="ttc" id="anamespacenonstd_html"><div class="ttname"><a href="namespacenonstd.html">nonstd</a></div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00584">span.h:584</a></div></div>
 <div class="ttc" id="astructnonstd_1_1span__lite_1_1std11_1_1integral__constant_html"><div class="ttname"><a href="structnonstd_1_1span__lite_1_1std11_1_1integral__constant.html">nonstd::span_lite::std11::integral_constant</a></div><div class="ttdef"><b>Definition:</b> <a href="span_8h_source.html#l00656">span.h:656</a></div></div>

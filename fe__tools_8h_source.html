@@ -170,7 +170,7 @@ $(function() {
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keyword">auto</span> entities = mesh.<a class="code" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">Entities</a>(codim);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keyword">auto</span> result = internal::LocalIntegral(**entities.begin(), qr_selector, mf);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *i = entities.begin() + 1; i != entities.end(); ++i) {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = entities.begin() + 1; i != entities.end(); ++i) {</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordflow">if</span> (!ep(**i)) {</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
@@ -204,7 +204,7 @@ $(function() {
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="comment">// SCALAR</span></div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="keyword">using</span> scalarMF_t =</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      <a class="code" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">mesh::utils::MeshFunctionReturnType&lt;std::remove_reference_t&lt;MF&gt;</a>&gt;;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="keyword">using</span> scalar_t = decltype(SCALAR(0) * scalarMF_t(0));</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="keyword">using</span> scalar_t = decltype(SCALAR(0) * scalarMF_t(0));  <span class="comment">// NOLINT</span></div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="comment">// Return type, type for FE coefficient vector</span></div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="keyword">using</span> dof_vec_t = Eigen::Matrix&lt;scalar_t, Eigen::Dynamic, 1&gt;;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>

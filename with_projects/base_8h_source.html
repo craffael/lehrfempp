@@ -92,8 +92,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef __986f32316282425d9be137cb399482f3</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define __986f32316282425d9be137cb399482f3</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef INCG986f32316282425d9be137cb399482f3</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define INCG986f32316282425d9be137cb399482f3</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="namespacelf_1_1base.html">   15</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacelf_1_1base.html">lf::base</a> {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
@@ -112,14 +112,15 @@ $(function() {
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#include &quot;lehrfem_info.h&quot;</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &quot;lf_assert.h&quot;</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#include &quot;lf_exception.h&quot;</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#include &quot;predicate_true.h&quot;</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#include &quot;ref_el.h&quot;</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#include &quot;scalar_traits.h&quot;</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#include &quot;span.h&quot;</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#include &quot;spdlog_utils.h&quot;</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#include &quot;timer.h&quot;</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// __986f32316282425d9be137cb399482f3</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#include &quot;narrow.h&quot;</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#include &quot;predicate_true.h&quot;</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#include &quot;ref_el.h&quot;</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#include &quot;scalar_traits.h&quot;</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#include &quot;span.h&quot;</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#include &quot;spdlog_utils.h&quot;</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#include &quot;timer.h&quot;</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// INCG986f32316282425d9be137cb399482f3</span></div>
 <div class="ttc" id="agroup__lftypes_html_ga0f348035fff459797488241bebc1362b"><div class="ttname"><a href="group__lftypes.html#ga0f348035fff459797488241bebc1362b">lf::base::dim_t</a></div><div class="ttdeci">unsigned int dim_t</div><div class="ttdoc">type for dimensions and co-dimensions and numbers derived from them</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00036">base.h:36</a></div></div>
 <div class="ttc" id="agroup__lftypes_html_ga67c2c5c259138ba1832b2cfec128b547"><div class="ttname"><a href="group__lftypes.html#ga67c2c5c259138ba1832b2cfec128b547">lf::base::kIdxNil</a></div><div class="ttdeci">const unsigned int kIdxNil</div><div class="ttdoc">Index flagged as invalid.</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00040">base.h:40</a></div></div>
 <div class="ttc" id="agroup__lftypes_html_ga6ca89f18bafb1a831fedda7fc0b7b882"><div class="ttname"><a href="group__lftypes.html#ga6ca89f18bafb1a831fedda7fc0b7b882">lf::base::sub_idx_t</a></div><div class="ttdeci">unsigned int sub_idx_t</div><div class="ttdoc">type for local indices of sub-entities</div><div class="ttdef"><b>Definition:</b> <a href="base_8h_source.html#l00032">base.h:32</a></div></div>

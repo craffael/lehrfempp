@@ -298,7 +298,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">34</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00434">edge_marked_</a>, <a class="el" href="hybrid2d__refinement__pattern_8h_source.html#l00018">lf::refinement::idx_nil</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01837">LongestEdge()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00432">parent_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00436">refinement_edges_</a>.</p>
+<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00434">edge_marked_</a>, <a class="el" href="hybrid2d__refinement__pattern_8h_source.html#l00018">lf::refinement::idx_nil</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01839">LongestEdge()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00432">parent_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00436">refinement_edges_</a>.</p>
 
 </div>
 </div>
@@ -540,7 +540,7 @@ Private Attributes</h2></td></tr>
 </ul>
 <p>One of the displayed matrices is returned if the entity <code>e</code> corresponds to that child of a quadrilateral. </p>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01858">1858</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01860">1860</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="mesh__function__transfer_8h_source.html#l00073">lf::refinement::MeshFunctionTransfer&lt; MF &gt;::operator()()</a>.</p>
 
@@ -685,9 +685,9 @@ Private Attributes</h2></td></tr>
 <p>This method created <a class="el" href="classlf_1_1geometry_1_1_geometry.html">geometry::Geometry</a> type objects describing the shape of a child entity in the reference coordinates of its parent.</p>
 <dl class="section note"><dt>Note</dt><dd>This method assumes that the parent-child connections of the mesh hierarchy have been initialized completely already. Therefore this method is invoked at the end of <a class="el" href="classlf_1_1refinement_1_1_mesh_hierarchy.html#ac18f1c6c7d4cca9de0647287913509f8">PerformRefinement()</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01603">1603</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01605">1605</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -720,7 +720,7 @@ Private Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="spdlog__utils_8cc_source.html#l00016">lf::base::InitLogger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>.</p>
 
 </div>
 </div>
@@ -751,7 +751,7 @@ Private Attributes</h2></td></tr>
 <p>Finds the index of the longest edge of a triangle. </p>
 <p>This method is used for setting refinement edges on coarsest meshes. Called in the constructor of <a class="el" href="classlf_1_1refinement_1_1_mesh_hierarchy.html" title="A hierarchy of nested 2D hybrid meshes created by refinement.">MeshHierarchy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01837">1837</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01839">1839</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>.</p>
 
@@ -913,7 +913,7 @@ template&lt;typename Marker &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>pointer to parent entity</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>to be used in combination with geometry::Geometry::GeometryInParent() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01876">1876</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01878">1878</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="mesh__function__transfer_8h_source.html#l00073">lf::refinement::MeshFunctionTransfer&lt; MF &gt;::operator()()</a>.</p>
 
@@ -1001,11 +1001,11 @@ template&lt;typename Marker &gt; </div>
 <p>This method relies on <a class="el" href="classlf_1_1geometry_1_1_geometry.html#ad3e58b9f80a6daa2ce19455e88e4ef94">lf::geometry::Geometry::ChildGeometry()</a> to obtain information about the shape of child entities in the form of <a class="el" href="classlf_1_1geometry_1_1_geometry.html" title="Interface class for shape information on a mesh cell in the spirit of parametric finite element metho...">lf::geometry::Geometry</a> objects.</p>
 <p>The method also initializes the data vectors in <code>_parent_infos_</code> for the newly created finest mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">367</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">368</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
 <p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00054">lf::refinement::EdgeChildInfo::child_edge_idx</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00056">lf::refinement::EdgeChildInfo::child_point_idx</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#ad3e58b9f80a6daa2ce19455e88e4ef94">lf::geometry::Geometry::ChildGeometry()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ae1c9ee1cb4ccf93247155cf1e790d97d">lf::mesh::Mesh::Index()</a>, <a class="el" href="ref__el_8h_source.html#l00141">lf::base::RefEl::kPoint()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00027">Logger()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00424">mesh_factory_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00052">lf::refinement::EdgeChildInfo::ref_pat_</a>, and <a class="el" href="hybrid2d__refinement__pattern_8h_source.html#l00038">lf::refinement::rp_split</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -1087,7 +1087,7 @@ template&lt;typename Marker &gt; </div>
 <p>The type of output is controlled by the <code>ctrl</code> static control variable. If its second bit is set, the output function of the mesh class is used.</p>
 <p>This is a rudimentary implementation and should be extended. </p>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01894">1894</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l01896">1896</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
 </div>
 </div>
@@ -1121,9 +1121,9 @@ template&lt;typename Marker &gt; </div>
 <p>For details please consult the comments in <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a></p>
 <p>This algorithm ends with a set of local refinement patterns for every entity that is compatible with a <em>conforming</em> finite element mesh, that is, hanging nodes are avoided. </p>
 
-<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">115</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">116</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00434">edge_marked_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ae1c9ee1cb4ccf93247155cf1e790d97d">lf::mesh::Mesh::Index()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01603">initGeometryInParent()</a>, <a class="el" href="ref__el_8h_source.html#l00166">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#aa7a4c2c25dcc2864b2d6db198a013b29">lf::mesh::Mesh::NumEntities()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00030">lf::refinement::PointChildInfo::ref_pat</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00052">lf::refinement::EdgeChildInfo::ref_pat_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00436">refinement_edges_</a>.</p>
+<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00434">edge_marked_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ae1c9ee1cb4ccf93247155cf1e790d97d">lf::mesh::Mesh::Index()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01605">initGeometryInParent()</a>, <a class="el" href="ref__el_8h_source.html#l00166">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00158">lf::base::RefEl::kTria()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#aa7a4c2c25dcc2864b2d6db198a013b29">lf::mesh::Mesh::NumEntities()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00030">lf::refinement::PointChildInfo::ref_pat</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00052">lf::refinement::EdgeChildInfo::ref_pat_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00436">refinement_edges_</a>.</p>
 
 </div>
 </div>
@@ -1197,7 +1197,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">72</a> of file <a class="el" href="mesh__hierarchy_8cc_source.html">mesh_hierarchy.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ae1c9ee1cb4ccf93247155cf1e790d97d">lf::mesh::Mesh::Index()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01603">initGeometryInParent()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#aa7a4c2c25dcc2864b2d6db198a013b29">lf::mesh::Mesh::NumEntities()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00030">lf::refinement::PointChildInfo::ref_pat</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00052">lf::refinement::EdgeChildInfo::ref_pat_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00074">lf::refinement::CellChildInfo::ref_pat_</a>.</p>
+<p class="reference">References <a class="el" href="mesh__hierarchy_8h_source.html#l00430">cell_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00428">edge_child_infos_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ac5ca664bf04b9a0651b40e02d5563833">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#ae1c9ee1cb4ccf93247155cf1e790d97d">lf::mesh::Mesh::Index()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l01605">initGeometryInParent()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00422">meshes_</a>, <a class="el" href="classlf_1_1mesh_1_1_mesh.html#aa7a4c2c25dcc2864b2d6db198a013b29">lf::mesh::Mesh::NumEntities()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00426">point_child_infos_</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00030">lf::refinement::PointChildInfo::ref_pat</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00052">lf::refinement::EdgeChildInfo::ref_pat_</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00074">lf::refinement::CellChildInfo::ref_pat_</a>.</p>
 
 </div>
 </div>
@@ -1226,7 +1226,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00430">430</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00211">CellChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00211">CellChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -1254,7 +1254,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00428">428</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00198">EdgeChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00198">EdgeChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -1282,7 +1282,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00434">434</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00455">MarkEdges()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00455">MarkEdges()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>.</p>
 
 </div>
 </div>
@@ -1310,7 +1310,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00424">424</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>.</p>
 
 </div>
 </div>
@@ -1338,7 +1338,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00422">422</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00151">getMesh()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00172">getMeshes()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00455">MarkEdges()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00143">NumLevels()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8h_source.html#l00151">getMesh()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00172">getMeshes()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00455">MarkEdges()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00143">NumLevels()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -1394,7 +1394,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00426">426</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00367">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00185">PointChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00368">PerformRefinement()</a>, <a class="el" href="mesh__hierarchy_8h_source.html#l00185">PointChildInfos()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8cc_source.html#l00072">RefineRegular()</a>.</p>
 
 </div>
 </div>
@@ -1422,7 +1422,7 @@ template&lt;typename Marker &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="mesh__hierarchy_8h_source.html#l00436">436</a> of file <a class="el" href="mesh__hierarchy_8h_source.html">mesh_hierarchy.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00115">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00238">RefinementEdges()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__hierarchy_8cc_source.html#l00034">MeshHierarchy()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00116">RefineMarked()</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00238">RefinementEdges()</a>.</p>
 
 </div>
 </div>

@@ -92,8 +92,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef __6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define __6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;fmt/format.h&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;fmt/ranges.h&gt;</span></div>
@@ -159,9 +159,9 @@ $(function() {
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  }</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> FormatContext&gt;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keyword">auto</span> format(<span class="keyword">const</span> MATRIX&amp; m, FormatContext&amp; ctx) {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keyword">auto</span> format(<span class="keyword">const</span> MATRIX&amp; matrix, FormatContext&amp; ctx) {</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    std::stringstream ss;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    ss &lt;&lt; m.format(clean_fmt);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    ss &lt;&lt; matrix.format(clean_fmt);</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keyword">auto</span> it = ctx.out();</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keyword">auto</span> str = ss.str();</div>
@@ -174,7 +174,7 @@ $(function() {
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;      Eigen::IOFormat(4, 0, <span class="stringliteral">&quot;, &quot;</span>, <span class="stringliteral">&quot;\n&quot;</span>, <span class="stringliteral">&quot;[&quot;</span>, <span class="stringliteral">&quot;]&quot;</span>);</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;};</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// __6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// INCG6f06a5790b0b46cf94fb3cc3cc0cc2d3</span></div>
 <div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html">lf::base::LineFeedFormatter</a></div><div class="ttdoc">A spdlog formatter which wraps another formatter and makes sure that if there are new lines (\n) in t...</div><div class="ttdef"><b>Definition:</b> <a href="spdlog__utils_8h_source.html#l00075">spdlog_utils.h:75</a></div></div>
 <div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_a1ba172bbfc26839bfd794d5ad84ce337"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#a1ba172bbfc26839bfd794d5ad84ce337">lf::base::LineFeedFormatter::operator=</a></div><div class="ttdeci">LineFeedFormatter &amp; operator=(LineFeedFormatter &amp;&amp;)=default</div></div>
 <div class="ttc" id="aclasslf_1_1base_1_1_line_feed_formatter_html_a21e8f1fd12d1ca1dc8b03dd2568fa6b2"><div class="ttname"><a href="classlf_1_1base_1_1_line_feed_formatter.html#a21e8f1fd12d1ca1dc8b03dd2568fa6b2">lf::base::LineFeedFormatter::operator=</a></div><div class="ttdeci">LineFeedFormatter &amp; operator=(const LineFeedFormatter &amp;)=delete</div></div>

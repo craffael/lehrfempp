@@ -92,8 +92,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef __4ee2d6e8004446558bc6d2186596e392</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define __4ee2d6e8004446558bc6d2186596e392</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef INCG4ee2d6e8004446558bc6d2186596e392</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define INCG4ee2d6e8004446558bc6d2186596e392</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
@@ -106,7 +106,7 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// Why this? Because we can use real-valued finite element spaces to represent</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// complex-valued functions by using complex degrees of freedom!</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a4be1176690898426e1ec08f0fc28f5f3">   48</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a4be1176690898426e1ec08f0fc28f5f3">Scalar</a> = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a4be1176690898426e1ec08f0fc28f5f3">   48</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a4be1176690898426e1ec08f0fc28f5f3">Scalar</a> = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  <span class="comment">// NOLINT</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a011f4a67180f9c596f53eddb556ac673">   61</a></span>&#160;  <a class="code" href="classlf_1_1fe_1_1_mesh_function_f_e.html#a011f4a67180f9c596f53eddb556ac673">MeshFunctionFE</a>(std::shared_ptr&lt;<span class="keyword">const</span> <a class="code" href="classlf_1_1fe_1_1_scalar_f_e_space.html">ScalarFESpace&lt;SCALAR_FE&gt;</a>&gt; fe_space,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                 Eigen::Matrix&lt;SCALAR_COEFF, Eigen::Dynamic, 1&gt; coeff_vector)</div>
@@ -127,7 +127,7 @@ $(function() {
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="comment">// Trick to combine Eigen data types with STL containers</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    std::vector&lt;Scalar&gt; result(local.cols());</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    Eigen::Map&lt;Eigen::Matrix&lt;Scalar, 1, Eigen::Dynamic&gt;&gt; temp(&amp;result[0], 1,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    Eigen::Map&lt;Eigen::Matrix&lt;Scalar, 1, Eigen::Dynamic&gt;&gt; temp(result.data(), 1,</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                                              local.cols());</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    temp = local_dofs * sf_eval;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> result;</div>
@@ -155,7 +155,7 @@ $(function() {
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace lf::fe</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// __4ee2d6e8004446558bc6d2186596e392</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// INCG4ee2d6e8004446558bc6d2186596e392</span></div>
 <div class="ttc" id="aclasslf_1_1fe_1_1_mesh_function_f_e_html"><div class="ttname"><a href="classlf_1_1fe_1_1_mesh_function_f_e.html">lf::fe::MeshFunctionFE</a></div><div class="ttdoc">A MeshFunction representing an element from a ScalarUniformFESpace (e.g. solution of BVP)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__function__fe_8h_source.html#l00044">mesh_function_fe.h:44</a></div></div>
 <div class="ttc" id="aclasslf_1_1fe_1_1_mesh_function_f_e_html_a011f4a67180f9c596f53eddb556ac673"><div class="ttname"><a href="classlf_1_1fe_1_1_mesh_function_f_e.html#a011f4a67180f9c596f53eddb556ac673">lf::fe::MeshFunctionFE::MeshFunctionFE</a></div><div class="ttdeci">MeshFunctionFE(std::shared_ptr&lt; const ScalarFESpace&lt; SCALAR_FE &gt;&gt; fe_space, Eigen::Matrix&lt; SCALAR_COEFF, Eigen::Dynamic, 1 &gt; coeff_vector)</div><div class="ttdoc">Create a new MeshFunctionFE from a ScalarFESpace and a coefficient vector.</div><div class="ttdef"><b>Definition:</b> <a href="mesh__function__fe_8h_source.html#l00061">mesh_function_fe.h:61</a></div></div>
 <div class="ttc" id="aclasslf_1_1fe_1_1_mesh_function_f_e_html_a186d8ec69cde5354288a36f11e61fc23"><div class="ttname"><a href="classlf_1_1fe_1_1_mesh_function_f_e.html#a186d8ec69cde5354288a36f11e61fc23">lf::fe::MeshFunctionFE::operator()</a></div><div class="ttdeci">std::vector&lt; Scalar &gt; operator()(const lf::mesh::Entity &amp;e, const Eigen::MatrixXd &amp;local) const</div><div class="ttdoc">Evaluate the mesh function on a MeshEntity.</div><div class="ttdef"><b>Definition:</b> <a href="mesh__function__fe_8h_source.html#l00072">mesh_function_fe.h:72</a></div></div>

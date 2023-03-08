@@ -166,8 +166,12 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a107b5158c9389c01da99c4b9f2ef1fab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a107b5158c9389c01da99c4b9f2ef1fab">AssertionFailed</a> (const std::string &amp;expr, const std::string &amp;file, long line, const std::string &amp;msg)</td></tr>
 <tr class="separator:a107b5158c9389c01da99c4b9f2ef1fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68986d1aa68e6b74cb2453b34dbc1643"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a68986d1aa68e6b74cb2453b34dbc1643">PrintInfo</a> (std::ostream &amp;o, const <a class="el" href="classlf_1_1base_1_1_ref_el.html">RefEl</a> &amp;ref_el, int output_ctrl)</td></tr>
-<tr class="separator:a68986d1aa68e6b74cb2453b34dbc1643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a6f860c6fae3c61bbd876e6bf26c04"><td class="memTemplParams" colspan="2">template&lt;class TO , class FROM &gt; </td></tr>
+<tr class="memitem:a72a6f860c6fae3c61bbd876e6bf26c04"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a72a6f860c6fae3c61bbd876e6bf26c04">narrow</a> (FROM from) noexcept -&gt; TO</td></tr>
+<tr class="memdesc:a72a6f860c6fae3c61bbd876e6bf26c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">cast <code>from</code> to <code>TO</code> using <code>static_cast</code>. An assert will fail if this would change the value (e.g. because of overflow when an <code>std::int64_t</code> is converted to a <code>std::int32_t</code>)  <a href="namespacelf_1_1base.html#a72a6f860c6fae3c61bbd876e6bf26c04">More...</a><br /></td></tr>
+<tr class="separator:a72a6f860c6fae3c61bbd876e6bf26c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c68c603794885ef72f2817b95065c56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#a6c68c603794885ef72f2817b95065c56">PrintInfo</a> (std::ostream &amp;stream, const <a class="el" href="classlf_1_1base_1_1_ref_el.html">RefEl</a> &amp;ref_el, int output_ctrl)</td></tr>
+<tr class="separator:a6c68c603794885ef72f2817b95065c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd38471e3da2165f752fb1e80bc7e1b"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelf_1_1base.html#aebd38471e3da2165f752fb1e80bc7e1b">operator&lt;&lt;</a> (std::ostream &amp;stream, const <a class="el" href="classlf_1_1base_1_1_ref_el.html">RefEl</a> &amp;ref_el)</td></tr>
 <tr class="memdesc:aebd38471e3da2165f752fb1e80bc7e1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to print a <code><a class="el" href="classlf_1_1base_1_1_ref_el.html" title="Represents a reference element with all its properties.">RefEl</a></code> to a stream, such as <code>std::cout</code>  <a href="namespacelf_1_1base.html#aebd38471e3da2165f752fb1e80bc7e1b">More...</a><br /></td></tr>
 <tr class="separator:aebd38471e3da2165f752fb1e80bc7e1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -300,7 +304,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="lf__assert_8cc_source.html#l00011">11</a> of file <a class="el" href="lf__assert_8cc_source.html">lf_assert.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="lf__assert_8cc_source.html#l00012">12</a> of file <a class="el" href="lf__assert_8cc_source.html">lf_assert.cc</a>.</p>
 
 </div>
 </div>
@@ -334,7 +338,53 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="spdlog__utils_8cc_source.html#l00016">16</a> of file <a class="el" href="spdlog__utils_8cc_source.html">spdlog_utils.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="assembler_8cc_source.html#l00019">lf::assemble::AssembleMatrixLogger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00167">lf::uscalfe::LinearFeLocalLoadVectorLogger()</a>, <a class="el" href="hybrid2d_2mesh_8h_source.html#l00135">lf::mesh::hybrid2d::Mesh::Logger()</a>, <a class="el" href="mesh__factory_8cc_source.html#l00012">lf::mesh::hybrid2d::MeshFactory::Logger()</a>, <a class="el" href="torus__mesh__builder_8cc_source.html#l00023">lf::mesh::utils::TorusMeshBuilder::Logger()</a>, <a class="el" href="tp__quad__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPQuadMeshBuilder::Logger()</a>, <a class="el" href="tp__triag__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPTriagMeshBuilder::Logger()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00027">lf::refinement::MeshHierarchy::Logger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00021">lf::uscalfe::LinearFELaplaceElementMatrix::Logger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00027">lf::uscalfe::MassEdgeMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00021">lf::uscalfe::ReactionDiffusionElementMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00039">lf::uscalfe::ScalarLoadEdgeVectorProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00033">lf::uscalfe::ScalarLoadElementVectorProviderLogger()</a>, and <a class="el" href="check__mesh__completeness_8cc_source.html#l00080">lf::mesh::test_utils::WatertightLogger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="assembler_8cc_source.html#l00019">lf::assemble::AssembleMatrixLogger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00167">lf::uscalfe::LinearFeLocalLoadVectorLogger()</a>, <a class="el" href="hybrid2d_2mesh_8h_source.html#l00135">lf::mesh::hybrid2d::Mesh::Logger()</a>, <a class="el" href="mesh__factory_8cc_source.html#l00012">lf::mesh::hybrid2d::MeshFactory::Logger()</a>, <a class="el" href="torus__mesh__builder_8cc_source.html#l00021">lf::mesh::utils::TorusMeshBuilder::Logger()</a>, <a class="el" href="tp__quad__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPQuadMeshBuilder::Logger()</a>, <a class="el" href="tp__triag__mesh__builder_8cc_source.html#l00012">lf::mesh::utils::TPTriagMeshBuilder::Logger()</a>, <a class="el" href="mesh__hierarchy_8cc_source.html#l00027">lf::refinement::MeshHierarchy::Logger()</a>, <a class="el" href="lin__fe_8cc_source.html#l00021">lf::uscalfe::LinearFELaplaceElementMatrix::Logger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00027">lf::uscalfe::MassEdgeMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00021">lf::uscalfe::ReactionDiffusionElementMatrixProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00039">lf::uscalfe::ScalarLoadEdgeVectorProviderLogger()</a>, <a class="el" href="uscalfe_2loc__comp__ellbvp_8cc_source.html#l00033">lf::uscalfe::ScalarLoadElementVectorProviderLogger()</a>, and <a class="el" href="check__mesh__completeness_8cc_source.html#l00080">lf::mesh::test_utils::WatertightLogger()</a>.</p>
+
+</div>
+</div>
+<a id="a72a6f860c6fae3c61bbd876e6bf26c04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a6f860c6fae3c61bbd876e6bf26c04">&#9670;&nbsp;</a></span>narrow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class TO , class FROM &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto lf::base::narrow </td>
+          <td>(</td>
+          <td class="paramtype">FROM&#160;</td>
+          <td class="paramname"><em>from</em></td><td>)</td>
+          <td> -&gt; TO </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>cast <code>from</code> to <code>TO</code> using <code>static_cast</code>. An assert will fail if this would change the value (e.g. because of overflow when an <code>std::int64_t</code> is converted to a <code>std::int32_t</code>) </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TO</td><td>Type to which we want to convert </td></tr>
+    <tr><td class="paramname">FROM</td><td>Type from which we convert </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>original value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>static_cast&lt;TO&gt;(std::forward&lt;FROM&gt;(from))</code> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="narrow_8h_source.html#l00031">31</a> of file <a class="el" href="narrow_8h_source.html">narrow.h</a>.</p>
 
 </div>
 </div>
@@ -391,8 +441,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a68986d1aa68e6b74cb2453b34dbc1643"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68986d1aa68e6b74cb2453b34dbc1643">&#9670;&nbsp;</a></span>PrintInfo()</h2>
+<a id="a6c68c603794885ef72f2817b95065c56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c68c603794885ef72f2817b95065c56">&#9670;&nbsp;</a></span>PrintInfo()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -404,7 +454,7 @@ Variables</h2></td></tr>
           <td class="memname">void lf::base::PrintInfo </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>o</em>, </td>
+          <td class="paramname"><em>stream</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -464,7 +514,7 @@ template&lt;class T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00058">58</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00287">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00290">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
 
 </div>
 </div>
@@ -496,7 +546,7 @@ template&lt;class T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="eigen__tools_8h_source.html#l00051">51</a> of file <a class="el" href="eigen__tools_8h_source.html">eigen_tools.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00287">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="mesh__function__unary_8h_source.html#l00290">lf::mesh::utils::MeshFunctionUnary&lt; OP, MF &gt;::transpose()</a>.</p>
 
 </div>
 </div>
@@ -556,6 +606,8 @@ template&lt;class T &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="base_8h_source.html#l00043">43</a> of file <a class="el" href="base_8h_source.html">base.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="torus__mesh__builder_8cc_source.html#l00027">lf::mesh::utils::TorusMeshBuilder::Build()</a>.</p>
 
 </div>
 </div>

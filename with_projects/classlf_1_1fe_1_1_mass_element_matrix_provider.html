@@ -167,7 +167,7 @@ class lf::fe::MassElementMatrixProvider&lt; SCALAR, REACTION_COEFF &gt;</h3>
 <li>REACTION_COEFF should be compatible with a scalar-valued <a class="el" href="group__mesh__function.html">MeshFunction</a> </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00238">238</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00240">240</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="aee20662f6f85220ffd4bbb36a91fe7c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aee20662f6f85220ffd4bbb36a91fe7c8">&#9670;&nbsp;</a></span>ElemMat</h2>
@@ -183,7 +183,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00248">248</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00250">250</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +203,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 
 <p>type of returned element matrix </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00245">245</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00247">247</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -305,7 +305,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 <dl class="section see"><dt>See also</dt><dd>LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()</dd></dl>
 <p>This constructor uses local quadature rules with double the degree of exactness as the polynomial degree of the finite element space. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00326">326</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00328">328</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -367,7 +367,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 <p>Actual computation of the element matrix based on numerical quadrature and mapping techniques. The order of the quadrature rule is tied to the polynomial degree of the underlying finite element spaces: for polynomial degree p a quadrature rule is chosen that is exact for polynomials o degree 2p.</p>
 <p>Throws an assertion in case the finite element specification is missing for the type of the cell. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00335">335</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00337">337</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 <p class="reference">References <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a7200354b3ea18b68c4112c3a4dd6ef07">lf::geometry::Geometry::DimGlobal()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a3f937acbc212bbd6685ec89d9025a61c">lf::geometry::Geometry::DimLocal()</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#a0ba7b5cc76e31be825417130bf8d4025">lf::mesh::Entity::Geometry()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a34b0bc0a54ff1de82e2a5cbc52c506a5">lf::geometry::Geometry::Global()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a80112cf5cfa9314cb44e61756299607d">lf::geometry::Geometry::IntegrationElement()</a>, <a class="el" href="fe_2loc__comp__ellbvp_8cc_source.html#l00023">lf::fe::mass_element_matrix_provider_logger</a>, <a class="el" href="ref__el_8h_source.html#l00238">lf::base::RefEl::NodeCoords()</a>, <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>, and <a class="el" href="quad__rule_8h_source.html#l00152">lf::quad::QuadRule::Weights()</a>.</p>
 
@@ -401,7 +401,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 
 <p>All cells are considered active. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00279">279</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00281">281</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -485,7 +485,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 </div><div class="memdoc">
 <p>FE Space </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00309">309</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00311">311</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -512,7 +512,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 </div><div class="memdoc">
 <p>Reaction coefficient </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00305">305</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00307">307</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -538,7 +538,7 @@ template&lt;typename SCALAR , typename REACTION_COEFF &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00311">311</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00313">313</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>

@@ -264,7 +264,7 @@ $(function() {
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    points[i] = z;</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    weights(i) = (exp(lgamma(alpha + num_points) + lgamma(beta + num_points) -</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                      lgamma(num_points + 1.) -</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                      lgamma(<span class="keywordtype">double</span>(num_points) + alfbet + 1.0)) *</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                      lgamma(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(num_points) + alfbet + 1.0)) *</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                  temp * pow(2.0, alfbet) / (pp * p2))</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                     .convert_to&lt;<span class="keywordtype">double</span>&gt;();</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  }</div>

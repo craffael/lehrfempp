@@ -161,7 +161,7 @@ class lf::fe::MassEdgeMatrixProvider&lt; SCALAR, COEFF, EDGESELECTOR &gt;</h3>
 </p>
 <p> where \(e\) is an edge of the mesh, and \(\gamma\) a scalar-valued coefficient function. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00392">392</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00394">394</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a95b3b2304d9f75b5f9fabcce42177680"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95b3b2304d9f75b5f9fabcce42177680">&#9670;&nbsp;</a></span>ElemMat</h2>
@@ -177,7 +177,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00396">396</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00398">398</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -195,7 +195,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00394">394</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00396">396</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -309,7 +309,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 </dl>
 <p>This constructor chooses a local quadature rule with double the degree of exactness as the polynomial degree of the finite element. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00417">417</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00419">419</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ template&lt;class SCALAR , class COEFF , class EDGESELECTOR &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>a small dense matrix, containing the element matrix.</dd></dl>
 <p>Actual computation of the local edge mass based on numerical quadrature and mapping techniques. The order of the quadrature rule is tied to the polynomial degree of the underlying Lagrangian finite element spaces: for polynomial degree p a quadrature rule is chosen that is exact for polynomials o degree 2p. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00483">483</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00485">485</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 <p class="reference">References <a class="el" href="classlf_1_1mesh_1_1_entity.html#a0ba7b5cc76e31be825417130bf8d4025">lf::mesh::Entity::Geometry()</a>, <a class="el" href="classlf_1_1geometry_1_1_geometry.html#a80112cf5cfa9314cb44e61756299607d">lf::geometry::Geometry::IntegrationElement()</a>, <a class="el" href="quad__rule_8h_source.html#l00158">lf::quad::QuadRule::NumPoints()</a>, <a class="el" href="quad__rule_8h_source.html#l00145">lf::quad::QuadRule::Points()</a>, <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>, and <a class="el" href="quad__rule_8h_source.html#l00152">lf::quad::QuadRule::Weights()</a>.</p>
 
@@ -404,9 +404,9 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 <p>If true, then an edge is taken into account during assembly. </p>
 <p>The information about "active" edges is supplied through the <code>edge_selector</code> argument of the constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00430">430</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00432">432</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
-<p class="reference">References <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00457">lf::fe::MassEdgeMatrixProvider&lt; SCALAR, COEFF, EDGESELECTOR &gt;::edge_sel_</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
+<p class="reference">References <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00459">lf::fe::MassEdgeMatrixProvider&lt; SCALAR, COEFF, EDGESELECTOR &gt;::edge_sel_</a>, <a class="el" href="ref__el_8h_source.html#l00150">lf::base::RefEl::kSegment()</a>, and <a class="el" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">lf::mesh::Entity::RefEl()</a>.</p>
 
 </div>
 </div>
@@ -489,9 +489,9 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00457">457</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00459">459</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00430">lf::fe::MassEdgeMatrixProvider&lt; SCALAR, COEFF, EDGESELECTOR &gt;::isActive()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00432">lf::fe::MassEdgeMatrixProvider&lt; SCALAR, COEFF, EDGESELECTOR &gt;::isActive()</a>.</p>
 
 </div>
 </div>
@@ -517,7 +517,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00459">459</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00461">461</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -543,7 +543,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00456">456</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00458">458</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>
@@ -569,7 +569,7 @@ template&lt;typename SCALAR , typename COEFF , typename EDGESELECTOR &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00461">461</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html#l00463">463</a> of file <a class="el" href="fe_2loc__comp__ellbvp_8h_source.html">loc_comp_ellbvp.h</a>.</p>
 
 </div>
 </div>

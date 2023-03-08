@@ -151,22 +151,22 @@ $(function() {
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  std::vector&lt;Eigen::Matrix&lt;int, Eigen::Dynamic, Eigen::Dynamic&gt;&gt;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      child_polygons(ref_pat.<a class="code" href="classlf_1_1geometry_1_1_refinement_pattern.html#a66596964caa2d44a5811f3dd109a6ee3">ChildPolygons</a>(codim));</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// Number of child entities</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> no_children = child_polygons.size();</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> no_children = base::narrow&lt;int&gt;(child_polygons.size());</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  LF_VERIFY_MSG(</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      no_children == ref_pat.<a class="code" href="classlf_1_1geometry_1_1_refinement_pattern.html#a1391c98b43ee0996e56b578f8d7b5a19">NumChildren</a>(codim),</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="stringliteral">&quot;no_children = &quot;</span> &lt;&lt; no_children &lt;&lt; <span class="stringliteral">&quot; &lt;-&gt; &quot;</span> &lt;&lt; ref_pat.<a class="code" href="classlf_1_1geometry_1_1_refinement_pattern.html#a1391c98b43ee0996e56b578f8d7b5a19">NumChildren</a>(codim));</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// For each child create a geometry object and a unique pointer to it.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> l = 0; l &lt; no_children; l++) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; no_children; i++) {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">// codim == 0:A single child must be described by an interval, that is</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// two different lattice coordinates</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">// codim == 1: a point&#39;s location is just one number</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    LF_VERIFY_MSG(child_polygons[l].rows() == 1,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                  <span class="stringliteral">&quot;child_polygons[l].rows() = &quot;</span> &lt;&lt; child_polygons[l].rows());</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    LF_VERIFY_MSG(child_polygons[l].cols() == (2 - codim),</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                  <span class="stringliteral">&quot;child_polygons[l].cols() = &quot;</span> &lt;&lt; child_polygons[l].cols());</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    LF_VERIFY_MSG(child_polygons[i].rows() == 1,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                  <span class="stringliteral">&quot;child_polygons[l].rows() = &quot;</span> &lt;&lt; child_polygons[i].rows());</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    LF_VERIFY_MSG(child_polygons[i].cols() == (2 - codim),</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                  <span class="stringliteral">&quot;child_polygons[l].cols() = &quot;</span> &lt;&lt; child_polygons[i].cols());</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="comment">// Normalize lattice coordinates</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">const</span> Eigen::MatrixXd child_geo(</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <a class="code" href="classlf_1_1geometry_1_1_segment_o1.html#aec6a71f94e12a6f9ce467f541cd87d9b">Global</a>(h_lattice * child_polygons[l].cast&lt;double&gt;()));</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <a class="code" href="classlf_1_1geometry_1_1_segment_o1.html#aec6a71f94e12a6f9ce467f541cd87d9b">Global</a>(h_lattice * child_polygons[i].cast&lt;double&gt;()));</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">switch</span> (codim) {</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      <span class="keywordflow">case</span> 0: {</div>

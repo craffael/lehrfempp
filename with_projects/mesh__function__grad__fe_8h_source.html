@@ -92,8 +92,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef __b6997524e2834b5b8e4bba019fb35cc6</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define __b6997524e2834b5b8e4bba019fb35cc6</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef INCGb6997524e2834b5b8e4bba019fb35cc6</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define INCGb6997524e2834b5b8e4bba019fb35cc6</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;scalar_fe_space.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacelf_1_1fe.html">lf::fe</a> {</div>
@@ -101,7 +101,7 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> SCALAR_FE, <span class="keyword">class</span> SCALAR_COEFF&gt;</div>
 <div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html">   46</a></span>&#160;<span class="keyword">class </span><a class="code" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html">MeshFunctionGradFE</a> {</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#ae32f3c3eec4411904a5f93329d29a604">   48</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#ae32f3c3eec4411904a5f93329d29a604">Scalar</a> = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#ae32f3c3eec4411904a5f93329d29a604">   48</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#ae32f3c3eec4411904a5f93329d29a604">Scalar</a> = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  <span class="comment">// NOLINT</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#a4acd0d278dd634db9b502abb1da9adb7">   60</a></span>&#160;  <a class="code" href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#a4acd0d278dd634db9b502abb1da9adb7">MeshFunctionGradFE</a>(std::shared_ptr&lt;<span class="keyword">const</span> <a class="code" href="classlf_1_1fe_1_1_scalar_f_e_space.html">ScalarFESpace&lt;SCALAR_FE&gt;</a>&gt; fe_space,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                     Eigen::Matrix&lt;SCALAR_COEFF, Eigen::Dynamic, 1&gt; dof_vector)</div>
@@ -134,10 +134,10 @@ $(function() {
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keyword">auto</span> local_grads = (local_dofs * grad_sf_eval).eval();</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// Transform to Cartesian coordinates</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keyword">auto</span> jac_t = e.<a class="code" href="classlf_1_1mesh_1_1_entity.html#a0ba7b5cc76e31be825417130bf8d4025">Geometry</a>()-&gt;<a class="code" href="classlf_1_1geometry_1_1_geometry.html#a7cb2b572966d7492522acb1b127cbbd0">JacobianInverseGramian</a>(local);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">auto</span> dim_local = e.<a class="code" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">RefEl</a>().<a class="code" href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">Dimension</a>();</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">auto</span> dim_local = base::narrow&lt;Eigen::Index&gt;(e.<a class="code" href="classlf_1_1mesh_1_1_entity.html#acff29c2e4f65daaef0152b07559b3f52">RefEl</a>().<a class="code" href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">Dimension</a>());</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    std::vector&lt;Eigen::Matrix&lt;Scalar, Eigen::Dynamic, 1&gt;&gt; result(local.cols());</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// Transform all the local gradients in the evaluation points</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; result.size(); ++i) {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; result.size(); ++i) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                  local_grads.block(0, i * dim_local, 1, dim_local).transpose();</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    }</div>
@@ -157,7 +157,7 @@ $(function() {
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace lf::fe</span></div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// __b6997524e2834b5b8e4bba019fb35cc6</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// INCGb6997524e2834b5b8e4bba019fb35cc6</span></div>
 <div class="ttc" id="aclasslf_1_1base_1_1_ref_el_html_a9b2ee915314345e10d1d090145957509"><div class="ttname"><a href="classlf_1_1base_1_1_ref_el.html#a9b2ee915314345e10d1d090145957509">lf::base::RefEl::Dimension</a></div><div class="ttdeci">constexpr dim_t Dimension() const</div><div class="ttdoc">Return the dimension of this reference element.</div><div class="ttdef"><b>Definition:</b> <a href="ref__el_8h_source.html#l00201">ref_el.h:201</a></div></div>
 <div class="ttc" id="aclasslf_1_1fe_1_1_mesh_function_grad_f_e_html"><div class="ttname"><a href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html">lf::fe::MeshFunctionGradFE</a></div><div class="ttdoc">A MeshFunction representing the gradient of a function from a finite element space (e....</div><div class="ttdef"><b>Definition:</b> <a href="mesh__function__grad__fe_8h_source.html#l00046">mesh_function_grad_fe.h:46</a></div></div>
 <div class="ttc" id="aclasslf_1_1fe_1_1_mesh_function_grad_f_e_html_a2f236b346069bfc4cceda01a33faa4bd"><div class="ttname"><a href="classlf_1_1fe_1_1_mesh_function_grad_f_e.html#a2f236b346069bfc4cceda01a33faa4bd">lf::fe::MeshFunctionGradFE::fe_space_</a></div><div class="ttdeci">std::shared_ptr&lt; const ScalarFESpace&lt; SCALAR_FE &gt; &gt; fe_space_</div><div class="ttdoc">Pointer to underlying finite element space.</div><div class="ttdef"><b>Definition:</b> <a href="mesh__function__grad__fe_8h_source.html#l00121">mesh_function_grad_fe.h:121</a></div></div>
