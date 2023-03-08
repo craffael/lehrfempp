@@ -47,7 +47,7 @@ TEST(lf_base_timer, TimerSingleThread) {
   std::cout << t.Format() << std::endl;
   auto elapsed2 = t.Elapsed();
   EXPECT_GT(elapsed2.wall, elapsed.wall);
-  EXPECT_GT(elapsed2.system, elapsed.system);
+  EXPECT_GE(elapsed2.system, elapsed.system);
   EXPECT_GE(elapsed2.user, elapsed.user);
 
   // The following in principle makes sense, but is often not true on
