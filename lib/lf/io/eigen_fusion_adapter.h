@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __a4e6283ee2844d93bc9772c830f33b2d
-#define __a4e6283ee2844d93bc9772c830f33b2d
+#ifndef INCGa4e6283ee2844d93bc9772c830f33b2d
+#define INCGa4e6283ee2844d93bc9772c830f33b2d
 #include <lf/base/base.h>
 
 #include <Eigen/Eigen>
@@ -215,4 +215,4 @@ struct is_view_impl<Eigen::FusionMatrixTag<MATRIX>> {
 };
 }  // namespace boost::fusion::extension
 /// \endcond
-#endif  // __a4e6283ee2844d93bc9772c830f33b2d
+#endif  // INCGa4e6283ee2844d93bc9772c830f33b2d

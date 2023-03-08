@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __1cc1076600024d7ea537871be7fc1fc0
-#define __1cc1076600024d7ea537871be7fc1fc0
+#ifndef INCG1cc1076600024d7ea537871be7fc1fc0
+#define INCG1cc1076600024d7ea537871be7fc1fc0
 
 // clang-format off
 #include "lf_assert.h"  // must be included before eigen!
@@ -60,4 +60,4 @@ inline constexpr bool is_eigen_array = std::is_same_v<
 
 }  // namespace lf::base
 
-#endif  // __1cc1076600024d7ea537871be7fc1fc0
+#endif  // INCG1cc1076600024d7ea537871be7fc1fc0

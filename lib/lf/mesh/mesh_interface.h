@@ -5,8 +5,8 @@
  * @date   2018
  * @copyright MIT License
  */
-#ifndef __b86b0c9cb0fd48da931a1f24421b8842
-#define __b86b0c9cb0fd48da931a1f24421b8842
+#ifndef INCGb86b0c9cb0fd48da931a1f24421b8842
+#define INCGb86b0c9cb0fd48da931a1f24421b8842
 
 #include <lf/base/base.h>
 
@@ -210,4 +210,4 @@ class Mesh {
 
 }  // namespace lf::mesh
 
-#endif  // __b86b0c9cb0fd48da931a1f24421b8842
+#endif  // INCGb86b0c9cb0fd48da931a1f24421b8842

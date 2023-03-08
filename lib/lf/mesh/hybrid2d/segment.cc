@@ -16,7 +16,7 @@ nonstd::span<const Entity* const> Segment::SubEntities(
   // An impressive way to do double dereferencing!
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   if (rel_codim == 1) {
-    return {reinterpret_cast<const Entity* const*>(&nodes_[0]), 2};
+    return {reinterpret_cast<const Entity* const*>(nodes_.data()), 2};
   }
   // If the segment itself is requested return reference to itself
   if (rel_codim == 0) {

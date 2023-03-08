@@ -19,9 +19,9 @@ jobs:
       - name: clang-format
         run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-10 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
-    name: clang-tidy-10 ${{ matrix.name }}
+    name: clang-tidy-14 ${{ matrix.name }}
     needs: clang-format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
@@ -31,13 +31,13 @@ jobs:
            paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
 
     env:
-      COMPILER: "clang++-10"
+      COMPILER: "clang++-14"
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: sudo apt-get install clang-tidy-10 g++-8
+        run: sudo apt-get install clang-tidy-14 g++-11
       - name: Restore cache
         uses: actions/cache@v2
         with:

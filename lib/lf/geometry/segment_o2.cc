@@ -13,10 +13,7 @@
 namespace lf::geometry {
 
 SegmentO2::SegmentO2(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
-    : coords_(std::move(coords)),
-      alpha_squared_(0),
-      alpha_beta_(0),
-      beta_squared_(0) {
+    : coords_(std::move(coords)) {
   // polynomial of degree 2: alpha * x^2 + beta * x + gamma
   alpha_ = 2. * (coords_.col(1) + coords_.col(0)) - 4. * coords_.col(2);
   beta_ = 4. * coords_.col(2) - 3. * coords_.col(0) - coords_.col(1);

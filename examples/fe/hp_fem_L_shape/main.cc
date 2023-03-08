@@ -14,6 +14,7 @@
 
 #include <filesystem>
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   // 1) Load the mesh:
   std::filesystem::path path(__FILE__);
@@ -51,7 +52,7 @@ int main() {
 
     // find the point entity at the origin (0,0):
     Eigen::Matrix<double, 0, 1> zero;
-    const auto* const origin = std::find_if(
+    const auto origin = std::find_if(
         mesh->Entities(2).begin(), mesh->Entities(2).end(), [&](auto ep) {
           auto coord = ep->Geometry()->Global(zero);
           return coord.norm() < 1e-10;
@@ -110,7 +111,7 @@ int main() {
     auto lhs = lhs_coo.makeSparse();
 
     std::cout << "Solving level " << level << " with " << num_dof << " dofs";
-    num_dofs(level) = num_dof;
+    num_dofs(level) = lf::base::narrow<int>(num_dof);
     Eigen::SimplicialLLT<decltype(lhs)> solver(lhs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success,
                   "Sparse Cholesky decomposition was not successful.");

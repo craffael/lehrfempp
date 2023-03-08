@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __b6997524e2834b5b8e4bba019fb35cc6
-#define __b6997524e2834b5b8e4bba019fb35cc6
+#ifndef INCGb6997524e2834b5b8e4bba019fb35cc6
+#define INCGb6997524e2834b5b8e4bba019fb35cc6
 #include "scalar_fe_space.h"
 
 namespace lf::fe {
@@ -45,7 +45,7 @@ namespace lf::fe {
 template <class SCALAR_FE, class SCALAR_COEFF>
 class MeshFunctionGradFE {
  public:
-  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));
+  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  // NOLINT
 
   /**
    * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
@@ -106,10 +106,10 @@ class MeshFunctionGradFE {
     auto local_grads = (local_dofs * grad_sf_eval).eval();
     // Transform to Cartesian coordinates
     auto jac_t = e.Geometry()->JacobianInverseGramian(local);
-    auto dim_local = e.RefEl().Dimension();
+    auto dim_local = base::narrow<Eigen::Index>(e.RefEl().Dimension());
     std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> result(local.cols());
     // Transform all the local gradients in the evaluation points
-    for (std::size_t i = 0; i < result.size(); ++i) {
+    for (Eigen::Index i = 0; i < result.size(); ++i) {
       result[i] = jac_t.block(0, dim_local * i, jac_t.rows(), dim_local) *
                   local_grads.block(0, i * dim_local, 1, dim_local).transpose();
     }
@@ -132,4 +132,4 @@ MeshFunctionGradFE(std::shared_ptr<T>,
 
 }  // namespace lf::fe
 
-#endif  // __b6997524e2834b5b8e4bba019fb35cc6
+#endif  // INCGb6997524e2834b5b8e4bba019fb35cc6

@@ -237,6 +237,7 @@ std::ostream &operator<<(std::ostream &o,
 
 // Initialization methods
 template <typename SCALAR>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
     std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   // Check validity and consistency of mesh pointer
@@ -335,6 +336,8 @@ assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},
       {lf::base::RefEl::kQuad(), num_rsf_quad_}};
+
+  // NOLINTNEXTLINE(modernize-return-braced-init-list)
   return lf::assemble::UniformFEDofHandler(std::move(mesh_p), rsf_layout);
 }
 

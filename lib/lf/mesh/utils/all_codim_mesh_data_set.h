@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __df4311acf6554f11919b7b1edfc5b3dd
-#define __df4311acf6554f11919b7b1edfc5b3dd
+#ifndef INCGdf4311acf6554f11919b7b1edfc5b3dd
+#define INCGdf4311acf6554f11919b7b1edfc5b3dd
 
 #include <lf/mesh/mesh.h>
 
@@ -139,4 +139,4 @@ std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
 
 }  // namespace lf::mesh::utils
 
-#endif  // __df4311acf6554f11919b7b1edfc5b3dd
+#endif  // INCGdf4311acf6554f11919b7b1edfc5b3dd

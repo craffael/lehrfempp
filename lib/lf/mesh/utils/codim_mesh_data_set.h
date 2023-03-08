@@ -1,5 +1,5 @@
-#ifndef __bae24f2390174bff85f65c2c2e558a9e
-#define __bae24f2390174bff85f65c2c2e558a9e
+#ifndef INCGbae24f2390174bff85f65c2c2e558a9e
+#define INCGbae24f2390174bff85f65c2c2e558a9e
 
 #include <boost/container/vector.hpp>
 #include <utility>
@@ -113,4 +113,4 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
 
 }  // namespace lf::mesh::utils
 
-#endif  // __bae24f2390174bff85f65c2c2e558a9e
+#endif  // INCGbae24f2390174bff85f65c2c2e558a9e

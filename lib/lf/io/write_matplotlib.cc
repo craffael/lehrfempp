@@ -13,6 +13,7 @@
 
 namespace lf::io {
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
   using dim_t = lf::base::RefEl::dim_t;
 

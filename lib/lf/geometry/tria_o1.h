@@ -1,5 +1,5 @@
-#ifndef __b84bb391fa744cdd9159293bfcb5b311
-#define __b84bb391fa744cdd9159293bfcb5b311
+#ifndef INCGb84bb391fa744cdd9159293bfcb5b311
+#define INCGb84bb391fa744cdd9159293bfcb5b311
 
 #include "geometry_interface.h"
 
@@ -62,8 +62,8 @@ class TriaO1 : public Geometry {
   Eigen::Matrix<double, Eigen::Dynamic, 3> coords_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_;
   Eigen::Matrix<double, Eigen::Dynamic, 2> jacobian_inverse_gramian_;
-  double integrationElement_;
+  double integrationElement_{0};
 };
 }  // namespace lf::geometry
 
-#endif  // __b84bb391fa744cdd9159293bfcb5b311
+#endif  // INCGb84bb391fa744cdd9159293bfcb5b311

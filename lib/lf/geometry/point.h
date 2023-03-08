@@ -1,5 +1,5 @@
-#ifndef __184598b89ca44fe1a1e7a043bc32da06
-#define __184598b89ca44fe1a1e7a043bc32da06
+#ifndef INCG184598b89ca44fe1a1e7a043bc32da06
+#define INCG184598b89ca44fe1a1e7a043bc32da06
 
 #include <lf/base/base.h>
 
@@ -43,4 +43,4 @@ class Point : public Geometry {
 
 }  // namespace lf::geometry
 
-#endif  // __184598b89ca44fe1a1e7a043bc32da06
+#endif  // INCG184598b89ca44fe1a1e7a043bc32da06

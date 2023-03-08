@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __d0f3b8f133da4af980ce21ffffdf719a
-#define __d0f3b8f133da4af980ce21ffffdf719a
+#ifndef INCGd0f3b8f133da4af980ce21ffffdf719a
+#define INCGd0f3b8f133da4af980ce21ffffdf719a
 #include <vector>
 
 #include "lf/mesh/mesh_interface.h"
@@ -46,4 +46,4 @@ class MeshFunctionConstant {
 
 }  // namespace lf::mesh::utils
 
-#endif  // __d0f3b8f133da4af980ce21ffffdf719a
+#endif  // INCGd0f3b8f133da4af980ce21ffffdf719a

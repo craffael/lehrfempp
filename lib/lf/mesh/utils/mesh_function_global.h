@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __1323b89d2f584608940fcb37657142cc
-#define __1323b89d2f584608940fcb37657142cc
+#ifndef INCG1323b89d2f584608940fcb37657142cc
+#define INCG1323b89d2f584608940fcb37657142cc
 #include <lf/mesh/mesh.h>
 
 #include <vector>
@@ -95,4 +95,4 @@ class MeshFunctionGlobal {
 
 }  // namespace lf::mesh::utils
 
-#endif  // __1323b89d2f584608940fcb37657142cc
+#endif  // INCG1323b89d2f584608940fcb37657142cc

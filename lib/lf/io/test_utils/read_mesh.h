@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __1bd576875bb04c168d82c67cc451cbe7
-#define __1bd576875bb04c168d82c67cc451cbe7
+#ifndef INCG1bd576875bb04c168d82c67cc451cbe7
+#define INCG1bd576875bb04c168d82c67cc451cbe7
 #include <lf/mesh/hybrid2d/hybrid2d.h>
 
 #include <string>
@@ -32,4 +32,4 @@ GmshReader getGmshReader(std::string mesh_name, base::dim_t dim_world);
 
 }  // namespace lf::io::test_utils
 
-#endif  // __1bd576875bb04c168d82c67cc451cbe7
+#endif  // INCG1bd576875bb04c168d82c67cc451cbe7

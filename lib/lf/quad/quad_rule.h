@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __a7241ee797424d98ad339341b02bca70
-#define __a7241ee797424d98ad339341b02bca70
+#ifndef INCGa7241ee797424d98ad339341b02bca70
+#define INCGa7241ee797424d98ad339341b02bca70
 
 #include <lf/base/base.h>
 
@@ -196,4 +196,4 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace lf::quad
 
-#endif  // __a7241ee797424d98ad339341b02bca70
+#endif  // INCGa7241ee797424d98ad339341b02bca70

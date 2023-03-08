@@ -58,22 +58,22 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child entities
-  const int no_children = child_polygons.size();
+  const int no_children = base::narrow<int>(child_polygons.size());
   LF_VERIFY_MSG(
       no_children == ref_pat.NumChildren(codim),
       "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));
   // For each child create a geometry object and a unique pointer to it.
-  for (int l = 0; l < no_children; l++) {
+  for (int i = 0; i < no_children; i++) {
     // codim == 0:A single child must be described by an interval, that is
     // two different lattice coordinates
     // codim == 1: a point's location is just one number
-    LF_VERIFY_MSG(child_polygons[l].rows() == 1,
-                  "child_polygons[l].rows() = " << child_polygons[l].rows());
-    LF_VERIFY_MSG(child_polygons[l].cols() == (2 - codim),
-                  "child_polygons[l].cols() = " << child_polygons[l].cols());
+    LF_VERIFY_MSG(child_polygons[i].rows() == 1,
+                  "child_polygons[l].rows() = " << child_polygons[i].rows());
+    LF_VERIFY_MSG(child_polygons[i].cols() == (2 - codim),
+                  "child_polygons[l].cols() = " << child_polygons[i].cols());
     // Normalize lattice coordinates
     const Eigen::MatrixXd child_geo(
-        Global(h_lattice * child_polygons[l].cast<double>()));
+        Global(h_lattice * child_polygons[i].cast<double>()));
 
     switch (codim) {
       case 0: {

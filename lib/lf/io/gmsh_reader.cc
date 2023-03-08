@@ -41,11 +41,11 @@ size_type GmshReader::PhysicalEntityName2Nr(const std::string& name,
   auto result = *begin;
   ++begin;
   if (begin == end) {
-    if (codim == dim_t(-1) || codim == result.second.second) {
+    if (codim == static_cast<dim_t>(-1) || codim == result.second.second) {
       return result.second.first;
     }
   } else {
-    if (codim == dim_t(-1)) {
+    if (codim == static_cast<dim_t>(-1)) {
       throw base::LfException(
           "There are multiple physical entities with the name " + name +
           ", please specify also the codimension.");
@@ -75,11 +75,11 @@ std::string GmshReader::PhysicalEntityNr2Name(size_type number,
   auto result = *begin;
   ++begin;
   if (begin == end) {
-    if (codim == dim_t(-1) || result.second.second == codim) {
+    if (codim == static_cast<dim_t>(-1) || result.second.second == codim) {
       return result.second.first;
     }
   } else {
-    if (codim == dim_t(-1)) {
+    if (codim == static_cast<dim_t>(-1)) {
       throw base::LfException(
           "There are multiple physical entities with the Number " +
           std::to_string(number) + ", please specify also the codimension");
@@ -116,6 +116,7 @@ std::vector<size_type> GmshReader::PhysicalEntityNr(
   return physical_nrs_->operator()(e);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
   // 1) Check Gmsh_file and initialize
   //////////////////////////////////////////////////////////////////////////
@@ -240,9 +241,10 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
       }
     } else {
       // gmsh element is not a point -> insert entity:
-      auto num_nodes = end_element.NodeNumbers.size();
+      auto num_nodes =
+          base::narrow<Eigen::Index>(end_element.NodeNumbers.size());
       Eigen::MatrixXd node_coords(dim_world, num_nodes);
-      for (std::size_t i = 0; i < num_nodes; ++i) {
+      for (Eigen::Index i = 0; i < num_nodes; ++i) {
         auto node_coord =
             msh_file.Nodes[gi2i[end_element.NodeNumbers[i]]].second;
         if (dim_world == 2) {
@@ -343,6 +345,7 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
   // 1) Check Gmsh_file and initialize
   //////////////////////////////////////////////////////////////////////////
@@ -487,9 +490,9 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
         }
       } else {
         // gmsh element is not a point -> insert entity:
-        auto num_nodes = end_element.second.size();
+        auto num_nodes = base::narrow<Eigen::Index>(end_element.second.size());
         Eigen::MatrixXd node_coords(dim_world, num_nodes);
-        for (std::size_t i = 0; i < num_nodes; ++i) {
+        for (Eigen::Index i = 0; i < num_nodes; ++i) {
           auto& gi2i_e = gi2i[end_element.second[i] - min_node_tag];
           auto node_coord = msh_file.nodes.node_blocks[gi2i_e.first]
                                 .nodes[gi2i_e.second]

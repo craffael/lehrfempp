@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __6f934bca210e4020914d12e0910fab42
-#define __6f934bca210e4020914d12e0910fab42
+#ifndef INCG6f934bca210e4020914d12e0910fab42
+#define INCG6f934bca210e4020914d12e0910fab42
 
 #include <lf/mesh/mesh.h>
 
@@ -117,4 +117,4 @@ class Triangle : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __6f934bca210e4020914d12e0910fab42
+#endif  // INCG6f934bca210e4020914d12e0910fab42

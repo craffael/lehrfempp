@@ -12,8 +12,8 @@
  * @copyright MIT License
  */
 
-#ifndef _LF_ASSEMTYPES_H
-#define _LF_ASSEMTYPES_H
+#ifndef INCG_LF_ASSEMTYPES_H
+#define INCG_LF_ASSEMTYPES_H
 
 #include <lf/base/base.h>
 

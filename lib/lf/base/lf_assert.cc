@@ -8,6 +8,7 @@
 namespace lf::base {
 
 // Output for assertions
+// NOLINTNEXTLINE(misc-no-recursion)
 void AssertionFailed(const std::string& expr, const std::string& file,
                      long line, const std::string& msg) {
   std::cerr << "***** Internal Program Error - assertion (" << expr
@@ -22,10 +23,11 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 #ifdef LF_REDIRECT_ASSERTS
 namespace boost {
 // the following is needed to redirect BOOST_ASSERT(_MSG)/BOOST_VERIFY (_MSG)
+// NOLINTNEXTLINE(misc-no-recursion)
 void assertion_failed_msg(char const* expr, char const* msg,
                           char const* /*function*/, char const* file,
                           long line) {
-  lf::base::AssertionFailed(expr, file, line, msg);
+  lf::base::AssertionFailed(expr, file, line, msg);  // NOLINT
 }
 
 void assertion_failed(char const* expr, char const* /*function*/,

@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iomanip>
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
   std::cout << "\t Solution of general second-order elliptic\n"

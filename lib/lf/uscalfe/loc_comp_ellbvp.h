@@ -324,10 +324,11 @@ ReactionDiffusionElementMatrixProvider<
   for (base::size_type k = 0; k < pfe.Qr().NumPoints(); ++k) {
     const double w = pfe.Qr().Weights()[k] * determinants[k];
     // Transformed gradients
-    const auto trf_grad(JinvT.block(0, 2 * k, world_dim, 2) *
-                        pfe.PrecompGradientsReferenceShapeFunctions()
-                            .block(0, 2 * k, mat.rows(), 2)
-                            .transpose());
+    const auto trf_grad(
+        JinvT.block(0, 2 * static_cast<Eigen::Index>(k), world_dim, 2) *
+        pfe.PrecompGradientsReferenceShapeFunctions()
+            .block(0, 2 * k, mat.rows(), 2)
+            .transpose());
     // Transformed gradients multiplied with coefficient
     const auto alpha_trf_grad(alphaval[k] * trf_grad);
     mat += w * (trf_grad.adjoint() * alpha_trf_grad +
@@ -367,7 +368,8 @@ class MassEdgeMatrixProvider {
  public:
   /// Scalar type of the element matrix
   using scalar_t =
-      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<COEFF>(0));
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<COEFF>>(0));
   using ElemMat = Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
   /** @name standard constructors
@@ -559,9 +561,9 @@ class ScalarLoadElementVectorProvider {
 
  public:
   /// Scalar type of the element matrix
-  using scalar_t =
-      decltype(SCALAR(0) *
-               mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>(0));
+  using scalar_t = decltype(
+      static_cast<SCALAR>(0) *
+      static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(0));
   using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors
@@ -782,7 +784,8 @@ class ScalarLoadEdgeVectorProvider {
   static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
                 "FUNCTOR does not fulfill the concept of a mesh function.");
   using Scalar =
-      decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<FUNCTOR>>(0));
   using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
   /** @name standard constructors

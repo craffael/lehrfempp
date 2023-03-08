@@ -19,6 +19,7 @@
 using FisherKPP::localQuadFunction;
 using FisherKPP::StrangSplit;
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, char** /*argv*/) {
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);

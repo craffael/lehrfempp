@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __3e48c7b32a034cb3be3dbca884ff4f6c
-#define __3e48c7b32a034cb3be3dbca884ff4f6c
+#ifndef INCG3e48c7b32a034cb3be3dbca884ff4f6c
+#define INCG3e48c7b32a034cb3be3dbca884ff4f6c
 
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
@@ -836,6 +836,7 @@ class VtkWriter {
 };
 
 template <class MESH_FUNCTION, class>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void VtkWriter::WritePointData(const std::string& name,
                                const MESH_FUNCTION& mesh_function) {
   //  we have to evaluate the mesh function at all points
@@ -996,14 +997,14 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
                              const Eigen::Matrix<T, ROWS, 1>& in) {
   if constexpr (ROWS == 2) {  // NOLINT
     out.template block<2, 1>(0, 0) = in;
-    out(2) = T(0);
+    out(2) = T(0);                   // NOLINT
   } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
   } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
     LF_ASSERT_MSG(in.rows() == 2 || in.rows() == 3,
                   "VtkWriter can only write out 2d or 3d vectors.");
     if (in.rows() == 2) {
-      out(2) = T(0);
+      out(2) = T{0};
       out.topRows(2) = in;
     } else {
       out = in;
@@ -1013,4 +1014,4 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
 
 }  // namespace lf::io
 
-#endif  // __3e48c7b32a034cb3be3dbca884ff4f6c
+#endif  // INCG3e48c7b32a034cb3be3dbca884ff4f6c

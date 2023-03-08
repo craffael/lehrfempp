@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __c3c605c9e48646758bf03fab65d52836
-#define __c3c605c9e48646758bf03fab65d52836
+#ifndef c3c605c9e48646758bf03fab65d52836
+#define c3c605c9e48646758bf03fab65d52836
 
 #include <boost/assert.hpp>
 #include <sstream>
@@ -20,6 +20,17 @@ void AssertionFailed(const std::string& expr, const std::string& file,
                      long line, const std::string& msg);
 
 }  // namespace lf::base
+
+/**
+ * @brief `LF_UNREACHABLE` is the same as `LF_VERIFY(false)` but its easier
+ * for the compiler to analyze and helps to avoid warnings about "control
+ * reached end of non-void function"
+ */
+#define LF_UNREACHABLE                                            \
+  {                                                               \
+    ::lf::base::AssertionFailed("false", __FILE__, __LINE__, ""); \
+    std::abort();                                                 \
+  }
 
 /**
  * @brief LF_VERIFY_MSG(expr, msg) aborts execution of the code if
@@ -55,7 +66,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      throw std::runtime_error("this code should not be reached");      \
+      LF_UNREACHABLE;                                                   \
     }                                                                   \
   }
 #endif
@@ -81,4 +92,4 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 #define eigen_assert_redirected
 #endif
 #endif
-#endif  // __c3c605c9e48646758bf03fab65d52836
+#endif  // c3c605c9e48646758bf03fab65d52836

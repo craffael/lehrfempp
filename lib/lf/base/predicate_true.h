@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __7f5cb415f32d480ba60fcefa5f351637
-#define __7f5cb415f32d480ba60fcefa5f351637
+#ifndef INCG7f5cb415f32d480ba60fcefa5f351637
+#define INCG7f5cb415f32d480ba60fcefa5f351637
 
 namespace lf::base {
 
@@ -26,4 +26,4 @@ class PredicateTrue {
 
 }  // namespace lf::base
 
-#endif  // __7f5cb415f32d480ba60fcefa5f351637
+#endif  // INCG7f5cb415f32d480ba60fcefa5f351637

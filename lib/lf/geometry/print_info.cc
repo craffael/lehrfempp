@@ -8,8 +8,8 @@ void PrintInfo(std::ostream& o, const Geometry& geom, int output_ctrl) {
 
   if (output_ctrl > 10) {
     // Dimensions and the derived type
-    int dim_glob = geom.DimGlobal();
-    int dim_local = geom.DimLocal();
+    base::dim_t dim_glob = geom.DimGlobal();
+    base::dim_t dim_local = geom.DimLocal();
     o << "world dim. = " << dim_glob << std::flush;
     o << ", loc dim =  " << dim_local << std::flush;
     o << "type: " << typeid(geom).name() << std::endl;

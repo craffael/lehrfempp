@@ -20,6 +20,7 @@ TikzOutputCtrl operator&(const TikzOutputCtrl &lhs, const TikzOutputCtrl &rhs) {
                                      static_cast<unsigned int>(rhs));
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                std::function<bool(const lf::mesh::Entity &)> &&selector,
                TikzOutputCtrl output_ctrl) {
@@ -85,7 +86,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
       if (selector(*obj)) {  // IF SELECTOR -------
         size_type obj_idx = mesh.Index(*obj);
         lf::base::RefEl obj_refel = obj->RefEl();
-        int num_nodes_obj = obj_refel.NumNodes();
+        int num_nodes_obj = base::narrow<int>(obj_refel.NumNodes());
         const geometry::Geometry *obj_geo_ptr = obj->Geometry();
         const Eigen::MatrixXd &obj_corners(obj_refel.NodeCoords());
         const Eigen::MatrixXd vertices = obj_geo_ptr->Global(obj_corners);
