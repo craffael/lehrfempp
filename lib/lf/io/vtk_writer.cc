@@ -704,8 +704,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         addSegmentNodes(*e, false);
         break;
       case base::RefEl::kTria(): {
-        const auto* iterator = e->SubEntities(1).begin();
-        const auto* o_iterator = e->RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -719,8 +719,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         break;
       }
       case base::RefEl::kQuad(): {
-        const auto* iterator = e->SubEntities(1).begin();
-        const auto* o_iterator = e->RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
