@@ -161,7 +161,7 @@ energy_vector TestConververgencePrimalDPGConvectionDiffusionDirichletBVP(
             rhs_provider, stiffness_provider, gramian_provider);
 
     // initialize the boundary value problem
-    auto h = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+    auto h = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
     auto dirichlet_selector = lf::mesh::utils::flagEntitiesOnBoundary(mesh_p);
     auto bvp = std::make_shared<FullConvectionDiffusionBVP<
         decltype(alpha), decltype(beta), decltype(f), decltype(g), decltype(h),

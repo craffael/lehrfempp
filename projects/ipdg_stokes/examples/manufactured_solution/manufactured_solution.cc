@@ -146,7 +146,7 @@ int main() {
       return computeF(n, x);
     };
     // The velocity on the boundary is zero everywhere
-    auto dirichlet_funct = [](const lf::mesh::Entity &
+    auto dirichlet_funct = [](const lf::mesh::Entity&
                               /*unused*/) -> Eigen::Vector2d {
       return Eigen::Vector2d::Zero();
     };

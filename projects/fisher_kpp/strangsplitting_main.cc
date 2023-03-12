@@ -210,8 +210,8 @@ int main(int /*argc*/, char** /*argv*/) {
   Eigen::VectorXd K(N_dofs);
   K.setZero();
   K = 0.2 * Eigen::VectorXd::Ones(N_dofs);
-  auto c_cap = [](const Eigen::Vector2d & /*x*/) -> double { return 80.0; };
-  auto h_cap = [](const Eigen::Vector2d & /*x*/) -> double { return 1.0; };
+  auto c_cap = [](const Eigen::Vector2d& /*x*/) -> double { return 80.0; };
+  auto h_cap = [](const Eigen::Vector2d& /*x*/) -> double { return 1.0; };
   Eigen::MatrixXd L_cap(N_dofs, N_dofs);
   L_cap = Eigen::MatrixXd::Zero(N_dofs, N_dofs);
   /* NOTE: c = 80, lambda = 0, L = 0, h = 1, K does not matter*/

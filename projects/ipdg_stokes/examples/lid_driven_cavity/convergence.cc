@@ -37,7 +37,7 @@ using lf::uscalfe::operator*;  // NOLINT
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
+static std::string concat(Args &&...args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();

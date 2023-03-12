@@ -9,15 +9,15 @@ env:
 
 jobs:
   clang-format:
-    name: clang-format-10
+    name: clang-format-14
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: sudo apt-get install clang-format-10
+        run: sudo apt-get install clang-format-14
       - name: clang-format
-        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-10 --color always ./lib/ ./projects/ ./examples/"
+        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-14 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
     name: clang-tidy-14 ${{ matrix.name }}
     needs: clang-format

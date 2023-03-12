@@ -699,7 +699,7 @@ using std::size;
 #elif span_HAVE(CONSTRAINED_SPAN_CONTAINER_CTOR)
 
 template <typename T, std::size_t N>
-inline span_constexpr auto size(const T (&)[N]) span_noexcept -> size_t {
+inline span_constexpr auto size(const T (&)[N]) span_noexcept->size_t {
   return N;
 }
 
@@ -709,7 +709,7 @@ inline span_constexpr auto size(C const& cont) -> decltype(cont.size()) {
 }
 
 template <typename T, std::size_t N>
-inline span_constexpr auto data(T (&arr)[N]) span_noexcept -> T* {
+inline span_constexpr auto data(T (&arr)[N]) span_noexcept->T* {
   return &arr[0];
 }
 
@@ -724,8 +724,8 @@ inline span_constexpr auto data(C const& cont) -> decltype(cont.data()) {
 }
 
 template <typename E>
-inline span_constexpr auto data(std::initializer_list<E> il) span_noexcept
-    -> E const* {
+inline span_constexpr auto data(std::initializer_list<E> il)
+    span_noexcept->E const* {
   return il.begin();
 }
 
@@ -832,13 +832,13 @@ struct is_compatible_container
 
 template <
     class C,
-    class E span_REQUIRES_T((
-        !is_span<C>::value && !is_array<C>::value && !is_std_array<C>::value &&
-        (std::is_convertible<typename std::remove_pointer<decltype(
-                                 std17::data(std::declval<C &>()))>::type (*)[],
-                             E (*)[]>::value)
-        //  &&   has_size_and_data< C >::value
-        )),
+    class E span_REQUIRES_T(
+        (!is_span<C>::value && !is_array<C>::value && !is_std_array<C>::value &&
+         (std::is_convertible<typename std::remove_pointer<decltype(std17::data(
+                                  std::declval<C &>()))>::type (*)[],
+                              E (*)[]>::value)
+         //  &&   has_size_and_data< C >::value
+         )),
     class = decltype(std17::size(std::declval<C>())),
     class = decltype(std17::data(std::declval<C>()))>
 struct is_compatible_container : std::true_type {};
@@ -1562,15 +1562,15 @@ inline span_constexpr span<const T, static_cast<extent_t>(N)> make_span(
 
 template <class Container,
           class EP = decltype(std::data(std::declval<Container&>()))>
-inline span_constexpr auto make_span(Container& cont) span_noexcept
-    -> span<typename std::remove_pointer<EP>::type> {
+inline span_constexpr auto make_span(Container& cont)
+    span_noexcept->span<typename std::remove_pointer<EP>::type> {
   return span<typename std::remove_pointer<EP>::type>(cont);
 }
 
 template <class Container,
           class EP = decltype(std::data(std::declval<Container&>()))>
-inline span_constexpr auto make_span(Container const& cont) span_noexcept
-    -> span<const typename std::remove_pointer<EP>::type> {
+inline span_constexpr auto make_span(Container const& cont)
+    span_noexcept->span<const typename std::remove_pointer<EP>::type> {
   return span<const typename std::remove_pointer<EP>::type>(cont);
 }
 
@@ -1578,15 +1578,15 @@ inline span_constexpr auto make_span(Container const& cont) span_noexcept
 
 template <class Container,
           class EP = decltype(std17::data(std::declval<Container&>()))>
-inline span_constexpr auto make_span(Container& cont) span_noexcept
-    -> span<typename std::remove_pointer<EP>::type> {
+inline span_constexpr auto make_span(Container& cont)
+    span_noexcept->span<typename std::remove_pointer<EP>::type> {
   return span<typename std::remove_pointer<EP>::type>(cont);
 }
 
 template <class Container,
           class EP = decltype(std17::data(std::declval<Container&>()))>
-inline span_constexpr auto make_span(Container const& cont) span_noexcept
-    -> span<const typename std::remove_pointer<EP>::type> {
+inline span_constexpr auto make_span(Container const& cont)
+    span_noexcept->span<const typename std::remove_pointer<EP>::type> {
   return span<const typename std::remove_pointer<EP>::type>(cont);
 }
 
@@ -1734,15 +1734,15 @@ namespace nonstd {
 namespace span_lite {
 
 template <class T>
-inline span_constexpr auto byte_span(T& t) span_noexcept
-    -> span<std17::byte, span_sizeof(T)> {
+inline span_constexpr auto byte_span(T& t)
+    span_noexcept->span<std17::byte, span_sizeof(T)> {
   return span<std17::byte, span_sizeof(t)>(reinterpret_cast<std17::byte*>(&t),
                                            span_sizeof(T));
 }
 
 template <class T>
-inline span_constexpr auto byte_span(T const& t) span_noexcept
-    -> span<const std17::byte, span_sizeof(T)> {
+inline span_constexpr auto byte_span(T const& t)
+    span_noexcept->span<const std17::byte, span_sizeof(T)> {
   return span<const std17::byte, span_sizeof(t)>(
       reinterpret_cast<std17::byte const*>(&t), span_sizeof(T));
 }
