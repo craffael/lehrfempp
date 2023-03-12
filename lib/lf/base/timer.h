@@ -39,6 +39,7 @@
 #define INCG_529e391f2915453388028b848b3dcbd6
 
 #include <spdlog/logger.h>
+
 #include <chrono>
 #include <cstdint>
 #include <memory>

@@ -96,7 +96,7 @@ int main(int /*argc*/, char** /*argv*/) {
   mu4_ipol.setZero();
 
   /* Diffusion Coefficient */
-  auto c = [](const Eigen::Vector2d & /*x*/) -> double { return 1.2; };
+  auto c = [](const Eigen::Vector2d& /*x*/) -> double { return 1.2; };
   /* Growth Factor */
   double lambda = 2.1;
 

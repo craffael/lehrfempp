@@ -45,7 +45,7 @@ int main(int /*argc*/, char** /*argv*/) {
   u0(0) = 0.00008;
 
   /* Diffusion Coefficient */
-  auto c = [](const Eigen::Vector2d & /*x*/) -> double {
+  auto c = [](const Eigen::Vector2d& /*x*/) -> double {
     /* In case of three circles: Mesh 2. */
     return 0.004;
   };

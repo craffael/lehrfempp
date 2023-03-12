@@ -53,10 +53,10 @@ int main() {
           .finished();
     };
 
-    auto epsilon = [eps](const Eigen::Vector2d & /*x*/) -> double {
+    auto epsilon = [eps](const Eigen::Vector2d& /*x*/) -> double {
       return eps;
     };
-    auto beta = [b1, b2](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
+    auto beta = [b1, b2](const Eigen::Vector2d& /*x*/) -> Eigen::Vector2d {
       return (Eigen::VectorXd(2) << b1, b2).finished();
     };
 
@@ -68,7 +68,7 @@ int main() {
              b1 * u1_exact_grad(x[0]) * u2_exact(x[1]) +
              b2 * u1_exact(x[0]) * u2_exact_grad(x[1]);
     };
-    auto g = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+    auto g = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
 
     // specification of degree and enrichement for the method
     int deg_p = 1;

@@ -543,9 +543,10 @@ class ScalarLoadElementVectorProvider final {
   static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
-  using scalar_t = decltype(
-      static_cast<SCALAR>(0) *
-      static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(0));
+  using scalar_t =
+      decltype(static_cast<SCALAR>(0) *
+               static_cast<mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>>(
+                   0));
   using ElemVec = Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>;
 
   /** @name standard constructors

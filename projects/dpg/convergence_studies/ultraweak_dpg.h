@@ -139,11 +139,11 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     auto zero_mf =
         lf::mesh::utils::MeshFunctionConstant(Eigen::Vector2d(0.0, 0.0));
     auto x_selector_mf = lf::mesh::utils::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
+        [](const Eigen::Vector2d& /*x*/) -> Eigen::Matrix2d {
           return (Eigen::MatrixXd(2, 2) << 1.0, 0.0, 0.0, 0.0).finished();
         });
     auto y_selector_mf = lf::mesh::utils::MeshFunctionGlobal(
-        [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
+        [](const Eigen::Vector2d& /*x*/) -> Eigen::Matrix2d {
           return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 0.0, 1.0).finished();
         });
 
@@ -195,13 +195,13 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
     gramian_builder.AddDiffusionElementMatrixProvider(
         tau_y, tau_x,
         lf::mesh::utils::MeshFunctionGlobal(
-            [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
+            [](const Eigen::Vector2d& /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 1.0, 0.0, 0.0).finished();
             }));
     gramian_builder.AddDiffusionElementMatrixProvider(
         tau_x, tau_y,
         lf::mesh::utils::MeshFunctionGlobal(
-            [](const Eigen::Vector2d & /*x*/) -> Eigen::Matrix2d {
+            [](const Eigen::Vector2d& /*x*/) -> Eigen::Matrix2d {
               return (Eigen::MatrixXd(2, 2) << 0.0, 0.0, 1.0, 0.0).finished();
             }));
 
@@ -223,7 +223,7 @@ TestConververgenceUltraWeakDPGConvectionDiffusionDirichletBVP(
             rhs_provider, stiffness_provider, gramian_provider);
 
     // initialize the boundary value problem
-    auto h = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+    auto h = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
     auto dirichlet_selector = lf::mesh::utils::flagEntitiesOnBoundary(mesh_p);
     auto bvp = std::make_shared<FullConvectionDiffusionBVP<
         decltype(alpha), decltype(beta), decltype(f), decltype(g), decltype(h),

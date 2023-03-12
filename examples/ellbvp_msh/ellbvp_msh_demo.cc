@@ -72,7 +72,7 @@ int main() {
   // identity mesh function for very simple problem
   lf::mesh::utils::MeshFunctionConstant mf_identity(1.0);
 
-  auto zero = [](const Eigen::Vector2d & /*x*/) -> double { return 0.; };
+  auto zero = [](const Eigen::Vector2d& /*x*/) -> double { return 0.; };
   lf::mesh::utils::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
