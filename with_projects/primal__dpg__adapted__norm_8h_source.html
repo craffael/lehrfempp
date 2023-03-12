@@ -227,7 +227,7 @@ $(function() {
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;            rhs_provider, stiffness_provider, gramian_provider);</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="comment">// initialize the boundary value problem</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keyword">auto</span> h = [](<span class="keyword">const</span> Eigen::Vector2d &amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> { <span class="keywordflow">return</span> 0.0; };</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keyword">auto</span> h = [](<span class="keyword">const</span> Eigen::Vector2d&amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> { <span class="keywordflow">return</span> 0.0; };</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">auto</span> dirichlet_selector = <a class="code" href="namespacelf_1_1mesh_1_1utils.html#a8b5d673cc329a83aabf29e965c727948">lf::mesh::utils::flagEntitiesOnBoundary</a>(mesh_p);</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keyword">auto</span> bvp = std::make_shared&lt;FullConvectionDiffusionBVP&lt;</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        decltype(alpha), decltype(beta), decltype(f), decltype(g), decltype(h),</div>

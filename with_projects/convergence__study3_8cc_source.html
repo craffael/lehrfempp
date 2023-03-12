@@ -146,10 +146,10 @@ $(function() {
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          .finished();</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    };</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">auto</span> epsilon = [eps](<span class="keyword">const</span> Eigen::Vector2d &amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">auto</span> epsilon = [eps](<span class="keyword">const</span> Eigen::Vector2d&amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">return</span> eps;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    };</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">auto</span> beta = [b1, b2](<span class="keyword">const</span> Eigen::Vector2d &amp; <span class="comment">/*x*/</span>) -&gt; Eigen::Vector2d {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">auto</span> beta = [b1, b2](<span class="keyword">const</span> Eigen::Vector2d&amp; <span class="comment">/*x*/</span>) -&gt; Eigen::Vector2d {</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> (Eigen::VectorXd(2) &lt;&lt; b1, b2).finished();</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    };</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
@@ -161,7 +161,7 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;             b1 * u1_exact_grad(x[0]) * u2_exact(x[1]) +</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;             b2 * u1_exact(x[0]) * u2_exact_grad(x[1]);</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    };</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">auto</span> g = [](<span class="keyword">const</span> Eigen::Vector2d &amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> { <span class="keywordflow">return</span> 0.0; };</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">auto</span> g = [](<span class="keyword">const</span> Eigen::Vector2d&amp; <span class="comment">/*x*/</span>) -&gt; <span class="keywordtype">double</span> { <span class="keywordflow">return</span> 0.0; };</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// specification of degree and enrichement for the method</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">int</span> deg_p = 2;</div>

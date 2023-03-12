@@ -117,7 +117,7 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">static</span> std::string concat(Args &amp;&amp;... args) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">static</span> std::string concat(Args &amp;&amp;...args) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  std::ostringstream ss;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  (ss &lt;&lt; ... &lt;&lt; args);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordflow">return</span> ss.str();</div>

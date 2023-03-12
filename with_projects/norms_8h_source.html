@@ -124,10 +124,10 @@ $(function() {
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      *mesh, lf::mesh::utils::squaredNorm(f_grad), qr_selector);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// Compute the norm on the edges</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">const</span> <span class="keyword">auto</span> boundary = <a class="code" href="namespacelf_1_1mesh_1_1utils.html#a8b5d673cc329a83aabf29e965c727948">lf::mesh::utils::flagEntitiesOnBoundary</a>(mesh, 1);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">using</span> jump_t = std::remove_cv_t&lt;decltype(</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      (std::declval&lt;<a class="code" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">lf::mesh::utils::MeshFunctionReturnType&lt;MF_F&gt;</a>&gt;() *</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;       std::declval&lt;Eigen::Vector2d&gt;().transpose())</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;          .eval())&gt;;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">using</span> jump_t = std::remove_cv_t&lt;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      decltype((std::declval&lt;<a class="code" href="namespacelf_1_1mesh_1_1utils.html#a4b9f811e348cd2c9cb391465a891e648">lf::mesh::utils::MeshFunctionReturnType&lt;MF_F&gt;</a>&gt;() *</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                std::declval&lt;Eigen::Vector2d&gt;().transpose())</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                   .eval())&gt;;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="classlf_1_1mesh_1_1utils_1_1_codim_mesh_data_set.html">lf::mesh::utils::CodimMeshDataSet&lt;std::vector&lt;jump_t&gt;</a>&gt; eval(mesh, 1);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> entity : mesh-&gt;Entities(0)) {</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> edges = entity-&gt;SubEntities(1);</div>

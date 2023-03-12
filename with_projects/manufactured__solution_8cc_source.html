@@ -200,7 +200,7 @@ $(function() {
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;      <span class="keywordflow">return</span> computeF(n, x);</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    };</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="comment">// The velocity on the boundary is zero everywhere</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keyword">auto</span> dirichlet_funct = [](<span class="keyword">const</span> <a class="code" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keyword">auto</span> dirichlet_funct = [](<span class="keyword">const</span> <a class="code" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a>&amp;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                              <span class="comment">/*unused*/</span>) -&gt; Eigen::Vector2d {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;      <span class="keywordflow">return</span> Eigen::Vector2d::Zero();</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    };</div>
