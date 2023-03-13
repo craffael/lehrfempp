@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __3178e8d1e7bf4366bcb00cdb4ebbf5fb
-#define __3178e8d1e7bf4366bcb00cdb4ebbf5fb
+#ifndef INCG3178e8d1e7bf4366bcb00cdb4ebbf5fb
+#define INCG3178e8d1e7bf4366bcb00cdb4ebbf5fb
 #include <utility>
 
 #include "lf/base/base.h"
@@ -135,4 +135,4 @@ bool isParallelogram(
 
 }  // namespace lf::geometry
 
-#endif  // __3178e8d1e7bf4366bcb00cdb4ebbf5fb
+#endif  // INCG3178e8d1e7bf4366bcb00cdb4ebbf5fb

@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __a0ec4da7c53444cbb215ff2415c2b3c5
-#define __a0ec4da7c53444cbb215ff2415c2b3c5
+#ifndef INCGa0ec4da7c53444cbb215ff2415c2b3c5
+#define INCGa0ec4da7c53444cbb215ff2415c2b3c5
 
 #include <lf/mesh/mesh.h>
 
@@ -49,4 +49,4 @@ void PrintInfo(std::ostream& stream, const lf::mesh::Entity& e,
 
 }  // namespace lf::mesh::utils
 
-#endif  // __a0ec4da7c53444cbb215ff2415c2b3c5
+#endif  // INCGa0ec4da7c53444cbb215ff2415c2b3c5

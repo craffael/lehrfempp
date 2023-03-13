@@ -29,18 +29,18 @@ int main() {
   };
 
   // BVP1:
-  auto epsilon_1 = [](const Eigen::Vector2d & /*x*/) -> double { return 1.0; };
-  auto beta_1 = [](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
+  auto epsilon_1 = [](const Eigen::Vector2d& /*x*/) -> double { return 1.0; };
+  auto beta_1 = [](const Eigen::Vector2d& /*x*/) -> Eigen::Vector2d {
     return (Eigen::VectorXd(2) << 0.0, 0.0).finished();
   };
   auto f_1 = [PI](const Eigen::Vector2d& x) -> double {
     return 2.0 * PI * PI * std::sin(PI * x[0]) * std::sin(PI * x[1]);
   };
-  auto g_1 = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+  auto g_1 = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
 
   // BVP 2:
-  auto epsilon_2 = [](const Eigen::Vector2d & /*x*/) -> double { return 1.0; };
-  auto beta_2 = [PI](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
+  auto epsilon_2 = [](const Eigen::Vector2d& /*x*/) -> double { return 1.0; };
+  auto beta_2 = [PI](const Eigen::Vector2d& /*x*/) -> Eigen::Vector2d {
     return (Eigen::VectorXd(2) << 2.0, 1.0).finished();
   };
   auto f_2 = [PI](const Eigen::Vector2d& x) -> double {
@@ -48,7 +48,7 @@ int main() {
            PI * (2.0 * std::cos(PI * x[0]) * std::sin(PI * x[1]) +
                  std::sin(PI * x[0]) * std::cos(PI * x[1]));
   };
-  auto g_2 = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+  auto g_2 = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
 
   //-----------------------------------------
   // Convergence tests on a triangluar mesh -

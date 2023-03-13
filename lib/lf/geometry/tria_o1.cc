@@ -50,8 +50,7 @@ bool assertNonDegenerateTriangle(
 TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
     : coords_(std::move(coords)),
       jacobian_(coords_.rows(), 2),
-      jacobian_inverse_gramian_(coords_.rows(), 2),
-      integrationElement_(0) {
+      jacobian_inverse_gramian_(coords_.rows(), 2) {
   // Make sure that the triangle has a proper shape.
   assertNonDegenerateTriangle(coords_);
   // Precompute constant Jacobian
@@ -109,7 +108,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
-  const int no_children = child_polygons.size();
+  const auto no_children = base::narrow<base::size_type>(child_polygons.size());
   LF_VERIFY_MSG(
       no_children == ref_pat.NumChildren(codim),
       "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));

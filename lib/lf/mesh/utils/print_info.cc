@@ -14,6 +14,7 @@
 
 namespace lf::mesh::utils {
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
   using dim_t = lf::base::dim_t;
   using size_type = lf::base::size_type;
@@ -26,7 +27,7 @@ void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
   if (ctrl > 10) {
     // Loop over codimensions
 
-    for (int co_dim = dim_mesh; co_dim >= 0; co_dim--) {
+    for (int co_dim = base::narrow<int>(dim_mesh); co_dim >= 0; co_dim--) {
       const size_type no_ent = mesh.NumEntities(co_dim);
       o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
         << std::endl;
@@ -51,7 +52,7 @@ void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
 
         // Loop over local co-dimensions
         if (ctrl > 90) {
-          for (int l = 1; l <= dim_mesh - co_dim; l++) {
+          for (int l = 1; l <= base::narrow<int>(dim_mesh) - co_dim; l++) {
             o << "rel codim-" << l << " subent: [";
             // Fetch subentities of co-dimension l
             auto sub_ent_range = e->SubEntities(l);
@@ -75,7 +76,7 @@ void PrintInfo(std::ostream &stream, const lf::mesh::Entity &e,
                int output_ctrl) {
   // Topological type of entity
   lf::base::RefEl e_ref_el = e.RefEl();
-  int dim_ref_el = e_ref_el.Dimension();
+  base::dim_t dim_ref_el = e_ref_el.Dimension();
   // Geometry of entity and coordinates
   const geometry::Geometry *e_geo_ptr = e.Geometry();
   LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
@@ -89,8 +90,8 @@ void PrintInfo(std::ostream &stream, const lf::mesh::Entity &e,
     const Eigen::MatrixXd &ref_el_corners(e_ref_el.NodeCoords());
 
     // Loop over codimensions
-    for (int co_dim = dim_ref_el; co_dim > 0; co_dim--) {
-      int num_sub_ent = e_ref_el.NumSubEntities(co_dim);
+    for (base::dim_t co_dim = dim_ref_el; co_dim > 0; co_dim--) {
+      base::size_type num_sub_ent = e_ref_el.NumSubEntities(co_dim);
       stream << std::endl
              << "Codimension " << co_dim << ": " << num_sub_ent
              << " sub-entities" << std::endl;

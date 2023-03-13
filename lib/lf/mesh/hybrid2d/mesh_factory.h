@@ -1,5 +1,5 @@
-#ifndef __e98a803fac5b430a8ff634ceb2f809aX
-#define __e98a803fac5b430a8ff634ceb2f809aX
+#ifndef INCGe98a803fac5b430a8ff634ceb2f809aX
+#define INCGe98a803fac5b430a8ff634ceb2f809aX
 
 #include <lf/mesh/mesh.h>
 
@@ -89,4 +89,4 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __e98a803fac5b430a8ff634ceb2f809aX
+#endif  // INCGe98a803fac5b430a8ff634ceb2f809aX

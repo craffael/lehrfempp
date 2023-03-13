@@ -22,7 +22,7 @@ TEST(lf_refinement, FatherChildRelations) {
 
   // mark all edges of the triangle for refinement:
   auto marks = mesh::utils::make_CodimMeshDataSet(base_mesh, 1, false);
-  const auto *triangle = std::find_if(
+  const auto triangle = std::find_if(
       base_mesh->Entities(0).begin(), base_mesh->Entities(0).end(),
       [](const auto e) { return e->RefEl() == base::RefEl::kTria(); });
   // Visit all edges of the triangle

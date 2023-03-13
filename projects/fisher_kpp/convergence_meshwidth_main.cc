@@ -42,6 +42,7 @@ double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh> &mesh_p) {
   return mesh_size;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =

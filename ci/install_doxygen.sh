@@ -9,7 +9,7 @@ dir=$(pwd)
 mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
 if [ ! -d "doxygen-1.9.1" ]; then
-  wget -O - https://doxygen.nl/files/doxygen-1.9.1.src.tar.gz | tar xz
+  wget -O - https://sourceforge.net/projects/doxygen/files/rel-1.9.1/doxygen-1.9.1.src.tar.gz/download | tar xz
   cd doxygen-1.9.1
   mkdir build
   cd build

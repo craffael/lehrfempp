@@ -112,6 +112,7 @@ void MeshHierarchy::RefineRegular(RefPat ref_pat) {
   initGeometryInParent();
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void MeshHierarchy::RefineMarked() {
   // Target the finest mesh
   const lf::mesh::Mesh &finest_mesh(*meshes_.back());
@@ -1600,6 +1601,7 @@ void MeshHierarchy::PerformRefinement() {
 // **********************************************************************
 // Initialization of rel_ref_geo fields of ParentInfo structures
 // **********************************************************************
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void MeshHierarchy::initGeometryInParent() {
   // number of meshes contained in the hierarchy
   const size_type num_levels = NumLevels();

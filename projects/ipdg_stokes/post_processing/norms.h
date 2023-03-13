@@ -73,10 +73,10 @@ double DGnorm(const std::shared_ptr<const lf::mesh::Mesh> &mesh, const MF_F &f,
       *mesh, lf::mesh::utils::squaredNorm(f_grad), qr_selector);
   // Compute the norm on the edges
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
-  using jump_t = std::remove_cv_t<decltype(
-      (std::declval<lf::mesh::utils::MeshFunctionReturnType<MF_F>>() *
-       std::declval<Eigen::Vector2d>().transpose())
-          .eval())>;
+  using jump_t = std::remove_cv_t<
+      decltype((std::declval<lf::mesh::utils::MeshFunctionReturnType<MF_F>>() *
+                std::declval<Eigen::Vector2d>().transpose())
+                   .eval())>;
   lf::mesh::utils::CodimMeshDataSet<std::vector<jump_t>> eval(mesh, 1);
   for (const auto entity : mesh->Entities(0)) {
     const auto edges = entity->SubEntities(1);

@@ -96,7 +96,7 @@ double computeGeometryVolume(const lf::geometry::Geometry& geom) {
 
   double vol = 0.;
 
-  for (size_t j = 0; j < points.cols(); ++j) {
+  for (Eigen::Index j = 0; j < points.cols(); ++j) {
     vol += weights(j) * integrationElements(j);
   }
 

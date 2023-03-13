@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __7a41e223dd0e4176af0371c2b57d2b67
-#define __7a41e223dd0e4176af0371c2b57d2b67
+#ifndef INCG7a41e223dd0e4176af0371c2b57d2b67
+#define INCG7a41e223dd0e4176af0371c2b57d2b67
 
 #include "lagr_fe.h"
 #include "uniform_scalar_fe_space.h"
@@ -53,4 +53,4 @@ class FeSpaceLagrangeO1 : public UniformScalarFESpace<SCALAR> {
 };
 }  // namespace lf::uscalfe
 
-#endif  // __7a41e223dd0e4176af0371c2b57d2b67
+#endif  // INCG7a41e223dd0e4176af0371c2b57d2b67

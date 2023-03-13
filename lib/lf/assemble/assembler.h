@@ -13,8 +13,8 @@
  * @copyright MIT License
  */
 
-#ifndef _LF_ASSEMBLE_H
-#define _LF_ASSEMBLE_H
+#ifndef INCG_LF_ASSEMBLE_H
+#define INCG_LF_ASSEMBLE_H
 
 #include <fmt/ranges.h>
 #include <spdlog/fmt/ostr.h>

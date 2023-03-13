@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __e384f4f7485d447c8d3f33406a0f5f7e
-#define __e384f4f7485d447c8d3f33406a0f5f7e
+#ifndef INCGe384f4f7485d447c8d3f33406a0f5f7e
+#define INCGe384f4f7485d447c8d3f33406a0f5f7e
 
 #include <complex>
 #include <type_traits>
@@ -57,4 +57,4 @@ inline constexpr bool is_scalar = IsScalar<T>::value;
 
 }  // namespace lf::base
 
-#endif  // __e384f4f7485d447c8d3f33406a0f5f7e
+#endif  // INCGe384f4f7485d447c8d3f33406a0f5f7e

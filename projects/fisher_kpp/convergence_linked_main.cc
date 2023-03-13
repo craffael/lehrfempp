@@ -43,6 +43,7 @@ double getMeshSize(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p) {
   return mesh_size;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, char** /*argv*/) {
   /* Obtain mesh */
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =
@@ -95,7 +96,7 @@ int main(int /*argc*/, char** /*argv*/) {
   mu4_ipol.setZero();
 
   /* Diffusion Coefficient */
-  auto c = [](const Eigen::Vector2d & /*x*/) -> double { return 1.2; };
+  auto c = [](const Eigen::Vector2d& /*x*/) -> double { return 1.2; };
   /* Growth Factor */
   double lambda = 2.1;
 
@@ -113,7 +114,7 @@ int main(int /*argc*/, char** /*argv*/) {
     const lf::assemble::DofHandler& dofh{fe_space->LocGlobMap()};
     const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
 
-    numDofs(l) = N_dofs;
+    numDofs(l) = lf::base::narrow<int>(N_dofs);
     meshsizes(l) = getMeshSize(mesh_p);
 
     std::cout << "Num of Dofs " << N_dofs << std::endl;
@@ -227,7 +228,7 @@ int main(int /*argc*/, char** /*argv*/) {
 
     if (l > 0) {
       tau(l) = (tau(0) / meshsizes(0)) * meshsizes(l);
-      m(l) = std::round(T / tau(l));
+      m(l) = lf::base::narrow<int>(std::round(T / tau(l)));
     }
 
     std::cout << "tau " << tau(l) << std::endl;

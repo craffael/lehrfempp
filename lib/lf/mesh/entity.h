@@ -1,5 +1,5 @@
-#ifndef __37e385afbd3b4b1dba8611fb71787822
-#define __37e385afbd3b4b1dba8611fb71787822
+#ifndef INCG37e385afbd3b4b1dba8611fb71787822
+#define INCG37e385afbd3b4b1dba8611fb71787822
 
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
@@ -159,4 +159,4 @@ std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
 
 }  // namespace lf::mesh
 
-#endif  // __37e385afbd3b4b1dba8611fb71787822
+#endif  // INCG37e385afbd3b4b1dba8611fb71787822

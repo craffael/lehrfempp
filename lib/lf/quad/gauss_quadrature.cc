@@ -179,7 +179,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     points[i] = z;
     weights(i) = (exp(lgamma(alpha + num_points) + lgamma(beta + num_points) -
                       lgamma(num_points + 1.) -
-                      lgamma(double(num_points) + alfbet + 1.0)) *
+                      lgamma(static_cast<double>(num_points) + alfbet + 1.0)) *
                   temp * pow(2.0, alfbet) / (pp * p2))
                      .convert_to<double>();
   }

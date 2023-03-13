@@ -111,6 +111,7 @@ double ilegendre_dt(unsigned n, double x, double t) {
  *	    \frac{\partial}{\partial x} L_n(x;t) &= 2nP_{n-1}(x;t) +
  *(2x-t)\frac{\partial}{\partial x}P_{n-1}(x;t) \\ \end{aligned} \f]
  */
+// NOLINTNEXTLINE(misc-no-recursion)
 double legendre_dx(unsigned n, double x, double t) {
   if (n == 0) {
     return 0;

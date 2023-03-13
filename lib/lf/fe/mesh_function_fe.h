@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __4ee2d6e8004446558bc6d2186596e392
-#define __4ee2d6e8004446558bc6d2186596e392
+#ifndef INCG4ee2d6e8004446558bc6d2186596e392
+#define INCG4ee2d6e8004446558bc6d2186596e392
 
 #include <memory>
 
@@ -45,7 +45,7 @@ class MeshFunctionFE {
  public:
   // Why this? Because we can use real-valued finite element spaces to represent
   // complex-valued functions by using complex degrees of freedom!
-  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));
+  using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  // NOLINT
 
   /**
    * @brief Create a new MeshFunctionFE from a @ref ScalarFESpace and a
@@ -84,7 +84,7 @@ class MeshFunctionFE {
     }
     // Trick to combine Eigen data types with STL containers
     std::vector<Scalar> result(local.cols());
-    Eigen::Map<Eigen::Matrix<Scalar, 1, Eigen::Dynamic>> temp(&result[0], 1,
+    Eigen::Map<Eigen::Matrix<Scalar, 1, Eigen::Dynamic>> temp(result.data(), 1,
                                                               local.cols());
     temp = local_dofs * sf_eval;
     return result;
@@ -122,4 +122,4 @@ MeshFunctionFE(std::shared_ptr<T>,
 
 }  // namespace lf::fe
 
-#endif  // __4ee2d6e8004446558bc6d2186596e392
+#endif  // INCG4ee2d6e8004446558bc6d2186596e392

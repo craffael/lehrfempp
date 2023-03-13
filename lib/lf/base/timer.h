@@ -35,10 +35,11 @@
 //
 // clang-format on
 
-#ifndef __529e391f2915453388028b848b3dcbd6
-#define __529e391f2915453388028b848b3dcbd6
+#ifndef INCG_529e391f2915453388028b848b3dcbd6
+#define INCG_529e391f2915453388028b848b3dcbd6
 
 #include <spdlog/logger.h>
+
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -274,4 +275,4 @@ class AutoTimer {
 
 }  // namespace lf::base
 
-#endif  // __529e391f2915453388028b848b3dcbd6
+#endif  // INCG_529e391f2915453388028b848b3dcbd6

@@ -6,8 +6,6 @@
  * @copyright MIT License
  */
 
-#define _USE_MATH_DEFINES
-
 #include <lf/assemble/assemble.h>
 #include <lf/fe/fe.h>
 #include <lf/geometry/geometry.h>
@@ -49,7 +47,7 @@ Eigen::VectorXd solvePoisson(
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
@@ -117,7 +115,7 @@ int main(int argc, char *argv[]) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("output") == 0) {
     std::cout << desc << std::endl;
-    exit(1);
+    return 1;
   }
   const std::string output_file = vm["output"].as<std::string>();
 
@@ -126,7 +124,7 @@ int main(int argc, char *argv[]) {
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
@@ -136,7 +134,7 @@ int main(int argc, char *argv[]) {
     const double r = x.norm();
     double phi = std::atan2(x[1], x[0]);
     if (phi < 0) {
-      phi += 2 * M_PI;
+      phi += 2 * lf::base::kPi;
     }
     Eigen::Vector2d grad;
     grad[0] = 2. / 3 * std::pow(r, -4. / 3) *

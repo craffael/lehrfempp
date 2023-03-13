@@ -3,7 +3,6 @@
  * @brief Produces h-convergence results for the lid driven cavity experiment
  */
 
-#define _USE_MATH_DEFINES
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/io/gmsh_reader.h>
@@ -28,8 +27,8 @@
 #include <sstream>
 #include <string>
 
-using lf::uscalfe::operator-;
-using lf::uscalfe::operator*;
+using lf::uscalfe::operator-;  // NOLINT
+using lf::uscalfe::operator*;  // NOLINT
 
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
@@ -38,7 +37,7 @@ using lf::uscalfe::operator*;
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
+static std::string concat(Args &&...args) {
   std::ostringstream ss;
   (ss << ... << args);
   return ss.str();
@@ -163,7 +162,9 @@ int main() {
     };
     const auto weight =
         lf::mesh::utils::MeshFunctionGlobal([](const Eigen::Vector2d &x) {
-          return x[1] >= 0.9 ? (1 - std::cos(M_PI / 0.1 * (1 - x[1]))) / 2 : 1.;
+          return x[1] >= 0.9
+                     ? (1 - std::cos(lf::base::kPi / 0.1 * (1 - x[1]))) / 2
+                     : 1.;
         });
     const auto diff = velocity_fine - velocity_exact;
     const auto diff_weighted = weight * diff;

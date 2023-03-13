@@ -1,5 +1,5 @@
-#ifndef __X633e7bf8dd548de839f74075687e81A
-#define __X633e7bf8dd548de839f74075687e81A
+#ifndef INCGX633e7bf8dd548de839f74075687e81A
+#define INCGX633e7bf8dd548de839f74075687e81A
 
 #include <lf/mesh/mesh.h>
 
@@ -36,4 +36,4 @@ void writeMatlab(const lf::mesh::Mesh &mesh, std::string filename);
 
 }  // namespace lf::io
 
-#endif  // __X633e7bf8dd548de839f74075687e81A
+#endif  // INCGX633e7bf8dd548de839f74075687e81A

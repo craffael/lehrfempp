@@ -3,7 +3,6 @@
  * @brief Determines the h-convergence of the manufactured solution
  */
 
-#define _USE_MATH_DEFINES
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/fe/fe.h>
@@ -36,7 +35,7 @@
  */
 Eigen::Vector2d computeU(int n, Eigen::Vector2d x) {
   const double r = x.norm();
-  const double u0 = 1 - std::cos(2 * M_PI * n * r);
+  const double u0 = 1 - std::cos(2 * lf::base::kPi * n * r);
   Eigen::Vector2d u;
   u << -x[1], x[0];
   return u0 * u.normalized();
@@ -52,17 +51,18 @@ Eigen::Matrix2d computeUGrad(int n, Eigen::Vector2d x) {
   const double r = x.norm();
   const double r2 = r * r;
   const double r3 = r2 * r;
-  const double phi = 2 * M_PI * n * r;
+  const double phi = 2 * lf::base::kPi * n * r;
   const double cphi = std::cos(phi);
   const double sphi = std::sin(phi);
   Eigen::Matrix2d grad;
   grad << x[0] * x[1] / r3 * (1 - cphi) -
-              2 * M_PI * n * x[0] * x[1] / r2 * sphi,
+              2 * lf::base::kPi * n * x[0] * x[1] / r2 * sphi,
       (1. / r - x[0] * x[0] / r3) * (1 - cphi) +
-          2 * M_PI * n * x[0] * x[0] / r2 * sphi,
+          2 * lf::base::kPi * n * x[0] * x[0] / r2 * sphi,
       (x[0] * x[1] / r3 - 1. / r) * (1 - cphi) +
-          2 * M_PI * n * x[1] * x[1] / r2 * sphi,
-      -x[0] * x[1] / r3 * (1 - cphi) + 2 * M_PI * n * x[0] * x[1] / r2 * sphi;
+          2 * lf::base::kPi * n * x[1] * x[1] / r2 * sphi,
+      -x[0] * x[1] / r3 * (1 - cphi) +
+          2 * lf::base::kPi * n * x[0] * x[1] / r2 * sphi;
   return grad;
 }
 
@@ -74,12 +74,14 @@ Eigen::Matrix2d computeUGrad(int n, Eigen::Vector2d x) {
  */
 Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
   const double r = x.norm();
-  const double f0 = r == 0 ? -6 * n * n * M_PI * M_PI
-                           : (1 -
-                              (1 + 4 * n * n * M_PI * M_PI * r * r) *
-                                  std::cos(2 * M_PI * n * r) -
-                              2 * M_PI * n * r * std::sin(2 * M_PI * n * r)) /
-                                 (r * r);
+  const double f0 =
+      r == 0
+          ? -6 * n * n * lf::base::kPi * lf::base::kPi
+          : (1 -
+             (1 + 4 * n * n * lf::base::kPi * lf::base::kPi * r * r) *
+                 std::cos(2 * lf::base::kPi * n * r) -
+             2 * lf::base::kPi * n * r * std::sin(2 * lf::base::kPi * n * r)) /
+                (r * r);
   Eigen::Vector2d f;
   f << -x[1], x[0];
   return f0 * f.normalized();
@@ -144,7 +146,7 @@ int main() {
       return computeF(n, x);
     };
     // The velocity on the boundary is zero everywhere
-    auto dirichlet_funct = [](const lf::mesh::Entity &
+    auto dirichlet_funct = [](const lf::mesh::Entity&
                               /*unused*/) -> Eigen::Vector2d {
       return Eigen::Vector2d::Zero();
     };

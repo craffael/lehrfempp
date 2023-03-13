@@ -20,11 +20,11 @@
 #include <boost/fusion/support/tag_of.hpp>
 #include <boost/fusion/support/tag_of_fwd.hpp>
 #include <boost/mpl/minus.hpp>
+#include <boost/phoenix/core.hpp>
 #include <boost/phoenix/function/adapt_function.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
+#include <boost/phoenix/object.hpp>
+#include <boost/phoenix/operator.hpp>
+#include <boost/phoenix/stl.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_binary.hpp>
 
@@ -386,7 +386,7 @@ using nodePair_t = std::pair<size_type, Eigen::Vector3d>;
 /// header information this is set using attributes.
 // NOLINTNEXTLINE
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
-    lf::io::GMshFileV2, MshFileAdapted,
+    lf::io::GMshFileV2, MshFileAdapted,  // NOLINT
     //(double, VersionNumber)
     //(bool, IsBinary)
     //(int, DoubleSize)

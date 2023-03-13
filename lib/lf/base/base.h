@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __986f32316282425d9be137cb399482f3
-#define __986f32316282425d9be137cb399482f3
+#ifndef INCG986f32316282425d9be137cb399482f3
+#define INCG986f32316282425d9be137cb399482f3
 
 /**
  * @brief Contains basic functionality that is used by other parts of LehrFEM++
@@ -50,6 +50,7 @@ constexpr double kPi = 3.14159265358979323846;
 #include "lehrfem_info.h"
 #include "lf_assert.h"
 #include "lf_exception.h"
+#include "narrow.h"
 #include "predicate_true.h"
 #include "ref_el.h"
 #include "scalar_traits.h"
@@ -57,4 +58,4 @@ constexpr double kPi = 3.14159265358979323846;
 #include "spdlog_utils.h"
 #include "timer.h"
 
-#endif  // __986f32316282425d9be137cb399482f3
+#endif  // INCG986f32316282425d9be137cb399482f3

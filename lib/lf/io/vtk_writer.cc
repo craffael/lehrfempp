@@ -484,9 +484,10 @@ Eigen::MatrixXd AuxNodesSegment(unsigned char order) {
 }
 
 // compute aux reference coordinates of lagrange points on Tria:
+// NOLINTNEXTLINE(misc-no-recursion)
 Eigen::MatrixXd AuxNodesTria(unsigned char order) {
   if (order < 3) {
-    return Eigen::MatrixXd();
+    return {};
   }
   Eigen::MatrixXd result(2, NumAuxNodes(base::RefEl::kTria(), order));
   if (order == 3) {
@@ -573,6 +574,7 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
                      std::string filename, dim_t codim, unsigned char order)
     : mesh_(std::move(mesh)),
@@ -611,7 +613,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
     auto index = mesh_->Index(*p);
     Eigen::Vector3f coord;
     if (dim_world == 1) {
-      coord(0) = p->Geometry()->Global(zero)(0);
+      coord(0) = static_cast<float>(p->Geometry()->Global(zero)(0));
       coord(1) = 0.F;
       coord(2) = 0.F;
     } else if (dim_world == 2) {
@@ -702,8 +704,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         addSegmentNodes(*e, false);
         break;
       case base::RefEl::kTria(): {
-        const auto* iterator = e->SubEntities(1).begin();
-        const auto* o_iterator = e->RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;
@@ -717,8 +719,8 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
         break;
       }
       case base::RefEl::kQuad(): {
-        const auto* iterator = e->SubEntities(1).begin();
-        const auto* o_iterator = e->RelativeOrientations().begin();
+        auto iterator = e->SubEntities(1).begin();
+        auto o_iterator = e->RelativeOrientations().begin();
         addSegmentNodes(**iterator,
                         (*o_iterator) == mesh::Orientation::negative);
         ++iterator;

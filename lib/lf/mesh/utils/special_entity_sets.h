@@ -12,8 +12,8 @@
  * @copyright MIT License
  */
 
-#ifndef _LF_SPEC_DATA_
-#define _LF_SPEC_DATA_
+#ifndef INCG_LF_SPEC_DATA_
+#define INCG_LF_SPEC_DATA_
 
 #include "all_codim_mesh_data_set.h"
 #include "codim_mesh_data_set.h"

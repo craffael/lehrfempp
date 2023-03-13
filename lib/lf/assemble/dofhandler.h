@@ -1,5 +1,5 @@
-#ifndef _LF_DOFHD_H
-#define _LF_DOFHD_H
+#ifndef INCG_LF_DOFHD_H
+#define INCG_LF_DOFHD_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -520,6 +520,7 @@ class DynamicFEDofHandler : public DofHandler {
    * DynamicFEDofHandler::NumInteriorDofs().
    */
   template <typename LOCALDOFINFO>
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
                       LOCALDOFINFO &&locdof)
       : mesh_p_(std::move(mesh_p)) {

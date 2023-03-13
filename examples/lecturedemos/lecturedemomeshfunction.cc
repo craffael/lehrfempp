@@ -27,9 +27,7 @@ void lecturedemomeshfunction() {
     return std::sin(x[0] * x[0] - x[1]);
   };
   // A vectorfield for testing
-  auto vf = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return Eigen::Vector2d(-x[1], x[0]);
-  };
+  auto vf = [](Eigen::Vector2d x) { return Eigen::Vector2d(-x[1], x[0]); };
   // A coefficient function, matrix-valued
   auto cf = [](Eigen::Vector2d x) -> Eigen::Matrix2d {
     return (Eigen::Matrix2d() << x[0] * x[0], x[0] * x[1], x[0] * x[1],
@@ -37,7 +35,7 @@ void lecturedemomeshfunction() {
         .finished();
   };
   // Number of levels
-  int L = multi_mesh.NumLevels();
+  lf::base::size_type L = multi_mesh.NumLevels();
 
   // Loop over all meshes
   for (int level = 0; level < L; ++level) {

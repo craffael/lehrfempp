@@ -6,8 +6,6 @@
  * @copyright MIT License
  */
 
-#define _USE_MATH_DEFINES
-
 #include "torus_mesh_builder.h"
 
 #include <lf/geometry/geometry.h>
@@ -53,8 +51,8 @@ std::shared_ptr<mesh::Mesh> TorusMeshBuilder::Build() {
   const double hy = y_size / ny;
 
   // parametrize torus: https://en.wikipedia.org/wiki/Torus#Geometry
-  const double r = x_size / (2. * M_PI);
-  const double R = y_size / (2. * M_PI);
+  const double r = x_size / (2. * lf::base::kPi);
+  const double R = y_size / (2. * lf::base::kPi);
   auto theta = [r, hx](double i) -> double { return (i * hx) / r; };
   auto phi = [R, hy](double j) -> double { return (j * hy) / R; };
 

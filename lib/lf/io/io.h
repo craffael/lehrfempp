@@ -12,8 +12,8 @@
  * @copyright MIT License
  */
 
-#ifndef __22f8165024874bb58675c694b54c52b5
-#define __22f8165024874bb58675c694b54c52b5
+#ifndef INCG22f8165024874bb58675c694b54c52b5
+#define INCG22f8165024874bb58675c694b54c52b5
 
 #include "gmsh_reader.h"
 #include "vtk_writer.h"
@@ -26,4 +26,4 @@
  */
 namespace lf::io {}
 
-#endif  // __22f8165024874bb58675c694b54c52b5
+#endif  // INCG22f8165024874bb58675c694b54c52b5

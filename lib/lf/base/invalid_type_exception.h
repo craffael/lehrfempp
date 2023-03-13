@@ -1,5 +1,5 @@
-#ifndef __b58a30690f684a2b9422606fd526d0f4
-#define __b58a30690f684a2b9422606fd526d0f4
+#ifndef INCGb58a30690f684a2b9422606fd526d0f4
+#define INCGb58a30690f684a2b9422606fd526d0f4
 
 #include <exception>
 #include <string>
@@ -31,4 +31,4 @@ class InvalidTypeException : public std::exception {
 
 }  // namespace lf::base
 
-#endif  // __b58a30690f684a2b9422606fd526d0f4
+#endif  // INCGb58a30690f684a2b9422606fd526d0f4

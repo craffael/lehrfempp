@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __ecc2ab2ad7184f42a672a2b9d490f541
-#define __ecc2ab2ad7184f42a672a2b9d490f541
+#ifndef INCGecc2ab2ad7184f42a672a2b9d490f541
+#define INCGecc2ab2ad7184f42a672a2b9d490f541
 
 /**
  * @brief Contains helper functions and classes that all operate on the
@@ -30,4 +30,4 @@ namespace lf::mesh::utils {}
 #include "tp_quad_mesh_builder.h"
 #include "tp_triag_mesh_builder.h"
 
-#endif  // __ecc2ab2ad7184f42a672a2b9d490f541
+#endif  // INCGecc2ab2ad7184f42a672a2b9d490f541
