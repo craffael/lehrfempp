@@ -23,9 +23,9 @@ namespace lf::mesh::hybrid2d {
 class MeshFactory : public mesh::MeshFactory {
  public:
   MeshFactory(const MeshFactory&) = delete;
-  MeshFactory(MeshFactory&&) = delete;
+  MeshFactory(MeshFactory&&) = default;
   MeshFactory& operator=(const MeshFactory&) = delete;
-  MeshFactory& operator=(MeshFactory&&) = delete;
+  MeshFactory& operator=(MeshFactory&&) = default;
 
   /**
    * @brief Construct a new builder that can be used to construct a new hybrid2d
@@ -50,6 +50,12 @@ class MeshFactory : public mesh::MeshFactory {
 
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddPoint(std::unique_ptr<geometry::Geometry>&& geometry) override;
+
+  [[nodiscard]] geometry::Point const& GetPoint(size_type index) const noexcept {
+    assert(index < nodes_.size());
+    assert(dynamic_cast<geometry::Point const*>(nodes_[index].get()));
+    return static_cast<geometry::Point const&>(*nodes_[index]);
+  }
 
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddEntity(base::RefEl ref_el,
