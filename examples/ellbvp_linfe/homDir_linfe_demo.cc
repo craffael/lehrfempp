@@ -134,6 +134,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, elmat_builder, A);
 
     // ----------------------------------------------------------------------
+
     // IV: Right-hand side vector; has to be set to zero initially
     Eigen::Matrix<double, Eigen::Dynamic, 1> phi(N_dofs);
     phi.setZero();
