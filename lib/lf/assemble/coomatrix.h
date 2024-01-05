@@ -261,4 +261,10 @@ void COOMatrix<SCALAR>::MatVecMult(SCALAR alpha, const VECTOR &vec,
 
 }  // namespace lf::assemble
 
+/**
+ * @brief Make COOMatrix formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template<class SCALAR>
+struct fmt::formatter<lf::assemble::COOMatrix<SCALAR>> : ostream_formatter {};
+
 #endif

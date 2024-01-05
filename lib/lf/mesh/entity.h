@@ -1,6 +1,7 @@
 #ifndef INCG37e385afbd3b4b1dba8611fb71787822
 #define INCG37e385afbd3b4b1dba8611fb71787822
 
+#include <fmt/ostream.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
 
@@ -158,5 +159,11 @@ class Entity {
 std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
 
 }  // namespace lf::mesh
+
+/**
+ * @brief Make lf::mesh::Entity formattable with fmt, see
+ * https://fmt.dev/latest/api.html#ostream-api
+ */
+template <> struct fmt::formatter<lf::mesh::Entity> : ostream_formatter {};
 
 #endif  // INCG37e385afbd3b4b1dba8611fb71787822

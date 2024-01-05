@@ -748,4 +748,9 @@ class DynamicFEDofHandler : public DofHandler {
 
 }  // namespace lf::assemble
 
+/**
+ * @brief Make lf::assemble::DofHandler formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <> struct fmt::formatter<lf::assemble::DofHandler> : ostream_formatter{};
+
 #endif
