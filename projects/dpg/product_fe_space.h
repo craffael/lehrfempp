@@ -394,7 +394,7 @@ size_type ProductUniformFESpace<SCALAR>::NumRefShapeFunctions(
     case lf::base::RefEl::kQuad(): {
       return num_rsf_quad_[component];
     }
-    dafault : { LF_ASSERT_MSG(false, "Illegal entity type"); }
+    default: { LF_ASSERT_MSG(false, "Illegal entity type"); }
   }
   return 0;
 }
