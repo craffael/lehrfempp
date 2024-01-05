@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: apt-get update && apt-get install clang-format-17
+        run: apt-get update && apt-get install -y clang-format-17
       - name: clang-format
         run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
