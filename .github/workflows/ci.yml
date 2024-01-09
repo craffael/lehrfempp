@@ -11,12 +11,14 @@ jobs:
   clang-format:
     name: clang-format-17
     runs-on: ubuntu-22.04
-    container: ubuntu:23.10
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install clang-format
-        run: apt-get update && apt-get install -y clang-format-17 python-is-python3
+        run: |
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        echo 'deb http://apt.llvm.org/lunar/ llvm-toolchain-lunar-17 main' > /etc/apt/sources.list.d/llvm.list
+        sudo apt-get update && apt-get install -y clang-format-17 python-is-python3
       - name: clang-format
         run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
