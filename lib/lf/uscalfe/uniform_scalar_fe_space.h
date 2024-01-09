@@ -331,7 +331,7 @@ assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
 
   // Initialization of dof handler starting with collecting the number of
   // interior reference shape functions
-  lf::assemble::UniformFEDofHandler::dof_map_t rsf_layout{
+  const lf::assemble::UniformFEDofHandler::dof_map_t rsf_layout{
       {lf::base::RefEl::kPoint(), num_rsf_node_},
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},

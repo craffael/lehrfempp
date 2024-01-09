@@ -19,7 +19,7 @@ Eigen::MatrixXd PiecewiseConstElementMatrixProvider::Eval(
   // Get the geometry of the entity
   const auto *geom = entity.Geometry();
   // Compute the global vertex coordinates
-  Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
+  const Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
   // Use the vertex coordinates to compute the local normals on the edges
   const Eigen::Matrix<double, 2, 3> normals =
       projects::ipdg_stokes::mesh::computeOutwardNormals(entity);

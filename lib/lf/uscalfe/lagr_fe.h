@@ -233,7 +233,7 @@ class FeLagrangeO1Quad final
       const Eigen::MatrixXd& refcoords) const override {
     LF_ASSERT_MSG(refcoords.rows() == 2,
                   "Reference coordinates must be 2-vectors");
-    size_type n_pts(refcoords.cols());
+    const size_type n_pts(refcoords.cols());
 
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(4, 2 * n_pts);
 
@@ -1017,10 +1017,10 @@ class FeLagrangeO3Tria final
     Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> result(10, n_pts);
 
     // evaluation of the barycentric coordinate functions
-    Eigen::Array<double, 1, Eigen::Dynamic> lambda0 =
+    const Eigen::Array<double, 1, Eigen::Dynamic> lambda0 =
         1 - refcoords.row(0).array() - refcoords.row(1).array();
-    Eigen::Array<double, 1, Eigen::Dynamic> lambda1 = refcoords.row(0).array();
-    Eigen::Array<double, 1, Eigen::Dynamic> lambda2 = refcoords.row(1).array();
+    const Eigen::Array<double, 1, Eigen::Dynamic> lambda1 = refcoords.row(0).array();
+    const Eigen::Array<double, 1, Eigen::Dynamic> lambda2 = refcoords.row(1).array();
 
     // evaluation of the shape functions
     // The LSF associated with vertices
@@ -1062,7 +1062,7 @@ class FeLagrangeO3Tria final
         temp(&result(0, 0), 20, n_pts);
 
     // evaulate barycentric coordinate functions:
-    Eigen::Array<double, 1, Eigen::Dynamic> l0 =
+    const Eigen::Array<double, 1, Eigen::Dynamic> l0 =
         1 - refcoords.row(0).array() - refcoords.row(1).array();
     auto l1 = refcoords.row(0).array();
     auto l2 = refcoords.row(1).array();

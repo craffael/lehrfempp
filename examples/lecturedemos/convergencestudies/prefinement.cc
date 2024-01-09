@@ -159,19 +159,19 @@ std::tuple<double, double> computeErrorsSquareDomain(
   const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
   lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
-  std::cout << "\t\t> Assembling System Matrix" << std::endl;
+  std::cout << "\t\t> Assembling System Matrix" << '\n';
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
   lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space,
                                                                  mf_alpha);
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
-  std::cout << "\t\t> Assembling right Hand Side" << std::endl;
+  std::cout << "\t\t> Assembling right Hand Side" << '\n';
   lf::fe::ScalarLoadElementVectorProvider element_vector_provider(fe_space,
                                                                   mf_load);
   lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
 
   // Enforce zero dirichlet boundary conditions
-  std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
+  std::cout << "\t\t> Enforcing Boundary Conditions" << '\n';
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     const auto &entity = dofh.Entity(idx);
@@ -180,16 +180,16 @@ std::tuple<double, double> computeErrorsSquareDomain(
   lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
 
   // Solve the LSE using the cholesky decomposition
-  std::cout << "\t\t> Solving LSE" << std::endl;
-  Eigen::SparseMatrix<double> A = A_COO.makeSparse();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
+  std::cout << "\t\t> Solving LSE" << '\n';
+  const Eigen::SparseMatrix<double> A = A_COO.makeSparse();
+  const Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
   const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space, solution);
   const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(fe_space,
                                                                    solution);
 
   // Compute the H1 and L2 errors
-  std::cout << "\t\t> Computing Error Norms" << std::endl;
+  std::cout << "\t\t> Computing Error Norms" << '\n';
   auto qr_segment =
       lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2 * degree - 1);
   auto qr_tria =
@@ -244,7 +244,7 @@ std::tuple<double, double> computeErrorsLDomain(
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_u(u);
+  const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
   // The gradient of the analytic solution
   const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
     const double r = x.norm();
@@ -259,13 +259,13 @@ std::tuple<double, double> computeErrorsLDomain(
               (x[1] * std::sin(2. / 3 * phi) + x[0] * std::cos(2. / 3 * phi));
     return grad;
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
+  const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
 
   // Get a few useful variables
   const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
 
   // Assemble the system matrix
-  std::cout << "\t\t> Assembling System Matrix" << std::endl;
+  std::cout << "\t\t> Assembling System Matrix" << '\n';
   const lf::mesh::utils::MeshFunctionConstant<double> mf_alpha(1);
   lf::fe::DiffusionElementMatrixProvider element_matrix_provider(fe_space,
                                                                  mf_alpha);
@@ -277,7 +277,7 @@ std::tuple<double, double> computeErrorsLDomain(
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
 
   // Enforce the dirichlet boundary conditions
-  std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
+  std::cout << "\t\t> Enforcing Boundary Conditions" << '\n';
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   Eigen::VectorXd boundary_dofs = Eigen::VectorXd::Zero(dofh.NumDofs());
   for (const auto *const edge : mesh->Entities(1)) {
@@ -300,16 +300,16 @@ std::tuple<double, double> computeErrorsLDomain(
   lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
 
   // Solve the LSE using Cholesky decomposition
-  std::cout << "\t\t> Solving LSE" << std::endl;
-  Eigen::SparseMatrix<double> A = A_COO.makeSparse();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
+  std::cout << "\t\t> Solving LSE" << '\n';
+  const Eigen::SparseMatrix<double> A = A_COO.makeSparse();
+  const Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   const Eigen::VectorXd solution = solver.solve(rhs);
   const lf::fe::MeshFunctionFE<double, double> mf_numeric(fe_space, solution);
   const lf::fe::MeshFunctionGradFE<double, double> mf_numeric_grad(fe_space,
                                                                    solution);
 
   // Compute the H1 and L2 errors
-  std::cout << "\t\t> Computing Error Norms" << std::endl;
+  std::cout << "\t\t> Computing Error Norms" << '\n';
   auto qr_segment =
       lf::quad::make_QuadRule(lf::base::RefEl::kSegment(), 2 * degree - 1);
   auto qr_tria =
@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("output") == 0 || vm.count("max_p") == 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
   const std::string output_file = vm["output"].as<std::string>();
@@ -363,7 +363,7 @@ int main(int argc, char *argv[]) {
   // Compute the errors for different polynomial degrees
   Eigen::MatrixXd results(max_p, 7);
   for (unsigned p = 1; p <= max_p; ++p) {
-    std::cout << "> Polynomial Degree: " << p << std::endl;
+    std::cout << "> Polynomial Degree: " << p << '\n';
 
     // Solve the problem on the unit square domain
     std::cout << "\t> Unit Square Domain";
@@ -371,7 +371,7 @@ int main(int argc, char *argv[]) {
         std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(square_mesh,
                                                                   p);
     std::cout << " (" << fe_space_square->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const auto [H1_square, L2_square] =
         computeErrorsSquareDomain(p, square_mesh, fe_space_square);
 
@@ -380,7 +380,7 @@ int main(int argc, char *argv[]) {
     const auto fe_space_L =
         std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(L_mesh, p);
     std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const auto [H1_L, L2_L] = computeErrorsLDomain(p, L_mesh, fe_space_L);
 
     // Store the computed quantities in the results matrix

@@ -54,7 +54,7 @@ struct UnaryOpMinus {
   // minus in front of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
@@ -73,7 +73,7 @@ struct UnaryOpMinus {
     }
     if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
       // matrix size is known at compile time
-      Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(
+      const Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(
           &u[0](0, 0), 1, u.size() * R * C);
       std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> result(u.size());
       Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0](0, 0), 1,
@@ -132,7 +132,7 @@ struct UnaryOpSquaredNorm {
   // squared norm of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
@@ -152,7 +152,7 @@ struct UnaryOpSquaredNorm {
           "squaredNorm only supported for matrices with at least 1 row "
           "and column");
       if constexpr (C == 1) {  // NOLINT
-        Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
+        const Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
                                                                  u.size());
         Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                            u.size());
@@ -212,7 +212,7 @@ struct UnaryOpAdjoint {
 
 struct UnaryOpConjugate {
   // conjugate of scalar type
-  template <class U, class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
@@ -325,7 +325,7 @@ auto conjugate(const A& a) {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(
       base::is_eigen_matrix<returnType_t> ||
-          base::is_eigen_array<returnType_t> || base::is_scalar<returnType_t>,
+          base::is_eigen_array<returnType_t> || base::Scalar<returnType_t>,
       "conjugate() supports only Eigen::Matrix, Eigen::Array or Scalar valued "
       "mesh functions.");
   return MeshFunctionUnary(internal::UnaryOpConjugate{}, a);

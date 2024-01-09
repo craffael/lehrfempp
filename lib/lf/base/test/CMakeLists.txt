@@ -6,7 +6,7 @@ set(sources
   lehrfem_info_tests.cc
   lf_assert_tests.cc
   ref_el_tests.cc
-  scalar_traits_tests.cc
+  scalar_concept_tests.cc
   timer_tests.cc
 )
 

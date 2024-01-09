@@ -37,9 +37,9 @@ struct VectorElementType<std::vector<T, A>> {
 template <class T>
 using VectorElement_t = typename VectorElementType<T>::type;
 
-template <class T, class RETURN_TYPE,
-          class = typename std::enable_if<!std::is_same_v<
-              VectorElement_t<MeshFunctionReturnType_t<T>>, void>>::type>
+template <class T, class RETURN_TYPE>
+requires (!std::is_same_v<
+              VectorElement_t<MeshFunctionReturnType_t<T>>, void>)
 constexpr bool IsMeshFunctionCallable(int /*unused*/) {
   if constexpr (std::is_same_v<RETURN_TYPE, void>) {
     // user didn't want us to check whether the return type is something

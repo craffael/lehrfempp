@@ -227,7 +227,7 @@ double ijacobi(unsigned n, double alpha, double x) {
     bjp1P = 2 * (j + 1) + alpha - 1;
     cjp1P = (2 * (j + 1) + alpha) * (2 * (j + 1) + alpha - 2);
     djp1P = 2 * ((j + 1) + alpha - 1) * ((j + 1) - 1) * (2 * (j + 1) + alpha);
-    double Pjp1 =
+    const double Pjp1 =
         (bjp1P * (cjp1P * (2 * x - 1) + alpha * alpha) * Pj - djp1P * Pjm1) /
         ajp1P;
     Pjm2 = Pjm1;

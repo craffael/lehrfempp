@@ -60,7 +60,7 @@ double l2normByMassMatrix(const lf::assemble::DofHandler &dofh,
       "Size mismatch: NumDofs = " << N_dofs << " <-> size = " << uvec.size());
   // Obtain Galerkin mass matrix by local cell-oriented assembly
   LinFEMassMatrixProvider M_loc{};  // ENTITY_MATRIX_PROVIDER
-  lf::assemble::COOMatrix<double> M_coo{
+  const lf::assemble::COOMatrix<double> M_coo{
       lf::assemble::AssembleMatrixLocally<lf::assemble::COOMatrix<double>>(
           0, dofh, M_loc)};
   // Optional: output of mass matrix for debugging purposes
@@ -90,7 +90,7 @@ double l2normByQuadrature(const lf::assemble::DofHandler &dofh,
     // Query volume of the cell
     const double area = lf::geometry::Volume(*geo_p);
     // Obtain global indices of global shape functions covering the cell
-    nonstd::span<const lf::assemble::gdof_idx_t> idx{
+    const nonstd::span<const lf::assemble::gdof_idx_t> idx{
         dofh.GlobalDofIndices(*cell)};
     switch (ref_el) {
       case lf::base::RefEl::kTria(): {
@@ -129,16 +129,16 @@ void lecturedemotwonorm() {
   // lf::assemble::ass_mat_dbg_ctrl = 31;
   std::cout << "LehrFEM++ demo: computation of L2-norm of piecewise linear FE "
                "function"
-            << std::endl;
+            << '\n';
   // Obtain a purely triangular mesh of the unit square from the collection of
   // LehrFEM++'s built-in meshes
-  std::shared_ptr<lf::mesh::Mesh> mesh_p{
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p{
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(3, 1.0 / 3.0)};
   // Optional: Output information on the mesh
   // std::cout << "Mesh: " << std::endl << *mesh_p << std::endl;
 
   // Build a lowest-order Lagrangian finite element space
-  std::shared_ptr<lf::uscalfe::FeSpaceLagrangeO1<double>> fe_space_p =
+  const std::shared_ptr<lf::uscalfe::FeSpaceLagrangeO1<double>> fe_space_p =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
   // Fetch the d.o.f. handler from the finite element space
   const lf::assemble::DofHandler &dofh{fe_space_p->LocGlobMap()};
@@ -146,7 +146,7 @@ void lecturedemotwonorm() {
   // std::cout << "DofHandler" << std::endl << dofh << std::endl;
 
   // Dimension of  the finite element space
-  size_type n_dofs{dofh.NumDofs()};
+  const size_type n_dofs{dofh.NumDofs()};
 
   // Build finite element coefficient vector by interpolating
   // a known linear (!) function. The L2-norm of linear functions
@@ -161,15 +161,15 @@ void lecturedemotwonorm() {
   // Console output of different functions: results should all be equal
   // up to machine precision.
   std::cout << "Pw. linear FE function from " << n_dofs
-            << "-dimenmsional FE space" << std::endl;
-  std::cout << "Euclidean norm = " << uvec.norm() << std::endl;
+            << "-dimenmsional FE space" << '\n';
+  std::cout << "Euclidean norm = " << uvec.norm() << '\n';
 
   std::cout << "l2normByMassMatrix = " << l2normByMassMatrix(dofh, uvec)
-            << std::endl;
+            << '\n';
   std::cout << "l2normByQuadrature = " << l2normByQuadrature(dofh, uvec)
-            << std::endl;
+            << '\n';
   std::cout << "l2normByMeshFunction = "
-            << l2normByMeshFunction(fe_space_p, uvec) << std::endl;
+            << l2normByMeshFunction(fe_space_p, uvec) << '\n';
 }
 
 }  // namespace lecturedemo

@@ -561,10 +561,10 @@ void WriteToFile(const VtkFile& vtk_file, const std::string& filename) {
 
   bool result = false;
   if (vtk_file.format == VtkFile::Format::BINARY) {
-    VtkGrammar<decltype(outit), true> grammar{};
+    const VtkGrammar<decltype(outit), true> grammar{};
     result = karma::generate(outit, grammar, vtk_file);
   } else {
-    VtkGrammar<decltype(outit), false> grammar{};
+    const VtkGrammar<decltype(outit), false> grammar{};
     result = karma::generate(outit, grammar, vtk_file);
   }
 
@@ -608,7 +608,7 @@ VtkWriter::VtkWriter(std::shared_ptr<const mesh::Mesh> mesh,
 
   // insert main nodes:
   vtk_file_.unstructured_grid.points.resize(numNodes);
-  Eigen::Matrix<double, 0, 1> zero;
+  const Eigen::Matrix<double, 0, 1> zero;
   for (const auto* p : mesh_->Entities(dim_mesh)) {
     auto index = mesh_->Index(*p);
     Eigen::Vector3f coord;

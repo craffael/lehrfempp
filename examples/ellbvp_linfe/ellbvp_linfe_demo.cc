@@ -21,10 +21,10 @@
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, const char** /*argv*/) {
-  std::cout << "\t LehrFEM++ Demonstration Code " << std::endl;
+  std::cout << "\t LehrFEM++ Demonstration Code " << '\n';
   std::cout << "\t Solution of general second-order elliptic\n"
             << "\t boundary value problem by means of linear\n"
-            << "\t Lagrangian finite element discretization" << std::endl;
+            << "\t Lagrangian finite element discretization" << '\n';
 
   // abbreviations for types
   using size_type = lf::base::size_type;
@@ -45,17 +45,17 @@ int main(int /*argc*/, const char** /*argv*/) {
         .finished();
   };
   // Wrap diffusion coefficient into a MeshFunction
-  lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
+  const lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
 
   // Scalar valued reaction coefficient c
   auto gamma = [](Eigen::Vector2d x) -> double {
     return (x[0] * x[0] + x[1] * x[1]);
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_gamma{gamma};
+  const lf::mesh::utils::MeshFunctionGlobal mf_gamma{gamma};
 
   // Scalar valued impedance coefficient
   auto eta = [](Eigen::Vector2d x) -> double { return (1.0 + x[0] + x[1]); };
-  lf::mesh::utils::MeshFunctionGlobal mf_eta{eta};
+  const lf::mesh::utils::MeshFunctionGlobal mf_eta{eta};
 
   /* SAM_LISTING_BEGIN_1 */
   // Exact solution u
@@ -63,15 +63,15 @@ int main(int /*argc*/, const char** /*argv*/) {
     return std::log(x[0] * x[0] + x[1] + 1.0);
   };
   // Has to be wrapped into a mesh function for error computation
-  lf::mesh::utils::MeshFunctionGlobal mf_u{u};
+  const lf::mesh::utils::MeshFunctionGlobal mf_u{u};
 
   // Gradient of exact solution
   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-    double den = x[0] * x[0] + x[1] + 1.0;
+    const double den = x[0] * x[0] + x[1] + 1.0;
     return ((Eigen::Vector2d() << 2.0 * x[0], 1.0).finished()) / den;
   };
   // Convert into mesh function to use for error computation
-  lf::mesh::utils::MeshFunctionGlobal mf_grad_u{grad_u};
+  const lf::mesh::utils::MeshFunctionGlobal mf_grad_u{grad_u};
   /* SAM_LISTING_END_1 */
 
   // Right-hand side source function f
@@ -81,7 +81,7 @@ int main(int /*argc*/, const char** /*argv*/) {
         -x[0] * x[0] * (2 * x[1] + 9) - x[0] + 2 * x[1] * x[1] + 9 * x[1] + 5;
     return (-num / (den * den) + gamma(x) * u(x));
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_f{f};
+  const lf::mesh::utils::MeshFunctionGlobal mf_f{f};
 
   // Boundary conditions and predicates for different boundary parts
   // The predicates are named edge_sel_* and when invoked for an entity of edge
@@ -94,7 +94,7 @@ int main(int /*argc*/, const char** /*argv*/) {
       ((Eigen::Vector2d() << -1.0, 0.2).finished()).normalized();
   // Dirichlet data borrowed from the known exact solution.
   auto g = [&u](const Eigen::Vector2d& x) -> double { return u(x); };
-  lf::mesh::utils::MeshFunctionGlobal mf_g{g};
+  const lf::mesh::utils::MeshFunctionGlobal mf_g{g};
 
   // Predicates and selectors for boundary conditions
   // Predicates for selecting edges on the Neumann boundary
@@ -105,7 +105,7 @@ int main(int /*argc*/, const char** /*argv*/) {
       std::function<bool(const Eigen::Vector2d&)>>
       edge_sel_neu{neu_sel};
   // Predicates for selecting edges on the Dirichlet boundary
-  std::function<bool(const Eigen::Vector2d&)> dir_sel =
+  const std::function<bool(const Eigen::Vector2d&)> dir_sel =
       [](const Eigen::Vector2d& x) -> bool { return (x[1] < 1.0E-7); };
   lf::refinement::EntityCenterPositionSelector<
       std::function<bool(const Eigen::Vector2d&)>>
@@ -134,7 +134,7 @@ int main(int /*argc*/, const char** /*argv*/) {
     LF_ASSERT_MSG(false, "h called for Dirichlet edge!");
     return 0.0;
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_h{h};
+  const lf::mesh::utils::MeshFunctionGlobal mf_h{h};
 
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
@@ -145,7 +145,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // The following code also illustrates the role of a MeshFactory
   // Create helper object: mesh factory
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+  const std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
   // Generate nodes of the mesh
@@ -206,7 +206,7 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // Obtain a pointer to a hierarchy of nested meshes
   const int reflevels = 7;
-  std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
+  const std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
       lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p,
                                                               reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
@@ -214,7 +214,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t Sequence of nested meshes used in demo code\n";
   multi_mesh.PrintInfo(std::cout);
   // Number of levels
-  size_type L = multi_mesh.NumLevels();
+  const size_type L = multi_mesh.NumLevels();
 
   // Vector for keeping error norms
   std::vector<std::tuple<size_type, double, double>> errs{};
@@ -258,7 +258,7 @@ int main(int /*argc*/, const char** /*argv*/) {
               << " (#Dir_ed =  " << no_Dirichlet_edges
               << ", #Neu_ed = " << no_Neumann_edges
               << ", #imp_ed = " << no_impedance_edges << "), #dof = " << N_dofs
-              << std::endl;
+              << '\n';
 
     // Matrix in triplet format holding Galerkin matrix, zero initially.
     lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
@@ -351,14 +351,14 @@ int main(int /*argc*/, const char** /*argv*/) {
     /* SAM_LISTING_BEGIN_2 */
     // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
-    Eigen::SparseMatrix<double> A_crs = A.makeSparse();
+    const Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
     // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
-    Eigen::VectorXd sol_vec = solver.solve(phi);
+    const Eigen::VectorXd sol_vec = solver.solve(phi);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
@@ -379,14 +379,14 @@ int main(int /*argc*/, const char** /*argv*/) {
   // Output table of errors to file and terminal
   std::ofstream out_file("errors.txt");
   std::cout << std::left << std::setw(10) << "N" << std::right << std::setw(16)
-            << "L2 error" << std::setw(16) << "H1 error" << std::endl;
-  std::cout << "---------------------------------------------" << std::endl;
+            << "L2 error" << std::setw(16) << "H1 error" << '\n';
+  std::cout << "---------------------------------------------" << '\n';
   for (const auto& err : errs) {
     auto [N, l2err, h1serr] = err;
     out_file << std::left << std::setw(10) << N << std::left << std::setw(16)
-             << l2err << std::setw(16) << h1serr << std::endl;
+             << l2err << std::setw(16) << h1serr << '\n';
     std::cout << std::left << std::setw(10) << N << std::left << std::setw(16)
-              << l2err << std::setw(16) << h1serr << std::endl;
+              << l2err << std::setw(16) << h1serr << '\n';
   }
 
   return 0;

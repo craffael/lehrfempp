@@ -247,7 +247,7 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
         dofvec.size() == num_loc_dofs,
         "Size mismatch: " << dofvec.size() << " <-> " << num_loc_dofs);
     // Fetch global numbers of local shape functions
-    nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
+    const nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
         dofh.GlobalDofIndices(*cell));
     // Insert dof values into the global coefficient vector
     for (int j = 0; j < num_loc_dofs; ++j) {

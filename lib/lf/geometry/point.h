@@ -3,7 +3,7 @@
 
 #include <lf/base/base.h>
 
-#include "geometry.h"
+#include "geometry_interface.h"
 
 namespace lf::geometry {
 

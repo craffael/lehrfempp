@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   po::notify(vm);
 
   if (vm.count("help") != 0U) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
@@ -57,12 +57,12 @@ int main(int argc, char **argv) {
   builder.setTopRightCorner(Eigen::Vector2d{top_right_corner_coords.data()});
   builder.setNumXCells(num_x_cells);
   builder.setNumYCells(num_y_cells);
-  std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
+  const std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
 
   // output mesh information
   const lf::mesh::Mesh &mesh = *mesh_ptr;
   lf::mesh::utils::PrintInfo(std::cout, mesh);
-  std::cout << std::endl;
+  std::cout << '\n';
 
   // build mesh hierarchy
   lf::refinement::MeshHierarchy multi_mesh(
@@ -71,19 +71,19 @@ int main(int argc, char **argv) {
   for (int step = 0; step < num_steps; ++step) {
     // obtain pointer to mesh on finest level
     const size_type n_levels = multi_mesh.NumLevels();
-    std::shared_ptr<const lf::mesh::Mesh> mesh_fine =
+    const std::shared_ptr<const lf::mesh::Mesh> mesh_fine =
         multi_mesh.getMesh(n_levels - 1);
 
     // print number of entities of various co-dimensions
     std::cout << "Mesh on level " << n_levels - 1 << ": "
               << mesh_fine->NumEntities(2) << " nodes, "
               << mesh_fine->NumEntities(1) << " edges, "
-              << mesh_fine->NumEntities(0) << " cells," << std::endl;
+              << mesh_fine->NumEntities(0) << " cells," << '\n';
 
     lf::io::writeMatplotlib(*mesh_fine, std::string("torus_refinement") +
                                             std::to_string(step) + ".csv");
 
-    lf::io::VtkWriter vtk_writer(mesh_fine, std::string("torus_refinement") +
+    const lf::io::VtkWriter vtk_writer(mesh_fine, std::string("torus_refinement") +
                                                 std::to_string(step) + ".vtk");
 
     multi_mesh.RefineRegular();

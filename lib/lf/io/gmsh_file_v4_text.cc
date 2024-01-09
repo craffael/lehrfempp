@@ -51,7 +51,7 @@ struct MshV4GrammarText
     quoted_string_ %= lexeme['"' >> +(char_ - '"') >> '"'];
     quoted_string_.name("string");
     vec3_ %= double_ > double_ > double_;  // NOLINT(misc-redundant-expression)
-    int_vec_ %= omit[size_t_[reserve(_val, _1), _a = _1]] > repeat(_a)[int_];
+    int_vec_ %= omit[size_t_[(reserve(_val, _1), _a = _1)]] > repeat(_a)[int_];
     start_comment_ %= !lit("$PhysicalNames") >> !lit("$Entities") >>
                       !lit("$PartitionedEntities") >> !lit("$Nodes") >>
                       !lit("$Elements") >> !lit("$Periodic") >>
@@ -69,7 +69,7 @@ struct MshV4GrammarText
     physical_name_.name("Physical Name");
     qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
     physical_name_vector_ %= "$PhysicalNames" >
-                             omit[size_t_[reserve(_val, _1), _a = _1]] >
+                             omit[size_t_[(reserve(_val, _1), _a = _1)]] >
                              repeat(_a)[physical_name_] > "$EndPhysicalNames";
     physical_name_vector_.name("$PhyiscalNames");
     /*qi::on_error<qi::fail>(physical_name_vector_,
@@ -83,10 +83,10 @@ struct MshV4GrammarText
     entity_.name("entity");
 
     entities_ %= "$Entities" >
-                 omit[size_t_[reserve(phoenix::at_c<0>(_val), _1), _a = _1]] >
-                 omit[size_t_[reserve(phoenix::at_c<1>(_val), _1), _b = _1]] >
-                 omit[size_t_[reserve(phoenix::at_c<2>(_val), _1), _c = _1]] >
-                 omit[size_t_[reserve(phoenix::at_c<3>(_val), _1), _d = _1]] >
+                 omit[size_t_[(reserve(phoenix::at_c<0>(_val), _1), _a = _1)]] >
+                 omit[size_t_[(reserve(phoenix::at_c<1>(_val), _1), _b = _1)]] >
+                 omit[size_t_[(reserve(phoenix::at_c<2>(_val), _1), _c = _1)]] >
+                 omit[size_t_[(reserve(phoenix::at_c<3>(_val), _1), _d = _1)]] >
                  repeat(_a)[point_entity_] > repeat(_b)[entity_] >
                  repeat(_c)[entity_] > repeat(_d)[entity_] > "$EndEntities";
     entities_.name("$Entities");
@@ -94,7 +94,7 @@ struct MshV4GrammarText
 
     // PartitionedEntities
     ghost_entities_ %=
-        omit[size_t_[reserve(_val, _1), _a = _1]] >
+        omit[size_t_[(reserve(_val, _1), _a = _1)]] >
         repeat(_a)[int_ > int_];  // NOLINT(misc-redundant-expression)
     ghost_entities_.name("ghost_entities");
     partitioned_point_entity_ %=
@@ -107,10 +107,10 @@ struct MshV4GrammarText
     partitioned_entity_.name("partitioned_entity");
 
     partitioned_entities2_ %=
-        omit[size_t_[reserve(at_c<0>(_val), _1), _a = _1]] >
-        omit[size_t_[reserve(at_c<1>(_val), _1), _b = _1]] >
-        omit[size_t_[reserve(at_c<2>(_val), _1), _c = _1]] >
-        omit[size_t_[reserve(at_c<3>(_val), _1), _d = _1]] >
+        omit[size_t_[(reserve(at_c<0>(_val), _1), _a = _1)]] >
+        omit[size_t_[(reserve(at_c<1>(_val), _1), _b = _1)]] >
+        omit[size_t_[(reserve(at_c<2>(_val), _1), _c = _1)]] >
+        omit[size_t_[(reserve(at_c<3>(_val), _1), _d = _1)]] >
         repeat(_a)[partitioned_point_entity_] >
         repeat(_b)[partitioned_entity_] > repeat(_c)[partitioned_entity_] >
         repeat(_d)[partitioned_entity_];
@@ -124,13 +124,13 @@ struct MshV4GrammarText
     // nodes:
     node_block_ %=
         int_ > int_ > int_ >  // NOLINT
-        omit[size_t_[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
+        omit[size_t_[(phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0)]] >
         omit[repeat(_a)[size_t_[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
         eps[_b = 0] >
         omit[repeat(_a)[vec3_[at_c<1>(at_c<3>(_val)[_b++]) = _1]]];
     node_block_.name("node_block");
 
-    nodes_ %= "$Nodes" > omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] >
+    nodes_ %= "$Nodes" > omit[size_t_[(reserve(at_c<3>(_val), _1), _a = _1)]] >
               size_t_ > size_t_ > size_t_ > repeat(_a)[node_block_] >
               "$EndNodes";
     nodes_.name("nodes");
@@ -138,12 +138,12 @@ struct MshV4GrammarText
     // elements:
     element_block_ %=
         int_ > int_ > int_ >  // NOLINT
-        omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] >
+        omit[size_t_[(reserve(at_c<3>(_val), _1), _a = _1)]] >
         repeat(_a)[size_t_ > repeat(numNodesAdapted(at_c<2>(_val)))[size_t_]];
     element_block_.name("element_block");
 
     elements_ %= "$Elements" >
-                 omit[size_t_[reserve(at_c<3>(_val), _1), _a = _1]] > size_t_ >
+                 omit[size_t_[(reserve(at_c<3>(_val), _1), _a = _1)]] > size_t_ >
                  size_t_ > size_t_ > repeat(_a)[element_block_] >
                  "$EndElements";
     elements_.name("elements");
@@ -157,22 +157,22 @@ struct MshV4GrammarText
 
     // NOLINTNEXTLINE
     periodic_link_ %= int_ > int_ > int_ > ('0' | ("16" > matrix4d_)) >
-                      omit[size_t_[reserve(at_c<4>(_val), _1), _a = _1]] >
+                      omit[size_t_[(reserve(at_c<4>(_val), _1), _a = _1)]] >
                       repeat(_a)[size_t_ > size_t_];
     periodic_link_.name("periodic_link");
 
-    periodic_links_ %= "$Periodic" > omit[size_t_[reserve(_val, _1), _a = _1]] >
+    periodic_links_ %= "$Periodic" > omit[size_t_[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[periodic_link_] > "$EndPeriodic";
     periodic_links_.name("periodic_links");
 
     // ghost elements:
     ghost_element_ %= size_t_ > int_ >
-                      omit[size_t_[reserve(at_c<2>(_val), _1), _a = _1]] >
+                      omit[size_t_[(reserve(at_c<2>(_val), _1), _a = _1)]] >
                       repeat(_a)[int_];
     ghost_element_.name("ghost_element");
 
     ghost_elements_ %= "$GhostElements" >
-                       omit[size_t_[reserve(_val, _1), _a = _1]] >
+                       omit[size_t_[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[ghost_element_] > "$EndGhostElements";
     ghost_elements_.name("ghost_elements");
 
@@ -301,7 +301,7 @@ namespace detail {
 bool ParseGmshFileV4Text(std::string::const_iterator begin,
                          std::string::const_iterator end, GMshFileV4* result) {
   // Text file
-  MshV4GrammarText<std::string::const_iterator> grammar;
+  const MshV4GrammarText<std::string::const_iterator> grammar;
   return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
 }
 

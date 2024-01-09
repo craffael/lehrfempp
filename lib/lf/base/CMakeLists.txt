@@ -16,12 +16,13 @@ set(sources
   predicate_true.h
   ref_el.cc
   ref_el.h
-  scalar_traits.h
+  scalar_concept.h
   span.h
   spdlog_utils.h
   spdlog_utils.cc
   timer.h
   timer.cc
+  types.h
 )
 
 lf_add_library(lf.base ${sources})

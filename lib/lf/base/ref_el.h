@@ -10,8 +10,9 @@
 
 #include <fmt/ostream.h>
 
-#include "base.h"
+#include "eigen_tools.h"
 #include "lf_assert.h"
+#include "types.h"
 
 namespace lf::base {
 
@@ -541,6 +542,7 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
  * @brief Make lf::base::RefEl work with fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <> struct fmt::formatter<lf::base::RefEl> : ostream_formatter {};
+template <>
+struct fmt::formatter<lf::base::RefEl> : ostream_formatter {};
 
 #endif  // INCG96e6ff0ee0034f4584fcdfc7e9c53f82

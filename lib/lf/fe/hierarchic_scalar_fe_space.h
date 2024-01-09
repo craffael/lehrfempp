@@ -172,7 +172,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
   template <class F>
   void Init(F &&degree_functor) {
     // Initialize all shape function layouts for nodes
-    size_type num_rsf_node = 1;
+    const size_type num_rsf_node = 1;
     for (const auto *entity : mesh_p_->Entities(2)) {
       ref_el_(*entity) = FePoint<SCALAR>(1);
     }
@@ -186,7 +186,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
     for (const auto *entity : mesh_p_->Entities(0)) {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria(): {
-          std::array<unsigned, 3> edge_degrees{
+          const std::array<unsigned, 3> edge_degrees{
               {degree_functor(*entity->SubEntities(1)[0]),
                degree_functor(*entity->SubEntities(1)[1]),
                degree_functor(*entity->SubEntities(1)[2])}};
@@ -197,7 +197,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
           break;
         }
         case lf::base::RefEl::kQuad(): {
-          std::array<unsigned, 4> edge_degrees{
+          const std::array<unsigned, 4> edge_degrees{
               {degree_functor(*entity->SubEntities(1)[0]),
                degree_functor(*entity->SubEntities(1)[1]),
                degree_functor(*entity->SubEntities(1)[2]),

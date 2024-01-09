@@ -845,7 +845,7 @@ void VtkWriter::WritePointData(const std::string& name,
   using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
   auto dim_mesh = mesh_->DimMesh();
 
-  Eigen::Matrix<double, 0, 1> origin;
+  const Eigen::Matrix<double, 0, 1> origin;
 
   if constexpr (std::is_same_v<T, unsigned char> || std::is_same_v<T, char> ||
                 std::is_same_v<T, unsigned> || std::is_same_v<T, int> ||

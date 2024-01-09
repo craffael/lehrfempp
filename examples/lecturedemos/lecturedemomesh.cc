@@ -26,13 +26,13 @@ int traverseEntities(const lf::mesh::Mesh &mesh, dim_t codim) {
   LF_ASSERT_MSG((codim <= mesh.DimMesh()), "codim " << +codim << " too large");
   std::cout << "Mesh dimension = " << mesh.DimMesh()
             << ", iterating over entities of co-dim. " << codim << ": "
-            << mesh.NumEntities(codim) << " exist" << std::endl;
+            << mesh.NumEntities(codim) << " exist" << '\n';
   int cnt = 0;
   // Typical loop for running through all entities of a specific co-dimension
   for (const lf::mesh::Entity *entity : mesh.Entities(codim)) {
     // Print entity information including its \samemp{unique} index
     std::cout << cnt << ": Entity #" << mesh.Index(*entity) << ": " << *entity
-              << std::endl;
+              << '\n';
     cnt++;
   }
   return cnt;
@@ -47,7 +47,7 @@ std::pair<size_type, size_type> countCellTypes(const lf::mesh::Mesh &mesh) {
   // Loop over all cells (= co-dimension-0 entities) of the mesh
   for (const lf::mesh::Entity* cell : mesh.Entities(0)) {
     // Fetch type information
-    lf::base::RefEl ref_el{cell->RefEl()};
+    const lf::base::RefEl ref_el{cell->RefEl()};
     // Test, if current cell is of a particular type
     switch (ref_el) {
       case lf::base::RefEl::kTria(): { tria_cnt++; break; }
@@ -69,19 +69,19 @@ void scanTopology(const lf::mesh::Mesh &mesh, dim_t codim) {
     const lf::base::RefEl ref_el{ent->RefEl()};
     // Print topological type and global index of the ent
     const glb_idx_t ent_idx = mesh.Index(*ent);
-    std::cout << ref_el << ": idx = " << ent_idx << std::endl;
+    std::cout << ref_el << ": idx = " << ent_idx << '\n';
     // Inspect sub-entities of any co-dimension
     for (dim_t sub_codim = 1; sub_codim <= mesh.DimMesh() - codim;
          ++sub_codim) {
       // Obtain iterator over sub-entities
-      nonstd::span<const lf::mesh::Entity* const>
+      const nonstd::span<const lf::mesh::Entity* const>
 	sub_ent_range { ent->SubEntities(sub_codim) };
       size_type sub_cnt = 0;  // Counter for sub-entities
       // Loop over sub-entities, whose types and indices will be output
       for (const lf::mesh::Entity* subent : sub_ent_range) { // \Label[line]{st:1}
         std::cout << "\t rel. codim " << +sub_codim << " sub-ent "
 		  << sub_cnt << ": " << *subent << ", idx = "
-		  << mesh.Index(*subent) << std::endl;
+		  << mesh.Index(*subent) << '\n';
         sub_cnt++;
       }}}}
 /* SAM_LISTING_END_2 */
@@ -107,7 +107,7 @@ void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim) {
     for (int l = 0; l < num_nodes; ++l) {
       std::cout << l << " =[" << corners.col(l).transpose() << "], ";
     }
-    std::cout << std::endl;
+    std::cout << '\n';
   }}
 /* SAM_LISTING_END_4 */
 // clang-format on
@@ -117,9 +117,9 @@ void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim) {
  */
 void lecturedemomesh() {
   std::cout << "LehrFEM++ DEMO: mesh capabilities and functionality"
-            << std::endl;
+            << '\n';
   // Set complete file path to the sample mesh in Gmsh format
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_file = here.parent_path() / "lecturedemomesh.msh";
 
   // clang-format off
@@ -132,15 +132,15 @@ void lecturedemomesh() {
   // Obtain pointer to read only mesh from the mesh reader object
   // Meshes in \lfpp are managed through \samemp{shared pointers}, see
   // \href{http://en.cppreference.com/w/cpp/memory/shared_ptr}{documentation}.
-  std::shared_ptr<const lf::mesh::Mesh> mesh_ptr = reader.mesh();
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_ptr = reader.mesh();
   const lf::mesh::Mesh &mesh{*mesh_ptr};
 
   // Output general information on mesh; self-explanatory
   std::cout << "Mesh from file " << mesh_file.string() << ": ["
             << mesh.DimMesh() << ',' << mesh.DimWorld()
-            << "] dim:" << std::endl;
+            << "] dim:" << '\n';
   std::cout << mesh.NumEntities(0) << " cells, " << mesh.NumEntities(1)
-            << " edges, " << mesh.NumEntities(2) << " nodes" << std::endl;
+            << " edges, " << mesh.NumEntities(2) << " nodes" << '\n';
   /* SAM_LISTING_END_5 */
   // clang-format on
 
@@ -151,7 +151,7 @@ void lecturedemomesh() {
   // Count number of instances of different cell types
   // NOLINTNEXTLINE
   auto [tria_cnt, quad_cnt] = lecturedemo::countCellTypes(mesh);
-  std::cout << tria_cnt << " TRIA, " << quad_cnt << " QUAD cells" << std::endl;
+  std::cout << tria_cnt << " TRIA, " << quad_cnt << " QUAD cells" << '\n';
 
   // Output information about topological relationships
   lecturedemo::scanTopology(mesh, 0);  // topolgy from the cell perspective

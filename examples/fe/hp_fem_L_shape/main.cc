@@ -25,8 +25,8 @@ int main() {
   // 2) define the exact, analytic solution:
   auto exact_solution =
       lf::mesh::utils::MeshFunctionGlobal([](Eigen::Vector2d x) {
-        double r = x.norm();
-        double theta = std::atan2(x.y(), x.x());
+        const double r = x.norm();
+        const double theta = std::atan2(x.y(), x.x());
         return std::pow(r, 2. / 3.) *
                std::sin(2. / 3. * (theta + lf::base::kPi / 2.));
       });
@@ -92,7 +92,7 @@ int main() {
         mesh, degrees);
 
     // 5) solve laplace problem with inhomogeneous dirichlet boundary conditions
-    lf::base::size_type num_dof = fes->LocGlobMap().NumDofs();
+    const lf::base::size_type num_dof = fes->LocGlobMap().NumDofs();
     auto on_boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh, 1);
     lf::fe::DiffusionElementMatrixProvider diffusion_emp(fes,
                                                          diffusion_coefficient);
@@ -112,7 +112,7 @@ int main() {
 
     std::cout << "Solving level " << level << " with " << num_dof << " dofs";
     num_dofs(level) = lf::base::narrow<int>(num_dof);
-    Eigen::SimplicialLLT<decltype(lhs)> solver(lhs);
+    const Eigen::SimplicialLLT<decltype(lhs)> solver(lhs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success,
                   "Sparse Cholesky decomposition was not successful.");
     auto solution_vec = solver.solve(rhs).eval();
@@ -126,7 +126,7 @@ int main() {
         *mesh, squaredNorm(solution_mf - exact_solution),
         static_cast<int>(2 * (level + 5))));
     errors(level) = L2error;
-    std::cout << ", L2 error: " << L2error << std::endl;
+    std::cout << ", L2 error: " << L2error << '\n';
 
     // lf::fe::DiffusionElementMatrixProvider laplacian()
 

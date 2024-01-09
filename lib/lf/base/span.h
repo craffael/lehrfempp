@@ -12,9 +12,11 @@
 #ifndef NONSTD_SPAN_HPP_INCLUDED
 #define NONSTD_SPAN_HPP_INCLUDED
 
-#define span_lite_MAJOR 0
-#define span_lite_MINOR 10
-#define span_lite_PATCH 0
+// NOLINTBEGIN
+
+#define span_lite_MAJOR 0 // NOLINT
+#define span_lite_MINOR 10 // NOLINT
+#define span_lite_PATCH 0 // NOLINT
 
 #define span_lite_VERSION                             \
   span_STRINGIFY(span_lite_MAJOR) "." span_STRINGIFY( \
@@ -25,9 +27,9 @@
 
 // span configuration:
 
-#define span_SPAN_DEFAULT 0
-#define span_SPAN_NONSTD 1
-#define span_SPAN_STD 2
+#define span_SPAN_DEFAULT 0 // NOLINT
+#define span_SPAN_NONSTD 1 // NOLINT
+#define span_SPAN_STD 2 // NOLINT
 
 // tweak header support:
 
@@ -758,7 +760,7 @@ namespace detail {
 
 template <typename T>
 bool is_positive(T x) {  // NOLINT(readability-identifier-length)
-  return std11::is_signed<T>::value ? x >= 0 : true;
+  return std11::is_signed<T>::value ? x >= 0 : true; // NOLINT
 }
 
 #if span_HAVE(TYPE_TRAITS)
@@ -770,7 +772,7 @@ template <class T, span_CONFIG_EXTENT_TYPE Extent>
 struct is_span_oracle<span<T, Extent> > : std::true_type {};
 
 template <class Q>
-struct is_span : is_span_oracle<typename std::remove_cv<Q>::type> {};
+struct is_span : is_span_oracle<typename std::remove_cv<Q>::type> {}; // NOLINT
 
 template <class Q>
 struct is_std_array_oracle : std::false_type {};
@@ -783,7 +785,7 @@ struct is_std_array_oracle<std::array<T, Extent> > : std::true_type {};
 #endif
 
 template <class Q>
-struct is_std_array : is_std_array_oracle<typename std::remove_cv<Q>::type> {};
+struct is_std_array : is_std_array_oracle<typename std::remove_cv<Q>::type> {}; // NOLINT
 
 template <class Q>
 struct is_array : std::false_type {};
@@ -916,7 +918,7 @@ class span {  // NOLINT
   // constants and types
 
   using element_type = T;  // NOLINT
-  using value_type = typename std11::remove_cv<T>::type;
+  using value_type = typename std11::remove_cv<T>::type; // NOLINT
 
   using reference = T &;
   using pointer = T *;
@@ -939,6 +941,7 @@ class span {  // NOLINT
 
   // 26.7.3.2 Constructors, copy, and assignment [span.cons]
 
+  // NOLINTNEXTLINE
   span_REQUIRES_0((Extent == 0) || (Extent == dynamic_extent)) span_constexpr
       span() span_noexcept : data_(span_nullptr),
                              size_(0) {
@@ -953,9 +956,9 @@ class span {  // NOLINT
       : data_(span_nullptr), size_(count) {
     span_EXPECTS(data_ == span_nullptr && count == 0);
   }
-
+  // NOLINTNEXTLINE
   template <typename It span_REQUIRES_T(
-      (std::is_convertible<decltype(*std::declval<It &>()),
+      (std::is_convertible<decltype(*std::declval<It &>()), // NOLINT
                            element_type &>::value))>
   span_constexpr_exp span(It first, size_type count)
       : data_(to_address(first)), size_(count) {
@@ -972,10 +975,10 @@ class span {  // NOLINT
 
 #if span_HAVE(ITERATOR_CTOR)
   template <typename It,
-            typename End span_REQUIRES_T(
-                (std::is_convertible<decltype(*std::declval<It &>()),
+            typename End span_REQUIRES_T( // NOLINT
+                (std::is_convertible<decltype(*std::declval<It &>()), // NOLINT
                                      element_type &>::value &&
-                 !std::is_convertible<End, std::size_t>::value))>
+                 !std::is_convertible<End, std::size_t>::value))> // NOLINT
   span_constexpr_exp span(It first, End last)
       : data_(to_address(first)), size_(to_size(last - first)) {
     span_EXPECTS(last - first >= 0);
@@ -986,7 +989,6 @@ class span {  // NOLINT
     span_EXPECTS(last - first >= 0);
   }
 #endif
-
   template <std::size_t N span_REQUIRES_T(
       ((Extent == dynamic_extent || Extent == static_cast<extent_t>(N)) &&
        std::is_convertible<value_type (*)[],                 // NOLINT
@@ -1835,5 +1837,5 @@ span_constexpr ElementType const& get(
 #if !span_USES_STD_SPAN
 span_RESTORE_WARNINGS()
 #endif  // span_USES_STD_SPAN
-
+// NOLINTEND
 #endif  // NONSTD_SPAN_HPP_INCLUDED

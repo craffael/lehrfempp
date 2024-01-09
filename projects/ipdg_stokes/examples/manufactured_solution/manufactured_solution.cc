@@ -94,8 +94,8 @@ Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args&&... args) {
-  std::ostringstream ss;
+std::string concat(Args&&... args) {
+  std::ostringstream ss; // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }
@@ -166,7 +166,7 @@ int main() {
             lf::quad::make_QuadRule(lf::base::RefEl::kTria(), quadrule_degree),
             true);
     sol.A_modified = A_modified.makeSparse();
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
+    const Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
         sol.A_modified);
     sol.solution_modified = solver_modified.solve(rhs_modified);
   }
@@ -190,9 +190,9 @@ int main() {
         [n](const Eigen::Vector2d& x) -> Eigen::Matrix2d {
           return computeUGrad(n, x);
         });
-    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         velocity(fe_space, solutions[lvl].solution);
-    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
         velocity_modified(fe_space, solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));
@@ -226,7 +226,7 @@ int main() {
         lf::fe::IntegrateMeshFunction(
             *(solutions[lvl].mesh),
             lf::mesh::utils::squaredNorm(velocity_modified), qr_provider);
-    std::cout << factor << std::endl;
+    std::cout << factor << '\n';
     // The error in the corrected velocity
     const auto velocity_scaled =
         lf::mesh::utils::MeshFunctionConstant<double>(factor) * velocity;
@@ -258,6 +258,6 @@ int main() {
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
               << ' ' << DG << ' ' << L2f << ' ' << DGf << ' ' << L2_modified
               << ' ' << DG_modified << ' ' << L2f_modified << ' '
-              << DGf_modified << std::endl;
+              << DGf_modified << '\n';
   }
 }

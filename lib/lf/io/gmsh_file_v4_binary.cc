@@ -66,7 +66,7 @@ struct MshV4GrammarBinary
     quoted_string_.name("string");
     vec3_ %= bin_double > bin_double > bin_double;  // NOLINT
     vec3_.name("vec3");
-    int_vec_ %= omit[qword[reserve(_val, _1), _a = _1]] > repeat(_a)[dword];
+    int_vec_ %= omit[qword[(reserve(_val, _1), _a = _1)]] > repeat(_a)[dword];
     int_vec_.name("int_vec");
     start_comment_ %= !lit("$PhysicalNames") >> !lit("$Entities") >>
                       !lit("$PartitionedEntities") >> !lit("$Nodes") >>
@@ -84,7 +84,7 @@ struct MshV4GrammarBinary
     physical_name_.name("Physical Name");
     qi::on_error<qi::fail>(physical_name_, error_handler_(_1, _2, _3, _4));
     physical_name_vector_ %= "$PhysicalNames" >
-                             omit[size_t_[reserve(_val, _1), _a = _1]] >
+                             omit[size_t_[(reserve(_val, _1), _a = _1)]] >
                              repeat(_a)[physical_name_] > "$EndPhysicalNames";
     physical_name_vector_.name("$PhysicalNames");
 
@@ -96,16 +96,16 @@ struct MshV4GrammarBinary
     entity_.name("entity");
 
     entities_ %= "$Entities\n" >
-                 omit[qword[reserve(phoenix::at_c<0>(_val), _1), _a = _1]] >
-                 omit[qword[reserve(phoenix::at_c<1>(_val), _1), _b = _1]] >
-                 omit[qword[reserve(phoenix::at_c<2>(_val), _1), _c = _1]] >
-                 omit[qword[reserve(phoenix::at_c<3>(_val), _1), _d = _1]] >
+                 omit[qword[(reserve(phoenix::at_c<0>(_val), _1), _a = _1)]] >
+                 omit[qword[(reserve(phoenix::at_c<1>(_val), _1), _b = _1)]] >
+                 omit[qword[(reserve(phoenix::at_c<2>(_val), _1), _c = _1)]] >
+                 omit[qword[(reserve(phoenix::at_c<3>(_val), _1), _d = _1)]] >
                  repeat(_a)[point_entity_] > repeat(_b)[entity_] >
                  repeat(_c)[entity_] > repeat(_d)[entity_] > "\n$EndEntities";
     entities_.name("$Entities");
 
     // PartitionedEntities
-    ghost_entities_ %= omit[qword[reserve(_val, _1), _a = _1]] >
+    ghost_entities_ %= omit[qword[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[dword > dword];  // NOLINT
     ghost_entities_.name("ghost_entities");
     partitioned_point_entity_ %=
@@ -117,10 +117,10 @@ struct MshV4GrammarBinary
                            int_vec_ > int_vec_;  // NOLINT
     partitioned_entity_.name("partitioned_entity");
 
-    partitioned_entities2_ %= omit[qword[reserve(at_c<0>(_val), _1), _a = _1]] >
-                              omit[qword[reserve(at_c<1>(_val), _1), _b = _1]] >
-                              omit[qword[reserve(at_c<2>(_val), _1), _c = _1]] >
-                              omit[qword[reserve(at_c<3>(_val), _1), _d = _1]] >
+    partitioned_entities2_ %= omit[qword[(reserve(at_c<0>(_val), _1), _a = _1)]] >
+                              omit[qword[(reserve(at_c<1>(_val), _1), _b = _1)]] >
+                              omit[qword[(reserve(at_c<2>(_val), _1), _c = _1)]] >
+                              omit[qword[(reserve(at_c<3>(_val), _1), _d = _1)]] >
                               repeat(_a)[partitioned_point_entity_] >
                               repeat(_b)[partitioned_entity_] >
                               repeat(_c)[partitioned_entity_] >
@@ -135,25 +135,25 @@ struct MshV4GrammarBinary
     // nodes:
     node_block_ %=
         dword > dword > dword >  // NOLINT
-        omit[qword[phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0]] >
+        omit[qword[(phoenix::resize(at_c<3>(_val), _1), _a = _1, _b = 0)]] >
         omit[repeat(_a)[qword[at_c<0>(at_c<3>(_val)[_b++]) = _1]]] >
         eps[_b = 0] >
         omit[repeat(_a)[vec3_[at_c<1>(at_c<3>(_val)[_b++]) = _1]]];
     node_block_.name("node_block");
 
-    nodes_ %= "$Nodes\n" > omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] >
+    nodes_ %= "$Nodes\n" > omit[qword[(reserve(at_c<3>(_val), _1), _a = _1)]] >
               qword > qword > qword > repeat(_a)[node_block_] > "\n$EndNodes";
     nodes_.name("nodes");
 
     // elements:
     element_block_ %=
         dword > dword > dword >  // NOLINT
-        omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] >
+        omit[qword[(reserve(at_c<3>(_val), _1), _a = _1)]] >
         repeat(_a)[qword > repeat(numNodesAdapted(at_c<2>(_val)))[qword]];
     element_block_.name("element_block");
 
     elements_ %= "$Elements\n" >
-                 omit[qword[reserve(at_c<3>(_val), _1), _a = _1]] > qword >
+                 omit[qword[(reserve(at_c<3>(_val), _1), _a = _1)]] > qword >
                  qword > qword > repeat(_a)[element_block_] > "\n$EndElements";
     elements_.name("elements");
 
@@ -168,22 +168,22 @@ struct MshV4GrammarBinary
     // NOLINTNEXTLINE
     periodic_link_ %= dword > dword > dword >
                       (qword(0) | (qword(16) > matrix4d_)) >
-                      omit[qword[reserve(at_c<4>(_val), _1), _a = _1]] >
+                      omit[qword[(reserve(at_c<4>(_val), _1), _a = _1)]] >
                       repeat(_a)[qword > qword];  // NOLINT
     periodic_link_.name("periodic_link");
 
-    periodic_links_ %= "$Periodic\n" > omit[qword[reserve(_val, _1), _a = _1]] >
+    periodic_links_ %= "$Periodic\n" > omit[qword[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[periodic_link_] > "\n$EndPeriodic";
     periodic_links_.name("periodic_links");
 
     // ghost elements:
     ghost_element_ %= qword > dword >
-                      omit[qword[reserve(at_c<2>(_val), _1), _a = _1]] >
+                      omit[qword[(reserve(at_c<2>(_val), _1), _a = _1)]] >
                       repeat(_a)[dword];
     ghost_element_.name("ghost_element");
 
     ghost_elements_ %= "$GhostElements\n" >
-                       omit[qword[reserve(_val, _1), _a = _1]] >
+                       omit[qword[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[ghost_element_] > "\n$EndGhostElements";
     ghost_elements_.name("ghost_elements");
 
@@ -299,11 +299,11 @@ bool ParseGmshFileV4Binary(std::string::const_iterator begin,
                            std::string::const_iterator end, int one,
                            GMshFileV4* result) {
   if (one == 1) {
-    MshV4GrammarBinary<std::string::const_iterator> grammar(
+    const MshV4GrammarBinary<std::string::const_iterator> grammar(
         qi::little_dword, qi::little_qword, qi::little_bin_double);
     return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
   }
-  MshV4GrammarBinary<std::string::const_iterator> grammar(
+  const MshV4GrammarBinary<std::string::const_iterator> grammar(
       qi::big_dword, qi::big_qword, qi::big_bin_double);
   return qi::phrase_parse(begin, end, grammar, ascii::space, *result);
 }

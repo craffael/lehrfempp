@@ -39,20 +39,20 @@ int main(int argc, char **argv) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
-    std::cout << "No arg: run all demos" << std::endl;
-    std::cout << "N = 1: demo of LehrFEM++ mesh capabilities" << std::endl;
+    std::cout << desc << '\n';
+    std::cout << "No arg: run all demos" << '\n';
+    std::cout << "N = 1: demo of LehrFEM++ mesh capabilities" << '\n';
     std::cout << "N = 2: demo of LehrFEM++ DofHandler capabilities"
-              << std::endl;
-    std::cout << "N = 3: demo of LehrFEM++ assembly of LSE" << std::endl;
+              << '\n';
+    std::cout << "N = 3: demo of LehrFEM++ assembly of LSE" << '\n';
     std::cout << "N = 4: demo of numerical quadrature in LehrFEM++"
-              << std::endl;
-    std::cout << "N = 5: demo of solving a Dirichlet BVP" << std::endl;
-    std::cout << "N = 6: demo of mesh refinement" << std::endl;
-    std::cout << "N = 7: Various of ways of computing an L2-norm" << std::endl;
-    std::cout << "N = 8: Demo for MeshFunction" << std::endl;
+              << '\n';
+    std::cout << "N = 5: demo of solving a Dirichlet BVP" << '\n';
+    std::cout << "N = 6: demo of mesh refinement" << '\n';
+    std::cout << "N = 7: Various of ways of computing an L2-norm" << '\n';
+    std::cout << "N = 8: Demo for MeshFunction" << '\n';
   } else {
-    int selector = vm["demo_number"].as<int>();
+    const int selector = vm["demo_number"].as<int>();
     if ((selector == 1) || (selector == 0)) {
       lecturedemo::lecturedemomesh();
     }

@@ -273,7 +273,7 @@ ReactionDiffusionElementMatrixProvider<
   const lf::base::RefEl ref_el{cell.RefEl()};
   // Obtain precomputed information about values of local shape functions
   // and their gradients at quadrature points.
-  PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
+  const PrecomputedScalarReferenceFiniteElement<SCALAR> &pfe =
       fe_precomp_[ref_el.Id()];
   if (!pfe.isInitialized()) {
     // Accident: cell is of a type not covered by finite element
@@ -667,7 +667,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
       auto qr_coll_ptr = qr_collection.find(ref_el);
       if (qr_coll_ptr != qr_collection.end()) {
         // A quadrature rule for the current entity type is available
-        lf::quad::QuadRule qr = qr_coll_ptr->second;
+        const lf::quad::QuadRule qr = qr_coll_ptr->second;
         LF_ASSERT_MSG(qr.RefEl() == ref_el,
                       "qr.RefEl() = " << qr.RefEl() << " <-> " << ref_el);
         // Precompute cell-independent quantities using the user-supplied

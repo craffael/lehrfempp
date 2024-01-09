@@ -51,13 +51,13 @@ int main(int argc, char **argv) {
     po::store(po::parse_config_file<char>("setup.vars", desc), vm);
   } catch (const po::reading_file &) {
     std::cout << "No file `setup.vars` specifying control variables"
-              << std::endl;
+              << '\n';
   }
   po::store(po::parse_command_line(argc, argv, desc), vm);
 
   // check for the help option (-h or --help)
   if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
@@ -66,19 +66,19 @@ int main(int argc, char **argv) {
   auto refsteps = vm["refsteps"].as<int>();
 
   // Generate hybrid test mesh and obtain a pointer to it
-  std::shared_ptr<lf::mesh::Mesh> mesh_ptr =
+  const std::shared_ptr<lf::mesh::Mesh> mesh_ptr =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh();
   const lf::mesh::Mesh &mesh = *mesh_ptr;
 
   // Output information about the mesh
-  std::cout << "########################################" << std::endl;
-  std::cout << "Output of PrintInfo() for test mesh" << std::endl;
+  std::cout << "########################################" << '\n';
+  std::cout << "Output of PrintInfo() for test mesh" << '\n';
   lf::mesh::utils::PrintInfo(std::cout, mesh);
 
   // Build mesh hierarchy
-  std::cout << "########################################" << std::endl;
+  std::cout << "########################################" << '\n';
   std::cout << "Initialization of data structure for mesh hierarchy"
-            << std::endl;
+            << '\n';
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_ptr,
@@ -86,11 +86,11 @@ int main(int argc, char **argv) {
 
   // lambda functions for (local) marking
   // First, a global marker
-  std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)>
+  const std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &)>
       allmarker = [](const lf::mesh::Mesh & /*mesh*/, const lf::mesh::Entity &
                      /*edge*/) -> bool { return true; };
   // Mark edges whose center lies inside a square
-  std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
+  const std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
       locmarker = [](const lf::mesh::Mesh & /*mesh*/,
                      const lf::mesh::Entity &edge) -> bool {
     Eigen::MatrixXd ref_c(1, 1);
@@ -100,37 +100,37 @@ int main(int argc, char **argv) {
   };
 
   // Main refinement loop
-  std::cout << "########################################" << std::endl;
+  std::cout << "########################################" << '\n';
 
   std::cout << "No of refinement steps: " << refsteps;
-  std::cout << "Entering main refinement loop" << std::endl;
+  std::cout << "Entering main refinement loop" << '\n';
   for (std::size_t refstep = 0; refstep < refsteps; refstep++) {
-    std::cout << "#### Refinement step " << refstep + 1 << std::endl;
+    std::cout << "#### Refinement step " << refstep + 1 << '\n';
     // Depending on the value of the control variable do different types
     // of refinement
     switch (refselector) {
       case 0: {
         // Global regular refinement
-        std::cout << "#### global regular refinement" << std::endl;
+        std::cout << "#### global regular refinement" << '\n';
         multi_mesh.RefineRegular();
         break;
       }
       case 1: {
         // Global barycentric refinement
-        std::cout << "#### global barycentric refinement" << std::endl;
+        std::cout << "#### global barycentric refinement" << '\n';
         multi_mesh.RefineRegular(lf::refinement::RefPat::rp_barycentric);
         break;
       }
       case 2: {
         // Global regular refinement
-        std::cout << "#### global bisection refinement" << std::endl;
+        std::cout << "#### global bisection refinement" << '\n';
         multi_mesh.MarkEdges(allmarker);
         multi_mesh.RefineMarked();
         break;
       }
       case 3: {
         // Local refinement
-        std::cout << "#### local bisection refinement" << std::endl;
+        std::cout << "#### local bisection refinement" << '\n';
         multi_mesh.MarkEdges(locmarker);
         multi_mesh.RefineMarked();
         break;
@@ -144,12 +144,12 @@ int main(int argc, char **argv) {
     // Inquire about number of existing levels
     const size_type n_levels = multi_mesh.NumLevels();
     // Obtain pointer to mesh on finest level
-    std::shared_ptr<const lf::mesh::Mesh> mesh =
+    const std::shared_ptr<const lf::mesh::Mesh> mesh =
         multi_mesh.getMesh(n_levels - 1);
     // Print number of entities of various co-dimensions
     std::cout << "#### Mesh on level " << n_levels - 1 << ": "
               << mesh->NumEntities(2) << " nodes, " << mesh->NumEntities(1)
-              << " edges, " << mesh->NumEntities(0) << " cells," << std::endl;
+              << " edges, " << mesh->NumEntities(0) << " cells," << '\n';
     std::stringstream level_asc;
     level_asc << refstep;
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
                   TikzOutputCtrl::NodeNumbering |
                   TikzOutputCtrl::EdgeNumbering);
 
-    lf::io::VtkWriter vtk_writer(mesh,
+    const lf::io::VtkWriter vtk_writer(mesh,
                                  "refinement_mesh" + level_asc.str() + ".vtk");
   }
 

@@ -12,7 +12,7 @@
 using size_type = lf::mesh::Mesh::size_type;
 
 // Structures that represent the MshFile:
-namespace lf::io {
+namespace lf::io { // NOLINT(misc-confusable-identifiers)
 
 bool GmshReader::IsPhysicalEntity(const mesh::Entity& e,
                                   size_type physical_entity_nr) const {
@@ -121,8 +121,8 @@ void GmshReader::InitGmshFile(const GMshFileV2& msh_file) {
   // 1) Check Gmsh_file and initialize
   //////////////////////////////////////////////////////////////////////////
 
-  dim_t dim_mesh = mesh_factory_->DimMesh();
-  dim_t dim_world = mesh_factory_->DimWorld();
+  const dim_t dim_mesh = mesh_factory_->DimMesh();
+  const dim_t dim_world = mesh_factory_->DimWorld();
   LF_VERIFY_MSG(
       dim_mesh >= 2 && dim_mesh <= 3 && dim_world >= 2 && dim_world <= 3,
       "GmshReader supports only 2D and 3D meshes.");
@@ -350,8 +350,8 @@ void GmshReader::InitGmshFile(const GMshFileV4& msh_file) {
   // 1) Check Gmsh_file and initialize
   //////////////////////////////////////////////////////////////////////////
 
-  dim_t dim_mesh = mesh_factory_->DimMesh();
-  dim_t dim_world = mesh_factory_->DimWorld();
+  const dim_t dim_mesh = mesh_factory_->DimMesh();
+  const dim_t dim_world = mesh_factory_->DimWorld();
   LF_VERIFY_MSG(
       dim_mesh >= 2 && dim_mesh <= 3 && dim_world >= 2 && dim_world <= 3,
       "GmshReader supports only 2D and 3D meshes.");

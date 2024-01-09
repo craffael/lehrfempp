@@ -263,6 +263,8 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
       }  // end switch codim
       break;
     }  // end case of a quadrilateral
+    default:
+      LF_VERIFY_MSG(false, "unsupported RefEl");
   }    // end switch cell type
   return 0;
 }
@@ -484,7 +486,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // of the edges.
 
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_third, lt_third});
 
               child_coords.col(0) = lt_node_coords.col(0);
@@ -627,7 +629,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // of the edges. Six interior edges will be created
 
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_third, lt_third});
 
               child_coords.col(0) = lt_node_coords.col(0);
@@ -813,7 +815,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             case RefPat::rp_regular: {
               // Fully symmetric splitting into four quadrilaterals
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_half, lt_half});
 
               quad_child_coords.col(0) = lt_node_coords.col(0);
@@ -929,7 +931,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // Fully symmetric splitting into four quadrilaterals
               // Four interior edges arise
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_half, lt_half});
 
               child_coords.col(0) = lt_midpoint_coords.col(0);
@@ -972,6 +974,8 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
       }  // end switch codim
       break;
     }  // end case of a quadrilateral
+    default:
+      LF_VERIFY_MSG(false, "Unsupported RefEl");
   }    // end switch cell type
   return (child_poly);
 }

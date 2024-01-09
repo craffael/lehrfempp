@@ -41,6 +41,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
  * in order to help IDE tools detect that
  * `BOOST_VERIFY_MSG(false, "message")` always aborts execution.
  */
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_VERIFY_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
@@ -50,6 +51,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
+// NOLINTEND(readability-simplify-boolean-expr)
 
 #ifdef NDEBUG
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
@@ -60,6 +62,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
     if (!(expr)) throw std::runtime_error(msg); \
   }
 
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_ASSERT_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
@@ -70,6 +73,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
     }                                                                   \
   }
 #endif
+// NOLINTEND(readability-simplify-boolean-expr)
 
 // And now we will redefine eigen_assert if needed:
 #ifdef LF_REDIRECT_ASSERTS
@@ -78,7 +82,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 // eigen_assert has already been defined, but not by us!
 #ifdef _MSC_VER
 #pragma message( \
-    "WARNING: Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html")
+        "WARNING: Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html")
 #else
 #warning \
     "Eigen has been included before all LehrFEM++ headers but LF_REDIRECT_ASSERTS=On in cmake. Not all Eigen Asserts may print a stacktrace! https://craffael.github.io/lehrfempp/eigen_stacktrace_warning.html"

@@ -240,7 +240,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   for (auto &e : edges) {
     // Node indices of endpoints: the KEY
     std::array<size_type, 2> end_nodes(e.first);
-    EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
+    const EndpointIndexPair e_endpoint_idx(end_nodes[0], end_nodes[1]);
     LF_ASSERT_MSG(
         (end_nodes[0] < no_of_nodes) && (end_nodes[1] < no_of_nodes),
         "Illegal edge node numbers " << end_nodes[0] << ", " << end_nodes[1]);
@@ -261,11 +261,11 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
     // not yet available.
     LF_ASSERT_MSG(e.second != nullptr,
                   "Edge " << edge_index << ": missing geometry!");
-    AdjCellsList empty_cells_list{};
+    const AdjCellsList empty_cells_list{};
     EdgeData edge_data(std::move(e.second), empty_cells_list, edge_index);
     EdgeMap::value_type edge_info =
         std::make_pair(e_endpoint_idx, std::move(edge_data));
-    std::pair<EdgeMap::iterator, bool> insert_status =
+    const std::pair<EdgeMap::iterator, bool> insert_status =
         edge_map.insert(std::move(edge_info));
     LF_ASSERT_MSG(insert_status.second,
                   "Duplicate edge " << end_nodes[0] << " <-> " << end_nodes[1]);
@@ -285,7 +285,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
 
   if (Logger()->should_log(spdlog::level::trace)) {
     std::stringstream ss;
-    ss << "Edge map after edge registration" << std::endl;
+    ss << "Edge map after edge registration" << '\n';
     for (auto &edge_info : edge_map) {
       const EndpointIndexPair &eip(edge_info.first);
       const EdgeData &edat(edge_info.second);
@@ -326,7 +326,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       no_of_quadrilaterals++;
     }
     // Fix the type of the cell
-    base::RefEl ref_el =
+    const base::RefEl ref_el =
         (no_of_vertices == 3) ? base::RefEl::kTria() : base::RefEl::kQuad();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -375,7 +375,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       const size_type p1_local_index =
           ref_el.SubSubEntity2SubEntity(1, j, 1, 1);
       // Fetch global indices of the endnodes of edge j
-      EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
+      const EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
                                               cell_node_list[p1_local_index]);
 
       if (Logger()->should_log(spdlog::level::trace)) {
@@ -385,7 +385,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
                     << c_edge_vertex_indices.second_node() << " # ";
       }
       // Store number of cell and the local index j of the edge
-      AdjCellInfo edge_cell_info(cell_index, j);
+      const AdjCellInfo edge_cell_info(cell_index, j);
       // Check whether edge exists already
       auto edge_ptr = edge_map.find(c_edge_vertex_indices);
       if (edge_ptr == edge_map.end()) {
@@ -395,9 +395,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
           edge_geo_ptr = cell_geometry->SubGeometry(1, j);
         }
         // Beginning of list of adjacent elements
-        AdjCellsList single_cell_list{edge_cell_info};
+        const AdjCellsList single_cell_list{edge_cell_info};
         EdgeData edge_data(std::move(edge_geo_ptr), single_cell_list);
-        std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
+        const std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
             std::make_pair(c_edge_vertex_indices, std::move(edge_data)));
         LF_ASSERT_MSG(insert_status.second, "Duplicate not found earlier!");
         edge_ptr = insert_status.first;  // pointer to newly inserted edge
@@ -461,9 +461,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         for (const auto &i : acl) {
           ss_log_line << "[" << i.cell_idx << "," << i.edge_idx << "] ";
         }
-        ss_log_line << " geo = " << std::endl;
+        ss_log_line << " geo = " << '\n';
         if (gptr) {
-          Eigen::MatrixXd edp_c(
+          const Eigen::MatrixXd edp_c(
               gptr->Global(base::RefEl::kSegment().NodeCoords()));
           ss_log_line << edp_c;
         } else {
@@ -501,7 +501,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   // Run through the entire associative container for edges
   // and build edge Entities
   // This is the length to be reserved for the edge vector
-  size_type no_of_edges = edge_map.size();
+  const size_type no_of_edges = edge_map.size();
 
   // Initialized vector of Edge entities here
   segments_.reserve(no_of_edges);
@@ -603,7 +603,7 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
   size_type edge_array_position = 0;  // actual position in edge array
   for (const EdgeMap::value_type &edge : edge_map) {
     // Obtain array of indices of adjacent cells
-    AdjCellsList adjacent_cells(edge.second.adj_cells_list);
+    const AdjCellsList adjacent_cells(edge.second.adj_cells_list);
     for (const auto &adj_cell : adjacent_cells) {
       const size_type adj_cell_index = adj_cell.cell_idx;
       // Local index of edge in adjacent cell

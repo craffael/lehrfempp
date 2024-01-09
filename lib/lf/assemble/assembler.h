@@ -308,7 +308,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       // Length of element vector
       const size_type veclen = dof_handler.NumLocalDofs(*entity);
       // global dof indices for contribution of the entity
-      nonstd::span<const gdof_idx_t> dof_idx(
+      const nonstd::span<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(*entity));
       // Request local vector from entity_vector_provider object. In the case
       // CODIM = 0, when `entity` is a cell, this is the element vector

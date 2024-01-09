@@ -28,7 +28,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 
   // the roots are symmetric in the interval, so we only have to find half of
   // them
-  unsigned int m = (num_points + 1) / 2;
+  const unsigned int m = (num_points + 1) / 2;
 
   // approximation for the roots:
   for (unsigned int i = 0; i < m; ++i) {
@@ -79,7 +79,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
       boost::multiprecision::number<boost::multiprecision::cpp_bin_float<
           57, boost::multiprecision::digit_base_2>>;
 
-  int MAX_IT = 10;
+  const int MAX_IT = 10;
 
   scalar_t alfbet;
   scalar_t an;

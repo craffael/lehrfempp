@@ -540,10 +540,10 @@ class DynamicFEDofHandler : public DofHandler {
       const mesh::Entity *node_p{mesh_p_->EntityByIndex(2, node_idx)};
       LF_ASSERT_MSG(mesh_p_->Index(*node_p) == node_idx, "Node index mismatch");
       // Offset for indices of node in index vector
-      glb_idx_t node_dof_offset = dof_idx;
+      const glb_idx_t node_dof_offset = dof_idx;
       offsets_[2][node_idx] = node_dof_offset;
       // Request number of local shape functions associated with the node
-      size_type no_int_dof_node = locdof(*node_p);
+      const size_type no_int_dof_node = locdof(*node_p);
       num_int_dofs_[2][node_idx] = no_int_dof_node;
 
       // Store dof indices in array
@@ -569,15 +569,15 @@ class DynamicFEDofHandler : public DofHandler {
       LF_ASSERT_MSG(mesh_p_->Index(*edge) == edge_idx, "Edge index mismatch");
       // Offset for indices of edge dof in index vector
       offsets_[1][edge_idx] = edge_dof_offset;
-      size_type no_int_dof_edge = locdof(*edge);
+      const size_type no_int_dof_edge = locdof(*edge);
       num_int_dofs_[1][edge_idx] = no_int_dof_edge;
 
       // Obtain indices for basis functions sitting at endpoints
       // Endpoints are mesh entities with co-dimension = 2
       for (const lf::mesh::Entity *endpoint : edge->SubEntities(1)) {
         const glb_idx_t ep_idx(mesh_p_->Index(*endpoint));
-        glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
-        size_type no_int_dofs_ep = num_int_dofs_[2][ep_idx];
+        const glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
+        const size_type no_int_dofs_ep = num_int_dofs_[2][ep_idx];
         // Copy indices of shape functions from nodes to edge
         for (unsigned j = 0; j < no_int_dofs_ep; j++) {
           dofs_[1].push_back(dofs_[2][ep_dof_offset + j]);
@@ -607,14 +607,14 @@ class DynamicFEDofHandler : public DofHandler {
       const mesh::Entity *cell{mesh_p_->EntityByIndex(0, cell_idx)};
       // Offset for indices of cell dof in index vector
       offsets_[0][cell_idx] = cell_dof_offset;
-      size_type no_int_dof_cell = locdof(*cell);
+      const size_type no_int_dof_cell = locdof(*cell);
       num_int_dofs_[0][cell_idx] = no_int_dof_cell;
 
       // Obtain indices for basis functions in vertices
       for (const lf::mesh::Entity *vertex : cell->SubEntities(2)) {
         const glb_idx_t vt_idx(mesh_p_->Index(*vertex));
-        glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
-        size_type no_int_dofs_vt = num_int_dofs_[2][vt_idx];
+        const glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
+        const size_type no_int_dofs_vt = num_int_dofs_[2][vt_idx];
         // Copy indices of shape functions from nodes to cell
         for (unsigned j = 0; j < no_int_dofs_vt; j++) {
           dofs_[0].push_back(dofs_[2][vt_dof_offset + j]);
@@ -749,7 +749,8 @@ class DynamicFEDofHandler : public DofHandler {
 }  // namespace lf::assemble
 
 /**
- * @brief Make lf::assemble::DofHandler formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ * @brief Make lf::assemble::DofHandler formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
  */
 template <> struct fmt::formatter<lf::assemble::DofHandler> : ostream_formatter{};
 

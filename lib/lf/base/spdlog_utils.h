@@ -121,7 +121,7 @@ struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
 
   template <typename FormatContext>
   auto format(const MATRIX& matrix, FormatContext& ctx) {
-    std::stringstream ss;
+    std::stringstream ss; // NOLINT(misc-const-correctness)
     ss << matrix.format(clean_fmt);
 
     auto it = ctx.out();
