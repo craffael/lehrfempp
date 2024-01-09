@@ -39,8 +39,8 @@ jobs:
         include:
          - name: without projects
            paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-         # - name: only projects
-           # paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+         - name: only projects
+           paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     env:
       COMPILER: "clang++-17"
       BUILD_TYPE: "Debug"
