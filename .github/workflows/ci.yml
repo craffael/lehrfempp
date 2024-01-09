@@ -43,14 +43,15 @@ jobs:
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install clang-tidy
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
           sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main" && 
           sudo apt-get install clang-tidy-17 g++-13
       - name: Restore cache
-        uses: actions/cache@v2
+        uses: actions/cache/restore@v3
+        id: cache
         with:
           path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
           key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
@@ -59,6 +60,12 @@ jobs:
             ${{ runner.os }}-${{ env.COMPILER }}-
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
+      - name: Save Cache
+        uses: actions/cache/save@v3
+        id: cache
+        with:
+          path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
       - name: clang-tidy
         run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
         
