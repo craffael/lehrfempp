@@ -51,7 +51,6 @@ jobs:
           sudo apt-get install clang-tidy-17 g++-13
       - name: Restore cache
         uses: actions/cache/restore@v3
-        id: cache
         with:
           path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
           key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
@@ -62,7 +61,7 @@ jobs:
         run: "./ci/build_dependencies.sh"
       - name: Save Cache
         uses: actions/cache/save@v3
-        id: cache
+        if: always()
         with:
           path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
           key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
