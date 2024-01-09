@@ -201,7 +201,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   lf::assemble::FixFlaggedSolutionComponents(selector, A, rhs);
 
   // Solve the LSE using sparse LU
-  const Eigen::SparseMatrix<double> As_mapped = A.makeSparse().block(0, 0, idx, idx);
+  const Eigen::SparseMatrix<double> As_mapped =
+      A.makeSparse().block(0, 0, idx, idx);
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(As_mapped);
   const Eigen::VectorXd sol_mapped = solver.solve(rhs_mapped);
@@ -224,7 +225,7 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
  */
 template <typename... Args>
 std::string concat(Args &&...args) {
-  std::ostringstream ss; // NOLINT(misc-const-correctness)
+  std::ostringstream ss;  // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }

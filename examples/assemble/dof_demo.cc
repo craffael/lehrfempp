@@ -52,8 +52,7 @@ int main(int argc, char **argv) {
     if (vm.count("ndof_quad") > 0) {
       ndof_quad = vm["ndof_quad"].as<int>();
     }
-    std::cout << "LehrFEM++ demo: assignment of global shape functions"
-              << '\n';
+    std::cout << "LehrFEM++ demo: assignment of global shape functions" << '\n';
     std::cout << "#dof/vertex = " << ndof_node << '\n';
     std::cout << "#dof/edge = " << ndof_edge << '\n';
     std::cout << "#dof/triangle = " << ndof_tria << '\n';

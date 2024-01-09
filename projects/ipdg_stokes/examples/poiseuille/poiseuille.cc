@@ -35,7 +35,7 @@
  */
 template <typename... Args>
 std::string concat(Args &&...args) {
-  std::ostringstream ss; // NOLINT(misc-const-correctness,-warnings-as-errors)
+  std::ostringstream ss;  // NOLINT(misc-const-correctness,-warnings-as-errors)
   (ss << ... << args);
   return ss.str();
 }
@@ -233,8 +233,7 @@ int main(int argc, char *argv[]) {
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
         solutions[lvl].mesh, diff_v_modified, diff_g_modified, qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
-              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified
-              << '\n';
+              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified << '\n';
   }
 
   return 0;

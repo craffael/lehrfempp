@@ -12,11 +12,7 @@
 /**
  * @brief Contains basic functionality that is used by other parts of LehrFEM++
  */
-namespace lf::base {
-
-
-
-}  // namespace lf::base
+namespace lf::base {}  // namespace lf::base
 
 // public header files that make up the base library:
 #include "eigen_tools.h"
@@ -30,7 +26,7 @@ namespace lf::base {
 #include "scalar_concept.h"
 #include "span.h"
 #include "spdlog_utils.h"
-#include "types.h"
 #include "timer.h"
+#include "types.h"
 
 #endif  // INCG986f32316282425d9be137cb399482f3

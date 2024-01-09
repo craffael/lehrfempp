@@ -213,8 +213,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 
   for (int l = 0; l < 6; l++) {
     if (l < 5) {
-      std::cout << "errorL2 solcol0 for l = " << l << " : " << eL2(l)
-                << '\n';
+      std::cout << "errorL2 solcol0 for l = " << l << " : " << eL2(l) << '\n';
     }
 
     std::cout << "number of timesteps for l = " << l << " : " << numSteps(l)

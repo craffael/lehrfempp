@@ -38,7 +38,8 @@ Eigen::VectorXd StrangSplit::diffusionEvolutionOperator(
     const Eigen::VectorXd k1 = solver2.solve(rhs);
     LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
     /* Second stage SDIRK-2 */
-    const Eigen::VectorXd k2 = solver2.solve(rhs - tau_ * (1 - kappa_) * A_ * k1);
+    const Eigen::VectorXd k2 =
+        solver2.solve(rhs - tau_ * (1 - kappa_) * A_ * k1);
     LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
 
     evol_op = mu + tau_ * (1 - kappa_) * k1 + tau_ * kappa_ * k2;

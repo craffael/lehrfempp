@@ -85,8 +85,7 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
         if ((dbg_ctrl & dbg_elim) > 0) {
           if (tmp_bd_flags[triplet.row()]) {
             std::cout << "EBD: removing " << triplet.row() << ','
-                      << triplet.col() << "[" << triplet.value() << "]"
-                      << '\n';
+                      << triplet.col() << "[" << triplet.value() << "]" << '\n';
           }
         }
         return tmp_bd_flags[triplet.row()];
@@ -331,8 +330,7 @@ int main(int argc, char **argv) {
 
   std::cout << "AssembleMatrixLogger level "
             << lf::assemble::AssembleMatrixLogger()->level() << "\n";
-  std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
-            << '\n';
+  std::cout << "*** Solving Dirichlet problems for the Laplacian ***" << '\n';
   // Retrieve number of degrees of freedom for each entity type from
   // command line arguments
   if (vm.count("filename") > 0) {

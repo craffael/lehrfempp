@@ -29,8 +29,7 @@ void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
 
     for (int co_dim = base::narrow<int>(dim_mesh); co_dim >= 0; co_dim--) {
       const size_type no_ent = mesh.NumEntities(co_dim);
-      o << "Co-dimension " << co_dim << ": " << no_ent << " entities"
-        << '\n';
+      o << "Co-dimension " << co_dim << ": " << no_ent << " entities" << '\n';
 
       // Loop over entities
       for (const Entity *e : mesh.Entities(co_dim)) {
@@ -81,8 +80,7 @@ void PrintInfo(std::ostream &stream, const lf::mesh::Entity &e,
   const geometry::Geometry *e_geo_ptr = e.Geometry();
   LF_ASSERT_MSG(e_geo_ptr != nullptr, "Missing geometry information!");
 
-  stream << "Entity " << e_ref_el << "/" << typeid(*e_geo_ptr).name()
-         << '\n';
+  stream << "Entity " << e_ref_el << "/" << typeid(*e_geo_ptr).name() << '\n';
 
   if (output_ctrl > 10) {
     stream << "Dimension: " << dim_ref_el << '\n';

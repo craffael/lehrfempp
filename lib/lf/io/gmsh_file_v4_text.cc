@@ -143,8 +143,8 @@ struct MshV4GrammarText
     element_block_.name("element_block");
 
     elements_ %= "$Elements" >
-                 omit[size_t_[(reserve(at_c<3>(_val), _1), _a = _1)]] > size_t_ >
-                 size_t_ > size_t_ > repeat(_a)[element_block_] >
+                 omit[size_t_[(reserve(at_c<3>(_val), _1), _a = _1)]] >
+                 size_t_ > size_t_ > size_t_ > repeat(_a)[element_block_] >
                  "$EndElements";
     elements_.name("elements");
 
@@ -161,7 +161,8 @@ struct MshV4GrammarText
                       repeat(_a)[size_t_ > size_t_];
     periodic_link_.name("periodic_link");
 
-    periodic_links_ %= "$Periodic" > omit[size_t_[(reserve(_val, _1), _a = _1)]] >
+    periodic_links_ %= "$Periodic" >
+                       omit[size_t_[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[periodic_link_] > "$EndPeriodic";
     periodic_links_.name("periodic_links");
 

@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
   auto mesh = base_mesh;
   auto errors = Eigen::VectorXd(max_level + 1);
   for (int level = 0; level <= max_level; ++level) {
-    const lf::io::VtkWriter vtk_writer(mesh,
-                                 "level" + std::to_string(level) + ".vtk");
+    const lf::io::VtkWriter vtk_writer(
+        mesh, "level" + std::to_string(level) + ".vtk");
 
     auto approx = integrate(*mesh, quad_degree, f);
     errors(level) = std::abs(approx - exact_integral);

@@ -10,9 +10,9 @@
 #define INCGdf4311acf6554f11919b7b1edfc5b3dd
 
 #include <lf/mesh/mesh.h>
-#include <concepts>
 
 #include <boost/container/vector.hpp>
+#include <concepts>
 
 #include "lf/base/lf_assert.h"
 #include "mesh_data_set.h"
@@ -130,7 +130,7 @@ std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
  * @param init_value The initial value that should be assigned to every
  * entity.
  */
-template <std::copy_constructible  T>
+template <std::copy_constructible T>
 std::shared_ptr<AllCodimMeshDataSet<T>> make_AllCodimMeshDataSet(
     const std::shared_ptr<const lf::mesh::Mesh>& mesh, T init_value) {
   using impl_t = AllCodimMeshDataSet<T>;

@@ -1019,8 +1019,10 @@ class FeLagrangeO3Tria final
     // evaluation of the barycentric coordinate functions
     const Eigen::Array<double, 1, Eigen::Dynamic> lambda0 =
         1 - refcoords.row(0).array() - refcoords.row(1).array();
-    const Eigen::Array<double, 1, Eigen::Dynamic> lambda1 = refcoords.row(0).array();
-    const Eigen::Array<double, 1, Eigen::Dynamic> lambda2 = refcoords.row(1).array();
+    const Eigen::Array<double, 1, Eigen::Dynamic> lambda1 =
+        refcoords.row(0).array();
+    const Eigen::Array<double, 1, Eigen::Dynamic> lambda2 =
+        refcoords.row(1).array();
 
     // evaluation of the shape functions
     // The LSF associated with vertices

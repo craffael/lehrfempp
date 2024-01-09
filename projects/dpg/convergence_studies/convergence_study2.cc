@@ -61,7 +61,8 @@ int main() {
             delta_p, lf::base::RefEl::kTria());
 
     // output to a corresponding file
-    const std::string file_name = "cs2/triangular/bvp1_" + std::to_string(deg_p);
+    const std::string file_name =
+        "cs2/triangular/bvp1_" + std::to_string(deg_p);
     std::ofstream file(file_name);
     for (auto [dofs, erroru, errorsigma, errorestimate] : errors) {
       file << dofs << ", " << erroru << "," << errorsigma << ","
@@ -81,7 +82,8 @@ int main() {
             delta_p, lf::base::RefEl::kTria());
 
     // output to a corresponding file
-    const std::string file_name = "cs2/triangular/bvp2_" + std::to_string(deg_p);
+    const std::string file_name =
+        "cs2/triangular/bvp2_" + std::to_string(deg_p);
     std::ofstream file(file_name);
     for (auto [dofs, erroru, errorsigma, errorestimate] : errors) {
       file << dofs << ", " << erroru << "," << errorsigma << ","
@@ -101,7 +103,8 @@ int main() {
             delta_p, lf::base::RefEl::kQuad());
 
     // output to a corresponding file
-    const std::string file_name = "cs2/quadrilateral/bvp1_" + std::to_string(deg_p);
+    const std::string file_name =
+        "cs2/quadrilateral/bvp1_" + std::to_string(deg_p);
     std::ofstream file(file_name);
     for (auto [dofs, erroru, errorsigma, errorestimate] : errors) {
       file << dofs << ", " << erroru << "," << errorsigma << ","
@@ -122,7 +125,8 @@ int main() {
             delta_p, lf::base::RefEl::kQuad());
 
     // output to a corresponding file
-    const std::string file_name = "cs2/quadrilateral/bvp2_" + std::to_string(deg_p);
+    const std::string file_name =
+        "cs2/quadrilateral/bvp2_" + std::to_string(deg_p);
     std::ofstream file(file_name);
     for (auto [dofs, erroru, errorsigma, errorestimate] : errors) {
       file << dofs << ", " << erroru << "," << errorsigma << ","

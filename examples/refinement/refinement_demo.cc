@@ -50,8 +50,7 @@ int main(int argc, char **argv) {
   try {
     po::store(po::parse_config_file<char>("setup.vars", desc), vm);
   } catch (const po::reading_file &) {
-    std::cout << "No file `setup.vars` specifying control variables"
-              << '\n';
+    std::cout << "No file `setup.vars` specifying control variables" << '\n';
   }
   po::store(po::parse_command_line(argc, argv, desc), vm);
 
@@ -77,8 +76,7 @@ int main(int argc, char **argv) {
 
   // Build mesh hierarchy
   std::cout << "########################################" << '\n';
-  std::cout << "Initialization of data structure for mesh hierarchy"
-            << '\n';
+  std::cout << "Initialization of data structure for mesh hierarchy" << '\n';
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::refinement::MeshHierarchy multi_mesh(mesh_ptr,
@@ -90,7 +88,8 @@ int main(int argc, char **argv) {
       allmarker = [](const lf::mesh::Mesh & /*mesh*/, const lf::mesh::Entity &
                      /*edge*/) -> bool { return true; };
   // Mark edges whose center lies inside a square
-  const std::function<bool(const lf::mesh::Mesh &, const lf::mesh::Entity &edge)>
+  const std::function<bool(const lf::mesh::Mesh &,
+                           const lf::mesh::Entity &edge)>
       locmarker = [](const lf::mesh::Mesh & /*mesh*/,
                      const lf::mesh::Entity &edge) -> bool {
     Eigen::MatrixXd ref_c(1, 1);
@@ -159,8 +158,8 @@ int main(int argc, char **argv) {
                   TikzOutputCtrl::NodeNumbering |
                   TikzOutputCtrl::EdgeNumbering);
 
-    const lf::io::VtkWriter vtk_writer(mesh,
-                                 "refinement_mesh" + level_asc.str() + ".vtk");
+    const lf::io::VtkWriter vtk_writer(
+        mesh, "refinement_mesh" + level_asc.str() + ".vtk");
   }
 
   // Generate  MATLAB functions that provide a description of all

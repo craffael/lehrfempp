@@ -40,8 +40,10 @@ std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
 }  // namespace lf::geometry
 
 /**
- * @brief Make lf::geometry::Geometry formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ * @brief Make lf::geometry::Geometry formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <> struct fmt::formatter<lf::geometry::Geometry> : ostream_formatter{};
+template <>
+struct fmt::formatter<lf::geometry::Geometry> : ostream_formatter {};
 
 #endif  // PRINT_INFO_H

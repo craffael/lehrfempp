@@ -265,7 +265,7 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
     }  // end case of a quadrilateral
     default:
       LF_VERIFY_MSG(false, "unsupported RefEl");
-  }    // end switch cell type
+  }  // end switch cell type
   return 0;
 }
 
@@ -976,7 +976,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
     }  // end case of a quadrilateral
     default:
       LF_VERIFY_MSG(false, "Unsupported RefEl");
-  }    // end switch cell type
+  }  // end switch cell type
   return (child_poly);
 }
 

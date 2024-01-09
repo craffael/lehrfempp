@@ -65,8 +65,7 @@ namespace lecturedemo {
 
 // Main driver function
 void lecturedemoassemble() {
-  std::cout << "LehrFEM++ demo: assembly of Galerkin linear system"
-            << '\n';
+  std::cout << "LehrFEM++ demo: assembly of Galerkin linear system" << '\n';
   // Obtain a purely triangular mesh from the collection of LehrFEM++'s
   // built-in meshes
   const std::shared_ptr<lf::mesh::Mesh> mesh_p{

@@ -42,7 +42,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
       static_cast<bool>(output_ctrl & TikzOutputCtrl::VerticeNumbering);
   const bool RenderCellsOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::RenderCells);
-  const bool ArrowsOn = static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
+  const bool ArrowsOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
   const bool WithPreamble =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::WithPreamble);
   // NOLINTEND(bugprone-non-zero-enum-to-bool-conversion)

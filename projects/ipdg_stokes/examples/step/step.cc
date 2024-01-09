@@ -39,7 +39,7 @@ using lf::uscalfe::operator-;  // NOLINT
  */
 template <typename... Args>
 std::string concat(Args &&...args) {
-  std::ostringstream ss; // NOLINT(misc-const-correctness)
+  std::ostringstream ss;  // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }
@@ -208,9 +208,11 @@ int main() {
   const auto fe_space_fine =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
           solutions.back().mesh);
-  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>
       velocity_exact(fe_space_fine, solutions.back().solution);
-  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>
       velocity_exact_modified(fe_space_fine,
                               solutions.back().solution_modified);
   lf::io::VtkWriter writer(solutions.back().mesh, "result.vtk");
@@ -218,9 +220,11 @@ int main() {
     const auto fe_space_lvl =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
-    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity_lvl(fe_space_lvl, solutions[lvl].solution);
-    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
     const lf::refinement::MeshFunctionTransfer velocity_fine(
         *mesh_hierarchy, velocity_lvl, lvl, mesh_hierarchy->NumLevels() - 1);
@@ -263,8 +267,7 @@ int main() {
             Eigen::Matrix2d::Zero()),
         qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
-              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified
-              << '\n';
+              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified << '\n';
   }
 
   return 0;

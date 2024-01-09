@@ -70,8 +70,8 @@ class MeshFunctionTransfer {
    * be evaluated
    * @returns A std::vector of point evaluations of the MeshFunction
    */
-  decltype(auto) operator()(const lf::mesh::Entity & e,
-                            const Eigen::MatrixXd & local) const {
+  decltype(auto) operator()(const lf::mesh::Entity &e,
+                            const Eigen::MatrixXd &local) const {
     const auto *rel_geom = mh_.GeometryInParent(level_fine_, e);
     const auto *parent = mh_.ParentEntity(level_fine_, e);
     auto local_parent = rel_geom->Global(local);

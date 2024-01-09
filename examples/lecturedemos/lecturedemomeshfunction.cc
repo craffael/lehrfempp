@@ -42,14 +42,14 @@ void lecturedemomeshfunction() {
     const std::shared_ptr<const lf::mesh::Mesh> lev_mesh_p =
         multi_mesh.getMesh(level);
     // Build FE space
-    const std::shared_ptr<const lf::uscalfe::FeSpaceLagrangeO2<double>> fe_space_p =
-        std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(lev_mesh_p);
+    const std::shared_ptr<const lf::uscalfe::FeSpaceLagrangeO2<double>>
+        fe_space_p = std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(
+            lev_mesh_p);
     // Compute FE nodal interpolant
     const lf::mesh::utils::MeshFunctionGlobal mf_f(f);
     auto coeff_vec{lf::fe::NodalProjection(*fe_space_p, mf_f)};
     std::cout << "Level " << level << ", integral = "
-              << integrateCoeffgradUhVf(fe_space_p, coeff_vec, cf, vf)
-              << '\n';
+              << integrateCoeffgradUhVf(fe_space_p, coeff_vec, cf, vf) << '\n';
   }
 }
 

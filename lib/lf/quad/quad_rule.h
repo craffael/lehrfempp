@@ -197,8 +197,10 @@ std::ostream& operator<<(std::ostream& stream,
 }  // namespace lf::quad
 
 /**
- * @brief Make lf::quad::QuadRule formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ * @brief Make lf::quad::QuadRule formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <> struct fmt::formatter<lf::quad::QuadRule> : ostream_formatter{};
+template <>
+struct fmt::formatter<lf::quad::QuadRule> : ostream_formatter {};
 
 #endif  // INCGa7241ee797424d98ad339341b02bca70

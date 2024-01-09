@@ -375,8 +375,8 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
       const size_type p1_local_index =
           ref_el.SubSubEntity2SubEntity(1, j, 1, 1);
       // Fetch global indices of the endnodes of edge j
-      const EndpointIndexPair c_edge_vertex_indices(cell_node_list[p0_local_index],
-                                              cell_node_list[p1_local_index]);
+      const EndpointIndexPair c_edge_vertex_indices(
+          cell_node_list[p0_local_index], cell_node_list[p1_local_index]);
 
       if (Logger()->should_log(spdlog::level::trace)) {
         ss_log_line << "e(" << j << ") = local " << p0_local_index << " <-> "
@@ -397,8 +397,9 @@ Mesh::Mesh(dim_t dim_world, NodeCoordList nodes, EdgeList edges, CellList cells,
         // Beginning of list of adjacent elements
         const AdjCellsList single_cell_list{edge_cell_info};
         EdgeData edge_data(std::move(edge_geo_ptr), single_cell_list);
-        const std::pair<EdgeMap::iterator, bool> insert_status = edge_map.insert(
-            std::make_pair(c_edge_vertex_indices, std::move(edge_data)));
+        const std::pair<EdgeMap::iterator, bool> insert_status =
+            edge_map.insert(
+                std::make_pair(c_edge_vertex_indices, std::move(edge_data)));
         LF_ASSERT_MSG(insert_status.second, "Duplicate not found earlier!");
         edge_ptr = insert_status.first;  // pointer to newly inserted edge
       } else {

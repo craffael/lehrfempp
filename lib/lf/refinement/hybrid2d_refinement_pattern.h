@@ -260,6 +260,7 @@ class Hybrid2DRefinementPattern : public geometry::RefinementPattern {
  * @brief Make lf::refinement::RefPat formattable for fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <> struct fmt::formatter<lf::refinement::RefPat> : ostream_formatter {};
+template <>
+struct fmt::formatter<lf::refinement::RefPat> : ostream_formatter {};
 
 #endif

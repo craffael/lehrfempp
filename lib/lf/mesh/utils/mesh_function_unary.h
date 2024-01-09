@@ -55,7 +55,7 @@ struct UnaryOpMinus {
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+                                                                   u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                        u.size());
@@ -133,7 +133,7 @@ struct UnaryOpSquaredNorm {
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+                                                                   u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                        u.size());
@@ -152,8 +152,8 @@ struct UnaryOpSquaredNorm {
           "squaredNorm only supported for matrices with at least 1 row "
           "and column");
       if constexpr (C == 1) {  // NOLINT
-        const Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
-                                                                 u.size());
+        const Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(
+            &u[0](0, 0), R, u.size());
         Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                            u.size());
         rm = um.cwiseAbs2().colwise().sum();

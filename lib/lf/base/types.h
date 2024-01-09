@@ -37,7 +37,6 @@ const unsigned int kIdxNil = static_cast<unsigned int>(-1);
 /** @} */
 
 constexpr double kPi = 3.14159265358979323846;
-}
-
+}  // namespace lf::base
 
 #endif  // INCG_e1ab6004cad5460f9baa3153c65f157a

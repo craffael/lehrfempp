@@ -110,8 +110,7 @@ void lecturedemodof() {
   const size_type ndof_tria = 1;  // One interior dof per triangle
   const size_type ndof_quad = 4;  // One interior dof per quad
 
-  std::cout << "LehrFEM++ demo: assignment of global shape functions"
-            << '\n';
+  std::cout << "LehrFEM++ demo: assignment of global shape functions" << '\n';
   std::cout << "#dof/vertex = " << ndof_node << '\n';
   std::cout << "#dof/edge = " << ndof_edge << '\n';
   std::cout << "#dof/triangle = " << ndof_tria << '\n';

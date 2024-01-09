@@ -64,8 +64,9 @@ int main() {
               delta_p, lf::base::RefEl::kTria());
 
       // output to a corresponding file
-      const std::string file_name = "cs1/triangular/bvp1_" + std::to_string(deg_p) +
-                              "_" + std::to_string(delta_p);
+      const std::string file_name = "cs1/triangular/bvp1_" +
+                                    std::to_string(deg_p) + "_" +
+                                    std::to_string(delta_p);
       std::ofstream file(file_name);
       for (auto [dofs, h1error, estimator] : errors) {
         file << dofs << ", " << h1error << ", " << estimator << '\n';
@@ -81,8 +82,9 @@ int main() {
           TestConververgencePrimalDPGConvectionDiffusionDirichletBVP(
               reflev, u_exact, u_grad, epsilon_2, beta_2, f_2, g_2, deg_p,
               delta_p, lf::base::RefEl::kTria());
-      const std::string file_name = "cs1/triangular/bvp2_" + std::to_string(deg_p) +
-                              "_" + std::to_string(delta_p);
+      const std::string file_name = "cs1/triangular/bvp2_" +
+                                    std::to_string(deg_p) + "_" +
+                                    std::to_string(delta_p);
       std::ofstream file(file_name);
       for (auto [dofs, h1error, estimator] : errors) {
         file << dofs << ", " << h1error << ", " << estimator << '\n';
@@ -104,8 +106,8 @@ int main() {
 
       // output to a corresponding file
       const std::string file_name = "cs1/quadrilateral/bvp1_" +
-                              std::to_string(deg_p) + "_" +
-                              std::to_string(delta_p);
+                                    std::to_string(deg_p) + "_" +
+                                    std::to_string(delta_p);
       std::ofstream file(file_name);
       for (auto [dofs, h1error, estimator] : errors) {
         file << dofs << ", " << h1error << ", " << estimator << '\n';
@@ -122,8 +124,8 @@ int main() {
               reflev, u_exact, u_grad, epsilon_2, beta_2, f_2, g_2, deg_p,
               delta_p, lf::base::RefEl::kQuad());
       const std::string file_name = "cs1/quadrilateral/bvp2_" +
-                              std::to_string(deg_p) + "_" +
-                              std::to_string(delta_p);
+                                    std::to_string(deg_p) + "_" +
+                                    std::to_string(delta_p);
       std::ofstream file(file_name);
       for (auto [dofs, h1error, estimator] : errors) {
         file << dofs << ", " << h1error << ", " << estimator << '\n';

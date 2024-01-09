@@ -42,11 +42,9 @@ int main(int argc, char **argv) {
     std::cout << desc << '\n';
     std::cout << "No arg: run all demos" << '\n';
     std::cout << "N = 1: demo of LehrFEM++ mesh capabilities" << '\n';
-    std::cout << "N = 2: demo of LehrFEM++ DofHandler capabilities"
-              << '\n';
+    std::cout << "N = 2: demo of LehrFEM++ DofHandler capabilities" << '\n';
     std::cout << "N = 3: demo of LehrFEM++ assembly of LSE" << '\n';
-    std::cout << "N = 4: demo of numerical quadrature in LehrFEM++"
-              << '\n';
+    std::cout << "N = 4: demo of numerical quadrature in LehrFEM++" << '\n';
     std::cout << "N = 5: demo of solving a Dirichlet BVP" << '\n';
     std::cout << "N = 6: demo of mesh refinement" << '\n';
     std::cout << "N = 7: Various of ways of computing an L2-norm" << '\n';

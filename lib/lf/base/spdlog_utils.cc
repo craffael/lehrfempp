@@ -38,15 +38,15 @@ void LineFeedFormatter::format(const spdlog::details::log_msg& msg,
         // => determine the offset
         spdlog::memory_buf_t temp_dest;
         const spdlog::details::log_msg empty_msg(msg.time, msg.source,
-                                           msg.logger_name, msg.level,
-                                           spdlog::string_view_t());
+                                                 msg.logger_name, msg.level,
+                                                 spdlog::string_view_t());
         wrapped_formatter_->format(empty_msg, temp_dest);
         offset = static_cast<int>(temp_dest.size() - 1);
       }
 
-      const spdlog::details::log_msg part(msg.time, msg.source, msg.logger_name,
-                                    msg.level,
-                                    spdlog::string_view_t(begin, it - begin));
+      const spdlog::details::log_msg part(
+          msg.time, msg.source, msg.logger_name, msg.level,
+          spdlog::string_view_t(begin, it - begin));
 
       auto old_end = dest.size();
       wrapped_formatter_->format(part, dest);

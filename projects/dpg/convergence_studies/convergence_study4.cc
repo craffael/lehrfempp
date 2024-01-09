@@ -5,7 +5,7 @@
 #include "primal_dpg.h"
 #include "ultraweak_dpg.h"
 
-lf::base::size_type reflev =  5;
+lf::base::size_type reflev = 5;
 
 int main() {
   std::cout << "Convergence study 4: Ultraweak DPG method, solution with a "

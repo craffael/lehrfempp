@@ -379,8 +379,7 @@ int main(int argc, char *argv[]) {
     std::cout << "\t> L-shaped Domain";
     const auto fe_space_L =
         std::make_shared<lf::fe::HierarchicScalarFESpace<double>>(L_mesh, p);
-    std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)"
-              << '\n';
+    std::cout << " (" << fe_space_L->LocGlobMap().NumDofs() << " DOFs)" << '\n';
     const auto [H1_L, L2_L] = computeErrorsLDomain(p, L_mesh, fe_space_L);
 
     // Store the computed quantities in the results matrix

@@ -116,8 +116,7 @@ void PrintGeometryInfo(const lf::mesh::Mesh &mesh, dim_t codim) {
  *  Referenced in @lref{rem:betlgmsh}
  */
 void lecturedemomesh() {
-  std::cout << "LehrFEM++ DEMO: mesh capabilities and functionality"
-            << '\n';
+  std::cout << "LehrFEM++ DEMO: mesh capabilities and functionality" << '\n';
   // Set complete file path to the sample mesh in Gmsh format
   const std::filesystem::path here = __FILE__;
   auto mesh_file = here.parent_path() / "lecturedemomesh.msh";

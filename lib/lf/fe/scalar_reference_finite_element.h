@@ -360,8 +360,11 @@ std::ostream& operator<<(std::ostream& o,
 }  // end namespace lf::fe
 
 /**
- * @brief Make lf::fe::ScalarReferenceFiniteElement formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ * @brief Make lf::fe::ScalarReferenceFiniteElement formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <class SCALAR> struct fmt::formatter<lf::fe::ScalarReferenceFiniteElement<SCALAR>> : ostream_formatter{};
+template <class SCALAR>
+struct fmt::formatter<lf::fe::ScalarReferenceFiniteElement<SCALAR>>
+    : ostream_formatter {};
 
 #endif  // LF_FE_SCALAR_REFERENCE_FINITE_ELEMENT_H_

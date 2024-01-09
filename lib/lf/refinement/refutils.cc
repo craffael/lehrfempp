@@ -34,8 +34,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
     // Remove trailing .m
     filename.pop_back();
     filename.pop_back();
-    file << "function [PTPAR,EDPAR,CELLPAR] = " << filename << "()"
-         << '\n';
+    file << "function [PTPAR,EDPAR,CELLPAR] = " << filename << "()" << '\n';
     file << "% Parent data for a hybid 2D mesh" << '\n';
 
     // Mesh on the selected level
@@ -48,8 +47,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       for (int k = 0; k < no_nodes; k++) {
         file << "PTPAR(" << k + 1 << ",:) = ["
              << normalize_idx(pt_parent_info[k].parent_index) << " , "
-             << normalize_idx(pt_parent_info[k].child_number) << "];"
-             << '\n';
+             << normalize_idx(pt_parent_info[k].child_number) << "];" << '\n';
       }
     }
 
@@ -61,8 +59,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       for (int k = 0; k < no_edges; k++) {
         file << "EDPAR(" << k + 1 << ",:) = ["
              << normalize_idx(ed_parent_info[k].parent_index) << " , "
-             << normalize_idx(ed_parent_info[k].child_number) << "];"
-             << '\n';
+             << normalize_idx(ed_parent_info[k].child_number) << "];" << '\n';
       }
     }
 

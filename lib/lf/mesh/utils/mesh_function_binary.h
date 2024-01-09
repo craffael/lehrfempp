@@ -106,9 +106,9 @@ struct OperatorAddition {
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+                                                                   u.size());
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
-                                                             v.size());
+                                                                   v.size());
     std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
     // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(
@@ -274,9 +274,9 @@ struct OperatorSubtraction {
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+                                                                   u.size());
     const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
-                                                             v.size());
+                                                                   v.size());
     std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
     // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(

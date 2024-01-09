@@ -95,7 +95,7 @@ Eigen::Vector2d computeF(int n, Eigen::Vector2d x) {
  */
 template <typename... Args>
 std::string concat(Args&&... args) {
-  std::ostringstream ss; // NOLINT(misc-const-correctness)
+  std::ostringstream ss;  // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }
@@ -190,9 +190,11 @@ int main() {
         [n](const Eigen::Vector2d& x) -> Eigen::Matrix2d {
           return computeUGrad(n, x);
         });
-    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity(fe_space, solutions[lvl].solution);
-    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity_modified(fe_space, solutions[lvl].solution_modified);
     lf::io::VtkWriter writer(solutions[lvl].mesh,
                              concat("result", lvl, ".vtk"));

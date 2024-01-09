@@ -12,7 +12,7 @@
 using size_type = lf::mesh::Mesh::size_type;
 
 // Structures that represent the MshFile:
-namespace lf::io { // NOLINT(misc-confusable-identifiers)
+namespace lf::io {  // NOLINT(misc-confusable-identifiers)
 
 bool GmshReader::IsPhysicalEntity(const mesh::Entity& e,
                                   size_type physical_entity_nr) const {

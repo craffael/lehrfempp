@@ -535,8 +535,10 @@ GMshFileV4 ReadGmshFileV4(std::string::const_iterator begin,
 }  // namespace lf::io
 
 /**
- * @brief Make f::io::GMshFileV4::ElementType formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ * @brief Make f::io::GMshFileV4::ElementType formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
  */
-template <> struct fmt::formatter<lf::io::GMshFileV4::ElementType> : ostream_formatter{};
+template <>
+struct fmt::formatter<lf::io::GMshFileV4::ElementType> : ostream_formatter {};
 
 #endif  // INCG0eae50bb4868430ebde754b70d7f7f47

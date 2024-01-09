@@ -117,14 +117,14 @@ struct MshV4GrammarBinary
                            int_vec_ > int_vec_;  // NOLINT
     partitioned_entity_.name("partitioned_entity");
 
-    partitioned_entities2_ %= omit[qword[(reserve(at_c<0>(_val), _1), _a = _1)]] >
-                              omit[qword[(reserve(at_c<1>(_val), _1), _b = _1)]] >
-                              omit[qword[(reserve(at_c<2>(_val), _1), _c = _1)]] >
-                              omit[qword[(reserve(at_c<3>(_val), _1), _d = _1)]] >
-                              repeat(_a)[partitioned_point_entity_] >
-                              repeat(_b)[partitioned_entity_] >
-                              repeat(_c)[partitioned_entity_] >
-                              repeat(_d)[partitioned_entity_];
+    partitioned_entities2_ %=
+        omit[qword[(reserve(at_c<0>(_val), _1), _a = _1)]] >
+        omit[qword[(reserve(at_c<1>(_val), _1), _b = _1)]] >
+        omit[qword[(reserve(at_c<2>(_val), _1), _c = _1)]] >
+        omit[qword[(reserve(at_c<3>(_val), _1), _d = _1)]] >
+        repeat(_a)[partitioned_point_entity_] >
+        repeat(_b)[partitioned_entity_] > repeat(_c)[partitioned_entity_] >
+        repeat(_d)[partitioned_entity_];
     partitioned_entities2_.name("partitioned_entities2");
 
     partitioned_entities_ %= "$PartitionedEntities\n" > qword >
@@ -172,7 +172,8 @@ struct MshV4GrammarBinary
                       repeat(_a)[qword > qword];  // NOLINT
     periodic_link_.name("periodic_link");
 
-    periodic_links_ %= "$Periodic\n" > omit[qword[(reserve(_val, _1), _a = _1)]] >
+    periodic_links_ %= "$Periodic\n" >
+                       omit[qword[(reserve(_val, _1), _a = _1)]] >
                        repeat(_a)[periodic_link_] > "\n$EndPeriodic";
     periodic_links_.name("periodic_links");
 

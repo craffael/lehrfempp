@@ -83,8 +83,9 @@ int main(int argc, char **argv) {
     lf::io::writeMatplotlib(*mesh_fine, std::string("torus_refinement") +
                                             std::to_string(step) + ".csv");
 
-    const lf::io::VtkWriter vtk_writer(mesh_fine, std::string("torus_refinement") +
-                                                std::to_string(step) + ".vtk");
+    const lf::io::VtkWriter vtk_writer(
+        mesh_fine,
+        std::string("torus_refinement") + std::to_string(step) + ".vtk");
 
     multi_mesh.RefineRegular();
   }

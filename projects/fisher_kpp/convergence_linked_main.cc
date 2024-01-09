@@ -294,8 +294,7 @@ int main(int /*argc*/, char** /*argv*/) {
   for (int l = 0; l < 4; l++) {
     std::cout << "numdofs for l = " << l << " : " << numDofs(l) << '\n';
     std::cout << "meshsize for l = " << l << " : " << meshsizes(l) << '\n';
-    std::cout << "for l = " << l << "number of timesteps m : " << m(l)
-              << '\n';
+    std::cout << "for l = " << l << "number of timesteps m : " << m(l) << '\n';
     std::cout << "for l = " << l << "timestep size : " << tau(l) << '\n';
 
     std::cout << "L2 error of solution with respect to reference solution on "
