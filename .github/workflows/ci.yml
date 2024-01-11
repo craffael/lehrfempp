@@ -133,10 +133,6 @@ jobs:
             ${{ runner.os }}-${{ env.COMPILER }}-
       - name: build_dependencies
         run: "./ci/build_dependencies.sh"
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
       - name: compile and test
         run: "./ci/compile_test.sh"
       
