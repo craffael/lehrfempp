@@ -29,108 +29,110 @@ jobs:
           # sudo apt-get install clang-format-17
       # - name: clang-format
         # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
-  clang-tidy:
-    name: clang-tidy-17 ${{ matrix.name }}
-    # needs: clang-format
-    runs-on: ubuntu-20.04
-    container: craffael/feen-ci:clang17
-    strategy:
-      matrix:
-        include:
-         - name: without projects
-           paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-         - name: only projects
-           paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
-    env:
-      COMPILER: "clang++-17"
-      BUILD_TYPE: "Debug"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install clang-tidy
-        run: apt install -y clang-tidy-17 python-is-python3
-      - name: Restore cache
-        uses: actions/cache/restore@v3
-        with:
-          path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
-          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            ${{ runner.os }}-${{ env.COMPILER }}-
-      - name: build_dependencies
-        run: "./ci/build_dependencies.sh"
-      - name: Save Cache
-        uses: actions/cache/save@v3
-        if: always()
-        with:
-          path: |
-            ${{ env.DEPS_DIR }}
-            ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-      - name: clang-tidy
-        run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
-        
-  # # compilation on linux/osx:
-  # compile_test:
-    # name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-    # needs: clang-format
+  # clang-tidy:
+    # name: clang-tidy-17 ${{ matrix.name }}
+    # # needs: clang-format
+    # runs-on: ubuntu-20.04
+    # container: craffael/feen-ci:clang17
     # strategy:
       # matrix:
         # include:
-          # - os: ubuntu-20.04
-            # compiler: "clang++-7"
-            # packages: "clang++-7 g++-8"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: ubuntu-20.04
-            # compiler: "clang++-7"
-            # packages: "clang++-7 g++-8"
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: ubuntu-20.04
-            # compiler: "g++-8"
-            # packages: "g++-8"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=cpp"
-          # - os: ubuntu-20.04
-            # compiler: "g++-8"
-            # packages: "g++-8"
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=cpp"
-          # - os: macos-10.15
-            # compiler: "clang++"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: macos-10.15
-            # compiler: "clang++"
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=#warnings"
-    # runs-on: ${{ matrix.os }}
+         # - name: without projects
+           # paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+         # - name: only projects
+           # paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
     # env:
-      # COMPILER: ${{ matrix.compiler }}
-      # BUILD_TYPE: ${{ matrix.build_type }}
-      # CXXFLAGS: ${{ matrix.cxx_flags }}
-    
+      # COMPILER: "clang++-17"
+      # BUILD_TYPE: "Debug"
     # steps:
       # - name: Checkout code
-        # uses: actions/checkout@v2
-      # - name: Install packages
-        # if: runner.os == 'Linux'
-        # run: sudo apt-get install ${{ matrix.packages }}
+        # uses: actions/checkout@v3
+      # - name: Install clang-tidy
+        # run: apt install -y clang-tidy-17 python-is-python3
       # - name: Restore cache
-        # uses: actions/cache@v2
+        # uses: actions/cache/restore@v3
         # with:
-          # path: |
-            # ${{ env.DEPS_DIR }}
-            # ${{ env.HUNTER_ROOT }}
+          # path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
           # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
           # restore-keys: |
             # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
             # ${{ runner.os }}-${{ env.COMPILER }}-
       # - name: build_dependencies
         # run: "./ci/build_dependencies.sh"
-      # - name: compile and test
-        # run: "./ci/compile_test.sh"
+      # - name: Save Cache
+        # uses: actions/cache/save@v3
+        # if: always()
+        # with:
+          # path: |
+            # ${{ env.DEPS_DIR }}
+            # ${{ env.HUNTER_ROOT }}
+          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+      # - name: clang-tidy
+        # run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
+        
+  # compilation on linux/osx:
+  compile_test:
+    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
+    needs: clang-format
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            compiler: "clang++-17"
+            packages: ""
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=#warnings"
+            container: craffael/feen-ci:clang17
+          # - os: ubuntu-20.04
+            # compiler: "clang++-7"
+            # packages: "clang++-7 g++-8"
+            # build_type: "Release"
+            # cxx_flags: "-g0 -Werror=#warnings"
+          # - os: ubuntu-20.04
+            # compiler: "g++-8"
+            # packages: "g++-8"
+            # build_type: "Debug"
+            # cxx_flags: "-g0 -Werror=cpp"
+          # - os: ubuntu-20.04
+            # compiler: "g++-8"
+            # packages: "g++-8"
+            # build_type: "Release"
+            # cxx_flags: "-g0 -Werror=cpp"
+          # - os: macos-10.15
+            # compiler: "clang++"
+            # build_type: "Debug"
+            # cxx_flags: "-g0 -Werror=#warnings"
+          # - os: macos-10.15
+            # compiler: "clang++"
+            # build_type: "Release"
+            # cxx_flags: "-g0 -Werror=#warnings"
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    env:
+      COMPILER: ${{ matrix.compiler }}
+      BUILD_TYPE: ${{ matrix.build_type }}
+      CXXFLAGS: ${{ matrix.cxx_flags }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        if: runner.os == 'Linux' && ${{ matrix.packages }} != ""
+        run: sudo apt-get install ${{ matrix.packages }}
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.DEPS_DIR }}
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-${{ env.COMPILER }}-
+      - name: build_dependencies
+        run: "./ci/build_dependencies.sh"
+      - name: compile and test
+        run: "./ci/compile_test.sh"
       
   # windows:
     # name: Windows x64 - ${{ matrix.build_type }}
