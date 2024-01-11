@@ -77,12 +77,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-20.04
-            container: craffael/feen-ci:clang17
-            compiler: "clang++-17"
-            packages: ""
-            build_type: "Debug"
-            cxx_flags: "-g0 -Werror=#warnings"
+          # - os: ubuntu-20.04
+            # container: craffael/feen-ci:clang17
+            # compiler: "clang++-17"
+            # packages: ""
+            # build_type: "Debug"
+            # cxx_flags: "-g0 -Werror=#warnings"
           # - os: ubuntu-20.04
             # container: craffael/feen-ci:clang17
             # compiler: "clang++-17"
@@ -90,11 +90,12 @@ jobs:
             # build_type: "Release"
             # cxx_flags: "-g0 -Werror=#warnings"
             
-          # - os: ubuntu-20.04
-            # compiler: "g++-8"
-            # packages: "g++-8"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=cpp"
+          - os: ubuntu-20.04
+            container: craffael/feen-ci:gcc13
+            compiler: "g++-13"
+            packages: ""
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=cpp"
           # - os: ubuntu-20.04
             # compiler: "g++-8"
             # packages: "g++-8"
