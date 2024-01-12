@@ -90,21 +90,21 @@ jobs:
             # build_type: "Release"
             # cxx_flags: "-g0 -Werror=#warnings"
             
-          - os: ubuntu-20.04
-            container: craffael/feen-ci:gcc13
-            compiler: "g++-13"
-            packages: ""
-            build_type: "Debug"
-            cxx_flags: "-g0 -Werror=cpp"
+          # - os: ubuntu-20.04
+            # container: craffael/feen-ci:gcc13
+            # compiler: "g++-13"
+            # packages: ""
+            # build_type: "Debug"
+            # cxx_flags: "-g0 -Werror=cpp"
           # - os: ubuntu-20.04
             # compiler: "g++-8"
             # packages: "g++-8"
             # build_type: "Release"
             # cxx_flags: "-g0 -Werror=cpp"
-          # - os: macos-10.15
-            # compiler: "clang++"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
+          - os: macos-10.15
+            compiler: "clang++"
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=#warnings"
           # - os: macos-10.15
             # compiler: "clang++"
             # build_type: "Release"
@@ -122,6 +122,10 @@ jobs:
       - name: Install packages
         if: (runner.os == 'Linux') && (matrix.packages != '')
         run: sudo apt-get install ${{ matrix.packages }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: false
       - name: Restore cache
         uses: actions/cache@v2
         with:
