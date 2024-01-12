@@ -61,3 +61,6 @@ add_custom_target(examples.lecturedemos.convergencestudies.prefinement_run
 )
 add_dependencies(examples_run examples.lecturedemos.convergencestudies.prefinement_run)
 set_target_properties(examples_run examples.lecturedemos.convergencestudies.prefinement_run PROPERTIES FOLDER "examples")
+if(MSVC)
+  target_compile_options(examples.lecturedemos.convergencestudies.prefinement PRIVATE /bigobj)
+endif()

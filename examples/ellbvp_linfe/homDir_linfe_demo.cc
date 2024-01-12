@@ -44,15 +44,15 @@ int main(int /*argc*/, const char** /*argv*/) {
    return Eigen::Matrix<double, 2, 2>::Identity();
  };
  auto u = [](Eigen::Vector2d x) -> double {
-   return (std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]));
+   return (std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]));
  };
  auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-   return M_PI *
-          ((Eigen::Vector2d() << std::cos(M_PI * x(0)) * std::sin(M_PI * x(1)),
-            std::sin(M_PI * x(0)) * std::cos(M_PI * x(1)))
+   return lf::base::kPi *
+          ((Eigen::Vector2d() << std::cos(lf::base::kPi * x(0)) * std::sin(lf::base::kPi * x(1)),
+            std::sin(lf::base::kPi * x(0)) * std::cos(lf::base::kPi * x(1)))
                .finished());
  };
- auto f = [&u](Eigen::Vector2d x) -> double { return (2.0*M_PI * M_PI * u(x)); };
+ auto f = [&u](Eigen::Vector2d x) -> double { return (2.0*lf::base::kPi * lf::base::kPi * u(x)); };
  /*
   auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
     return Eigen::Matrix<double, 2, 2>::Identity();

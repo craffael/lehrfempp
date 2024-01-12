@@ -5,6 +5,8 @@
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
 
+#include <span>
+
 namespace lf::mesh {
 
 /** @brief Relative orientation of a sub-entity

@@ -188,7 +188,7 @@ jobs:
           
       - name: compile
         run: |
-          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD
+          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
           
       - name: test
         run: |

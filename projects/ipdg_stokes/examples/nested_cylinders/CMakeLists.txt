@@ -5,6 +5,10 @@ target_link_libraries(${PROJECT_NAME}.main PUBLIC Eigen3::Eigen lf.base lf.mesh 
 set_target_properties(${PROJECT_NAME}.main PROPERTIES FOLDER "projects/ipdg_stokes")
 target_compile_features(${PROJECT_NAME}.main PUBLIC cxx_std_17)
 
+if(MSVC)
+  target_compile_options(${PROJECT_NAME}.main PRIVATE /bigobj)
+endif()
+
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output_builder.dat
 		   DEPENDS ${PROJECT_NAME}.main
 		   COMMAND $<TARGET_FILE:${PROJECT_NAME}.main> builder > output_builder.dat

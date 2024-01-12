@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <span>
 
 #include "lf/base/base.h"
 
