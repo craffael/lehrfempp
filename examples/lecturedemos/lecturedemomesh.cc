@@ -74,7 +74,7 @@ void scanTopology(const lf::mesh::Mesh &mesh, dim_t codim) {
     for (dim_t sub_codim = 1; sub_codim <= mesh.DimMesh() - codim;
          ++sub_codim) {
       // Obtain iterator over sub-entities
-      const nonstd::span<const lf::mesh::Entity* const>
+      const std::span<const lf::mesh::Entity* const>
 	sub_ent_range { ent->SubEntities(sub_codim) };
       size_type sub_cnt = 0;  // Counter for sub-entities
       // Loop over sub-entities, whose types and indices will be output

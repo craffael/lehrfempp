@@ -17,7 +17,7 @@
 
 namespace lf::mesh::hybrid2d {
 
-nonstd::span<const Entity *const> Mesh::Entities(unsigned codim) const {
+std::span<const Entity *const> Mesh::Entities(unsigned codim) const {
   LF_ASSERT_MSG(codim >= 0, "codim negative.");
   LF_ASSERT_MSG(codim <= dim_world_, "codim > dimWorld.");
 

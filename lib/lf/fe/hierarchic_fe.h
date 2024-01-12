@@ -456,7 +456,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicTria(unsigned interior_degree,
                    std::array<unsigned, 3> edge_degrees,
                    const quad::QuadRuleCache &qr_cache,
-                   nonstd::span<const lf::mesh::Orientation> rel_orient)
+                   std::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         interior_degree_(interior_degree),
         edge_degrees_(edge_degrees),
@@ -896,7 +896,7 @@ class FeHierarchicTria final : public ScalarReferenceFiniteElement<SCALAR> {
   std::array<const quad::QuadRule *, 3>
       qr_dual_edge_;  // Quadrature rules for the edges.
   const lf::quad::QuadRule *qr_dual_tria_;
-  nonstd::span<const lf::mesh::Orientation> rel_orient_;
+  std::span<const lf::mesh::Orientation> rel_orient_;
 
   /*
    * @brief Compute the DOFs of the vertex functions from some
@@ -1097,7 +1097,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   FeHierarchicQuad(unsigned interior_degree,
                    std::array<unsigned, 4> edge_degrees,
                    const quad::QuadRuleCache &qr_cache,
-                   nonstd::span<const lf::mesh::Orientation> rel_orient)
+                   std::span<const lf::mesh::Orientation> rel_orient)
       : ScalarReferenceFiniteElement<SCALAR>(),
         interior_degree_(interior_degree),
         edge_degrees_(edge_degrees),
@@ -1621,7 +1621,7 @@ class FeHierarchicQuad final : public ScalarReferenceFiniteElement<SCALAR> {
   std::array<const quad::QuadRule *, 4> qr_dual_edge_;
   FeHierarchicSegment<SCALAR>
       fe1d_;  // degree = max(interior_degree_, edge_degrees_)
-  nonstd::span<const lf::mesh::Orientation> rel_orient_;
+  std::span<const lf::mesh::Orientation> rel_orient_;
 };
 
 }  // end namespace lf::fe

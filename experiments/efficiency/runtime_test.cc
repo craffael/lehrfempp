@@ -25,7 +25,7 @@ void getData_REF(double offset, std::vector<double> &res) {
   }
 }
 
-nonstd::span<const double> getData_SPAN(double offset) {
+std::span<const double> getData_SPAN(double offset) {
   for (int j = 0; j < N; j++) {
     stat_tmp[j] = 1.0 / (j + offset);
   }

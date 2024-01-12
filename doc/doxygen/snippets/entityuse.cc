@@ -26,7 +26,7 @@ bool checkLocalTopology(const Entity &e) {
     const lf::base::size_type num_sub_entities =
         ref_el.NumSubEntities(sub_codim);
     // Obtain sequence of pointers to sub-entities of co-dimension sub_codim
-    nonstd::span<const Entity *const> sub_ent_range = e.SubEntities(sub_codim);
+    std::span<const Entity *const> sub_ent_range = e.SubEntities(sub_codim);
     // Run through sub-entities
     lf::base::size_type sub_ent_cnt{0};
     for (const lf::mesh::Entity *sub_ent : sub_ent_range) {
@@ -36,13 +36,13 @@ bool checkLocalTopology(const Entity &e) {
       // The sub-entity has further sub-entities of codimension 1 to sub_dim
       for (lf::base::dim_t sub_sub_codim = 1; sub_sub_codim <= sub_dim;
            sub_sub_codim++) {
-        nonstd::span<const Entity *const> sub_sub_ent_range =
+        std::span<const Entity *const> sub_sub_ent_range =
             sub_ent->SubEntities(sub_sub_codim);
         for (const lf::mesh::Entity *sub_sub_ent : sub_sub_ent_range) {
           // The entity pointed to by sub_sub_ent has co-dimension
           // sub_codim + sub_sub_codim w.r.t. the entity referenced by e
           // Hence get all corresponding sub-entities of e
-          nonstd::span<const Entity *const> e_sub_sub_range =
+          std::span<const Entity *const> e_sub_sub_range =
               e.SubEntities(sub_codim + sub_sub_codim);
           // See whether we find sub_sub_ent in this range
           int found = 0;  // Count how many times we find the sub-entity

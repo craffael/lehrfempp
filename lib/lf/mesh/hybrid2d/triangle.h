@@ -77,13 +77,13 @@ class Triangle : public mesh::Entity {
      - for rel_codim == 1: return 3-range covering corners
      - for rel_codim == 2: return 3-range containing the edges
    */
-  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of edges
    * @sa mesh::Orientation
    */
-  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+  [[nodiscard]] std::span<const lf::mesh::Orientation> RelativeOrientations()
       const override {
     return edge_ori_;
   }

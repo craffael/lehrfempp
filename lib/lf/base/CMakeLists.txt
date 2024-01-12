@@ -17,7 +17,6 @@ set(sources
   ref_el.cc
   ref_el.h
   scalar_concept.h
-  span.h
   spdlog_utils.h
   spdlog_utils.cc
   timer.h

@@ -43,7 +43,7 @@ void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
           // Number of shape functions covering current entity
           const lf::assemble::size_type no_dofs(dof_handler.NumLocalDofs(*e));
           // Obtain global indices of those shape functions ...
-          const nonstd::span<const gdof_idx_t> doflist(
+          const std::span<const gdof_idx_t> doflist(
               dof_handler.GlobalDofIndices(*e));
           // and print them
           stream << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -53,7 +53,7 @@ void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
           stream << ']';
           if (ctrl % 5 == 0) {
             // Also output indices of interior shape functions
-            const nonstd::span<const gdof_idx_t> intdoflist(
+            const std::span<const gdof_idx_t> intdoflist(
                 dof_handler.InteriorGlobalDofIndices(*e));
             stream << " int = [";
             for (const lf::assemble::gdof_idx_t int_dof : intdoflist) {
@@ -276,7 +276,7 @@ void UniformFEDofHandler::initIndexArrays() {
   num_dof_ = dof_idx;
 }  // end constructor
 
-nonstd::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
+std::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
     lf::base::RefEl ref_el_type, glb_idx_t entity_index) const {
   // Co-dimension of entity in a 2D mesh
   const dim_t codim = 2 - ref_el_type.Dimension();
@@ -292,12 +292,12 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
   return {begin, end};
 }
 
-nonstd::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
+std::span<const gdof_idx_t> UniformFEDofHandler::GlobalDofIndices(
     const lf::mesh::Entity &entity) const {
   return GlobalDofIndices(entity.RefEl(), mesh_->Index(entity));
 }
 
-nonstd::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
+std::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
     lf::base::RefEl ref_el_type, glb_idx_t entity_index) const {
   // Co-dimension of entity in a 2D mesh
   const dim_t codim = 2 - ref_el_type.Dimension();
@@ -315,7 +315,7 @@ nonstd::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
   return {begin, end};
 }
 
-nonstd::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
+std::span<const gdof_idx_t> UniformFEDofHandler::InteriorGlobalDofIndices(
     const lf::mesh::Entity &entity) const {
   return InteriorGlobalDofIndices(entity.RefEl(), mesh_->Index(entity));
 }
@@ -334,7 +334,7 @@ size_type UniformFEDofHandler::NumInteriorDofs(
 // Implementation DynamicFEDofHandler
 // ----------------------------------------------------------------------
 
-nonstd::span<const gdof_idx_t> DynamicFEDofHandler::GlobalDofIndices(
+std::span<const gdof_idx_t> DynamicFEDofHandler::GlobalDofIndices(
     const lf::mesh::Entity &entity) const {
   // Topological type
   const lf::base::RefEl ref_el_type = entity.RefEl();
@@ -353,7 +353,7 @@ nonstd::span<const gdof_idx_t> DynamicFEDofHandler::GlobalDofIndices(
   return {begin, end};
 }
 
-nonstd::span<const gdof_idx_t> DynamicFEDofHandler::InteriorGlobalDofIndices(
+std::span<const gdof_idx_t> DynamicFEDofHandler::InteriorGlobalDofIndices(
     const lf::mesh::Entity &entity) const {
   // Topological type
   const lf::base::RefEl ref_el_type = entity.RefEl();

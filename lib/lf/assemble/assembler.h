@@ -130,10 +130,10 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       const size_type nrows_loc = dof_handler_test.NumLocalDofs(*entity);
       const size_type ncols_loc = dof_handler_trial.NumLocalDofs(*entity);
       // row indices of for contributions of cells
-      nonstd::span<const gdof_idx_t> row_idx(
+      std::span<const gdof_idx_t> row_idx(
           dof_handler_test.GlobalDofIndices(*entity));
       // Column indices of for contributions of cells
-      nonstd::span<const gdof_idx_t> col_idx(
+      std::span<const gdof_idx_t> col_idx(
           dof_handler_trial.GlobalDofIndices(*entity));
       // Request local matrix from entity_matrix_provider object. In the
       // case codim = 0, when `entity` is a cell, this is the element matrix
@@ -308,7 +308,7 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       // Length of element vector
       const size_type veclen = dof_handler.NumLocalDofs(*entity);
       // global dof indices for contribution of the entity
-      const nonstd::span<const gdof_idx_t> dof_idx(
+      const std::span<const gdof_idx_t> dof_idx(
           dof_handler.GlobalDofIndices(*entity));
       // Request local vector from entity_vector_provider object. In the case
       // CODIM = 0, when `entity` is a cell, this is the element vector

@@ -53,7 +53,7 @@ class MeshFactory : public mesh::MeshFactory {
 
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddEntity(base::RefEl ref_el,
-                      const nonstd::span<const size_type>& nodes,
+                      const std::span<const size_type>& nodes,
                       std::unique_ptr<geometry::Geometry>&& geometry) override;
 
   [[nodiscard]] std::shared_ptr<mesh::Mesh> Build() override;

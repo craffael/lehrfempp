@@ -178,7 +178,7 @@ class DofHandler {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{par:betldofmap} for more information.
    */
-  [[nodiscard]] virtual nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] virtual std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -198,7 +198,7 @@ class DofHandler {
    * @note Be aware of the difference of @ref GlobalDofIndices() and @ref
    * InteriorGlobalDofIndices()
    */
-  [[nodiscard]] virtual nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] virtual std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -320,13 +320,13 @@ class UniformFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -362,10 +362,10 @@ class UniformFEDofHandler : public DofHandler {
   void InitTotalNumDofs();
 
   // Access method to numbers and values of indices of shape functions
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
   [[nodiscard]] size_type GetNumLocalDofs(lf::base::RefEl ref_el_type,
@@ -692,13 +692,13 @@ class DynamicFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**

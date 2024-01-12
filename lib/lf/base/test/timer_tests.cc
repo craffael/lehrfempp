@@ -79,6 +79,7 @@ TEST(lf_base_timer, TimerMultiThread) {
   EXPECT_EQ(elapsed.wall, 0ns);
 
   t.Start();
+
   // do some multithread work -> system + user > wall
   auto f = []() {
     std::vector<int> x(20000000);
@@ -92,6 +93,8 @@ TEST(lf_base_timer, TimerMultiThread) {
   t.Stop();
   std::cout << t.Format() << std::endl;
   elapsed = t.Elapsed();
+
+  // Note this test fails on windows if the debugger is attached. Otherwise it seems to work most of the time.
   EXPECT_GT(elapsed.system + elapsed.user, 1.1 * elapsed.wall);
 }
 

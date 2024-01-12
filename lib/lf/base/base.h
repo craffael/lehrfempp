@@ -24,7 +24,6 @@ namespace lf::base {}  // namespace lf::base
 #include "predicate_true.h"
 #include "ref_el.h"
 #include "scalar_concept.h"
-#include "span.h"
 #include "spdlog_utils.h"
 #include "timer.h"
 #include "types.h"

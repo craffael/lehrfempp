@@ -28,7 +28,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       // Number of shape functions covering current entity
       const lf::assemble::size_type no_dofs(dofh.NumLocalDofs(*e));
       // Obtain global indices of those shape functions ...
-      const nonstd::span<const lf::assemble::gdof_idx_t> dofarray{
+      const std::span<const lf::assemble::gdof_idx_t> dofarray{
           dofh.GlobalDofIndices(*e)};
       // and print them
       std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -37,7 +37,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       }
       std::cout << ']';
       // Also output indices of interior shape functions
-      const nonstd::span<const lf::assemble::gdof_idx_t>
+      const std::span<const lf::assemble::gdof_idx_t>
 	intdofarray{dofh.InteriorGlobalDofIndices(*e)};
       std::cout << " int = [";
       for (const lf::assemble::gdof_idx_t int_dof : intdofarray) {

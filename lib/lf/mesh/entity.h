@@ -84,7 +84,7 @@ class Entity {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:subent}.
    */
-  [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] virtual std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
 
   /**
@@ -98,7 +98,7 @@ class Entity {
    * orientation_ of that sub-entity as given by its own numbering of corners.
    * Such a possible mismatch is detected by this function.
    */
-  [[nodiscard]] virtual nonstd::span<const Orientation> RelativeOrientations()
+  [[nodiscard]] virtual std::span<const Orientation> RelativeOrientations()
       const = 0;
 
   /**

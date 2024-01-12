@@ -3,7 +3,6 @@
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
@@ -13,6 +12,7 @@
 
 #include <array>
 #include <cmath>
+#include <span>
 
 TEST(projects_ipdg_stokes_assembly, piecewise_const_matrix_assembler_test) {
   // Build a mesh containing only the reference triangle
@@ -25,7 +25,7 @@ TEST(projects_ipdg_stokes_assembly, piecewise_const_matrix_assembler_test) {
   factory.AddPoint(vertices.col(0));
   factory.AddPoint(vertices.col(1));
   factory.AddPoint(vertices.col(2));
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
   // Compute the element matrix for the triangle
@@ -78,7 +78,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
     factory.AddEntity(lf::base::RefEl::kSegment(),
-                      nonstd::span(indices.data(), 2), std::move(geom));
+                      std::span(indices.data(), 2), std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);
@@ -92,7 +92,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
     verts << vertices.col(v1), vertices.col(v2), vertices.col(v3);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::TriaO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(indices.data(), 3),
+    factory.AddEntity(lf::base::RefEl::kTria(), std::span(indices.data(), 3),
                       std::move(geom));
   };
   add_triangle(0, 1, 3);
@@ -156,7 +156,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
     factory.AddEntity(lf::base::RefEl::kSegment(),
-                      nonstd::span(indices.data(), 2), std::move(geom));
+                      std::span(indices.data(), 2), std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);
@@ -170,7 +170,7 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
     verts << vertices.col(v1), vertices.col(v2), vertices.col(v3);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::TriaO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kTria(), nonstd::span(indices.data(), 3),
+    factory.AddEntity(lf::base::RefEl::kTria(), std::span(indices.data(), 3),
                       std::move(geom));
   };
   add_triangle(0, 1, 3);

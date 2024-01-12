@@ -174,7 +174,7 @@ void MeshHierarchy::RefineMarked() {
       // Local indices of edges marked as split
       std::array<sub_idx_t, 4> split_edge_idx{};
       // Array of references to edge sub-entities of current cell
-      const nonstd::span<const lf::mesh::Entity *const> sub_edges =
+      const std::span<const lf::mesh::Entity *const> sub_edges =
           cell->SubEntities(1);
       const size_type num_edges = cell->RefEl().NumSubEntities(1);
       LF_VERIFY_MSG(num_edges <= 4, "Too many edges = " << num_edges);
@@ -591,8 +591,8 @@ void MeshHierarchy::PerformRefinement() {
       }  // end loop over local edges
 
       SPDLOG_LOGGER_TRACE(Logger(), "vt_child_idx = {}, ed_mp_idx = {}",
-                          nonstd::span(vertex_child_idx.data(), num_vertices),
-                          nonstd::span(edge_midpoint_idx.data(), num_edges));
+                          std::span(vertex_child_idx.data(), num_vertices),
+                          std::span(edge_midpoint_idx.data(), num_edges));
 
       // Array of node indices (w.r.t. fine mesh) for sub-cells (triangles or
       // quadrilaterals)
