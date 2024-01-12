@@ -160,14 +160,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # - name: Restore cache
-        # uses: actions/cache@v2
-        # with:
-          # path: C:\.hunter
-          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-            # ${{ runner.os }}-msvc-
+      - name: Restore cache
+        uses: actions/cache/restore@v3
+        with:
+          path: "${{ env.HUNTER_ROOT }}"
+          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            ${{ runner.os }}-msvc-
       
      # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
@@ -177,6 +177,14 @@ jobs:
           mkdir build > $null
           cd build
           cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+          
+      - name: Save Cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
           
       - name: compile
         run: |
