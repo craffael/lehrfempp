@@ -141,7 +141,7 @@ jobs:
       # - name: compile and test
         # run: "./ci/compile_test.sh"
       
-  # windows:
+  windows:
     name: Windows x64 - ${{ matrix.build_type }}
     # needs: clang-format
     runs-on: windows-latest
