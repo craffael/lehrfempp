@@ -16,6 +16,20 @@ add_custom_target(examples.assemble.dof_demo_run COMMAND examples.assemble.dof_d
 add_dependencies(examples_run examples.assemble.dof_demo_run)
 set_target_properties(examples.assemble.dof_demo_run PROPERTIES FOLDER "examples")
 
+set (dofh_probe dofh_probe.cc)
+add_executable(examples.assemble.dofh_probe ${dofh_probe})
+target_link_libraries(examples.assemble.dofh_probe
+  PUBLIC Eigen3::Eigen Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.assemble
+  )
+set_target_properties(examples.assemble.dofh_probe PROPERTIES FOLDER "examples")
+add_custom_target(examples.assemble.dofh_probe_run COMMAND examples.assemble.dofh_probe)
+add_dependencies(examples_run examples.assemble.dofh_probe_run)
+set_target_properties(examples.assemble.dofh_probe_run PROPERTIES FOLDER "examples")
 
 set (Dirichlet_Laplacian_demo Dirichlet_Laplacian_demo.cc)
 add_executable(examples.assemble.Dirichlet_Laplacian_demo ${Dirichlet_Laplacian_demo})

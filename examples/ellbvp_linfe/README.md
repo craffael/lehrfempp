@@ -13,4 +13,9 @@ This demonstration code
 - solves the finite element linear system,
 - approximately computes the L2 norm and H1 seminorm of the finite element discretization
   errors
-  
+
+File: `homDir_linfe_demo.cc`
+
+This small demo shows how to solve a second-order linear scalar boundary value problem
+with zero Dirichlet boundary conditions by means a Galerkin finite-element scheme based on
+piecewise linear Lagrangian finite elements. 
