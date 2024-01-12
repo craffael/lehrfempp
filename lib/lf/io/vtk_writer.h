@@ -876,7 +876,7 @@ void VtkWriter::WritePointData(const std::string& name,
       }
     }
     vtk_file_.point_data.push_back(std::move(data));
-  } else if constexpr (base::is_eigen_matrix<T>) {  // NOLINT
+  } else if constexpr (base::EigenMatrix<T>) {  // NOLINT
     static_assert(T::ColsAtCompileTime == 1,
                   "The MeshFunction must return row-vectors");
     static_assert(
@@ -939,7 +939,7 @@ void VtkWriter::WriteCellData(const std::string& name,
   barycenters[base::RefEl::kQuad().Id()] =
       base::RefEl::kTria().NodeCoords().rowwise().sum() / 4.;
 
-  if constexpr (base::is_eigen_array<T> || base::is_eigen_matrix<T>) {
+  if constexpr (base::EigenArray<T> || base::EigenMatrix<T>) {
     static_assert(T::ColsAtCompileTime == 1,
                   "The MeshFunction must return row-vectors");
     static_assert(

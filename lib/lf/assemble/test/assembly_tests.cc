@@ -20,6 +20,27 @@
 
 #include "lf/mesh/test_utils/test_meshes.h"
 
+namespace lf::assemble {
+// Test that AssembleMatrixLocally only depends on interface defined in the
+// concept EntityMatrixProvider by instantiating the function (but not actually
+// calling it):
+template void AssembleMatrixLocally(
+    dim_t codim, const DofHandler &dof_handler_trial,
+    const DofHandler &dof_handler_test,
+    EntityMatrixProviderAT<double> &entity_matrix_provider,
+    COOMatrix<double> &matrix);
+
+template COOMatrix<double> AssembleMatrixLocally(
+    dim_t codim, const DofHandler &dof_handler_trial,
+    const DofHandler &dof_handler_test,
+    EntityMatrixProviderAT<double> &entity_matrix_provider);
+
+template COOMatrix<double> AssembleMatrixLocally<COOMatrix<double>>(
+    dim_t codim, const DofHandler &dof_handler,
+    EntityMatrixProviderAT<double> &entity_matrix_provider);
+
+}  // namespace lf::assemble
+
 namespace lf::assemble::test {
 
 /** Rudimentary implementation of an assembler for testing
@@ -269,9 +290,11 @@ TEST(lf_assembly, mat_assembly_test) {
 }
 
 TEST(lf_assembly, dynamic_dof_test) {
-  // Same as the previous test, just based on another version of the dof handler
+  // Same as the previous test, just based on another version of the dof
+  handler
 
-  std::cout << "### TEST: Assembly based on dynamic dofs" << std::endl;
+          std::cout
+      << "### TEST: Assembly based on dynamic dofs" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 

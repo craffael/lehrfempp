@@ -104,11 +104,14 @@ std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes) {
 
 }  // namespace lf::fe
 
+/// \cond
 /**
  * @brief Make lf::fe::ScalarFESpace formattable by fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
  */
 template <class SCALAR>
 struct fmt::formatter<lf::fe::ScalarFESpace<SCALAR>> : ostream_formatter {};
+
+/// \endcond
 
 #endif

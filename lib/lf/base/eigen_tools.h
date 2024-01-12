@@ -13,9 +13,10 @@
 #include "lf_assert.h"  // must be included before eigen!
 // clang-format on
 
+#include <spdlog/fmt/ranges.h>
+
 #include <Eigen/Core>
 #include <utility>
-#include <spdlog/fmt/ranges.h>
 
 namespace lf::base {
 
@@ -47,19 +48,43 @@ struct IsEigenArrayTester {
 
 /**
  * @brief Check if a given type T is an Eigen::Matrix
+ * @tparam SCALAR If set to void (default), `T` can have any scalar type.
+ * Otherwise `T` must have the scalar type `SCALAR`.
+ * @tparam ROWS   If set to -1 (default), `T` can have any number of
+ *                rows. Otherwise `T` must have a dynamic number of rows or the
+ *                number of rows known at compile time must equal `ROWS`.
+ * @tparam COLS   If set to -1 (default), `T` can have any number of
+ *                columns. Otherwise `T` must have a dynamic number of columns
+ *                or the number of columns known at compile time must equal
+ *                `COLS`.
+ *
+ * @note The parameter ROWS/COLS allow you to specify the number of rows/columns
+ * that the matrix must have at compile time. But this doesn't ensure, that the
+ * the same holds at runtime. The matrix `T` could have a dynamic number of rows
+ * and columns while still fulfilling the concept `Eigen::Matrix<T, void, 5,
+ * 1>`.
  */
-template <class T>
-inline constexpr bool is_eigen_matrix = std::is_same_v<
-    decltype(internal::IsEigenMatrixTester::Test(std::declval<T>(), 0)), bool>;
+template <class T, class SCALAR = void, int ROWS = -1, int COLS = -1>
+concept EigenMatrix =
+    std::is_same_v<decltype(internal::IsEigenMatrixTester::Test(
+                       std::declval<T>(), 0)),
+                   bool> &&
+    (std::same_as<SCALAR, void> || std::same_as<typename T::Scalar, SCALAR>)&&(
+        ROWS == -1 || T::RowsAtCompileTime == Eigen::Dynamic ||
+        T::RowsAtCompileTime == ROWS) &&
+    (COLS == -1 || T::ColsAtCompileTime == Eigen::Dynamic ||
+     T::ColsAtCompileTime == COLS);
 
 /**
- * @brief Check if a given type T is an Eigen::Array
+ * @brief Check if a given type T is a `Eigen::Array<...>&`
  */
 template <class T>
-inline constexpr bool is_eigen_array = std::is_same_v<
+concept EigenArray = std::is_same_v<
     decltype(internal::IsEigenArrayTester::Test(std::declval<T>(), 0)), bool>;
 
 }  // namespace lf::base
+
+/// \cond
 
 // The following is needed to prohibit fmt to treat Eigen matrices/arrays as
 // ranges.
@@ -130,5 +155,6 @@ struct fmt::formatter<MATRIX> {
     return result;
   }
 };
+/// \endcond
 
 #endif  // INCG1cc1076600024d7ea537871be7fc1fc0

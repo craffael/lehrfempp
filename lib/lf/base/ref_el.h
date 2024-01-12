@@ -538,11 +538,13 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
 
 }  // namespace lf::base
 
+
+/// \cond
 /**
  * @brief Make lf::base::RefEl work with fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
  */
 template <>
 struct fmt::formatter<lf::base::RefEl> : ostream_formatter {};
-
+/// \endcond
 #endif  // INCG96e6ff0ee0034f4584fcdfc7e9c53f82

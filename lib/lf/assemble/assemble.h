@@ -17,6 +17,7 @@
 
 #include "assembler.h"
 #include "assembly_types.h"
+#include "concepts.h"
 #include "coomatrix.h"
 #include "dofhandler.h"
 #include "fix_dof.h"

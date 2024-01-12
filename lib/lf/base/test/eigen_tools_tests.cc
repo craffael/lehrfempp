@@ -16,12 +16,14 @@
 namespace lf::base::test {
 
 TEST(eigenTools, IsEigen) {
-  EXPECT_FALSE(is_eigen_matrix<double>);
-  EXPECT_FALSE(is_eigen_matrix<int>);
-  EXPECT_FALSE(is_eigen_matrix<std::vector<Eigen::Vector2d>>);
-  EXPECT_TRUE(is_eigen_matrix<Eigen::VectorXd>);
-  EXPECT_TRUE(is_eigen_matrix<Eigen::Vector2d>);
-  EXPECT_TRUE(is_eigen_matrix<Eigen::Matrix3cd>);
+  EXPECT_FALSE(EigenMatrix<double>);
+  EXPECT_FALSE(EigenMatrix<int>);
+  EXPECT_FALSE(EigenMatrix<std::vector<Eigen::Vector2d>>);
+  EXPECT_TRUE(EigenMatrix<Eigen::VectorXd>);
+  EXPECT_TRUE(EigenMatrix<Eigen::Vector2d>);
+  EXPECT_TRUE(EigenMatrix<Eigen::Matrix3cd>);
+  EXPECT_FALSE(EigenMatrix<decltype(Eigen::Vector3d(1,2,3) * 5)>);
+  EXPECT_FALSE(EigenMatrix<decltype(Eigen::Vector3d::Zero())>);
 }
 
 }  // namespace lf::base::test

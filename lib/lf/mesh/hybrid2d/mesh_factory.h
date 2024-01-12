@@ -89,11 +89,13 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace lf::mesh::hybrid2d
 
+/// \cond
 /**
  * @brief Make lf::mesh::hybrid2d::MeshFactory formattable by fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
  */
 template <>
 struct fmt::formatter<lf::mesh::hybrid2d::MeshFactory> : ostream_formatter {};
+/// \endcond
 
 #endif  // INCGe98a803fac5b430a8ff634ceb2f809aX

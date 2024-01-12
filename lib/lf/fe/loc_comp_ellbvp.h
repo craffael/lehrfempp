@@ -24,7 +24,7 @@
 
 namespace lf::fe {
 /**
- * @ingroup entity_matrix_provider
+ * 
  * @headerfile lf/fe/fe.h
  * @brief Class for computing element matrices for general scalar-valued finite
  * elements and homogeneous 2nd-order elliptic bilinear forms
@@ -207,7 +207,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
 }
 
 /**
- * @ingroup entity_matrix_provider
+ * 
  * @headerfile lf/fe/fe.h
  * @brief Class for local quadrature based computation of element matrix for
  * Lagrangian finite elements and a weighted \f$L^2\f$ inner product.
@@ -370,7 +370,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
 }
 
 /**
- * @ingroup entity_matrix_provider
+ * 
  * @headerfile lf/fe/fe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
@@ -380,7 +380,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
  * scalar valued coefficient \f$ \gamma \f$
  * @tparam EDGESELECTOR predicate defining which edges are included
  *
- * This \ref entity_matrix_provider "EntityMatrixProvider" class corresponds to
+ * This \ref assemble::EntityMatrixProvider "EntityMatrixProvider" class corresponds to
  * the the element matrix for the bilinear form
  * @f[
  *     (u,v) \mapsto \int\limits_e

@@ -450,6 +450,7 @@ std::ostream &operator<<(std::ostream &o,
 
 }  // namespace lf::uscalfe
 
+/// \cond
 /**
  * @brief Make lf::uscalfe::UniformScalarFESpace formattable by fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
@@ -457,5 +458,6 @@ std::ostream &operator<<(std::ostream &o,
 template <class SCALAR>
 struct fmt::formatter<lf::uscalfe::UniformScalarFESpace<SCALAR>>
     : ostream_formatter {};
+/// \endcond
 
 #endif

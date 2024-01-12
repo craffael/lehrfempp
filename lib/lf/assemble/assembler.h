@@ -24,11 +24,13 @@
 #include <iostream>
 
 #include "dofhandler.h"
+#include "concepts.h"
 
 namespace lf::assemble {
 
 /**
  * @defgroup assemble_matrix_locally Cell-Oriented Assembly of Galerkin Matrices
+ * @headerfile lf/assemble/assemble.h
  * @brief Based on helper objects that provide element matrices these functions
  * rely on the distribute assembly policy to set the entries of global Galerkin
  * matrices.
@@ -109,7 +111,7 @@ std::shared_ptr<spdlog::logger> &AssembleMatrixLogger();
  * @snippet assembler.cc matrix_usage
  *
  */
-template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
+template <typename TMPMATRIX, EntityMatrixProvider ENTITY_MATRIX_PROVIDER>
 void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
                            const DofHandler &dof_handler_test,
                            ENTITY_MATRIX_PROVIDER &entity_matrix_provider,
@@ -204,7 +206,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  * This function logs additional information to \ref AssembleMatrixLogger(). See
  * \ref loggers for more information.
  */
-template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
+template <typename TMPMATRIX, EntityMatrixProvider ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(
     dim_t codim, const DofHandler &dof_handler_trial,
     const DofHandler &dof_handler_test,
@@ -238,7 +240,7 @@ TMPMATRIX AssembleMatrixLocally(
  * \ref loggers for more information.
  */
 
-template <typename TMPMATRIX, class ENTITY_MATRIX_PROVIDER>
+template <typename TMPMATRIX, EntityMatrixProvider ENTITY_MATRIX_PROVIDER>
 TMPMATRIX AssembleMatrixLocally(
     dim_t codim, const DofHandler &dof_handler,
     ENTITY_MATRIX_PROVIDER &entity_matrix_provider) {

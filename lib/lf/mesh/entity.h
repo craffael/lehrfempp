@@ -162,11 +162,13 @@ std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
 
 }  // namespace lf::mesh
 
+/// \cond
 /**
  * @brief Make lf::mesh::Entity formattable with fmt, see
  * https://fmt.dev/latest/api.html#ostream-api
  */
 template <>
 struct fmt::formatter<lf::mesh::Entity> : ostream_formatter {};
+/// \endcond
 
 #endif  // INCG37e385afbd3b4b1dba8611fb71787822

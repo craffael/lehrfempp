@@ -323,7 +323,6 @@ class ScalarReferenceFiniteElement {
  * @param o stream to which output is to be sent
  * @param srfe The ScalarReferenceFiniteElement that should be printed.
  * @param ctrl controls the level of detail that is printed (see below)
- * @return reference to the same stream
  *
  *
  * #### Level of output:
@@ -359,6 +358,7 @@ std::ostream& operator<<(std::ostream& o,
 
 }  // end namespace lf::fe
 
+/// \cond
 /**
  * @brief Make lf::fe::ScalarReferenceFiniteElement formattable by fmt
  * (https://fmt.dev/latest/api.html#ostream-api)
@@ -366,5 +366,6 @@ std::ostream& operator<<(std::ostream& o,
 template <class SCALAR>
 struct fmt::formatter<lf::fe::ScalarReferenceFiniteElement<SCALAR>>
     : ostream_formatter {};
+/// \endcond
 
 #endif  // LF_FE_SCALAR_REFERENCE_FINITE_ELEMENT_H_

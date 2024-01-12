@@ -288,8 +288,8 @@ auto squaredNorm(const A& a) {
  */
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto transpose(const A& a) {
-  static_assert(base::is_eigen_matrix<MeshFunctionReturnType<A>> ||
-                    base::is_eigen_array<MeshFunctionReturnType<A>>,
+  static_assert(base::EigenMatrix<MeshFunctionReturnType<A>> ||
+                    base::EigenArray<MeshFunctionReturnType<A>>,
                 "transpose() only supported for Eigen::Matrix and Eigen::Array "
                 "valued mesh functions");
   return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
@@ -306,7 +306,7 @@ auto transpose(const A& a) {
 template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto adjoint(const A& a) {
   using returnType_t = MeshFunctionReturnType<A>;
-  static_assert(base::is_eigen_matrix<returnType_t>,
+  static_assert(base::EigenMatrix<returnType_t>,
                 "adjoint only supported for Eigen::Matrix valued mesh "
                 "functions.");
   return MeshFunctionUnary(internal::UnaryOpAdjoint{}, a);
@@ -324,8 +324,8 @@ template <class A, class = std::enable_if_t<isMeshFunction<A>>>
 auto conjugate(const A& a) {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(
-      base::is_eigen_matrix<returnType_t> ||
-          base::is_eigen_array<returnType_t> || base::Scalar<returnType_t>,
+      base::EigenMatrix<returnType_t> ||
+          base::EigenArray<returnType_t> || base::Scalar<returnType_t>,
       "conjugate() supports only Eigen::Matrix, Eigen::Array or Scalar valued "
       "mesh functions.");
   return MeshFunctionUnary(internal::UnaryOpConjugate{}, a);

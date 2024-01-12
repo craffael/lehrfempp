@@ -3,6 +3,7 @@ set(sources
   assembly_types.h
   dofhandler.h
   dofhandler.cc
+  concepts.h
   coomatrix.h
   coomatrix.cc
   assembler.h

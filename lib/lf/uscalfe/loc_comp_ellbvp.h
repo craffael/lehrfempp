@@ -33,7 +33,7 @@ namespace lf::uscalfe {
 using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
 
 /**
- * @ingroup entity_matrix_provider
+ * 
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
@@ -339,7 +339,7 @@ ReactionDiffusionElementMatrixProvider<
 }
 
 /**
- * @ingroup entity_matrix_provider
+ * 
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
