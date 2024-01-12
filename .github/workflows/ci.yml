@@ -122,10 +122,10 @@ jobs:
       - name: Install packages
         if: (runner.os == 'Linux') && (matrix.packages != '')
         run: sudo apt-get install ${{ matrix.packages }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
+      # - name: Setup tmate session
+        # uses: mxschmitt/action-tmate@v3
+        # with:
+          # limit-access-to-actor: false
       - name: Restore cache
         uses: actions/cache@v2
         with:
