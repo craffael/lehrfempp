@@ -145,6 +145,7 @@ jobs:
     name: Windows x64 - ${{ matrix.build_type }}
     # needs: clang-format
     runs-on: windows-latest
+    shell: pwsh
     env:
       HUNTER_ROOT: C:\.hunter
     strategy:
@@ -157,14 +158,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: C:\.hunter
-          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-            ${{ runner.os }}-msvc-
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: C:\.hunter
+          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            # ${{ runner.os }}-msvc-
       
      # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
