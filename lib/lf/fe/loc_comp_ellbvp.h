@@ -53,7 +53,24 @@ namespace lf::fe {
  * - DIFF_COEFF must model the concept of a \ref mesh_function "MeshFunction"
  *   that returns either scalars or matrices.
  *
+ * @note If you intend to use this matrix provider with FE Spaces from
+ * `lf::uscalfe` please consider switching to
+ * `lf::uscalfe::ReactionDiffusionElementMatrixProvider` provided there,
+ * as it is specifically optimized for uniform FE Spaces.
  *
+ * ## Logger
+ * This class logs additional information to
+ * \ref DiffusionElementMatrixProviderLogger().
+ * See \ref loggers for more information.
+ *
+ * ### Example usage
+ * The following code snippet computes the solution of the BVP
+ * \f{align}
+ * - \Delta u &= 1 && \text{on }\Omega := [0,1]^2 \\
+ * u &= 0 && \text{on }\partial \Omega
+ * \f}
+ *
+ * @snippet hierarchic_scalar_fe_space_snippets.cc Laplace
  */
 template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF>
 class DiffusionElementMatrixProvider final {
@@ -79,17 +96,16 @@ class DiffusionElementMatrixProvider final {
   /** @} */
 
   /**
-   * @brief Constructor: cell-independent precomputations
+   * @brief Constructor
    *
    * @param fe_space collection of specifications for scalar-valued parametric
    * reference elements
    * @param alpha mesh function for the (possibly matrix-valued) diffusion
    * coefficient
    *
-   * @see LocCompLagrFEPreprocessor::LocCompLagrFEPreprocessor()
-   *
-   * This constructor uses local quadature rules with double the degree of
-   * exactness as the polynomial degree of the finite element space.
+   * @note If your `fe_space` is from lf::uscalfe, please consider using the
+   * lf::uscalfe::DiffusionElementMatrixProvider provided there, as that is
+   * specifically optimized for uniform FE spaces.
    */
   DiffusionElementMatrixProvider(
       std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha);
@@ -99,17 +115,15 @@ class DiffusionElementMatrixProvider final {
    */
   bool isActive(const lf::mesh::Entity & /*cell*/) const { return true; }
   /**
-   * @brief main routine for the computation of element matrices
+   * @brief Routine for the computation of element matrices
    *
    * @param cell reference to the (triangular or quadrilateral) cell for
    *        which the element matrix should be computed.
-   * @return a small dense, containing the element matrix.
+   * @return a small dense element matrix.
    *
-   * Actual computation of the element matrix based on numerical quadrature and
-   * mapping techniques. The order of the quadrature rule is tied to the
-   * polynomial degree of the underlying finite element spaces: for
-   * polynomial degree p a quadrature rule is chosen that is exact for
-   * polynomials of degree 2p.
+   * Evaluation of the integral over the basis functions is done using
+   * numerical quadrature with double the degree of exactness as the polynomial
+   * degree of the basis functions on the provided cell.
    *
    * Throws an assertion in case the finite element specification is missing for
    * the type of the cell.
@@ -135,7 +149,7 @@ class DiffusionElementMatrixProvider final {
 /**
  * @brief logger for DiffusionElementMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger> diffusion_element_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &DiffusionElementMatrixProviderLogger();
 
 template <class PTR, class DIFF_COEFF>
 DiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha)
@@ -161,7 +175,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(diffusion_element_matrix_provider_logger,
+  SPDLOG_LOGGER_TRACE(DiffusionElementMatrixProviderLogger(),
                       "{}, shape = \n{}", cell.RefEl(),
                       geo_ptr->Global(cell.RefEl().NodeCoords()));
   // Physical dimension of the cell
@@ -233,6 +247,10 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * - SCALAR must be a type like `double`
  * - REACTION_COEFF should be compatible with a scalar-valued \ref mesh_function
  *
+ * @note If you intend to use this matrix provider with FE Spaces from
+ * `lf::uscalfe` please consider switching to
+ * `lf::uscalfe::MassEdgeMatrixProvider` provided there,
+ * as it is specifically optimized for uniform FE Spaces.
  */
 template <base::Scalar SCALAR, mesh::utils::MeshFunction REACTION_COEFF>
 class MassElementMatrixProvider final {
@@ -312,7 +330,7 @@ class MassElementMatrixProvider final {
 /**
  * @brief logger for MassElementMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger> mass_element_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &MassElementMatrixProviderLogger();
 
 template <class PTR, class REACTION_COEFF>
 MassElementMatrixProvider(PTR fe_space, REACTION_COEFF gamma)
@@ -337,7 +355,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(mass_element_matrix_provider_logger, "{}, shape = \n{}",
+  SPDLOG_LOGGER_TRACE(MassElementMatrixProviderLogger(), "{}, shape = \n{}",
                       cell.RefEl(), geo_ptr->Global(cell.RefEl().NodeCoords()));
   // Physical dimension of the cell
   const dim_t world_dim = geo_ptr->DimGlobal();
@@ -385,6 +403,10 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
  * where @f$e@f$ is an edge of the mesh, and @f$\gamma@f$ a scalar-valued
  * coefficient function.
  *
+ * @note If you intend to use this matrix provider with FE Spaces from
+ * `lf::uscalfe` please consider switching to
+ * `lf::uscalfe::ReactionDiffusionElementMatrixProvider` provided there,
+ * as it is specifically optimized for uniform FE Spaces.
  */
 template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
 class MassEdgeMatrixProvider final {
@@ -462,7 +484,7 @@ class MassEdgeMatrixProvider final {
 /**
  * @brief logger for MassEdgeMatrixProvider
  */
-extern std::shared_ptr<spdlog::logger> mass_edge_matrix_provider_logger;
+std::shared_ptr<spdlog::logger> &MassEdgeMatrixProviderLogger();
 
 // deduction guide:
 template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
@@ -533,6 +555,15 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  *
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function assemble::AssembleVectorLocally().
+ *
+ * ### Example usage
+ * The following code snippet computes the solution of the BVP
+ * \f{align}
+ * - \Delta u &= 1 && \text{on }\Omega := [0,1]^2 \\
+ * u &= 0 && \text{on }\partial \Omega
+ * \f}
+ *
+ * @snippet hierarchic_scalar_fe_space_snippets.cc Laplace
  */
 template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 class ScalarLoadElementVectorProvider final {
@@ -590,8 +621,7 @@ class ScalarLoadElementVectorProvider final {
 /**
  * @brief logger used by ScalarLoadElementVectorProvider
  */
-extern std::shared_ptr<spdlog::logger>
-    scalar_load_element_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadElementVectorProviderLogger();
 
 // Deduction guide
 template <class PTR, class MESH_FUNCTION>
@@ -627,7 +657,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(geo_ptr != nullptr, "Invalid geometry!");
   LF_ASSERT_MSG((geo_ptr->DimLocal() == 2),
                 "Only 2D implementation available!");
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "{}, shape = \n{}", cell.RefEl(),
                       geo_ptr->Global(cell.RefEl().NodeCoords()));
 
@@ -636,7 +666,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
   LF_ASSERT_MSG(
       determinants.size() == qr.NumPoints(),
       "Mismatch " << determinants.size() << " <-> " << qr.NumPoints());
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                       "LOCVEC({}): Metric factors :\n{}", cell.RefEl(),
                       determinants.transpose());
   // Element vector
@@ -650,7 +680,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
 
   // Loop over quadrature points
   for (long k = 0; k < determinants.size(); ++k) {
-    SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
+    SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(),
                         "LOCVEC: [{}] -> [weight = {}]",
                         qr.Points().transpose(), qr.Weights()[k]);
     // Contribution of current quadrature point
@@ -658,8 +688,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
         (qr.Weights()[k] * determinants[k] * fval[k]) * rsf.col(k).conjugate();
   }
 
-  SPDLOG_LOGGER_TRACE(scalar_load_element_vector_provider_logger,
-                      "LOCVEC = \n{}", vec.transpose());
+  SPDLOG_LOGGER_TRACE(ScalarLoadElementVectorProviderLogger(), "LOCVEC = \n{}",
+                      vec.transpose());
   return vec;
 }
 
@@ -668,7 +698,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * @headerfile lf/fe/fe.h
  * @brief Local edge contributions to element vector
  *
- * @tparam SCALAR underlying scalar type of the FESpace, usually double or
+ * @tparam SCALAR underlying scalar type of the ScalarFESpace, usually double or
  *                complex<double>
  * @tparam FUNCTOR `SCALAR` valued \ref mesh_function "MeshFunction" which
  *                 defines the function \f$ g \f$
@@ -753,7 +783,7 @@ class ScalarLoadEdgeVectorProvider final {
 /**
  * @brief logger for ScalarLoadEdgeVectorProvider class template.
  */
-extern std::shared_ptr<spdlog::logger> scalar_load_edge_vector_provider_logger;
+std::shared_ptr<spdlog::logger> &ScalarLoadEdgeVectorProviderLogger();
 
 // deduction guide
 template <class PTR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>

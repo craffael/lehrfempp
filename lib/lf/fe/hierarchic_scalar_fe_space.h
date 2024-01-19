@@ -30,6 +30,11 @@ namespace lf::fe {
  * The polynomial degree can vary from entity to entity, i.e. local
  * \f$p\f$-refinement is supported.
  *
+ * A complete description of the basis functions and their dual basis can be
+ * found <a
+ * href="https://raw.githubusercontent.com/craffael/lehrfempp/master/doc/pfem/hierarchical_basis.pdf"
+ * target="_blank"><b>here</b></a>.
+ *
  * ### Example usage
  * The following code snippet computes the solution of the BVP
  * \f{align}
