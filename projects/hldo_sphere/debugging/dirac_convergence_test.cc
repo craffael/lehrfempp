@@ -187,8 +187,8 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
     csv_file << sol_mesh->NumEntities(0) << "," << sol_mesh->NumEntities(1)
              << "," << sol_mesh->NumEntities(2) << "," << hMax(lvl);
 
-    const projects::hldo_sphere::post_processing::MeshFunctionWhitneyZero mf_zero(
-        solutions.mu_zero[lvl], sol_mesh);
+    const projects::hldo_sphere::post_processing::MeshFunctionWhitneyZero
+        mf_zero(solutions.mu_zero[lvl], sol_mesh);
     const projects::hldo_sphere::post_processing::MeshFunctionWhitneyOne mf_one(
         solutions.mu_one[lvl], sol_mesh);
     const projects::hldo_sphere::post_processing::MeshFunctionWhitneyTwo mf_two(

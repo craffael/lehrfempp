@@ -8,9 +8,10 @@ DiracOperatorSourceProblem::DiracOperatorSourceProblem()
   std::unique_ptr<lf::mesh::MeshFactory> factory =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
 
-  const std::shared_ptr<projects::hldo_sphere::mesh::SphereTriagMeshBuilder> sphere =
-      std::make_shared<projects::hldo_sphere::mesh::SphereTriagMeshBuilder>(
-          std::move(factory));
+  const std::shared_ptr<projects::hldo_sphere::mesh::SphereTriagMeshBuilder>
+      sphere =
+          std::make_shared<projects::hldo_sphere::mesh::SphereTriagMeshBuilder>(
+              std::move(factory));
   sphere->setRefinementLevel(0);
   sphere->setRadius(1);
 
@@ -23,11 +24,16 @@ DiracOperatorSourceProblem::DiracOperatorSourceProblem()
   mu_ = Eigen::Matrix<complex, Eigen::Dynamic, 1>(1);
 
   // create basic function
-  auto f_0 = [](Eigen::Matrix<double, 3, 1> const& /*x*/) -> complex { return 0; };
-  auto f_1 = [](Eigen::Matrix<double, 3, 1> const& /*x*/) -> Eigen::Matrix<complex, 3, 1> {
+  auto f_0 = [](Eigen::Matrix<double, 3, 1> const & /*x*/) -> complex {
+    return 0;
+  };
+  auto f_1 = [](Eigen::Matrix<double, 3, 1> const & /*x*/)
+      -> Eigen::Matrix<complex, 3, 1> {
     return Eigen::Matrix<complex, 3, 1>::Zero();
   };
-  auto f_2 = [](const Eigen::Matrix<double, 3, 1> & /*x*/) -> complex { return 0; };
+  auto f_2 = [](const Eigen::Matrix<double, 3, 1> & /*x*/) -> complex {
+    return 0;
+  };
   f0_ = f_0;
   f1_ = f_1;
   f2_ = f_2;
@@ -153,8 +159,8 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> DiracOperatorSourceProblem::GetMu(
   LF_ASSERT_MSG(index < 3 && index >= 0,
                 "Index must be in {0,1,2}, given " << index);
 
-  Eigen::Vector<lf::base::size_type,3> n;
-  Eigen::Vector<lf::base::size_type,3> s;
+  Eigen::Vector<lf::base::size_type, 3> n;
+  Eigen::Vector<lf::base::size_type, 3> s;
   n(0) = mesh_p_->NumEntities(2);
   s(0) = 0;
   n(1) = mesh_p_->NumEntities(1);

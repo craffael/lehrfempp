@@ -19,7 +19,8 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() const {
   // refinement_level_ = l
   //
   // (1 << (l+1))+1 = std::pow(2, l + 1) + 1
-  const lf::base::size_type ring_count = (lf::base::size_type{1} << (l+1))+1;
+  const lf::base::size_type ring_count =
+      (lf::base::size_type{1} << (l + 1)) + 1;
 
   // number of overall vertices
   const lf::base::size_type vertex_count =
