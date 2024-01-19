@@ -24,14 +24,14 @@
 
 void dofProbe() {
   std::cout << "Probing DofHandler output for one cell of test mesh #3"
-            << std::endl;
+            << '\n';
   // Generate test mesh number 3
   constexpr int selector = 3;
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p =
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
   // Create a dof handler object describing a uniform distribution
   // of shape functions
-  lf::assemble::UniformFEDofHandler dofh(mesh_p,
+  const lf::assemble::UniformFEDofHandler dofh(mesh_p,
                                          {{lf::base::RefEl::kPoint(), 0},
                                           {lf::base::RefEl::kSegment(), 1},
                                           {lf::base::RefEl::kTria(), 2},
@@ -42,26 +42,26 @@ void dofProbe() {
   // Fethc pointer to cell number 8
   const lf::mesh::Entity *cell_p = mesh_p->EntityByIndex(0, 8);
   // Output of DofHandler object
-  std::cout << "dofh.NumDofs() = " << dofh.NumDofs() << std::endl;
+  std::cout << "dofh.NumDofs() = " << dofh.NumDofs() << '\n';
   std::cout << "dofh.NumLocalDofs(*cell_p) = " << dofh.NumLocalDofs(*cell_p)
-            << std::endl;
+            << '\n';
   std::cout << "dofh.NumInteriorDofs(*cell_p) = "
-            << dofh.NumInteriorDofs(*cell_p) << std::endl;
+            << dofh.NumInteriorDofs(*cell_p) << '\n';
   std::cout << "dofh.GlobalDofIndices(*cell_p) = (";
   const auto gdof_idxs = dofh.GlobalDofIndices(*cell_p);
-  for (lf::base::glb_idx_t idx : gdof_idxs) {
+  for (const lf::base::glb_idx_t idx : gdof_idxs) {
     std::cout << idx << ", ";
   }
-  std::cout << ")" << std::endl;
+  std::cout << ")" << '\n';
   std::cout << "dofh.InteriorGlobalDofIndices(*cell_p) = (";
   const auto idof_idxs = dofh.InteriorGlobalDofIndices(*cell_p);
-  for (lf::base::glb_idx_t idx : idof_idxs) {
+  for (const lf::base::glb_idx_t idx : idof_idxs) {
     std::cout << idx << ", ";
   }
-  std::cout << ")" << std::endl;
+  std::cout << ")" << '\n';
 }
 
-int main(int argc, char **argv) {
+int main(int /*argc*/, char **/*argv*/) {
   dofProbe();
   return 0;
 }

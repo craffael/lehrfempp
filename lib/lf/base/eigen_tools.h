@@ -18,6 +18,8 @@
 #include <Eigen/Core>
 #include <utility>
 
+#include "lf_exception.h"
+
 namespace lf::base {
 
 namespace internal {
@@ -129,8 +131,8 @@ struct fmt::formatter<MATRIX> {
 
   template <typename FormatContext>
   auto format(const MATRIX& m, FormatContext& ctx) const {
-    std::stringstream ss;
-    Eigen::IOFormat format(precision, 0, ", ", "\n", "[", "]");
+    std::stringstream ss; // NOLINT(misc-const-correctness)
+    const Eigen::IOFormat format(precision, 0, ", ", "\n", "[", "]");
     ss << m.format(format);
 
     auto it = ctx.out();
@@ -147,7 +149,7 @@ struct fmt::formatter<MATRIX> {
     int result = 0;
     while (begin != end) {
       if (!is_digit(*begin)) {
-        throw "compile time error, this is not a digit.";
+        throw "compile time error, this is not a digit."; // NOLINT(hicpp-exception-baseclass)
       }
       result += (*begin - '0');
       result *= 10;

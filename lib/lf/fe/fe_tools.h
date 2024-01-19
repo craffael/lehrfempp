@@ -199,8 +199,8 @@ template <typename SCALAR, mesh::utils::MeshFunction MF,
           typename SELECTOR = base::PredicateTrue>
 auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF const &u,
                      SELECTOR &&pred = base::PredicateTrue{})
-    -> Eigen::Vector<decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<
-                                              std::remove_reference_t<MF>>(0)),
+    -> Eigen::Vector<decltype(SCALAR{0} * mesh::utils::MeshFunctionReturnType<
+                                              std::remove_reference_t<MF>>{0}),
                      Eigen::Dynamic> {
   // choose scalar type so it can hold the scalar type of u as well as
   // SCALAR

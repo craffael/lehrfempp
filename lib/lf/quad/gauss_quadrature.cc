@@ -70,6 +70,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 
 std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     quadDegree_t num_points, double alpha, double beta) {
+  // NOLINTBEGIN(clang-analyzer-core.StackAddressEscape)
   LF_ASSERT_MSG(num_points > 0, "num_points must be positive.");
   LF_ASSERT_MSG(alpha > -1, "alpha > -1 required");
   LF_ASSERT_MSG(beta > -1, "beta > -1 required.");
@@ -177,6 +178,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     LF_VERIFY_MSG(its <= MAX_IT, "too many iterations.");
 
     points[i] = z;
+    
     weights(i) = (exp(lgamma(alpha + num_points) + lgamma(beta + num_points) -
                       lgamma(num_points + 1.) -
                       lgamma(static_cast<double>(num_points) + alfbet + 1.0)) *
@@ -188,6 +190,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
   for (quadDegree_t i = 0; i < num_points; ++i) {
     points_result(i) = points[i].convert_to<double>();
   }
+  // NOLINTEND(clang-analyzer-core.StackAddressEscape)
 
   return {points_result, weights};
 }
