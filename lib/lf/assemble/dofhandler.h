@@ -32,7 +32,7 @@ namespace lf::assemble {
  * ## Some terminology
  *
  * - The terms "degrees of freedom", "global basis functions", and "global shape
- * functions are synomymous.
+ * functions" are synomymous.
  * - Every global and local shape function is _associated_ with a unique
  * geometric entity.
  * - The global/local shape functions associated with a mesh entity are called

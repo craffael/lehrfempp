@@ -70,76 +70,76 @@ jobs:
       # - name: clang-tidy
         # run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
         
-  # compilation on linux/osx:
-  compile_test:
-    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-    # needs: clang-format
-    strategy:
-      matrix:
-        include:
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:clang17
-            # compiler: "clang++-17"
-            # packages: ""
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:clang17
-            # compiler: "clang++-17"
-            # packages: ""
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=#warnings"
+  # # compilation on linux/osx:
+  # compile_test:
+    # name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
+    # # needs: clang-format
+    # strategy:
+      # matrix:
+        # include:
+          # # - os: ubuntu-20.04
+            # # container: craffael/feen-ci:clang17
+            # # compiler: "clang++-17"
+            # # packages: ""
+            # # build_type: "Debug"
+            # # cxx_flags: "-g0 -Werror=#warnings"
+          # # - os: ubuntu-20.04
+            # # container: craffael/feen-ci:clang17
+            # # compiler: "clang++-17"
+            # # packages: ""
+            # # build_type: "Release"
+            # # cxx_flags: "-g0 -Werror=#warnings"
             
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:gcc13
-            # compiler: "g++-13"
-            # packages: ""
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=cpp"
-          # - os: ubuntu-20.04
-            # compiler: "g++-8"
-            # packages: "g++-8"
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=cpp"
-          - os: macos-12
-            compiler: "clang++"
-            build_type: "Debug"
-            cxx_flags: "-g0 -Werror=#warnings"
-          # - os: macos-10.15
+          # # - os: ubuntu-20.04
+            # # container: craffael/feen-ci:gcc13
+            # # compiler: "g++-13"
+            # # packages: ""
+            # # build_type: "Debug"
+            # # cxx_flags: "-g0 -Werror=cpp"
+          # # - os: ubuntu-20.04
+            # # compiler: "g++-8"
+            # # packages: "g++-8"
+            # # build_type: "Release"
+            # # cxx_flags: "-g0 -Werror=cpp"
+          # - os: macos-12
             # compiler: "clang++"
-            # build_type: "Release"
+            # build_type: "Debug"
             # cxx_flags: "-g0 -Werror=#warnings"
-    runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
-    env:
-      COMPILER: ${{ matrix.compiler }}
-      BUILD_TYPE: ${{ matrix.build_type }}
-      CXXFLAGS: ${{ matrix.cxx_flags }}
+          # # - os: macos-10.15
+            # # compiler: "clang++"
+            # # build_type: "Release"
+            # # cxx_flags: "-g0 -Werror=#warnings"
+    # runs-on: ${{ matrix.os }}
+    # container: ${{ matrix.container }}
+    # env:
+      # COMPILER: ${{ matrix.compiler }}
+      # BUILD_TYPE: ${{ matrix.build_type }}
+      # CXXFLAGS: ${{ matrix.cxx_flags }}
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install packages
-        if: (runner.os == 'Linux') && (matrix.packages != '')
-        run: sudo apt-get install ${{ matrix.packages }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{ env.DEPS_DIR }}
-            ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            ${{ runner.os }}-${{ env.COMPILER }}-
-      - name: build_dependencies
-        run: "./ci/build_dependencies.sh"
-      - name: compile and test
-        run: "./ci/compile_test.sh"
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Install packages
+        # if: (runner.os == 'Linux') && (matrix.packages != '')
+        # run: sudo apt-get install ${{ matrix.packages }}
+      # # - name: Setup tmate session
+        # # uses: mxschmitt/action-tmate@v3
+        # # with:
+          # # limit-access-to-actor: false
+      # - name: Restore cache
+        # uses: actions/cache@v2
+        # with:
+          # path: |
+            # ${{ env.DEPS_DIR }}
+            # ${{ env.HUNTER_ROOT }}
+          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            # ${{ runner.os }}-${{ env.COMPILER }}-
+      # - name: build_dependencies
+        # run: "./ci/build_dependencies.sh"
+      # - name: compile and test
+        # run: "./ci/compile_test.sh"
       
   # windows:
     # name: Windows x64 - ${{ matrix.build_type }}
@@ -195,56 +195,55 @@ jobs:
           # cd build
           # ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
 
-  # doxygen:
-    # name: doxygen
-    # runs-on: ubuntu-20.04
+  doxygen:
+    name: doxygen
+    runs-on: ubuntu-20.04
     # needs: [clang-format]
-    # env:
-      # CXX: "g++-10"
-      # BUILD_TYPE: "Debug"
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      # # - name: Setup tmate session
-        # # uses: mxschmitt/action-tmate@v3
-      # - name: install packages
-        # run: sudo apt remove clang-12 libclang-cpp12 clang-11 libclang-cpp11  && sudo apt-get install libclang-10-dev expect
-      # - name: Restore cache
-        # uses: actions/cache@v2
-        # with:
-          # path: |
-            # ${{ env.DEPS_DIR }}
-            # ${{ env.HUNTER_ROOT }}
-          # key:  ${{ runner.os }}-g++-10-Doxygen-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-g++-10-Doxygen-
-            # ${{ runner.os }}-g++-10-Debug-
-      # - name: doxygen 
-        # run: |
-          # . ./ci/install_doxygen.sh
-          # cd $GITHUB_WORKSPACE
-          # cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-          # cd Build
-          # make doxygen
-          # cd doc/doxygen/html
-          # mkdir with_projects
-          # shopt -s extglob
-          # mv !(with_projects) with_projects
-          # cd ../../..
-          # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-          # unbuffer make doxygen 2>&1 | tee output
-          # if grep -q "warning:" "output"; then
-            # echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
-            # grep "warning:" "output"
-            # exit 1
-          # fi
-      # - name: deploy
-        # uses: JamesIves/github-pages-deploy-action@3.7.1
-        # if: github.ref == 'refs/heads/master'
-        # with:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # BRANCH: gh-pages
-          # FOLDER: "./Build/doc/doxygen/html"
-          # CLEAN: true 
+    container: craffael/feen-ci:doxygen
+    env:
+      CXX: "g++-10"
+      BUILD_TYPE: "Debug"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # - name: Setup tmate session
+        # uses: mxschmitt/action-tmate@v3
+      - name: install packages
+        run: sudo apt remove clang-12 libclang-cpp12 clang-11 libclang-cpp11  && sudo apt-get install libclang-10-dev expect
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.DEPS_DIR }}
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-clang++-17-Doxygen-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-clang++-17-Doxygen-
+            ${{ runner.os }}-clang++-17-Debug-
+      - name: doxygen 
+        run: |
+          cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+          cd Build
+          make doxygen
+          cd doc/doxygen/html
+          mkdir with_projects
+          shopt -s extglob
+          mv !(with_projects) with_projects
+          cd ../../..
+          cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+          unbuffer make doxygen 2>&1 | tee output
+          if grep -q "warning:" "output"; then
+            echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
+            grep "warning:" "output"
+            exit 1
+          fi
+      - name: deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        if: github.ref == 'refs/heads/master'
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: "./Build/doc/doxygen/html"
+          CLEAN: true 
 
 
