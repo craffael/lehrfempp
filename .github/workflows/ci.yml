@@ -201,7 +201,7 @@ jobs:
     # needs: [clang-format]
     container: craffael/feen-ci:doxygen
     env:
-      CXX: "g++-10"
+      CXX: "clang++-17"
       BUILD_TYPE: "Debug"
     steps:
       - name: Checkout code
