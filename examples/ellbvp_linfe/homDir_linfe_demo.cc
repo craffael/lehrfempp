@@ -166,14 +166,14 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
-    Eigen::SparseMatrix<double> A_crs = A.makeSparse();
+    const Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
     // Solve linear system using Eigen's sparse direct elimination
     // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
-    Eigen::VectorXd sol_vec = solver.solve(phi);
+    const Eigen::VectorXd sol_vec = solver.solve(phi);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
