@@ -267,4 +267,20 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
 
 }  // namespace lf::io
 
+/// \cond
+/**
+ * @brief Make lf::io::GMshFileV2 formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::io::GMshFileV2> : ostream_formatter {};
+
+/**
+ * @brief Make f::io::GMshFileV2::ElementType formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::io::GMshFileV2::ElementType> : ostream_formatter {};
+/// \endcond
+
 #endif  // INCG1fd687af60b74bf6aad50d509ecbc4da

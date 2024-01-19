@@ -41,7 +41,7 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
         switch (obj_ref_el) {
           case lf::base::RefEl::kPoint(): {
             file << codim << ',' << obj_idx << ',' << vertices(0, 0) << ','
-                 << vertices(1, 0) << std::endl;
+                 << vertices(1, 0) << '\n';
             break;
           }
           case lf::base::RefEl::kSegment(): {
@@ -50,7 +50,7 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
             for (const auto *sub : obj->SubEntities(codim)) {
               file << mesh.Index(*sub) << ',';
             }
-            file << std::endl;
+            file << '\n';
 
             break;
           }
@@ -61,7 +61,7 @@ void writeMatplotlib(const lf::mesh::Mesh &mesh, std::string filename) {
             for (const auto *sub : obj->SubEntities(codim + 1)) {
               file << mesh.Index(*sub) << ',';
             }
-            file << std::endl;
+            file << '\n';
 
             break;
           }

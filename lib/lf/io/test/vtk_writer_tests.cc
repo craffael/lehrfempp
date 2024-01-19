@@ -14,6 +14,23 @@
 
 #include <complex>
 
+namespace lf::io {
+
+// Make sure that template methods of VtkWriter only depend on the corresponding
+// Archetype functionality by explicitly instantiating them:
+
+template void VtkWriter::WritePointData(
+    const std::string&, const mesh::utils::MeshFunctionAT<double>&);
+template void VtkWriter::WritePointData(
+    const std::string&, const mesh::utils::MeshFunctionAT<Eigen::Vector2d>&);
+
+template void VtkWriter::WriteCellData(
+    const std::string&, const mesh::utils::MeshFunctionAT<double>&);
+template void VtkWriter::WriteCellData(
+    const std::string&, const mesh::utils::MeshFunctionAT<Eigen::Vector2d>&);
+
+}  // namespace lf::io
+
 namespace lf::io::test {
 
 template <class T>

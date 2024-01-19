@@ -48,7 +48,7 @@ int main(int /*argc*/, char** /*argv*/) {
   /* Obtain mesh */
   std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_file = (here.parent_path() / "/meshes/test1.msh").string();
   lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
   std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();
@@ -69,7 +69,7 @@ int main(int /*argc*/, char** /*argv*/) {
   tau.setZero();
 
   /* Final time */
-  double T = 1.;
+  const double T = 1.;
 
   m(0) = 100;
   tau(0) = T / m(0);
@@ -98,7 +98,7 @@ int main(int /*argc*/, char** /*argv*/) {
   /* Diffusion Coefficient */
   auto c = [](const Eigen::Vector2d& /*x*/) -> double { return 1.2; };
   /* Growth Factor */
-  double lambda = 2.1;
+  const double lambda = 2.1;
 
   hierarchy.RefineRegular();
   hierarchy.RefineRegular();
@@ -117,8 +117,8 @@ int main(int /*argc*/, char** /*argv*/) {
     numDofs(l) = lf::base::narrow<int>(N_dofs);
     meshsizes(l) = getMeshSize(mesh_p);
 
-    std::cout << "Num of Dofs " << N_dofs << std::endl;
-    std::cout << "Meshsizes " << meshsizes(l) << std::endl;
+    std::cout << "Num of Dofs " << N_dofs << '\n';
+    std::cout << "Meshsizes " << meshsizes(l) << '\n';
 
     /* Initial Population density */
     Eigen::VectorXd u0(N_dofs);
@@ -194,7 +194,7 @@ int main(int /*argc*/, char** /*argv*/) {
           Eigen::VectorXd L1(N_dofs);
           L1.setZero();
 
-          lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
+          const lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
           lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_g),
                                                     decltype(edge_pred)>
               edgeVec_y(fe_space, mf_g, edge_pred);
@@ -206,7 +206,7 @@ int main(int /*argc*/, char** /*argv*/) {
         Eigen::VectorXd L2(N_dofs);
         L2.setZero();
 
-        lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
+        const lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
         lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_L),
                                                   decltype(edge_pred)>
             edgeVec_x(fe_space, mf_L, edge_pred);
@@ -219,7 +219,7 @@ int main(int /*argc*/, char** /*argv*/) {
         L.col(j) = Eigen::VectorXd::Zero(N_dofs);
       }
     }
-    std::cout << "L norm " << L.norm() << std::endl;
+    std::cout << "L norm " << L.norm() << '\n';
 
     /* Strang Splitting Method
      * SDIRK-2 evolution of linear parabolic term
@@ -231,8 +231,8 @@ int main(int /*argc*/, char** /*argv*/) {
       m(l) = lf::base::narrow<int>(std::round(T / tau(l)));
     }
 
-    std::cout << "tau " << tau(l) << std::endl;
-    std::cout << "M " << m(l) << std::endl;
+    std::cout << "tau " << tau(l) << '\n';
+    std::cout << "M " << m(l) << '\n';
 
     /* Carrying Capacity */
     Eigen::VectorXd cap(N_dofs);
@@ -292,15 +292,14 @@ int main(int /*argc*/, char** /*argv*/) {
   eL2(3) = (mu4_ipol - mu5).lpNorm<2>();
 
   for (int l = 0; l < 4; l++) {
-    std::cout << "numdofs for l = " << l << " : " << numDofs(l) << std::endl;
-    std::cout << "meshsize for l = " << l << " : " << meshsizes(l) << std::endl;
-    std::cout << "for l = " << l << "number of timesteps m : " << m(l)
-              << std::endl;
-    std::cout << "for l = " << l << "timestep size : " << tau(l) << std::endl;
+    std::cout << "numdofs for l = " << l << " : " << numDofs(l) << '\n';
+    std::cout << "meshsize for l = " << l << " : " << meshsizes(l) << '\n';
+    std::cout << "for l = " << l << "number of timesteps m : " << m(l) << '\n';
+    std::cout << "for l = " << l << "timestep size : " << tau(l) << '\n';
 
     std::cout << "L2 error of solution with respect to reference solution on "
                  "finest mesh, for l = "
-              << l << " : " << eL2(l) << std::endl;
+              << l << " : " << eL2(l) << '\n';
   }
 
   /* Define output file format */

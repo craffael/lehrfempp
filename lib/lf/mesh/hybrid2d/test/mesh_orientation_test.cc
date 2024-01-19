@@ -65,4 +65,33 @@ TEST(lf_hybrid2d, lf_orientation) {
   }
 }
 
+TEST(lf_hybrid_2d, Orientation) {
+  std::cout << "### TEST: opposite orientations" << std::endl;
+  // Building a triangular mesh
+  auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+  // For distinguishing boundary edges
+  auto ed_bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(mesh_p, 1)};
+  // For accumulating orientations
+  lf::mesh::utils::CodimMeshDataSet<int> sum_ori(mesh_p, 1, 0);
+  // Visit all cells
+  for (const mesh::Entity* cell : mesh_p->Entities(0)) {
+    // Array of edges
+    auto edges = cell->SubEntities(1);
+    // Array of orientations
+    auto oris = cell->RelativeOrientations();
+    for (int ed_idx = 0; ed_idx < cell->RefEl().NumSubEntities(1); ed_idx++) {
+      sum_ori(*edges[ed_idx]) += (int)oris[ed_idx];
+    }
+  }
+  for (const mesh::Entity* edge : mesh_p->Entities(1)) {
+    if (ed_bd_flags(*edge)) {
+      EXPECT_EQ(std::abs(sum_ori(*edge)), 1)
+          << "Wrong orientation of boundary edge";
+    } else {
+      EXPECT_EQ(sum_ori(*edge), 0)
+          << "Orientation problem: edge " << mesh_p->Index(*edge);
+    }
+  }
+}
+
 }  // namespace lf::mesh::hybrid2d::test

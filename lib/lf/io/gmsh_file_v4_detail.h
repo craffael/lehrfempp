@@ -163,7 +163,7 @@ struct assign_to_attribute_from_value<
   static void call(RawValue const& raw, Enum& cat) {
     if constexpr (detail::has_value_type<RawValue>::value) {  // NOLINT
       // specialization for endian::endian
-      typename RawValue::value_type value = raw;
+      const typename RawValue::value_type value = raw;
       cat = static_cast<Enum>(value);
     } else {  // NOLINT
       cat = static_cast<Enum>(raw);

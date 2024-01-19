@@ -21,7 +21,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
                       std::string filename) {
   // Preprocess filename: append .m, if not there already
   {
-    size_type fn_len = filename.size();
+    const size_type fn_len = filename.size();
     if ((fn_len > 1) && (filename[fn_len - 2] != '.') &&
         (filename[fn_len - 1] != 'm')) {
       filename += ".m";
@@ -34,12 +34,11 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
     // Remove trailing .m
     filename.pop_back();
     filename.pop_back();
-    file << "function [PTPAR,EDPAR,CELLPAR] = " << filename << "()"
-         << std::endl;
-    file << "% Parent data for a hybid 2D mesh" << std::endl;
+    file << "function [PTPAR,EDPAR,CELLPAR] = " << filename << "()" << '\n';
+    file << "% Parent data for a hybid 2D mesh" << '\n';
 
     // Mesh on the selected level
-    std::shared_ptr<const mesh::Mesh> mesh = hier_mesh.getMesh(level);
+    const std::shared_ptr<const mesh::Mesh> mesh = hier_mesh.getMesh(level);
     {
       // Output parent information for nodes
       const std::vector<ParentInfo> &pt_parent_info(
@@ -48,8 +47,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       for (int k = 0; k < no_nodes; k++) {
         file << "PTPAR(" << k + 1 << ",:) = ["
              << normalize_idx(pt_parent_info[k].parent_index) << " , "
-             << normalize_idx(pt_parent_info[k].child_number) << "];"
-             << std::endl;
+             << normalize_idx(pt_parent_info[k].child_number) << "];" << '\n';
       }
     }
 
@@ -61,8 +59,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
       for (int k = 0; k < no_edges; k++) {
         file << "EDPAR(" << k + 1 << ",:) = ["
              << normalize_idx(ed_parent_info[k].parent_index) << " , "
-             << normalize_idx(ed_parent_info[k].child_number) << "];"
-             << std::endl;
+             << normalize_idx(ed_parent_info[k].child_number) << "];" << '\n';
       }
     }
 
@@ -76,7 +73,7 @@ void WriteMatlabLevel(const MeshHierarchy &hier_mesh, size_type level,
         file << "CELLPAR(" << k + 1 << ",:) = ["
              << normalize_idx(cell_parent_info[k].parent_index) << " , "
              << normalize_idx(cell_parent_info[k].child_number) << " , "
-             << normalize_idx(ref_eds[k]) << " ];" << std::endl;
+             << normalize_idx(ref_eds[k]) << " ];" << '\n';
       }
     }
   }
@@ -88,10 +85,10 @@ void WriteMatlab(const MeshHierarchy &hier_mesh, const std::string &basename) {
     // prepare filename
     std::stringstream level_asc;
     level_asc << level;
-    std::string filebase = basename + "_L" + level_asc.str();
+    const std::string filebase = basename + "_L" + level_asc.str();
 
     // Fetch mesh on the current level
-    std::shared_ptr<const mesh::Mesh> mesh = hier_mesh.getMesh(level);
+    const std::shared_ptr<const mesh::Mesh> mesh = hier_mesh.getMesh(level);
 
     // Output of mesh data
     io::writeMatlab(*mesh, filebase + ".m");

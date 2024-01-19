@@ -37,8 +37,8 @@ using lf::uscalfe::operator*;  // NOLINT
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&...args) {
-  std::ostringstream ss;
+std::string concat(Args &&...args) {
+  std::ostringstream ss;  // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }
@@ -123,7 +123,7 @@ int main() {
             sol.mesh, *(sol.dofh), f, dirichlet_funct, 100,
             lf::quad::make_TriaQR_MidpointRule(), true);
     sol.A_modified = A_modified.makeSparse();
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
+    const Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
         sol.A_modified);
     sol.solution_modified = solver_modified.solve(rhs_modified);
   }
@@ -132,9 +132,11 @@ int main() {
   const auto fe_space_fine =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
           solutions.back().mesh);
-  projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>
       velocity_exact(fe_space_fine, solutions.back().solution);
-  projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+  const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                     double>
       velocity_exact_modified(fe_space_fine,
                               solutions.back().solution_modified);
   lf::io::VtkWriter writer(solutions.back().mesh, "result.vtk");
@@ -142,13 +144,15 @@ int main() {
     const auto fe_space_lvl =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(
             solutions[lvl].mesh);
-    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity_lvl(fe_space_lvl, solutions[lvl].solution);
-    projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double, double>
+    const projects::ipdg_stokes::post_processing::MeshFunctionVelocity<double,
+                                                                       double>
         velocity_lvl_modified(fe_space_lvl, solutions[lvl].solution_modified);
-    lf::refinement::MeshFunctionTransfer velocity_fine(
+    const lf::refinement::MeshFunctionTransfer velocity_fine(
         *mesh_hierarchy, velocity_lvl, lvl, mesh_hierarchy->NumLevels() - 1);
-    lf::refinement::MeshFunctionTransfer velocity_fine_modified(
+    const lf::refinement::MeshFunctionTransfer velocity_fine_modified(
         *mesh_hierarchy, velocity_lvl_modified, lvl,
         mesh_hierarchy->NumLevels() - 1);
     writer.WriteCellData(concat("v_", solutions[lvl].mesh->NumEntities(2)),
@@ -190,7 +194,7 @@ int main() {
         qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
               << ' ' << L2w << ' ' << DG << ' ' << L2_modified << ' '
-              << L2w_modified << ' ' << DG_modified << std::endl;
+              << L2w_modified << ' ' << DG_modified << '\n';
   }
 
   return 0;

@@ -18,7 +18,7 @@
 using lf::io::TikzOutputCtrl;
 
 int main() {
-  std::filesystem::path file_path = __FILE__;
+  const std::filesystem::path file_path = __FILE__;
 
   for (const std::string& mesh_name :
        {"square_quads.msh", "square_trias.msh"}) {
@@ -34,7 +34,7 @@ int main() {
         std::const_pointer_cast<lf::mesh::Mesh>(reader.mesh()),
         std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2));
 
-    int refinement_steps = 2;
+    const int refinement_steps = 2;
 
     for (int step = 0; step < refinement_steps; ++step) {
       // refine mesh and store to TikZ

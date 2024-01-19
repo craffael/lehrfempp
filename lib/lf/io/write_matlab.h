@@ -15,7 +15,7 @@ namespace lf::io {
  * This function creates a .m-file containing a MATLAB function
  * of the same name
  *
- *    function [x,y,TRI,EDS] = filename()
+ *    function [x,y,TRI,QUAD,EDS] = filename()
  *
  * that initializes four variables
  * - _x_ the x-coordinates of the nodes if the affine triangular mesh
@@ -27,6 +27,9 @@ namespace lf::io {
  *    first four entries, and the cell index as last entry.
  * - _EDS_ an Mx2 - matrix containing the indices of the endpoints of
  *   the edges of the mesh.
+ *
+ * The the ordering of the nodes in the coordinate arrays corresponds to their
+ * indices.
  *
  * The data returned by this function can be visualized by the MATLAB
  * function plot_lf_mesh(), which is also  provided with LehrFEM++.

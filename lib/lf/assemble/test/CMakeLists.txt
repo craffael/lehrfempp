@@ -2,6 +2,7 @@ include(GoogleTest)
 
 set(sources
   assembly_tests.cc
+  concept_tests.cc
   coomatrix_tests.cc
 )
 

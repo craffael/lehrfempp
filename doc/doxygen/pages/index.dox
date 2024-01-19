@@ -13,7 +13,6 @@ give details about data structures and algorithms used in LehrFEM++.
 Content:
 - \ref getting_started
 - \ref modules_
-- \ref concepts
 - \ref loggers
 
 */

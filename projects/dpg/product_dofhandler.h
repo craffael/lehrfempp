@@ -122,10 +122,10 @@ class ProductUniformFEDofHandler : public lf::assemble::DofHandler {
   [[nodiscard]] size_type NumInteriorDofs(const lf::mesh::Entity& entity,
                                           size_type component) const;
 
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity& entity) const override;
 
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity& entity) const override;
 
   [[nodiscard]] const lf::mesh::Entity& Entity(

@@ -14,7 +14,7 @@
 
 int main() {
   // Find path to the smiley mesh
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto smiley_path = here.parent_path() / "smiley.msh";
 
   // load the smiley mesh
@@ -22,16 +22,16 @@ int main() {
   lf::io::GmshReader reader(std::move(mesh_factory), smiley_path.string());
 
   // print all physical entities:
-  std::cout << "Physical Entities in Gmsh File " << std::endl;
+  std::cout << "Physical Entities in Gmsh File " << '\n';
   std::cout
       << "---------------------------------------------------------------\n";
   for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
     for (auto& pair : reader.PhysicalEntities(codim)) {
       std::cout << "codim = " << static_cast<int>(codim) << ": " << pair.first
-                << " <=> " << pair.second << std::endl;
+                << " <=> " << pair.second << '\n';
     }
   }
-  std::cout << std::endl << std::endl;
+  std::cout << '\n' << '\n';
 
   // count the number of elements in the eyes:
   int num_eye_elements = 0;
@@ -42,7 +42,7 @@ int main() {
       ++num_eye_elements;
     }
   }
-  std::cout << "Number of eye elements : " << num_eye_elements << std::endl;
+  std::cout << "Number of eye elements : " << num_eye_elements << '\n';
 
   // count the number of edges that form the mouth
   int num_mouth_edges = 0;
@@ -52,7 +52,7 @@ int main() {
       ++num_mouth_edges;
     }
   }
-  std::cout << "Number of mouth edges : " << num_mouth_edges << std::endl;
+  std::cout << "Number of mouth edges : " << num_mouth_edges << '\n';
 
   // count the total number of elements in the face (including eyes)
   int num_face_elements = 0;
@@ -62,7 +62,7 @@ int main() {
       ++num_face_elements;
     }
   }
-  std::cout << "Number of face elements : " << num_face_elements << std::endl;
+  std::cout << "Number of face elements : " << num_face_elements << '\n';
 
   // Start vtk output:
   lf::io::VtkWriter vtk_writer(mesh, "smiley.vtk");

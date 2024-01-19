@@ -43,7 +43,7 @@ MeshFactory::size_type MeshFactory::AddPoint(
 }
 
 MeshFactory::size_type MeshFactory::AddEntity(
-    base::RefEl ref_el, const nonstd::span<const size_type>& nodes,
+    base::RefEl ref_el, const std::span<const size_type>& nodes,
     std::unique_ptr<geometry::Geometry>&& geometry) {
   LF_ASSERT_MSG(ref_el.Dimension() > 0,
                 "Use AddPoint() to add a node to a mesh.");
@@ -126,28 +126,28 @@ std::shared_ptr<mesh::Mesh> MeshFactory::Build() {
 
 // For diagnostic output
 void MeshFactory::PrintLists(std::ostream& o) const {
-  o << "hybrid2d::MeshFactory: Internal information" << std::endl;
-  o << nodes_.size() << " nodes:" << std::endl;
+  o << "hybrid2d::MeshFactory: Internal information" << '\n';
+  o << nodes_.size() << " nodes:" << '\n';
   for (std::size_t j = 0; j < nodes_.size(); j++) {
     o << "Node " << j << " at ";
     if (nodes_[j] != nullptr) {
       o << (nodes_[j]->Global(Eigen::Matrix<double, 0, 1>())).transpose()
-        << std::endl;
+        << '\n';
     } else {
-      o << "with unknown location!" << std::endl;
+      o << "with unknown location!" << '\n';
     }
   }
-  o << edges_.size() << " edges " << std::endl;
+  o << edges_.size() << " edges " << '\n';
   for (std::size_t j = 0; j < edges_.size(); j++) {
     o << "Edge " << j << ": " << edges_[j].first[0] << " <-> "
       << edges_[j].first[1];
     if (edges_[j].second) {
       o << " with geometry";
     }
-    o << std::endl;
+    o << '\n';
   }
 
-  std::cout << elements_.size() << " cells " << std::endl;
+  std::cout << elements_.size() << " cells " << '\n';
   for (std::size_t j = 0; j < elements_.size(); j++) {
     o << "Cell " << j << " : ";
     for (int l = 0; l < 4; l++) {
@@ -160,7 +160,7 @@ void MeshFactory::PrintLists(std::ostream& o) const {
     } else {
       o << "[no geometry]";
     }
-    o << std::endl;
+    o << '\n';
   }
 }
 

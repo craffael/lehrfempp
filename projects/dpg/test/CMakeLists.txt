@@ -20,4 +20,8 @@ set_target_properties(projects.dpg.test PROPERTIES FOLDER "projects/dpg")
 target_compile_features(projects.dpg.test PUBLIC cxx_std_17)
 gtest_discover_tests(projects.dpg.test)
 
+if(MSVC)
+  target_compile_options(projects.dpg.test PRIVATE /bigobj)
+endif()
+
 

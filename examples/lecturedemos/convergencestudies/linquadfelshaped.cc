@@ -62,12 +62,12 @@ Eigen::VectorXd solvePoisson(
   const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
   lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
-  std::cout << "\t\t> Assembling System Matrix" << std::endl;
+  std::cout << "\t\t> Assembling System Matrix" << '\n';
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
 
   // Enforce the dirichlet boundary conditions
-  std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
+  std::cout << "\t\t> Enforcing Boundary Conditions" << '\n';
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     const lf::mesh::Entity &entity = dofh.Entity(idx);
@@ -96,9 +96,9 @@ Eigen::VectorXd solvePoisson(
   lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
 
   // Solve the LSE using Cholesky decomposition
-  std::cout << "\t\t> Solving LSE" << std::endl;
-  Eigen::SparseMatrix<double> A = A_COO.makeSparse();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
+  std::cout << "\t\t> Solving LSE" << '\n';
+  const Eigen::SparseMatrix<double> A = A_COO.makeSparse();
+  const Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   Eigen::VectorXd solution = solver.solve(rhs);
 
   // Return the resulting solution vector
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("output") == 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
   const std::string output_file = vm["output"].as<std::string>();
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
     }
     return std::pow(r, 2. / 3) * std::sin(2. / 3 * phi);
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_u(u);
+  const lf::mesh::utils::MeshFunctionGlobal mf_u(u);
   // The gradient of the analytic solution
   const auto u_grad = [](const Eigen::Vector2d &x) -> Eigen::Vector2d {
     const double r = x.norm();
@@ -143,16 +143,16 @@ int main(int argc, char *argv[]) {
               (x[1] * std::sin(2. / 3 * phi) + x[0] * std::cos(2. / 3 * phi));
     return grad;
   };
-  lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
+  const lf::mesh::utils::MeshFunctionGlobal mf_u_grad(u_grad);
 
   const std::filesystem::path here = __FILE__;
   const std::filesystem::path mesh_folder = here.parent_path() / "meshes";
   Eigen::MatrixXd results(num_meshes, 5);
   for (int mesh_idx = 0; mesh_idx < num_meshes; ++mesh_idx) {
-    std::cout << "> Mesh Nr. " << mesh_idx << std::endl;
+    std::cout << "> Mesh Nr. " << mesh_idx << '\n';
 
     // Load the mesh
-    std::cout << "\t> Loading Mesh" << std::endl;
+    std::cout << "\t> Loading Mesh" << '\n';
     const std::string mesh_name = "L" + std::to_string(mesh_idx) + ".msh";
     const std::filesystem::path mesh_file = mesh_folder / mesh_name;
     auto factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
     const auto fe_space_o1 =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
     std::cout << " (" << fe_space_o1->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
     const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o1(fe_space_o1,
                                                                 solution_o1);
@@ -174,13 +174,13 @@ int main(int argc, char *argv[]) {
     const auto fe_space_o2 =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh);
     std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
     const lf::fe::MeshFunctionGradFE<double, double> mf_grad_o2(fe_space_o2,
                                                                 solution_o2);
 
     // Compute the errors
-    std::cout << "\t> Computing Error Norms" << std::endl;
+    std::cout << "\t> Computing Error Norms" << '\n';
     const auto quadrule_provider = [](const lf::mesh::Entity &entity) {
       return lf::quad::make_QuadRule(entity.RefEl(), 6);
     };

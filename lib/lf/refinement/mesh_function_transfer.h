@@ -14,11 +14,9 @@ namespace lf::refinement {
  * lf::refinement::MeshHierarchy
  * @tparam The type of mesh function to interpolate on a finer mesh
  */
-template <typename MF>
+template <mesh::utils::MeshFunction MF>
 class MeshFunctionTransfer {
   using mf_t = std::remove_cv_t<std::remove_reference_t<MF>>;
-  static_assert(lf::mesh::utils::isMeshFunction<mf_t>,
-                "MF is not a valid MeshFunction");
 
   // Metafunction to determine whether MF provides a `getMesh` method
   template <typename MF_TEST,

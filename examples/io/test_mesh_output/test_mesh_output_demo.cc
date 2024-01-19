@@ -56,23 +56,23 @@ void writeMeshRenderingData(const std::shared_ptr<const lf::mesh::Mesh>& mesh_p,
   // VTK output
   std::stringstream filename_vtk;
   filename_vtk << filename << ".vtk";
-  lf::io::VtkWriter vtk_writer(mesh_p, filename_vtk.str());
+  const lf::io::VtkWriter vtk_writer(mesh_p, filename_vtk.str());
 }
 
 int main() {
-  std::cout << "LehrFEM++ demo: output of test meshes" << std::endl;
+  std::cout << "LehrFEM++ demo: output of test meshes" << '\n';
   std::cout << "(test meshes from "
                "lf::mesh::test_utils::GenerateHybrid2DTestMesh()"
-            << std::endl;
+            << '\n';
   for (int selector = 0;
        selector <= lf::mesh::test_utils::GenerateHybrid2DTestMesh_maxsel;
        selector++) {
     // Generates a small test meshes, more precisely described in the
     // documentation of the function GenerateHybrid2DTestMesh()
-    std::shared_ptr<const lf::mesh::Mesh> mesh_p =
+    const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
         lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
     // Output of mesh information
-    std::cout << "#### Test mesh " << selector << " ####" << std::endl;
+    std::cout << "#### Test mesh " << selector << " ####" << '\n';
     lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     std::stringstream filename;
@@ -90,9 +90,9 @@ int main() {
         .setTopRightCorner(Eigen::Vector2d{1, 1})
         .setNumXCells(2)
         .setNumYCells(2);
-    std::shared_ptr<const lf::mesh::Mesh> mesh_p = builder.Build();
+    const std::shared_ptr<const lf::mesh::Mesh> mesh_p = builder.Build();
     // Output of mesh information
-    std::cout << "#### Triangular tensor product 2x2 mesh #####" << std::endl;
+    std::cout << "#### Triangular tensor product 2x2 mesh #####" << '\n';
     lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     writeMeshRenderingData(mesh_p, "tp_tria_mesh");

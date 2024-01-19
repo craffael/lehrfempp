@@ -27,6 +27,10 @@ lf_add_library(lf.geometry ${sources})
 target_link_libraries(lf.geometry PUBLIC Eigen3::Eigen lf.base)
 set_target_properties(lf.geometry PROPERTIES FOLDER "lib")
 
+if(MSVC)
+  target_compile_options(lf.geometry PRIVATE /bigobj)
+endif()
+
 if(LF_ENABLE_TESTING)
   add_subdirectory(test)
 endif()

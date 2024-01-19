@@ -29,31 +29,31 @@ int main(int argc, char **argv) {
       break;
     }
     default: {
-      std::cerr << "Usage: " << argv[0] << " <filename> " << std::endl;
+      std::cerr << "Usage: " << argv[0] << " <filename> " << '\n';
       break;
     }
   }  // end switch
 
   // Mesh file is supposed to reside in the same directory as source file
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_path = here.parent_path() / filename.c_str();
 
   // load the mesh
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
   lf::io::GmshReader reader(std::move(mesh_factory), mesh_path.string());
-  std::cout << "Mesh read from file " << mesh_path.string() << std::endl;
+  std::cout << "Mesh read from file " << mesh_path.string() << '\n';
 
   // Obtain pointer to mesh object
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p{reader.mesh()};
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_p{reader.mesh()};
   const lf::mesh::Mesh &mesh{*mesh_p};
   std::cout << mesh.DimMesh() << "D mesh in " << mesh.DimWorld()
             << "D: " << mesh.NumEntities(2) << " nodes, " << mesh.NumEntities(1)
-            << " edges, " << mesh.NumEntities(0) << " cells" << std::endl;
+            << " edges, " << mesh.NumEntities(0) << " cells" << '\n';
 
   // Examine physical groups
   for (dim_t codim = 0; codim <= 2; codim++) {
     // Obtain list of physical groups for that co-dimension
-    std::vector<std::pair<size_type, std::string>> phys_ent_list{
+    const std::vector<std::pair<size_type, std::string>> phys_ent_list{
         reader.PhysicalEntities(codim)};
     if (!phys_ent_list.empty()) {
       // Loop over all physical groups of a particular co-dimension
@@ -67,10 +67,10 @@ int main(int argc, char **argv) {
             cnt++;
           }
         }
-        std::cout << ": " << cnt << " entitites" << std::endl;
+        std::cout << ": " << cnt << " entitites" << '\n';
       }
     } else {
-      std::cout << "codim = " << codim << ": No physical groups" << std::endl;
+      std::cout << "codim = " << codim << ": No physical groups" << '\n';
     }
   }
 
