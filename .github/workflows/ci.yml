@@ -106,7 +106,7 @@ jobs:
             compiler: "clang++"
             build_type: "Debug"
             cxx_flags: "-g0 -Werror=#warnings"
-          - os: macos-10.15
+          - os: macos-12
             compiler: "clang++"
             build_type: "Release"
             cxx_flags: "-g0 -Werror=#warnings"
