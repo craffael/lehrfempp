@@ -55,10 +55,8 @@ namespace lf::fe {
  *
  *
  */
-template <typename SCALAR, typename DIFF_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF>
 class DiffusionElementMatrixProvider final {
-  static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
-
  public:
   /**
    * @brief type of returned element matrix
@@ -145,7 +143,7 @@ DiffusionElementMatrixProvider(PTR fe_space, DIFF_COEFF alpha)
                                       DIFF_COEFF>;
 
 // First constructor (internal construction of quadrature rules
-template <typename SCALAR, typename DIFF_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF>
 DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::
     DiffusionElementMatrixProvider(
         std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, DIFF_COEFF alpha)
@@ -154,7 +152,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename DIFF_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF>
 typename lf::fe::DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::ElemMat
 DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
     const lf::mesh::Entity &cell) const {
@@ -236,10 +234,8 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
  * - REACTION_COEFF should be compatible with a scalar-valued \ref mesh_function
  *
  */
-template <typename SCALAR, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction REACTION_COEFF>
 class MassElementMatrixProvider final {
-  static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
-
  public:
   /**
    * @brief type of returned element matrix
@@ -324,7 +320,7 @@ MassElementMatrixProvider(PTR fe_space, REACTION_COEFF gamma)
                                  REACTION_COEFF>;
 
 // First constructor
-template <typename SCALAR, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction REACTION_COEFF>
 MassElementMatrixProvider<SCALAR, REACTION_COEFF>::MassElementMatrixProvider(
     std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, REACTION_COEFF gamma)
     : gamma_(std::move(gamma)), fe_space_(std::move(fe_space)) {}
@@ -332,7 +328,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::MassElementMatrixProvider(
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction REACTION_COEFF>
 typename lf::fe::MassElementMatrixProvider<SCALAR, REACTION_COEFF>::ElemMat
 MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
     const lf::mesh::Entity &cell) const {
@@ -538,9 +534,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * This class complies with the requirements for the template parameter
  * `ELEM_VEC_COMP` of the function assemble::AssembleVectorLocally().
  */
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 class ScalarLoadElementVectorProvider final {
-  static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
 
  public:
   using scalar_t =
@@ -606,7 +601,7 @@ ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
                                        MESH_FUNCTION>;
 
 // Constructors
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
         std::shared_ptr<const ScalarFESpace<SCALAR>> fe_space, MESH_FUNCTION f)
@@ -615,7 +610,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) const {
@@ -701,11 +696,9 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * ~~~
  * which returns true, if the edge is to be included in assembly.
  */
-template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider final {
  public:
-  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
-                "FUNCTOR does not fulfill the concept of a mesh function.");
   using Scalar =
       decltype(SCALAR(0) * mesh::utils::MeshFunctionReturnType<FUNCTOR>(0));
   using ElemVec = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
@@ -772,7 +765,7 @@ ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR, class EDGESELECTOR>
 typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) const {

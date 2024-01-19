@@ -33,6 +33,9 @@ struct AnimalAT {
 
  The archetype class `AnimalAT` is useful in a number of ways:
  <ul>
+ <li> Archetypes can document the methods of a concept. For example, the archetype `AnimalAT` documents that the concept `Animal` requires
+   the methods `MakeSound()` and `Eat()`. Additionally we can put doxygen comments in front of `MakeSound()` and `Eat()` to document
+   their intended functionality.
  <li> If another function template requires a type that models the concept `Animal`, we can check with the archetype, that the function 
    template only requires the functionality provided by the concept `Animal`. For example, assume that we have written the
    following errorneous function:
@@ -76,6 +79,8 @@ struct AnimalAT {
 @sa https://en.cppreference.com/w/cpp/language/archetype
 
 @sa lf::assemble::EntityMatrixProviderAT
+@sa lf::assemble::EntityVectorProviderAT
+@sa lf::mesh::utils::MeshFunctionAT
 
 
 

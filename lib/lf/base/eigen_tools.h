@@ -70,10 +70,10 @@ concept EigenMatrix =
                        std::declval<T>(), 0)),
                    bool> &&
     (std::same_as<SCALAR, void> || std::same_as<typename T::Scalar, SCALAR>)&&(
-        ROWS == -1 || T::RowsAtCompileTime == Eigen::Dynamic ||
-        T::RowsAtCompileTime == ROWS) &&
-    (COLS == -1 || T::ColsAtCompileTime == Eigen::Dynamic ||
-     T::ColsAtCompileTime == COLS);
+        ROWS == -1 || std::remove_cvref_t<T>::RowsAtCompileTime == Eigen::Dynamic ||
+        std::remove_cvref_t<T>::RowsAtCompileTime == ROWS) &&
+    (COLS == -1 || std::remove_cvref_t<T>::ColsAtCompileTime == Eigen::Dynamic ||
+     std::remove_cvref_t<T>::ColsAtCompileTime == COLS);
 
 /**
  * @brief Check if a given type T is a `Eigen::Array<...>&`

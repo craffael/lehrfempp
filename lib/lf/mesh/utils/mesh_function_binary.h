@@ -660,9 +660,8 @@ struct OperatorMultiplication {
  * ### Example
  * @snippet mesh_function_binary.cc one_trig
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator+(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator+(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorAddition, A, B> {
   return MeshFunctionBinary(internal::OperatorAddition{}, a, b);
 }
 
@@ -689,9 +688,8 @@ auto operator+(const A& a, const B& b) {
  * ### Example
  * @snippet mesh_function_binary.cc subtract
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator-(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator-(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorSubtraction, A, B> {
   return MeshFunctionBinary(internal::OperatorSubtraction{}, a, b);
 }
 
@@ -718,9 +716,8 @@ auto operator-(const A& a, const B& b) {
  * ### Example
  * @snippet mesh_function_binary.cc product
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator*(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator*(const A& a, const B& b) -> MeshFunctionBinary<internal::OperatorMultiplication, A, B> {
   return MeshFunctionBinary(internal::OperatorMultiplication{}, a, b);
 }
 

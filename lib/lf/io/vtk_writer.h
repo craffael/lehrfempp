@@ -539,8 +539,7 @@ class VtkWriter {
    * @snippet vtk_writer.cc mfPointUsage
    */
   template <
-      class MESH_FUNCTION,
-      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
+      mesh::utils::MeshFunction MESH_FUNCTION>
   void WritePointData(const std::string& name,
                       const MESH_FUNCTION& mesh_function);
 
@@ -741,8 +740,7 @@ class VtkWriter {
    * @snippet vtk_writer.cc mfCellUsage
    */
   template <
-      class MESH_FUNCTION,
-      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
+      mesh::utils::MeshFunction MESH_FUNCTION>
   void WriteCellData(const std::string& name,
                      const MESH_FUNCTION& mesh_function);
 
@@ -835,7 +833,7 @@ class VtkWriter {
                            const Eigen::Matrix<T, ROWS, 1>& in);
 };
 
-template <class MESH_FUNCTION, class>
+template <mesh::utils::MeshFunction MESH_FUNCTION>
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void VtkWriter::WritePointData(const std::string& name,
                                const MESH_FUNCTION& mesh_function) {
@@ -923,7 +921,7 @@ void VtkWriter::WritePointData(const std::string& name,
   }
 }
 
-template <class MESH_FUNCTION, class>
+template <mesh::utils::MeshFunction MESH_FUNCTION>
 void VtkWriter::WriteCellData(const std::string& name,
                               const MESH_FUNCTION& mesh_function) {
   CheckAttributeSetName(vtk_file_.cell_data, name);

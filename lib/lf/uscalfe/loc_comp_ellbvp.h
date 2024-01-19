@@ -33,7 +33,7 @@ namespace lf::uscalfe {
 using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
 
 /**
- * 
+ *
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Class for local quadrature based computations for Lagrangian finite
  * elements and second-order scalar elliptic BVPs.
@@ -83,11 +83,9 @@ using quad_rule_collection_t = std::map<lf::base::RefEl, lf::quad::QuadRule>;
  * \ref ReactionDiffusionElementMatrixProviderLogger().
  * See \ref loggers for more information.
  */
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF,
+          mesh::utils::MeshFunction REACTION_COEFF>
 class ReactionDiffusionElementMatrixProvider {
-  static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
-  static_assert(mesh::utils::isMeshFunction<REACTION_COEFF>);
-
  public:
   /**
    * @brief type of returned element matrix
@@ -210,7 +208,8 @@ ReactionDiffusionElementMatrixProvider(
         typename PTR::element_type::Scalar, DIFF_COEFF, REACTION_COEFF>;
 
 // First constructor (internal construction of quadrature rules
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF,
+          mesh::utils::MeshFunction REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
         std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
@@ -233,7 +232,8 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 }
 
 // Second constructor (quadrature rules passed as arguments)
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF,
+          mesh::utils::MeshFunction REACTION_COEFF>
 ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
     ReactionDiffusionElementMatrixProvider(
         std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
@@ -264,7 +264,8 @@ ReactionDiffusionElementMatrixProvider<SCALAR, DIFF_COEFF, REACTION_COEFF>::
 }
 
 // Main method for the computation of the element matrix
-template <typename SCALAR, typename DIFF_COEFF, typename REACTION_COEFF>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction DIFF_COEFF,
+          mesh::utils::MeshFunction REACTION_COEFF>
 typename lf::uscalfe::ReactionDiffusionElementMatrixProvider<
     SCALAR, DIFF_COEFF, REACTION_COEFF>::ElemMat
 ReactionDiffusionElementMatrixProvider<
@@ -339,11 +340,12 @@ ReactionDiffusionElementMatrixProvider<
 }
 
 /**
- * 
+ *
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
- * @tparam SCALAR underlying scalar type, usually double or complex<double>
+ * @tparam SCALAR underlying scalar type of the basis functions, usually double
+ * or complex<double>
  * @tparam COEFF \ref mesh_function "MeshFunction" that defines the
  * scalar valued coefficient \f$ \gamma \f$
  * @tparam EDGESELECTOR predicate defining which edges are included
@@ -363,7 +365,8 @@ ReactionDiffusionElementMatrixProvider<
  * See \ref loggers for more information.
  *
  */
-template <typename SCALAR, typename COEFF, typename EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction COEFF,
+          typename EDGESELECTOR>
 class MassEdgeMatrixProvider {
  public:
   /// Scalar type of the element matrix
@@ -474,7 +477,8 @@ class MassEdgeMatrixProvider {
 std::shared_ptr<spdlog::logger> &MassEdgeMatrixProviderLogger();
 
 // deduction guide:
-template <class PTR, class COEFF, class EDGESELECTOR = base::PredicateTrue>
+template <class PTR, mesh::utils::MeshFunction COEFF,
+          class EDGESELECTOR = base::PredicateTrue>
 MassEdgeMatrixProvider(PTR, COEFF coeff,
                        EDGESELECTOR edge_predicate = base::PredicateTrue{})
     -> MassEdgeMatrixProvider<typename PTR::element_type::Scalar, COEFF,
@@ -485,7 +489,7 @@ MassEdgeMatrixProvider(PTR, COEFF coeff,
 // https://
 // developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <class SCALAR, class COEFF, class EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction COEFF, class EDGESELECTOR>
 typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat
 MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {
@@ -555,10 +559,8 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  * See \ref loggers for more information.
  *
  */
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 class ScalarLoadElementVectorProvider {
-  static_assert(mesh::utils::isMeshFunction<MESH_FUNCTION>);
-
  public:
   /// Scalar type of the element matrix
   using scalar_t =
@@ -633,7 +635,7 @@ ScalarLoadElementVectorProvider(PTR fe_space, MESH_FUNCTION mf)
                                        MESH_FUNCTION>;
 
 // Constructors
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
         std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
@@ -653,7 +655,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
   }
 }
 
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
     ScalarLoadElementVectorProvider(
         std::shared_ptr<const UniformScalarFESpace<SCALAR>> fe_space,
@@ -686,7 +688,7 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::
 // TODO(craffael) remove const once
 // http://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <typename SCALAR, typename MESH_FUNCTION>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 typename ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::ElemVec
 ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
     const lf::mesh::Entity &cell) {
@@ -779,11 +781,10 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * ~~~
  * which returns true, if the edge is to be included in assembly.
  */
-template <class SCALAR, class FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR,
+          class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider {
  public:
-  static_assert(mesh::utils::isMeshFunction<FUNCTOR>,
-                "FUNCTOR does not fulfill the concept of a mesh function.");
   using Scalar =
       decltype(static_cast<SCALAR>(0) *
                static_cast<mesh::utils::MeshFunctionReturnType<FUNCTOR>>(0));
@@ -878,7 +879,8 @@ ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <class SCALAR, class FUNCTOR, class EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR,
+          class EDGESELECTOR>
 typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {

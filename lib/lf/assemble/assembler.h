@@ -23,8 +23,8 @@
 
 #include <iostream>
 
+#include "assemble_concepts.h"
 #include "dofhandler.h"
-#include "concepts.h"
 
 namespace lf::assemble {
 
@@ -38,8 +38,8 @@ namespace lf::assemble {
  * All the functions have the name `AssembleMatrixLocally`, but they differ in
  * their arguments. What they have in common is that they are all templated with
  * two types:
- * - ENTITY_MATRIX_PROVIDER is a @ref entity_matrix_provider
- * - TMPMATRIX, a rudimentary matrix type with an `AddToEntry(` mutbale access
+ * - ENTITY_MATRIX_PROVIDER is a @ref EntityMatrixProvider
+ * - TMPMATRIX, a rudimentary matrix type with an `AddToEntry(` mutable access
  * function
  *
  * The principles of local cell-oriented assembly of Galerkin matrices are
@@ -65,14 +65,14 @@ std::shared_ptr<spdlog::logger> &AssembleMatrixLogger();
  *
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
- * matrices, must model the concept \ref entity_matrix_provider
+ * matrices, must model the concept \ref EntityMatrixProvider
  * @param codim co-dimension of mesh entities which should be traversed
  *              in the course of assembly
  * @param dof_handler_trial a dof handler object for _column space_, see @ref
  * DofHandler
  * @param dof_handler_test a dof handler object for _row space_, see @ref
  * DofHandler
- * @param entity_matrix_provider @ref entity_matrix_provider object for passing
+ * @param entity_matrix_provider @ref EntityMatrixProvider object for passing
  * all kinds of data
  * @param matrix matrix object to which the assembled matrix will be added.
  *
@@ -100,7 +100,7 @@ std::shared_ptr<spdlog::logger> &AssembleMatrixLogger();
  * + provide a constructor taking two matrix dimension arguments
  * + have a method `AddtoEntry(i,j,value_to_add)` for adding to a matrix entry
  * A model type is COOMatrix.
- * - ENTITY_MATRIX_PROVIDER is a \ref entity_matrix_provider
+ * - ENTITY_MATRIX_PROVIDER is a \ref EntityMatrixProvider
  *
  * @note The element matrix returned by the `Eval()` method of
  * `entity_matrix_provider` may have a size larger than that suggested by the
@@ -189,7 +189,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
  * @brief Entity-wise local assembly of a matrix from local matrices
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
- * matrices, must model the concept \ref entity_matrix_provider
+ * matrices, must model the concept \ref EntityMatrixProvider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -223,7 +223,7 @@ TMPMATRIX AssembleMatrixLocally(
  * @brief Entity-wise local assembly of a matrix from local matrices
  * @tparam TMPMATRIX a type fitting the concept of COOMatrix
  * @tparam ENTITY_MATRIX_PROVIDER a type providing the computation of element
- * matrices, must model the concept \ref entity_matrix_provider
+ * matrices, must model the concept \ref EntityMatrixProvider
  *
  * @return assembled matrix in a format determined by the template argument
  *         TPMATRIX
@@ -257,7 +257,7 @@ TMPMATRIX AssembleMatrixLocally(
  *
  * The functions differ in their arguments, but all are templated with the
  following types:
- * - ENTITY_VECTOR_PROVIDER matching the concept @ref entity_vector_provider
+ * - ENTITY_VECTOR_PROVIDER matching the concept @ref EntityVectorProvider
  * - VECTOR a generic vector type compliant with Eigen::Vector
  *
  * Also refer to [Lecture
@@ -279,8 +279,8 @@ TMPMATRIX AssembleMatrixLocally(
  * out
  * @param dof_handler object providing local-to-global dof index mapping, see
  * DofHandler
- * @param entity_vector_provider local entity_vector_provider object (passed as
- * non-const!)
+ * @param entity_vector_provider local @ref assemble::EntityVectorProvider
+ * "EntityVectorProvider" object (passed as non-const!)
  * @param resultvector generic vector for returning the assembled vector
  *
  * ### Type requirements for template arguments
@@ -295,7 +295,7 @@ TMPMATRIX AssembleMatrixLocally(
  * ### Example Usage
  * @snippet assembler.cc vector_usage
  */
-template <typename VECTOR, class ENTITY_VECTOR_PROVIDER>
+template <typename VECTOR, EntityVectorProvider ENTITY_VECTOR_PROVIDER>
 void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
                            ENTITY_VECTOR_PROVIDER &entity_vector_provider,
                            VECTOR &resultvector) {
@@ -330,8 +330,14 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
  * @brief entity-local assembly of (right-hand-side) vectors from element
  * vectors
  * @tparam VECTOR a generic vector type with component access through []
- * @tparam ENTITY_VECTOR_PROVIDER type for objects computing entity-local
- * vectors, models concept \ref entity_vector_provider
+ * @tparam entity_vector_provider local @ref assemble::EntityVectorProvider
+ * "EntityVectorProvider" object (passed as non-const!)
+ * @param codim co-dimension of entities over which assembly should be carried
+ * out
+ * @param dof_handler object providing local-to-global dof index mapping, see
+ * DofHandler
+ * @param entity_vector_provider local @ref assemble::EntityVectorProvider
+ * "EntityVectorProvider" object (passed as non-const!)
  * @return assembled vector as an object of a type specified by the
  *         VECTOR template argument
  * @sa AssembleVectorLocally(const DofHandler &dof_handler,

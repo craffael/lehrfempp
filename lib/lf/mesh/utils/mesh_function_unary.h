@@ -259,8 +259,8 @@ struct UnaryOpConjugate {
  *
  * @note The MeshFunctionReturnType of `a` must support the minus operator!
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto operator-(const A& a) {
+template <MeshFunction A>
+auto operator-(const A& a) -> MeshFunctionUnary<internal::UnaryOpMinus, A>{
   return MeshFunctionUnary(internal::UnaryOpMinus{}, a);
 }
 
@@ -274,8 +274,8 @@ auto operator-(const A& a) {
  * @note This operator requires `a` to be either scalar or (eigen-) vector
  * valued.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto squaredNorm(const A& a) {
+template <MeshFunction A>
+auto squaredNorm(const A& a) -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, A> {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);
 }
 
@@ -286,8 +286,8 @@ auto squaredNorm(const A& a) {
  * @param a The original \ref mesh_function
  * @return \ref mesh_function representing the pointwise transpose of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto transpose(const A& a) {
+template <MeshFunction A>
+auto transpose(const A& a) -> MeshFunctionUnary<internal::UnaryOpTranspose, A> {
   static_assert(base::EigenMatrix<MeshFunctionReturnType<A>> ||
                     base::EigenArray<MeshFunctionReturnType<A>>,
                 "transpose() only supported for Eigen::Matrix and Eigen::Array "
@@ -303,8 +303,8 @@ auto transpose(const A& a) {
  * @param a The original mesh function whose adjoint should be taken.
  * @return \ref mesh_function representing the pointwise adjoint of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto adjoint(const A& a) {
+template <MeshFunction A>
+auto adjoint(const A& a) -> MeshFunctionUnary<internal::UnaryOpAdjoint, A>{
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(base::EigenMatrix<returnType_t>,
                 "adjoint only supported for Eigen::Matrix valued mesh "
@@ -320,8 +320,8 @@ auto adjoint(const A& a) {
  * @param a The original mesh function that should be conjugated.
  * @return \ref mesh_function representing the pointwise conjugate of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto conjugate(const A& a) {
+template <MeshFunction A>
+auto conjugate(const A& a)->MeshFunctionUnary<internal::UnaryOpConjugate, A> {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(
       base::EigenMatrix<returnType_t> ||

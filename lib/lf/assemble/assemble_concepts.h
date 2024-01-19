@@ -14,7 +14,6 @@
 namespace lf::assemble {
 
 /**
- * @ingroup concepts
  * @headerfile lf/assemble/assemble.h
  * @brief Provides the local element matrix for a mesh entity.
  *
@@ -124,10 +123,25 @@ struct EntityMatrixProviderAT {
   /// Destructor
   ~EntityMatrixProviderAT() noexcept = delete;
 
-  bool isActive(const mesh::Entity& e) { return true; }
+  /**
+   * @brief 	Defines whether the entity `e` is taken into account by the
+   * assembly routine.
+   * @param e The entity which should be queried.
+   * @return true, if the entity `e` is taken into account by the assembly. Otherwise false.
+   */
+  bool isActive(const mesh::Entity& e) {
+    LF_VERIFY_MSG(false, "Should never be called");
+    return true;
+  }
 
+  /**
+   * @brief Returns the local element matrix for mesh entity `e`. Is only called if emp.isActive(e)==true.
+   * @param e The entity for which the local element matrix should be returned.
+   * @return The local element matrix for mesh entity `e`.
+   */
   Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> Eval(
       const mesh::Entity& e) {
+    LF_VERIFY_MSG(false, "Should never be called");
     return {};
   }
 };
@@ -189,7 +203,7 @@ struct EntityMatrixProviderAT {
  * - lf::uscalfe::LinearFELocalLoadVector
  * - lf::uscalfe::ScalarLoadElementVectorProvider
  * - lf::uscalfe::ScalarLoadEdgeVectorProvider
- * 
+ *
  */
 template <class EVP>
 concept EntityVectorProvider = requires(EVP& evp, const mesh::Entity& e) {
@@ -205,9 +219,42 @@ concept EntityVectorProvider = requires(EVP& evp, const mesh::Entity& e) {
  */
 template <class SCALAR>
 struct EntityVectorProviderAT {
-  bool isActive(const mesh::Entity& e);
+  /// Copy constructor deleted because not part of the concept
+  EntityVectorProviderAT(const EntityVectorProviderAT&) noexcept = delete;
 
-  Eigen::Vector<SCALAR, Eigen::Dynamic> Eval(const mesh::Entity& e);
+  /// Move constructor deleted because not part of the concept
+  EntityVectorProviderAT(EntityVectorProviderAT&&) noexcept = delete;
+
+  /// Copy assignment operator deleted because not part of the concept
+  auto operator=(const EntityVectorProviderAT&) noexcept -> EntityVectorProviderAT& = delete;
+
+  /// Move assignment operator deleted because not part of the concept
+  auto operator=(EntityVectorProviderAT&&) noexcept -> EntityVectorProviderAT& = delete;
+
+  /// Destructor
+  ~EntityVectorProviderAT() noexcept = default;
+
+  /**
+   * @brief Defines whether the entity e is taken into account by the assembly
+   * routine.
+   * @param e The entity which should be queried.
+   * @return true, if the entity e is taken into account by the assembly.
+   * Otherwise false.
+   */
+  bool isActive(const mesh::Entity& e) {
+    LF_VERIFY_MSG(false, "Should never be called");
+    return true;
+  }
+
+  /**
+   * @brief Returns the local element vector for mesh entity `e`. Is only called if evp.isActive(e)==true.
+   * @param e The entity for which the local element vector should be returned.
+   * @return The local element vector for mesh entity `e`.
+   */
+  Eigen::Vector<SCALAR, Eigen::Dynamic> Eval(const mesh::Entity& e) {
+    LF_VERIFY_MSG(false, "Should never be called");
+    return {};
+  }
 };
 
 }  // namespace lf::assemble

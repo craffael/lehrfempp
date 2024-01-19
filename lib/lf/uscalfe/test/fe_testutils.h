@@ -304,8 +304,8 @@ inline std::vector<std::pair<double, double>> InterpolationErrors(
  * - REAC_COEFF must behave like `std::function<SCALAR(Eigen::Vector2d)>`.
  *
  */
-template <typename SCALAR, typename FFUNC, typename DIFF_COEFF,
-          typename REAC_COEFF>
+template <typename SCALAR, mesh::utils::MeshFunction FFUNC, mesh::utils::MeshFunction DIFF_COEFF,
+          mesh::utils::MeshFunction REAC_COEFF>
 std::vector<SCALAR> EnergiesOfInterpolants(
     std::vector<std::shared_ptr<const mesh::Mesh>> mesh_ptrs, FFUNC f,
     DIFF_COEFF alpha, REAC_COEFF gamma,
@@ -313,9 +313,6 @@ std::vector<SCALAR> EnergiesOfInterpolants(
         rfs_tria_p,
     std::shared_ptr<const lf::fe::ScalarReferenceFiniteElement<double>>
         rfs_quad_p) {
-  static_assert(mesh::utils::isMeshFunction<DIFF_COEFF>);
-  static_assert(mesh::utils::isMeshFunction<REAC_COEFF>);
-  static_assert(mesh::utils::isMeshFunction<FFUNC>);
   // Vector for returning the energies
   std::vector<SCALAR> energies{};
 

@@ -39,6 +39,16 @@ template COOMatrix<double> AssembleMatrixLocally<COOMatrix<double>>(
     dim_t codim, const DofHandler &dof_handler,
     EntityMatrixProviderAT<double> &entity_matrix_provider);
 
+// The same for AssembleVectorLocally:
+template void AssembleVectorLocally(
+    dim_t codim, const DofHandler &dof_handler,
+    EntityVectorProviderAT<double> &entity_vector_provider,
+    Eigen::VectorXd &vector);
+
+template Eigen::VectorXd AssembleVectorLocally(
+    dim_t codim, const DofHandler &dof_handler,
+    EntityVectorProviderAT<double> &entity_vector_provider);
+
 }  // namespace lf::assemble
 
 namespace lf::assemble::test {
@@ -290,11 +300,9 @@ TEST(lf_assembly, mat_assembly_test) {
 }
 
 TEST(lf_assembly, dynamic_dof_test) {
-  // Same as the previous test, just based on another version of the dof
-  handler
+  // Same as the previous test, just based on another version of the dof handler
 
-          std::cout
-      << "### TEST: Assembly based on dynamic dofs" << std::endl;
+  std::cout << "### TEST: Assembly based on dynamic dofs" << std::endl;
   // Building the test mesh
   auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh();
 
