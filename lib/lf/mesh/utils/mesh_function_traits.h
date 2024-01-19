@@ -185,8 +185,10 @@ struct MeshFunctionAT {
    * @return A vector of length `local.cols()` containing the values of the mesh
    * function at the given points.
    */
-  std::vector<R> operator()(const Entity& /*e*/,
-                            const Eigen::MatrixXd& /*local*/) const {
+  // NOLINTBEGIN(misc-unused-parameters)
+  std::vector<R> operator()(const Entity& e,
+                            const Eigen::MatrixXd& local) const {
+    // NOLINTEND(misc-unused-parameters)
     LF_VERIFY_MSG(false, "Should never be called, this is an archetype");
     return {};
   }

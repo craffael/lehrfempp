@@ -40,7 +40,7 @@ int main(int /*argc*/, const char** /*argv*/) {
   // ======================================================================
 
   // Coefficients:
-  auto alpha = [](Eigen::Vector2d /*x*/) -> Eigen::Matrix<double, 2, 2> {
+  auto alpha = [](Eigen::Vector2d const& /*x*/) -> Eigen::Matrix<double, 2, 2> {
     return Eigen::Matrix<double, 2, 2>::Identity();
   };
   auto u = [](Eigen::Vector2d x) -> double {

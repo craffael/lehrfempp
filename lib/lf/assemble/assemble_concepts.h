@@ -130,7 +130,7 @@ struct EntityMatrixProviderAT {
    * @return true, if the entity `e` is taken into account by the assembly.
    * Otherwise false.
    */
-  bool isActive(const mesh::Entity& /*e*/) {
+  bool isActive(const mesh::Entity& e) {  // NOLINT(misc-unused-parameters)
     LF_VERIFY_MSG(false, "Should never be called");
     return true;
   }
@@ -142,7 +142,7 @@ struct EntityMatrixProviderAT {
    * @return The local element matrix for mesh entity `e`.
    */
   Eigen::Matrix<SCALAR, Eigen::Dynamic, Eigen::Dynamic> Eval(
-      const mesh::Entity& /*e*/) {
+      const mesh::Entity& e) {  // NOLINT(misc-unused-parameters)
     LF_VERIFY_MSG(false, "Should never be called");
     return {};
   }
@@ -245,7 +245,7 @@ struct EntityVectorProviderAT {
    * @return true, if the entity e is taken into account by the assembly.
    * Otherwise false.
    */
-  bool isActive(const mesh::Entity& /*e*/) {
+  bool isActive(const mesh::Entity& e) {  // NOLINT(misc-unused-parameters)
     LF_VERIFY_MSG(false, "Should never be called");
     return true;
   }
@@ -256,7 +256,8 @@ struct EntityVectorProviderAT {
    * @param e The entity for which the local element vector should be returned.
    * @return The local element vector for mesh entity `e`.
    */
-  Eigen::Vector<SCALAR, Eigen::Dynamic> Eval(const mesh::Entity& /*e*/) {
+  Eigen::Vector<SCALAR, Eigen::Dynamic> Eval(
+      const mesh::Entity& e) {  // NOLINT(misc-unused-parameters)
     LF_VERIFY_MSG(false, "Should never be called");
     return {};
   }
