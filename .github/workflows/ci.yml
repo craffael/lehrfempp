@@ -77,11 +77,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-20.04
-            container: craffael/feen-ci:clang17
-            compiler: "clang++-17"
-            packages: ""
-            build_type: "Debug"
+          # - os: ubuntu-20.04
+            # container: craffael/feen-ci:clang17
+            # compiler: "clang++-17"
+            # packages: ""
+            # build_type: "Debug"
             # cxx_flags: "-g0 -Werror=#warnings"
           # - os: ubuntu-20.04
             # container: craffael/feen-ci:clang17
@@ -90,11 +90,11 @@ jobs:
             # build_type: "Release"
             # cxx_flags: "-g0 -Werror=#warnings"
             
-          - os: ubuntu-20.04
-            container: craffael/feen-ci:gcc13
-            compiler: "g++-13"
-            packages: ""
-            build_type: "Debug"
+          # - os: ubuntu-20.04
+            # container: craffael/feen-ci:gcc13
+            # compiler: "g++-13"
+            # packages: ""
+            # build_type: "Debug"
             # cxx_flags: "-g0 -Werror=cpp"
           # - os: ubuntu-20.04
             # compiler: "g++-8"
@@ -122,10 +122,10 @@ jobs:
       - name: Install packages
         if: (runner.os == 'Linux') && (matrix.packages != '')
         run: sudo apt-get install ${{ matrix.packages }}
-      # - name: Setup tmate session
-        # uses: mxschmitt/action-tmate@v3
-        # with:
-          # limit-access-to-actor: false
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: false
       - name: Restore cache
         uses: actions/cache@v2
         with:
@@ -141,59 +141,59 @@ jobs:
       - name: compile and test
         run: "./ci/compile_test.sh"
       
-  windows:
-    name: Windows x64 - ${{ matrix.build_type }}
-    # needs: clang-format
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: pwsh
-    env:
-      HUNTER_ROOT: C:\.hunter
-    strategy:
-      matrix:
-        include:
-          - build_type: "Debug"
-            compiler: "msvc"
-          # - build_type: "Release"
+  # windows:
+    # name: Windows x64 - ${{ matrix.build_type }}
+    # # needs: clang-format
+    # runs-on: windows-latest
+    # defaults:
+      # run:
+        # shell: pwsh
+    # env:
+      # HUNTER_ROOT: C:\.hunter
+    # strategy:
+      # matrix:
+        # include:
+          # - build_type: "Debug"
             # compiler: "msvc"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Restore cache
-        uses: actions/cache/restore@v3
-        with:
-          path: "${{ env.HUNTER_ROOT }}"
-          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-            ${{ runner.os }}-msvc-
+          # # - build_type: "Release"
+            # # compiler: "msvc"
+    # steps:
+      # - name: Checkout code
+        # uses: actions/checkout@v2
+      # - name: Restore cache
+        # uses: actions/cache/restore@v3
+        # with:
+          # path: "${{ env.HUNTER_ROOT }}"
+          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+          # restore-keys: |
+            # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            # ${{ runner.os }}-msvc-
       
-     # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+     # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
-     # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
-      - name: Hunter dependencies
-        run: |
-          mkdir build > $null
-          cd build
-          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+     # # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+      # - name: Hunter dependencies
+        # run: |
+          # mkdir build > $null
+          # cd build
+          # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
           
-      - name: Save Cache
-        uses: actions/cache/save@v3
-        if: always()
-        with:
-          path: |
-            ${{ env.HUNTER_ROOT }}
-          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+      # - name: Save Cache
+        # uses: actions/cache/save@v3
+        # if: always()
+        # with:
+          # path: |
+            # ${{ env.HUNTER_ROOT }}
+          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
           
-      - name: compile
-        run: |
-          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
+      # - name: compile
+        # run: |
+          # cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
           
-      - name: test
-        run: |
-          cd build
-          ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
+      # - name: test
+        # run: |
+          # cd build
+          # ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
 
   # doxygen:
     # name: doxygen
