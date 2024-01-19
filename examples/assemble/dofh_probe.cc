@@ -23,19 +23,18 @@
  */
 
 void dofProbe() {
-  std::cout << "Probing DofHandler output for one cell of test mesh #3"
-            << '\n';
+  std::cout << "Probing DofHandler output for one cell of test mesh #3" << '\n';
   // Generate test mesh number 3
   constexpr int selector = 3;
   const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
   // Create a dof handler object describing a uniform distribution
   // of shape functions
-  const lf::assemble::UniformFEDofHandler dofh(mesh_p,
-                                         {{lf::base::RefEl::kPoint(), 0},
-                                          {lf::base::RefEl::kSegment(), 1},
-                                          {lf::base::RefEl::kTria(), 2},
-                                          {lf::base::RefEl::kQuad(), 2}});
+  const lf::assemble::UniformFEDofHandler dofh(
+      mesh_p, {{lf::base::RefEl::kPoint(), 0},
+               {lf::base::RefEl::kSegment(), 1},
+               {lf::base::RefEl::kTria(), 2},
+               {lf::base::RefEl::kQuad(), 2}});
   // Copious output of information about dof handler
   // PrintInfo(std::cout, dof_handler, 30);
   LF_ASSERT_MSG((mesh_p->NumEntities(0) > 8), "No cell number 8!");
@@ -61,7 +60,7 @@ void dofProbe() {
   std::cout << ")" << '\n';
 }
 
-int main(int /*argc*/, char **/*argv*/) {
+int main(int /*argc*/, char ** /*argv*/) {
   dofProbe();
   return 0;
 }

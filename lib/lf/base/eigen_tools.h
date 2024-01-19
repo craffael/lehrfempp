@@ -131,7 +131,7 @@ struct fmt::formatter<MATRIX> {
 
   template <typename FormatContext>
   auto format(const MATRIX& m, FormatContext& ctx) const {
-    std::stringstream ss; // NOLINT(misc-const-correctness)
+    std::stringstream ss;  // NOLINT(misc-const-correctness)
     const Eigen::IOFormat format(precision, 0, ", ", "\n", "[", "]");
     ss << m.format(format);
 
@@ -149,7 +149,7 @@ struct fmt::formatter<MATRIX> {
     int result = 0;
     while (begin != end) {
       if (!is_digit(*begin)) {
-        throw "compile time error, this is not a digit."; // NOLINT(hicpp-exception-baseclass)
+        throw "compile time error, this is not a digit.";  // NOLINT(hicpp-exception-baseclass)
       }
       result += (*begin - '0');
       result *= 10;

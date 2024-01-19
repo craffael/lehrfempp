@@ -178,7 +178,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     LF_VERIFY_MSG(its <= MAX_IT, "too many iterations.");
 
     points[i] = z;
-    
+
     weights(i) = (exp(lgamma(alpha + num_points) + lgamma(beta + num_points) -
                       lgamma(num_points + 1.) -
                       lgamma(static_cast<double>(num_points) + alfbet + 1.0)) *
