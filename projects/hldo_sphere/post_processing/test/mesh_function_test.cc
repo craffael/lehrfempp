@@ -40,7 +40,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_one_basic) {
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -49,7 +49,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_one_basic) {
   std::unique_ptr<lf::geometry::Geometry> geom1 =
       std::make_unique<lf::geometry::TriaO1>(triag1);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes1 = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes1.data(), 3), std::move(geom1));
+  factory.AddEntity(trig, std::span(nodes1.data(), 3), std::move(geom1));
   std::make_unique<lf::geometry::TriaO1>(triag1);
 
   // build mesh
@@ -137,7 +137,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_zero_basic) {
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -146,7 +146,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_zero_basic) {
   std::unique_ptr<lf::geometry::Geometry> geom1 =
       std::make_unique<lf::geometry::TriaO1>(triag1);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes1 = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes1.data(), 3), std::move(geom1));
+  factory.AddEntity(trig, std::span(nodes1.data(), 3), std::move(geom1));
   std::make_unique<lf::geometry::TriaO1>(triag1);
 
   // build mesh
@@ -212,7 +212,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_two_basic) {
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -221,7 +221,7 @@ TEST(projects_hldo_sphere_post_processing, mesh_function_whitney_two_basic) {
   std::unique_ptr<lf::geometry::Geometry> geom1 =
       std::make_unique<lf::geometry::TriaO1>(triag1);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes1 = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes1.data(), 3), std::move(geom1));
+  factory.AddEntity(trig, std::span(nodes1.data(), 3), std::move(geom1));
   std::make_unique<lf::geometry::TriaO1>(triag1);
 
   // build mesh

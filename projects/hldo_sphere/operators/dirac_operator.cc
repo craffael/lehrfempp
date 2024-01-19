@@ -1,8 +1,6 @@
 #include "dirac_operator.h"
 
-namespace projects::hldo_sphere {
-
-namespace operators {
+namespace projects::hldo_sphere::operators {
 
 void DiracOperator::Compute() {
   // create element matrix provider for the matrices A12, A21
@@ -59,10 +57,10 @@ void DiracOperator::Compute() {
       coo_A_23_m.triplets();
 
   // Add A_12 and A_21
-  for (Eigen::Triplet<double> triplet : triplets_A_21) {
-    int col = triplet.col();
-    int row = triplet.row();
-    complex val = complex(triplet.value(), 0.);
+  for (const Eigen::Triplet<double> triplet : triplets_A_21) {
+    const int col = triplet.col();
+    const int row = triplet.row();
+    const complex val = complex(triplet.value(), 0.);
     // A_21
     full_matrix.AddToEntry(row + n_dofs_vert, col, val);
     // A_12
@@ -70,10 +68,10 @@ void DiracOperator::Compute() {
   }
 
   // Add A_23 and A_32
-  for (Eigen::Triplet<double> triplet : triplets_A_23_m) {
-    int col = triplet.col();
-    int row = triplet.row();
-    complex val = complex(triplet.value(), 0.);
+  for (const Eigen::Triplet<double> triplet : triplets_A_23_m) {
+    const int col = triplet.col();
+    const int row = triplet.row();
+    const complex val = complex(triplet.value(), 0.);
 
     // Add A_23
     full_matrix.AddToEntry(row + n_dofs_vert, col + n_dofs_vert + n_dofs_edge,
@@ -144,5 +142,4 @@ void DiracOperator::SetMesh(std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   mesh_p_ = mesh_p;
 }
 
-}  // namespace operators
-}  // namespace projects::hldo_sphere
+}  // namespace projects::hldo_sphere::operators

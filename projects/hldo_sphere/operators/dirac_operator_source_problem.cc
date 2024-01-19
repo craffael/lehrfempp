@@ -1,8 +1,6 @@
 #include "dirac_operator_source_problem.h"
 
-namespace projects::hldo_sphere {
-
-namespace operators {
+namespace projects::hldo_sphere::operators {
 
 DiracOperatorSourceProblem::DiracOperatorSourceProblem()
     : coo_matrix_(lf::assemble::COOMatrix<complex>(1, 1)) {
@@ -10,7 +8,7 @@ DiracOperatorSourceProblem::DiracOperatorSourceProblem()
   std::unique_ptr<lf::mesh::MeshFactory> factory =
       std::make_unique<lf::mesh::hybrid2d::MeshFactory>(3);
 
-  std::shared_ptr<projects::hldo_sphere::mesh::SphereTriagMeshBuilder> sphere =
+  const std::shared_ptr<projects::hldo_sphere::mesh::SphereTriagMeshBuilder> sphere =
       std::make_shared<projects::hldo_sphere::mesh::SphereTriagMeshBuilder>(
           std::move(factory));
   sphere->setRefinementLevel(0);
@@ -25,11 +23,11 @@ DiracOperatorSourceProblem::DiracOperatorSourceProblem()
   mu_ = Eigen::Matrix<complex, Eigen::Dynamic, 1>(1);
 
   // create basic function
-  auto f_0 = [](Eigen::Matrix<double, 3, 1> x) -> complex { return 0; };
-  auto f_1 = [](Eigen::Matrix<double, 3, 1> x) -> Eigen::Matrix<complex, 3, 1> {
+  auto f_0 = [](Eigen::Matrix<double, 3, 1> const& /*x*/) -> complex { return 0; };
+  auto f_1 = [](Eigen::Matrix<double, 3, 1> const& /*x*/) -> Eigen::Matrix<complex, 3, 1> {
     return Eigen::Matrix<complex, 3, 1>::Zero();
   };
-  auto f_2 = [](Eigen::Matrix<double, 3, 1> x) -> complex { return 0; };
+  auto f_2 = [](const Eigen::Matrix<double, 3, 1> & /*x*/) -> complex { return 0; };
   f0_ = f_0;
   f1_ = f_1;
   f2_ = f_2;
@@ -45,7 +43,7 @@ void DiracOperatorSourceProblem::Compute() {
   lf::assemble::COOMatrix<complex> coo_mat = dirac_operator.GetGalerkinMatrix();
 
   // get righthandside vector
-  Eigen::Matrix<complex, Eigen::Dynamic, 1> phi =
+  const Eigen::Matrix<complex, Eigen::Dynamic, 1> phi =
       dirac_operator.GetLoadVector();
   phi_ = phi;
 
@@ -68,10 +66,10 @@ void DiracOperatorSourceProblem::Compute() {
       0, dof_handler_zero, dof_handler_zero, mass_matrix_provider_zero,
       coo_mass_mat_zero);
 
-  for (Eigen::Triplet<complex> triplet : coo_mass_mat_zero.triplets()) {
-    int col = triplet.col();
-    int row = triplet.row();
-    complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
+  for (const Eigen::Triplet<complex> triplet : coo_mass_mat_zero.triplets()) {
+    const int col = triplet.col();
+    const int row = triplet.row();
+    const complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
     coo_mat.AddToEntry(row, col, val);
   };
 
@@ -88,10 +86,10 @@ void DiracOperatorSourceProblem::Compute() {
       0, dof_handler_one, dof_handler_one, mass_matrix_provider_one,
       coo_mass_mat_one);
 
-  for (Eigen::Triplet<complex> triplet : coo_mass_mat_one.triplets()) {
-    int col = triplet.col() + n_dofs_zero;
-    int row = triplet.row() + n_dofs_zero;
-    complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
+  for (const Eigen::Triplet<complex> triplet : coo_mass_mat_one.triplets()) {
+    const lf::base::size_type col = triplet.col() + n_dofs_zero;
+    const lf::base::size_type row = triplet.row() + n_dofs_zero;
+    const complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
     coo_mat.AddToEntry(row, col, val);
   }
 
@@ -108,12 +106,12 @@ void DiracOperatorSourceProblem::Compute() {
       0, dof_handler_two, dof_handler_two, mass_matrix_provider_two,
       coo_mass_mat_two);
 
-  for (Eigen::Triplet<complex> triplet : coo_mass_mat_two.triplets()) {
+  for (const Eigen::Triplet<complex> triplet : coo_mass_mat_two.triplets()) {
     // n_dofs_one contains the number of edges and hence the
     // dimension of A_{11}
-    int col = triplet.col() + n_dofs_zero + n_dofs_one;
-    int row = triplet.row() + n_dofs_zero + n_dofs_one;
-    complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
+    const lf::base::size_type col = triplet.col() + n_dofs_zero + n_dofs_one;
+    const lf::base::size_type row = triplet.row() + n_dofs_zero + n_dofs_one;
+    const complex val = std::complex<double>(0., 1.) * k_ * triplet.value();
     coo_mat.AddToEntry(row, col, val);
   }
 
@@ -155,8 +153,8 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> DiracOperatorSourceProblem::GetMu(
   LF_ASSERT_MSG(index < 3 && index >= 0,
                 "Index must be in {0,1,2}, given " << index);
 
-  Eigen::Vector3d n;
-  Eigen::Vector3d s;
+  Eigen::Vector<lf::base::size_type,3> n;
+  Eigen::Vector<lf::base::size_type,3> s;
   n(0) = mesh_p_->NumEntities(2);
   s(0) = 0;
   n(1) = mesh_p_->NumEntities(1);
@@ -166,5 +164,4 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> DiracOperatorSourceProblem::GetMu(
   return mu_.segment(s(index), n(index)).real();
 }
 
-}  // namespace operators
-}  // namespace projects::hldo_sphere
+}  // namespace projects::hldo_sphere::operators

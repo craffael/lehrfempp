@@ -9,7 +9,7 @@
 namespace projects::hldo_sphere::assemble {
 
 Eigen::MatrixXd LaplaceMatrixProvider::Eval(
-    const lf::mesh::Entity &entity) const {
+    const lf::mesh::Entity &entity) {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
                 "Unsupported cell type " << entity.RefEl());
@@ -18,7 +18,7 @@ Eigen::MatrixXd LaplaceMatrixProvider::Eval(
   const auto *geom = entity.Geometry();
 
   // Compute the global vertex coordinates
-  Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
+  const Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
 
   // Construct the basis functions from curl of the standard hat functions
   const lf::uscalfe::FeLagrangeO1Tria<double> hat_func;

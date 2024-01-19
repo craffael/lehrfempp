@@ -3,7 +3,6 @@
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
@@ -84,7 +83,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -92,7 +91,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -176,7 +175,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -184,7 +183,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -261,7 +260,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -269,7 +268,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -345,7 +344,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_two_form_test_regular) {
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -353,7 +352,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_two_form_test_regular) {
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
 
   // Define function f
@@ -436,7 +435,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -444,7 +443,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
 
   // Define function f
@@ -599,7 +598,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -607,7 +606,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -691,7 +690,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -699,7 +698,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -776,7 +775,7 @@ TEST(projects_hldo_sphere_assembly,
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -784,7 +783,7 @@ TEST(projects_hldo_sphere_assembly,
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
 
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
@@ -860,7 +859,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_two_form_test_flat) {
     edge_endpoints[i].col(0) = vertices.col(edge_nodes[i][0]);
     edge_endpoints[i].col(1) = vertices.col(edge_nodes[i][1]);
     edge_geom[i] = std::make_unique<lf::geometry::SegmentO1>(edge_endpoints[i]);
-    factory.AddEntity(seg, nonstd::span(edge_nodes[i].data(), 2),
+    factory.AddEntity(seg, std::span(edge_nodes[i].data(), 2),
                       std::move(edge_geom[i]));
   }
 
@@ -868,7 +867,7 @@ TEST(projects_hldo_sphere_assembly, vector_provider_two_form_test_flat) {
   std::unique_ptr<lf::geometry::Geometry> geom =
       std::make_unique<lf::geometry::TriaO1>(vertices);
   const std::array<lf::mesh::MeshFactory::size_type, 3> nodes = {0, 1, 2};
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
 
   // Define function f

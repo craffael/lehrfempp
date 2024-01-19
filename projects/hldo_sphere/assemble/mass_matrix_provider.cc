@@ -8,7 +8,7 @@
 
 namespace projects::hldo_sphere::assemble {
 
-Eigen::MatrixXd MassMatrixProvider::Eval(const lf::mesh::Entity &entity) const {
+Eigen::MatrixXd MassMatrixProvider::Eval(const lf::mesh::Entity &entity) {
   // Only triangles are supported
   LF_VERIFY_MSG(entity.RefEl() == lf::base::RefEl::kTria(),
                 "Unsupported cell type " << entity.RefEl());

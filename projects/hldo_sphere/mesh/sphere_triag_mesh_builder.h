@@ -88,7 +88,7 @@ class SphereTriagMeshBuilder {
    * set with `setRadius(r)` and the refinement level is set with
    * `setRefinementLevel(n)`.
    */
-  std::shared_ptr<lf::mesh::Mesh> Build();
+  std::shared_ptr<lf::mesh::Mesh> Build() const;
 
  private:
   double radius_;

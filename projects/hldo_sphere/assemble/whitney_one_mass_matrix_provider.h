@@ -61,7 +61,7 @@ class WhitneyOneMassMatrixProvider {
    *
    * @note Only triangular cells are supported
    */
-  Eigen::MatrixXd Eval(const lf::mesh::Entity &entity) const;
+  static Eigen::MatrixXd Eval(const lf::mesh::Entity &entity);
 
   /**
    * @brief All entities are regarded as active

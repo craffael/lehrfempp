@@ -29,19 +29,19 @@ int main(int arg, char** args) {
   // read out
   if (arg != 4 && arg != 5) {
     std::cerr << "Usage: " << args[0]
-              << "smallest_mesh largest_mesh radius [verbose]" << std::endl;
-    exit(1);
+              << "smallest_mesh largest_mesh radius [verbose]" << '\n';
+    std::quick_exit(1);
   }
 
-  double radius;
-  sscanf(args[3], "%lf", &radius);
+  const double radius = std::stod(args[3]);
   sphere.setRadius(radius);
 
-  int largest_mesh = atoi(args[2]);
-  int smallest_mesh = atoi(args[1]);
+  const int largest_mesh = std::stoi(args[2]);
+  const int smallest_mesh = std::stoi(args[1]);
   for (int i = 0; i <= largest_mesh; i++) {
     // create mesh
-    int refinement_level = i + smallest_mesh;
+    // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
+    const int refinement_level = i + smallest_mesh; 
 
     sphere.setRefinementLevel(i);
     const std::shared_ptr<lf::mesh::Mesh> mesh = sphere.Build();
@@ -51,22 +51,22 @@ int main(int arg, char** args) {
     if (i == 0 && arg == 5 && std::string(args[4]) == "verbose") {
       std::cout << "\n\n\nPoint information";
       for (const lf::mesh::Entity* point : mesh->Entities(2)) {
-        Eigen::MatrixXd vertex = lf::geometry::Corners(*(point->Geometry()));
-        int index = mesh->Index(*point);
+        const Eigen::MatrixXd vertex = lf::geometry::Corners(*(point->Geometry()));
+        const lf::base::size_type index = mesh->Index(*point);
         std::cout << "\n\nPoint " << index << "\n" << vertex;
       }
 
       for (const lf::mesh::Entity* cell_p : mesh->Entities(0)) {
-        int global_cell_index = mesh->Index(*cell_p);
+        const lf::base::size_type global_cell_index = mesh->Index(*cell_p);
         auto orientations = cell_p->RelativeOrientations();
-        Eigen::MatrixXd vertices = lf::geometry::Corners(*(cell_p->Geometry()));
+        const Eigen::MatrixXd vertices = lf::geometry::Corners(*(cell_p->Geometry()));
         std::cout << "\n\n\nInfo for cell " << global_cell_index << "\n";
         std::cout << "Corners:\n" << vertices;
 
         int i = 0;
         for (const lf::mesh::Entity* edge_p : cell_p->SubEntities(1)) {
-          int global_edge_index = mesh->Index(*edge_p);
-          int sign = lf::mesh::to_sign(orientations[i]);
+          const lf::base::size_type global_edge_index = mesh->Index(*edge_p);
+          const int sign = lf::mesh::to_sign(orientations[i]);
           std::cout << "\n\nEdge local " << i << " global " << global_edge_index
                     << " orientation " << sign;
           i++;
@@ -75,7 +75,7 @@ int main(int arg, char** args) {
     }
 
     // write mesh out with refinement_level and radius cut to 6 decimals
-    lf::io::VtkWriter vtk_writer_1(mesh, "meshs/sphere_" + std::to_string(i) +
+    const lf::io::VtkWriter vtk_writer_1(mesh, "meshs/sphere_" + std::to_string(i) +
                                              "_" + std::to_string(radius) +
                                              ".vtk");
   }

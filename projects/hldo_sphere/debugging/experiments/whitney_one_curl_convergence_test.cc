@@ -9,12 +9,12 @@
  */
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " max_refinement_level" << std::endl;
-    exit(1);
+    std::cerr << "Usage: " << argv[0] << " max_refinement_level" << '\n';
+    std::terminate();
   }
 
-  unsigned refinement_level = atoi(argv[1]);
-  std::cout << "max_refinement_level : " << refinement_level << std::endl;
+  const unsigned refinement_level = std::stoi(argv[1]);
+  std::cout << "max_refinement_level : " << refinement_level << '\n';
 
   // mathematica function output requries the following helpers
   auto Power = [](double a, double b) -> double { return std::pow(a, b); };
@@ -23,12 +23,12 @@ int main(int argc, char *argv[]) {
   auto Sqrt = [](double a) -> double { return std::sqrt(a); };
 
   // Compute the analytic solution of the problem
-  auto u_one = [&](const Eigen::Vector3d x_vec) -> Eigen::Vector3d {
+  auto u_one = [&](const Eigen::Vector3d &x_vec) -> Eigen::Vector3d {
     // first scale to the circle
     Eigen::Vector3d x_ = x_vec / x_vec.norm();
-    double x = x_(0);
-    double y = x_(1);
-    double z = x_(2);
+    const double x = x_(0);
+    const double y = x_(1);
+    const double z = x_(2);
 
     Eigen::VectorXd ret(3);
 
@@ -38,22 +38,22 @@ int main(int argc, char *argv[]) {
   };
 
   // Compute the analytic solution of the problem
-  auto u_two = [&](const Eigen::Vector3d x_vec) -> double {
+  auto u_two = [&](const Eigen::Vector3d &x_vec) -> double {
     // first scale to the circle
     Eigen::Vector3d x_ = x_vec / x_vec.norm();
-    double x = x_(0);
-    double y = x_(1);
-    double z = x_(2);
+    const double x = x_(0);
+    const double y = x_(1);
+    const double z = x_(2);
 
     return sin(z);
   };
 
-  double ana_sol = -7.5691944739878640736;
+  const double ana_sol = -7.5691944739878640736;
 
   projects::hldo_sphere::debugging::WhitneyOneCurlTest test;
   test.SetAnaSol(ana_sol);
   test.SetFunctions(u_two, u_one);
-  test.Compute(refinement_level);
+  test.Compute(lf::base::narrow<int>(refinement_level));
 
   return 0;
 }

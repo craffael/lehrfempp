@@ -2,8 +2,7 @@
 
 #include "debugging.h"
 
-namespace projects::hldo_sphere {
-namespace debugging {
+namespace projects::hldo_sphere::debugging {
 
 /**
  *
@@ -38,7 +37,7 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
   sphere.setRadius(1.);
 
   // start timer for total time
-  std::chrono::steady_clock::time_point start_time_total =
+  const std::chrono::steady_clock::time_point start_time_total =
       std::chrono::steady_clock::now();
 
   // Initialize refinement level
@@ -61,10 +60,12 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
     // end timer
     std::chrono::steady_clock::time_point end_time =
         std::chrono::steady_clock::now();
-    double elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             end_time - start_time)
-                             .count() /
-                         1000.;
+    auto elapsed_sec =
+        lf::base::narrow<double>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(end_time -
+                                                                  start_time)
+                .count()) /
+        1000.;
 
     std::cout << " -> Built Mesh " << elapsed_sec << " [s] " << std::flush;
 
@@ -79,9 +80,10 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
 
     // end timer
     end_time = std::chrono::steady_clock::now();
-    elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      end_time - start_time)
-                      .count() /
+    elapsed_sec = lf::base::narrow<double>(
+                      std::chrono::duration_cast<std::chrono::milliseconds>(
+                          end_time - start_time)
+                          .count()) /
                   1000.;
 
     std::cout << " -> Computed LSE " << elapsed_sec << " [s] " << std::flush;
@@ -95,9 +97,10 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
     // end timer
     end_time = std::chrono::steady_clock::now();
 
-    elapsed_sec = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      end_time - start_time)
-                      .count() /
+    elapsed_sec = lf::base::narrow<double>(
+                      std::chrono::duration_cast<std::chrono::milliseconds>(
+                          end_time - start_time)
+                          .count()) /
                   1000.;
 
     std::cout << " -> Solved System " << elapsed_sec << " [s] " << std::flush;
@@ -109,12 +112,13 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
   }  // end loop level
 
   // end timer total
-  std::chrono::steady_clock::time_point end_time_total =
+  const std::chrono::steady_clock::time_point end_time_total =
       std::chrono::steady_clock::now();
-  double elapsed_sec_total =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end_time_total -
-                                                            start_time_total)
-          .count() /
+  const double elapsed_sec_total =
+      lf::base::narrow<double>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              end_time_total - start_time_total)
+              .count()) /
       1000.;
 
   std::cout << "\nTotal computation time for all levels " << elapsed_sec_total
@@ -126,12 +130,12 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
    */
 
   // create results direcotry
-  std::string main_dir = "results";
+  const std::string main_dir = "results";
   std::filesystem::create_directory(main_dir);
 
   // prepare output
-  int table_width = 13;
-  int precision = 4;
+  const int table_width = 13;
+  const int precision = 4;
 
   // create csv file
   std::ofstream csv_file;
@@ -148,12 +152,13 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
     return std::abs(a) * std::abs(a);
   };
   auto square_vector =
-      [](Eigen::Matrix<complex, Eigen::Dynamic, 1> a) -> double {
+      [](const Eigen::Matrix<complex, Eigen::Dynamic, 1> &a) -> double {
     return a.squaredNorm();
   };
 
   // define quadrule for norms
-  lf::quad::QuadRule qr = lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4);
+  const lf::quad::QuadRule qr =
+      lf::quad::make_QuadRule(lf::base::RefEl::kTria(), 4);
 
   Eigen::VectorXd L2ErrorZero = Eigen::VectorXd::Zero(refinement_levels);
   Eigen::VectorXd L2ErrorOne = Eigen::VectorXd::Zero(refinement_levels);
@@ -163,7 +168,7 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
   // introduce columns for errors
   csv_file << ",L2ErrorZero,DiffOfL2Zero,L2ErrorOne,DiffOfL2One,"
               "L2ErrorTwo,DiffOfL2Two";
-  csv_file << std::endl;
+  csv_file << '\n';
 
   // loop over all levels contained in the solution
   for (lf::base::size_type lvl = 0; lvl <= refinement_levels; ++lvl) {
@@ -172,19 +177,21 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
 
     // compute meshwidth
     for (const lf::mesh::Entity *e : sol_mesh->Entities(1)) {
-      double h = lf::geometry::Volume(*(e->Geometry()));
-      if (h > hMax(lvl)) hMax(lvl) = h;
+      const double h = lf::geometry::Volume(*(e->Geometry()));
+      if (h > hMax(lvl)) {
+        hMax(lvl) = h;
+      }
     }
 
     // print level and mesh informations
     csv_file << sol_mesh->NumEntities(0) << "," << sol_mesh->NumEntities(1)
              << "," << sol_mesh->NumEntities(2) << "," << hMax(lvl);
 
-    projects::hldo_sphere::post_processing::MeshFunctionWhitneyZero mf_zero(
+    const projects::hldo_sphere::post_processing::MeshFunctionWhitneyZero mf_zero(
         solutions.mu_zero[lvl], sol_mesh);
-    projects::hldo_sphere::post_processing::MeshFunctionWhitneyOne mf_one(
+    const projects::hldo_sphere::post_processing::MeshFunctionWhitneyOne mf_one(
         solutions.mu_one[lvl], sol_mesh);
-    projects::hldo_sphere::post_processing::MeshFunctionWhitneyTwo mf_two(
+    const projects::hldo_sphere::post_processing::MeshFunctionWhitneyTwo mf_two(
         solutions.mu_two[lvl], sol_mesh);
 
     // get error for zero form
@@ -230,5 +237,4 @@ void DiracConvergenceTest::Compute(unsigned refinement_levels) {
   csv_file.close();
 };
 
-}  // namespace debugging
-}  // namespace projects::hldo_sphere
+}  // namespace projects::hldo_sphere::debugging

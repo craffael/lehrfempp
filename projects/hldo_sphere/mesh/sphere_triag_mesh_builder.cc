@@ -1,7 +1,6 @@
 #include "sphere_triag_mesh_builder.h"
 
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 
 #include <array>
@@ -10,14 +9,17 @@
 
 namespace projects::hldo_sphere::mesh {
 
-std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() const {
   const double r = radius_;
   const lf::base::size_type l = refinement_level_;
 
   // the order in which we create mesh elements will be top down
   // in rings, of which the number is computed based on the
   // refinement_level_ = l
-  const lf::base::size_type ring_count = std::pow(2, l + 1) + 1;
+  //
+  // (1 << (l+1))+1 = std::pow(2, l + 1) + 1
+  const lf::base::size_type ring_count = (lf::base::size_type{1} << (l+1))+1;
 
   // number of overall vertices
   const lf::base::size_type vertex_count =
@@ -43,9 +45,8 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     LF_ASSERT_MSG(0 <= r_idx && r_idx < ring_count, "ring index out of range");
     if (r_idx <= (ring_count / 2)) {
       return r_idx;
-    } else {
-      return ring_count - r_idx - 1;
     }
+    return ring_count - r_idx - 1;
   };
 
   // returns the number of vertices on a ring
@@ -55,9 +56,8 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     LF_ASSERT_MSG(0 <= r_idx && r_idx < ring_count, "ring index out of range");
     if (r_tilde(r_idx) == 0) {
       return 1;
-    } else {
-      return r_tilde(r_idx) * 4;
     }
+    return r_tilde(r_idx) * 4;
   };
 
   // returns the ring index on which the vertex is located as well as
@@ -159,7 +159,8 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
     LF_ASSERT_MSG(0 < r_idx && r_idx < ring_count, "ring index out of range");
     LF_ASSERT_MSG(0 <= v_idx && v_idx < vert_count_on_ring(r_idx),
                   "vertex index out of range");
-    lf::base::size_type num_v_per_quarter = vert_count_on_ring(r_idx) / 4;
+    const lf::base::size_type num_v_per_quarter = vert_count_on_ring(r_idx) / 4;
+    LF_ASSERT_MSG(num_v_per_quarter > 0, "Internal error");
     return v_idx / num_v_per_quarter;
   };
 
@@ -175,10 +176,8 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
   // two for every vertex except the ones the first and last ring
   const lf::base::RefEl ref_el = lf::base::RefEl::kTria();
   for (lf::base::size_type i = 1; i < vertex_count - 1; ++i) {
-    lf::base::size_type r_idx;
-    lf::base::size_type v_local_idx;
-    std::tie(r_idx, v_local_idx) = local_vert_idx(i);
-    const int quarter = get_quarter(r_idx, v_local_idx);
+    auto [r_idx, v_local_idx] = local_vert_idx(i);
+    const int quarter = lf::base::narrow<int>(get_quarter(r_idx, v_local_idx));
 
     lf::base::size_type v1;
     lf::base::size_type v2;
@@ -208,7 +207,7 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
 
     std::unique_ptr<lf::geometry::Geometry> upper_geom =
         std::make_unique<lf::geometry::TriaO1>(upper_verts);
-    mesh_factory_->AddEntity(ref_el, nonstd::span(upper_trig.data(), 3),
+    mesh_factory_->AddEntity(ref_el, std::span(upper_trig.data(), 3),
                              std::move(upper_geom));
 
     if (vert_count_on_ring(r_idx) > vert_count_on_ring(r_idx + 1)) {
@@ -234,7 +233,7 @@ std::shared_ptr<lf::mesh::Mesh> SphereTriagMeshBuilder::Build() {
 
     std::unique_ptr<lf::geometry::Geometry> lower_geom =
         std::make_unique<lf::geometry::TriaO1>(lower_verts);
-    mesh_factory_->AddEntity(ref_el, nonstd::span(lower_trig.data(), 3),
+    mesh_factory_->AddEntity(ref_el, std::span(lower_trig.data(), 3),
                              std::move(lower_geom));
   }
 
