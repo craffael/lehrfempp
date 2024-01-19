@@ -661,7 +661,8 @@ struct OperatorMultiplication {
  * @snippet mesh_function_binary.cc one_trig
  */
 template <MeshFunction A, MeshFunction B>
-auto operator+(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorAddition, A, B> {
+auto operator+(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorAddition, A, B> {
   return MeshFunctionBinary(internal::OperatorAddition{}, a, b);
 }
 
@@ -689,7 +690,8 @@ auto operator+(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorAdd
  * @snippet mesh_function_binary.cc subtract
  */
 template <MeshFunction A, MeshFunction B>
-auto operator-(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorSubtraction, A, B> {
+auto operator-(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorSubtraction, A, B> {
   return MeshFunctionBinary(internal::OperatorSubtraction{}, a, b);
 }
 
@@ -717,7 +719,8 @@ auto operator-(const A& a, const B& b)->MeshFunctionBinary<internal::OperatorSub
  * @snippet mesh_function_binary.cc product
  */
 template <MeshFunction A, MeshFunction B>
-auto operator*(const A& a, const B& b) -> MeshFunctionBinary<internal::OperatorMultiplication, A, B> {
+auto operator*(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorMultiplication, A, B> {
   return MeshFunctionBinary(internal::OperatorMultiplication{}, a, b);
 }
 

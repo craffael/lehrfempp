@@ -40,34 +40,37 @@ int main(int /*argc*/, const char** /*argv*/) {
   // ======================================================================
 
   // Coefficients:
- auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
-   return Eigen::Matrix<double, 2, 2>::Identity();
- };
- auto u = [](Eigen::Vector2d x) -> double {
-   return (std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]));
- };
- auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-   return lf::base::kPi *
-          ((Eigen::Vector2d() << std::cos(lf::base::kPi * x(0)) * std::sin(lf::base::kPi * x(1)),
-            std::sin(lf::base::kPi * x(0)) * std::cos(lf::base::kPi * x(1)))
-               .finished());
- };
- auto f = [&u](Eigen::Vector2d x) -> double { return (2.0*lf::base::kPi * lf::base::kPi * u(x)); };
- /*
   auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
     return Eigen::Matrix<double, 2, 2>::Identity();
   };
   auto u = [](Eigen::Vector2d x) -> double {
-    return (x[0] * (1.0 - x[0]) * x[1] * (1.0 - x[1]));
+    return (std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]));
   };
   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return ((Eigen::Vector2d() << (1 - 2 * x[0]) * x[1] * (1 - x[1]),
-             x[0] * (1 - x[0]) * (1 - 2 * x[1]))
+    return lf::base::kPi *
+           ((Eigen::Vector2d() << std::cos(lf::base::kPi * x(0)) *
+                                      std::sin(lf::base::kPi * x(1)),
+             std::sin(lf::base::kPi * x(0)) * std::cos(lf::base::kPi * x(1)))
                 .finished());
   };
-  auto f = [](Eigen::Vector2d x) -> double {
-    return 2 * (x[1] * (1 - x[1]) + x[0] * (1 - x[0]));
-    }; */
+  auto f = [&u](Eigen::Vector2d x) -> double {
+    return (2.0 * lf::base::kPi * lf::base::kPi * u(x));
+  };
+  /*
+   auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
+     return Eigen::Matrix<double, 2, 2>::Identity();
+   };
+   auto u = [](Eigen::Vector2d x) -> double {
+     return (x[0] * (1.0 - x[0]) * x[1] * (1.0 - x[1]));
+   };
+   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+     return ((Eigen::Vector2d() << (1 - 2 * x[0]) * x[1] * (1 - x[1]),
+              x[0] * (1 - x[0]) * (1 - 2 * x[1]))
+                 .finished());
+   };
+   auto f = [](Eigen::Vector2d x) -> double {
+     return 2 * (x[1] * (1 - x[1]) + x[0] * (1 - x[0]));
+     }; */
 
   // Wrap diffusion coefficient into a MeshFunction
   lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};

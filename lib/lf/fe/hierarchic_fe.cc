@@ -47,7 +47,6 @@ double ilegendre_dt(unsigned n, double x, double t) {
   return -0.5 * (legendre(n - 1, x, t) + t * legendre(n - 2, x, t));
 }
 
-
 // NOLINTNEXTLINE(misc-no-recursion)
 double legendre_dx(unsigned n, double x, double t) {
   if (n == 0) {
@@ -90,7 +89,6 @@ double jacobi(unsigned n, double alpha, double beta, double x) {
 double jacobi(unsigned n, double alpha, double x) {
   return jacobi(n, alpha, 0, x);
 }
-
 
 double ijacobi(unsigned n, double alpha, double x) {
   if (n == 0) {

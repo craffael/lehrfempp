@@ -17,8 +17,7 @@ namespace lf::refinement {
 // Make sure MeshFunctionTransfer only depends on Archetype functionality:
 template class MeshFunctionTransfer<mesh::utils::MeshFunctionAT<double>>;
 
-
-}
+}  // namespace lf::refinement
 
 TEST(lf_refinement, MeshFunctionTransferConcept) {
   using mf_scalar = lf::mesh::utils::MeshFunctionConstant<double>;

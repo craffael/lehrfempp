@@ -78,8 +78,7 @@ Triangle::Triangle(size_type index,
 }
 
 // Acessing sub-entities
-std::span<const Entity* const> Triangle::SubEntities(
-    unsigned rel_codim) const {
+std::span<const Entity* const> Triangle::SubEntities(unsigned rel_codim) const {
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   switch (rel_codim) {
     case 2:

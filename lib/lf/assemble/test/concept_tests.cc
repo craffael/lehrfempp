@@ -6,16 +6,18 @@
  * @copyright MIT License
  */
 
-#include <lf/assemble/assemble.h>
 #include <gtest/gtest.h>
+#include <lf/assemble/assemble.h>
 
 namespace lf::assemble::tests {
 
 // Make sure the Archetypes really fulfills the concept.
 static_assert(EntityMatrixProvider<EntityMatrixProviderAT<double>>);
-static_assert(EntityMatrixProvider<EntityMatrixProviderAT<std::complex<double>>>);
+static_assert(
+    EntityMatrixProvider<EntityMatrixProviderAT<std::complex<double>>>);
 
 static_assert(EntityVectorProvider<EntityVectorProviderAT<double>>);
-static_assert(EntityVectorProvider<EntityVectorProviderAT<std::complex<double>>>);
+static_assert(
+    EntityVectorProvider<EntityVectorProviderAT<std::complex<double>>>);
 
-}
+}  // namespace lf::assemble::tests

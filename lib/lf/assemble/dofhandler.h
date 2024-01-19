@@ -748,7 +748,6 @@ class DynamicFEDofHandler : public DofHandler {
 
 }  // namespace lf::assemble
 
-
 /// \cond
 /**
  * @brief Make lf::assemble::DofHandler formattable by fmt

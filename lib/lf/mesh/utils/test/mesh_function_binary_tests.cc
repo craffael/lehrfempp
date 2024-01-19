@@ -32,8 +32,8 @@ template auto operator-(const MeshFunctionAT<double>&,
 
 template auto operator*(const MeshFunctionAT<double>&,
                         const MeshFunctionAT<double>&)
-    -> MeshFunctionBinary<internal::OperatorMultiplication, MeshFunctionAT<double>,
-                          MeshFunctionAT<double>>;
+    -> MeshFunctionBinary<internal::OperatorMultiplication,
+                          MeshFunctionAT<double>, MeshFunctionAT<double>>;
 
 }  // namespace lf::mesh::utils
 

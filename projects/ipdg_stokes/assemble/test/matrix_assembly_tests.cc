@@ -77,8 +77,8 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_1) {
     verts << vertices.col(v1), vertices.col(v2);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kSegment(),
-                      std::span(indices.data(), 2), std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kSegment(), std::span(indices.data(), 2),
+                      std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);
@@ -155,8 +155,8 @@ TEST(projects_ipdg_stokes_assembly, global_matrix_assembly_2) {
     verts << vertices.col(v1), vertices.col(v2);
     std::unique_ptr<lf::geometry::Geometry> geom =
         std::make_unique<lf::geometry::SegmentO1>(verts);
-    factory.AddEntity(lf::base::RefEl::kSegment(),
-                      std::span(indices.data(), 2), std::move(geom));
+    factory.AddEntity(lf::base::RefEl::kSegment(), std::span(indices.data(), 2),
+                      std::move(geom));
   };
   add_edge(0, 1);
   add_edge(1, 3);

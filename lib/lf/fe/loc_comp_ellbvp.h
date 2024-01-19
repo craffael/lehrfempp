@@ -24,7 +24,7 @@
 
 namespace lf::fe {
 /**
- * 
+ *
  * @headerfile lf/fe/fe.h
  * @brief Class for computing element matrices for general scalar-valued finite
  * elements and homogeneous 2nd-order elliptic bilinear forms
@@ -205,7 +205,7 @@ DiffusionElementMatrixProvider<SCALAR, DIFF_COEFF>::Eval(
 }
 
 /**
- * 
+ *
  * @headerfile lf/fe/fe.h
  * @brief Class for local quadrature based computation of element matrix for
  * Lagrangian finite elements and a weighted \f$L^2\f$ inner product.
@@ -366,7 +366,7 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
 }
 
 /**
- * 
+ *
  * @headerfile lf/fe/fe.h
  * @brief Quadrature-based computation of local mass matrix for an edge
  *
@@ -376,8 +376,8 @@ MassElementMatrixProvider<SCALAR, REACTION_COEFF>::Eval(
  * scalar valued coefficient \f$ \gamma \f$
  * @tparam EDGESELECTOR predicate defining which edges are included
  *
- * This \ref assemble::EntityMatrixProvider "EntityMatrixProvider" class corresponds to
- * the the element matrix for the bilinear form
+ * This \ref assemble::EntityMatrixProvider "EntityMatrixProvider" class
+ * corresponds to the the element matrix for the bilinear form
  * @f[
  *     (u,v) \mapsto \int\limits_e
  * \gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
@@ -536,7 +536,6 @@ MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
  */
 template <base::Scalar SCALAR, mesh::utils::MeshFunction MESH_FUNCTION>
 class ScalarLoadElementVectorProvider final {
-
  public:
   using scalar_t =
       decltype(static_cast<SCALAR>(0) *
@@ -696,7 +695,8 @@ ScalarLoadElementVectorProvider<SCALAR, MESH_FUNCTION>::Eval(
  * ~~~
  * which returns true, if the edge is to be included in assembly.
  */
-template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR, class EDGESELECTOR = base::PredicateTrue>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR,
+          class EDGESELECTOR = base::PredicateTrue>
 class ScalarLoadEdgeVectorProvider final {
  public:
   using Scalar =
@@ -765,7 +765,8 @@ ScalarLoadEdgeVectorProvider(PTR, FUNCTOR, EDGESELECTOR = base::PredicateTrue{})
 // TODO(craffael) remove const once
 // https://developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR, class EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction FUNCTOR,
+          class EDGESELECTOR>
 typename ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::ElemVec
 ScalarLoadEdgeVectorProvider<SCALAR, FUNCTOR, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) const {

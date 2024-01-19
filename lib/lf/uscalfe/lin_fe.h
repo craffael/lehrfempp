@@ -27,7 +27,7 @@
 
 namespace lf::uscalfe {
 /**
- * 
+ *
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Computing the element matrix for the (negative) Laplacian
  *         and linear finite elements.

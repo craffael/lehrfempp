@@ -538,8 +538,7 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfPointUsage
    */
-  template <
-      mesh::utils::MeshFunction MESH_FUNCTION>
+  template <mesh::utils::MeshFunction MESH_FUNCTION>
   void WritePointData(const std::string& name,
                       const MESH_FUNCTION& mesh_function);
 
@@ -739,8 +738,7 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfCellUsage
    */
-  template <
-      mesh::utils::MeshFunction MESH_FUNCTION>
+  template <mesh::utils::MeshFunction MESH_FUNCTION>
   void WriteCellData(const std::string& name,
                      const MESH_FUNCTION& mesh_function);
 

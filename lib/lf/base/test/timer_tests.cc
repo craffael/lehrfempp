@@ -94,7 +94,8 @@ TEST(lf_base_timer, TimerMultiThread) {
   std::cout << t.Format() << std::endl;
   elapsed = t.Elapsed();
 
-  // Note this test fails on windows if the debugger is attached. Otherwise it seems to work most of the time.
+  // Note this test fails on windows if the debugger is attached. Otherwise it
+  // seems to work most of the time.
   EXPECT_GT(elapsed.system + elapsed.user, 1.1 * elapsed.wall);
 }
 

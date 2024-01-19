@@ -489,7 +489,8 @@ MassEdgeMatrixProvider(PTR, COEFF coeff,
 // https://
 // developercommunity.visualstudio.com/content/problem/180948/vs2017-155-c-cv-qualifiers-lost-on-type-alias-used.html
 // is resolved
-template <base::Scalar SCALAR, mesh::utils::MeshFunction COEFF, class EDGESELECTOR>
+template <base::Scalar SCALAR, mesh::utils::MeshFunction COEFF,
+          class EDGESELECTOR>
 typename MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::ElemMat
 MassEdgeMatrixProvider<SCALAR, COEFF, EDGESELECTOR>::Eval(
     const lf::mesh::Entity &edge) {

@@ -5,8 +5,8 @@
 
 #include <array>
 #include <cmath>
-#include <vector>
 #include <span>
+#include <vector>
 
 namespace projects::ipdg_stokes::mesh {
 

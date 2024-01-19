@@ -49,13 +49,13 @@ void dofProbe() {
             << dofh.NumInteriorDofs(*cell_p) << std::endl;
   std::cout << "dofh.GlobalDofIndices(*cell_p) = (";
   const auto gdof_idxs = dofh.GlobalDofIndices(*cell_p);
-  for (lf::base::glb_idx_t idx : gdof_idxs ) {
+  for (lf::base::glb_idx_t idx : gdof_idxs) {
     std::cout << idx << ", ";
   }
   std::cout << ")" << std::endl;
   std::cout << "dofh.InteriorGlobalDofIndices(*cell_p) = (";
-  const auto idof_idxs =  dofh.InteriorGlobalDofIndices(*cell_p);
-  for (lf::base::glb_idx_t idx : idof_idxs ) {
+  const auto idof_idxs = dofh.InteriorGlobalDofIndices(*cell_p);
+  for (lf::base::glb_idx_t idx : idof_idxs) {
     std::cout << idx << ", ";
   }
   std::cout << ")" << std::endl;

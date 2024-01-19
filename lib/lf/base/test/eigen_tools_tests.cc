@@ -22,7 +22,7 @@ TEST(eigenTools, IsEigen) {
   EXPECT_TRUE(EigenMatrix<Eigen::VectorXd>);
   EXPECT_TRUE(EigenMatrix<Eigen::Vector2d>);
   EXPECT_TRUE(EigenMatrix<Eigen::Matrix3cd>);
-  EXPECT_FALSE(EigenMatrix<decltype(Eigen::Vector3d(1,2,3) * 5)>);
+  EXPECT_FALSE(EigenMatrix<decltype(Eigen::Vector3d(1, 2, 3) * 5)>);
   EXPECT_FALSE(EigenMatrix<decltype(Eigen::Vector3d::Zero())>);
 }
 

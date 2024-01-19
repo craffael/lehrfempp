@@ -260,7 +260,7 @@ struct UnaryOpConjugate {
  * @note The MeshFunctionReturnType of `a` must support the minus operator!
  */
 template <MeshFunction A>
-auto operator-(const A& a) -> MeshFunctionUnary<internal::UnaryOpMinus, A>{
+auto operator-(const A& a) -> MeshFunctionUnary<internal::UnaryOpMinus, A> {
   return MeshFunctionUnary(internal::UnaryOpMinus{}, a);
 }
 
@@ -275,7 +275,8 @@ auto operator-(const A& a) -> MeshFunctionUnary<internal::UnaryOpMinus, A>{
  * valued.
  */
 template <MeshFunction A>
-auto squaredNorm(const A& a) -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, A> {
+auto squaredNorm(const A& a)
+    -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, A> {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);
 }
 
@@ -304,7 +305,7 @@ auto transpose(const A& a) -> MeshFunctionUnary<internal::UnaryOpTranspose, A> {
  * @return \ref mesh_function representing the pointwise adjoint of `a`.
  */
 template <MeshFunction A>
-auto adjoint(const A& a) -> MeshFunctionUnary<internal::UnaryOpAdjoint, A>{
+auto adjoint(const A& a) -> MeshFunctionUnary<internal::UnaryOpAdjoint, A> {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(base::EigenMatrix<returnType_t>,
                 "adjoint only supported for Eigen::Matrix valued mesh "
@@ -321,11 +322,11 @@ auto adjoint(const A& a) -> MeshFunctionUnary<internal::UnaryOpAdjoint, A>{
  * @return \ref mesh_function representing the pointwise conjugate of `a`.
  */
 template <MeshFunction A>
-auto conjugate(const A& a)->MeshFunctionUnary<internal::UnaryOpConjugate, A> {
+auto conjugate(const A& a) -> MeshFunctionUnary<internal::UnaryOpConjugate, A> {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(
-      base::EigenMatrix<returnType_t> ||
-          base::EigenArray<returnType_t> || base::Scalar<returnType_t>,
+      base::EigenMatrix<returnType_t> || base::EigenArray<returnType_t> ||
+          base::Scalar<returnType_t>,
       "conjugate() supports only Eigen::Matrix, Eigen::Array or Scalar valued "
       "mesh functions.");
   return MeshFunctionUnary(internal::UnaryOpConjugate{}, a);

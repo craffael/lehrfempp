@@ -30,11 +30,14 @@ template class ReactionDiffusionElementMatrixProvider<
     double, mesh::utils::MeshFunctionAT<Eigen::Vector2d>,
     mesh::utils::MeshFunctionAT<Eigen::Vector2d>>;
 
-template class MassEdgeMatrixProvider<double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+template class MassEdgeMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
 
-template class ScalarLoadElementVectorProvider<double, mesh::utils::MeshFunctionAT<double>>;
+template class ScalarLoadElementVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>>;
 
-template class ScalarLoadEdgeVectorProvider<double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+template class ScalarLoadEdgeVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
 
 }  // namespace lf::uscalfe
 

@@ -26,10 +26,12 @@ template auto squaredNorm(const MeshFunctionAT<double>&)
     -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, MeshFunctionAT<double>>;
 
 template auto transpose(const MeshFunctionAT<Eigen::VectorXd>&)
-    -> MeshFunctionUnary<internal::UnaryOpTranspose, MeshFunctionAT<Eigen::VectorXd>>;
+    -> MeshFunctionUnary<internal::UnaryOpTranspose,
+                         MeshFunctionAT<Eigen::VectorXd>>;
 
 template auto adjoint(const MeshFunctionAT<Eigen::Vector3d>&)
-    -> MeshFunctionUnary<internal::UnaryOpAdjoint, MeshFunctionAT<Eigen::Vector3d>>;
+    -> MeshFunctionUnary<internal::UnaryOpAdjoint,
+                         MeshFunctionAT<Eigen::Vector3d>>;
 
 template auto conjugate(const MeshFunctionAT<double>&)
     -> MeshFunctionUnary<internal::UnaryOpConjugate, MeshFunctionAT<double>>;

@@ -538,7 +538,6 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
 
 }  // namespace lf::base
 
-
 /// \cond
 /**
  * @brief Make lf::base::RefEl work with fmt

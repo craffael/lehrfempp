@@ -127,7 +127,8 @@ struct EntityMatrixProviderAT {
    * @brief 	Defines whether the entity `e` is taken into account by the
    * assembly routine.
    * @param e The entity which should be queried.
-   * @return true, if the entity `e` is taken into account by the assembly. Otherwise false.
+   * @return true, if the entity `e` is taken into account by the assembly.
+   * Otherwise false.
    */
   bool isActive(const mesh::Entity& e) {
     LF_VERIFY_MSG(false, "Should never be called");
@@ -135,7 +136,8 @@ struct EntityMatrixProviderAT {
   }
 
   /**
-   * @brief Returns the local element matrix for mesh entity `e`. Is only called if emp.isActive(e)==true.
+   * @brief Returns the local element matrix for mesh entity `e`. Is only called
+   * if emp.isActive(e)==true.
    * @param e The entity for which the local element matrix should be returned.
    * @return The local element matrix for mesh entity `e`.
    */
@@ -226,10 +228,12 @@ struct EntityVectorProviderAT {
   EntityVectorProviderAT(EntityVectorProviderAT&&) noexcept = delete;
 
   /// Copy assignment operator deleted because not part of the concept
-  auto operator=(const EntityVectorProviderAT&) noexcept -> EntityVectorProviderAT& = delete;
+  auto operator=(const EntityVectorProviderAT&) noexcept
+      -> EntityVectorProviderAT& = delete;
 
   /// Move assignment operator deleted because not part of the concept
-  auto operator=(EntityVectorProviderAT&&) noexcept -> EntityVectorProviderAT& = delete;
+  auto operator=(EntityVectorProviderAT&&) noexcept
+      -> EntityVectorProviderAT& = delete;
 
   /// Destructor
   ~EntityVectorProviderAT() noexcept = default;
@@ -247,7 +251,8 @@ struct EntityVectorProviderAT {
   }
 
   /**
-   * @brief Returns the local element vector for mesh entity `e`. Is only called if evp.isActive(e)==true.
+   * @brief Returns the local element vector for mesh entity `e`. Is only called
+   * if evp.isActive(e)==true.
    * @param e The entity for which the local element vector should be returned.
    * @return The local element vector for mesh entity `e`.
    */
