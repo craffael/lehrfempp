@@ -12,6 +12,32 @@
 
 #include "mesh_function_utils.h"
 
+namespace lf::mesh::utils {
+
+// Make sure the functionality in MeshFunctionUnary which relies on concepts
+// (such as MeshFunction), rely indeed only on the functionality in these
+// concepts. We do this by instantiating the corresponding functions/classes
+// using Archetypes.
+
+template auto operator-(const MeshFunctionAT<double>&)
+    -> MeshFunctionUnary<internal::UnaryOpMinus, MeshFunctionAT<double>>;
+
+template auto squaredNorm(const MeshFunctionAT<double>&)
+    -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, MeshFunctionAT<double>>;
+
+template auto transpose(const MeshFunctionAT<Eigen::VectorXd>&)
+    -> MeshFunctionUnary<internal::UnaryOpTranspose,
+                         MeshFunctionAT<Eigen::VectorXd>>;
+
+template auto adjoint(const MeshFunctionAT<Eigen::Vector3d>&)
+    -> MeshFunctionUnary<internal::UnaryOpAdjoint,
+                         MeshFunctionAT<Eigen::Vector3d>>;
+
+template auto conjugate(const MeshFunctionAT<double>&)
+    -> MeshFunctionUnary<internal::UnaryOpConjugate, MeshFunctionAT<double>>;
+
+}  // namespace lf::mesh::utils
+
 namespace lf::mesh::utils::test {
 
 struct X {

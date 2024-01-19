@@ -17,6 +17,10 @@ target_link_libraries(examples.ellbvp_msh.ellbvp_msh_demo
   )
 set_target_properties(examples.ellbvp_msh.ellbvp_msh_demo PROPERTIES FOLDER "examples")
 
+if(MSVC)
+  target_compile_options(examples.ellbvp_msh.ellbvp_msh_demo PRIVATE /bigobj)
+endif()
+
 add_custom_target(examples.ellbvp_msh.ellbvp_msh_demo_run COMMAND examples.ellbvp_msh.ellbvp_msh_demo)
 add_dependencies(examples_run examples.ellbvp_msh.ellbvp_msh_demo_run)
 set_target_properties(examples.ellbvp_msh.ellbvp_msh_demo_run PROPERTIES FOLDER "examples")

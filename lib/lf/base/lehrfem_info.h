@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __8efea66a20694b749ebcac463c2beaae
-#define __8efea66a20694b749ebcac463c2beaae
+#ifndef INCG8efea66a20694b749ebcac463c2beaae
+#define INCG8efea66a20694b749ebcac463c2beaae
 
 #include <string>
 
@@ -68,4 +68,4 @@ class LehrFemInfo {
 
 }  // namespace lf::base
 
-#endif  // __8efea66a20694b749ebcac463c2beaae
+#endif  // INCG8efea66a20694b749ebcac463c2beaae

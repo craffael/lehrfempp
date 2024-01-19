@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __c3c605c9e48646758bf03fab65d52836
-#define __c3c605c9e48646758bf03fab65d52836
+#ifndef c3c605c9e48646758bf03fab65d52836
+#define c3c605c9e48646758bf03fab65d52836
 
 #include <boost/assert.hpp>
 #include <sstream>
@@ -22,6 +22,17 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 }  // namespace lf::base
 
 /**
+ * @brief `LF_UNREACHABLE` is the same as `LF_VERIFY(false)` but its easier
+ * for the compiler to analyze and helps to avoid warnings about "control
+ * reached end of non-void function"
+ */
+#define LF_UNREACHABLE                                            \
+  {                                                               \
+    ::lf::base::AssertionFailed("false", __FILE__, __LINE__, ""); \
+    std::abort();                                                 \
+  }
+
+/**
  * @brief LF_VERIFY_MSG(expr, msg) aborts execution of the code if
  * `expr` evaluates to false.
  *
@@ -30,6 +41,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
  * in order to help IDE tools detect that
  * `BOOST_VERIFY_MSG(false, "message")` always aborts execution.
  */
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_VERIFY_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
@@ -39,6 +51,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
+// NOLINTEND(readability-simplify-boolean-expr)
 
 #ifdef NDEBUG
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
@@ -49,16 +62,18 @@ void AssertionFailed(const std::string& expr, const std::string& file,
     if (!(expr)) throw std::runtime_error(msg); \
   }
 
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_ASSERT_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
       std::stringstream ss;                                             \
       ss << msg; /* NOLINT */                                           \
       ::lf::base::AssertionFailed(#expr, __FILE__, __LINE__, ss.str()); \
-      throw std::runtime_error("this code should not be reached");      \
+      LF_UNREACHABLE;                                                   \
     }                                                                   \
   }
 #endif
+// NOLINTEND(readability-simplify-boolean-expr)
 
 // And now we will redefine eigen_assert if needed:
 #ifdef LF_REDIRECT_ASSERTS
@@ -81,4 +96,4 @@ void AssertionFailed(const std::string& expr, const std::string& file,
 #define eigen_assert_redirected
 #endif
 #endif
-#endif  // __c3c605c9e48646758bf03fab65d52836
+#endif  // c3c605c9e48646758bf03fab65d52836

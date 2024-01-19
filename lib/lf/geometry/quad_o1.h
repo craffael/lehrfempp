@@ -1,5 +1,5 @@
-#ifndef __b193e889f4e245959d124b0ded8a3b68
-#define __b193e889f4e245959d124b0ded8a3b68
+#ifndef INCGb193e889f4e245959d124b0ded8a3b68
+#define INCGb193e889f4e245959d124b0ded8a3b68
 
 #include "geometry_interface.h"
 
@@ -176,4 +176,4 @@ class Parallelogram : public Geometry {
 
 }  // namespace lf::geometry
 
-#endif  // __b193e889f4e245959d124b0ded8a3b68
+#endif  // INCGb193e889f4e245959d124b0ded8a3b68

@@ -15,7 +15,7 @@ using size_type = lf::base::size_type;
 /* SAM_LISTING_BEGIN_1 */
 void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
                         int refsteps) {
-  std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
+  const std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
       lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p, refsteps);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
 
@@ -23,11 +23,11 @@ void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
   std::cout << "\t Sequence of nested meshes created\n";
   multi_mesh.PrintInfo(std::cout);
   // Number of levels
-  size_type L = multi_mesh.NumLevels();
+  const size_type L = multi_mesh.NumLevels();
 
   // Retrieve meshes on all levels
   for (size_type level = 0; level < L; ++level) {
-    std::shared_ptr<const lf::mesh::Mesh> lev_mesh_p =
+    const std::shared_ptr<const lf::mesh::Mesh> lev_mesh_p =
         multi_mesh.getMesh(level);
     // Reference to current mesh
     const lf::mesh::Mesh& mesh{*lev_mesh_p};
@@ -37,16 +37,16 @@ void regrefMeshSequence(const std::shared_ptr<lf::mesh::Mesh>& mesh_p,
               << mesh.NumEntities(lf::base::RefEl::kSegment()) << " EDGEs, "
               << mesh.NumEntities(lf::base::RefEl::kTria()) << " TRIAs, "
               << mesh.NumEntities(lf::base::RefEl::kQuad()) << " QUADs."
-              << std::endl;
+              << '\n';
   }
 }
 /* SAM_LISTING_END_1 */
 
 // Driver function
 void lecturedemorefine() {
-  std::cout << "LehrFEM++ refinement demos" << std::endl;
+  std::cout << "LehrFEM++ refinement demos" << '\n';
   // Obtain hybrid test mesh
-  std::shared_ptr<lf::mesh::Mesh> mesh_p =
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p =
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
   // Request regular refinement, 5 levels
   regrefMeshSequence(mesh_p, 5);

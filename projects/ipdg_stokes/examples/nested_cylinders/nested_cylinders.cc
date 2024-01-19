@@ -3,7 +3,6 @@
  * @brief Compute the convergence of the nested cylinders experiment
  */
 
-#define _USE_MATH_DEFINES
 #include <annulus_triag_mesh_builder.h>
 #include <build_system_matrix.h>
 #include <lf/assemble/dofhandler.h>
@@ -26,8 +25,6 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-
-using lf::uscalfe::operator-;
 
 /**
  * @brief Solve the nested cylinders problem with zero potential at the boundary
@@ -99,7 +96,7 @@ Eigen::VectorXd solveNestedCylindersZeroBC(
   lf::assemble::FixFlaggedSolutionComponents(selector, A, rhs);
 
   // Solve the LSE using sparse LU
-  Eigen::SparseMatrix<double> As = A.makeSparse();
+  const Eigen::SparseMatrix<double> As = A.makeSparse();
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(As);
   return solver.solve(rhs);
@@ -188,7 +185,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   std::for_each(A.triplets().begin(), A.triplets().end(),
                 [&](Eigen::Triplet<double> &trip) {
                   trip = Eigen::Triplet<double>(
-                      dofmap[trip.row()], dofmap[trip.col()], trip.value());
+                      lf::base::narrow<int>(dofmap[trip.row()]),
+                      lf::base::narrow<int>(dofmap[trip.col()]), trip.value());
                 });
   // Apply the mapping to the right hand side vector
   Eigen::VectorXd rhs_mapped = Eigen::VectorXd::Zero(idx);
@@ -203,7 +201,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
   lf::assemble::FixFlaggedSolutionComponents(selector, A, rhs);
 
   // Solve the LSE using sparse LU
-  Eigen::SparseMatrix<double> As_mapped = A.makeSparse().block(0, 0, idx, idx);
+  const Eigen::SparseMatrix<double> As_mapped =
+      A.makeSparse().block(0, 0, idx, idx);
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(As_mapped);
   const Eigen::VectorXd sol_mapped = solver.solve(rhs_mapped);
@@ -225,8 +224,8 @@ Eigen::VectorXd solveNestedCylindersNonzeroBC(
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
-  std::ostringstream ss;
+std::string concat(Args &&...args) {
+  std::ostringstream ss;  // NOLINT(misc-const-correctness)
   (ss << ... << args);
   return ss.str();
 }
@@ -260,12 +259,12 @@ int main(int argc, char *argv[]) {
   pos_desc.add("type", 1);
   boost::program_options::command_line_parser parser{argc, argv};
   parser.options(desc).positional(pos_desc).allow_unregistered();
-  boost::program_options::parsed_options po = parser.run();
+  const boost::program_options::parsed_options po = parser.run();
   boost::program_options::variables_map vm;
   boost::program_options::store(po, vm);
   boost::program_options::notify(vm);
   if (vm.count("help") != 0U) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
   }
 
   std::vector<std::shared_ptr<lf::mesh::Mesh>> meshes;
@@ -285,7 +284,7 @@ int main(int argc, char *argv[]) {
     // Build a sequence of meshes
     for (unsigned i = 0U; i < 8U; ++i) {
       const unsigned nx = 4U << i;
-      const double dx = 2 * M_PI * (r + R) / 2 / nx;
+      const double dx = 2 * lf::base::kPi * (r + R) / 2 / nx;
       const unsigned ny = std::max(static_cast<unsigned>((R - r) / dx), 1U);
 
       // Build the mesh
@@ -300,7 +299,7 @@ int main(int argc, char *argv[]) {
       meshes.push_back(builder.Build());
     }
   } else if (mesh_selection == "irregular") {
-    std::filesystem::path meshpath = __FILE__;
+    const std::filesystem::path meshpath = __FILE__;
     const auto mesh_irregular_path =
         meshpath.parent_path() / "annulus_irregular.msh";
     const auto mesh_irregular_inverted_path =
@@ -317,8 +316,8 @@ int main(int argc, char *argv[]) {
     meshes.push_back(reader_irregular.mesh());
     meshes.push_back(reader_irregular_inverted.mesh());
   } else {
-    std::cout << desc << std::endl;
-    exit(1);
+    std::cout << desc << '\n';
+    return 1;
   }
 
   // Compute the analytic solution of the problem
@@ -343,7 +342,7 @@ int main(int argc, char *argv[]) {
 
   // Solve the problem on each mesh and compute the error
   for (const auto &mesh : meshes) {
-    lf::assemble::UniformFEDofHandler dofh(
+    const lf::assemble::UniformFEDofHandler dofh(
         mesh,
         {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
     const auto fe_space =
@@ -430,7 +429,7 @@ int main(int argc, char *argv[]) {
     std::cout << mesh->NumEntities(2) << ' ' << L2_zero << ' ' << DG_zero << ' '
               << L2_nonzero << ' ' << DG_nonzero << ' ' << L2_zero_modified
               << ' ' << DG_zero_modified << ' ' << L2_nonzero_modified << ' '
-              << DG_nonzero_modified << std::endl;
+              << DG_nonzero_modified << '\n';
   }
 
   return 0;

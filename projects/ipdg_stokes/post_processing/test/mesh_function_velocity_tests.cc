@@ -32,7 +32,7 @@ TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity_concept) {
   constexpr bool b =
       lf::mesh::utils::internal::IsMeshFunctionCallable<mf, void>(0);
   ASSERT_TRUE(b);
-  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf>);
+  ASSERT_TRUE(lf::mesh::utils::MeshFunction<mf>);
 }
 
 TEST(projects_ipdg_stokes_post_processing, mesh_function_velocity) {

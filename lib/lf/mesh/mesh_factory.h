@@ -5,8 +5,8 @@
  * @date   2018
  * @copyright MIT License
  */
-#ifndef __5ac8f981f27e45d3b9d15fc9d52f7136
-#define __5ac8f981f27e45d3b9d15fc9d52f7136
+#ifndef INCG5ac8f981f27e45d3b9d15fc9d52f7136
+#define INCG5ac8f981f27e45d3b9d15fc9d52f7136
 
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
@@ -115,7 +115,7 @@ class MeshFactory {
    */
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   virtual size_type AddEntity(
-      base::RefEl ref_el, const nonstd::span<const size_type>& nodes,
+      base::RefEl ref_el, const std::span<const size_type>& nodes,
       std::unique_ptr<geometry::Geometry>&& geometry) = 0;
 
   /**
@@ -134,4 +134,4 @@ class MeshFactory {
 
 }  // namespace lf::mesh
 
-#endif  // __5ac8f981f27e45d3b9d15fc9d52f7136
+#endif  // INCG5ac8f981f27e45d3b9d15fc9d52f7136

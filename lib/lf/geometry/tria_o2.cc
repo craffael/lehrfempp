@@ -11,6 +11,7 @@
 #include <Eigen/Eigen>
 
 #include "point.h"
+#include "segment_o2.h"
 
 namespace lf::geometry {
 
@@ -182,7 +183,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO2::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> childPolygons(
       ref_pat.ChildPolygons(codim));
 
-  const int noChildren = childPolygons.size();
+  const base::size_type noChildren = childPolygons.size();
   LF_VERIFY_MSG(
       noChildren == ref_pat.NumChildren(codim),
       "NumChildren " << noChildren << " <-> " << ref_pat.NumChildren(codim));

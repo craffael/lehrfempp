@@ -82,7 +82,7 @@ Eigen::VectorXd createOffsetFunction(
         &dirichlet_data,
     const Eigen::SparseMatrix<double> &A) {
   // Create a new dofhandler for the boundary nodes of the mesh
-  lf::assemble::DynamicFEDofHandler boundary_node_dofh(
+  const lf::assemble::DynamicFEDofHandler boundary_node_dofh(
       mesh, [&](const lf::mesh::Entity &entity) {
         if (entity.RefEl() == lf::base::RefElType::kPoint && boundary(entity)) {
           return 1;
@@ -90,7 +90,7 @@ Eigen::VectorXd createOffsetFunction(
         return 0;
       });
   // Create a new dofhandler for the boundary edges of the mesh
-  lf::assemble::DynamicFEDofHandler boundary_edge_dofh(
+  const lf::assemble::DynamicFEDofHandler boundary_edge_dofh(
       mesh, [&](const lf::mesh::Entity &entity) {
         if (entity.RefEl() == lf::base::RefElType::kSegment &&
             boundary(entity)) {
@@ -113,7 +113,7 @@ Eigen::VectorXd createOffsetFunction(
   for (lf::base::size_type i = 0; i < boundary_edge_dofh.NumDofs(); ++i) {
     J.AddToEntry(i, boundary_node_dofh.NumDofs(), 1);
   }
-  Eigen::SparseMatrix<double> Js = J.makeSparse();
+  const Eigen::SparseMatrix<double> Js = J.makeSparse();
   // Assemble the right hand side from the provided dirichlet data
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(boundary_edge_dofh.NumDofs() + 1);
   for (const auto *const cell : mesh->Entities(0)) {

@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __3e48c7b32a034cb3be3dbca884ff4f6c
-#define __3e48c7b32a034cb3be3dbca884ff4f6c
+#ifndef INCG3e48c7b32a034cb3be3dbca884ff4f6c
+#define INCG3e48c7b32a034cb3be3dbca884ff4f6c
 
 #include <lf/mesh/mesh.h>
 #include <lf/mesh/utils/utils.h>
@@ -538,9 +538,7 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfPointUsage
    */
-  template <
-      class MESH_FUNCTION,
-      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
+  template <mesh::utils::MeshFunction MESH_FUNCTION>
   void WritePointData(const std::string& name,
                       const MESH_FUNCTION& mesh_function);
 
@@ -740,9 +738,7 @@ class VtkWriter {
    * ### Example usage
    * @snippet vtk_writer.cc mfCellUsage
    */
-  template <
-      class MESH_FUNCTION,
-      class = std::enable_if_t<lf::mesh::utils::isMeshFunction<MESH_FUNCTION>>>
+  template <mesh::utils::MeshFunction MESH_FUNCTION>
   void WriteCellData(const std::string& name,
                      const MESH_FUNCTION& mesh_function);
 
@@ -835,7 +831,8 @@ class VtkWriter {
                            const Eigen::Matrix<T, ROWS, 1>& in);
 };
 
-template <class MESH_FUNCTION, class>
+template <mesh::utils::MeshFunction MESH_FUNCTION>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void VtkWriter::WritePointData(const std::string& name,
                                const MESH_FUNCTION& mesh_function) {
   //  we have to evaluate the mesh function at all points
@@ -844,7 +841,7 @@ void VtkWriter::WritePointData(const std::string& name,
   using T = mesh::utils::MeshFunctionReturnType<MESH_FUNCTION>;
   auto dim_mesh = mesh_->DimMesh();
 
-  Eigen::Matrix<double, 0, 1> origin;
+  const Eigen::Matrix<double, 0, 1> origin;
 
   if constexpr (std::is_same_v<T, unsigned char> || std::is_same_v<T, char> ||
                 std::is_same_v<T, unsigned> || std::is_same_v<T, int> ||
@@ -875,7 +872,7 @@ void VtkWriter::WritePointData(const std::string& name,
       }
     }
     vtk_file_.point_data.push_back(std::move(data));
-  } else if constexpr (base::is_eigen_matrix<T>) {  // NOLINT
+  } else if constexpr (base::EigenMatrix<T>) {  // NOLINT
     static_assert(T::ColsAtCompileTime == 1,
                   "The MeshFunction must return row-vectors");
     static_assert(
@@ -922,7 +919,7 @@ void VtkWriter::WritePointData(const std::string& name,
   }
 }
 
-template <class MESH_FUNCTION, class>
+template <mesh::utils::MeshFunction MESH_FUNCTION>
 void VtkWriter::WriteCellData(const std::string& name,
                               const MESH_FUNCTION& mesh_function) {
   CheckAttributeSetName(vtk_file_.cell_data, name);
@@ -938,7 +935,7 @@ void VtkWriter::WriteCellData(const std::string& name,
   barycenters[base::RefEl::kQuad().Id()] =
       base::RefEl::kTria().NodeCoords().rowwise().sum() / 4.;
 
-  if constexpr (base::is_eigen_array<T> || base::is_eigen_matrix<T>) {
+  if constexpr (base::EigenArray<T> || base::EigenMatrix<T>) {
     static_assert(T::ColsAtCompileTime == 1,
                   "The MeshFunction must return row-vectors");
     static_assert(
@@ -996,14 +993,14 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
                              const Eigen::Matrix<T, ROWS, 1>& in) {
   if constexpr (ROWS == 2) {  // NOLINT
     out.template block<2, 1>(0, 0) = in;
-    out(2) = T(0);
+    out(2) = T(0);                   // NOLINT
   } else if constexpr (ROWS == 3) {  // NOLINT
     out = in;
   } else if constexpr (ROWS == Eigen::Dynamic) {  // NOLINT
     LF_ASSERT_MSG(in.rows() == 2 || in.rows() == 3,
                   "VtkWriter can only write out 2d or 3d vectors.");
     if (in.rows() == 2) {
-      out(2) = T(0);
+      out(2) = T{0};
       out.topRows(2) = in;
     } else {
       out = in;
@@ -1013,4 +1010,4 @@ void VtkWriter::PadWithZeros(Eigen::Matrix<T, 3, 1>& out,
 
 }  // namespace lf::io
 
-#endif  // __3e48c7b32a034cb3be3dbca884ff4f6c
+#endif  // INCG3e48c7b32a034cb3be3dbca884ff4f6c

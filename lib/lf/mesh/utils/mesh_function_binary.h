@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __9bad469d38e04e8ab67391ce50c2c480
-#define __9bad469d38e04e8ab67391ce50c2c480
+#ifndef INCG9bad469d38e04e8ab67391ce50c2c480
+#define INCG9bad469d38e04e8ab67391ce50c2c480
 
 #include <type_traits>
 #include <vector>
@@ -102,18 +102,17 @@ struct OperatorAddition {
    * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
    * us to use the Eigen optimized `operator+`
    */
-  template <class U, class V,
-            class = typename std::enable_if<base::is_scalar<U> &&
-                                            base::is_scalar<V>>::type>
+  template <base::Scalar U, base::Scalar V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
-                                                             u.size());
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(&v[0], 1,
-                                                             v.size());
-    std::vector<decltype(U(0) + V(0))> result(u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                                   u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
+                                                                   v.size());
+    std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
+    // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(
-        &result[0], 1, u.size());
+        result.data(), 1, u.size());
     rm = um + vm;
     return result;
   }
@@ -271,18 +270,17 @@ struct OperatorSubtraction {
    * reinterpret the `std::vector<U>` as an `Eigen::Matrix` which in turn allows
    * us to use the Eigen optimized `operator-`
    */
-  template <class U, class V,
-            class = typename std::enable_if<base::is_scalar<U> &&
-                                            base::is_scalar<V>>::type>
+  template <base::Scalar U, base::Scalar V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(&u[0], 1,
-                                                             u.size());
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(&v[0], 1,
-                                                             v.size());
-    std::vector<decltype(U(0) + V(0))> result(u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                                   u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> vm(v.data(), 1,
+                                                                   v.size());
+    std::vector<decltype(U(0) + V(0))> result(u.size());  // NOLINT
+    // NOLINTNEXTLINE(google-readability-casting)
     Eigen::Map<Eigen::Matrix<decltype(U(0) + V(0)), 1, Eigen::Dynamic>> rm(
-        &result[0], 1, u.size());
+        result.data(), 1, u.size());
     rm = um - vm;
     return result;
   }
@@ -295,7 +293,7 @@ struct OperatorSubtraction {
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
                   int /*unused*/) const {
-    using scalar_t = decltype(S1(0) + S2(0));
+    using scalar_t = decltype(S1(0) + S2(0));  // NOLINT
     if constexpr (R1 != Eigen::Dynamic && C1 != Eigen::Dynamic &&
                   R2 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // subtract two static size eigen matrices from each other
@@ -449,16 +447,16 @@ struct OperatorMultiplication {
    * reinterpret the `std::vector<U>` as an `Eigen::Array` which in turn allows
    * us to use the Eigen optimized `operator*`
    */
-  template <class U, class V,
-            class = typename std::enable_if_t<base::is_scalar<U> &&
-                                              base::is_scalar<V>>>
+  template <base::Scalar U, base::Scalar V>
   auto operator()(const std::vector<U>& u, const std::vector<V>& v, int
                   /*unused*/) const {
-    Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(&u[0], 1, u.size());
-    Eigen::Map<const Eigen::Array<V, 1, Eigen::Dynamic>> vm(&v[0], 1, v.size());
+    Eigen::Map<const Eigen::Array<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                            u.size());
+    Eigen::Map<const Eigen::Array<V, 1, Eigen::Dynamic>> vm(v.data(), 1,
+                                                            v.size());
     std::vector<decltype(U(0) * V(0))> result(u.size());
     Eigen::Map<Eigen::Array<decltype(U(0) * V(0)), 1, Eigen::Dynamic>> rm(
-        &result[0], 1, u.size());
+        result.data(), 1, u.size());
     rm = um * vm;
     return result;
   }
@@ -469,7 +467,7 @@ struct OperatorMultiplication {
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& u,
                   const std::vector<Eigen::Matrix<S2, R2, C2, O2, MR2, MC2>>& v,
                   int /*unused*/) const {
-    using scalar_t = decltype(S1(0) * S2(0));
+    using scalar_t = decltype(S1(0) * S2(0));                      // NOLINT
     if constexpr (R1 != Eigen::Dynamic && C2 != Eigen::Dynamic) {  // NOLINT
       // The result is fixed size
       static_assert(C1 == Eigen::Dynamic || R2 == Eigen::Dynamic || C1 == R2,
@@ -559,8 +557,7 @@ struct OperatorMultiplication {
   }
 
   // multiplication of a scalar with matrix
-  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U, class S1, int R1, int C1, int O1, int MR1, int MC1>
   auto operator()(const std::vector<U>& u,
                   const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& v,
                   int /*unused*/) const {
@@ -586,16 +583,14 @@ struct OperatorMultiplication {
   }
 
   // multiplication of matrix with scalar (other way around)
-  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U, class S1, int R1, int C1, int O1, int MR1, int MC1>
   auto operator()(const std::vector<Eigen::Matrix<S1, R1, C1, O1, MR1, MC1>>& v,
                   const std::vector<U>& u, int /*unused*/) const {
     return operator()(u, v, 0);
   }
 
   // multiplication of a scalar with array
-  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U, class S1, int R1, int C1, int O1, int MR1, int MC1>
   auto operator()(const std::vector<U>& u,
                   const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
                   int /*unused*/) const {
@@ -621,8 +616,7 @@ struct OperatorMultiplication {
   }
 
   // multiplication of array with scalar (other way around)
-  template <class U, class S1, int R1, int C1, int O1, int MR1, int MC1,
-            class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U, class S1, int R1, int C1, int O1, int MR1, int MC1>
   auto operator()(const std::vector<Eigen::Array<S1, R1, C1, O1, MR1, MC1>>& v,
                   const std::vector<U>& u, int /*unused*/) const {
     return operator()(u, v, 0);
@@ -666,9 +660,9 @@ struct OperatorMultiplication {
  * ### Example
  * @snippet mesh_function_binary.cc one_trig
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator+(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator+(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorAddition, A, B> {
   return MeshFunctionBinary(internal::OperatorAddition{}, a, b);
 }
 
@@ -695,9 +689,9 @@ auto operator+(const A& a, const B& b) {
  * ### Example
  * @snippet mesh_function_binary.cc subtract
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator-(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator-(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorSubtraction, A, B> {
   return MeshFunctionBinary(internal::OperatorSubtraction{}, a, b);
 }
 
@@ -724,12 +718,12 @@ auto operator-(const A& a, const B& b) {
  * ### Example
  * @snippet mesh_function_binary.cc product
  */
-template <class A, class B,
-          class = std::enable_if_t<isMeshFunction<A> && isMeshFunction<B>>>
-auto operator*(const A& a, const B& b) {
+template <MeshFunction A, MeshFunction B>
+auto operator*(const A& a, const B& b)
+    -> MeshFunctionBinary<internal::OperatorMultiplication, A, B> {
   return MeshFunctionBinary(internal::OperatorMultiplication{}, a, b);
 }
 
 }  // namespace lf::mesh::utils
 
-#endif  // __9bad469d38e04e8ab67391ce50c2c480
+#endif  // INCG9bad469d38e04e8ab67391ce50c2c480

@@ -45,7 +45,7 @@ std::ostream &operator<<(std::ostream &o, const RefPat &refpat) {
 }
 
 // Implementation for RefinemeentPattern
-
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
     lf::base::dim_t codim) const {
   LF_VERIFY_MSG(codim <= ref_el_.Dimension(),
@@ -263,11 +263,14 @@ lf::base::size_type Hybrid2DRefinementPattern::NumChildren(
       }  // end switch codim
       break;
     }  // end case of a quadrilateral
-  }    // end switch cell type
+    default:
+      LF_VERIFY_MSG(false, "unsupported RefEl");
+  }  // end switch cell type
   return 0;
 }
 
 std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
   LF_VERIFY_MSG(codim <= ref_el_.Dimension(),
                 "Illegal codim = " << codim << " for " << ref_el_.ToString());
@@ -276,9 +279,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> child_poly{};
 
   // Lattice point coordinates (lattice_const_ should be a multiple of 6)
-  const unsigned int lt_half = lattice_const_ / 2;
-  const unsigned int lt_third = lattice_const_ / 3;
-  const unsigned int lt_one = lattice_const_;
+  const int lt_half = base::narrow<int>(lattice_const_ / 2);
+  const int lt_third = base::narrow<int>(lattice_const_ / 3);
+  const int lt_one = base::narrow<int>(lattice_const_);
   // Depending on the type of cell do something different
   switch (ref_el_) {
     case lf::base::RefEl::kPoint(): {
@@ -483,7 +486,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // of the edges.
 
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_third, lt_third});
 
               child_coords.col(0) = lt_node_coords.col(0);
@@ -626,7 +629,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // of the edges. Six interior edges will be created
 
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_third, lt_third});
 
               child_coords.col(0) = lt_node_coords.col(0);
@@ -812,7 +815,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             case RefPat::rp_regular: {
               // Fully symmetric splitting into four quadrilaterals
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_half, lt_half});
 
               quad_child_coords.col(0) = lt_node_coords.col(0);
@@ -928,7 +931,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
               // Fully symmetric splitting into four quadrilaterals
               // Four interior edges arise
               // Obtain coordinates of center of gravity
-              Eigen::Vector2i lt_baryc_coords =
+              const Eigen::Vector2i lt_baryc_coords =
                   Eigen::Vector2i({lt_half, lt_half});
 
               child_coords.col(0) = lt_midpoint_coords.col(0);
@@ -971,7 +974,9 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
       }  // end switch codim
       break;
     }  // end case of a quadrilateral
-  }    // end switch cell type
+    default:
+      LF_VERIFY_MSG(false, "Unsupported RefEl");
+  }  // end switch cell type
   return (child_poly);
 }
 

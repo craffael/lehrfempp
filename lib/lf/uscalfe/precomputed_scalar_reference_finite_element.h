@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __e281cd0ab7fb476e9315a3dda7f45ffe
-#define __e281cd0ab7fb476e9315a3dda7f45ffe
+#ifndef INCGe281cd0ab7fb476e9315a3dda7f45ffe
+#define INCGe281cd0ab7fb476e9315a3dda7f45ffe
 
 #include <Eigen/src/Core/util/ForwardDeclarations.h>
 #include <lf/quad/quad.h>
@@ -185,4 +185,4 @@ class PrecomputedScalarReferenceFiniteElement
 
 }  // namespace lf::uscalfe
 
-#endif  // __e281cd0ab7fb476e9315a3dda7f45ffe
+#endif  // INCGe281cd0ab7fb476e9315a3dda7f45ffe

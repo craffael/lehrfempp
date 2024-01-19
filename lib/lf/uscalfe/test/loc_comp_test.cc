@@ -19,6 +19,28 @@
 
 #include <iostream>
 
+namespace lf::uscalfe {
+
+// Make sure the ElementMatrix/VectorProviders in the lf::fe namespace only
+// depend on the archetype functionality by explicitly instantiating them:
+template class ReactionDiffusionElementMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<double>,
+    mesh::utils::MeshFunctionAT<double>>;
+template class ReactionDiffusionElementMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<Eigen::Vector2d>,
+    mesh::utils::MeshFunctionAT<Eigen::Vector2d>>;
+
+template class MassEdgeMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+
+template class ScalarLoadElementVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>>;
+
+template class ScalarLoadEdgeVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+
+}  // namespace lf::uscalfe
+
 namespace lf::uscalfe::test {
 
 TEST(lf_uscalfe, mass_mat_test) {

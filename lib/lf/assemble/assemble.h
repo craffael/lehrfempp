@@ -12,9 +12,10 @@
  * @copyright MIT License
  */
 
-#ifndef __cb2024b1c029404f85ca46a0178b43f1
-#define __cb2024b1c029404f85ca46a0178b43f1
+#ifndef INCGcb2024b1c029404f85ca46a0178b43f1
+#define INCGcb2024b1c029404f85ca46a0178b43f1
 
+#include "assemble_concepts.h"
 #include "assembler.h"
 #include "assembly_types.h"
 #include "coomatrix.h"
@@ -29,4 +30,4 @@
  */
 namespace lf::assemble {}
 
-#endif  // __cb2024b1c029404f85ca46a0178b43f1
+#endif  // INCGcb2024b1c029404f85ca46a0178b43f1

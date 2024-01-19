@@ -20,14 +20,14 @@ Eigen::VectorXd StrangSplit::diffusionEvolutionOperator(
   /*  solver.compute(M_ + tau * kappa_ * A_);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
    */
-  Eigen::VectorXd rhs = -A_ * mu;
+  const Eigen::VectorXd rhs = -A_ * mu;
 
   if (firstcall) {
     /* First stage SDIRK-2 */
-    Eigen::VectorXd k1 = solver1.solve(rhs);
+    const Eigen::VectorXd k1 = solver1.solve(rhs);
     LF_VERIFY_MSG(solver1.info() == Eigen::Success, "LU decomposition failed");
     /* Second stage SDIRK-2 */
-    Eigen::VectorXd k2 =
+    const Eigen::VectorXd k2 =
         solver1.solve(rhs - 0.5 * tau_ * (1 - kappa_) * A_ * k1);
     LF_VERIFY_MSG(solver1.info() == Eigen::Success, "LU decomposition failed");
 
@@ -35,10 +35,11 @@ Eigen::VectorXd StrangSplit::diffusionEvolutionOperator(
 
   } else {
     /* First stage SDIRK-2 */
-    Eigen::VectorXd k1 = solver2.solve(rhs);
+    const Eigen::VectorXd k1 = solver2.solve(rhs);
     LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
     /* Second stage SDIRK-2 */
-    Eigen::VectorXd k2 = solver2.solve(rhs - tau_ * (1 - kappa_) * A_ * k1);
+    const Eigen::VectorXd k2 =
+        solver2.solve(rhs - tau_ * (1 - kappa_) * A_ * k1);
     LF_VERIFY_MSG(solver2.info() == Eigen::Success, "LU decomposition failed");
 
     evol_op = mu + tau_ * (1 - kappa_) * k1 + tau_ * kappa_ * k2;
@@ -59,7 +60,7 @@ Eigen::VectorXd StrangSplit::Evolution(const Eigen::VectorXd &cap,
   Eigen::VectorXd sol_cur(N_dofs);
   Eigen::VectorXd sol_next(N_dofs);
 
-  Eigen::VectorXd ones = Eigen::VectorXd::Ones(N_dofs);
+  const Eigen::VectorXd ones = Eigen::VectorXd::Ones(N_dofs);
 
   /* Time Steps */
   // double tau = T_ / m_;

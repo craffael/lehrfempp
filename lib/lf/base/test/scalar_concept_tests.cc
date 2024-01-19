@@ -12,14 +12,14 @@
 namespace lf::base::test {
 
 TEST(ScalarTraits, IsScalar) {
-  EXPECT_TRUE(is_scalar<double>);
-  EXPECT_TRUE(is_scalar<float>);
-  EXPECT_TRUE(is_scalar<int>);
-  EXPECT_TRUE(is_scalar<std::complex<double>>);
-  EXPECT_TRUE(is_scalar<std::complex<int>>);
+  EXPECT_TRUE(Scalar<double>);
+  EXPECT_TRUE(Scalar<float>);
+  EXPECT_TRUE(Scalar<int>);
+  EXPECT_TRUE(Scalar<std::complex<double>>);
+  EXPECT_TRUE(Scalar<std::complex<int>>);
 
-  EXPECT_FALSE(is_scalar<std::string>);
-  EXPECT_FALSE(is_scalar<Eigen::MatrixXd>);
+  EXPECT_FALSE(Scalar<std::string>);
+  EXPECT_FALSE(Scalar<Eigen::MatrixXd>);
 }
 
 }  // namespace lf::base::test

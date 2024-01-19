@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __818709b0104548a7b5e6f47bdba89f69
-#define __818709b0104548a7b5e6f47bdba89f69
+#ifndef INCG818709b0104548a7b5e6f47bdba89f69
+#define INCG818709b0104548a7b5e6f47bdba89f69
 
 #include <lf/mesh/mesh.h>
 
@@ -65,17 +65,17 @@ class Point : public mesh::Entity {
   [[nodiscard]] unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
-  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
     return {&this_, 1};
   }
 
   /** Must not be called: No sub-entities for a point */
-  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+  [[nodiscard]] std::span<const lf::mesh::Orientation> RelativeOrientations()
       const override {
     LF_ASSERT_MSG(false, "A point has not sub-entities");
-    return nonstd::span<Orientation>();
+    return std::span<Orientation>();
   }
 
   /** @brief return _pointer_ to associated geometry object */
@@ -106,4 +106,4 @@ class Point : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __818709b0104548a7b5e6f47bdba89f69
+#endif  // INCG818709b0104548a7b5e6f47bdba89f69

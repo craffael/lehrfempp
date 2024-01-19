@@ -12,7 +12,6 @@
 
 #include <boost/program_options.hpp>
 
-#include "lf/assemble/assemble.h"
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
@@ -33,7 +32,7 @@ int main(int argc, char **argv) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
   } else {
     // Retrieve number of degrees of freedom for each entity type from command
     // line arguments
@@ -53,22 +52,21 @@ int main(int argc, char **argv) {
     if (vm.count("ndof_quad") > 0) {
       ndof_quad = vm["ndof_quad"].as<int>();
     }
-    std::cout << "LehrFEM++ demo: assignment of global shape functions"
-              << std::endl;
-    std::cout << "#dof/vertex = " << ndof_node << std::endl;
-    std::cout << "#dof/edge = " << ndof_edge << std::endl;
-    std::cout << "#dof/triangle = " << ndof_tria << std::endl;
-    std::cout << "#dof/quadrilateral = " << ndof_quad << std::endl;
+    std::cout << "LehrFEM++ demo: assignment of global shape functions" << '\n';
+    std::cout << "#dof/vertex = " << ndof_node << '\n';
+    std::cout << "#dof/edge = " << ndof_edge << '\n';
+    std::cout << "#dof/triangle = " << ndof_tria << '\n';
+    std::cout << "#dof/quadrilateral = " << ndof_quad << '\n';
 
     // Build a mesh comprising two cells
-    std::shared_ptr<lf::mesh::Mesh> mesh_p =
+    const std::shared_ptr<lf::mesh::Mesh> mesh_p =
         lf::mesh::test_utils::GenerateHybrid2DTestMesh(2);
     // Output information about the mesh
     lf::mesh::utils::PrintInfo(std::cout, *mesh_p);
 
     // Create a dof handler object describing a uniform distribution
     // of shape functions
-    lf::assemble::UniformFEDofHandler dof_handler(
+    const lf::assemble::UniformFEDofHandler dof_handler(
         mesh_p, {{lf::base::RefEl::kPoint(), ndof_node},
                  {lf::base::RefEl::kSegment(), ndof_edge},
                  {lf::base::RefEl::kTria(), ndof_tria},

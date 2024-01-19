@@ -1,5 +1,5 @@
-#ifndef __2633e7bf8dd548de839f74075687e81A
-#define __2633e7bf8dd548de839f74075687e81A
+#ifndef INCG2633e7bf8dd548de839f74075687e81A
+#define INCG2633e7bf8dd548de839f74075687e81A
 
 #include <lf/mesh/mesh.h>
 
@@ -40,4 +40,4 @@ std::shared_ptr<spdlog::logger>& WatertightLogger();
 
 }  // namespace lf::mesh::test_utils
 
-#endif  // __2633e7bf8dd548de839f74075687e81A
+#endif  // INCG2633e7bf8dd548de839f74075687e81A

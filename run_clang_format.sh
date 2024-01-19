@@ -13,17 +13,17 @@
 if [ -x "$(command -v clang-format)" ]; then
   ct=$(command -v clang-format)
 fi
-if [ -x "$(command -v clang-format-10)" ]; then
-  ct=$(command -v clang-format-10)
+if [ -x "$(command -v clang-format-17)" ]; then
+  ct=$(command -v clang-format-17)
 fi
 
 if [ -z "$ct" ]; then
-  echo "clang-format or clang-format-10 not found in path"
+  echo "clang-format or clang-format-17 not found in path"
   exit 1
 fi
 version=$($ct --version)
-if [[ ! $version =~ "version 10." ]]; then
-  echo "ERROR: Found clang-format but it doesn't have version 10.x. Please install clang-format-10"
+if [[ ! $version =~ "version 17." ]]; then
+  echo "ERROR: Found clang-format but it doesn't have version 17.x. Please install clang-format-17"
   exit 1
 fi
 echo "using $ct"

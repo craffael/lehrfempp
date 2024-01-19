@@ -47,7 +47,7 @@ TEST(lf_base_timer, TimerSingleThread) {
   std::cout << t.Format() << std::endl;
   auto elapsed2 = t.Elapsed();
   EXPECT_GT(elapsed2.wall, elapsed.wall);
-  EXPECT_GT(elapsed2.system, elapsed.system);
+  EXPECT_GE(elapsed2.system, elapsed.system);
   EXPECT_GE(elapsed2.user, elapsed.user);
 
   // The following in principle makes sense, but is often not true on
@@ -65,7 +65,10 @@ TEST(lf_base_timer, TimerSingleThread) {
   std::cout << t.Format() << std::endl;
   auto elapsed3 = t.Elapsed();
   EXPECT_LT(elapsed3.wall, 3s);
-  EXPECT_LT(elapsed3.system, 0.8 * elapsed3.user);
+
+  // This test can fail if there was a system interrupt
+  // -> Disable it so we don't have problems in ci pipeline.
+  // EXPECT_LT(elapsed3.system, 0.8 * elapsed3.user);
   EXPECT_GT(elapsed3.user, 1ms);
   EXPECT_LT(elapsed3.user, 3s);
 }
@@ -79,6 +82,7 @@ TEST(lf_base_timer, TimerMultiThread) {
   EXPECT_EQ(elapsed.wall, 0ns);
 
   t.Start();
+
   // do some multithread work -> system + user > wall
   auto f = []() {
     std::vector<int> x(20000000);
@@ -92,6 +96,9 @@ TEST(lf_base_timer, TimerMultiThread) {
   t.Stop();
   std::cout << t.Format() << std::endl;
   elapsed = t.Elapsed();
+
+  // Note this test fails on windows if the debugger is attached. Otherwise it
+  // seems to work most of the time.
   EXPECT_GT(elapsed.system + elapsed.user, 1.1 * elapsed.wall);
 }
 

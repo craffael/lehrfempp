@@ -81,14 +81,14 @@ Quadrilateral::Quadrilateral(size_type index,
 }  // end constructor
 
 // Access to sub-entities
-nonstd::span<const mesh::Entity* const> Quadrilateral::SubEntities(
+std::span<const mesh::Entity* const> Quadrilateral::SubEntities(
     unsigned rel_codim) const {
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   switch (rel_codim) {
     case 2:
-      return {reinterpret_cast<const Entity* const*>(&nodes_[0]), 4};
+      return {reinterpret_cast<const Entity* const*>(nodes_.data()), 4};
     case 1:
-      return {reinterpret_cast<const Entity* const*>(&edges_[0]), 4};
+      return {reinterpret_cast<const Entity* const*>(edges_.data()), 4};
     case 0:
       return {&this_, 1};
     default:

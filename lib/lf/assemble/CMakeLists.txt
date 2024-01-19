@@ -1,5 +1,6 @@
 set(sources
   assemble.h
+  assemble_concepts.h
   assembly_types.h
   dofhandler.h
   dofhandler.cc

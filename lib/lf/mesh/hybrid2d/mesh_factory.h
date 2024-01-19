@@ -1,5 +1,5 @@
-#ifndef __e98a803fac5b430a8ff634ceb2f809aX
-#define __e98a803fac5b430a8ff634ceb2f809aX
+#ifndef INCGe98a803fac5b430a8ff634ceb2f809aX
+#define INCGe98a803fac5b430a8ff634ceb2f809aX
 
 #include <lf/mesh/mesh.h>
 
@@ -53,7 +53,7 @@ class MeshFactory : public mesh::MeshFactory {
 
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   size_type AddEntity(base::RefEl ref_el,
-                      const nonstd::span<const size_type>& nodes,
+                      const std::span<const size_type>& nodes,
                       std::unique_ptr<geometry::Geometry>&& geometry) override;
 
   [[nodiscard]] std::shared_ptr<mesh::Mesh> Build() override;
@@ -89,4 +89,13 @@ inline std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __e98a803fac5b430a8ff634ceb2f809aX
+/// \cond
+/**
+ * @brief Make lf::mesh::hybrid2d::MeshFactory formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::mesh::hybrid2d::MeshFactory> : ostream_formatter {};
+/// \endcond
+
+#endif  // INCGe98a803fac5b430a8ff634ceb2f809aX

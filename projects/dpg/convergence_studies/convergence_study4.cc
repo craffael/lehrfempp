@@ -5,14 +5,14 @@
 #include "primal_dpg.h"
 #include "ultraweak_dpg.h"
 
-#define reflev 5
+lf::base::size_type reflev = 5;
 
 int main() {
   std::cout << "Convergence study 4: Ultraweak DPG method, solution with a "
                "boundary layer  \n";
   std::cout << "Solution develops a boundary layer at top and right edge. \n";
 
-  std::vector<double> epsilon_values = {1, 0.5, 0.1, 0.05, 0.02, 0.01};
+  const std::vector<double> epsilon_values = {1, 0.5, 0.1, 0.05, 0.02, 0.01};
   const double b1 = 2.0;
   const double b2 = 1.0;
 
@@ -53,10 +53,10 @@ int main() {
           .finished();
     };
 
-    auto epsilon = [eps](const Eigen::Vector2d & /*x*/) -> double {
+    auto epsilon = [eps](const Eigen::Vector2d& /*x*/) -> double {
       return eps;
     };
-    auto beta = [b1, b2](const Eigen::Vector2d & /*x*/) -> Eigen::Vector2d {
+    auto beta = [b1, b2](const Eigen::Vector2d& /*x*/) -> Eigen::Vector2d {
       return (Eigen::VectorXd(2) << b1, b2).finished();
     };
 
@@ -68,11 +68,11 @@ int main() {
              b1 * u1_exact_grad(x[0]) * u2_exact(x[1]) +
              b2 * u1_exact(x[0]) * u2_exact_grad(x[1]);
     };
-    auto g = [](const Eigen::Vector2d & /*x*/) -> double { return 0.0; };
+    auto g = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
 
     // specification of degree and enrichement for the method
-    int deg_p = 1;
-    int delta_p = 2;
+    const int deg_p = 1;
+    const int delta_p = 2;
 
     //------------------------
     // run the convergence test
@@ -85,11 +85,11 @@ int main() {
             lf::base::RefEl::kTria());
 
     // output to a corresponding file
-    std::string file_name = "cs4/" + std::to_string(eps);
+    const std::string file_name = "cs4/" + std::to_string(eps);
     std::ofstream file(file_name);
     for (auto [dofs, error_u, error_s, errorestimator] : errors) {
       file << dofs << ", " << error_u << ", " << error_s << ", "
-           << errorestimator << std::endl;
+           << errorestimator << '\n';
     }
     file.close();
   }

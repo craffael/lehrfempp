@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-using lf::uscalfe::operator-;
-
 /**
  * @brief Concatenate objects defining an operator<<(std::ostream&)
  * @param args A variadic pack of objects implementing
@@ -36,8 +34,8 @@ using lf::uscalfe::operator-;
  * @returns A string with the objects concatenated
  */
 template <typename... Args>
-static std::string concat(Args &&... args) {
-  std::ostringstream ss;
+std::string concat(Args &&...args) {
+  std::ostringstream ss;  // NOLINT(misc-const-correctness,-warnings-as-errors)
   (ss << ... << args);
   return ss.str();
 }
@@ -77,14 +75,14 @@ int main(int argc, char *argv[]) {
   const double h = 0.25;
 
   if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << "[regular,stretched]" << std::endl;
+    std::cerr << "Usage: " << argv[0] << "[regular,stretched]" << '\n';
     std::cerr << "\tregular  : Builds a mesh where the resolution in the x- "
                  "and y-direction are equal"
-              << std::endl;
+              << '\n';
     std::cerr << "\tirregular: Builds a mesh where the resolution in the "
                  "x-direction is 10 times less than in the y-direction"
-              << std::endl;
-    exit(1);
+              << '\n';
+    return 1;
   }
 
   // Read the mesh from the gmsh file
@@ -155,7 +153,7 @@ int main(int argc, char *argv[]) {
             sol.mesh, *(sol.dofh), f, dirichlet_funct, 100,
             lf::quad::make_TriaQR_MidpointRule(), true);
     sol.A_modified = A_modified.makeSparse();
-    Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
+    const Eigen::SparseLU<Eigen::SparseMatrix<double>> solver_modified(
         sol.A_modified);
     sol.solution_modified =
         solver_modified.solve(rhs_modified) + offset_function_modified;
@@ -235,8 +233,7 @@ int main(int argc, char *argv[]) {
     const double DG_modified = projects::ipdg_stokes::post_processing::DGnorm(
         solutions[lvl].mesh, diff_v_modified, diff_g_modified, qr_provider);
     std::cout << lvl << ' ' << solutions[lvl].mesh->NumEntities(2) << ' ' << L2
-              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified
-              << std::endl;
+              << ' ' << DG << ' ' << L2_modified << ' ' << DG_modified << '\n';
   }
 
   return 0;

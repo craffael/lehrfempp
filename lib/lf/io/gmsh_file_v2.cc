@@ -146,21 +146,20 @@ std::ostream& operator<<(std::ostream& stream, GMshFileV2::ElementType et) {
 std::ostream& operator<<(std::ostream& stream, const GMshFileV2& mf) {
   stream << "GMSH FILE: Ver. " << mf.VersionNumber
          << (mf.IsBinary ? "(Binary)" : "(Text)")
-         << ", size of double = " << mf.DoubleSize << std::endl;
-  stream << "======================================================="
-         << std::endl;
-  stream << "PHYSICAL ENTITIES (Dimension, Number, Name):" << std::endl;
+         << ", size of double = " << mf.DoubleSize << '\n';
+  stream << "=======================================================" << '\n';
+  stream << "PHYSICAL ENTITIES (Dimension, Number, Name):" << '\n';
   for (const auto& pe : mf.PhysicalEntities) {
     stream << "  " << pe.Dimension << "\t , " << pe.Number << "\t , " << pe.Name
-           << std::endl;
+           << '\n';
   }
-  stream << "NODES (Number, coords)" << std::endl;
+  stream << "NODES (Number, coords)" << '\n';
   for (const auto& n : mf.Nodes) {
-    stream << "  " << n.first << "\t , " << n.second.transpose() << std::endl;
+    stream << "  " << n.first << "\t , " << n.second.transpose() << '\n';
   }
   stream << "ELEMENTS (Number, Type, PhysicalEntity Nr, ElementaryEntityNr, "
             "Mesh partitions to which it belongs, Node numbers in it)"
-         << std::endl;
+         << '\n';
   for (const auto& e : mf.Elements) {
     stream << "  " << e.Number << "\t " << e.Type << '\t' << e.PhysicalEntityNr
            << "\t" << e.ElementaryEntityNr << "\t";
@@ -171,16 +170,16 @@ std::ostream& operator<<(std::ostream& stream, const GMshFileV2& mf) {
     for (auto n : e.NodeNumbers) {
       stream << n << ", ";
     }
-    stream << std::endl;
+    stream << '\n';
   }
-  stream << std::endl;
-  stream << "PERIODIC ENTITIES:" << std::endl;
+  stream << '\n';
+  stream << "PERIODIC ENTITIES:" << '\n';
   for (const auto& pe : mf.Periodic) {
     std::cout << "  dim=" << pe.Dimension
               << ", slaveNr=" << pe.ElementarySlaveNr
-              << ", masterNr=" << pe.ElementaryMasterNr << std::endl;
+              << ", masterNr=" << pe.ElementaryMasterNr << '\n';
     for (auto nm : pe.NodeMapping) {
-      std::cout << "    " << nm.first << " <-> " << nm.second << std::endl;
+      std::cout << "    " << nm.first << " <-> " << nm.second << '\n';
     }
   }
   return stream;
@@ -386,7 +385,7 @@ using nodePair_t = std::pair<size_type, Eigen::Vector3d>;
 /// header information this is set using attributes.
 // NOLINTNEXTLINE
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
-    lf::io::GMshFileV2, MshFileAdapted,
+    lf::io::GMshFileV2, MshFileAdapted,  // NOLINT
     //(double, VersionNumber)
     //(bool, IsBinary)
     //(int, DoubleSize)
@@ -405,12 +404,9 @@ struct transform_attribute<hydi::io::MshFile::ElementType, int, qi::domain> {
   static void fail(hydi::io::MshFile::ElementType&) {}
 };*/
 
-template <typename Enum, typename RawValue>
-struct assign_to_attribute_from_value<
-    Enum, RawValue,
-    typename std::enable_if<std::is_enum<Enum>::value &&
-                            std::is_same<Enum, RawValue>::value ==
-                                false>::type> {
+template <class Enum, typename RawValue>
+  requires(std::is_enum_v<Enum> && !std::is_same_v<Enum, RawValue>)
+struct assign_to_attribute_from_value<Enum, RawValue> {
   static void call(RawValue const& raw, Enum& cat) {
     cat = static_cast<Enum>(raw);
   }
@@ -488,7 +484,7 @@ struct MshGrammarText
     qi::on_error<qi::fail>(physicalEntity_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
     physicalEntityGroup_ %= "$PhysicalNames" >
-                            omit[int_[reserve(_val, qi::_1), _a = qi::_1]] >
+                            omit[int_[(reserve(_val, qi::_1), _a = qi::_1)]] >
                             repeat(_a)[physicalEntity_] > "$EndPhysicalNames";
     physicalEntityGroup_.name("$Physical Entity Section");
     qi::on_error<qi::fail>(physicalEntityGroup_,
@@ -496,7 +492,7 @@ struct MshGrammarText
 
     // Nodes:
     nodeGroup_ %= "$Nodes" > qi::eol >
-                  omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >
+                  omit[qi::uint_[(reserve(_val, qi::_1), _a = qi::_1)]] >
                   qi::eol > repeat(_a)[node_] > -qi::eol > "$EndNodes";
     nodeGroup_.name("$Node Section");
     qi::on_error<qi::fail>(node_,
@@ -510,7 +506,7 @@ struct MshGrammarText
 
     // Periodic entities:
     periodicEntityNodeMapping_ =
-        omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >
+        omit[qi::uint_[(reserve(_val, qi::_1), _a = qi::_1)]] >
         repeat(_a)[qi::uint_ > qi::uint_];  // NOLINT
     periodicEntityNodeMapping_.name("slave-master node mapping");
     qi::on_error<qi::fail>(periodicEntityNodeMapping_,
@@ -520,9 +516,9 @@ struct MshGrammarText
     periodicEntity_.name("periodic entity");
     qi::on_error<qi::fail>(periodicEntity_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
-    periodicEntityGroup_ = "$Periodic" >
-                           omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >
-                           repeat(_a)[periodicEntity_] > "$EndPeriodic";
+    periodicEntityGroup_ =
+        "$Periodic" > omit[qi::uint_[(reserve(_val, qi::_1), _a = qi::_1)]] >
+        repeat(_a)[periodicEntity_] > "$EndPeriodic";
     periodicEntityGroup_.name("periodic entity section");
     qi::on_error<qi::fail>(periodicEntityGroup_,
                            errorHandler_(qi::_1, qi::_2, qi::_3, qi::_4));
@@ -664,8 +660,8 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
                    qi::repeat(qi::_a - 3)[qi::int_ >> ' '] > (qi::uint_ % ' ') >
                    *(qi::blank) > qi::eol;
     elementGroup %= "$Elements" > qi::eol >
-                    qi::omit[qi::uint_[phoenix::reserve(qi::_val, qi::_1),
-                                       qi::_a = qi::_1]] > qi::eol >
+                    qi::omit[qi::uint_[(phoenix::reserve(qi::_val, qi::_1),
+                                        qi::_a = qi::_1)]] > qi::eol >
                     qi::repeat(qi::_a)[elementText] > "$EndElements";
   } else if (is_binary && one == 1) {
     // Binary File Little Endian
@@ -680,7 +676,7 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
                   qi::repeat(_r3)[qi::little_dword];
     elementGroup %=
         "$Elements" >> qi::eol >> qi::eps[_e = 0] >>
-        omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >>
+        omit[qi::uint_[(reserve(_val, qi::_1), _a = qi::_1)]] >>
         qi::eol  // # Elements in total
         >>
         omit[*((qi::eps(_e < _a) >> qi::little_dword[_b = qi::_1] >>
@@ -704,7 +700,7 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
         qi::repeat(_r2 - 3)[qi::big_dword] >> qi::repeat(_r3)[qi::big_dword];
     elementGroup %=
         "$Elements" >> qi::eol >> qi::eps[_e = 0] >>
-        omit[qi::uint_[reserve(_val, qi::_1), _a = qi::_1]] >>
+        omit[qi::uint_[(reserve(_val, qi::_1), _a = qi::_1)]] >>
         qi::eol  // # Elements in total
         >>
         omit[*((qi::eps(_e < _a) >> qi::big_dword[_b = qi::_1] >>
@@ -727,8 +723,8 @@ GMshFileV2 readGmshFileV2(std::string::const_iterator begin,
   elementGroup.name("ElementSection");
 
   // Finally parse everything:
-  MshGrammarText<iterator_t> mshGrammar(node, elementGroup);
-  bool r = qi::phrase_parse(begin, end, mshGrammar, ascii::space, result);
+  const MshGrammarText<iterator_t> mshGrammar(node, elementGroup);
+  const bool r = qi::phrase_parse(begin, end, mshGrammar, ascii::space, result);
 
   // if (r && iter == end) std::cout << "Parsing succeeded" << std::endl;
   // else if (r) std::cout << "Parsing partially succeeded" << std::endl;

@@ -1,5 +1,5 @@
-#ifndef _LF_FIXDOF_H
-#define _LF_FIXDOF_H
+#ifndef INCG_LF_FIXDOF_H
+#define INCG_LF_FIXDOF_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,

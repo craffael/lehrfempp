@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __62731052ee4a4a2d9f256c2caac43835
-#define __62731052ee4a4a2d9f256c2caac43835
+#ifndef INCG62731052ee4a4a2d9f256c2caac43835
+#define INCG62731052ee4a4a2d9f256c2caac43835
 
 #include <lf/mesh/mesh.h>
 #include <spdlog/logger.h>
@@ -37,7 +37,7 @@ class Mesh : public mesh::Mesh {
   [[nodiscard]] unsigned DimMesh() const override { return 2; }
   [[nodiscard]] unsigned DimWorld() const override { return dim_world_; }
 
-  [[nodiscard]] nonstd::span<const Entity* const> Entities(
+  [[nodiscard]] std::span<const Entity* const> Entities(
       unsigned codim) const override;
   [[nodiscard]] size_type NumEntities(unsigned codim) const override;
   [[nodiscard]] size_type NumEntities(
@@ -140,4 +140,4 @@ class Mesh : public mesh::Mesh {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __62731052ee4a4a2d9f256c2caac43835
+#endif  // INCG62731052ee4a4a2d9f256c2caac43835

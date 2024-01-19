@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __feff908010fa4d75a9c006c02b4fafe7
-#define __feff908010fa4d75a9c006c02b4fafe7
+#ifndef INCGfeff908010fa4d75a9c006c02b4fafe7
+#define INCGfeff908010fa4d75a9c006c02b4fafe7
 
 #include <lf/mesh/mesh.h>
 
@@ -79,7 +79,7 @@ class Segment : public mesh::Entity {
      - for rel_codim == 1: return 2-range covering endnodes
      - for rel_codim == 0: return the Segment entity itself
    */
-  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override;
 
   /** @brief Access to relative orientations of endpoints
@@ -87,7 +87,7 @@ class Segment : public mesh::Entity {
    * This method just returns {+,-}, because points always have the intrinsic
    * orientation + and the orientation of an edge is defined through the
    * ordering of its vertices. */
-  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+  [[nodiscard]] std::span<const lf::mesh::Orientation> RelativeOrientations()
       const override {
     return endpoint_ori_;
   }
@@ -124,4 +124,4 @@ class Segment : public mesh::Entity {
 
 }  // namespace lf::mesh::hybrid2d
 
-#endif  // __feff908010fa4d75a9c006c02b4fafe7
+#endif  // INCGfeff908010fa4d75a9c006c02b4fafe7

@@ -19,13 +19,14 @@
 using FisherKPP::localQuadFunction;
 using FisherKPP::StrangSplit;
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main(int /*argc*/, char** /*argv*/) {
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_file = (here.parent_path() / "/meshes/earth.msh").string();
   const lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
   /* Finite Element Space */
   std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
@@ -38,7 +39,7 @@ int main(int /*argc*/, char** /*argv*/) {
   u0.setZero();
   u0(277) = 80;
 
-  std::cout << "N_dofs :" << N_dofs << std::endl;
+  std::cout << "N_dofs :" << N_dofs << '\n';
 
   /* Diffusion Coefficient
    * APPROACH 1: constant diffusion coefficient.
@@ -62,44 +63,44 @@ int main(int /*argc*/, char** /*argv*/) {
 
     if ((x - Himalaya).norm() <= 3) {
       diffCoeff = 5.0;
-      std::cout << "Take Himalaya into account." << std::endl;
+      std::cout << "Take Himalaya into account." << '\n';
     }
 
     if ((x - Karakoram).norm() <= 3) {
       diffCoeff = 6.0;
-      std::cout << "Take Karakoram into account." << std::endl;
+      std::cout << "Take Karakoram into account." << '\n';
     }
 
     if ((x - Hindukush).norm() <= 2) {
       diffCoeff = 6.0;
-      std::cout << "Take Hindukush into account." << std::endl;
+      std::cout << "Take Hindukush into account." << '\n';
     }
 
     if ((x - Alps).norm() <= 3) {
       diffCoeff = 5.0;
-      std::cout << "Take Alps into account." << std::endl;
+      std::cout << "Take Alps into account." << '\n';
     }
 
     if ((x - Ural).norm() <= 2) {
       diffCoeff = 8.0;
-      std::cout << "Take Ural into account." << std::endl;
+      std::cout << "Take Ural into account." << '\n';
     }
 
     if ((x - RockyMountains).norm() <= 2) {
       diffCoeff = 10.0;
-      std::cout << "Take Himalaya into account." << std::endl;
+      std::cout << "Take Himalaya into account." << '\n';
     }
 
     if ((x - Andes).norm() <= 3) {
       diffCoeff = 9.0;
-      std::cout << "Take Himalaya into account." << std::endl;
+      std::cout << "Take Himalaya into account." << '\n';
     }
 
     return diffCoeff;
   };
 
   /* Growth Factor */
-  double lambda = 1.94;
+  const double lambda = 1.94;
 
   /* Non Local Boundary Conditions */
 
@@ -147,7 +148,7 @@ int main(int /*argc*/, char** /*argv*/) {
          {lf::base::RefEl::kTria(), lf::quad::make_TriaQR_EdgeMidpointRule()}},
         g, 1, edge_pred);
 
-    std::cout << "res" << res << std::endl;
+    std::cout << "res" << res << '\n';
     return res;
   };
 
@@ -168,7 +169,7 @@ int main(int /*argc*/, char** /*argv*/) {
         Eigen::VectorXd L1(N_dofs);
         L1.setZero();
 
-        lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
+        const lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
         lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_g),
                                                   decltype(edge_pred)>
             edgeVec_y(fe_space, mf_g, edge_pred);
@@ -180,7 +181,7 @@ int main(int /*argc*/, char** /*argv*/) {
       Eigen::VectorXd L2(N_dofs);
       L2.setZero();
 
-      lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
+      const lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
       lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_L),
                                                 decltype(edge_pred)>
           edgeVec_x(fe_space, mf_L, edge_pred);
@@ -200,8 +201,8 @@ int main(int /*argc*/, char** /*argv*/) {
    */
 
   /* Total number of timesteps */
-  unsigned int m = 121;
-  double T = 1.;  // the timestepsize tau will equal T/m = 0.0083
+  const unsigned int m = 121;
+  const double T = 1.;  // the timestepsize tau will equal T/m = 0.0083
 
   /* First we assemble the carrying capacity maps */
   Eigen::MatrixXd car_cap(N_dofs, 22);
@@ -209,8 +210,8 @@ int main(int /*argc*/, char** /*argv*/) {
   Eigen::VectorXd K(N_dofs);
   K.setZero();
   K = 0.2 * Eigen::VectorXd::Ones(N_dofs);
-  auto c_cap = [](const Eigen::Vector2d & /*x*/) -> double { return 80.0; };
-  auto h_cap = [](const Eigen::Vector2d & /*x*/) -> double { return 1.0; };
+  auto c_cap = [](const Eigen::Vector2d& /*x*/) -> double { return 80.0; };
+  auto h_cap = [](const Eigen::Vector2d& /*x*/) -> double { return 1.0; };
   Eigen::MatrixXd L_cap(N_dofs, N_dofs);
   L_cap = Eigen::MatrixXd::Zero(N_dofs, N_dofs);
   /* NOTE: c = 80, lambda = 0, L = 0, h = 1, K does not matter*/
@@ -226,10 +227,10 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(2) = DiffusionCapacity.Evolution(K, car_cap.col(1));
   car_cap.col(2) *= 10;
 
-  std::cout << "Carrying Capacity 200kya - 150kya!" << std::endl;
+  std::cout << "Carrying Capacity 200kya - 150kya!" << '\n';
 
   /* t = 150 kya - 130 kya */
-  std::cout << "Carrying Capacity 150kya - 130kya!" << std::endl;
+  std::cout << "Carrying Capacity 150kya - 130kya!" << '\n';
 
   /* t = 130 kya - 100 kya */
   k0.setZero();
@@ -239,10 +240,10 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(5) = DiffusionCapacity.Evolution(K, car_cap.col(4));
   car_cap.col(5) *= 10;
 
-  std::cout << "Carrying Capacity 130kya - 100kya!" << std::endl;
+  std::cout << "Carrying Capacity 130kya - 100kya!" << '\n';
 
   /* t = 100 kya - 70 kya */
-  std::cout << "Carrying Capacity 100kya - 70kya!" << std::endl;
+  std::cout << "Carrying Capacity 100kya - 70kya!" << '\n';
 
   /* t = 70 kya - 65 kya */
   k0.setZero();
@@ -251,7 +252,7 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(7) = DiffusionCapacity.Evolution(K, car_cap.col(6));
   car_cap.col(7) *= 15;
 
-  std::cout << "Carrying Capacity 70kya - 65kya!" << std::endl;
+  std::cout << "Carrying Capacity 70kya - 65kya!" << '\n';
 
   /* t = 65 kya - 50 kya */
   k0.setZero();
@@ -262,7 +263,7 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(9) = DiffusionCapacity.Evolution(K, car_cap.col(8));
   car_cap.col(9) *= 8;
 
-  std::cout << "Carrying Capacity 65kya - 50kya!" << std::endl;
+  std::cout << "Carrying Capacity 65kya - 50kya!" << '\n';
 
   /* t = 50 kya - 45 kya */
   k0.setZero();
@@ -270,7 +271,7 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(10) = DiffusionCapacity.Evolution(K, k0);
   car_cap.col(10) *= 2;
 
-  std::cout << "Carrying Capacity 50kya - 45kya!" << std::endl;
+  std::cout << "Carrying Capacity 50kya - 45kya!" << '\n';
 
   /* t = 45 kya - 25 kya */
   k0.setZero();
@@ -280,7 +281,7 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(12) = DiffusionCapacity.Evolution(K, car_cap.col(11));
   car_cap.col(12) *= 8;
 
-  std::cout << "Carrying Capacity 45kya - 25kya!" << std::endl;
+  std::cout << "Carrying Capacity 45kya - 25kya!" << '\n';
 
   /* t = 25 kya - 15 kya */
   k0.setZero();
@@ -289,7 +290,7 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(14) = DiffusionCapacity.Evolution(K, car_cap.col(13));
   car_cap.col(14) *= 25;
 
-  std::cout << "Carrying Capacity 25kya - 15kya!" << std::endl;
+  std::cout << "Carrying Capacity 25kya - 15kya!" << '\n';
 
   /* t = 15 kya - 0 kya */
   k0.setZero();
@@ -298,8 +299,8 @@ int main(int /*argc*/, char** /*argv*/) {
   car_cap.col(15) = DiffusionCapacity.Evolution(K, k0);
   car_cap.col(15) *= 4;
 
-  std::cout << "Carrying Capacity 15kya - 0kya!" << std::endl;
-  std::cout << "Capacity maps are assembled!" << std::endl;
+  std::cout << "Carrying Capacity 15kya - 0kya!" << '\n';
+  std::cout << "Capacity maps are assembled!" << '\n';
 
   /* Now we may compute the solution */
   StrangSplit StrangSplitter(fe_space, T, m, lambda, c, h, L);
@@ -311,43 +312,43 @@ int main(int /*argc*/, char** /*argv*/) {
   cap = car_cap.col(2);
   sol.col(0) = StrangSplitter.Evolution(cap, u0);
 
-  std::cout << "Solution 200kya - 150kya!" << std::endl;
+  std::cout << "Solution 200kya - 150kya!" << '\n';
 
   /* t = 150 kya - 130 kya */
   sol.col(1) = StrangSplitter.Evolution(cap, sol.col(0));
 
-  std::cout << "Solution 150kya - 130kya!" << std::endl;
+  std::cout << "Solution 150kya - 130kya!" << '\n';
 
   /* t = 130 kya - 100 kya */
   cap = cap + car_cap.col(5);
   sol.col(2) = StrangSplitter.Evolution(cap, sol.col(1));
 
-  std::cout << "Solution 130kya - 100kya!" << std::endl;
+  std::cout << "Solution 130kya - 100kya!" << '\n';
 
   /* t = 100 kya - 70 kya */
   sol.col(3) = StrangSplitter.Evolution(cap, sol.col(2));
 
-  std::cout << "Solution 100kya - 70kya!" << std::endl;
+  std::cout << "Solution 100kya - 70kya!" << '\n';
 
   /* t = 70 kya - 65 kya */
   cap = cap + car_cap.col(7);
   sol.col(4) = StrangSplitter.Evolution(cap, sol.col(3));
   sol.col(5) = StrangSplitter.Evolution(cap, sol.col(4));
 
-  std::cout << "Solution 70kya - 65kya!" << std::endl;
+  std::cout << "Solution 70kya - 65kya!" << '\n';
 
   /* t = 65 kya - 50 kya */
   cap = cap + car_cap.col(9);
   sol.col(6) = StrangSplitter.Evolution(cap, sol.col(5));
   sol.col(7) = StrangSplitter.Evolution(cap, sol.col(6));
 
-  std::cout << "Solution 65kya - 50kya!" << std::endl;
+  std::cout << "Solution 65kya - 50kya!" << '\n';
 
   /* t = 50 kya - 45 kya */
   cap = cap + car_cap.col(10);
   sol.col(8) = StrangSplitter.Evolution(cap, sol.col(7));
 
-  std::cout << "Solution 50kya - 45kya!" << std::endl;
+  std::cout << "Solution 50kya - 45kya!" << '\n';
 
   /* t = 45 kya - 25 kya */
   cap = cap + car_cap.col(12);
@@ -356,14 +357,14 @@ int main(int /*argc*/, char** /*argv*/) {
   sol.col(11) = StrangSplitter.Evolution(cap, sol.col(10));
   sol.col(12) = StrangSplitter.Evolution(cap, sol.col(11));
 
-  std::cout << "Solution 45kya - 25kya!" << std::endl;
+  std::cout << "Solution 45kya - 25kya!" << '\n';
 
   /* t = 25 kya - 15 kya */
   cap = cap + car_cap.col(14);
   sol.col(13) = StrangSplitter.Evolution(cap, sol.col(12));
   sol.col(14) = StrangSplitter.Evolution(cap, sol.col(13));
 
-  std::cout << "Solution 25kya - 15kya!" << std::endl;
+  std::cout << "Solution 25kya - 15kya!" << '\n';
 
   /* t = 15 kya - 0 kya */
   cap = cap + car_cap.col(15);
@@ -373,7 +374,7 @@ int main(int /*argc*/, char** /*argv*/) {
   sol.col(18) = StrangSplitter.Evolution(cap, sol.col(17));
   sol.col(19) = StrangSplitter.Evolution(cap, sol.col(18));
 
-  std::cout << "Solution 15kya - 0kya!" << std::endl;
+  std::cout << "Solution 15kya - 0kya!" << '\n';
 
   /* Use VTK-Writer for Visualization of solution */
   lf::io::VtkWriter vtk_writer_cap(mesh_p, "cap.vtk");

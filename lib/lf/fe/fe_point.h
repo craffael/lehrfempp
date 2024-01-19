@@ -15,7 +15,7 @@ namespace lf::fe {
 
 /**
  * @headerfile lf/fe/fe.h
- * @brief Linear finite element on a point
+ * @brief Finite element on a point
  *
  * This is a specialization of ScalarReferenceFiniteElement for an entity
  * of dimension 0, which is exactly one scalar value. It is an ingredient
@@ -52,7 +52,7 @@ class FePoint : public ScalarReferenceFiniteElement<SCALAR> {
     LF_VERIFY_MSG(false, "gradients not defined in points of mesh.");
   }
   [[nodiscard]] Eigen::MatrixXd EvaluationNodes() const override {
-    return Eigen::MatrixXd(0, 1);
+    return {0, 1};
   }
   [[nodiscard]] size_type NumEvaluationNodes() const override { return 1; }
 

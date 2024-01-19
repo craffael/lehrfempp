@@ -1,5 +1,5 @@
-#ifndef _LF_DOFHD_H
-#define _LF_DOFHD_H
+#ifndef INCG_LF_DOFHD_H
+#define INCG_LF_DOFHD_H
 /***************************************************************************
  * LehrFEM++ - A simple C++ finite element libray for teaching
  * Developed from 2018 at the Seminar of Applied Mathematics of ETH Zurich,
@@ -32,7 +32,7 @@ namespace lf::assemble {
  * ## Some terminology
  *
  * - The terms "degrees of freedom", "global basis functions", and "global shape
- * functions are synomymous.
+ * functions" are synomymous.
  * - Every global and local shape function is _associated_ with a unique
  * geometric entity.
  * - The global/local shape functions associated with a mesh entity are called
@@ -178,7 +178,7 @@ class DofHandler {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{par:betldofmap} for more information.
    */
-  [[nodiscard]] virtual nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] virtual std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -198,7 +198,7 @@ class DofHandler {
    * @note Be aware of the difference of @ref GlobalDofIndices() and @ref
    * InteriorGlobalDofIndices()
    */
-  [[nodiscard]] virtual nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] virtual std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const = 0;
 
   /**
@@ -320,13 +320,13 @@ class UniformFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -362,10 +362,10 @@ class UniformFEDofHandler : public DofHandler {
   void InitTotalNumDofs();
 
   // Access method to numbers and values of indices of shape functions
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       lf::base::RefEl ref_el_type, glb_idx_t entity_index) const;
 
   [[nodiscard]] size_type GetNumLocalDofs(lf::base::RefEl ref_el_type,
@@ -520,6 +520,7 @@ class DynamicFEDofHandler : public DofHandler {
    * DynamicFEDofHandler::NumInteriorDofs().
    */
   template <typename LOCALDOFINFO>
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   DynamicFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh_p,
                       LOCALDOFINFO &&locdof)
       : mesh_p_(std::move(mesh_p)) {
@@ -539,10 +540,10 @@ class DynamicFEDofHandler : public DofHandler {
       const mesh::Entity *node_p{mesh_p_->EntityByIndex(2, node_idx)};
       LF_ASSERT_MSG(mesh_p_->Index(*node_p) == node_idx, "Node index mismatch");
       // Offset for indices of node in index vector
-      glb_idx_t node_dof_offset = dof_idx;
+      const glb_idx_t node_dof_offset = dof_idx;
       offsets_[2][node_idx] = node_dof_offset;
       // Request number of local shape functions associated with the node
-      size_type no_int_dof_node = locdof(*node_p);
+      const size_type no_int_dof_node = locdof(*node_p);
       num_int_dofs_[2][node_idx] = no_int_dof_node;
 
       // Store dof indices in array
@@ -568,15 +569,15 @@ class DynamicFEDofHandler : public DofHandler {
       LF_ASSERT_MSG(mesh_p_->Index(*edge) == edge_idx, "Edge index mismatch");
       // Offset for indices of edge dof in index vector
       offsets_[1][edge_idx] = edge_dof_offset;
-      size_type no_int_dof_edge = locdof(*edge);
+      const size_type no_int_dof_edge = locdof(*edge);
       num_int_dofs_[1][edge_idx] = no_int_dof_edge;
 
       // Obtain indices for basis functions sitting at endpoints
       // Endpoints are mesh entities with co-dimension = 2
       for (const lf::mesh::Entity *endpoint : edge->SubEntities(1)) {
         const glb_idx_t ep_idx(mesh_p_->Index(*endpoint));
-        glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
-        size_type no_int_dofs_ep = num_int_dofs_[2][ep_idx];
+        const glb_idx_t ep_dof_offset = offsets_[2][ep_idx];
+        const size_type no_int_dofs_ep = num_int_dofs_[2][ep_idx];
         // Copy indices of shape functions from nodes to edge
         for (unsigned j = 0; j < no_int_dofs_ep; j++) {
           dofs_[1].push_back(dofs_[2][ep_dof_offset + j]);
@@ -606,14 +607,14 @@ class DynamicFEDofHandler : public DofHandler {
       const mesh::Entity *cell{mesh_p_->EntityByIndex(0, cell_idx)};
       // Offset for indices of cell dof in index vector
       offsets_[0][cell_idx] = cell_dof_offset;
-      size_type no_int_dof_cell = locdof(*cell);
+      const size_type no_int_dof_cell = locdof(*cell);
       num_int_dofs_[0][cell_idx] = no_int_dof_cell;
 
       // Obtain indices for basis functions in vertices
       for (const lf::mesh::Entity *vertex : cell->SubEntities(2)) {
         const glb_idx_t vt_idx(mesh_p_->Index(*vertex));
-        glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
-        size_type no_int_dofs_vt = num_int_dofs_[2][vt_idx];
+        const glb_idx_t vt_dof_offset = offsets_[2][vt_idx];
+        const size_type no_int_dofs_vt = num_int_dofs_[2][vt_idx];
         // Copy indices of shape functions from nodes to cell
         for (unsigned j = 0; j < no_int_dofs_vt; j++) {
           dofs_[0].push_back(dofs_[2][vt_dof_offset + j]);
@@ -691,13 +692,13 @@ class DynamicFEDofHandler : public DofHandler {
   /**
    * @copydoc DofHandler::GlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> GlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
    */
-  [[nodiscard]] nonstd::span<const gdof_idx_t> InteriorGlobalDofIndices(
+  [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
@@ -747,4 +748,13 @@ class DynamicFEDofHandler : public DofHandler {
 
 }  // namespace lf::assemble
 
+/// \cond
+/**
+ * @brief Make lf::assemble::DofHandler formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::assemble::DofHandler> : ostream_formatter {};
+
+/// \endcond
 #endif

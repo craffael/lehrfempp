@@ -27,7 +27,7 @@ bool PointInTriangle(const Eigen::MatrixXd &tria_coords,
                      const Eigen::Vector2d &point) {
   // calculate barycentric coordinates of point using affine transformation
   // from reference triangle: phi(x_hat) = alpha + beta * x_hat
-  Eigen::Vector2d alpha = tria_coords.col(0);
+  const Eigen::Vector2d alpha = tria_coords.col(0);
   Eigen::Matrix2d beta;
   beta << tria_coords.col(1) - tria_coords.col(0),
       tria_coords.col(2) - tria_coords.col(0);
@@ -47,7 +47,7 @@ CodimMeshDataSet_t MarkMesh(
   // loop through all cells to check if it contains the point
   for (const lf::mesh::Entity *cell : mesh_ptr->Entities(0)) {
     const lf::geometry::Geometry *geom_ptr = cell->Geometry();
-    lf::base::RefEl ref_el = cell->RefEl();
+    const lf::base::RefEl ref_el = cell->RefEl();
     const Eigen::MatrixXd &ref_el_coords(ref_el.NodeCoords());
     const Eigen::MatrixXd vtx_coords(geom_ptr->Global(ref_el_coords));
 
@@ -60,7 +60,7 @@ CodimMeshDataSet_t MarkMesh(
       }
     } else if (ref_el == lf::base::RefEl::kQuad()) {
       // split quadrilateral into two triangles and check each separately
-      Eigen::MatrixXd tria1 = vtx_coords.block(0, 0, 2, 3);
+      const Eigen::MatrixXd tria1 = vtx_coords.block(0, 0, 2, 3);
       Eigen::MatrixXd tria2(2, 3);
       tria2 << vtx_coords.col(0), vtx_coords.col(2), vtx_coords.col(3);
 
@@ -70,7 +70,7 @@ CodimMeshDataSet_t MarkMesh(
         }
       }
     } else {
-      std::cerr << "unknown cell geometry" << std::endl;
+      std::cerr << "unknown cell geometry" << '\n';
     }
   }
 
@@ -96,14 +96,14 @@ int main(int argc, char **argv) {
   po::notify(vm);
 
   if (vm.count("help") != 0U) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
-  size_t num_steps = vm["num_steps"].as<size_t>();
-  bool pointwise = vm["pointwise"].as<bool>();
+  const size_t num_steps = vm["num_steps"].as<size_t>();
+  const bool pointwise = vm["pointwise"].as<bool>();
   std::vector<double> point_coords = vm["point"].as<std::vector<double>>();
-  Eigen::Vector2d point(point_coords.data());
+  const Eigen::Vector2d point(point_coords.data());
 
   using size_type = lf::base::size_type;
   using lf::io::TikzOutputCtrl;
@@ -117,12 +117,12 @@ int main(int argc, char **argv) {
   builder.setTopRightCorner(Eigen::Vector2d{1, 1});
   builder.setNumXCells(1);
   builder.setNumYCells(1);
-  std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
+  const std::shared_ptr<lf::mesh::Mesh> mesh_ptr = builder.Build();
 
   // output mesh information
   const lf::mesh::Mesh &mesh = *mesh_ptr;
   lf::mesh::utils::PrintInfo(std::cout, mesh);
-  std::cout << std::endl;
+  std::cout << '\n';
 
   // build mesh hierarchy
   lf::refinement::MeshHierarchy multi_mesh(
@@ -138,14 +138,14 @@ int main(int argc, char **argv) {
   for (std::size_t step = 0; step < num_steps; ++step) {
     // obtain pointer to mesh on finest level
     const size_type n_levels = multi_mesh.NumLevels();
-    std::shared_ptr<const lf::mesh::Mesh> mesh_fine =
+    const std::shared_ptr<const lf::mesh::Mesh> mesh_fine =
         multi_mesh.getMesh(n_levels - 1);
 
     // print number of entities of various co-dimensions
     std::cout << "Mesh on level " << n_levels - 1 << ": "
               << mesh_fine->NumEntities(2) << " nodes, "
               << mesh_fine->NumEntities(1) << " edges, "
-              << mesh_fine->NumEntities(0) << " cells," << std::endl;
+              << mesh_fine->NumEntities(0) << " cells," << '\n';
 
     lf::io::writeTikZ(
         *mesh_fine,
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
                                             std::to_string(step) + ".csv");
 
     if (pointwise) {
-      CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
+      const CodimMeshDataSet_t marked_mesh = MarkMesh(mesh_fine, point);
       multi_mesh.MarkEdges([marker, marked_mesh](const lf::mesh::Mesh &mesh,
                                                  const lf::mesh::Entity &e) {
         return marker(mesh, e, marked_mesh);

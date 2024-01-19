@@ -70,9 +70,9 @@ class SegmentO2 : public Geometry {
    * Coefficients for efficient evaluation of JacobianInverseGramian() and
    * IntegrationElement()
    */
-  double alpha_squared_;
-  double alpha_beta_;
-  double beta_squared_;
+  double alpha_squared_{0};
+  double alpha_beta_{0};
+  double beta_squared_{0};
 };
 
 }  // namespace lf::geometry

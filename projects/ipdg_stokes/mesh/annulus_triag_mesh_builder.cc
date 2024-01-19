@@ -1,11 +1,11 @@
 #include "annulus_triag_mesh_builder.h"
 
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 
 #include <array>
 #include <cmath>
+#include <span>
 #include <vector>
 
 namespace projects::ipdg_stokes::mesh {
@@ -16,7 +16,7 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
   const double r = inner_radius_;
   const double R = outer_radius_;
   const double dr = (R - r) / num_radial_cells_;
-  const double dphi = 2 * M_PI / num_angular_cells_;
+  const double dphi = 2 * lf::base::kPi / num_angular_cells_;
   auto node_position = [&](lf::base::size_type r_idx,
                            lf::base::size_type phi_idx) {
     Eigen::Vector2d pos;
@@ -66,9 +66,9 @@ std::shared_ptr<lf::mesh::Mesh> AnnulusTriagMeshBuilder::Build() {
           std::make_unique<lf::geometry::TriaO1>(verts1);
       std::unique_ptr<lf::geometry::Geometry> geom2 =
           std::make_unique<lf::geometry::TriaO1>(verts2);
-      mesh_factory_->AddEntity(ref_el, nonstd::span(trig1.data(), 3),
+      mesh_factory_->AddEntity(ref_el, std::span(trig1.data(), 3),
                                std::move(geom1));
-      mesh_factory_->AddEntity(ref_el, nonstd::span(trig2.data(), 3),
+      mesh_factory_->AddEntity(ref_el, std::span(trig2.data(), 3),
                                std::move(geom2));
     }
   }

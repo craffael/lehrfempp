@@ -28,18 +28,18 @@ std::vector<lf::quad::QuadRule> BoundaryQuadRule(lf::base::RefEl ref_el,
   }
 
   // query the number of edges
-  int numSegments = ref_el.NumSubEntities(1);
+  const lf::base::size_type numSegments = ref_el.NumSubEntities(1);
   std::vector<lf::quad::QuadRule> BoundaryQuadRules(numSegments);
 
   // iterate over edges
   for (int segment = 0; segment < numSegments; ++segment) {
     // query edge geometry and transform weights
     auto edge_ptr = geo_ptr->SubGeometry(1, segment);
-    Eigen::MatrixXd Points = edge_ptr->Global(qr.Points());
-    Eigen::VectorXd Weights =
+    const Eigen::MatrixXd Points = edge_ptr->Global(qr.Points());
+    const Eigen::VectorXd Weights =
         qr.Weights() *
         edge_ptr->IntegrationElement((Eigen::VectorXd(1) << 0.5).finished());
-    lf::quad::QuadRule bqr(ref_el, Points, Weights, 0);
+    const lf::quad::QuadRule bqr(ref_el, Points, Weights, 0);
     BoundaryQuadRules[segment] = bqr;
   }
 
@@ -48,15 +48,15 @@ std::vector<lf::quad::QuadRule> BoundaryQuadRule(lf::base::RefEl ref_el,
 
 Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
   // check, that the reference element is supported:
-  lf::base::RefEl refEl = geometry.RefEl();
+  const lf::base::RefEl refEl = geometry.RefEl();
   LF_ASSERT_MSG(
       refEl == lf::base::RefEl::kTria() || refEl == lf::base::RefEl::kQuad(),
       "invalid reference element: " << refEl);
 
   // retrive the corners of the geometry object.
   Eigen::MatrixXd corners = lf::geometry::Corners(geometry);
-  int n_corners = corners.cols();
-  int n_edges = n_corners;
+  const lf::base::size_type n_corners = corners.cols();
+  const lf::base::size_type n_edges = n_corners;
 
   // determine, if the numbering of corners is
   // counterclockwise or clockwise. This is needed to conclude
@@ -68,9 +68,9 @@ Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
     // if the orientation of the numbering has changed.
     // since the Jacobian is constant, it can be evaluated in any
     // point of the reference triangle.
-    Eigen::MatrixXd point = Eigen::MatrixXd::Zero(2, 1);
-    Eigen::MatrixXd Jacobian = geometry.Jacobian(point);
-    double JacobianDeterminant = Jacobian.determinant();
+    const Eigen::MatrixXd point = Eigen::MatrixXd::Zero(2, 1);
+    const Eigen::MatrixXd Jacobian = geometry.Jacobian(point);
+    const double JacobianDeterminant = Jacobian.determinant();
     orientation = JacobianDeterminant > 0 ? 1 : -1;
 
   } else {
@@ -85,8 +85,9 @@ Eigen::MatrixXd OuterNormals(const lf::geometry::Geometry& geometry) {
     // Count the number of Jacobian evaluations with a positive determinant.
     int positiveJacobianDeterminantCount = 0;
     for (int i = 0; i < 4; ++i) {
-      Eigen::MatrixXd Jacobian = Jacobians.block(0, 2 * i, 2, 2);
-      double JacobianDeterminant = Jacobian.determinant();
+      const Eigen::MatrixXd Jacobian =
+          Jacobians.block(0, 2 * static_cast<Eigen::Index>(i), 2, 2);
+      const double JacobianDeterminant = Jacobian.determinant();
       if (JacobianDeterminant > 0) {
         positiveJacobianDeterminantCount++;
       }
@@ -130,11 +131,12 @@ void PrescribedSignProvider::init() {
   lf::mesh::utils::CodimMeshDataSet<int>& maxElement = *maxElement_ptr_;
   // find the maximum index of cells to which any given edge belongs.
   for (const lf::mesh::Entity* const e : mesh_ptr_->Entities(0)) {
-    int entity_idx = mesh_ptr_->Index(*e);
+    auto entity_idx = mesh_ptr_->Index(*e);
     for (const lf::mesh::Entity* const subent : e->SubEntities(1)) {
       LF_ASSERT_MSG(maxElement.DefinedOn(*subent),
                     "maxElement_ not defined on subentity" << *subent);
-      maxElement(*subent) = std::max(maxElement(*subent), entity_idx);
+      maxElement(*subent) =
+          std::max<int>(maxElement(*subent), lf::base::narrow<int>(entity_idx));
     }
   }
 }

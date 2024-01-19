@@ -12,18 +12,18 @@ bool assertNonDegenerateTriangle(
   // World dimension
   const Geometry::dim_t wd = coords.rows();
   // Length tests
-  double e0lensq = (coords.col(1) - coords.col(0)).squaredNorm();
-  double e1lensq = (coords.col(2) - coords.col(1)).squaredNorm();
-  double e2lensq = (coords.col(0) - coords.col(2)).squaredNorm();
+  const double e0lensq = (coords.col(1) - coords.col(0)).squaredNorm();
+  const double e1lensq = (coords.col(2) - coords.col(1)).squaredNorm();
+  const double e2lensq = (coords.col(0) - coords.col(2)).squaredNorm();
   // Test lengths of edges versus circumference.
-  double circum = e0lensq + e1lensq + e2lensq;
+  const double circum = e0lensq + e1lensq + e2lensq;
   LF_VERIFY_MSG(e0lensq > tol * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > tol * circum, "Collapsed edge 1");
   LF_VERIFY_MSG(e2lensq > tol * circum, "Collapsed edge 2");
   // Area test
   switch (wd) {
     case 2: {
-      double area = std::fabs(
+      const double area = std::fabs(
           ((coords(0, 1) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
            (coords(1, 1) - coords(1, 0)) * (coords(0, 2) - coords(0, 0))));
       LF_VERIFY_MSG(area > tol * circum,
@@ -33,7 +33,7 @@ bool assertNonDegenerateTriangle(
     }
     case 3: {
       const Eigen::Matrix<double, 3, 3> c3d(coords.block<3, 3>(0, 0));
-      double area =
+      const double area =
           ((c3d.col(1) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
       LF_VERIFY_MSG(area > tol * circum, "Degenerate 3D triangle");
       return true;
@@ -50,8 +50,7 @@ bool assertNonDegenerateTriangle(
 TriaO1::TriaO1(Eigen::Matrix<double, Eigen::Dynamic, 3> coords)
     : coords_(std::move(coords)),
       jacobian_(coords_.rows(), 2),
-      jacobian_inverse_gramian_(coords_.rows(), 2),
-      integrationElement_(0) {
+      jacobian_inverse_gramian_(coords_.rows(), 2) {
   // Make sure that the triangle has a proper shape.
   assertNonDegenerateTriangle(coords_);
   // Precompute constant Jacobian
@@ -109,7 +108,7 @@ std::vector<std::unique_ptr<Geometry>> TriaO1::ChildGeometry(
   std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>>
       child_polygons(ref_pat.ChildPolygons(codim));
   // Number of child segments
-  const int no_children = child_polygons.size();
+  const auto no_children = base::narrow<base::size_type>(child_polygons.size());
   LF_VERIFY_MSG(
       no_children == ref_pat.NumChildren(codim),
       "no_children = " << no_children << " <-> " << ref_pat.NumChildren(codim));

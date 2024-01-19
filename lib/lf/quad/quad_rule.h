@@ -6,8 +6,8 @@
  * @copyright MIT License
  */
 
-#ifndef __a7241ee797424d98ad339341b02bca70
-#define __a7241ee797424d98ad339341b02bca70
+#ifndef INCGa7241ee797424d98ad339341b02bca70
+#define INCGa7241ee797424d98ad339341b02bca70
 
 #include <lf/base/base.h>
 
@@ -196,4 +196,13 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace lf::quad
 
-#endif  // __a7241ee797424d98ad339341b02bca70
+/// \cond
+/**
+ * @brief Make lf::quad::QuadRule formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::quad::QuadRule> : ostream_formatter {};
+/// \endcond
+
+#endif  // INCGa7241ee797424d98ad339341b02bca70

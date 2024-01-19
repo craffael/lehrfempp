@@ -9,8 +9,8 @@
  * @copyright MIT License
  */
 
-#ifndef __c3071f8127a44f7e8cb57f0b1dd3335a
-#define __c3071f8127a44f7e8cb57f0b1dd3335a
+#ifndef INCGc3071f8127a44f7e8cb57f0b1dd3335a
+#define INCGc3071f8127a44f7e8cb57f0b1dd3335a
 
 #include <boost/fusion/adapted.hpp>
 #include <boost/fusion/adapted/std_tuple.hpp>
@@ -133,7 +133,7 @@ using entities_t = std::tuple<std::vector<lf::io::GMshFileV4::PointEntity>,
                               std::vector<lf::io::GMshFileV4::Entity>>;
 
 // clang-format off
-// NOLINTNEXTLINE
+// NOLINTBEGIN
 BOOST_FUSION_ADAPT_STRUCT_NAMED(
     lf::io::GMshFileV4, MshFileV4Adapted,
     (std::vector<lf::io::GMshFileV4::PhysicalName>, physical_names)
@@ -144,6 +144,7 @@ BOOST_FUSION_ADAPT_STRUCT_NAMED(
     (std::vector<lf::io::GMshFileV4::PeriodicLink>, periodic_links)
     (std::vector<lf::io::GMshFileV4::GhostElement>, ghost_elements)
 )
+// NOLINTEND
 // clang-format on
 
 namespace lf::io {
@@ -162,7 +163,7 @@ struct assign_to_attribute_from_value<
   static void call(RawValue const& raw, Enum& cat) {
     if constexpr (detail::has_value_type<RawValue>::value) {  // NOLINT
       // specialization for endian::endian
-      typename RawValue::value_type value = raw;
+      const typename RawValue::value_type value = raw;
       cat = static_cast<Enum>(value);
     } else {  // NOLINT
       cat = static_cast<Enum>(raw);
@@ -172,4 +173,4 @@ struct assign_to_attribute_from_value<
 
 }  // namespace boost::spirit::traits
 /// \endcond
-#endif  // __c3071f8127a44f7e8cb57f0b1dd3335a
+#endif  // INCGc3071f8127a44f7e8cb57f0b1dd3335a

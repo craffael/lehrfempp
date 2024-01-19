@@ -237,6 +237,7 @@ std::ostream &operator<<(std::ostream &o,
 
 // Initialization methods
 template <typename SCALAR>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
     std::shared_ptr<const lf::mesh::Mesh> mesh_p) {
   // Check validity and consistency of mesh pointer
@@ -330,11 +331,13 @@ assemble::UniformFEDofHandler UniformScalarFESpace<SCALAR>::InitDofHandler(
 
   // Initialization of dof handler starting with collecting the number of
   // interior reference shape functions
-  lf::assemble::UniformFEDofHandler::dof_map_t rsf_layout{
+  const lf::assemble::UniformFEDofHandler::dof_map_t rsf_layout{
       {lf::base::RefEl::kPoint(), num_rsf_node_},
       {lf::base::RefEl::kSegment(), num_rsf_edge_},
       {lf::base::RefEl::kTria(), num_rsf_tria_},
       {lf::base::RefEl::kQuad(), num_rsf_quad_}};
+
+  // NOLINTNEXTLINE(modernize-return-braced-init-list)
   return lf::assemble::UniformFEDofHandler(std::move(mesh_p), rsf_layout);
 }
 
@@ -446,5 +449,15 @@ std::ostream &operator<<(std::ostream &o,
 }
 
 }  // namespace lf::uscalfe
+
+/// \cond
+/**
+ * @brief Make lf::uscalfe::UniformScalarFESpace formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <class SCALAR>
+struct fmt::formatter<lf::uscalfe::UniformScalarFESpace<SCALAR>>
+    : ostream_formatter {};
+/// \endcond
 
 #endif

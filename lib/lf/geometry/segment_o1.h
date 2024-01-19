@@ -1,5 +1,5 @@
-#ifndef __0ec30f6fc5554ec9bea4d9b83e83ea42
-#define __0ec30f6fc5554ec9bea4d9b83e83ea42
+#ifndef INCG0ec30f6fc5554ec9bea4d9b83e83ea42
+#define INCG0ec30f6fc5554ec9bea4d9b83e83ea42
 
 #include "geometry_interface.h"
 
@@ -37,4 +37,4 @@ class SegmentO1 : public Geometry {
 
 }  // namespace lf::geometry
 
-#endif  // __0ec30f6fc5554ec9bea4d9b83e83ea42
+#endif  // INCG0ec30f6fc5554ec9bea4d9b83e83ea42

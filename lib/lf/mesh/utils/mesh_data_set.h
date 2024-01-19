@@ -1,5 +1,5 @@
-#ifndef __f6f00b1842024f36a0ad87792d103c89
-#define __f6f00b1842024f36a0ad87792d103c89
+#ifndef INCGf6f00b1842024f36a0ad87792d103c89
+#define INCGf6f00b1842024f36a0ad87792d103c89
 
 #include <lf/mesh/mesh.h>
 
@@ -65,4 +65,4 @@ class MeshDataSet {
 
 }  // namespace lf::mesh::utils
 
-#endif  // __f6f00b1842024f36a0ad87792d103c89
+#endif  // INCGf6f00b1842024f36a0ad87792d103c89

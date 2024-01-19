@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   }
 
   if(vm.count("help") > 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
@@ -46,8 +46,8 @@ int main(int argc, char** argv) {
   
 
   // number of cells cannot be 0, that would result in segfault!
-  int Nx = vm["Nx_cells"].as<int>();
-  int Ny = vm["Ny_cells"].as<int>();
+  const int Nx = vm["Nx_cells"].as<int>();
+  const int Ny = vm["Ny_cells"].as<int>();
   if (Nx == 0 || Ny == 0) {
     std::cout << "Nx and Ny must not be zero, set using options --Nx_cells and "
                  "--Ny_cells\n";
@@ -67,9 +67,9 @@ int main(int argc, char** argv) {
 
   // Some consistency checks.
   // These should not be included in a regular code
-  std::cout << "Checking entity indexing" << std::endl;
+  std::cout << "Checking entity indexing" << '\n';
   lf::mesh::test_utils::checkEntityIndexing(*mesh_p);
-  std::cout << "Checking mesh completeness" << std::endl;
+  std::cout << "Checking mesh completeness" << '\n';
   lf::mesh::test_utils::checkMeshCompleteness(*mesh_p);
 
   // Printing mesh information

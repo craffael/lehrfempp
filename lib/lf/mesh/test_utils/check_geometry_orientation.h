@@ -1,5 +1,5 @@
-#ifndef __ea25e7ba269040a1876408a8c67712b5
-#define __ea25e7ba269040a1876408a8c67712b5
+#ifndef INCGea25e7ba269040a1876408a8c67712b5
+#define INCGea25e7ba269040a1876408a8c67712b5
 
 #include <lf/mesh/mesh.h>
 
@@ -15,4 +15,4 @@ void checkGeometryOrientation(const Entity& e);
 
 }  // namespace lf::mesh::test_utils
 
-#endif  // __ea25e7ba269040a1876408a8c67712b5
+#endif  // INCGea25e7ba269040a1876408a8c67712b5

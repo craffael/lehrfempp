@@ -14,7 +14,7 @@
 
 int main() {
   using lf::io::TikzOutputCtrl;
-  std::cout << "Output of information for mesh entity elements" << std::endl;
+  std::cout << "Output of information for mesh entity elements" << '\n';
 
   // Build mesh ----------------------------------
   lf::mesh::hybrid2d::MeshFactory test(2);  // MeshFactory object
@@ -44,15 +44,15 @@ int main() {
       test.Build();  // mesh is Mesh object // test is MeshFactory object
 
   // Output information on mesh
-  std::cout << "##### Mesh information ######" << std::endl;
+  std::cout << "##### Mesh information ######" << '\n';
   lf::mesh::utils::PrintInfo(std::cout, *mesh);
-  std::cout << "#####                   #####" << std::endl;
+  std::cout << "#####                   #####" << '\n';
 
-  std::cout << "****** Output of mesh entities *******" << std::endl;
+  std::cout << "****** Output of mesh entities *******" << '\n';
   // Loop over entities and print associated information
   for (lf::base::dim_t codim = 0; codim <= 2; ++codim) {
     std::cout << "******* Entities of codimension " << static_cast<int>(codim)
-              << " ******* " << std::endl;
+              << " ******* " << '\n';
     for (const lf::mesh::Entity* entity : mesh->Entities(codim)) {
       lf::mesh::utils::PrintInfo(std::cout, *entity, 100);
     }

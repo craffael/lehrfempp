@@ -1,15 +1,18 @@
 /// @file ref_el.h
 
-#ifndef __96e6ff0ee0034f4584fcdfc7e9c53f82
-#define __96e6ff0ee0034f4584fcdfc7e9c53f82
+#ifndef INCG96e6ff0ee0034f4584fcdfc7e9c53f82
+#define INCG96e6ff0ee0034f4584fcdfc7e9c53f82
 
 #include <array>
 #include <vector>
 
-//#include <boost/range.hpp>
+// #include <boost/range.hpp>
 
-#include "base.h"
+#include <fmt/ostream.h>
+
+#include "eigen_tools.h"
 #include "lf_assert.h"
+#include "types.h"
 
 namespace lf::base {
 
@@ -500,7 +503,7 @@ class RefEl {
 /**
  * @brief Diagnostic output operator. Prints info about a reference element.
  * @param ref_el The reference element to print info about
- * @param o The stream to which this function should output
+ * @param stream The stream to which this function should output
  * @param output_ctrl Determines the level of detail with which the output is
  * printed to `o`
  *
@@ -516,7 +519,7 @@ class RefEl {
  *
  * @relates RefEl
  */
-void PrintInfo(std::ostream& o, const RefEl& ref_el, int output_ctrl = 0);
+void PrintInfo(std::ostream& stream, const RefEl& ref_el, int output_ctrl = 0);
 
 /**
  * @brief Operator overload to print a `RefEl` to a stream, such as `std::cout`
@@ -535,4 +538,12 @@ inline std::ostream& operator<<(std::ostream& stream, const RefEl& ref_el) {
 
 }  // namespace lf::base
 
-#endif  // __96e6ff0ee0034f4584fcdfc7e9c53f82
+/// \cond
+/**
+ * @brief Make lf::base::RefEl work with fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::base::RefEl> : ostream_formatter {};
+/// \endcond
+#endif  // INCG96e6ff0ee0034f4584fcdfc7e9c53f82

@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef __5b965019a2a74585a86f055191a31def
-#define __5b965019a2a74585a86f055191a31def
+#ifndef INCG5b965019a2a74585a86f055191a31def
+#define INCG5b965019a2a74585a86f055191a31def
 
 #include <deque>
 
@@ -72,4 +72,4 @@ class QuadRuleCache {
 
 }  // namespace lf::quad
 
-#endif  // __5b965019a2a74585a86f055191a31def
+#endif  // INCG5b965019a2a74585a86f055191a31def

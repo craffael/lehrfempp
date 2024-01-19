@@ -5,8 +5,8 @@
  * @date   2018
  * @copyright MIT License
  */
-#ifndef __b86b0c9cb0fd48da931a1f24421b8842
-#define __b86b0c9cb0fd48da931a1f24421b8842
+#ifndef INCGb86b0c9cb0fd48da931a1f24421b8842
+#define INCGb86b0c9cb0fd48da931a1f24421b8842
 
 #include <lf/base/base.h>
 
@@ -129,7 +129,7 @@ class Mesh {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:lftrv} or the code snippet showing the use of @ref lf::mesh::Mesh
    */
-  [[nodiscard]] virtual nonstd::span<const Entity* const> Entities(
+  [[nodiscard]] virtual std::span<const Entity* const> Entities(
       unsigned codim) const = 0;
 
   /**
@@ -210,4 +210,4 @@ class Mesh {
 
 }  // namespace lf::mesh
 
-#endif  // __b86b0c9cb0fd48da931a1f24421b8842
+#endif  // INCGb86b0c9cb0fd48da931a1f24421b8842

@@ -14,33 +14,35 @@ const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
     (Eigen::MatrixXd{2, 4} << 0, 1, 1, 0, 0, 0, 1, 1).finished();
 
 // Print function
-void PrintInfo(std::ostream &o, const RefEl &ref_el, int output_ctrl) {
-  int dim_ref_el = ref_el.Dimension();
-  int no_nodes = ref_el.NumNodes();
-  o << "Type of reference element: " << ref_el.ToString() << std::endl;
-  o << "Dimension: " << dim_ref_el << std::endl;
-  o << "Number of nodes: " << no_nodes << std::endl;
+void PrintInfo(std::ostream &stream, const RefEl &ref_el, int output_ctrl) {
+  const base::dim_t dim_ref_el = ref_el.Dimension();
+  const base::dim_t no_nodes = ref_el.NumNodes();
+  stream << "Type of reference element: " << ref_el.ToString() << '\n';
+  stream << "Dimension: " << dim_ref_el << '\n';
+  stream << "Number of nodes: " << no_nodes << '\n';
 
   if (output_ctrl > 0) {
     // Loop over dimensions
-    for (int co_dim = dim_ref_el; co_dim > 0; co_dim--) {
-      int num_sub_ent = ref_el.NumSubEntities(co_dim);
-      o << "Codimension " << co_dim << " has " << num_sub_ent
-        << " entities of type " << ref_el.SubType(co_dim, 0).ToString()
-        << std::endl;
+    for (base::dim_t co_dim = dim_ref_el; co_dim > 0; co_dim--) {
+      base::dim_t num_sub_ent = ref_el.NumSubEntities(co_dim);
+      stream << "Codimension " << co_dim << " has " << num_sub_ent
+             << " entities of type " << ref_el.SubType(co_dim, 0).ToString()
+             << '\n';
 
       if (output_ctrl > 10) {
         for (; num_sub_ent > 0; num_sub_ent--) {
-          int sub_ent = num_sub_ent - 1;
-          o << " Subentity " << sub_ent << " is of type "
-            << ref_el.SubType(co_dim, 0).ToString();
+          const std::int32_t sub_ent =
+              static_cast<std::int32_t>(num_sub_ent) - 1;
+          stream << " Subentity " << sub_ent << " is of type "
+                 << ref_el.SubType(co_dim, 0).ToString();
 
           if (ref_el.SubType(co_dim, 0) == RefEl::kPoint() &&
               output_ctrl > 20) {
-            o << " and has coordinates [" << ref_el.NodeCoords().col(sub_ent)[0]
-              << " " << ref_el.NodeCoords().col(sub_ent)[1] << "]" << std::endl;
+            stream << " and has coordinates ["
+                   << ref_el.NodeCoords().col(sub_ent)[0] << " "
+                   << ref_el.NodeCoords().col(sub_ent)[1] << "]" << '\n';
           }
-          o << std::endl;
+          stream << '\n';
         }
       }
     }
