@@ -50,3 +50,26 @@ add_custom_target(examples.homDir_linfe.homDir_linfe_demo_run COMMAND examples.h
 add_dependencies(examples_run examples.homDir_linfe.homDir_linfe_demo_run)
 set_target_properties(examples.homDir_linfe.homDir_linfe_demo_run PROPERTIES FOLDER "examples")
 
+
+set (linfe_homdir_galmat linfe_homdir_galmat.cc)
+add_executable(examples.homDir_linfe.linfe_homdir_galmat ${linfe_homdir_galmat})
+target_link_libraries(examples.homDir_linfe.linfe_homdir_galmat
+  PUBLIC Eigen3::Eigen Boost::program_options
+  lf.mesh
+  lf.mesh.utils
+  lf.mesh.test_utils
+  lf.mesh.hybrid2d
+  lf.refinement
+  lf.assemble
+  lf.io
+  lf.uscalfe
+  )
+set_target_properties(examples.homDir_linfe.linfe_homdir_galmat PROPERTIES FOLDER "examples")
+
+if(MSVC)
+  target_compile_options(examples.homDir_linfe.linfe_homdir_galmat PRIVATE /bigobj)
+endif()
+
+add_custom_target(examples.homDir_linfe.linfe_homdir_galmat_run COMMAND examples.homDir_linfe.linfe_homdir_galmat)
+add_dependencies(examples_run examples.homDir_linfe.linfe_homdir_galmat_run)
+set_target_properties(examples.homDir_linfe.linfe_homdir_galmat_run PROPERTIES FOLDER "examples")
