@@ -37,7 +37,7 @@ namespace lf::assemble {
  * geometric entity.
  * - The global/local shape functions associated with a mesh entity are called
  * its **interior** shape functions/degrees of freedom.
- * - The shape functions/degrees of freedom **belonging** to a mesh entity
+ * - The shape functions/degrees of freedom **belonging** to or **covering** a mesh entity
  * or **subordinate** to a  mesh entity are those whose supports cover that
  * entity. Hence all interior d.o.f. must also belong to an entity.
  *
@@ -65,9 +65,13 @@ namespace lf::assemble {
  * -# dofs for _sub-entities_ of the same co-dimension are taken into account in
  * the order given by the _local indexing_ of the sub-entities.
  *
+ * Also refer to [Lecture
+ * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
+ * @lref{rem:betlordlsf}.
+ *
  * ## Local-to-global dof index mapping for entities of higher co-dimension
  *
- * The method getGlobalDofs() is available for entities of _any co-dimension_.
+ * The method GlobalDofIndices() is available for entities of _any co-dimension_.
  * For instance, this allows assembly of contributions from low-dimensional
  * manifolds like boundaries or interfaces.
  *
