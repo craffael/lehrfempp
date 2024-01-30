@@ -12,194 +12,194 @@ defaults:
     shell: bash
 
 jobs:
-  # clang-format:
-    # name: clang-format-17
-    # runs-on: ubuntu-20.04
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      # # - name: Setup tmate session
-        # # uses: mxschmitt/action-tmate@v3
-        # # with:
-          # # limit-access-to-actor: false
-      # - name: Install clang-format
-        # run: |
-          # wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
-          # sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main" && 
-          # sudo apt-get install clang-format-17
-      # - name: clang-format
-        # run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
-  # clang-tidy:
-    # name: clang-tidy-17 ${{ matrix.name }}
-    # needs: clang-format
-    # runs-on: ubuntu-20.04
-    # container: craffael/feen-ci:clang17
-    # strategy:
-      # matrix:
-        # include:
-         # - name: without projects
-           # paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-         # - name: only projects
-           # paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
-    # env:
-      # COMPILER: "clang++-17"
-      # BUILD_TYPE: "Debug"
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v3
-      # - name: Install clang-tidy
-        # run: apt update && apt install -y clang-tidy-17 python-is-python3
-      # - name: Restore cache
-        # uses: actions/cache/restore@v3
+  clang-format:
+    name: clang-format-17
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # - name: Setup tmate session
+        # uses: mxschmitt/action-tmate@v3
         # with:
-          # path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
-          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            # ${{ runner.os }}-${{ env.COMPILER }}-
-      # - name: build_dependencies
-        # run: "./ci/build_dependencies.sh"
-      # - name: Save Cache
-        # uses: actions/cache/save@v3
-        # if: always()
-        # with:
-          # path: |
-            # ${{ env.DEPS_DIR }}
-            # ${{ env.HUNTER_ROOT }}
-          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-      # - name: clang-tidy
-        # run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
+          # limit-access-to-actor: false
+      - name: Install clang-format
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
+          sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main" && 
+          sudo apt-get install clang-format-17
+      - name: clang-format
+        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
+  clang-tidy:
+    name: clang-tidy-17 ${{ matrix.name }}
+    needs: clang-format
+    runs-on: ubuntu-20.04
+    container: craffael/feen-ci:clang17
+    strategy:
+      matrix:
+        include:
+         - name: without projects
+           paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+         - name: only projects
+           paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+    env:
+      COMPILER: "clang++-17"
+      BUILD_TYPE: "Debug"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install clang-tidy
+        run: apt update && apt install -y clang-tidy-17 python-is-python3
+      - name: Restore cache
+        uses: actions/cache/restore@v3
+        with:
+          path: "${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}"
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-${{ env.COMPILER }}-
+      - name: build_dependencies
+        run: "./ci/build_dependencies.sh"
+      - name: Save Cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ${{ env.DEPS_DIR }}
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+      - name: clang-tidy
+        run: "./ci/run_clang_tidy.sh ${{ matrix.paths}}"
         
-  # # compilation on linux/osx:
-  # compile_test:
-    # name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-    # needs: clang-format
-    # strategy:
-      # matrix:
-        # include:
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:clang17
-            # compiler: "clang++-17"
-            # packages: ""
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:clang17
-            # compiler: "clang++-17"
-            # packages: ""
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=#warnings"
+  # compilation on linux/osx:
+  compile_test:
+    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
+    needs: clang-format
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            container: craffael/feen-ci:clang17
+            compiler: "clang++-17"
+            packages: ""
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=#warnings"
+          - os: ubuntu-20.04
+            container: craffael/feen-ci:clang17
+            compiler: "clang++-17"
+            packages: ""
+            build_type: "Release"
+            cxx_flags: "-g0 -Werror=#warnings"
             
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:gcc13
-            # compiler: "g++-13"
-            # packages: ""
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=cpp"
-          # - os: ubuntu-20.04
-            # container: craffael/feen-ci:gcc13
-            # compiler: "g++-13"
-            # packages: ""
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=cpp"
-          # - os: macos-12
-            # compiler: "clang++"
-            # build_type: "Debug"
-            # cxx_flags: "-g0 -Werror=#warnings"
-          # - os: macos-12
-            # compiler: "clang++"
-            # build_type: "Release"
-            # cxx_flags: "-g0 -Werror=#warnings"
-    # runs-on: ${{ matrix.os }}
-    # container: ${{ matrix.container }}
-    # env:
-      # COMPILER: ${{ matrix.compiler }}
-      # BUILD_TYPE: ${{ matrix.build_type }}
-      # CXXFLAGS: ${{ matrix.cxx_flags }}
+          - os: ubuntu-20.04
+            container: craffael/feen-ci:gcc13
+            compiler: "g++-13"
+            packages: ""
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=cpp"
+          - os: ubuntu-20.04
+            container: craffael/feen-ci:gcc13
+            compiler: "g++-13"
+            packages: ""
+            build_type: "Release"
+            cxx_flags: "-g0 -Werror=cpp"
+          - os: macos-12
+            compiler: "clang++"
+            build_type: "Debug"
+            cxx_flags: "-g0 -Werror=#warnings"
+          - os: macos-12
+            compiler: "clang++"
+            build_type: "Release"
+            cxx_flags: "-g0 -Werror=#warnings"
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    env:
+      COMPILER: ${{ matrix.compiler }}
+      BUILD_TYPE: ${{ matrix.build_type }}
+      CXXFLAGS: ${{ matrix.cxx_flags }}
     
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      # - name: Install packages
-        # if: (runner.os == 'Linux') && (matrix.packages != '')
-        # run: sudo apt-get install ${{ matrix.packages }}
-      # # - name: Setup tmate session
-        # # uses: mxschmitt/action-tmate@v3
-        # # with:
-          # # limit-access-to-actor: false
-      # - name: Restore cache
-        # uses: actions/cache@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        if: (runner.os == 'Linux') && (matrix.packages != '')
+        run: sudo apt-get install ${{ matrix.packages }}
+      # - name: Setup tmate session
+        # uses: mxschmitt/action-tmate@v3
         # with:
-          # path: |
-            # ${{ env.DEPS_DIR }}
-            # ${{ env.HUNTER_ROOT }}
-          # key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-            # ${{ runner.os }}-${{ env.COMPILER }}-
-      # - name: build_dependencies
-        # run: "./ci/build_dependencies.sh"
-      # - name: compile and test
-        # run: "./ci/compile_test.sh"
+          # limit-access-to-actor: false
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.DEPS_DIR }}
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-${{ env.COMPILER }}-
+      - name: build_dependencies
+        run: "./ci/build_dependencies.sh"
+      - name: compile and test
+        run: "./ci/compile_test.sh"
       
-  # windows:
-    # name: Windows x64 - ${{ matrix.build_type }}
-    # needs: clang-format
-    # runs-on: windows-latest
-    # defaults:
-      # run:
-        # shell: pwsh
-    # env:
-      # HUNTER_ROOT: C:\.hunter
-    # strategy:
-      # matrix:
-        # include:
-          # - build_type: "Debug"
+  windows:
+    name: Windows x64 - ${{ matrix.build_type }}
+    needs: clang-format
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      HUNTER_ROOT: C:\.hunter
+    strategy:
+      matrix:
+        include:
+          - build_type: "Debug"
+            compiler: "msvc"
+          # - build_type: "Release"
             # compiler: "msvc"
-          # # - build_type: "Release"
-            # # compiler: "msvc"
-    # steps:
-      # - name: Checkout code
-        # uses: actions/checkout@v2
-      # - name: Restore cache
-        # uses: actions/cache/restore@v3
-        # with:
-          # path: "${{ env.HUNTER_ROOT }}"
-          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-          # restore-keys: |
-            # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-            # ${{ runner.os }}-msvc-
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Restore cache
+        uses: actions/cache/restore@v3
+        with:
+          path: "${{ env.HUNTER_ROOT }}"
+          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+            ${{ runner.os }}-msvc-
       
-     # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+     # Note that windows has a recent version of cmake installed -> we don't need to install it here.
       
-     # # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
-      # - name: Hunter dependencies
-        # run: |
-          # mkdir build > $null
-          # cd build
-          # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+     # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+      - name: Hunter dependencies
+        run: |
+          mkdir build > $null
+          cd build
+          cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
           
-      # - name: Save Cache
-        # uses: actions/cache/save@v3
-        # if: always()
-        # with:
-          # path: |
-            # ${{ env.HUNTER_ROOT }}
-          # key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+      - name: Save Cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ${{ env.HUNTER_ROOT }}
+          key:  ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
           
-      # - name: compile
-        # run: |
-          # cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
+      - name: compile
+        run: |
+          cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
           
-      # - name: test
-        # run: |
-          # cd build
-          # ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
+      - name: test
+        run: |
+          cd build
+          ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
 
   doxygen:
     name: doxygen
     runs-on: ubuntu-20.04
-    # needs: [clang-format]
+    needs: [clang-format]
     container: craffael/feen-ci:doxygen
     env:
       CXX: "clang++-17"
@@ -238,7 +238,7 @@ jobs:
           fi
       - name: deploy
         uses: JamesIves/github-pages-deploy-action@v4
-        # if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
