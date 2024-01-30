@@ -1,5 +1,29 @@
 var searchData=
 [
-  ['nodeblock_1123',['NodeBlock',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_node_block.html',1,'lf::io::GMshFileV4']]],
-  ['nodes_1124',['Nodes',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_nodes.html',1,'lf::io::GMshFileV4']]]
+  ['parallelogram_0',['Parallelogram',['../classlf_1_1geometry_1_1_parallelogram.html',1,'lf::geometry']]],
+  ['parentinfo_1',['ParentInfo',['../structlf_1_1refinement_1_1_parent_info.html',1,'lf::refinement']]],
+  ['partitionedentities_2',['PartitionedEntities',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_partitioned_entities.html',1,'lf::io::GMshFileV4']]],
+  ['partitionedentity_3',['PartitionedEntity',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_partitioned_entity.html',1,'lf::io::GMshFileV4']]],
+  ['partitionedpointentity_4',['PartitionedPointEntity',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_partitioned_point_entity.html',1,'lf::io::GMshFileV4']]],
+  ['periodicentity_5',['PeriodicEntity',['../structlf_1_1io_1_1_g_msh_file_v2_1_1_periodic_entity.html',1,'lf::io::GMshFileV2']]],
+  ['periodiclink_6',['PeriodicLink',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_periodic_link.html',1,'lf::io::GMshFileV4']]],
+  ['physicalentity_7',['PhysicalEntity',['../structlf_1_1io_1_1_g_msh_file_v2_1_1_physical_entity.html',1,'lf::io::GMshFileV2']]],
+  ['physicalname_8',['PhysicalName',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_physical_name.html',1,'lf::io::GMshFileV4']]],
+  ['piecewiseboundarynormaljumpassembler_9',['PiecewiseBoundaryNormalJumpAssembler',['../classprojects_1_1ipdg__stokes_1_1assemble_1_1_piecewise_boundary_normal_jump_assembler.html',1,'projects::ipdg_stokes::assemble']]],
+  ['piecewiseconstelementmatrixprovider_10',['PiecewiseConstElementMatrixProvider',['../classprojects_1_1ipdg__stokes_1_1assemble_1_1_piecewise_const_element_matrix_provider.html',1,'projects::ipdg_stokes::assemble']]],
+  ['piecewiseconstelementvectorprovider_11',['PiecewiseConstElementVectorProvider',['../classprojects_1_1ipdg__stokes_1_1assemble_1_1_piecewise_const_element_vector_provider.html',1,'projects::ipdg_stokes::assemble']]],
+  ['point_12',['Point',['../classlf_1_1geometry_1_1_point.html',1,'lf::geometry::Point'],['../classlf_1_1mesh_1_1hybrid2d_1_1_point.html',1,'lf::mesh::hybrid2d::Point']]],
+  ['pointchildinfo_13',['PointChildInfo',['../structlf_1_1refinement_1_1_point_child_info.html',1,'lf::refinement']]],
+  ['pointentity_14',['PointEntity',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_point_entity.html',1,'lf::io::GMshFileV4']]],
+  ['precomputedscalarreferencefiniteelement_15',['PrecomputedScalarReferenceFiniteElement',['../classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html',1,'lf::uscalfe']]],
+  ['predicatetrue_16',['PredicateTrue',['../classlf_1_1base_1_1_predicate_true.html',1,'lf::base']]],
+  ['prescribedsignprovider_17',['PrescribedSignProvider',['../classprojects_1_1dpg_1_1_prescribed_sign_provider.html',1,'projects::dpg']]],
+  ['problemsolution_18',['ProblemSolution',['../struct_problem_solution.html',1,'']]],
+  ['productelementmatrixprovider_19',['ProductElementMatrixProvider',['../classprojects_1_1dpg_1_1_product_element_matrix_provider.html',1,'projects::dpg']]],
+  ['productelementmatrixproviderbuilder_20',['ProductElementMatrixProviderBuilder',['../classprojects_1_1dpg_1_1_product_element_matrix_provider_builder.html',1,'projects::dpg']]],
+  ['productelementvectorprovider_21',['ProductElementVectorProvider',['../classprojects_1_1dpg_1_1_product_element_vector_provider.html',1,'projects::dpg']]],
+  ['productelementvectorproviderbuilder_22',['ProductElementVectorProviderBuilder',['../classprojects_1_1dpg_1_1_product_element_vector_provider_builder.html',1,'projects::dpg']]],
+  ['productuniformfedofhandler_23',['ProductUniformFEDofHandler',['../classprojects_1_1dpg_1_1_product_uniform_f_e_dof_handler.html',1,'projects::dpg']]],
+  ['productuniformfespace_24',['ProductUniformFESpace',['../classprojects_1_1dpg_1_1_product_uniform_f_e_space.html',1,'projects::dpg']]],
+  ['productuniformfespacefactory_25',['ProductUniformFESpaceFactory',['../classprojects_1_1dpg_1_1_product_uniform_f_e_space_factory.html',1,'projects::dpg']]]
 ];

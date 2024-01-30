@@ -24,8 +24,8 @@
 */
 var menudata={children:[
 {text:"Main Page",url:"index.html"},
-{text:"Concepts",url:"group__concepts.html"},
 {text:"Namespaces",url:"namespaces.html"},
+{text:"Concepts",url:"concepts.html"},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
 {text:"Class Index",url:"classes.html"},
@@ -115,11 +115,8 @@ var menudata={children:[
 {text:"i",url:"functions_type.html#index_i"},
 {text:"m",url:"functions_type.html#index_m"},
 {text:"n",url:"functions_type.html#index_n"},
-{text:"p",url:"functions_type.html#index_p"},
 {text:"r",url:"functions_type.html#index_r"},
 {text:"s",url:"functions_type.html#index_s"},
-{text:"t",url:"functions_type.html#index_t"},
-{text:"v",url:"functions_type.html#index_v"}]},
+{text:"t",url:"functions_type.html#index_t"}]},
 {text:"Enumerations",url:"functions_enum.html"},
-{text:"Enumerator",url:"functions_eval.html"},
-{text:"Related Functions",url:"functions_rela.html"}]}]}]}
+{text:"Related Symbols",url:"functions_rela.html"}]}]}]}

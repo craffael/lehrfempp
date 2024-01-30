@@ -1,9 +1,24 @@
 var searchData=
 [
-  ['edgechildinfo_1054',['EdgeChildInfo',['../structlf_1_1refinement_1_1_edge_child_info.html',1,'lf::refinement']]],
-  ['element_1055',['Element',['../structlf_1_1io_1_1_g_msh_file_v2_1_1_element.html',1,'lf::io::GMshFileV2']]],
-  ['elementblock_1056',['ElementBlock',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_element_block.html',1,'lf::io::GMshFileV4']]],
-  ['elements_1057',['Elements',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_elements.html',1,'lf::io::GMshFileV4']]],
-  ['entity_1058',['Entity',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_entity.html',1,'lf::io::GMshFileV4::Entity'],['../classlf_1_1mesh_1_1_entity.html',1,'lf::mesh::Entity']]],
-  ['entitycenterpositionselector_1059',['EntityCenterPositionSelector',['../classlf_1_1refinement_1_1_entity_center_position_selector.html',1,'lf::refinement']]]
+  ['fediscontinuouso0quad_0',['FeDiscontinuousO0Quad',['../classprojects_1_1dpg_1_1_fe_discontinuous_o0_quad.html',1,'projects::dpg']]],
+  ['fediscontinuouso0segment_1',['FeDiscontinuousO0Segment',['../classprojects_1_1dpg_1_1_fe_discontinuous_o0_segment.html',1,'projects::dpg']]],
+  ['fediscontinuouso0tria_2',['FeDiscontinuousO0Tria',['../classprojects_1_1dpg_1_1_fe_discontinuous_o0_tria.html',1,'projects::dpg']]],
+  ['fehierarchicquad_3',['FeHierarchicQuad',['../classlf_1_1fe_1_1_fe_hierarchic_quad.html',1,'lf::fe']]],
+  ['fehierarchicsegment_4',['FeHierarchicSegment',['../classlf_1_1fe_1_1_fe_hierarchic_segment.html',1,'lf::fe']]],
+  ['fehierarchictria_5',['FeHierarchicTria',['../classlf_1_1fe_1_1_fe_hierarchic_tria.html',1,'lf::fe']]],
+  ['felagrangeo1quad_6',['FeLagrangeO1Quad',['../classlf_1_1uscalfe_1_1_fe_lagrange_o1_quad.html',1,'lf::uscalfe']]],
+  ['felagrangeo1segment_7',['FeLagrangeO1Segment',['../classlf_1_1uscalfe_1_1_fe_lagrange_o1_segment.html',1,'lf::uscalfe']]],
+  ['felagrangeo1tria_8',['FeLagrangeO1Tria',['../classlf_1_1uscalfe_1_1_fe_lagrange_o1_tria.html',1,'lf::uscalfe']]],
+  ['felagrangeo2quad_9',['FeLagrangeO2Quad',['../classlf_1_1uscalfe_1_1_fe_lagrange_o2_quad.html',1,'lf::uscalfe']]],
+  ['felagrangeo2segment_10',['FeLagrangeO2Segment',['../classlf_1_1uscalfe_1_1_fe_lagrange_o2_segment.html',1,'lf::uscalfe']]],
+  ['felagrangeo2tria_11',['FeLagrangeO2Tria',['../classlf_1_1uscalfe_1_1_fe_lagrange_o2_tria.html',1,'lf::uscalfe']]],
+  ['felagrangeo3quad_12',['FeLagrangeO3Quad',['../classlf_1_1uscalfe_1_1_fe_lagrange_o3_quad.html',1,'lf::uscalfe']]],
+  ['felagrangeo3segment_13',['FeLagrangeO3Segment',['../classlf_1_1uscalfe_1_1_fe_lagrange_o3_segment.html',1,'lf::uscalfe']]],
+  ['felagrangeo3tria_14',['FeLagrangeO3Tria',['../classlf_1_1uscalfe_1_1_fe_lagrange_o3_tria.html',1,'lf::uscalfe']]],
+  ['fepoint_15',['FePoint',['../classlf_1_1fe_1_1_fe_point.html',1,'lf::fe']]],
+  ['fespacelagrangeo1_16',['FeSpaceLagrangeO1',['../classlf_1_1uscalfe_1_1_fe_space_lagrange_o1.html',1,'lf::uscalfe']]],
+  ['fespacelagrangeo2_17',['FeSpaceLagrangeO2',['../classlf_1_1uscalfe_1_1_fe_space_lagrange_o2.html',1,'lf::uscalfe']]],
+  ['fespacelagrangeo3_18',['FeSpaceLagrangeO3',['../classlf_1_1uscalfe_1_1_fe_space_lagrange_o3.html',1,'lf::uscalfe']]],
+  ['fielddataarray_19',['FieldDataArray',['../classlf_1_1io_1_1_vtk_file_1_1_field_data_array.html',1,'lf::io::VtkFile']]],
+  ['fluxelementmatrixprovider_20',['FluxElementMatrixProvider',['../classprojects_1_1dpg_1_1_flux_element_matrix_provider.html',1,'projects::dpg']]]
 ];

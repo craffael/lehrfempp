@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['eigen_20included_20before_20lehrfem_2b_2b_2201',['Eigen included before LehrFEM++',['../eigen_stacktrace_warning.html',1,'']]]
+  ['and_20debug_20output_0',['Loggers and Debug output',['../loggers.html',1,'']]],
+  ['archetypes_1',['Archetypes',['../archetypes.html',1,'']]]
 ];

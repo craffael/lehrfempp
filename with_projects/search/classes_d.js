@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['quado1_1151',['QuadO1',['../classlf_1_1geometry_1_1_quad_o1.html',1,'lf::geometry']]],
-  ['quado2_1152',['QuadO2',['../classlf_1_1geometry_1_1_quad_o2.html',1,'lf::geometry']]],
-  ['quadrilateral_1153',['Quadrilateral',['../classlf_1_1mesh_1_1hybrid2d_1_1_quadrilateral.html',1,'lf::mesh::hybrid2d']]],
-  ['quadrule_1154',['QuadRule',['../classlf_1_1quad_1_1_quad_rule.html',1,'lf::quad']]],
-  ['quadrulecache_1155',['QuadRuleCache',['../classlf_1_1quad_1_1_quad_rule_cache.html',1,'lf::quad']]]
+  ['reactiondiffusionelementmatrixprovider_0',['ReactionDiffusionElementMatrixProvider',['../classlf_1_1uscalfe_1_1_reaction_diffusion_element_matrix_provider.html',1,'lf::uscalfe']]],
+  ['reactionelementmatrixprovider_1',['ReactionElementMatrixProvider',['../classprojects_1_1dpg_1_1_reaction_element_matrix_provider.html',1,'projects::dpg']]],
+  ['refel_2',['RefEl',['../classlf_1_1base_1_1_ref_el.html',1,'lf::base']]],
+  ['refinementpattern_3',['RefinementPattern',['../classlf_1_1geometry_1_1_refinement_pattern.html',1,'lf::geometry']]]
 ];

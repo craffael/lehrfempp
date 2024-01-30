@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['special_20_22named_22_20quadrature_20rules_2200',['Special &quot;named&quot; quadrature rules',['../group__namedqr.html',1,'']]]
+  ['galerkin_0',['Cell-Oriented Assembly of R.h.s. Galerkin',['../group__assemble__vector__locally.html',1,'']]],
+  ['galerkin_20matrices_1',['Cell-Oriented Assembly of Galerkin Matrices',['../group__assemble__matrix__locally.html',1,'']]]
 ];
