@@ -48,7 +48,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install clang-tidy
-        run: apt install -y clang-tidy-17 python-is-python3
+        run: apt update && install -y clang-tidy-17 python-is-python3
       - name: Restore cache
         uses: actions/cache/restore@v3
         with:
