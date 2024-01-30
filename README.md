@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/craffael/lehrfempp/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/craffael/lehrfempp/actions)
 
 # LehrFEM++
-Simplistic Finite Element Framework for research and eduction optimzed for clarity and
+Simple C++ Finite Element Framework for research and eduction optimzed for clarity and
 flexibility with some trade-off concerning performance. This libary is used for the course _Numerical Methods for Partial Differential Euqations_ taught by Prof. R. Hiptmair at ETH Zurich.
 
 * LehrFEM++ follows the [Google C++ Style

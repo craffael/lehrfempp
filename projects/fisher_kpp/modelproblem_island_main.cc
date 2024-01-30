@@ -22,10 +22,10 @@ using FisherKPP::StrangSplit;
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_file = (here.parent_path() / "/meshes/Island.msh").string();
   const lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
   /* Finite Element Space */
   std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
@@ -33,7 +33,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
 
-  std::cout << "N_dofs :" << N_dofs << std::endl;
+  std::cout << "N_dofs :" << N_dofs << '\n';
 
   /* Initial Population density */
   Eigen::VectorXd u0(N_dofs);
@@ -48,7 +48,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   /* auto c = [](const Eigen::Vector2d &x) -> double { return 0.0625; }; */
 
   /* Growth Factor */
-  double lambda = 2.1;
+  const double lambda = 2.1;
 
   /* In the case of a low diffusion coefficient. */
   /*  double lambda = 1.1; */
@@ -104,7 +104,7 @@ int main(int /*argc*/, char ** /*argv*/) {
         Eigen::VectorXd L1(N_dofs);
         L1.setZero();
 
-        lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
+        const lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
         lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_g),
                                                   decltype(edge_pred)>
             edgeVec_y(fe_space, mf_g, edge_pred);
@@ -116,7 +116,7 @@ int main(int /*argc*/, char ** /*argv*/) {
       Eigen::VectorXd L2(N_dofs);
       L2.setZero();
 
-      lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
+      const lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
       lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_L),
                                                 decltype(edge_pred)>
           edgeVec_x(fe_space, mf_L, edge_pred);
@@ -136,8 +136,8 @@ int main(int /*argc*/, char ** /*argv*/) {
    */
 
   /* Total number of timesteps */
-  unsigned int m = 120;
-  double T = 1.;
+  const unsigned int m = 120;
+  const double T = 1.;
 
   /* Now we may compute the solution */
   StrangSplit StrangSplitter(fe_space, T, m, lambda, c, h, L);

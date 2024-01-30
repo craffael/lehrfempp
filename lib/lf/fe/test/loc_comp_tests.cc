@@ -19,6 +19,29 @@
 #include <cmath>
 #include <iostream>
 
+namespace lf::fe {
+
+// Make sure the ElementMatrix/VectorProviders in the lf::fe namespace only
+// depend on the archetype functionality by explicitly instantiating them:
+template class DiffusionElementMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<double>>;
+template class DiffusionElementMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<Eigen::Matrix2d>>;
+
+template class MassElementMatrixProvider<double,
+                                         mesh::utils::MeshFunctionAT<double>>;
+
+template class MassEdgeMatrixProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+
+template class ScalarLoadElementVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>>;
+
+template class ScalarLoadEdgeVectorProvider<
+    double, mesh::utils::MeshFunctionAT<double>, base::PredicateTrue>;
+
+}  // namespace lf::fe
+
 namespace lf::fe::test {
 
 TEST(lf_fe, diffusion_mat_test) {

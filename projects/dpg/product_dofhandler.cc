@@ -48,12 +48,12 @@ void ProductUniformFEDofHandler::initIndexArrays() {
       // the specified offsets:
       for (size_type component = 0; component < num_components_; component++) {
         // set up local dof indieces mapping
-        for (glb_idx_t gdof_idx :
+        for (const glb_idx_t gdof_idx :
              component_dof_handlers_[component]->GlobalDofIndices(*entity_p)) {
           dofs_[codim][entity_idx].push_back(gdof_idx + offsets_[component]);
         }
         // set up internal dof indices mapping:
-        for (glb_idx_t gdof_idx :
+        for (const glb_idx_t gdof_idx :
              component_dof_handlers_[component]->InteriorGlobalDofIndices(
                  *entity_p)) {
           internal_dofs_[codim][entity_idx].push_back(gdof_idx +
@@ -76,7 +76,7 @@ size_type ProductUniformFEDofHandler::NumLocalDofs(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
   const glb_idx_t entity_idx = mesh_p_->Index(entity);
-  size_type num_dofs = dofs_[codim][entity_idx].size();
+  const size_type num_dofs = dofs_[codim][entity_idx].size();
   return num_dofs;
 }
 
@@ -89,7 +89,7 @@ size_type ProductUniformFEDofHandler::NumInteriorDofs(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
   const glb_idx_t entity_idx = mesh_p_->Index(entity);
-  size_type num_dofs = internal_dofs_[codim][entity_idx].size();
+  const size_type num_dofs = internal_dofs_[codim][entity_idx].size();
   return num_dofs;
 }
 
@@ -98,7 +98,7 @@ size_type ProductUniformFEDofHandler::NumInteriorDofs(
   return component_dof_handlers_[component]->NumInteriorDofs(entity);
 }
 
-nonstd::span<const gdof_idx_t> ProductUniformFEDofHandler::GlobalDofIndices(
+std::span<const gdof_idx_t> ProductUniformFEDofHandler::GlobalDofIndices(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
   const glb_idx_t entity_idx = mesh_p_->Index(entity);
@@ -109,7 +109,7 @@ nonstd::span<const gdof_idx_t> ProductUniformFEDofHandler::GlobalDofIndices(
   return {begin, end};
 }
 
-nonstd::span<const gdof_idx_t>
+std::span<const gdof_idx_t>
 ProductUniformFEDofHandler::InteriorGlobalDofIndices(
     const lf::mesh::Entity& entity) const {
   const dim_t codim = 2 - entity.RefEl().Dimension();
@@ -126,8 +126,8 @@ std::shared_ptr<const lf::mesh::Mesh> ProductUniformFEDofHandler::Mesh() const {
 
 const lf::mesh::Entity& ProductUniformFEDofHandler::Entity(
     gdof_idx_t dofnum) const {
-  size_type component = Component(dofnum);
-  glb_idx_t offset = offsets_[component];
+  const size_type component = Component(dofnum);
+  const glb_idx_t offset = offsets_[component];
   return component_dof_handlers_[component]->Entity(dofnum - offset);
 }
 

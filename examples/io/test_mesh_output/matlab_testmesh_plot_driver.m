@@ -1,4 +1,4 @@
-% MATLAB driver script for plotting the output of LehreFEM++ 
+cd % MATLAB driver script for plotting the output of LehreFEM++ 
 % demo code lf.examples.mesh.test_mesh_output_demo 
 
 display('Plotting of meshes output by lf.examples.mesh.test_mesh_output_demo');

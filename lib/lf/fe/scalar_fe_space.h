@@ -22,24 +22,44 @@ namespace lf::fe {
 
 /**
  * @headerfile lf/fe/fe.h
- * @brief Space of scalar valued finite element functions on a _hybrid 2D mesh_
+ * @brief Space of scalar valued finite element functions on a \ref mesh::Mesh
+ * "Mesh"
  *
- * @tparam SCALAR underlying scalar type, usually either `double` or
- * `complex<double>`
+ * @tparam SCALAR Scalar type of the finite element functions, usually either
+ * `double` or `complex<double>`
  *
- * The abstract concept of a (parametric) finite element space involves
- * - an underlying mesh
- * - the definition of a local set of shape functions for every cell.
- *
- * This class just contains (pointers to) objects representing the various
- * building blocks of a finite element space. It does not offer elaborate
- * methods.
- *
- * @note Some of the pointers may be NULL. For instance, if all computations
- *       are done on purely triangular meshes then a finite element
- * specification for quadrilaterals need not be given.
+ * A ScalarFESpace can be thought of as a set of basis functions \f$ b^1, \ldots
+ * b^N \f$ which span a (approximation) space \f$ V_h := \operatorname{span} \{
+ * b^1, \ldots b^N\} \f$. The basis functions \f$ b^i\f$ are usually selected
+ * such that their support is limited to a small number of mesh cells. This is
+ * reflected in the design of ScalarFESpace:
+ * - ShapeFunctionLayout() returns a \ref ScalarReferenceFiniteElement for an
+ *   \ref mesh::Entity "entity" which describes only the shape functions which
+ *   are non-zero on this entity (respectively whose support intersects with the
+ *   entity). In other words, the ScalarReferenceFiniteElement for an entity \f$
+ *   e \f$ describes the restriction of the approximation space
+ *   \f$ \left. V_h \right|_e \f$ (keep in mind that for technical reasons the
+ *   shape functions of the ScalarReferenceFiniteElement are defined on a \ref
+ *   base::RefEl "reference element"!)
+ * - LocGlobMap() returns a \ref assemble::DofHandler "DofHandler" which
+ *   identifies the local basis function (returned by
+ *   ShapeFunctionLayout()) with some of the global basis functions \f$
+ *   b^1\ldots b^N \f$
  *
  * This class is covered in @lref{par:fespace}.
+ *
+ * #### Relation to uscalfe::UniformScalarFESpace
+ * As you can see in the inheritance diagram, every
+ * \ref uscalfe::UniformScalarFESpace "UniformScalarFESpace" is also a
+ * ScalarFESpace. The UniformScalarFESpace class and all other classes in the
+ * namespace `lf::uscalfe` make additionally the assumption that when we
+ * restrict the basis functions \f$ b^1, \ldots b^N\f$ to a cell, the remaining
+ * set of basis functions are always the same for every cell/reference element
+ * (when defined on the \ref base::RefEl "reference element").
+ * I.e. ShapeFunctionLayout() will always return the same
+ * ScalarReferenceFiniteElement for the same \ref base::RefEl
+ * "reference element".
+ *
  */
 template <typename SCALAR>
 class ScalarFESpace {
@@ -103,5 +123,15 @@ std::ostream &operator<<(std::ostream &o, const ScalarFESpace<SCALAR> &fes) {
 }
 
 }  // namespace lf::fe
+
+/// \cond
+/**
+ * @brief Make lf::fe::ScalarFESpace formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <class SCALAR>
+struct fmt::formatter<lf::fe::ScalarFESpace<SCALAR>> : ostream_formatter {};
+
+/// \endcond
 
 #endif

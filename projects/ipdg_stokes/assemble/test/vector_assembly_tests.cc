@@ -3,7 +3,6 @@
 #include <lf/assemble/coomatrix.h>
 #include <lf/assemble/dofhandler.h>
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/hybrid2d/mesh_factory.h>
@@ -13,6 +12,7 @@
 #include <piecewise_const_element_vector_provider.h>
 
 #include <array>
+#include <span>
 
 TEST(projects_ipdg_stokes_assembly, piecewise_const_vector_assembler_test) {
   // Build a mesh containing only the reference triangle
@@ -25,7 +25,7 @@ TEST(projects_ipdg_stokes_assembly, piecewise_const_vector_assembler_test) {
   factory.AddPoint(vertices.col(0));
   factory.AddPoint(vertices.col(1));
   factory.AddPoint(vertices.col(2));
-  factory.AddEntity(trig, nonstd::span(nodes.data(), 3), std::move(geom));
+  factory.AddEntity(trig, std::span(nodes.data(), 3), std::move(geom));
   const auto mesh = factory.Build();
   const auto element = mesh->EntityByIndex(0, 0);
 

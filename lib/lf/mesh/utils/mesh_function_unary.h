@@ -54,8 +54,8 @@ struct UnaryOpMinus {
   // minus in front of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                                   u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                        u.size());
@@ -73,7 +73,7 @@ struct UnaryOpMinus {
     }
     if constexpr (R != Eigen::Dynamic && C != Eigen::Dynamic) {
       // matrix size is known at compile time
-      Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(
+      const Eigen::Map<const Eigen::Matrix<S, 1, Eigen::Dynamic>> um(
           &u[0](0, 0), 1, u.size() * R * C);
       std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> result(u.size());
       Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(&result[0](0, 0), 1,
@@ -132,8 +132,8 @@ struct UnaryOpSquaredNorm {
   // squared norm of a scalar type
   template <class U, class = std::enable_if_t<std::is_arithmetic_v<U>>>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
-    Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
-                                                             u.size());
+    const Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
+                                                                   u.size());
     std::vector<U> result(u.size());
     Eigen::Map<Eigen::Matrix<U, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                        u.size());
@@ -152,8 +152,8 @@ struct UnaryOpSquaredNorm {
           "squaredNorm only supported for matrices with at least 1 row "
           "and column");
       if constexpr (C == 1) {  // NOLINT
-        Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(&u[0](0, 0), R,
-                                                                 u.size());
+        const Eigen::Map<const Eigen::Matrix<S, R, Eigen::Dynamic>> um(
+            &u[0](0, 0), R, u.size());
         Eigen::Map<Eigen::Matrix<S, 1, Eigen::Dynamic>> rm(result.data(), 1,
                                                            u.size());
         rm = um.cwiseAbs2().colwise().sum();
@@ -212,7 +212,7 @@ struct UnaryOpAdjoint {
 
 struct UnaryOpConjugate {
   // conjugate of scalar type
-  template <class U, class = std::enable_if_t<base::is_scalar<U>>>
+  template <base::Scalar U>
   auto operator()(const std::vector<U>& u, int /*unused*/) const {
     Eigen::Map<const Eigen::Matrix<U, 1, Eigen::Dynamic>> um(u.data(), 1,
                                                              u.size());
@@ -259,8 +259,8 @@ struct UnaryOpConjugate {
  *
  * @note The MeshFunctionReturnType of `a` must support the minus operator!
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto operator-(const A& a) {
+template <MeshFunction A>
+auto operator-(const A& a) -> MeshFunctionUnary<internal::UnaryOpMinus, A> {
   return MeshFunctionUnary(internal::UnaryOpMinus{}, a);
 }
 
@@ -274,8 +274,9 @@ auto operator-(const A& a) {
  * @note This operator requires `a` to be either scalar or (eigen-) vector
  * valued.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto squaredNorm(const A& a) {
+template <MeshFunction A>
+auto squaredNorm(const A& a)
+    -> MeshFunctionUnary<internal::UnaryOpSquaredNorm, A> {
   return MeshFunctionUnary(internal::UnaryOpSquaredNorm{}, a);
 }
 
@@ -286,10 +287,10 @@ auto squaredNorm(const A& a) {
  * @param a The original \ref mesh_function
  * @return \ref mesh_function representing the pointwise transpose of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto transpose(const A& a) {
-  static_assert(base::is_eigen_matrix<MeshFunctionReturnType<A>> ||
-                    base::is_eigen_array<MeshFunctionReturnType<A>>,
+template <MeshFunction A>
+auto transpose(const A& a) -> MeshFunctionUnary<internal::UnaryOpTranspose, A> {
+  static_assert(base::EigenMatrix<MeshFunctionReturnType<A>> ||
+                    base::EigenArray<MeshFunctionReturnType<A>>,
                 "transpose() only supported for Eigen::Matrix and Eigen::Array "
                 "valued mesh functions");
   return MeshFunctionUnary(internal::UnaryOpTranspose{}, a);
@@ -303,10 +304,10 @@ auto transpose(const A& a) {
  * @param a The original mesh function whose adjoint should be taken.
  * @return \ref mesh_function representing the pointwise adjoint of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto adjoint(const A& a) {
+template <MeshFunction A>
+auto adjoint(const A& a) -> MeshFunctionUnary<internal::UnaryOpAdjoint, A> {
   using returnType_t = MeshFunctionReturnType<A>;
-  static_assert(base::is_eigen_matrix<returnType_t>,
+  static_assert(base::EigenMatrix<returnType_t>,
                 "adjoint only supported for Eigen::Matrix valued mesh "
                 "functions.");
   return MeshFunctionUnary(internal::UnaryOpAdjoint{}, a);
@@ -320,12 +321,12 @@ auto adjoint(const A& a) {
  * @param a The original mesh function that should be conjugated.
  * @return \ref mesh_function representing the pointwise conjugate of `a`.
  */
-template <class A, class = std::enable_if_t<isMeshFunction<A>>>
-auto conjugate(const A& a) {
+template <MeshFunction A>
+auto conjugate(const A& a) -> MeshFunctionUnary<internal::UnaryOpConjugate, A> {
   using returnType_t = MeshFunctionReturnType<A>;
   static_assert(
-      base::is_eigen_matrix<returnType_t> ||
-          base::is_eigen_array<returnType_t> || base::is_scalar<returnType_t>,
+      base::EigenMatrix<returnType_t> || base::EigenArray<returnType_t> ||
+          base::Scalar<returnType_t>,
       "conjugate() supports only Eigen::Matrix, Eigen::Array or Scalar valued "
       "mesh functions.");
   return MeshFunctionUnary(internal::UnaryOpConjugate{}, a);

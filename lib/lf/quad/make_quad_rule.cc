@@ -20,13 +20,13 @@ QuadRule HardcodedQuadRule();
 
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree) {
   if (ref_el == base::RefEl::kSegment()) {
-    quadDegree_t n = degree / 2 + 1;
+    const quadDegree_t n = degree / 2 + 1;
     auto [points, weights] = GaussLegendre(n);
     return QuadRule(base::RefEl::kSegment(), points.transpose(),
                     std::move(weights), 2 * n - 1);
   }
   if (ref_el == base::RefEl::kQuad()) {
-    quadDegree_t n = degree / 2 + 1;
+    const quadDegree_t n = degree / 2 + 1;
     auto [points1d, weights1d] = GaussLegendre(n);
     Eigen::MatrixXd points2d(2, n * n);
     points2d.row(0) = Eigen::kroneckerProduct(points1d.transpose(),
@@ -139,7 +139,7 @@ QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree) {
       default:
         // Create a quadrule using tensor product quadrature rule + duffy
         // transform
-        quadDegree_t n = degree / 2 + 1;
+        const quadDegree_t n = degree / 2 + 1;
         auto [leg_p, leg_w] = GaussLegendre(n);
         auto [jac_p, jac_w] = GaussJacobi(n, 1, 0);
         jac_p.array() = (jac_p.array() + 1) / 2.;  // rescale to [0,1]

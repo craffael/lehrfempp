@@ -30,6 +30,11 @@ namespace lf::fe {
  * The polynomial degree can vary from entity to entity, i.e. local
  * \f$p\f$-refinement is supported.
  *
+ * A complete description of the basis functions and their dual basis can be
+ * found <a
+ * href="https://raw.githubusercontent.com/craffael/lehrfempp/master/doc/pfem/hierarchical_basis.pdf"
+ * target="_blank"><b>here</b></a>.
+ *
  * ### Example usage
  * The following code snippet computes the solution of the BVP
  * \f{align}
@@ -172,7 +177,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
   template <class F>
   void Init(F &&degree_functor) {
     // Initialize all shape function layouts for nodes
-    size_type num_rsf_node = 1;
+    const size_type num_rsf_node = 1;
     for (const auto *entity : mesh_p_->Entities(2)) {
       ref_el_(*entity) = FePoint<SCALAR>(1);
     }
@@ -186,7 +191,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
     for (const auto *entity : mesh_p_->Entities(0)) {
       switch (entity->RefEl()) {
         case lf::base::RefEl::kTria(): {
-          std::array<unsigned, 3> edge_degrees{
+          const std::array<unsigned, 3> edge_degrees{
               {degree_functor(*entity->SubEntities(1)[0]),
                degree_functor(*entity->SubEntities(1)[1]),
                degree_functor(*entity->SubEntities(1)[2])}};
@@ -197,7 +202,7 @@ class HierarchicScalarFESpace : public ScalarFESpace<SCALAR> {
           break;
         }
         case lf::base::RefEl::kQuad(): {
-          std::array<unsigned, 4> edge_degrees{
+          const std::array<unsigned, 4> edge_degrees{
               {degree_functor(*entity->SubEntities(1)[0]),
                degree_functor(*entity->SubEntities(1)[1]),
                degree_functor(*entity->SubEntities(1)[2]),

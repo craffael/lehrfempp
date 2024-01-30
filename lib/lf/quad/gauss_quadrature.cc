@@ -28,7 +28,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 
   // the roots are symmetric in the interval, so we only have to find half of
   // them
-  unsigned int m = (num_points + 1) / 2;
+  const unsigned int m = (num_points + 1) / 2;
 
   // approximation for the roots:
   for (unsigned int i = 0; i < m; ++i) {
@@ -70,6 +70,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 
 std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     quadDegree_t num_points, double alpha, double beta) {
+  // NOLINTBEGIN(clang-analyzer-core.StackAddressEscape)
   LF_ASSERT_MSG(num_points > 0, "num_points must be positive.");
   LF_ASSERT_MSG(alpha > -1, "alpha > -1 required");
   LF_ASSERT_MSG(beta > -1, "beta > -1 required.");
@@ -79,7 +80,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
       boost::multiprecision::number<boost::multiprecision::cpp_bin_float<
           57, boost::multiprecision::digit_base_2>>;
 
-  int MAX_IT = 10;
+  const int MAX_IT = 10;
 
   scalar_t alfbet;
   scalar_t an;
@@ -177,6 +178,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
     LF_VERIFY_MSG(its <= MAX_IT, "too many iterations.");
 
     points[i] = z;
+
     weights(i) = (exp(lgamma(alpha + num_points) + lgamma(beta + num_points) -
                       lgamma(num_points + 1.) -
                       lgamma(static_cast<double>(num_points) + alfbet + 1.0)) *
@@ -188,6 +190,7 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussJacobi(
   for (quadDegree_t i = 0; i < num_points; ++i) {
     points_result(i) = points[i].convert_to<double>();
   }
+  // NOLINTEND(clang-analyzer-core.StackAddressEscape)
 
   return {points_result, weights};
 }

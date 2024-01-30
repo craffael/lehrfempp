@@ -161,9 +161,9 @@ def run_tidy(args, tmpdir, build_path, queue, failed_files):
                                      tmpdir, build_path, args.header_filter,
                                      args.extra_arg, args.extra_arg_before,
                                      args.quiet, args.config)
-    sys.stdout.write(' '.join(invocation) + '\n')
     return_code = subprocess.call(invocation)
     if return_code != 0:
+      sys.stdout.write('>>> FAILED: ' + ' '.join(invocation) + '\n')
       failed_files.append(name)
     queue.task_done()
 

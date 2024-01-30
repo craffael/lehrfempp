@@ -20,18 +20,18 @@ fi
 if [ -x "$(command -v clang-tidy)" ]; then
   ct=clang-tidy
 fi
-if [ -x "$(command -v clang-tidy-14)" ]; then
-  ct=clang-tidy-14
+if [ -x "$(command -v clang-tidy-17)" ]; then
+  ct=clang-tidy-17
 fi
 
 if [ -z "$ct" ]; then
-  echo "clang-tidy or clang-tidy-14 not found in path"
+  echo "clang-tidy or clang-tidy-17 not found in path"
   exit 1
 fi
 echo $ct
 version=$($ct --version)
-if [[ ! $version =~ "LLVM version 14." ]]; then
-  echo "ERROR: Found clang-tidy but it doesn't have version 14.x"
+if [[ ! $version =~ "LLVM version 17." ]]; then
+  echo "ERROR: Found clang-tidy but it doesn't have version 17.x"
   exit 1
 fi
 

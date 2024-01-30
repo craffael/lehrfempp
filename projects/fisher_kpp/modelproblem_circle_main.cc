@@ -21,12 +21,12 @@ using FisherKPP::StrangSplit;
 int main(int /*argc*/, char ** /*argv*/) {
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
 
   /* In case of one circle: Mesh 1. */
   auto mesh_file = (here.parent_path() / "/meshes/circle.msh").string();
   const lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
-  std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
+  const std::shared_ptr<const lf::mesh::Mesh> mesh_p = reader.mesh();
   /* Finite Element Space */
   std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space =
       std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh_p);
@@ -34,7 +34,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
 
-  std::cout << "N_dofs :" << N_dofs << std::endl;
+  std::cout << "N_dofs :" << N_dofs << '\n';
 
   /* Initial Population density */
   Eigen::VectorXd u0(N_dofs);
@@ -47,7 +47,7 @@ int main(int /*argc*/, char ** /*argv*/) {
    * u0(53) = 0.0005;
    */
 
-  std::cout << "norm u0 " << u0.norm() << std::endl;
+  std::cout << "norm u0 " << u0.norm() << '\n';
 
   /* Diffusion Coefficient */
   auto c = [](const Eigen::Vector2d & /*x*/) -> double {
@@ -57,7 +57,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 
   /* Growth Factor */
   /* In case of the circle: Mesh 1. */
-  double lambda = 0.008;
+  const double lambda = 0.008;
 
   /* Boundary Conditions. */
 
@@ -72,8 +72,8 @@ int main(int /*argc*/, char ** /*argv*/) {
    */
 
   /* Total number of timesteps */
-  unsigned int m = 100;
-  double T = 1.;  // the timestepsize tau will equal T/m = 0.01
+  const unsigned int m = 100;
+  const double T = 1.;  // the timestepsize tau will equal T/m = 0.01
 
   /* First we assemble the carrying capacity maps */
 
@@ -87,15 +87,15 @@ int main(int /*argc*/, char ** /*argv*/) {
   Eigen::MatrixXd sol(N_dofs, 20);
 
   sol.col(0) = StrangSplitter.Evolution(cap, u0);
-  std::cout << "sol1" << std::endl;
+  std::cout << "sol1" << '\n';
   sol.col(1) = StrangSplitter.Evolution(cap, sol.col(0));
-  std::cout << "sol2" << std::endl;
+  std::cout << "sol2" << '\n';
   sol.col(2) = StrangSplitter.Evolution(cap, sol.col(1));
-  std::cout << "sol3" << std::endl;
+  std::cout << "sol3" << '\n';
   sol.col(3) = StrangSplitter.Evolution(cap, sol.col(2));
-  std::cout << "sol4" << std::endl;
+  std::cout << "sol4" << '\n';
   sol.col(4) = StrangSplitter.Evolution(cap, sol.col(3));
-  std::cout << "sol5" << std::endl;
+  std::cout << "sol5" << '\n';
 
   /* Use VTK-Writer for Visualization of solution */
 

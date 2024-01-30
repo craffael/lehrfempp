@@ -67,14 +67,14 @@ Eigen::VectorXd solvePoisson(
   const lf::assemble::DofHandler &dofh = fe_space->LocGlobMap();
   lf::assemble::COOMatrix<double> A_COO(dofh.NumDofs(), dofh.NumDofs());
   Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dofh.NumDofs());
-  std::cout << "\t\t> Assembling System Matrix" << std::endl;
+  std::cout << "\t\t> Assembling System Matrix" << '\n';
   lf::assemble::AssembleMatrixLocally(0, dofh, dofh, element_matrix_provider,
                                       A_COO);
-  std::cout << "\t\t> Assembling right Hand Side" << std::endl;
+  std::cout << "\t\t> Assembling right Hand Side" << '\n';
   lf::assemble::AssembleVectorLocally(0, dofh, element_vector_provider, rhs);
 
   // Enforce zero dirichlet boundary conditions
-  std::cout << "\t\t> Enforcing Boundary Conditions" << std::endl;
+  std::cout << "\t\t> Enforcing Boundary Conditions" << '\n';
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
   const auto selector = [&](unsigned int idx) -> std::pair<bool, double> {
     return {boundary(dofh.Entity(idx)), 0};
@@ -82,9 +82,9 @@ Eigen::VectorXd solvePoisson(
   lf::assemble::FixFlaggedSolutionComponents(selector, A_COO, rhs);
 
   // Solve the LSE using the cholesky decomposition
-  std::cout << "\t\t> Solving LSE" << std::endl;
-  Eigen::SparseMatrix<double> A = A_COO.makeSparse();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
+  std::cout << "\t\t> Solving LSE" << '\n';
+  const Eigen::SparseMatrix<double> A = A_COO.makeSparse();
+  const Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver(A);
   Eigen::VectorXd solution = solver.solve(rhs);
 
   // Return the resulting dof vector
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   if (vm.count("output") == 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
   const std::string output_file = vm["output"].as<std::string>();
@@ -125,10 +125,10 @@ int main(int argc, char *argv[]) {
   const std::filesystem::path mesh_folder = here.parent_path() / "meshes";
   Eigen::MatrixXd results(num_meshes, 7);
   for (int mesh_idx = 0; mesh_idx < num_meshes; ++mesh_idx) {
-    std::cout << "> Mesh Nr. " << mesh_idx << std::endl;
+    std::cout << "> Mesh Nr. " << mesh_idx << '\n';
 
     // Load the mesh
-    std::cout << "\t> Loading Mesh" << std::endl;
+    std::cout << "\t> Loading Mesh" << '\n';
     const std::string mesh_name =
         "unitsquare" + std::to_string(mesh_idx) + ".msh";
     const std::filesystem::path mesh_file = mesh_folder / mesh_name;
@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
     const auto fe_space_o1 =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO1<double>>(mesh);
     std::cout << " (" << fe_space_o1->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const Eigen::VectorXd solution_o1 = solvePoisson(mesh, fe_space_o1);
     const lf::fe::MeshFunctionFE<double, double> mf_o1(fe_space_o1,
                                                        solution_o1);
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
     const auto fe_space_o2 =
         std::make_shared<lf::uscalfe::FeSpaceLagrangeO2<double>>(mesh);
     std::cout << " (" << fe_space_o2->LocGlobMap().NumDofs() << " DOFs)"
-              << std::endl;
+              << '\n';
     const Eigen::VectorXd solution_o2 = solvePoisson(mesh, fe_space_o2);
     const lf::fe::MeshFunctionFE<double, double> mf_o2(fe_space_o2,
                                                        solution_o2);
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
                                                                 solution_o2);
 
     // Compute the H1 and L2 errors
-    std::cout << "\t> Computing Error Norms" << std::endl;
+    std::cout << "\t> Computing Error Norms" << '\n';
     const auto quadrule_provider = [](const lf::mesh::Entity &entity) {
       return lf::quad::make_QuadRule(entity.RefEl(), 6);
     };

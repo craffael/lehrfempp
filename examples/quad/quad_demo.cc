@@ -60,12 +60,12 @@ int main(int argc, char** argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
   if (vm.count("help") != 0U) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
-  int max_level = vm["max_level"].as<int>();
-  int quad_degree = vm["quad_degree"].as<int>();
+  const int max_level = vm["max_level"].as<int>();
+  const int quad_degree = vm["quad_degree"].as<int>();
 
   // Create a three element mesh that contains two triangles and one
   // quadrilateral
@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
   auto mesh = base_mesh;
   auto errors = Eigen::VectorXd(max_level + 1);
   for (int level = 0; level <= max_level; ++level) {
-    lf::io::VtkWriter vtk_writer(mesh,
-                                 "level" + std::to_string(level) + ".vtk");
+    const lf::io::VtkWriter vtk_writer(
+        mesh, "level" + std::to_string(level) + ".vtk");
 
     auto approx = integrate(*mesh, quad_degree, f);
     errors(level) = std::abs(approx - exact_integral);
@@ -115,8 +115,8 @@ int main(int argc, char** argv) {
     mesh = mh.getMesh(1);
   }
 
-  std::cout << "measured errors for each level: " << std::endl;
-  std::cout << errors << std::endl << std::endl;
+  std::cout << "measured errors for each level: " << '\n';
+  std::cout << errors << '\n' << '\n';
 
   // estimate the rate of convergence:
   Eigen::MatrixXd A(max_level + 1, 2);
@@ -133,5 +133,5 @@ int main(int argc, char** argv) {
 
   Eigen::VectorXd x =
       A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-  std::cout << "estimated order of convergence = " << x(1) << std::endl;
+  std::cout << "estimated order of convergence = " << x(1) << '\n';
 }

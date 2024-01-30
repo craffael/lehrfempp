@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <span>
 
 #include "lf/base/base.h"
 
@@ -25,7 +26,7 @@ void getData_REF(double offset, std::vector<double> &res) {
   }
 }
 
-nonstd::span<const double> getData_SPAN(double offset) {
+std::span<const double> getData_SPAN(double offset) {
   for (int j = 0; j < N; j++) {
     stat_tmp[j] = 1.0 / (j + offset);
   }
@@ -33,13 +34,13 @@ nonstd::span<const double> getData_SPAN(double offset) {
 }
 
 int main(int /*argc*/, const char * /*unused*/[]) {
-  std::cout << "Runtime test for range access" << std::endl;
+  std::cout << "Runtime test for range access" << '\n';
 
   const long int reps = 100000000L;
 
-  std::cout << "I. Returning std::vector's" << std::endl;
+  std::cout << "I. Returning std::vector's" << '\n';
   {
-    lf::base::AutoTimer t;
+    const lf::base::AutoTimer t;
     for (long int i = 0; i < reps; i++) {
       auto res = getData_VEC(static_cast<double>(i));
       double s = 0.0;
@@ -49,9 +50,9 @@ int main(int /*argc*/, const char * /*unused*/[]) {
     }
   }
 
-  std::cout << "II. Returning result through reference" << std::endl;
+  std::cout << "II. Returning result through reference" << '\n';
   {
-    lf::base::AutoTimer t;
+    const lf::base::AutoTimer t;
     std::vector<double> res(N);
     for (long int i = 0; i < reps; i++) {
       getData_REF(static_cast<double>(i), res);
@@ -62,9 +63,9 @@ int main(int /*argc*/, const char * /*unused*/[]) {
     }
   }
 
-  std::cout << "III. Returning result through span" << std::endl;
+  std::cout << "III. Returning result through span" << '\n';
   {
-    lf::base::AutoTimer t;
+    const lf::base::AutoTimer t;
     for (long int i = 0; i < reps; i++) {
       auto res = getData_SPAN(static_cast<double>(i));
       double s = 0.0;

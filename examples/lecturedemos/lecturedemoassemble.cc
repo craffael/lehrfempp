@@ -65,23 +65,22 @@ namespace lecturedemo {
 
 // Main driver function
 void lecturedemoassemble() {
-  std::cout << "LehrFEM++ demo: assembly of Galerkin linear system"
-            << std::endl;
+  std::cout << "LehrFEM++ demo: assembly of Galerkin linear system" << '\n';
   // Obtain a purely triangular mesh from the collection of LehrFEM++'s
   // built-in meshes
-  std::shared_ptr<lf::mesh::Mesh> mesh_p{
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p{
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(3)};
   // Define the right hand side function as a simple lambda function of
   // point world coordinates (passed as a column vector)
   auto f = [](const Eigen::Vector2d &x) { return x[0] - x[1]; };
 
   // Initialization of local-to-global index mapping for linear finite elements
-  lf::assemble::UniformFEDofHandler dof_handler(
+  const lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
   // clang-format off
   /* SAM_LISTING_BEGIN_3 */
   // Query dimension of the finite element space, equal to the number of nodes
-  size_type N_dofs(dof_handler.NumDofs());
+  const size_type N_dofs(dof_handler.NumDofs());
   // Matrix in \samemp{triplet format} holding temporary Galerkin matrix 
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
 
@@ -116,36 +115,35 @@ void lecturedemoassemble() {
   /* SAM_LISTING_END_4 */
 
   // Print Galerkin matrix, posible because it is small
-  std::cout << "Galerkin matrix: " << std::endl
-            << Eigen::MatrixXd(A) << std::endl;
+  std::cout << "Galerkin matrix: " << '\n' << Eigen::MatrixXd(A) << '\n';
   // Print right-hand-side vector (as row vector)
-  std::cout << "R.h.s. vector: " << std::endl
-            << '[' << rhsvec.transpose() << ']' << std::endl;
+  std::cout << "R.h.s. vector: " << '\n'
+            << '[' << rhsvec.transpose() << ']' << '\n';
 
   // Solve linear system using a direct sparse elimination solver
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(A);
   Eigen::VectorXd sol_vec = solver.solve(rhsvec);
   if (solver.info() != Eigen::Success) {
-    std::cout << "solver failed!" << std::endl;
+    std::cout << "solver failed!" << '\n';
   } else {
     // Compute energy norm of solution
     const double energy = sol_vec.transpose() * A * sol_vec;
-    std::cout << "Energy norm of solution = " << energy << std::endl;
+    std::cout << "Energy norm of solution = " << energy << '\n';
   }
 }
 
 // Main driver function
 void lecturedemoDirichlet() {
   std::cout << "LehrFEM++ demo: treatment of Dirichlet boundary conditions"
-            << std::endl;
+            << '\n';
   // This is the exact solution, a harmonic function, from which we also derive
   // the Dirichlet data
   auto u_sol = [](Eigen::Vector2d x) -> double { return (x[0] - x[1]); };
 
   // Obtain a purely triangular mesh from the collection of LehrFEM++'s
   // built-in meshes
-  std::shared_ptr<lf::mesh::Mesh> mesh_p{
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p{
       lf::mesh::test_utils::GenerateHybrid2DTestMesh(3)};
 
   // In this demo routine we just solve a boundary value problem for the
@@ -156,10 +154,10 @@ void lecturedemoDirichlet() {
   // clang-format off
   /* SAM_LISTING_BEGIN_7 */
   // Initialization of local-to-global index mapping for linear finite elements
-  lf::assemble::UniformFEDofHandler dof_handler(
+  const lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
   // Query dimension of the finite element space, equal to the number of nodes
-  size_type N_dofs(dof_handler.NumDofs());
+  const size_type N_dofs(dof_handler.NumDofs());
   // Matrix in \samemp{triplet format} holding temporary Galerkin matrix
   lf::assemble::COOMatrix<double> mat(N_dofs, N_dofs);
   // Initialize objects for local computation of element matrices for $\cob{-\Delta}$
@@ -211,13 +209,13 @@ void lecturedemoDirichlet() {
   solver.compute(A);
   Eigen::VectorXd sol_vec = solver.solve(rhsvec);
   if (solver.info() != Eigen::Success) {
-    std::cout << "solver failed!" << std::endl;
+    std::cout << "solver failed!" << '\n';
   } else {
     // Compute the L2 norm of nodal error cell by cell by the 2D trapezoidal
     // rule
     double nodal_err = 0.0;
     for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
-      nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
+      const std::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
           dof_handler.GlobalDofIndices(*cell));
       LF_ASSERT_MSG(dof_handler.NumLocalDofs(*cell) == cell->RefEl().NumNodes(),
                     "Inconsistent node number");
@@ -230,7 +228,7 @@ void lecturedemoDirichlet() {
       }
       nodal_err += lf::geometry::Volume(*cell->Geometry()) * (sum / num_nodes);
     }
-    std::cout << "L2 error = " << std::sqrt(nodal_err) << std::endl;
+    std::cout << "L2 error = " << std::sqrt(nodal_err) << '\n';
   }
 }
 

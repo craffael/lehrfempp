@@ -27,7 +27,7 @@
 
 namespace lf::uscalfe {
 /**
- * @ingroup entity_matrix_provider
+ *
  * @headerfile lf/uscalfe/uscalfe.h
  * @brief Computing the element matrix for the (negative) Laplacian
  *         and linear finite elements.
@@ -42,7 +42,7 @@ namespace lf::uscalfe {
  * This class complies with the requirements for the type
  * `ENTITY_MATRIX_PROVIDER` given as a template parameter to define an
  * incarnation of the function
- * @ref AssembleMatrixLocally().
+ * @ref assemble_matrix_locally .
  */
 class LinearFELaplaceElementMatrix {
  public:

@@ -65,17 +65,17 @@ class Point : public mesh::Entity {
   [[nodiscard]] unsigned Codim() const override { return 2; }
 
   /** @copydoc Entity::SubEntities() */
-  [[nodiscard]] nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const override {
     LF_ASSERT_MSG(rel_codim == 0, "A point has only codim = 0 sub-entities");
     return {&this_, 1};
   }
 
   /** Must not be called: No sub-entities for a point */
-  [[nodiscard]] nonstd::span<const lf::mesh::Orientation> RelativeOrientations()
+  [[nodiscard]] std::span<const lf::mesh::Orientation> RelativeOrientations()
       const override {
     LF_ASSERT_MSG(false, "A point has not sub-entities");
-    return nonstd::span<Orientation>();
+    return std::span<Orientation>();
   }
 
   /** @brief return _pointer_ to associated geometry object */

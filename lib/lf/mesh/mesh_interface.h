@@ -129,7 +129,7 @@ class Mesh {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:lftrv} or the code snippet showing the use of @ref lf::mesh::Mesh
    */
-  [[nodiscard]] virtual nonstd::span<const Entity* const> Entities(
+  [[nodiscard]] virtual std::span<const Entity* const> Entities(
       unsigned codim) const = 0;
 
   /**

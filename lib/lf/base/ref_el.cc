@@ -15,11 +15,11 @@ const Eigen::MatrixXd RefEl::ncoords_quad_dynamic_ =
 
 // Print function
 void PrintInfo(std::ostream &stream, const RefEl &ref_el, int output_ctrl) {
-  base::dim_t dim_ref_el = ref_el.Dimension();
-  base::dim_t no_nodes = ref_el.NumNodes();
-  stream << "Type of reference element: " << ref_el.ToString() << std::endl;
-  stream << "Dimension: " << dim_ref_el << std::endl;
-  stream << "Number of nodes: " << no_nodes << std::endl;
+  const base::dim_t dim_ref_el = ref_el.Dimension();
+  const base::dim_t no_nodes = ref_el.NumNodes();
+  stream << "Type of reference element: " << ref_el.ToString() << '\n';
+  stream << "Dimension: " << dim_ref_el << '\n';
+  stream << "Number of nodes: " << no_nodes << '\n';
 
   if (output_ctrl > 0) {
     // Loop over dimensions
@@ -27,11 +27,12 @@ void PrintInfo(std::ostream &stream, const RefEl &ref_el, int output_ctrl) {
       base::dim_t num_sub_ent = ref_el.NumSubEntities(co_dim);
       stream << "Codimension " << co_dim << " has " << num_sub_ent
              << " entities of type " << ref_el.SubType(co_dim, 0).ToString()
-             << std::endl;
+             << '\n';
 
       if (output_ctrl > 10) {
         for (; num_sub_ent > 0; num_sub_ent--) {
-          std::int32_t sub_ent = static_cast<std::int32_t>(num_sub_ent) - 1;
+          const std::int32_t sub_ent =
+              static_cast<std::int32_t>(num_sub_ent) - 1;
           stream << " Subentity " << sub_ent << " is of type "
                  << ref_el.SubType(co_dim, 0).ToString();
 
@@ -39,9 +40,9 @@ void PrintInfo(std::ostream &stream, const RefEl &ref_el, int output_ctrl) {
               output_ctrl > 20) {
             stream << " and has coordinates ["
                    << ref_el.NodeCoords().col(sub_ent)[0] << " "
-                   << ref_el.NodeCoords().col(sub_ent)[1] << "]" << std::endl;
+                   << ref_el.NodeCoords().col(sub_ent)[1] << "]" << '\n';
           }
-          stream << std::endl;
+          stream << '\n';
         }
       }
     }

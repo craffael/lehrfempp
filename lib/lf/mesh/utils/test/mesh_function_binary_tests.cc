@@ -14,6 +14,29 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "mesh_function_utils.h"
 
+namespace lf::mesh::utils {
+
+// Make sure the functionality in MeshFunctionBinary which requires concepts
+// (such as MeshFunction), rely indeed only on the functionality in these
+// concepts. We do this by instantiating the corresponding functions/classes
+// using Archetypes.
+template auto operator+(const MeshFunctionAT<double>&,
+                        const MeshFunctionAT<double>&)
+    -> MeshFunctionBinary<internal::OperatorAddition, MeshFunctionAT<double>,
+                          MeshFunctionAT<double>>;
+
+template auto operator-(const MeshFunctionAT<double>&,
+                        const MeshFunctionAT<double>&)
+    -> MeshFunctionBinary<internal::OperatorSubtraction, MeshFunctionAT<double>,
+                          MeshFunctionAT<double>>;
+
+template auto operator*(const MeshFunctionAT<double>&,
+                        const MeshFunctionAT<double>&)
+    -> MeshFunctionBinary<internal::OperatorMultiplication,
+                          MeshFunctionAT<double>, MeshFunctionAT<double>>;
+
+}  // namespace lf::mesh::utils
+
 namespace lf::mesh::utils::test {
 
 class X {

@@ -12,6 +12,33 @@
 #include <lf/mesh/test_utils/test_meshes.h>
 #include <lf/uscalfe/uscalfe.h>
 
+namespace lf::fe {
+
+// Make sure that the utility functions only uses functionality of the
+// MeshFunction Archetype:
+
+template auto IntegrateMeshFunction(
+    const lf::mesh::Mesh& mesh, const mesh::utils::MeshFunctionAT<double>& mf,
+    const std::function<quad::QuadRule(const mesh::Entity&)>& qr_selector,
+    const base::PredicateTrue& ep, int codim) -> double;
+
+template auto IntegrateMeshFunction(
+    const lf::mesh::Mesh& mesh, const mesh::utils::MeshFunctionAT<double>& mf,
+    int quad_degree, const base::PredicateTrue& ep, int codim) -> double;
+
+template auto NodalProjection(const lf::fe::ScalarFESpace<double>& fe_space,
+                              mesh::utils::MeshFunctionAT<double> const& u,
+                              base::PredicateTrue&&)
+    -> Eigen::Vector<double, Eigen::Dynamic>;
+
+template std::vector<std::pair<bool, double>>
+InitEssentialConditionFromFunction(
+    const lf::fe::ScalarFESpace<double>& fes,
+    std::function<bool(const mesh::Entity&)>&& esscondflag,
+    const mesh::utils::MeshFunctionAT<double>& g);
+
+}  // namespace lf::fe
+
 namespace lf::fe::test {
 
 TEST(lf_fe_feTools, IntegrateMeshFunction) {

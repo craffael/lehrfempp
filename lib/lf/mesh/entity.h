@@ -1,8 +1,11 @@
 #ifndef INCG37e385afbd3b4b1dba8611fb71787822
 #define INCG37e385afbd3b4b1dba8611fb71787822
 
+#include <fmt/ostream.h>
 #include <lf/base/base.h>
 #include <lf/geometry/geometry.h>
+
+#include <span>
 
 namespace lf::mesh {
 
@@ -83,7 +86,7 @@ class Entity {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:subent}.
    */
-  [[nodiscard]] virtual nonstd::span<const Entity* const> SubEntities(
+  [[nodiscard]] virtual std::span<const Entity* const> SubEntities(
       unsigned rel_codim) const = 0;
 
   /**
@@ -97,7 +100,7 @@ class Entity {
    * orientation_ of that sub-entity as given by its own numbering of corners.
    * Such a possible mismatch is detected by this function.
    */
-  [[nodiscard]] virtual nonstd::span<const Orientation> RelativeOrientations()
+  [[nodiscard]] virtual std::span<const Orientation> RelativeOrientations()
       const = 0;
 
   /**
@@ -158,5 +161,14 @@ class Entity {
 std::ostream& operator<<(std::ostream& stream, const lf::mesh::Entity& entity);
 
 }  // namespace lf::mesh
+
+/// \cond
+/**
+ * @brief Make lf::mesh::Entity formattable with fmt, see
+ * https://fmt.dev/latest/api.html#ostream-api
+ */
+template <>
+struct fmt::formatter<lf::mesh::Entity> : ostream_formatter {};
+/// \endcond
 
 #endif  // INCG37e385afbd3b4b1dba8611fb71787822

@@ -13,7 +13,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
                      long line, const std::string& msg) {
   std::cerr << "***** Internal Program Error - assertion (" << expr
             << ") failed:\n"
-            << file << '(' << line << "): " << msg << std::endl;
+            << file << '(' << line << "): " << msg << std::endl;  // NOLINT
   std::cerr << "Backtrace:\n" << boost::stacktrace::stacktrace() << '\n';
   std::abort();
 }

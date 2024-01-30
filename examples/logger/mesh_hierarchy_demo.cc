@@ -58,7 +58,7 @@ Other available command line options)foo");
 
   // print help message if needed
   if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
@@ -71,13 +71,13 @@ Other available command line options)foo");
   if (vm.count("list-loggers") > 0) {
     // go through all registered loggers and print them with their log level:
     std::cout << "The following loggers are known (with their log level):"
-              << std::endl;
+              << '\n';
 
     spdlog::apply_all([&](const std::shared_ptr<spdlog::logger>& logger) {
       if (logger->name().empty()) {
         return;  // ignore default logger
       }
-      std::cout << logger->name() << ": " << logger->level() << std::endl;
+      std::cout << logger->name() << ": " << logger->level() << '\n';
     });
 
     return 1;
@@ -90,7 +90,7 @@ Other available command line options)foo");
       boost::split(splitted, s, boost::is_any_of("="));
       if (splitted.size() != 2) {
         std::cout << "Error, the argument '" << s
-                  << "' (given to --to-file) has invalid format" << std::endl;
+                  << "' (given to --to-file) has invalid format" << '\n';
         return 1;
       }
 
@@ -98,7 +98,7 @@ Other available command line options)foo");
       auto logger = spdlog::get(splitted[0]);
       if (logger == nullptr) {
         std::cout << "Error: Could not find logger with name " << splitted[0]
-                  << std::endl;
+                  << '\n';
         return 1;
       }
 
