@@ -13,6 +13,7 @@ set(sources
   lf_assert.cc
   lf_assert.h
   lf_exception.h
+  narrow.h
   predicate_true.h
   ref_el.cc
   ref_el.h
