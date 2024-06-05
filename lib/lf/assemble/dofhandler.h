@@ -71,11 +71,14 @@ namespace lf::assemble {
  * For instance, this allows assembly of contributions from low-dimensional
  * manifolds like boundaries or interfaces.
  *
- * However, the consistency of the local numbering of dofs has to be ensured.
- * In two dimensions this is an issue for edges only and can be resolved by
- * taking into account the orientation (direction) of the edge: dofs are ordered
- * along the edge and those "closer to endpoint 0" are numbered first. In 3D
- * many more situations have to be dealt with.
+ * @note When an entity carries several interior degrees of freedom, then the
+ * consistency of local and global numberings becomes an issue if the
+ * orientation of the edge is used to fix the global shape functions. This is
+ * happens in the case of Lagrangian finite element spaces for polynomial degree
+ * \f$\geq 3\f$. In two dimensions this is an issue for edges only and can be
+ * resolved by taking into account the orientation (direction) of the edge: dofs
+ * are ordered along the edge and those "closer to endpoint 0" are numbered
+ * first. In 3D many more situations have to be dealt with.
  *
  * The local numbering conventions are also defined in [Lecture
  * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
@@ -270,10 +273,32 @@ class UniformFEDofHandler : public DofHandler {
    * @lref{par:dofhinit}. Also study [Lecture
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:dofdist}.
+   *
+   * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
+   *case of negative orientation of the edge.
+   *
+   * In the case of Lagrangian fintie element space of polynomial degree
+   * \f$\geq 3\f$ several global shape functions are associated with every edge.
+   * Conveniently, they are numbered based on the orientation/direction of the
+   * edge. In case the local and global orientations do not match, this will
+   *lead to a wrong local -> global index mapping.
+   *
+   * The following example demonstrates this for a mesh consisting of two
+   * triangles and cubic Lagrangian finite elements. the indices of global shape
+   * functions are written in red, those of the local shape functions in light
+   * blue for the left triangle, in dark blue for the right triangle. The
+   * ordering of the shape functions associated with the common edge id
+   *different for the two triangles.
+   * @image html dofedgeorder.png
+   *
+   * If the flag check_edge_orientation is set, then the member functions
+   * GlobalDofIndices and InteriorGlobalDofIndices (when called for a cell) will
+   * reverse the ordering of edge-internal d.o.f.s, if the relative orientation
+   * of the edge is negative.
    */
   using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
   UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,
-                      dof_map_t dofmap);
+                      dof_map_t dofmap, bool check_edge_orientation = true);
   /**@}*/
 
   /**
@@ -319,12 +344,20 @@ class UniformFEDofHandler : public DofHandler {
 
   /**
    * @copydoc DofHandler::GlobalDofIndices()
+   *
+   * @note If the check_edge_orientation flag was set in the costructor, the
+   * ordering of local shape functions associated with edges will be reversed if
+   * the relative orientation of the edge is negative.
    */
   [[nodiscard]] std::span<const gdof_idx_t> GlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
 
   /**
    * @copydoc DofHandler::InteriorGlobalDofIndices()
+   *
+   * @note If the check_edge_orientation flag was set in the costructor, the
+   * ordering of local shape functions associated with edges will be reversed if
+   * the relative orientation of the edge is negative.
    */
   [[nodiscard]] std::span<const gdof_idx_t> InteriorGlobalDofIndices(
       const lf::mesh::Entity &entity) const override;
@@ -458,6 +491,8 @@ class UniformFEDofHandler : public DofHandler {
   size_type num_loc_dof_tria_{0};
   size_type num_loc_dof_quad_{0};
   /**@}*/
+  /** Flag for reversing numbering of internal edge d.o.f.s */
+  bool check_edge_orientation_;
 };
 
 /* ====================================================================== */
