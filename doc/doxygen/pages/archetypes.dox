@@ -1,0 +1,90 @@
+/**
+
+@page archetypes Archetypes
+
+For every concept defined in LehrFEM++, we provide an archetype class that models the corresponding concept 
+ in the most minimal way possible without providing extra functionality.
+ It can be used to test whether other classes/functions which require a parameter to model a certain concept, 
+ only rely on the functionality which has been defined in the concept.
+
+
+ Lets consider an example to understand what we mean by this.
+ Suppose we have a concept `Animal`:
+ ```
+ template<class A>
+ concept Animal = requires(A a) {
+    { a.MakeSound() } -> std::same_as<void>;
+    { a.Eat() } -> std::same_as<void>;
+ };
+ ```
+ 
+ Then we provide an archetype class `AnimalAT` that models the concept `Animal`:
+ ```
+struct AnimalAT {
+    void MakeSound() const {}
+    void Eat() const {}
+};
+ ```
+
+ We can check whether `AnimalAT` actually models the concept `Animal` by using the `static_assert` macro:
+ ```
+ static_assert(Animal<AnimalAT>);
+ ```
+
+ The archetype class `AnimalAT` is useful in a number of ways:
+ <ul>
+ <li> Archetypes can document the methods of a concept. For example, the archetype `AnimalAT` documents that the concept `Animal` requires
+   the methods `MakeSound()` and `Eat()`. Additionally we can put doxygen comments in front of `MakeSound()` and `Eat()` to document
+   their intended functionality.
+ <li> If another function template requires a type that models the concept `Animal`, we can check with the archetype, that the function 
+   template only requires the functionality provided by the concept `Animal`. For example, assume that we have written the
+   following errorneous function:
+   ```
+   void Feed(Animal auto& a) {
+     a.Eat();
+     a.Drink();
+   }
+   ```
+   Using the archetype `AnimalAT`, we can check that the function `Feed` really only requires the functionality provided by the concept `Animal`.
+   For this we explicitly instantiate the function `Feed()` (without actually calling it)
+   ```
+   template void Feed(AnimalAT&);
+   ```
+   We then get the following compiler error:
+   ```
+   error: 'struct AnimalAT' has no member named 'Drink'
+   ```
+<li> We can use Archetypes to deduce types of other classes which require types modelling the concept.
+  For example, assume we have the following class:
+  ```
+  template<Animal A>
+  class Owner {
+    using gender_t = ...;
+    gender_t Gender() const;
+  }
+  ```
+  If we want to get the type `gender_t` we could just write:
+  ```
+  using gender_t = typename Owner<AnimalAT>::gender_t;
+  ```
+<li> We can use Archetypes to define more complex concepts. For example:
+  ```
+  template<class Z>
+  concept Zoo = requires(Z z, AnimalAT a) {
+    { z.Add(a)}} -> std::same_as<void>;
+    };
+  ```
+</ul>
+
+@sa https://en.cppreference.com/w/cpp/language/archetype
+
+@sa lf::assemble::EntityMatrixProviderAT
+@sa lf::assemble::EntityVectorProviderAT
+@sa lf::mesh::utils::MeshFunctionAT
+
+
+
+
+
+
+*/

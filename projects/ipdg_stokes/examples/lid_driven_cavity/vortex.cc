@@ -55,7 +55,7 @@ Eigen::VectorXd solveLidDrivenCavity(
       projects::ipdg_stokes::assemble::buildSystemMatrixNoFlow(
           mesh, dofh, f, dirichlet_funct, 1,
           lf::quad::make_TriaQR_MidpointRule(), modified);
-  Eigen::SparseMatrix<double> As = A.makeSparse();
+  const Eigen::SparseMatrix<double> As = A.makeSparse();
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(As);
   return solver.solve(rhs);
@@ -79,22 +79,22 @@ int main() {
 
   const auto boundary = lf::mesh::utils::flagEntitiesOnBoundary(mesh);
 
-  lf::assemble::UniformFEDofHandler dofh(
+  const lf::assemble::UniformFEDofHandler dofh(
       mesh, {{lf::base::RefEl::kPoint(), 1}, {lf::base::RefEl::kSegment(), 1}});
-  std::cout << "solving original" << std::endl;
+  std::cout << "solving original" << '\n';
   const Eigen::VectorXd solution_original =
       solveLidDrivenCavity(mesh, dofh, false);
-  std::cout << "extracting original" << std::endl;
+  std::cout << "extracting original" << '\n';
   const auto c_original =
       projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
           mesh, dofh, solution_original);
   const auto v_original =
       projects::ipdg_stokes::post_processing::extractVelocity(
           mesh, dofh, solution_original);
-  std::cout << "solving modified" << std::endl;
+  std::cout << "solving modified" << '\n';
   const Eigen::VectorXd solution_modified =
       solveLidDrivenCavity(mesh, dofh, true);
-  std::cout << "extracting modified" << std::endl;
+  std::cout << "extracting modified" << '\n';
   const auto c_modified =
       projects::ipdg_stokes::post_processing::extractBasisFunctionCoefficients(
           mesh, dofh, solution_modified);
@@ -102,7 +102,7 @@ int main() {
       projects::ipdg_stokes::post_processing::extractVelocity(
           mesh, dofh, solution_modified);
 
-  std::cout << "writing" << std::endl;
+  std::cout << "writing" << '\n';
   lf::io::VtkWriter writer(mesh, "vortex.vtk");
   writer.WritePointData("coefficients_original", c_original);
   writer.WritePointData("coefficients_modified", c_modified);

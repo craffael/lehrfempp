@@ -9,7 +9,7 @@ class ElemMatProvider {
   // Constructor can be used to pass data required for local computations
   ElemMatProvider() = default;
   // Select cells taken into account during cell-oriented assembly
-  virtual bool isActive(const lf::mesh::Entity& cell);
+  bool isActive(const lf::mesh::Entity& cell);
   // Compute element matrix for a cell, here a fixed-size matrix
   Eigen::Matrix<double, 3, 3> Eval(const lf::mesh::Entity& cell);
 };

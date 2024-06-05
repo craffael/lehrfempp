@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <lf/base/base.h>
-#include <lf/base/span.h>
 #include <lf/geometry/geometry.h>
 #include <lf/geometry/tria_o1.h>
 #include <lf/mesh/entity.h>

@@ -41,6 +41,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
  * in order to help IDE tools detect that
  * `BOOST_VERIFY_MSG(false, "message")` always aborts execution.
  */
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_VERIFY_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
@@ -50,6 +51,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
       throw std::runtime_error("this code should not be reached");      \
     }                                                                   \
   }
+// NOLINTEND(readability-simplify-boolean-expr)
 
 #ifdef NDEBUG
 #define LF_ASSERT_MSG_CONSTEXPR(expr, msg) ((void)0)
@@ -60,6 +62,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
     if (!(expr)) throw std::runtime_error(msg); \
   }
 
+// NOLINTBEGIN(readability-simplify-boolean-expr)
 #define LF_ASSERT_MSG(expr, msg)                                        \
   {                                                                     \
     if (!(expr)) {                                                      \
@@ -70,6 +73,7 @@ void AssertionFailed(const std::string& expr, const std::string& file,
     }                                                                   \
   }
 #endif
+// NOLINTEND(readability-simplify-boolean-expr)
 
 // And now we will redefine eigen_assert if needed:
 #ifdef LF_REDIRECT_ASSERTS

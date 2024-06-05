@@ -102,13 +102,6 @@ using enable_if_eigen = MATRIX;
 
 /// \cond
 
-// The following is needed to prohibit fmt to treat Eigen matrices/arrays as
-// ranges.
-template <class MATRIX>
-struct fmt::is_range<lf::base::internal::enable_if_eigen<MATRIX>, char> {
-  static FMT_CONSTEXPR_DECL const bool value = false;
-};
-
 /**
  * \brief this is the fmt::formatter which is used to format eigen
  * matrices/arrays
@@ -128,7 +121,7 @@ struct fmt::formatter<lf::base::internal::enable_if_eigen<MATRIX>> {
 
   template <typename FormatContext>
   auto format(const MATRIX& matrix, FormatContext& ctx) {
-    std::stringstream ss;
+    std::stringstream ss;  // NOLINT(misc-const-correctness)
     ss << matrix.format(clean_fmt);
 
     auto it = ctx.out();

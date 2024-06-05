@@ -5,14 +5,14 @@
 #include "primal_dpg.h"
 #include "ultraweak_dpg.h"
 
-#define reflev 7
+lf::base::size_type reflev = 7;
 
 int main() {
   std::cout << "Convergence study 4: Primal DPG method, solution with a "
                "boundary layer\n";
   std::cout << "Solution develops a boundary layer at top and right edge. \n";
 
-  std::vector<double> epsilon_values = {1, 0.5, 0.1, 0.05, 0.02, 0.01};
+  const std::vector<double> epsilon_values = {1, 0.5, 0.1, 0.05, 0.02, 0.01};
   const double b1 = 2.0;
   const double b2 = 1.0;
 
@@ -71,8 +71,8 @@ int main() {
     auto g = [](const Eigen::Vector2d& /*x*/) -> double { return 0.0; };
 
     // specification of degree and enrichement for the method
-    int deg_p = 2;
-    int delta_p = 1;
+    const int deg_p = 2;
+    const int delta_p = 1;
 
     //------------------------
     // run the convergence test
@@ -85,10 +85,10 @@ int main() {
             lf::base::RefEl::kTria());
 
     // output to a corresponding file
-    std::string file_name = "cs3/" + std::to_string(eps);
+    const std::string file_name = "cs3/" + std::to_string(eps);
     std::ofstream file(file_name);
     for (auto [dofs, h1error, errorestimator] : errors) {
-      file << dofs << ", " << h1error << ", " << errorestimator << std::endl;
+      file << dofs << ", " << h1error << ", " << errorestimator << '\n';
     }
     file.close();
   }

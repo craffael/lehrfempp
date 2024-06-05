@@ -14,12 +14,12 @@ bool assertNonDegenerateQuad(
   // World dimension
   const Geometry::dim_t wd = coords.rows();
   // Length tests
-  double e0lensq = (coords.col(1) - coords.col(0)).squaredNorm();
-  double e1lensq = (coords.col(2) - coords.col(1)).squaredNorm();
-  double e2lensq = (coords.col(3) - coords.col(2)).squaredNorm();
-  double e3lensq = (coords.col(0) - coords.col(3)).squaredNorm();
+  const double e0lensq = (coords.col(1) - coords.col(0)).squaredNorm();
+  const double e1lensq = (coords.col(2) - coords.col(1)).squaredNorm();
+  const double e2lensq = (coords.col(3) - coords.col(2)).squaredNorm();
+  const double e3lensq = (coords.col(0) - coords.col(3)).squaredNorm();
   // Test lengths of edges versus circumference.
-  double circum = e0lensq + e1lensq + e2lensq + e3lensq;
+  const double circum = e0lensq + e1lensq + e2lensq + e3lensq;
   LF_VERIFY_MSG(e0lensq > tol * circum, "Collapsed edge 0");
   LF_VERIFY_MSG(e1lensq > tol * circum, "Collapsed edge 1");
   LF_VERIFY_MSG(e2lensq > tol * circum, "Collapsed edge 2");
@@ -27,24 +27,24 @@ bool assertNonDegenerateQuad(
   // Area test
   switch (wd) {
     case 2: {
-      double ar1 =
+      const double ar1 =
           ((coords(0, 1) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
            (coords(1, 1) - coords(1, 0)) * (coords(0, 2) - coords(0, 0)));
-      double ar2 =
+      const double ar2 =
           ((coords(0, 3) - coords(0, 0)) * (coords(1, 2) - coords(1, 0)) -
            (coords(1, 3) - coords(1, 0)) * (coords(0, 2) - coords(0, 0)));
-      double area = std::fabs(ar1) + std::fabs(ar2);
+      const double area = std::fabs(ar1) + std::fabs(ar2);
       LF_VERIFY_MSG(area > tol * circum, "Degenerate 2D quad");
       return true;
       break;
     }
     case 3: {
       const Eigen::Matrix<double, 3, 4> c3d(coords.block<3, 4>(0, 0));
-      double ar1 =
+      const double ar1 =
           ((c3d.col(1) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
-      double ar2 =
+      const double ar2 =
           ((c3d.col(3) - c3d.col(0)).cross(c3d.col(2) - c3d.col(0))).norm();
-      double area = ar1 + ar2;
+      const double area = ar1 + ar2;
       LF_VERIFY_MSG(area > tol * circum, "Degenerate 3D quad");
       return true;
       break;

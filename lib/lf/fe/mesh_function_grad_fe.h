@@ -16,13 +16,14 @@ namespace lf::fe {
  * @headerfile lf/fe/fe.h
  * @ingroup mesh_function
  * @brief A \ref mesh_function "MeshFunction" representing the gradient of a
- * function from a finite element space (e.g. gradient of a solution of BVP).
+ * function from a scalar finite element space (e.g. gradient of a solution of
+ * BVP).
  * @tparam SCALAR_FE The scalar type of the finite element basis functions.
  * @tparam SCALAR_COEFF The scalar type of the coefficient vector
  *
  * The MeshFunctionGradFE takes essentially two parameters:
- * - A ScalarUniformFESpace which defines the space of all approximation
- * functions. This should be a Lagrnagian finite element space of globally
+ * - A ScalarFESpace which defines the space of all approximation
+ * functions. This should be a finite element space of globally
  * continuous functions. Otherwise the evaluation for non-cell entities is not
  * possible.
  * - A Coefficient Vector which defines what element should be picked from the
@@ -48,7 +49,7 @@ class MeshFunctionGradFE {
   using Scalar = decltype(SCALAR_FE(0) * SCALAR_COEFF(0));  // NOLINT
 
   /**
-   * @brief Create a new MeshFunctionGradFE from a ScalarUniformFESpace and a
+   * @brief Create a new MeshFunctionGradFE from a ScalarFESpace and a
    * coefficient vector
    * @param fe_space the approximation space in which the function lies.
    * @param dof_vector passes the basis expansion coefficients

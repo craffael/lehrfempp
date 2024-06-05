@@ -66,7 +66,7 @@ void output_dofs_test(const lf::mesh::Mesh &mesh,
     for (const lf::mesh::Entity *const e : mesh.Entities(codim)) {
       const lf::base::glb_idx_t e_idx = mesh.Index(*e);
       const lf::assemble::size_type num_dofs(dof_handler.NumLocalDofs(*e));
-      nonstd::span<const lf::assemble::gdof_idx_t> doflist(
+      std::span<const lf::assemble::gdof_idx_t> doflist(
           dof_handler.GlobalDofIndices(*e));
       std::cout << *e << ' ' << e_idx << ": " << num_dofs << " dofs = [";
       for (const lf::assemble::gdof_idx_t &dof : doflist) {
@@ -89,7 +89,7 @@ void output_entities_dofs(const lf::mesh::Mesh &mesh,
     const lf::mesh::Entity &e = dof_handler.Entity(dof_idx);
     std::cout << "dof " << dof_idx << " -> " << e << " " << mesh.Index(e)
               << std::endl;
-    nonstd::span<const lf::assemble::gdof_idx_t> doflist(
+    std::span<const lf::assemble::gdof_idx_t> doflist(
         dof_handler.GlobalDofIndices(e));
     bool dof_found = false;
     for (const lf::assemble::gdof_idx_t &dof : doflist) {
@@ -420,7 +420,7 @@ SCALAR multVecAssMat(lf::assemble::dim_t codim,
       // Size, aka number of rows and columns, of element matrix
       const lf::assemble::size_type elmat_dim = dofh.NumLocalDofs(*entity);
       // Global indices of local shape functions
-      nonstd::span<const gdof_idx_t> global_idx(dofh.GlobalDofIndices(*entity));
+      std::span<const gdof_idx_t> global_idx(dofh.GlobalDofIndices(*entity));
       // Request local matrix from entity_matrix_provider object. In the case
       // codim = 0, when `entity` is a cell, this is the element matrix
       const auto elem_mat{entity_matrix_provider.Eval(*entity)};

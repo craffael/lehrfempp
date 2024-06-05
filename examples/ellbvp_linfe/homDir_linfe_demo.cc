@@ -25,11 +25,10 @@
 #include <iomanip>
 
 int main(int /*argc*/, const char** /*argv*/) {
-  std::cout << "\t LehrFEM++ Demonstration Code" << std::endl;
+  std::cout << "\t LehrFEM++ Demonstration Code" << '\n';
   std::cout << "\t Solution of general second-order elliptic\n"
             << "\t homogeneous Dirichlet problem by means of linear\n"
-            << "\t Lagrangian finite element discretization" << std::endl;
-
+            << "\t Lagrangian finite element discretization" << '\n';
   // abbreviations for types
   using size_type = lf::base::size_type;
   using glb_idx_t = lf::assemble::glb_idx_t;
@@ -40,42 +39,45 @@ int main(int /*argc*/, const char** /*argv*/) {
   // ======================================================================
 
   // Coefficients:
- auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
-   return Eigen::Matrix<double, 2, 2>::Identity();
- };
- auto u = [](Eigen::Vector2d x) -> double {
-   return (std::sin(M_PI * x[0]) * std::sin(M_PI * x[1]));
- };
- auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-   return M_PI *
-          ((Eigen::Vector2d() << std::cos(M_PI * x(0)) * std::sin(M_PI * x(1)),
-            std::sin(M_PI * x(0)) * std::cos(M_PI * x(1)))
-               .finished());
- };
- auto f = [&u](Eigen::Vector2d x) -> double { return (2.0*M_PI * M_PI * u(x)); };
- /*
-  auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
+  auto alpha = [](Eigen::Vector2d const& /*x*/) -> Eigen::Matrix<double, 2, 2> {
     return Eigen::Matrix<double, 2, 2>::Identity();
   };
   auto u = [](Eigen::Vector2d x) -> double {
-    return (x[0] * (1.0 - x[0]) * x[1] * (1.0 - x[1]));
+    return (std::sin(lf::base::kPi * x[0]) * std::sin(lf::base::kPi * x[1]));
   };
   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
-    return ((Eigen::Vector2d() << (1 - 2 * x[0]) * x[1] * (1 - x[1]),
-             x[0] * (1 - x[0]) * (1 - 2 * x[1]))
+    return lf::base::kPi *
+           ((Eigen::Vector2d() << std::cos(lf::base::kPi * x(0)) *
+                                      std::sin(lf::base::kPi * x(1)),
+             std::sin(lf::base::kPi * x(0)) * std::cos(lf::base::kPi * x(1)))
                 .finished());
   };
-  auto f = [](Eigen::Vector2d x) -> double {
-    return 2 * (x[1] * (1 - x[1]) + x[0] * (1 - x[0]));
-    }; */
+  auto f = [&u](Eigen::Vector2d const& x) -> double {
+    return (2.0 * lf::base::kPi * lf::base::kPi * u(x));
+  };
+  /*
+   auto alpha = [](Eigen::Vector2d x) -> Eigen::Matrix<double, 2, 2> {
+     return Eigen::Matrix<double, 2, 2>::Identity();
+   };
+   auto u = [](Eigen::Vector2d x) -> double {
+     return (x[0] * (1.0 - x[0]) * x[1] * (1.0 - x[1]));
+   };
+   auto grad_u = [](Eigen::Vector2d x) -> Eigen::Vector2d {
+     return ((Eigen::Vector2d() << (1 - 2 * x[0]) * x[1] * (1 - x[1]),
+              x[0] * (1 - x[0]) * (1 - 2 * x[1]))
+                 .finished());
+   };
+   auto f = [](Eigen::Vector2d x) -> double {
+     return 2 * (x[1] * (1 - x[1]) + x[0] * (1 - x[0]));
+     }; */
 
   // Wrap diffusion coefficient into a MeshFunction
-  lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
+  const lf::mesh::utils::MeshFunctionGlobal mf_alpha{alpha};
   // Has to be wrapped into a mesh function for error computation
-  lf::mesh::utils::MeshFunctionGlobal mf_u{u};
+  const lf::mesh::utils::MeshFunctionGlobal mf_u{u};
   // Convert into mesh function to use for error computation
-  lf::mesh::utils::MeshFunctionGlobal mf_grad_u{grad_u};
-  lf::mesh::utils::MeshFunctionGlobal mf_f{f};
+  const lf::mesh::utils::MeshFunctionGlobal mf_grad_u{grad_u};
+  const lf::mesh::utils::MeshFunctionGlobal mf_f{f};
 
   // ======================================================================
   // Stage I: Definition of computational domain through coarsest mesh
@@ -94,14 +96,14 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // Obtain a pointer to a hierarchy of nested meshes
   const int reflevels = 7;
-  std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
+  const std::shared_ptr<lf::refinement::MeshHierarchy> multi_mesh_p =
       lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p,
                                                               reflevels);
   lf::refinement::MeshHierarchy& multi_mesh{*multi_mesh_p};
   // Ouput information about hierarchy of nested meshes
   std::cout << "\t Sequence of nested meshes used in demo code\n";
   multi_mesh.PrintInfo(std::cout);
-  size_type L = multi_mesh.NumLevels();  // Number of levels
+  const size_type L = multi_mesh.NumLevels();  // Number of levels
 
   // Vector for keeping error norms
   std::vector<std::tuple<size_type, double, double>> errs{};
@@ -163,14 +165,13 @@ int main(int /*argc*/, const char** /*argv*/) {
 
     // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
-    Eigen::SparseMatrix<double> A_crs = A.makeSparse();
-
+    const Eigen::SparseMatrix<double> A_crs = A.makeSparse();
     // Solve linear system using Eigen's sparse direct elimination
     // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
     solver.compute(A_crs);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "LU decomposition failed");
-    Eigen::VectorXd sol_vec = solver.solve(phi);
+    const Eigen::VectorXd sol_vec = solver.solve(phi);
     LF_VERIFY_MSG(solver.info() == Eigen::Success, "Solving LSE failed");
 
     // Postprocessing: Compute error norms
@@ -189,16 +190,16 @@ int main(int /*argc*/, const char** /*argv*/) {
 
   // Output table of errors to file and terminal
   std::ofstream out_file("errors.txt");
-  std::cout << "\t Table of error norms" << std::endl;
+  std::cout << "\t Table of error norms" << '\n';
   std::cout << std::left << std::setw(10) << "N" << std::right << std::setw(16)
-            << "L2 error" << std::setw(16) << "H1 error" << std::endl;
-  std::cout << "---------------------------------------------" << std::endl;
+            << "L2 error" << std::setw(16) << "H1 error" << '\n';
+  std::cout << "---------------------------------------------" << '\n';
   for (const auto& err : errs) {
     auto [N, l2err, h1serr] = err;
     out_file << std::left << std::setw(10) << N << std::left << std::setw(16)
-             << l2err << std::setw(16) << h1serr << std::endl;
+             << l2err << std::setw(16) << h1serr << '\n';
     std::cout << std::left << std::setw(10) << N << std::left << std::setw(16)
-              << l2err << std::setw(16) << h1serr << std::endl;
+              << l2err << std::setw(16) << h1serr << '\n';
   }
 
   return 0;

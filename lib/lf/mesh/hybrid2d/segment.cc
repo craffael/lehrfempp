@@ -11,8 +11,7 @@
 #include "point.h"
 
 namespace lf::mesh::hybrid2d {
-nonstd::span<const Entity* const> Segment::SubEntities(
-    unsigned rel_codim) const {
+std::span<const Entity* const> Segment::SubEntities(unsigned rel_codim) const {
   // An impressive way to do double dereferencing!
   auto l = [&](auto i) -> const mesh::Entity& { return **i; };
   if (rel_codim == 1) {

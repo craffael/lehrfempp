@@ -12,6 +12,13 @@
 #include <type_traits>
 #include <vector>
 
+namespace lf::refinement {
+
+// Make sure MeshFunctionTransfer only depends on Archetype functionality:
+template class MeshFunctionTransfer<mesh::utils::MeshFunctionAT<double>>;
+
+}  // namespace lf::refinement
+
 TEST(lf_refinement, MeshFunctionTransferConcept) {
   using mf_scalar = lf::mesh::utils::MeshFunctionConstant<double>;
   using mf_matrix = lf::mesh::utils::MeshFunctionConstant<Eigen::MatrixXd>;
@@ -25,10 +32,10 @@ TEST(lf_refinement, MeshFunctionTransferConcept) {
   ASSERT_TRUE(std::is_move_constructible_v<mf_matrix>);
   ASSERT_TRUE(std::is_move_constructible_v<mf_array>);
   ASSERT_TRUE(std::is_move_constructible_v<mf_fe>);
-  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_scalar>);
-  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_matrix>);
-  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_array>);
-  ASSERT_TRUE(lf::mesh::utils::isMeshFunction<mf_fe>);
+  ASSERT_TRUE(lf::mesh::utils::MeshFunction<mf_scalar>);
+  ASSERT_TRUE(lf::mesh::utils::MeshFunction<mf_matrix>);
+  ASSERT_TRUE(lf::mesh::utils::MeshFunction<mf_array>);
+  ASSERT_TRUE(lf::mesh::utils::MeshFunction<mf_fe>);
 }
 
 TEST(lf_refinement, MeshFunctionTransferScalar) {

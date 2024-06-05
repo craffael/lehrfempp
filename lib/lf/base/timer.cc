@@ -30,7 +30,7 @@ std::int_least64_t tick_factor()  // multiplier to convert ticks
 {
   static std::int_least64_t tick_factor = 0;
   if (tick_factor == 0) {
-    if ((tick_factor = ::sysconf(_SC_CLK_TCK)) <= 0) {
+    if (tick_factor = ::sysconf(_SC_CLK_TCK); tick_factor <= 0) {
       tick_factor = -1;
     } else {
       tick_factor = INT64_C(1000000000) / tick_factor;  // compute factor
@@ -44,7 +44,7 @@ std::int_least64_t tick_factor()  // multiplier to convert ticks
 #endif
 
 void get_cpu_times(lf::base::Timer::cpu_times* const current) {
-  std::chrono::nanoseconds x(
+  const std::chrono::nanoseconds x(
       std::chrono::high_resolution_clock::now().time_since_epoch());
   current->wall = std::chrono::nanoseconds(x.count());
 
@@ -63,7 +63,7 @@ void get_cpu_times(lf::base::Timer::cpu_times* const current) {
   }
 #else
   tms tm;  // NOLINT
-  clock_t c = ::times(&tm);
+  const clock_t c = ::times(&tm);
   if (c == static_cast<clock_t>(-1))  // error
   {
     current->system = current->user = std::chrono::nanoseconds(-1);
@@ -71,7 +71,7 @@ void get_cpu_times(lf::base::Timer::cpu_times* const current) {
     current->system = std::chrono::nanoseconds(tm.tms_stime + tm.tms_cstime);
     current->user = std::chrono::nanoseconds(tm.tms_utime + tm.tms_cutime);
     int_least64_t factor;
-    if ((factor = tick_factor()) != -1) {
+    if (factor = tick_factor(); factor != -1) {
       current->user *= factor;
       current->system *= factor;
     } else {
@@ -99,13 +99,13 @@ Timer::cpu_times Timer::Elapsed() const noexcept {
 
 std::string Timer::Format(std::string_view format) const {
   const double sec = 1000000000.0L;
-  double wall_sec = static_cast<double>(times_.wall.count()) / sec;
-  auto total = times_.system.count() + times_.user.count();
-  double total_sec = static_cast<double>(total) / sec;
-  double percent = (total_sec / wall_sec) * 100.0;
+  const double wall_sec = static_cast<double>(times_.wall.count()) / sec;
+  const auto total = times_.system.count() + times_.user.count();
+  const double total_sec = static_cast<double>(total) / sec;
+  const double percent = (total_sec / wall_sec) * 100.0;
 
   return fmt::format(
-      format, fmt::arg("w", wall_sec),
+      fmt::runtime(format), fmt::arg("w", wall_sec),
       fmt::arg("u", static_cast<double>(times_.user.count()) / sec),
       fmt::arg("s", static_cast<double>(times_.system.count()) / sec),
       fmt::arg("t", total_sec), fmt::arg("p", percent));
@@ -131,7 +131,7 @@ void Timer::Stop() noexcept {
 
 void Timer::Resume() noexcept {
   if (IsStopped()) {
-    cpu_times current(times_);
+    const cpu_times current(times_);
     Start();
     times_.wall -= current.wall;
     times_.user -= current.user;
@@ -155,6 +155,8 @@ AutoTimer::~AutoTimer() {
     timer_.Stop();
     try {
       Report();
+
+      // NOLINTNEXTLINE(bugprone-empty-catch)
     } catch (...) {  // eat any exceptions
     }
   }
@@ -175,7 +177,7 @@ const std::string& AutoTimer::FormatString() const { return format_; }
 void AutoTimer::Report() {
   auto string = timer_.Format(format_);
   if (auto* ostream = std::get_if<std::ostream*>(&output_)) {
-    (**ostream) << string << std::endl;
+    (**ostream) << string << '\n';
   } else {
     std::get<1>(output_).first->log(std::get<1>(output_).second, string);
   }

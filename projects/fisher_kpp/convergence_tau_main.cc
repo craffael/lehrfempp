@@ -38,14 +38,14 @@ int main(int /*argc*/, char ** /*argv*/) {
   /* Diffusion Coefficient */
   auto c = [](const Eigen::Vector2d & /*x*/) -> double { return 1.2; };
   /* Growth Factor */
-  double lambda = 2.1;
+  const double lambda = 2.1;
 
   /* Obtain mesh */
   auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-  std::filesystem::path here = __FILE__;
+  const std::filesystem::path here = __FILE__;
   auto mesh_file = (here.parent_path() / "/meshes/test4.msh").string();
   lf::io::GmshReader reader(std::move(mesh_factory), mesh_file);
-  std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p = reader.mesh();
 
   /* Finite Element Space */
   std::shared_ptr<lf::uscalfe::UniformScalarFESpace<double>> fe_space =
@@ -54,7 +54,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   const lf::assemble::DofHandler &dofh{fe_space->LocGlobMap()};
   const lf::uscalfe::size_type N_dofs(dofh.NumDofs());
 
-  std::cout << "Num of dofs " << N_dofs << std::endl;
+  std::cout << "Num of dofs " << N_dofs << '\n';
 
   /* Initial Population density */
   Eigen::VectorXd u0(N_dofs);
@@ -117,7 +117,7 @@ int main(int /*argc*/, char ** /*argv*/) {
         Eigen::VectorXd L1(N_dofs);
         L1.setZero();
 
-        lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
+        const lf::mesh::utils::MeshFunctionGlobal mf_g{g_j};
         lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_g),
                                                   decltype(edge_pred)>
             edgeVec_y(fe_space, mf_g, edge_pred);
@@ -129,7 +129,7 @@ int main(int /*argc*/, char ** /*argv*/) {
       Eigen::VectorXd L2(N_dofs);
       L2.setZero();
 
-      lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
+      const lf::mesh::utils::MeshFunctionGlobal mf_L{L_j};
       lf::uscalfe::ScalarLoadEdgeVectorProvider<double, decltype(mf_L),
                                                 decltype(edge_pred)>
           edgeVec_x(fe_space, mf_L, edge_pred);
@@ -153,7 +153,7 @@ int main(int /*argc*/, char ** /*argv*/) {
   numSteps.setZero();
   Eigen::VectorXd tau(6);
   tau.setZero();
-  double T = 1.;
+  const double T = 1.;
 
   for (int i = 0; i < 6; i++) {
     numSteps(i) = static_cast<unsigned int>(80 * std::pow(2, i));
@@ -175,32 +175,32 @@ int main(int /*argc*/, char ** /*argv*/) {
   Eigen::VectorXd sol1(N_dofs);
   sol1.setZero();
   sol1 = StrangSplitter1.Evolution(cap, u0);
-  std::cout << "sol1 " << std::endl;
+  std::cout << "sol1 " << '\n';
 
   Eigen::VectorXd sol2(N_dofs);
   sol2.setZero();
   sol2 = StrangSplitter2.Evolution(cap, u0);
-  std::cout << "sol2 " << std::endl;
+  std::cout << "sol2 " << '\n';
 
   Eigen::VectorXd sol3(N_dofs);
   sol3.setZero();
   sol3 = StrangSplitter3.Evolution(cap, u0);
-  std::cout << "sol3 " << std::endl;
+  std::cout << "sol3 " << '\n';
 
   Eigen::VectorXd sol4(N_dofs);
   sol4.setZero();
   sol4 = StrangSplitter4.Evolution(cap, u0);
-  std::cout << "sol4 " << std::endl;
+  std::cout << "sol4 " << '\n';
 
   Eigen::VectorXd sol5(N_dofs);
   sol5.setZero();
   sol5 = StrangSplitter5.Evolution(cap, u0);
-  std::cout << "sol5 " << std::endl;
+  std::cout << "sol5 " << '\n';
 
   Eigen::VectorXd sol6(N_dofs);
   sol6.setZero();
   sol6 = StrangSplitter6.Evolution(cap, u0);
-  std::cout << "sol6 " << std::endl;
+  std::cout << "sol6 " << '\n';
 
   Eigen::VectorXd eL2(5);
   eL2.setZero();
@@ -209,17 +209,16 @@ int main(int /*argc*/, char ** /*argv*/) {
   eL2(2) = (sol6 - sol3).lpNorm<2>();
   eL2(3) = (sol6 - sol4).lpNorm<2>();
   eL2(4) = (sol6 - sol5).lpNorm<2>();
-  std::cout << "errors computed" << std::endl;
+  std::cout << "errors computed" << '\n';
 
   for (int l = 0; l < 6; l++) {
     if (l < 5) {
-      std::cout << "errorL2 solcol0 for l = " << l << " : " << eL2(l)
-                << std::endl;
+      std::cout << "errorL2 solcol0 for l = " << l << " : " << eL2(l) << '\n';
     }
 
     std::cout << "number of timesteps for l = " << l << " : " << numSteps(l)
-              << std::endl;
-    std::cout << "tau for l = " << l << " : " << tau(l) << std::endl;
+              << '\n';
+    std::cout << "tau for l = " << l << " : " << tau(l) << '\n';
   }
 
   /* Define output file format */

@@ -66,7 +66,7 @@ void checkRelCodim(const Entity &e) {
   // Loop over all possible co-dimensions of sub-entities
   for (dim_t sub_codim = 1; sub_codim <= dimension; ++sub_codim) {
     // Obtain array of sub-entities of co-dimensjon sub\_codim
-    nonstd::span<const lf::mesh::Entity *const> sub_ent_array{
+    std::span<const lf::mesh::Entity *const> sub_ent_array{
         e.SubEntities(sub_codim)};
     // Query number of sub-entities
     const size_type num_subent = ref_el.NumSubEntities(sub_codim);

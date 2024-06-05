@@ -10,6 +10,7 @@
 #include <lf/mesh/mesh.h>
 
 #include <iostream>
+#include <span>
 
 // Code snippet demonstrating the use of DofHandler functionality
 // copied from lecturedemodof.cc
@@ -28,7 +29,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       // Number of shape functions covering current entity
       const lf::assemble::size_type no_dofs(dofh.NumLocalDofs(*e));
       // Obtain global indices of those shape functions ...
-      nonstd::span<const lf::assemble::gdof_idx_t> dofarray{
+      std::span<const lf::assemble::gdof_idx_t> dofarray{
           dofh.GlobalDofIndices(*e)};
       // and print them
       std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -37,7 +38,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       }
       std::cout << ']';
       // Also output indices of interior shape functions
-      nonstd::span<const lf::assemble::gdof_idx_t> intdofarray{
+      std::span<const lf::assemble::gdof_idx_t> intdofarray{
           dofh.InteriorGlobalDofIndices(*e)};
       std::cout << " int = [";
       for (lf::assemble::gdof_idx_t int_dof : intdofarray) {

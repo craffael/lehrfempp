@@ -39,4 +39,14 @@ std::ostream& operator<<(std::ostream& stream, const Geometry& geom);
 
 }  // namespace lf::geometry
 
+/// \cond
+/**
+ * @brief Make lf::geometry::Geometry formattable by fmt
+ * (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template <>
+struct fmt::formatter<lf::geometry::Geometry> : ostream_formatter {};
+
+/// \endcond
+
 #endif  // PRINT_INFO_H

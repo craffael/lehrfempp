@@ -203,7 +203,7 @@ class COOMatrix {
    * @param o output stream
    */
   void PrintInfo(std::ostream &o) const {
-    o << rows_ << " x " << cols_ << " COO matrix" << std::endl;
+    o << rows_ << " x " << cols_ << " COO matrix" << '\n';
     for (const Triplet &trp : triplets_) {
       o << "(" << trp.row() << ',' << trp.col() << ") -> " << trp.value()
         << std::endl;
@@ -260,5 +260,14 @@ void COOMatrix<SCALAR>::MatVecMult(SCALAR alpha, const VECTOR &vec,
 }
 
 }  // namespace lf::assemble
+
+
+/// \cond
+/**
+ * @brief Make COOMatrix formattable by fmt (https://fmt.dev/latest/api.html#ostream-api)
+ */
+template<class SCALAR>
+struct fmt::formatter<lf::assemble::COOMatrix<SCALAR>> : ostream_formatter {};
+/// \endcond
 
 #endif

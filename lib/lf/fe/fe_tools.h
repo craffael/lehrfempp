@@ -49,7 +49,7 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
     return (value_m * weights_ie)(0);
   }
 
-  if constexpr (base::is_eigen_matrix<MfType>) {  // NOLINT
+  if constexpr (base::EigenMatrix<MfType>) {  // NOLINT
     constexpr int size = MfType::SizeAtCompileTime;
     if constexpr (size != Eigen::Dynamic) {
       auto value_m = Eigen::Map<
@@ -104,16 +104,14 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
  * ### Example
  * @snippet fe_tools.cc integrateMeshFunction2
  */
-template <class MF, class QR_SELECTOR,
-          class ENTITY_PREDICATE = base::PredicateTrue,
-          class = std::enable_if_t<
-              std::is_invocable_v<QR_SELECTOR, const mesh::Entity &>>>
+template <mesh::utils::MeshFunction MF, class QR_SELECTOR,
+          class ENTITY_PREDICATE = base::PredicateTrue>
+  requires std::is_invocable_v<QR_SELECTOR, const mesh::Entity &>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
                            const QR_SELECTOR &qr_selector,
                            const ENTITY_PREDICATE &ep = base::PredicateTrue{},
                            int codim = 0)
     -> mesh::utils::MeshFunctionReturnType<MF> {
-  static_assert(mesh::utils::isMeshFunction<MF>);
   using MfType = mesh::utils::MeshFunctionReturnType<MF>;
 
   auto entities = mesh.Entities(codim);
@@ -153,11 +151,13 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * ### Example
  * @snippet fe_tools.cc integrateMeshFunction
  */
-template <class MF, class ENTITY_PREDICATE = base::PredicateTrue>
+template <mesh::utils::MeshFunction MF,
+          class ENTITY_PREDICATE = base::PredicateTrue>
 auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
                            int quad_degree,
                            const ENTITY_PREDICATE &ep = base::PredicateTrue{},
-                           int codim = 0) {
+                           int codim = 0)
+    -> mesh::utils::MeshFunctionReturnType<MF> {
   std::array<quad::QuadRule, 5> qrs;
   for (auto ref_el :
        {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {
@@ -179,7 +179,7 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * valued function that should be projected
  * @tparam SELECTOR predicate type for selecting cells to be visited
  *
- * @param fe_space a uniform Lagrangian finite element space, providing
+ * @param fe_space a scalar finite element space, providing
  * finite element specifications for the cells of the mesh
  * @param u functor object supplying a scalar-valued function that is to be
  * projected
@@ -195,10 +195,13 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  * ### Example
  * @snippet fe_tools.cc nodalProjection
  */
-template <typename SCALAR, typename MF, typename SELECTOR = base::PredicateTrue>
-auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
-                     SELECTOR &&pred = base::PredicateTrue{}) {
-  static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<MF>>);
+template <typename SCALAR, mesh::utils::MeshFunction MF,
+          typename SELECTOR = base::PredicateTrue>
+auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF const &u,
+                     SELECTOR &&pred = base::PredicateTrue{})
+    -> Eigen::Vector<decltype(SCALAR{0} * mesh::utils::MeshFunctionReturnType<
+                                              std::remove_reference_t<MF>>{0}),
+                     Eigen::Dynamic> {
   // choose scalar type so it can hold the scalar type of u as well as
   // SCALAR
   using scalarMF_t =
@@ -247,7 +250,7 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
         dofvec.size() == num_loc_dofs,
         "Size mismatch: " << dofvec.size() << " <-> " << num_loc_dofs);
     // Fetch global numbers of local shape functions
-    nonstd::span<const lf::assemble::gdof_idx_t> ldof_gidx(
+    const std::span<const lf::assemble::gdof_idx_t> ldof_gidx(
         dofh.GlobalDofIndices(*cell));
     // Insert dof values into the global coefficient vector
     for (int j = 0; j < num_loc_dofs; ++j) {
@@ -297,11 +300,11 @@ auto NodalProjection(const lf::fe::ScalarFESpace<SCALAR> &fe_space, MF &&u,
  * ### Example
  * @snippet fe_tools.cc InitEssentialConditionFromFunction
  */
-template <typename SCALAR, typename EDGESELECTOR, typename FUNCTION>
+template <typename SCALAR, typename EDGESELECTOR,
+          mesh::utils::MeshFunction FUNCTION>
 std::vector<std::pair<bool, SCALAR>> InitEssentialConditionFromFunction(
     const lf::fe::ScalarFESpace<SCALAR> &fes, EDGESELECTOR &&esscondflag,
-    FUNCTION &&g) {
-  static_assert(mesh::utils::isMeshFunction<std::remove_reference_t<FUNCTION>>);
+    FUNCTION const &g) {
   // static_assert(isMeshFunction<FUNCTION>, "g must by a MeshFunction object");
 
   // *** I: Preprocessing ***

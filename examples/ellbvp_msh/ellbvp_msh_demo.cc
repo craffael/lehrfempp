@@ -70,10 +70,10 @@ int main() {
   const size_type N_dofs(dofh.NumDofs());
 
   // identity mesh function for very simple problem
-  lf::mesh::utils::MeshFunctionConstant mf_identity(1.0);
+  const lf::mesh::utils::MeshFunctionConstant mf_identity(1.0);
 
   auto zero = [](const Eigen::Vector2d& /*x*/) -> double { return 0.; };
-  lf::mesh::utils::MeshFunctionGlobal mf_zero{zero};
+  const lf::mesh::utils::MeshFunctionGlobal mf_zero{zero};
 
   // Matrix in triplet format holding Galerkin matrix, zero initially.
   lf::assemble::COOMatrix<double> A(N_dofs, N_dofs);
@@ -139,7 +139,7 @@ int main() {
   }
   // Assembly completed: Convert COO matrix into CRS format using Eigen's
   // internal conversion routines.
-  Eigen::SparseMatrix<double> A_crs = A.makeSparse();
+  const Eigen::SparseMatrix<double> A_crs = A.makeSparse();
 
   // Solve linear system using Eigen's sparse direct elimination
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
@@ -157,7 +157,7 @@ int main() {
             lf::mesh::utils::squaredNorm(mf_GradFe),
         2));
 
-    std::cout << "Computed H1 Norm: " << h1_norm << std::endl;
+    std::cout << "Computed H1 Norm: " << h1_norm << '\n';
 
     // Version 2: Compute Energy by assembling Stiffness matrix/mass matrix
     lf::assemble::COOMatrix<double> Stiffness(N_dofs, N_dofs);
@@ -165,19 +165,19 @@ int main() {
         fe_space, mf_identity, mf_zero);
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, stiffness_mat_builder,
                                         Stiffness);
-    Eigen::SparseMatrix<double> Stiffness_crs = Stiffness.makeSparse();
+    const Eigen::SparseMatrix<double> Stiffness_crs = Stiffness.makeSparse();
 
     // Matrix in triplet format holding Mass matrix.
     lf::assemble::COOMatrix<double> Mass(N_dofs, N_dofs);
     lf::uscalfe::ReactionDiffusionElementMatrixProvider mass_mat_builder(
         fe_space, mf_zero, mf_identity);
     lf::assemble::AssembleMatrixLocally(0, dofh, dofh, mass_mat_builder, Mass);
-    Eigen::SparseMatrix<double> Mass_crs = Mass.makeSparse();
+    const Eigen::SparseMatrix<double> Mass_crs = Mass.makeSparse();
 
     // h1_seminorm_sq = \mu' A \mu
-    double h1_semi2 = sol_vec.transpose() * (Stiffness_crs * sol_vec);
+    const double h1_semi2 = sol_vec.transpose() * (Stiffness_crs * sol_vec);
     // l2_norm_sq = \mu' M \mu
-    double l22 = sol_vec.transpose() * Mass_crs * sol_vec;
+    const double l22 = sol_vec.transpose() * Mass_crs * sol_vec;
 
     std::cout << "Computed H1 Norm: " << std::sqrt(h1_semi2 + l22) << "\n";
   }

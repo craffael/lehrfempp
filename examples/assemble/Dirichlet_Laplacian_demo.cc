@@ -22,7 +22,7 @@
 #include "lf/mesh/test_utils/test_meshes.h"
 #include "lf/mesh/utils/utils.h"
 
-static unsigned int dbg_ctrl = 0;
+unsigned int dbg_ctrl = 0;
 const unsigned int dbg_dofh = 1;
 const unsigned int dbg_mesh = 2;
 const unsigned int dbg_mat = 4;
@@ -62,7 +62,7 @@ std::vector<bool> flagBoundaryDOFs(const lf::assemble::DofHandler &dofh) {
       if (tmp_bd_flags[dofnum]) {
         std::cout << "ON BOUNDARY";
       }
-      std::cout << std::endl;
+      std::cout << '\n';
     }
   }
   return tmp_bd_flags;
@@ -85,8 +85,7 @@ void eliminateBoundaryDofs(const std::vector<bool> &tmp_bd_flags,
         if ((dbg_ctrl & dbg_elim) > 0) {
           if (tmp_bd_flags[triplet.row()]) {
             std::cout << "EBD: removing " << triplet.row() << ','
-                      << triplet.col() << "[" << triplet.value() << "]"
-                      << std::endl;
+                      << triplet.col() << "[" << triplet.value() << "]" << '\n';
           }
         }
         return tmp_bd_flags[triplet.row()];
@@ -144,7 +143,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   if (dbg_ctrl & dbg_basic) {
     std::cout << "Dirichlet Laplacian: Linear FE L2 error on mesh with "
               << mesh_p->NumEntities(0) << " cells, " << mesh_p->NumEntities(1)
-              << " edges, " << mesh_p->NumEntities(2) << " nodes" << std::endl;
+              << " edges, " << mesh_p->NumEntities(2) << " nodes" << '\n';
   }
   if (dbg_ctrl & dbg_mesh) {
     lf::mesh::utils::PrintInfo(std::cout, *mesh_p, 100);
@@ -154,7 +153,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   lf::uscalfe::LinearFELaplaceElementMatrix loc_mat_laplace{};
   lf::uscalfe::LinearFELocalLoadVector<double, decltype(f)> loc_vec_sample(f);
   // Initialization of index mapping for linear finite elements
-  lf::assemble::UniformFEDofHandler loc_glob_map(
+  const lf::assemble::UniformFEDofHandler loc_glob_map(
       mesh_p, {{lf::base::RefEl::kPoint(), 1}});
 
   if (dbg_ctrl & dbg_dofh) {
@@ -176,7 +175,7 @@ double L2ErrorLinearFEDirichletLaplacian(
   if (dbg_ctrl & dbg_mat) {
     std::cout << "Full " << mat.rows() << 'x' << mat.cols()
               << " stiffness matrix, " << mat.triplets().size() << " tripets:\n"
-              << mat.makeDense() << std::endl;
+              << mat.makeDense() << '\n';
   }
 
   // Filling the right-hand-side vector
@@ -193,7 +192,7 @@ double L2ErrorLinearFEDirichletLaplacian(
     const lf::assemble::size_type num_int_dof =
         loc_glob_map.NumInteriorDofs(*node);
     LF_ASSERT_MSG(num_int_dof == 1, "Node with " << num_int_dof << " dof");
-    nonstd::span<const lf::assemble::gdof_idx_t> gsf_idx(
+    const std::span<const lf::assemble::gdof_idx_t> gsf_idx(
         loc_glob_map.InteriorGlobalDofIndices(*node));
     const lf::assemble::gdof_idx_t node_dof_idx = gsf_idx[0];
     dirichlet_data[node_dof_idx] = u(point);
@@ -223,25 +222,25 @@ double L2ErrorLinearFEDirichletLaplacian(
     std::cout << "Reduced " << mat.rows() << 'x' << mat.cols()
               << " stiffness matrix, " << mat.triplets().size()
               << " triplets:\n"
-              << mat.makeDense() << std::endl;
+              << mat.makeDense() << '\n';
   }
 
   // Initialize sparse matrix
   // Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
   LF_VERIFY_MSG(!mat.triplets().empty() > 0, "Empty stiffness matrix!");
-  Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
+  const Eigen::SparseMatrix<double> stiffness_matrix(mat.makeSparse());
   // Solve linear system
   Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
   solver.compute(stiffness_matrix);
   Eigen::VectorXd sol_vec = solver.solve(rhsvec);
   if (solver.info() != Eigen::Success) {
-    std::cout << "solver failed!" << std::endl;
+    std::cout << "solver failed!" << '\n';
   }
 
   // Compute the norm of nodal error cell by cell
   double nodal_err = 0.0;
   for (const lf::mesh::Entity *cell : mesh_p->Entities(0)) {
-    nonstd::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
+    const std::span<const lf::assemble::gdof_idx_t> cell_dof_idx(
         loc_glob_map.GlobalDofIndices(*cell));
     LF_ASSERT_MSG(loc_glob_map.NumLocalDofs(*cell) == cell->RefEl().NumNodes(),
                   "Inconsistent node number");
@@ -281,7 +280,7 @@ std::vector<double> SolveDirLaplSeqMesh(
     multi_mesh.RefineRegular(/*lf::refinement::RefPat::rp_barycentric*/);
   }
   // Solve Dirichlet boundary value problem on every level
-  lf::assemble::size_type L = multi_mesh.NumLevels();
+  const lf::assemble::size_type L = multi_mesh.NumLevels();
   std::vector<double> errors;
   errors.reserve(L);
   for (unsigned level = 0; level < L; level++) {
@@ -316,7 +315,7 @@ int main(int argc, char **argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
 
   if (vm.count("help") > 0) {
-    std::cout << desc << std::endl;
+    std::cout << desc << '\n';
     return 1;
   }
 
@@ -331,15 +330,14 @@ int main(int argc, char **argv) {
 
   std::cout << "AssembleMatrixLogger level "
             << lf::assemble::AssembleMatrixLogger()->level() << "\n";
-  std::cout << "*** Solving Dirichlet problems for the Laplacian ***"
-            << std::endl;
+  std::cout << "*** Solving Dirichlet problems for the Laplacian ***" << '\n';
   // Retrieve number of degrees of freedom for each entity type from
   // command line arguments
   if (vm.count("filename") > 0) {
     // A filename was specified
-    std::string filename{vm["filename"].as<std::string>()};
+    const std::string filename{vm["filename"].as<std::string>()};
     if (filename.length() > 0) {
-      std::cout << "Reading mesh from file " << filename << std::endl;
+      std::cout << "Reading mesh from file " << filename << '\n';
       std::filesystem::path here = __FILE__;
       auto mesh_file_path = here.remove_filename() / filename.c_str();
       auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
@@ -349,36 +347,36 @@ int main(int argc, char **argv) {
     }
   } else {
     std::cout << "No mesh file supplied, using GenerateHybrid2DTestMesh()"
-              << std::endl;
+              << '\n';
     if (vm.count("selector") > 0) {
       auto selector = vm["selector"].as<int>();
-      std::cout << "Using test mesh no " << selector << std::endl;
+      std::cout << "Using test mesh no " << selector << '\n';
       if ((selector >= 0) && (selector <= 4)) {
         mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(selector);
       }
     }
   }
   // Set number of refinement levels
-  unsigned int reflevels = vm["reflevels"].as<int>();  // default value: 2
-  unsigned int bvpsel = vm["bvpsel"].as<int>();
+  const unsigned int reflevels = vm["reflevels"].as<int>();  // default value: 2
+  const unsigned int bvpsel = vm["bvpsel"].as<int>();
   if (mesh_p == nullptr) {
     // Default mesh
-    std::cout << "Using default mesh; test mesh 0" << std::endl;
+    std::cout << "Using default mesh; test mesh 0" << '\n';
     mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
   }
   // At this point a pointer to the mesh is stored in mesh_p
   // Output summary information about the coarsest mesh
   std::cout << "Coarse mesh: " << mesh_p->NumEntities(0) << " cells, "
             << mesh_p->NumEntities(1) << " edges, " << mesh_p->NumEntities(2)
-            << " vertices" << std::endl;
-  std::cout << reflevels << " refinement levels requested" << std::endl;
+            << " vertices" << '\n';
+  std::cout << reflevels << " refinement levels requested" << '\n';
 
   // Problem data provided by function pointers
   std::function<double(const Eigen::Vector2d &)> u;
   std::function<double(const Eigen::Vector2d &)> f;
 
   // Initialize the problem data
-  std::cout << "Problem setting " << bvpsel << " selected" << std::endl;
+  std::cout << "Problem setting " << bvpsel << " selected" << '\n';
   switch (bvpsel) {
     case 0: {
       // A linear solution, no error, if contained in FE space
@@ -415,7 +413,7 @@ int main(int argc, char **argv) {
                                     lf::mesh::utils::MeshFunctionGlobal(f));
   int level = 0;
   for (auto &err : L2errs) {
-    std::cout << "L2 error on level " << level << " = " << err << std::endl;
+    std::cout << "L2 error on level " << level << " = " << err << '\n';
     level++;
   }
 }

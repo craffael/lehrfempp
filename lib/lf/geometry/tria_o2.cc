@@ -11,6 +11,7 @@
 #include <Eigen/Eigen>
 
 #include "point.h"
+#include "segment_o2.h"
 
 namespace lf::geometry {
 

@@ -44,7 +44,7 @@ Eigen::VectorXd PiecewiseConstElementVectorProvider::Eval(
     element_vector.head(3) += basis_funct.transpose() * weights[n] * f_eval;
   }
   // Weakly impose the dirichlet boundary conditions
-  Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
+  const Eigen::MatrixXd vertices = geom->Global(entity.RefEl().NodeCoords());
   // Use the vertex coordinates to compute the local normals on the edges
   const Eigen::Matrix<double, 2, 3> normals =
       projects::ipdg_stokes::mesh::computeOutwardNormals(entity);

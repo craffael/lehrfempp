@@ -31,19 +31,22 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   }
   // ----------------------------------------------------------------
   // For the enum flags: TikzOutputCtrl
-  bool EdgeNumOn =
+  // NOLINTBEGIN(bugprone-non-zero-enum-to-bool-conversion)
+  const bool EdgeNumOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::EdgeNumbering);
-  bool NodeNumOn =
+  const bool NodeNumOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::NodeNumbering);
-  bool CellNumOn =
+  const bool CellNumOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::CellNumbering);
-  bool VerticeNumOn =
+  const bool VerticeNumOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::VerticeNumbering);
-  bool RenderCellsOn =
+  const bool RenderCellsOn =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::RenderCells);
-  bool ArrowsOn = static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
-  bool WithPreamble =
+  const bool ArrowsOn =
+      static_cast<bool>(output_ctrl & TikzOutputCtrl::ArrowTips);
+  const bool WithPreamble =
       static_cast<bool>(output_ctrl & TikzOutputCtrl::WithPreamble);
+  // NOLINTEND(bugprone-non-zero-enum-to-bool-conversion)
 
   using size_type = std::size_t;         // lf::base::size_type;
   using dim_t = lf::base::RefEl::dim_t;  // lf::base::dim_t;
@@ -63,7 +66,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
   if (WithPreamble) {
     outfile << "\\documentclass[12pt,a4paper]{article}\n\\usepackage{tikz}"
                "\n\\begin{document}\n"
-            << std::endl;
+            << '\n';
   }
   outfile << "% TikZ document graphics \n";
 
@@ -84,9 +87,9 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
     // Loop through all types of entities
     for (const mesh::Entity *obj : mesh.Entities(co_dim)) {
       if (selector(*obj)) {  // IF SELECTOR -------
-        size_type obj_idx = mesh.Index(*obj);
-        lf::base::RefEl obj_refel = obj->RefEl();
-        int num_nodes_obj = base::narrow<int>(obj_refel.NumNodes());
+        const size_type obj_idx = mesh.Index(*obj);
+        const lf::base::RefEl obj_refel = obj->RefEl();
+        const int num_nodes_obj = base::narrow<int>(obj_refel.NumNodes());
         const geometry::Geometry *obj_geo_ptr = obj->Geometry();
         const Eigen::MatrixXd &obj_corners(obj_refel.NodeCoords());
         const Eigen::MatrixXd vertices = obj_geo_ptr->Global(obj_corners);
@@ -142,7 +145,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                         << semi_scaled_vertices(1, 1) << ");\n";
               } else {
                 std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
-                          << obj_idx << std::endl;
+                          << obj_idx << '\n';
               }
 
             } else {
@@ -159,7 +162,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                         << ");\n";
               } else {
                 std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
-                          << obj_idx << std::endl;
+                          << obj_idx << '\n';
               }
             }  // arrows on
 
@@ -231,8 +234,8 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 
           default: {
             std::cout << "Error for object " << obj_idx << " in co-dim "
-                      << co_dim << std::endl;
-            std::cout << "Object type: " << obj_refel << std::endl;
+                      << co_dim << '\n';
+            std::cout << "Object type: " << obj_refel << '\n';
             break;
           }  // default
         }    // switch
@@ -245,7 +248,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
 
   outfile << "\\end{tikzpicture}\n";
   if (WithPreamble) {
-    outfile << "\n\\end{document}" << std::endl;
+    outfile << "\n\\end{document}" << '\n';
   }
   return true;
 }  // writetikz

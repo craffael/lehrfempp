@@ -13,15 +13,16 @@ set(sources
   lf_assert.cc
   lf_assert.h
   lf_exception.h
+  narrow.h
   predicate_true.h
   ref_el.cc
   ref_el.h
-  scalar_traits.h
-  span.h
+  scalar_concept.h
   spdlog_utils.h
   spdlog_utils.cc
   timer.h
   timer.cc
+  types.h
 )
 
 lf_add_library(lf.base ${sources})

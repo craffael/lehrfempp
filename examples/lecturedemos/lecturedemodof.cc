@@ -18,7 +18,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
   auto mesh = dofh.Mesh();
   // Number of degrees of freedom managed by the DofHandler object
   const lf::assemble::size_type N_dofs(dofh.NumDofs());
-  std::cout << "DofHandler(" << dofh.NumDofs() << " dofs):" << std::endl;
+  std::cout << "DofHandler(" << dofh.NumDofs() << " dofs):" << '\n';
   // Output information about dofs for entities of all co-dimensions
   for (lf::base::dim_t codim = 0; codim <= mesh->DimMesh(); codim++) {
     // Visit all entities of a codimension codim
@@ -28,7 +28,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       // Number of shape functions covering current entity
       const lf::assemble::size_type no_dofs(dofh.NumLocalDofs(*e));
       // Obtain global indices of those shape functions ...
-      nonstd::span<const lf::assemble::gdof_idx_t> dofarray{
+      const std::span<const lf::assemble::gdof_idx_t> dofarray{
           dofh.GlobalDofIndices(*e)};
       // and print them
       std::cout << *e << ' ' << e_idx << ": " << no_dofs << " dofs = [";
@@ -37,13 +37,13 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
       }
       std::cout << ']';
       // Also output indices of interior shape functions
-      nonstd::span<const lf::assemble::gdof_idx_t>
+      const std::span<const lf::assemble::gdof_idx_t>
 	intdofarray{dofh.InteriorGlobalDofIndices(*e)};
       std::cout << " int = [";
-      for (lf::assemble::gdof_idx_t int_dof : intdofarray) {
+      for (const lf::assemble::gdof_idx_t int_dof : intdofarray) {
         std::cout << int_dof << ' ';
       }
-      std::cout << ']' << std::endl;
+      std::cout << ']' << '\n';
     }
   }
   // List entities associated with the dofs managed by the current
@@ -51,7 +51,7 @@ void printDofInfo(const lf::assemble::DofHandler &dofh) {
   for (lf::assemble::gdof_idx_t dof_idx = 0; dof_idx < N_dofs; dof_idx++) {
     const lf::mesh::Entity &e(dofh.Entity(dof_idx));
     std::cout << "dof " << dof_idx << " -> " << e << " " << mesh->Index(e)
-              << std::endl;
+              << '\n';
   }
 }  // end function printDofInfo
 /* SAM_LISTING_END_1 */
@@ -66,13 +66,13 @@ void lecturedemodof() {
   using tria_coord_t = Eigen::Matrix<double, 2, 3>;
 
   std::cout << "LehrFEM++ demo for dof handling and assembly facilities"
-            << std::endl;
+            << '\n';
   // ======================================================================
   // I: Generate simple hybrid mesh comprising two cells, one quadrilateral,
   // one triangle
 
   // Obtain mesh factory
-  std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
+  const std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory_ptr =
       std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
   mesh_factory_ptr->AddPoint(coord_t({0, 0}));      // point 0
   mesh_factory_ptr->AddPoint(coord_t({1, 0}));      // point 1
@@ -90,7 +90,7 @@ void lecturedemodof() {
                               std::vector<size_type>({1, 3, 4}),
                               std::unique_ptr<lf::geometry::Geometry>(nullptr));
   // Ready to build the mesh data structure
-  std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
+  const std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
 
   // Output mesh in LaTeX TikZ format
   using lf::io::TikzOutputCtrl;
@@ -110,16 +110,15 @@ void lecturedemodof() {
   const size_type ndof_tria = 1;  // One interior dof per triangle
   const size_type ndof_quad = 4;  // One interior dof per quad
 
-  std::cout << "LehrFEM++ demo: assignment of global shape functions"
-            << std::endl;
-  std::cout << "#dof/vertex = " << ndof_node << std::endl;
-  std::cout << "#dof/edge = " << ndof_edge << std::endl;
-  std::cout << "#dof/triangle = " << ndof_tria << std::endl;
-  std::cout << "#dof/quadrilateral = " << ndof_quad << std::endl;
+  std::cout << "LehrFEM++ demo: assignment of global shape functions" << '\n';
+  std::cout << "#dof/vertex = " << ndof_node << '\n';
+  std::cout << "#dof/edge = " << ndof_edge << '\n';
+  std::cout << "#dof/triangle = " << ndof_tria << '\n';
+  std::cout << "#dof/quadrilateral = " << ndof_quad << '\n';
 
   // Create a dof handler object describing a uniform distribution
   // of shape functions
-  lf::assemble::UniformFEDofHandler dof_handler(
+  const lf::assemble::UniformFEDofHandler dof_handler(
       mesh_p, {{lf::base::RefEl::kPoint(), ndof_node},
                {lf::base::RefEl::kSegment(), ndof_edge},
                {lf::base::RefEl::kTria(), ndof_tria},

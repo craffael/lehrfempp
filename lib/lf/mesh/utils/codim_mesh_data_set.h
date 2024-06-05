@@ -42,9 +42,8 @@ class CodimMeshDataSet : public MeshDataSet<T> {
    * @param codim co-dimension of indexing entities for the given mesh
    * @param init value to be copied into all data elements
    */
-  template <class = typename std::enable_if<
-                std::is_copy_constructible<T>::value>::type>
   CodimMeshDataSet(std::shared_ptr<const Mesh> mesh, dim_t codim, T init)
+    requires std::copy_constructible<T>
       : MeshDataSet<T>(),
         mesh_(std::move(mesh)),
         data_(mesh_->NumEntities(codim), init),
@@ -103,8 +102,7 @@ std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
  * @param codim The codimension of the entities with which the data is stored.
  * @param init The initial value that should be assigned to every entity.
  */
-template <class T, class = typename std::enable_if<
-                       std::is_copy_constructible<T>::value>::type>
+template <std::copy_constructible T>
 std::shared_ptr<CodimMeshDataSet<T>> make_CodimMeshDataSet(
     const std::shared_ptr<const Mesh>& mesh, base::dim_t codim, T init) {
   using impl_t = CodimMeshDataSet<T>;
