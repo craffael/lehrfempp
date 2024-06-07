@@ -1,8 +1,8 @@
 var searchData=
 [
   ['a_0',['A',['../struct_problem_solution.html#a8338968f179e3becb3c43b49914508fe',1,'ProblemSolution']]],
-  ['a_5f_1',['a_',['../classlf_1_1mesh_1_1utils_1_1_mesh_function_binary.html#a9a8c07097951ce7b351d77d1e42d795e',1,'lf::mesh::utils::MeshFunctionBinary']]],
-  ['a_5f_2',['A_',['../class_fisher_k_p_p_1_1_strang_split.html#a08ab1c382a00503e71f03ece02c2a2c2',1,'FisherKPP::StrangSplit']]],
+  ['a_5f_1',['A_',['../class_fisher_k_p_p_1_1_strang_split.html#a08ab1c382a00503e71f03ece02c2a2c2',1,'FisherKPP::StrangSplit']]],
+  ['a_5f_2',['a_',['../classlf_1_1mesh_1_1utils_1_1_mesh_function_binary.html#a9a8c07097951ce7b351d77d1e42d795e',1,'lf::mesh::utils::MeshFunctionBinary']]],
   ['a_5fmodified_3',['A_modified',['../struct_problem_solution.html#a1bac4d7342f62cae43b2eff62b87cdca',1,'ProblemSolution']]],
   ['addconvectionelementmatrixprovider_4',['AddConvectionElementMatrixProvider',['../classprojects_1_1dpg_1_1_product_element_matrix_provider_builder.html#a7628edf59a5827dc8d3002db81af8145',1,'projects::dpg::ProductElementMatrixProviderBuilder::AddConvectionElementMatrixProvider(size_type trial_component, size_type test_component, CONVECTION_COEFF_1 beta_1, CONVECTION_COEFF_2 beta_2)'],['../classprojects_1_1dpg_1_1_product_element_matrix_provider_builder.html#ad92c2df973b6e488b2f5b13147bf3cfa',1,'projects::dpg::ProductElementMatrixProviderBuilder::AddConvectionElementMatrixProvider(size_type trial_component, size_type test_component, CONVECTION_COEFF_1 beta_1, CONVECTION_COEFF_2 beta_2)']]],
   ['adddiffusionelementmatrixprovider_5',['AddDiffusionElementMatrixProvider',['../classprojects_1_1dpg_1_1_product_element_matrix_provider_builder.html#abfd7cf323df9f39bff2a85ad01bc5eab',1,'projects::dpg::ProductElementMatrixProviderBuilder::AddDiffusionElementMatrixProvider(size_type trial_component, size_type test_component, DIFF_COEFF alpha)'],['../classprojects_1_1dpg_1_1_product_element_matrix_provider_builder.html#a5d244b81d8d8b03e8269553b1c5b81a4',1,'projects::dpg::ProductElementMatrixProviderBuilder::AddDiffusionElementMatrixProvider(size_type trial_component, size_type test_component, DIFF_COEFF alpha)']]],

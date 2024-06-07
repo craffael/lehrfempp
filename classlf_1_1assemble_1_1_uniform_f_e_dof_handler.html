@@ -197,6 +197,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a68f71802e03c7931848aabde3cbc0896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cc457417e1ad9f43789a41754553c21" id="r_a8cc457417e1ad9f43789a41754553c21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelf_1_1assemble.html#a833b2ce219e5d97c44bafa6bebe1f442">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cc457417e1ad9f43789a41754553c21">num_dofs_quad_</a> {0}</td></tr>
 <tr class="separator:a8cc457417e1ad9f43789a41754553c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4c9fe2a983b94b53d9442cf33067bf" id="r_a3b4c9fe2a983b94b53d9442cf33067bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b4c9fe2a983b94b53d9442cf33067bf">check_edge_orientation_</a></td></tr>
+<tr class="separator:a3b4c9fe2a983b94b53d9442cf33067bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a762b941537c16f6356612f25124963a2" id="r_a762b941537c16f6356612f25124963a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelf_1_1assemble.html#a833b2ce219e5d97c44bafa6bebe1f442">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a762b941537c16f6356612f25124963a2">kNodeOrd</a> = 2</td></tr>
 <tr class="separator:a762b941537c16f6356612f25124963a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,8 +222,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ad7b6632d13ccdaa865862cbf9a3feac9" id="r_ad7b6632d13ccdaa865862cbf9a3feac9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">using</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7b6632d13ccdaa865862cbf9a3feac9">dof_map_t</a> = std::map&lt;<a class="el" href="classlf_1_1base_1_1_ref_el.html">lf::base::RefEl</a>, <a class="el" href="group__lftypes.html#gab3b24f59c5ab0cb8154dca499837561e">base::size_type</a>&gt;</td></tr>
 <tr class="memdesc:ad7b6632d13ccdaa865862cbf9a3feac9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construction from a map object.  <br /></td></tr>
 <tr class="separator:ad7b6632d13ccdaa865862cbf9a3feac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41ec85ba22085744ced5c5b815fb87a5" id="r_a41ec85ba22085744ced5c5b815fb87a5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ec85ba22085744ced5c5b815fb87a5">UniformFEDofHandler</a> (std::shared_ptr&lt; <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">const</a> <a class="el" href="classlf_1_1mesh_1_1_mesh.html">lf::mesh::Mesh</a> &gt; mesh, <a class="el" href="#ad7b6632d13ccdaa865862cbf9a3feac9">dof_map_t</a> <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">dofmap</a>)</td></tr>
-<tr class="separator:a41ec85ba22085744ced5c5b815fb87a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73374ca218d3dacc6c85c68488a34649" id="r_a73374ca218d3dacc6c85c68488a34649"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73374ca218d3dacc6c85c68488a34649">UniformFEDofHandler</a> (std::shared_ptr&lt; <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">const</a> <a class="el" href="classlf_1_1mesh_1_1_mesh.html">lf::mesh::Mesh</a> &gt; mesh, <a class="el" href="#ad7b6632d13ccdaa865862cbf9a3feac9">dof_map_t</a> <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">dofmap</a>, <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">bool</a> <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">check_edge_orientation</a>=<a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">true</a>)</td></tr>
+<tr class="separator:a73374ca218d3dacc6c85c68488a34649"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -246,7 +248,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Dofhandler for uniform finite element spaces. </p>
 <p>This management class for indices of global shape functions is suitable for situations where every geometric entity of a particular type has exactly the same number of shape functions belonging to it. </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00257">257</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00260">260</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ad7b6632d13ccdaa865862cbf9a3feac9" name="ad7b6632d13ccdaa865862cbf9a3feac9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad7b6632d13ccdaa865862cbf9a3feac9">&#9670;&#160;</a></span>dof_map_t</h2>
@@ -267,15 +269,26 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Detailed information about the construction from a map object is given in <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.16. Also study <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Example 2.7.4.18. </p>
+<p>Detailed information about the construction from a map object is given in <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.16. Also study <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Example 2.7.4.18.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">check_edge_orientation</td><td>if true, reverse ordering of local d.o.f.s in case of negative orientation of the edge.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>In the case of Lagrangian fintie element space of polynomial degree \(\geq 3\) several global shape functions are associated with every edge. Conveniently, they are numbered based on the orientation/direction of the edge. In case the local and global orientations do not match, this will lead to a wrong local -&gt; global index mapping.</p>
+<p>The following example demonstrates this for a mesh consisting of two triangles and cubic Lagrangian finite elements. the indices of global shape functions are written in red, those of the local shape functions in light blue for the left triangle, in dark blue for the right triangle. The ordering of the shape functions associated with the common edge id different for the two triangles. </p><div class="image">
+<img src="dofedgeorder.png" alt=""/>
+</div>
+<p>If the flag check_edge_orientation is set, then the member functions GlobalDofIndices and InteriorGlobalDofIndices (when called for a cell) will reverse the ordering of edge-internal d.o.f.s, if the relative orientation of the edge is negative. </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00274">274</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00299">299</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a41ec85ba22085744ced5c5b815fb87a5" name="a41ec85ba22085744ced5c5b815fb87a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41ec85ba22085744ced5c5b815fb87a5">&#9670;&#160;</a></span>UniformFEDofHandler() <span class="overload">[1/3]</span></h2>
+<a id="a73374ca218d3dacc6c85c68488a34649" name="a73374ca218d3dacc6c85c68488a34649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73374ca218d3dacc6c85c68488a34649">&#9670;&#160;</a></span>UniformFEDofHandler() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,14 +301,19 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="#ad7b6632d13ccdaa865862cbf9a3feac9">dof_map_t</a></td>          <td class="paramname"><span class="paramname"><em>dofmap</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#ad7b6632d13ccdaa865862cbf9a3feac9">dof_map_t</a></td>          <td class="paramname"><span class="paramname"><em>dofmap</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">bool</a></td>          <td class="paramname"><span class="paramname"><em>check_edge_orientation</em><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">true</a></span></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00084">84</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00086">86</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00456">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00459">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00457">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00458">num_loc_dof_tria_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00489">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00492">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00490">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00491">num_loc_dof_tria_</a>.</p>
 
 </div>
 </div>
@@ -418,9 +436,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#a7fc1c626b0bc47620d0654739e294c16">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00336">336</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00369">369</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00444">dof_entities_</a>, and <a class="el" href="dofhandler_8h_source.html#l00442">num_dof_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00477">dof_entities_</a>, and <a class="el" href="dofhandler_8h_source.html#l00475">num_dof_</a>.</p>
 
 </div>
 </div>
@@ -451,11 +469,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00371">371</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00404">404</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00323">NumLocalDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00330">NumLocalDofs()</a>.</p>
 
 </div>
 </div>
@@ -492,15 +510,16 @@ Additional Inherited Members</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>cardinal number range of global dof indices, see <a href="https://en.cppreference.com/w/cpp/container/span">std::span data type documentation</a>.</dd></dl>
 <p>The basis functions of every finite element space must be associated with a unique geometric entity. Conversely, every entity can possess a finite number of basis functions = degrees of freedom. This member function returns the global indices of all basis functions associated with the entity <b>and its sub-entitites</b> (the <em>covering</em> local shape functions).</p>
 <p>The size of the returned range must agree with the value returned by <a class="el" href="#a8e53730d978423b08866d268503ac6f3" title="tells the number of degrees of freedom subordinate/_belonging_ to to an entity">NumLocalDofs()</a> when supplied with the same arguments.</p>
-<p>Consult <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.13 for more information.   </p>
+<p>Consult <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.13 for more information.  </p>
+<dl class="section note"><dt>Note</dt><dd>If the check_edge_orientation flag was set in the costructor, the ordering of local shape functions associated with edges will be reversed if the relative orientation of the edge is negative. </dd></dl>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#a9ef2112962f511c8ffc0ab20d68fa61a">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00295">295</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00302">302</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00295">GlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00302">GlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00295">GlobalDofIndices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00302">GlobalDofIndices()</a>.</p>
 
 </div>
 </div>
@@ -531,9 +550,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00279">279</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00286">286</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00447">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00449">num_dofs_</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00480">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00482">num_dofs_</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -562,11 +581,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>initialization of internal index arrays </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00137">137</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00142">142</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00444">dof_entities_</a>, <a class="el" href="dofhandler_8h_source.html#l00447">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00380">kCellOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00379">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00378">kNodeOrd</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>, <a class="el" href="namespacelf_1_1mesh.html#afeb5ab2fc27eb4779bca84a297f4c781a228d6a97a9838dc800e58b3c74ba7b11">lf::mesh::negative</a>, <a class="el" href="dofhandler_8h_source.html#l00442">num_dof_</a>, <a class="el" href="dofhandler_8h_source.html#l00449">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00456">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00459">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00457">num_loc_dof_segment_</a>, <a class="el" href="dofhandler_8h_source.html#l00458">num_loc_dof_tria_</a>, and <a class="el" href="namespacelf_1_1mesh.html#afeb5ab2fc27eb4779bca84a297f4c781a82082716189f80fd070b89ac716570ba">lf::mesh::positive</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00495">check_edge_orientation_</a>, <a class="el" href="dofhandler_8h_source.html#l00477">dof_entities_</a>, <a class="el" href="dofhandler_8h_source.html#l00480">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00413">kCellOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00412">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00411">kNodeOrd</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00475">num_dof_</a>, <a class="el" href="dofhandler_8h_source.html#l00482">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00489">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00492">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00490">num_loc_dof_segment_</a>, <a class="el" href="dofhandler_8h_source.html#l00491">num_loc_dof_tria_</a>, and <a class="el" href="namespacelf_1_1mesh.html#afeb5ab2fc27eb4779bca84a297f4c781a82082716189f80fd070b89ac716570ba">lf::mesh::positive</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -597,11 +616,11 @@ Additional Inherited Members</h2></td></tr>
 <p>This method assumes that the variables num_loc_dof_point_, num_loc_dof_segment_, num_loc_dof_tria_, num_loc_dof_quad_ have already been set.</p>
 <dl class="section see"><dt>See also</dt><dd>LocalStaticDOFs2D::TotalNoLocDofs() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00126">126</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00131">131</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00380">kCellOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00379">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00378">kNodeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00449">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00452">num_dofs_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00452">num_dofs_tria_</a>, <a class="el" href="dofhandler_8h_source.html#l00456">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00459">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00457">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00458">num_loc_dof_tria_</a>.</p>
+<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00413">kCellOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00412">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00411">kNodeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00482">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00485">num_dofs_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00485">num_dofs_tria_</a>, <a class="el" href="dofhandler_8h_source.html#l00489">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00492">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00490">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00491">num_loc_dof_tria_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -637,15 +656,17 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>cardinal number range of global indices of shape functions, see <a href="https://en.cppreference.com/w/cpp/container/span">std::span data type documentation</a>.</dd></dl>
 <p>Each global shape function is associated with a unique mesh entity. This method provides all the global indices of the shape function <em>associated to</em> the entity specified by the function arguments, see <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.13 for additional explanations.</p>
-<dl class="section note"><dt>Note</dt><dd>Be aware of the difference of <a class="el" href="#a4f1be226f2a632524fd26a889effc253">GlobalDofIndices()</a> and <a class="el" href="#a657a681cf603d94444a0bfaf6da93854">InteriorGlobalDofIndices()</a>   </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Be aware of the difference of <a class="el" href="#a4f1be226f2a632524fd26a889effc253">GlobalDofIndices()</a> and <a class="el" href="#a657a681cf603d94444a0bfaf6da93854">InteriorGlobalDofIndices()</a>  </dd>
+<dd>
+If the check_edge_orientation flag was set in the costructor, the ordering of local shape functions associated with edges will be reversed if the relative orientation of the edge is negative. </dd></dl>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#aa676aa41d8d38e3d938e3a1d699a5893">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00318">318</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00325">325</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00318">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8cc_source.html#l00325">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00318">InteriorGlobalDofIndices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00325">InteriorGlobalDofIndices()</a>.</p>
 
 </div>
 </div>
@@ -676,9 +697,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00300">300</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00307">307</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00447">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00449">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00328">NumInteriorDofs()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00480">dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>, <a class="el" href="dofhandler_8h_source.html#l00482">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00335">NumInteriorDofs()</a>.</p>
 
 </div>
 </div>
@@ -710,9 +731,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#a107c1a28661675cb9d64ee7cc28865ce">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00345">345</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00378">378</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00440">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00473">mesh_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="uniform__scalar__fe__space_8h_source.html#l00102">lf::uscalfe::UniformScalarFESpace&lt; SCALAR &gt;::Mesh()</a>.</p>
 
@@ -742,11 +763,11 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Number of covered dofs for an entity type </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00384">384</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00417">417</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00379">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00378">kNodeOrd</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00449">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00452">num_dofs_quad_</a>, and <a class="el" href="dofhandler_8h_source.html#l00452">num_dofs_tria_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="dofhandler_8h_source.html#l00412">kEdgeOrd</a>, <a class="el" href="dofhandler_8h_source.html#l00411">kNodeOrd</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00482">num_dofs_</a>, <a class="el" href="dofhandler_8h_source.html#l00485">num_dofs_quad_</a>, and <a class="el" href="dofhandler_8h_source.html#l00485">num_dofs_tria_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00371">GetNumLocalDofs()</a>, <a class="el" href="dofhandler_8cc_source.html#l00279">GlobalDofIndices()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00300">InteriorGlobalDofIndices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00404">GetNumLocalDofs()</a>, <a class="el" href="dofhandler_8cc_source.html#l00286">GlobalDofIndices()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00307">InteriorGlobalDofIndices()</a>.</p>
 
 </div>
 </div>
@@ -777,9 +798,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00304">304</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00329">329</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00442">num_dof_</a>.</p>
+<p class="reference">References <a class="el" href="dofhandler_8h_source.html#l00475">num_dof_</a>.</p>
 
 </div>
 </div>
@@ -819,11 +840,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#a5056e18e7f68dfdda80200eacabeccea">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00328">328</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00335">335</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00328">NumInteriorDofs()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00335">NumInteriorDofs()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00300">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00328">NumInteriorDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00307">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00335">NumInteriorDofs()</a>.</p>
 
 </div>
 </div>
@@ -851,9 +872,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Number of interior shape functions for an entity type </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00412">412</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00445">445</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00456">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00459">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00457">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00458">num_loc_dof_tria_</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, <a class="el" href="ref__el_8h_source.html#l00144">lf::base::RefEl::kPoint()</a>, <a class="el" href="ref__el_8h_source.html#l00169">lf::base::RefEl::kQuad()</a>, <a class="el" href="ref__el_8h_source.html#l00153">lf::base::RefEl::kSegment()</a>, <a class="el" href="ref__el_8h_source.html#l00161">lf::base::RefEl::kTria()</a>, <a class="el" href="dofhandler_8h_source.html#l00489">num_loc_dof_point_</a>, <a class="el" href="dofhandler_8h_source.html#l00492">num_loc_dof_quad_</a>, <a class="el" href="dofhandler_8h_source.html#l00490">num_loc_dof_segment_</a>, and <a class="el" href="dofhandler_8h_source.html#l00491">num_loc_dof_tria_</a>.</p>
 
 </div>
 </div>
@@ -893,9 +914,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#ab648d0a3d773d411358b7d6fdaf2c698">lf::assemble::DofHandler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00323">323</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8cc_source.html#l00330">330</a> of file <a class="el" href="dofhandler_8cc_source.html">dofhandler.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8h_source.html#l00371">GetNumLocalDofs()</a>.</p>
+<p class="reference">References <a class="el" href="assembler_8h_source.html#l00115">lf::assemble::AssembleMatrixLocally()</a>, and <a class="el" href="dofhandler_8h_source.html#l00404">GetNumLocalDofs()</a>.</p>
 
 </div>
 </div>
@@ -954,6 +975,33 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3b4c9fe2a983b94b53d9442cf33067bf" name="a3b4c9fe2a983b94b53d9442cf33067bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4c9fe2a983b94b53d9442cf33067bf">&#9670;&#160;</a></span>check_edge_orientation_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3">bool</a> lf::assemble::UniformFEDofHandler::check_edge_orientation_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Flag for reversing numbering of internal edge d.o.f.s </p>
+
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00495">495</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>.</p>
+
+</div>
+</div>
 <a id="adc853bedfff1a8b90d101831ee8c08de" name="adc853bedfff1a8b90d101831ee8c08de"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adc853bedfff1a8b90d101831ee8c08de">&#9670;&#160;</a></span>dof_entities_</h2>
 
@@ -975,9 +1023,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Vector of entities to which global basis functions are associated </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00444">444</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00477">477</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00336">Entity()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00369">Entity()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>.</p>
 
 </div>
 </div>
@@ -1002,9 +1050,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Vectors of global indices of dofs belonging to entities of different topological type </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00447">447</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00480">480</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00279">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00300">InteriorGlobalDofIndices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00286">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00307">InteriorGlobalDofIndices()</a>.</p>
 
 </div>
 </div>
@@ -1028,9 +1076,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00380">380</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00413">413</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>.</p>
 
 </div>
 </div>
@@ -1054,9 +1102,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00379">379</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00412">412</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -1081,9 +1129,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>co-dimensions of different geometric entities in a 2D mesh </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00378">378</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00411">411</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -1108,9 +1156,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The mesh on which the degrees of freedom are defined </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00440">440</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00473">473</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00295">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00279">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00318">InteriorGlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00300">InteriorGlobalDofIndices()</a>, <a class="el" href="dofhandler_8h_source.html#l00345">Mesh()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00302">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00286">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00325">InteriorGlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00307">InteriorGlobalDofIndices()</a>, <a class="el" href="dofhandler_8h_source.html#l00378">Mesh()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -1135,9 +1183,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The total number of degrees of freedom </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00442">442</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00475">475</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00336">Entity()</a>, <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, and <a class="el" href="dofhandler_8h_source.html#l00304">NumDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8h_source.html#l00369">Entity()</a>, <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, and <a class="el" href="dofhandler_8h_source.html#l00329">NumDofs()</a>.</p>
 
 </div>
 </div>
@@ -1162,9 +1210,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Number of dofs covering entities of a particular type </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00449">449</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00482">482</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00279">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8cc_source.html#l00300">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00286">GlobalDofIndices()</a>, <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8cc_source.html#l00307">InteriorGlobalDofIndices()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -1188,9 +1236,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00452">452</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00485">485</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -1216,9 +1264,9 @@ Additional Inherited Members</h2></td></tr>
 <p>(Maximum) number of shape functions covering entities of a particular co-dimension <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00452">452</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00485">485</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00384">NumCoveredDofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, and <a class="el" href="dofhandler_8h_source.html#l00417">NumCoveredDofs()</a>.</p>
 
 </div>
 </div>
@@ -1243,9 +1291,9 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Numbers of local <em>interior</em> shape functions associated with different types of entities </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00456">456</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00489">489</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00412">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00445">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -1269,9 +1317,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00459">459</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00492">492</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00412">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00445">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -1295,9 +1343,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00457">457</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00490">490</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00412">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00445">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>
@@ -1321,9 +1369,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00458">458</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00491">491</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00137">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00126">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00412">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00084">UniformFEDofHandler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="dofhandler_8cc_source.html#l00142">initIndexArrays()</a>, <a class="el" href="dofhandler_8cc_source.html#l00131">InitTotalNumDofs()</a>, <a class="el" href="dofhandler_8h_source.html#l00445">NumInteriorDofs()</a>, and <a class="el" href="dofhandler_8cc_source.html#l00086">UniformFEDofHandler()</a>.</p>
 
 </div>
 </div>

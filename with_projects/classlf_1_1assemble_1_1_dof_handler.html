@@ -200,7 +200,7 @@ functions" are synomymous.</li>
 </ol>
 <h2>Local-to-global dof index mapping for entities of higher co-dimension</h2>
 <p>The method <a class="el" href="group__assemble__matrix__locally.html#ga39b4197203dd4e896bd7073fc033aca3" title="Assembly function for standard assembly of finite element matrices.">getGlobalDofs()</a> is available for entities of <em>any co-dimension</em>. For instance, this allows assembly of contributions from low-dimensional manifolds like boundaries or interfaces.</p>
-<p>However, the consistency of the local numbering of dofs has to be ensured. In two dimensions this is an issue for edges only and can be resolved by taking into account the orientation (direction) of the edge: dofs are ordered along the edge and those "closer to endpoint 0" are numbered first. In 3D many more situations have to be dealt with.</p>
+<dl class="section note"><dt>Note</dt><dd>When an entity carries several interior degrees of freedom, then the consistency of local and global numberings becomes an issue if the orientation of the edge is used to fix the global shape functions. This is happens in the case of Lagrangian finite element spaces for polynomial degree \(\geq 3\). In two dimensions this is an issue for edges only and can be resolved by taking into account the orientation (direction) of the edge: dofs are ordered along the edge and those "closer to endpoint 0" are numbered first. In 3D many more situations have to be dealt with.</dd></dl>
 <p>The local numbering conventions are also defined in <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Paragraph 2.7.4.11 and illustrated in <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Example 2.7.4.12.</p>
 <h4>Demonstration code</h4>
 <p>(<a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Code 2.7.4.15)</p>
@@ -251,7 +251,7 @@ functions" are synomymous.</li>
 </ol>
 <p>Also refer to <a href="https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf">Lecture Document</a> Remark 2.7.4.17. </p>
 
-<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00109">109</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dofhandler_8h_source.html#l00112">112</a> of file <a class="el" href="dofhandler_8h_source.html">dofhandler.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6be02130c1398c87852e22743669de7d" name="a6be02130c1398c87852e22743669de7d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6be02130c1398c87852e22743669de7d">&#9670;&#160;</a></span>DofHandler() <span class="overload">[1/3]</span></h2>
