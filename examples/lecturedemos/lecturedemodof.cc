@@ -91,7 +91,7 @@ void lecturedemodof() {
                               std::unique_ptr<lf::geometry::Geometry>(nullptr));
   // Ready to build the mesh data structure
   const std::shared_ptr<lf::mesh::Mesh> mesh_p = mesh_factory_ptr->Build();
-  // 
+
   // Output mesh in LaTeX TikZ format
   using lf::io::TikzOutputCtrl;
   lf::io::writeTikZ(
