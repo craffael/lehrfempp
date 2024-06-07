@@ -14,6 +14,8 @@
 
 #include "dofhandler.h"
 
+#include "lf/mesh/entity.h"
+
 namespace lf::assemble {
 
 // Implementation of output operator for interface class
@@ -82,8 +84,11 @@ void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
 // ----------------------------------------------------------------------
 
 UniformFEDofHandler::UniformFEDofHandler(
-    std::shared_ptr<const lf::mesh::Mesh> mesh, dof_map_t dofmap)
-    : mesh_(std::move(mesh)), num_dofs_() {
+    std::shared_ptr<const lf::mesh::Mesh> mesh, dof_map_t dofmap,
+    bool check_edge_orientation)
+    : mesh_(std::move(mesh)),
+      num_dofs_(),
+      check_edge_orientation_(check_edge_orientation) {
   LF_ASSERT_MSG((mesh_->DimMesh() == 2), "Can handle 2D meshes only");
 
   // For checking whether a key was found
@@ -223,8 +228,10 @@ void UniformFEDofHandler::initIndexArrays() {
     }
 
     // Collect indices of interior shape functions of edges
-    // Internal ordering will depend on the orientation of the edge
-    auto edge_orientations = cell_p->RelativeOrientations();
+    // Internal ordering may depend on the orientation of the edge, if
+    // the check_edge_orientation_ flag is set
+    const std::span<const lf::mesh::Orientation> edge_orientations =
+        cell_p->RelativeOrientations();
     auto edges = cell_p->SubEntities(1);
     // Loop over edges
     const size_type no_edges_cell = cell_p->RefEl().NumSubEntities(1);
@@ -234,23 +241,23 @@ void UniformFEDofHandler::initIndexArrays() {
           edge_idx * num_dofs_[kEdgeOrd] + num_ext_dof_edge;
       // Copy indices of shape functions from edges to cell
       // The order, in which they are copied depends on the relative orientation
-      // of the edge w.r.t. the cell
-      switch (edge_orientations[ed_sub_idx]) {
-        case lf::mesh::Orientation::positive: {
-          for (int j = 0; j < no_int_dof_edge; j++) {
-            dofs_[kCellOrd][cell_dof_offset++] =
-                dofs_[kEdgeOrd][edge_int_dof_offset + j];
-          }
-          break;
+      // of the edge w.r.t. the cell, if the edge_orientation_flag is set
+      if (!check_edge_orientation_ or
+          (edge_orientations[ed_sub_idx] == lf::mesh::Orientation::positive)) {
+        // Cell-internal and intrinsic orientation match, do not tinker with
+        // the numbering of local shape functions
+        for (int j = 0; j < no_int_dof_edge; j++) {
+          dofs_[kCellOrd][cell_dof_offset++] =
+              dofs_[kEdgeOrd][edge_int_dof_offset + j];
         }
-        case lf::mesh::Orientation::negative: {
-          for (int j = static_cast<int>(no_int_dof_edge - 1); j >= 0; j--) {
-            dofs_[kCellOrd][cell_dof_offset++] =
-                dofs_[kEdgeOrd][edge_int_dof_offset + j];
-          }
-          break;
+      } else {
+        // lf::mesh::Orientation::negative: Mismatch of orientations
+        // reverse numbering of cell-internal d.o.f.s
+        for (int j = static_cast<int>(no_int_dof_edge - 1); j >= 0; j--) {
+          dofs_[kCellOrd][cell_dof_offset++] =
+              dofs_[kEdgeOrd][edge_int_dof_offset + j];
         }
-      }  // end switch
+      }
     }
 
     // Set indices for interior cell degrees of freedom depending on the type of

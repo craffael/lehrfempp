@@ -12,11 +12,9 @@
 
 #include <iostream>
 
-#include "lf/base/base.h"
 #include "lf/base/lf_assert.h"
 #include "lf/mesh/entity.h"
 #include "lf/mesh/test_utils/test_meshes.h"
-#include "lf/mesh/utils/utils.h"
 
 /**
  * @brief Probes DofHandler output for one cell of a triangular mesh

@@ -29,7 +29,6 @@ int main(int /*argc*/, const char** /*argv*/) {
   std::cout << "\t Solution of general second-order elliptic\n"
             << "\t homogeneous Dirichlet problem by means of linear\n"
             << "\t Lagrangian finite element discretization" << '\n';
-
   // abbreviations for types
   using size_type = lf::base::size_type;
   using glb_idx_t = lf::assemble::glb_idx_t;
@@ -167,7 +166,6 @@ int main(int /*argc*/, const char** /*argv*/) {
     // Assembly completed: Convert COO matrix A into CRS format using Eigen's
     // internal conversion routines.
     const Eigen::SparseMatrix<double> A_crs = A.makeSparse();
-
     // Solve linear system using Eigen's sparse direct elimination
     // Examine return status of solver in case the matrix is singular
     Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
