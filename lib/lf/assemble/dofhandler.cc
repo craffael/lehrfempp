@@ -230,7 +230,7 @@ void UniformFEDofHandler::initIndexArrays() {
     // Collect indices of interior shape functions of edges
     // Internal ordering may depend on the orientation of the edge, if
     // the check_edge_orientation_ flag is set
-    std::span<const lf::mesh::Orientation> edge_orientations =
+    const std::span<const lf::mesh::Orientation> edge_orientations =
         cell_p->RelativeOrientations();
     auto edges = cell_p->SubEntities(1);
     // Loop over edges
