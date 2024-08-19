@@ -22,7 +22,6 @@
 #include <iostream>
 
 #include "precomputed_scalar_reference_finite_element.h"
-#include "uscalfe.h"
 
 namespace lf::uscalfe {
 /** @brief Auxiliary data structure for passing collections of quadrature rules

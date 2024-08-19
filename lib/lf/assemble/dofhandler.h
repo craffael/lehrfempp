@@ -259,13 +259,24 @@ void PrintInfo(std::ostream &stream, const DofHandler &dof_handler,
  */
 class UniformFEDofHandler : public DofHandler {
  public:
+  /** @brief Map data type for telling number of global shape functions
+   * associated with every topological kind of mesh entity.
+   *
+   * Ddetailed explanations with examples are given in @lref{par:dofhinit} of
+   * the [Lecture
+   * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf).
+   */
+  using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
   /** Construction from local dof layout */
   /**@{*/
   /** @name Constructors */
 
   /** @brief Construction from a map object
    *
+   * @param mesh (shared) pointer to underlying mesh
    * @param dofmap map telling number of interior dofs for every type of entity
+   * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
+   *        case of negative orientation of the edge.
    *
    * Detailed information about the construction from a map object
    * is given in [Lecture
@@ -274,21 +285,18 @@ class UniformFEDofHandler : public DofHandler {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:dofdist}.
    *
-   * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
-   *case of negative orientation of the edge.
-   *
    * In the case of Lagrangian fintie element space of polynomial degree
    * \f$\geq 3\f$ several global shape functions are associated with every edge.
    * Conveniently, they are numbered based on the orientation/direction of the
    * edge. In case the local and global orientations do not match, this will
-   *lead to a wrong local -> global index mapping.
+   * lead to a wrong local -> global index mapping.
    *
    * The following example demonstrates this for a mesh consisting of two
    * triangles and cubic Lagrangian finite elements. the indices of global shape
    * functions are written in red, those of the local shape functions in light
    * blue for the left triangle, in dark blue for the right triangle. The
    * ordering of the shape functions associated with the common edge id
-   *different for the two triangles.
+   * different for the two triangles.
    * @image html dofedgeorder.png
    *
    * If the flag check_edge_orientation is set, then the member functions
@@ -296,7 +304,6 @@ class UniformFEDofHandler : public DofHandler {
    * reverse the ordering of edge-internal d.o.f.s, if the relative orientation
    * of the edge is negative.
    */
-  using dof_map_t = std::map<lf::base::RefEl, base::size_type>;
   UniformFEDofHandler(std::shared_ptr<const lf::mesh::Mesh> mesh,
                       dof_map_t dofmap, bool check_edge_orientation = true);
   /**@}*/
@@ -688,7 +695,7 @@ class DynamicFEDofHandler : public DofHandler {
             break;
           }
         }  // end switch
-      }    // end loop over edges
+      }  // end loop over edges
 
       // Set indices for interior shape functions of the cell
       for (unsigned j = 0; j < no_int_dof_cell; j++) {
@@ -697,7 +704,7 @@ class DynamicFEDofHandler : public DofHandler {
         dof_entities_.push_back(cell);
         dof_idx++;
       }  // end loop over interior dof of cell
-    }    // end loop over cells
+    }  // end loop over cells
     // Set sentinel
     offsets_[0][no_cells] = cell_dof_offset;
 

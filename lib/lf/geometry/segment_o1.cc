@@ -87,7 +87,7 @@ std::vector<std::unique_ptr<Geometry>> SegmentO1::ChildGeometry(
       default:
         LF_VERIFY_MSG(false, "codim out of bounds.");
     }  // end switch codim
-  }    // end loop over child entities
+  }  // end loop over child entities
   return child_geo_uptrs;
 }
 

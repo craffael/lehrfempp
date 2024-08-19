@@ -247,7 +247,7 @@ std::vector<std::unique_ptr<Geometry>> QuadO1::ChildGeometry(
         break;
       }
     }  // end switch codim
-  }    // end loop over children
+  }  // end loop over children
   return (child_geo_uptrs);
 }  // end ChildGeometry()
 
@@ -429,7 +429,7 @@ std::vector<std::unique_ptr<Geometry>> Parallelogram::ChildGeometry(
         break;
       }
     }  // end switch codim
-  }    // end loop over children
+  }  // end loop over children
   return (child_geo_uptrs);
 }  // end ChildGeometry()
 

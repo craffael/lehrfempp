@@ -768,8 +768,7 @@ TEST(fe_space_hierarchic, grad_quad) {
                         const double dy_ij_approx = dy_approx(i, j);
                         ASSERT_TRUE(std::fabs(dx_ij_exact - dx_ij_approx) <
                                     1e-8)
-                            << "p="
-                            << "p_interior=" << p_interior
+                            << "p=" << "p_interior=" << p_interior
                             << ", p_edges=" << p_edge0 << "," << p_edge1 << ","
                             << p_edge2 << "," << p_edge3 << " i=" << i
                             << " orient=[" << static_cast<int>(orient[0])
@@ -781,8 +780,7 @@ TEST(fe_space_hierarchic, grad_quad) {
                             << dy_ij_approx << "]" << std::endl;
                         ASSERT_TRUE(std::fabs(dy_ij_exact - dy_ij_approx) <
                                     1e-8)
-                            << "p="
-                            << "p_interior=" << p_interior
+                            << "p=" << "p_interior=" << p_interior
                             << ", p_edges=" << p_edge0 << "," << p_edge1 << ","
                             << p_edge2 << "," << p_edge3 << " i=" << i
                             << " orient=[" << static_cast<int>(orient[0])
