@@ -274,6 +274,8 @@ class UniformFEDofHandler : public DofHandler {
   /** @brief Construction from a map object
    *
    * @param dofmap map telling number of interior dofs for every type of entity
+   * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
+   *        case of negative orientation of the edge.
    *
    * Detailed information about the construction from a map object
    * is given in [Lecture
@@ -282,21 +284,18 @@ class UniformFEDofHandler : public DofHandler {
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{ex:dofdist}.
    *
-   * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
-   *case of negative orientation of the edge.
-   *
    * In the case of Lagrangian fintie element space of polynomial degree
    * \f$\geq 3\f$ several global shape functions are associated with every edge.
    * Conveniently, they are numbered based on the orientation/direction of the
    * edge. In case the local and global orientations do not match, this will
-   *lead to a wrong local -> global index mapping.
+   * lead to a wrong local -> global index mapping.
    *
    * The following example demonstrates this for a mesh consisting of two
    * triangles and cubic Lagrangian finite elements. the indices of global shape
    * functions are written in red, those of the local shape functions in light
    * blue for the left triangle, in dark blue for the right triangle. The
    * ordering of the shape functions associated with the common edge id
-   *different for the two triangles.
+   * different for the two triangles.
    * @image html dofedgeorder.png
    *
    * If the flag check_edge_orientation is set, then the member functions
