@@ -273,7 +273,7 @@ class UniformFEDofHandler : public DofHandler {
 
   /** @brief Construction from a map object
    *
-   * @param mesh (shared) pointer to underlying mesh 
+   * @param mesh (shared) pointer to underlying mesh
    * @param dofmap map telling number of interior dofs for every type of entity
    * @param check_edge_orientation if true, reverse ordering of local d.o.f.s in
    *        case of negative orientation of the edge.
