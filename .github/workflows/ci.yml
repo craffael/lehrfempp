@@ -28,7 +28,7 @@ jobs:
           sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" && 
           sudo apt-get install clang-format-18
       - name: clang-format
-        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
+        run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-18 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
     name: clang-tidy-17 ${{ matrix.name }}
     needs: clang-format
