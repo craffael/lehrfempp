@@ -784,7 +784,7 @@ template&lt;typename SCALAR , typename EDGESELECTOR , mesh::utils::MeshFunction 
 <div class="line">  <span class="keyword">auto</span> x = solver.solve(rhs);</div>
 <div class="line"> </div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00305">305</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00303">303</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
 
 <p class="reference">References <a class="el" href="classlf_1_1mesh_1_1_mesh.html#a69b9c2f54b261474f75c37e095e2b286">lf::mesh::Mesh::Entities()</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#a9ef2112962f511c8ffc0ab20d68fa61a">lf::assemble::DofHandler::GlobalDofIndices()</a>, <a class="el" href="classlf_1_1fe_1_1_scalar_f_e_space.html#a7534bb2e86c993bb802152a1bcb34bf0">lf::fe::ScalarFESpace&lt; SCALAR &gt;::LocGlobMap()</a>, <a class="el" href="classlf_1_1fe_1_1_scalar_f_e_space.html#a43a94d739575060162a5e32ffb10d407">lf::fe::ScalarFESpace&lt; SCALAR &gt;::Mesh()</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#ab648d0a3d773d411358b7d6fdaf2c698">lf::assemble::DofHandler::NumLocalDofs()</a>, and <a class="el" href="classlf_1_1fe_1_1_scalar_f_e_space.html#a1ab227ef91a9df12d9fa19a7afbb5a88">lf::fe::ScalarFESpace&lt; SCALAR &gt;::ShapeFunctionLayout()</a>.</p>
 
@@ -944,7 +944,7 @@ template&lt;mesh::utils::MeshFunction MF, class ENTITY_PREDICATE  = base::Predic
 <div class="line"> </div>
 <div class="line">  <span class="keyword">auto</span> integral = <a class="code hl_function" href="#a05db044f1a2e1eb7165d24d59547e818">IntegrateMeshFunction</a>(*mesh, mf, 5);</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00156">156</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00155">155</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
 
 </div>
 </div>
@@ -1408,7 +1408,7 @@ template&lt;typename SCALAR , mesh::utils::MeshFunction MF, typename SELECTOR  =
 <div class="line">  assert(<a class="code hl_function" href="#a05db044f1a2e1eb7165d24d59547e818">IntegrateMeshFunction</a>(*mesh, squaredNorm(mf_fe - mf_linear), 2) &lt;</div>
 <div class="line">         1e-12);</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00200">200</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fe__tools_8h_source.html#l00198">198</a> of file <a class="el" href="fe__tools_8h_source.html">fe_tools.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="prolongation_8h_source.html#l00033">prolongate()</a>.</p>
 
@@ -1501,7 +1501,7 @@ template&lt;typename SCALAR_COEFF , typename FES_COARSE , typename FES_FINE &gt;
 
 <p class="definition">Definition at line <a class="el" href="prolongation_8h_source.html#l00033">33</a> of file <a class="el" href="prolongation_8h_source.html">prolongation.h</a>.</p>
 
-<p class="reference">References <a class="el" href="fe__tools_8h_source.html#l00200">NodalProjection()</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00143">lf::refinement::MeshHierarchy::NumLevels()</a>.</p>
+<p class="reference">References <a class="el" href="fe__tools_8h_source.html#l00198">NodalProjection()</a>, <a class="el" href="classlf_1_1assemble_1_1_dof_handler.html#abb2653388e7c8ee14bd835c1bd854a89">lf::assemble::DofHandler::NumDofs()</a>, and <a class="el" href="mesh__hierarchy_8h_source.html#l00143">lf::refinement::MeshHierarchy::NumLevels()</a>.</p>
 
 </div>
 </div>

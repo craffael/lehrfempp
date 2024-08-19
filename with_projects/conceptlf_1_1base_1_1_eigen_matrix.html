@@ -110,10 +110,10 @@ $(function() {
 <div class="line">    std::is_same_v&lt;<span class="keyword">decltype</span>(internal::IsEigenMatrixTester::Test(</div>
 <div class="line">                       std::declval&lt;T&gt;(), 0)),</div>
 <div class="line">                   <span class="keywordtype">bool</span>&gt; &amp;&amp;</div>
-<div class="line">    (std::same_as&lt;SCALAR, void&gt; || std::same_as&lt;typename T::Scalar, SCALAR&gt;)&amp;&amp;(</div>
-<div class="line">        ROWS == -1 ||</div>
-<div class="line">        std::remove_cvref_t&lt;T&gt;::RowsAtCompileTime == Eigen::Dynamic ||</div>
-<div class="line">        std::remove_cvref_t&lt;T&gt;::RowsAtCompileTime == ROWS) &amp;&amp;</div>
+<div class="line">    (std::same_as&lt;SCALAR, void&gt; || std::same_as&lt;typename T::Scalar, SCALAR&gt;) &amp;&amp;</div>
+<div class="line">    (ROWS == -1 ||</div>
+<div class="line">     std::remove_cvref_t&lt;T&gt;::RowsAtCompileTime == Eigen::Dynamic ||</div>
+<div class="line">     std::remove_cvref_t&lt;T&gt;::RowsAtCompileTime == ROWS) &amp;&amp;</div>
 <div class="line">    (COLS == -1 ||</div>
 <div class="line">     std::remove_cvref_t&lt;T&gt;::ColsAtCompileTime == Eigen::Dynamic ||</div>
 <div class="line">     std::remove_cvref_t&lt;T&gt;::ColsAtCompileTime == COLS)</div>
