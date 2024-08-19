@@ -106,7 +106,7 @@ void checkGeometryInParent(const MeshHierarchy &mh,
           << "mapped corners = " << std::endl
           << mapped_corners;
     }  // loop over entities
-  }    // loop over codims
+  }  // loop over codims
 }  // end checkGeometryInParent()
 
 void checkFatherChildRelations(const MeshHierarchy &mh,
@@ -206,7 +206,7 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
         break;
       }
     }  // end switch
-  }    // end loop over nodes of fine mesh
+  }  // end loop over nodes of fine mesh
 
   // ----------------------------------------
   // II: check parent-child relations for edges and cells
@@ -288,7 +288,7 @@ void checkFatherChildRelations(const MeshHierarchy &mh,
         }  // end switch
       }
     }  // end loop over entities
-  }    // end loop over codimensions
+  }  // end loop over codimensions
 }
 
 }  // namespace lf::refinement::test

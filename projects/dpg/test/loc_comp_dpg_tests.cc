@@ -52,8 +52,8 @@ TEST(DiffusionElementMatrixProvider, mass_mat_test_1) {
     Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
     const double val = one_vec_r.dot(M * one_vec_c);
 
-    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")"
-              << ": " << val << std::endl;
+    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")" << ": "
+              << val << std::endl;
     // The multiplication with one vectors means, that the gradients are zero
     // (constant function), such that the value should be zero to.
     EXPECT_NEAR(val, 0, 1.0E-10) << "missmatch for cell " << *cell;
@@ -130,8 +130,8 @@ TEST(ReactionElementMatrixProvider, mass_mat_test) {
     Eigen::VectorXd one_vec_r = Eigen::VectorXd::Constant(M.rows(), 1.0);
     const double val = one_vec_r.dot(M * one_vec_c);
 
-    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")"
-              << ": " << val << std::endl;
+    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")" << ": "
+              << val << std::endl;
     // We the value corresponds to the integral of the constant one function
     // over the cell, so we expect it to be equal to the size of the cell.
     EXPECT_NEAR(val, lf::geometry::Volume(*(cell->Geometry())), 1.0E-10)
@@ -178,8 +178,8 @@ TEST(ConvectionElementMatrixProvider, mass_mat_test_1) {
     Eigen::VectorXd u = Eigen::VectorXd::Random(M.cols());
     Eigen::VectorXd v = Eigen::VectorXd::Constant(M.rows(), 1.0);
     const double val = v.dot(M * u);
-    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")"
-              << ": " << val << std::endl;
+    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")" << ": "
+              << val << std::endl;
     // v is constant and thus its gradient is zero, thus val should be zero
     EXPECT_NEAR(val, 0.0, 1.0E-10) << "missmatch on cell " << *cell;
   }
@@ -221,8 +221,8 @@ TEST(ConvectionElementMatrixProvider, mass_mat_test_2) {
     Eigen::VectorXd u = Eigen::VectorXd::Constant(M.cols(), 1.0);
     Eigen::VectorXd v = Eigen::VectorXd::Random(M.rows());
     const double val = v.dot(M * u);
-    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")"
-              << ": " << val << std::endl;
+    std::cout << *cell << ": (" << M.rows() << ", " << M.cols() << ")" << ": "
+              << val << std::endl;
     // u is constant and thus its gradient is zero, thus val should be zero.
     EXPECT_NEAR(val, 0.0, 1.0E-10) << "missmatch on cell " << *cell;
   }

@@ -117,9 +117,9 @@ std::vector<std::pair<lf::base::RefEl, base::glb_idx_t>> isWatertightMesh(
                               e_refel, mesh.Index(*e));
 
         }  // end geometry test
-      }    // end loop over nodes
-    }      // end loop over entities
-  }        // end loop over co-dimensions
+      }  // end loop over nodes
+    }  // end loop over entities
+  }  // end loop over co-dimensions
   if (!vertices_only) {
     // Check whether geometry of edges and cells match
     // ASSERT_MSG(false,

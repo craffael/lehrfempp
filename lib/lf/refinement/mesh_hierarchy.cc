@@ -355,7 +355,7 @@ void MeshHierarchy::RefineMarked() {
           break;
         }
       }  // end switch cell type
-    }    // end loop over cells
+    }  // end loop over cells
   } while (!refinement_complete);
 
   // Create finer mesh according to set refinment edges
@@ -1157,7 +1157,7 @@ void MeshHierarchy::PerformRefinement() {
             break;
           }
         }  // end switch cell_refpat
-      }    // end quadrilateral case
+      }  // end quadrilateral case
       else {
         LF_VERIFY_MSG(false, "Unknown cell type" << ref_el.ToString());
       }
@@ -1181,7 +1181,7 @@ void MeshHierarchy::PerformRefinement() {
               std::move(cell_edge_geo_ptrs[k]));
           cell_ci.child_edge_idx.push_back(new_edge_index);
         }  // end loop over new edges
-      }    // end register new edges
+      }  // end register new edges
       // Register new cells
       {
         std::vector<std::unique_ptr<geometry::Geometry>> childcell_geo_ptrs(
@@ -1222,8 +1222,8 @@ void MeshHierarchy::PerformRefinement() {
           }
           cell_ci.child_cell_idx.push_back(new_cell_index);
         }  // end loop over new cells
-      }    // end register new cells
-    }      // end loop over cells
+      }  // end register new cells
+    }  // end loop over cells
   }
   // At this point the MeshFactory has complete information to generate the new
   // finest mesh
@@ -1324,7 +1324,7 @@ void MeshHierarchy::PerformRefinement() {
         fine_node_parent_info[node_child_idx].parent_ptr = edge;
         fine_node_parent_info[node_child_idx].parent_index = edge_index;
       }  // end loop over child points
-    }    // end loop over edges
+    }  // end loop over edges
 
     // Loop over cells
     std::vector<CellChildInfo> &cell_child_info(
@@ -1367,7 +1367,7 @@ void MeshHierarchy::PerformRefinement() {
         fine_node_parent_info[node_child_idx].parent_ptr = cell;
         fine_node_parent_info[node_child_idx].parent_index = cell_index;
       }  // end loop over child points
-    }    // end loop over cells of parent mesh
+    }  // end loop over cells of parent mesh
   }
 
   // Finally set refinement edges for fine mesh
@@ -1832,8 +1832,8 @@ void MeshHierarchy::initGeometryInParent() {
           break;
         }
       }  // end switch(parent_codim)
-    }    // end loop over entities of the fine mesh
-  }      // end loop over codims
+    }  // end loop over entities of the fine mesh
+  }  // end loop over codims
 }  // end initGeometryInParent
 
 sub_idx_t MeshHierarchy::LongestEdge(const lf::mesh::Entity &T) {
