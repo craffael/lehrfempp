@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   clang-format:
-    name: clang-format-17
+    name: clang-format-18
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -25,8 +25,8 @@ jobs:
       - name: Install clang-format
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
-          sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main" && 
-          sudo apt-get install clang-format-17
+          sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" && 
+          sudo apt-get install clang-format-18
       - name: clang-format
         run: "./ci/run-clang-format.py -r --clang-format-executable clang-format-17 --color always ./lib/ ./projects/ ./examples/"
   clang-tidy:
