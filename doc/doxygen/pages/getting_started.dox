@@ -8,7 +8,9 @@
  We will make a very simple program that calls LehrFEM++ and prints the number of nodes of a triangle to the console.
  
  \note Because LehrFEM++ relies on the [Hunter Package Manager](https://github.com/ruslo/hunter), there is no need to download LehrFEM++ itself!
- 
+
+ You can find a minimal working example here: [LehrFEM++ Project Scaffold Github](https://github.com/benedict-armstrong/lehrfempp_minimal_example).
+
  ### 1. Check Prerequisites
  
  You only need a recent version of [CMake](https://cmake.org/download/) (>= 3.10) and one of the supported compilers:

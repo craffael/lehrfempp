@@ -7,9 +7,10 @@
 
     <tab type="user" url="@ref getting_started" title="Getting Started" />
 
-    <tab type="usergroup" visible="yes" title="Quick Reference" intro="">
+    <tab type="usergroup" visible="yes" title="Quick Reference">
+      <tab type="user" url="@ref quick_reference_mesh" title="Mesh" />
       <tab type="user" url="@ref quick_reference_geometry" title="Geometry" />
-      <tab type="user" url="@ref quick_reference_fespaces" title="FESpaces" />
+      <tab type="user" url="@ref quick_reference_fe_space" title="Finite Element Spaces" />
       <tab type="user" url="@ref quick_reference_dofs" title="DOFs" />
       <tab type="user" url="@ref quick_reference_emp" title="ENTIY_MATRIX_PROVIDER" />
       <tab type="user" url="@ref quick_reference_assembly" title="Assembly" />
@@ -32,8 +33,6 @@
       <tab type="hierarchy" visible="yes" title="" intro="" />
       <tab type="classmembers" visible="yes" title="" intro="" />
     </tab>
-
-    <tab type="examples" visible="yes" title="" intro="" />
   </navindex>
 
   <!-- Layout definition for a class page -->
