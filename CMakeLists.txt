@@ -110,4 +110,4 @@ set(LOCAL_GENERATED_INCLUDE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 install(EXPORT LFTargets DESTINATION ${config_install_dir} NAMESPACE LF::)
 
 
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json (used by VScode for intellisense)

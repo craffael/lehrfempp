@@ -10,6 +10,7 @@
     <tab type="usergroup" visible="yes" title="Quick Reference">
       <tab type="user" url="@ref quick_reference_mesh" title="Mesh" />
       <tab type="user" url="@ref quick_reference_geometry" title="Geometry" />
+      <tab type="user" url="@ref quick_reference_logging" title="Logging" />
       <tab type="user" url="@ref quick_reference_fe_space" title="Finite Element Spaces" />
       <tab type="user" url="@ref quick_reference_dofs" title="DOFs" />
       <tab type="user" url="@ref quick_reference_emp" title="ENTIY_MATRIX_PROVIDER" />
