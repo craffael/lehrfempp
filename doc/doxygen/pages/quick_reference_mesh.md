@@ -20,69 +20,36 @@ auto mesh_ptr = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
 auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
 ```
 
-The mesh object can be accessed through the pointer `mesh_p`. The mesh object provides access to the following information:
+The mesh object can be accessed through the pointer `mesh_p` (will be used throughout this page). The mesh object provides access to the following information:
 
 ```cpp
 // Access number of cells
-auto num_entities = mesh->NumEntities(0);
+auto num_entities = mesh_p->NumEntities(0);
 
 // Access number of edges
-auto num_nodes = mesh->NumEntities(1);
+auto num_nodes = mesh_p->NumEntities(1);
 
 ```
-
-## Mesh Data Sets 
-
-Mesh data sets are used to store data with entities of the mesh. A common use cases are:
-
-- Flags that mark boundary entities.
-- Material parameters for mesh elements (codim=0)
-
-```cpp
-// Create a mesh data set storing boolean values for each entity
-auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p);
-
-// Create a MDS storing boolean values for each entity of co-dimension 1 (edges)
-auto mesh_data_set_edges = lf::mesh::utils::CodimMeshDataSet<bool>(mesh_p, 1);
-
-// Mesh data sets can be initialized with a default value
-auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p, false);
-
-// Access a (modifiable) value associated with an entity
-auto entity = mesh_p->EntityByIndex(0, 0);
-auto value = mesh_data_set(*entity);
-```
-
-In this example, a mesh data set is created that stores boolean values for each entity/edge of the mesh.
-
-To flag all entities on the boundary of the mesh, the following code snippet can be used:
-
-```cpp
-// Create MeshDataSet storing boolean values for each entity indicating if the entity is on the boundary
-auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(mesh_p)};
-```
-
-The interface is defined in the lf::mesh::MeshDataSet class. More details can be found in the documentation of the lf::mesh::MeshDataSet class.
 
 ## Entities
 
-Entities implement the lf::mesh::Entity interface and are the building blocks of a mesh. Currently LehrFEM++ has the following types of entities:
+Entities implement the lf::mesh::Entity interface and are the building blocks of a mesh. LehrFEM++ provides a number of different types of entities:
 
 - **Triangles** lf::mesh::hybrid2d::Triangle
 - **Quadrilaterals** lf::mesh::hybrid2d::Quadrilateral
 - **Segments** lf::mesh::hybrid2d::Segment
 - **Points** lf::mesh::hybrid2d::Point
 
-Entities can be accessed by index or by iterating over all entities of a given co-dimension.
+A complete list can be found in the inheritance diagram of the lf::mesh::Entity interface class. Entities can be accessed by index or by iterating over all entities of a given co-dimension.
 
 ```cpp
 // Get entity pointer by index from a mesh
 auto entity = mesh_p->EntityByIndex(0, 0);
 
 // Iterate over all entities of co-dimension 0 (cells)
-for (const auto* cell : mesh->Entities(0)) {
+for (const auto* cell : mesh_p->Entities(0)) {
     // Do something with entity e.g.: print index of cell
-    std::cout << mesh->Index(*cell) << std::endl;
+    std::cout << mesh_p->Index(*cell) << std::endl;
 }
 ```
 
@@ -116,6 +83,81 @@ A slightly more nuanced concept is the relative orientation of sub-entities of t
 auto orientations = entity->RelativeOrientations();
 ```
 
+## Mesh Data Sets 
+
+Mesh data sets are used to store data with entities of the mesh. A common use cases are:
+
+- Flags that mark boundary entities.
+- Material parameters for mesh elements (codim=0)
+
+```cpp
+// Create a mesh data set storing boolean values for each entity
+auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p);
+
+// Create a MDS storing boolean values for each entity of co-dimension 1 (edges)
+auto mesh_data_set_edges = lf::mesh::utils::CodimMeshDataSet<bool>(mesh_p, 1);
+
+// Mesh data sets can be initialized with a default value
+auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p, false);
+
+// Access a (modifiable) value associated with an entity
+auto entity = mesh_p->EntityByIndex(0, 0);
+auto value = mesh_data_set(*entity);
+```
+
+In this example, a mesh data set is created that stores boolean values for each entity/edge of the mesh.
+
+To flag all entities on the boundary of the mesh, the following code snippet can be used:
+
+
+```cpp
+// Create MeshDataSet storing boolean values for each entity indicating if the entity is on the boundary
+auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(mesh_p)};
+```
+
+See also [Quick Reference - Boundary Conditions](quick_reference_bc.md) for more details on boundary conditions.
+
+The interface is defined in the lf::mesh::MeshDataSet class. More details can be found in the documentation of the lf::mesh::MeshDataSet class.
+
+## Mesh Functions
+
+Mesh functions are wrappers around a functor that can be evaluated on the entire mesh. The interface is defined in lf::mesh::utils::MeshFunction. A more detailed definition can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{supp:mshfn}.
+
+The most general representative of a mesh function is lf::mesh::utils::MeshFunctionGlobal. It takes a functor that can be evaluated on the entire mesh. The functor must provide an operator() a point within the entity reference Element and returns a value. Lambda functions are a common way to define such functors.
+
+For efficiency reasons the evaluation points are passed to mesh functions as the columns of a matrix. This allows for the evaluation of multiple points at once. The following code snippet demonstrates how to define a mesh function that evaluates the function 
+
+$$
+\alpha(x) = 0.5 \cdot \|x\|
+$$
+
+on a cell.
+
+```cpp
+// Define a lambda function that takes a point in the reference element of an entity and returns a value
+auto alpha = [](Eigen::Vector2d x) -> double {
+    return 0.5 * x.norm();
+};
+
+// Wrap the lambda function in a MeshFunctionGlobal object
+auto mesh_function = lf::mesh::utils::MeshFunctionGlobal(alpha);
+
+// Evaluate the mesh function on a cell
+auto cell = mesh_p->EntityByIndex(0, 0);
+std::vector<double> values = mesh_function(*cell, Eigen::Vector2d{0.5, 0.5});
+
+// We only asked for one point, so the vector has only one entry
+std::cout << "Value: " << values[0] << std::endl; // Value: 0.790569
+```
+
+There are is also a short-hand for mesh functions that are constant everywhere on the mesh: lf::mesh::utils::MeshFunctionConstant.
+
+MeshFunction objects support binary arithmetic operations +,-, and *, including scalar multiplication, provided that such operations are possible for their underlying types. As well as unary operations such as -, transpose(), and squaredNorm().
+
+### Finite Element Mesh Functions
+
+A special case of mesh functions are finite element mesh functions. They are used to represent the solution of a finite element problem on a mesh.
+
 ## Mesh Creation
 
 The standard ways to create a Mesh object are:
@@ -142,7 +184,7 @@ The standard ways to create a Mesh object are:
 
 LehrFEM++ provides a number of mesh refinement tools included in the lf::refinement namespace. 
 
-Mesh refinement is covered in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ss:ref}. 
+Mesh refinement using LehrFEM++ is covered in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ss:ref} and heavily used in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{cha:cvg}.
 
 ```cpp
 auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
@@ -168,7 +210,7 @@ Meshes can be built 'manually' using the lf::mesh::MeshFactory class. It follows
 // builder for a hybrid mesh in a world of dimension 2
 auto mesh_factory_ptr = std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
-// Add the triangle
+// Add a triangle
 // First set the coordinates of its nodes:
 Eigen::MatrixXd nodesOfTria(2, 3);
 nodesOfTria << 1, 1, 0.5, 0, 1, 1;
@@ -178,15 +220,16 @@ mesh_factory_ptr->AddEntity(
         {1, 2, 4}},  // indices of the nodes
     std::make_unique<lf::geometry::TriaO1>(nodesOfTria));  // node coords
 
-// Add the quadrilateral
+// Add a quadrilateral
 Eigen::MatrixXd nodesOfQuad(2, 4);
 nodesOfQuad << 0, 1, 0.5, 0, 0, 0, 1, 1;
 mesh_factory_ptr->AddEntity(
-    lf::base::RefEl::kQuad(),
-    std::array<lf::mesh::Mesh::size_type, 4>{{0, 1, 4, 3}},
-    std::make_unique<lf::geometry::QuadO1>(nodesOfQuad));
+    lf::base::RefEl::kQuad(), // we want a quadrilateral
+    std::array<lf::mesh::Mesh::size_type, 4>{
+        {0, 1, 4, 3}}, // indices of the nodes
+    std::make_unique<lf::geometry::QuadO1>(nodesOfQuad)); // node coords
 
-    // Build the mesh
+// Build the mesh
 auto mesh = mesh_factory_ptr->Build();
 ```
 
