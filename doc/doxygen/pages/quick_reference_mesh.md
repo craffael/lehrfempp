@@ -13,7 +13,7 @@ const std::shared_ptr<const lf::mesh::Mesh> mesh_ptr =
 auto mesh_ptr = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
 ```
 
-## Mesh Access
+## Mesh Access {#mesh_access}
 
 ```cpp
 // create a pointer to the mesh
@@ -31,7 +31,7 @@ auto num_nodes = mesh_p->NumEntities(1);
 
 ```
 
-## Entities
+## Entities {#entities}
 
 Entities implement the lf::mesh::Entity interface and are the building blocks of a mesh. LehrFEM++ provides a number of different types of entities:
 
@@ -83,7 +83,7 @@ A slightly more nuanced concept is the relative orientation of sub-entities of t
 auto orientations = entity->RelativeOrientations();
 ```
 
-## Mesh Data Sets 
+## Mesh Data Sets {#mesh_data_sets}
 
 Mesh data sets are used to store data with entities of the mesh. A common use cases are:
 
@@ -119,13 +119,13 @@ See also [Quick Reference - Boundary Conditions](quick_reference_bc.md) for more
 
 The interface is defined in the lf::mesh::MeshDataSet class. More details can be found in the documentation of the lf::mesh::MeshDataSet class.
 
-## Mesh Functions
+## Mesh Functions {#mesh_functions}
 
 Mesh functions are wrappers around a functor that can be evaluated on the entire mesh. The interface is defined in lf::mesh::utils::MeshFunction. A more detailed definition can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{supp:mshfn}.
 
 The most general representative of a mesh function is lf::mesh::utils::MeshFunctionGlobal. It takes a functor that can be evaluated on the entire mesh. The functor must provide an operator() a point within the entity reference Element and returns a value. Lambda functions are a common way to define such functors.
 
-For efficiency reasons the evaluation points are passed to mesh functions as the columns of a matrix. This allows for the evaluation of multiple points at once. The following code snippet demonstrates how to define a mesh function that evaluates the function 
+For efficiency reasons the evaluation points are passed to mesh functions as the columns of a  \f$d \times n \f$ - matrix (where \f$d\f$ agrees with the local dimension of the entity and \f$n\f$ is the number of points). This allows for the evaluation of multiple points at once. The following code snippet demonstrates how to define a mesh function that evaluates the function
 
 $$
 \alpha(x) = 0.5 \cdot \|x\|
@@ -154,11 +154,11 @@ There are is also a short-hand for mesh functions that are constant everywhere o
 
 MeshFunction objects support binary arithmetic operations +,-, and *, including scalar multiplication, provided that such operations are possible for their underlying types. As well as unary operations such as -, transpose(), and squaredNorm().
 
-### Finite Element Mesh Functions
+### Finite Element Mesh Functions {#femf}
 
 A special case of mesh functions are finite element mesh functions. They are used to represent the solution of a finite element problem on a mesh.
 
-## Mesh Creation
+## Mesh Creation {#mesh_creation}
 
 The standard ways to create a Mesh object are:
 
@@ -180,7 +180,7 @@ The standard ways to create a Mesh object are:
 
 4. **Refining an existing mesh**, see lf::refinement::MeshHierarchy or the short example below.
 
-### Mesh Refinement
+### Mesh Refinement {#mesh_refinement}
 
 LehrFEM++ provides a number of mesh refinement tools included in the lf::refinement namespace. 
 
@@ -202,7 +202,7 @@ multi_mesh_p->RefineRegular();
 auto mesh_level_3 = mesh_seq_p->getMesh(4);
 ```
 
-### Mesh Builder
+### Mesh Builder {#mesh_builder}
 
 Meshes can be built 'manually' using the lf::mesh::MeshFactory class. It follows a [builder pattern](https://refactoring.guru/design-patterns/builder) and allows the user to add entities to the mesh. 
 
