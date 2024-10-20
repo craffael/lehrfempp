@@ -2,6 +2,8 @@
 
 [TOC]
 
+Mesh Information and Mesh Data Structures are discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}.
+
 Meshes in LehrFEM++ are generally managed through shared pointers. A simple test mesh can be generated using the following code snippet:
 
 ```cpp

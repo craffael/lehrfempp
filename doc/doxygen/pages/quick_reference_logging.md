@@ -2,7 +2,7 @@
 
 [TOC]
 
-LehrFem relies on the https://github.com/gabime/spdlog library for logging. The logging is configured in the `log` namespace. The following example shows how to use the logging functionality:
+LehrFem relies on the [spdlog](https://github.com/gabime/spdlog) library for logging.
 
 ```cpp
 #include "lf/base/base.h"

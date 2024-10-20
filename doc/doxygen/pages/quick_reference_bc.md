@@ -2,7 +2,7 @@
 
 [TOC]
 
-LehrFEM provides a number of convenient functions to work with essential boundary conditions. More information can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:essbdc}.
+LehrFEM++ provides a number of convenient functions to work with essential boundary conditions. More information can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:essbdc}.
 
 To fix degrees of freedom on the boundary we can use the functions lf::assemble::FixFlaggedSolutionComponents or lf::assemble::FixFlaggedSolutionCompAlt (see also [Quick Reference Assembly](./quick_reference_assembly.md)). Both functions takes a function as an argument that returns a pair of a boolean and a double: `std::pair<bool, double> selector(unsigned int dof_idx)`. The selector function returns whether the dof is to be fixed and if so, the
 value it should be fixed to.

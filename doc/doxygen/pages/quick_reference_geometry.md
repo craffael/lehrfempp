@@ -4,7 +4,7 @@
 
 LehrFEM++ provides an Interface for geometry data: lf::geometry::Geometry. Geometry data is stored as a mapping from the reference element (unit triangle, square) to the physical element. Details and mathematical background can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}.
 
-## Geometry Interface
+## Geometry Interface {#geometry_interface}
 
 To get the geometry of an entity :
 
@@ -15,7 +15,7 @@ for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {
 }
 ```
 
-### Utility Functions
+### Utility Functions {#geometry_utility}
 
 A number of convenience functions are provided by the Geometry class.
 
@@ -47,7 +47,7 @@ bool is_not_deg = lf::geometry::assertNonDegenerateQuad(corners);
 bool is_not_deg = lf::geometry::assertNonDegenerateTriangle(corners);
 ```
 
-## Geometry Methodss
+## Geometry Methods {#geometry_methods}
 
 Objects implementing the lf::geometry::Geometry interface provide the following methods:
 
@@ -65,7 +65,7 @@ auto ref_el = geometry->RefEl();
 bool is_affine = geometry->IsAffine();
 ```
 
-## Transformations and Mappings 
+## Transformations and Mappings {#transformations}
 
 This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. The lf::geometry::Geometry class provides the following methods to compute and use the underlying mappings:
 
