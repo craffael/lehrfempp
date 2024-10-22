@@ -223,8 +223,6 @@ jobs:
               run: sudo apt-get install doxygen
             - name: Setup tmate session
               uses: mxschmitt/action-tmate@v3
-              with:
-                detached: true
             - name: build doxygen
               run: |
                   cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
