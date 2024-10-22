@@ -207,8 +207,6 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            # - name: Setup tmate session
-            # uses: mxschmitt/action-tmate@v3
             - name: Restore cache
               uses: actions/cache@v4
               with:
@@ -222,7 +220,11 @@ jobs:
             - name: Setup cmake
               uses: jwlawson/actions-setup-cmake@v2
             - name: install doxygen
-              run: sudo apt-get install doxygen graphviz
+              run: sudo apt-get install doxygen
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
+              with:
+                detached: true
             - name: build doxygen
               run: |
                   cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
