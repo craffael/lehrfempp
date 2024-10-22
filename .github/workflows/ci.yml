@@ -198,7 +198,7 @@ jobs:
 
     doxygen:
         name: doxygen
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         needs: [clang-format]
         # container: craffael/feen-ci:doxygen
         env:
@@ -221,18 +221,21 @@ jobs:
               uses: jwlawson/actions-setup-cmake@v2
               with:
                   cmake-version: '3.30'
-            - name: install doxygen
-              run: |
-                  sudo apt-add-repository universe
-                  sudo apt-get update
-                  sudo apt-get install doxygen expect
-            - name: Setup tmate session
-              uses: mxschmitt/action-tmate@v3
             - name: install clang17
               run: |
                   wget https://apt.llvm.org/llvm.sh
                   chmod u+x llvm.sh
                   sudo ./llvm.sh 17
+            - name: install doxygen
+              run: |
+                  wget https://github.com/doxygen/doxygen/releases/download/Release_1_12_0/doxygen-1.12.0.linux.bin.tar.gz
+                  gunzip doxygen-1.12.0.linux.bin.tar.gz
+                  tar -xvf doxygen-1.12.0.linux.bin.tar
+                  cd doxygen-1.12.0
+                  make install
+                  cd ..
+            # - name: Setup tmate session
+            #   uses: mxschmitt/action-tmate@v3
             - name: build doxygen
               run: |
                   cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
