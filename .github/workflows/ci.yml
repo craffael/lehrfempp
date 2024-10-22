@@ -232,7 +232,7 @@ jobs:
                   gunzip doxygen-1.12.0.linux.bin.tar.gz
                   tar -xvf doxygen-1.12.0.linux.bin.tar
                   cd doxygen-1.12.0
-                  make install
+                  sudo make install
                   cd ..
             # - name: Setup tmate session
             #   uses: mxschmitt/action-tmate@v3
