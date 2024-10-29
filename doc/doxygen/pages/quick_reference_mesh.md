@@ -2,7 +2,12 @@
 
 [TOC]
 
-Mesh Information and Mesh Data Structures are discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}.
+> [!caution]
+> Discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. Please read before using quick reference.
+
+<!-- Mesh Information and Mesh Data Structures are discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. -->
+
+## Overview
 
 Meshes in LehrFEM++ are generally managed through shared pointers. A simple test mesh can be generated using the following code snippet:
 
@@ -160,6 +165,11 @@ MeshFunction objects support binary arithmetic operations +,-, and *, including 
 
 A special case of mesh functions are finite element mesh functions. They are used to represent the solution of a finite element problem on a mesh.
 
+<!-- TODO (barmstron): Add note on Integration and evaluation of FE Mesh Functions-->
+
+- lf::fe::MeshFunctionFE
+- lf::fe::MeshFunctionGradFE
+
 ## Mesh Creation {#mesh_creation}
 
 The standard ways to create a Mesh object are:
@@ -177,7 +187,9 @@ The standard ways to create a Mesh object are:
 
     ```cpp
     // Read a mesh from a file
-    auto mesh_p = lf::io::GmshReader().mesh("path/to/mesh.msh");
+    auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+    auto gmsh_reader = lf::io::GmshReader(std::move(mesh_factory), "path/to/mesh.msh");
+    auto mesh = gmsh_reader.mesh();
     ```
 
 4. **Refining an existing mesh**, see lf::refinement::MeshHierarchy or the short example below.
