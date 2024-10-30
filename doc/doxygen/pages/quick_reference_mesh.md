@@ -3,7 +3,7 @@
 [TOC]
 
 > [!caution]
-> Discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. Please read before using quick reference.
+> The contents of this page is discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. Please read before using quick reference.
 
 <!-- Mesh Information and Mesh Data Structures are discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. -->
 

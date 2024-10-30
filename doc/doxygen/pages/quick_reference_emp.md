@@ -3,7 +3,7 @@
 [TOC]
 
 > [!caution]
-> Discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{rem:cppconcepts}. Please read before using quick reference.
+> The contents of this page is discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{rem:cppconcepts}. Please read before using quick reference.
 
 ## Overview
 

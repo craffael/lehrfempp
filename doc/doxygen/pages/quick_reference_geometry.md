@@ -3,7 +3,7 @@
 [TOC]
 
 > [!caution]
-> Discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Please read before using quick reference.
+> The contents of this page is discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Please read before using quick reference.
 
 ## Overview
 
@@ -83,18 +83,18 @@ This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz
 > [!note] 
 > The following methods accept a matrix of points in the local coordinate system as input. The points are stored in a matrix where each column represents a point. The number of rows corresponds to the dimension of the local coordinate system.
 
-The lf::geometry::Geometry class provides the `Global` method to map points from local to global coordinates.
-
 ### Global {#global}
+
+The lf::geometry::Geometry class provides the `lf::geometry::Geometry::Global` method to map points from local to global coordinates.
 
 ```cpp
 // A number of point in the reference element
-auto points = Eigen::MatrixXd(2, 3);
-points << 0.0, 1.0, 0.0,
-          0.0, 0.0, 1.0;
+auto points = Eigen::MatrixXd(2, 2);
+local_points << 0.1, 0.5, 
+                0.6, 0.2;
 
 // Map a the points from the local into the global coordinate system.
-auto global = geometry->Global(points);
+auto global = geometry->Global(local_points);
 ```
 
 ![Mapping of points from local to global coordinates](manim/mapping_global.gif)

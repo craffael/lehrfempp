@@ -2,6 +2,8 @@
 
 [TOC]
 
+## Overview
+
 LehrFem relies on the [spdlog](https://github.com/gabime/spdlog) library for logging.
 
 ```cpp
