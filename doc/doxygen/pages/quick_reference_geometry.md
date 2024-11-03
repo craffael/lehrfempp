@@ -88,18 +88,16 @@ This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz
 The lf::geometry::Geometry class provides the `lf::geometry::Geometry::Global` method to map points from local to global coordinates.
 
 ```cpp
-// A number of point in the reference element
+// Define two point in the reference space.
 auto points = Eigen::MatrixXd(2, 2);
-local_points << 0.1, 0.5, 
+local_points << 0.1, 0.5,
                 0.6, 0.2;
 
-// Map a the points from the local into the global coordinate system.
+// Map the points from the local into the global space.
 auto global = geometry->Global(local_points);
 ```
 
 ![Mapping of points from local to global coordinates](manim/mapping_global.gif)
-
-<!-- TODO: Jacobian, JacobianInverseGramian, IntegrationElement   -->
 
 ### IntegrationElement {#integration_element}
 
@@ -141,10 +139,11 @@ If `dim_local == dim_global == 2` and we pass three point for evaluation [Geomet
 
 ![Block matrix returned by Geometry::Jacobian](manim/jacobian_block_access.gif)
 
-To access the Jacobi for the second point we can use:
+To access the Jacobi for the second point we can use [Eigen block access](https://eigen.tuxfamily.org/dox/group__TutorialBlockOperations.html):
 
 ```cpp
-auto jacobian_2 = jacobian.block(0, 1 * 2, 2, 2);
+// Access 2x2 Jacobian matrix starting at row 0 and column 2
+auto jacobian_2 = jacobian.block(0, 2, 2, 2);
 ```
 
 ### JacobianInverseGramian {#jacobian_inverse_gramian}

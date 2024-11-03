@@ -21,6 +21,7 @@ The following pages give you a reference for some of the modules in LehrFEM++ in
 
 - \ref quick_reference_mesh
 - \ref quick_reference_geometry
+- \ref quick_reference_bc
 - \ref quick_reference_logging
 - \ref quick_reference_fe_space
 - \ref quick_reference_assembly
