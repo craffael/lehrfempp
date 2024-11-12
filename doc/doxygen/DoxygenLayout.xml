@@ -17,6 +17,7 @@
       <tab type="user" url="@ref quick_reference_emp" title="ENTIY_MATRIX_PROVIDER" />
       <tab type="user" url="@ref quick_reference_assembly" title="Assembly" />
       <tab type="user" url="@ref quick_reference_bc" title="Boundary Conditions" />
+      <tab type="user" url="@ref quick_reference_quad" title="Quadrature Rules" />
     </tab>
 
     <tab type="modules" visible="yes" title="" intro="">

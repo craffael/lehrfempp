@@ -20,6 +20,8 @@ LehrFEM++ provides some built-in lf::assemble::EntityMatrixProvider (EMPs) and e
 
 <!-- TODO (barmstron): Write down quick specification of each EL/VE MP -->
 
+<!-- Editor Note: Turn off word wrap to display table properly in Editor -->
+
 Entity Matrix Providers (EMPs) in LehrFEM++ are used to compute local element matrices for finite element methods. Below is a table summarizing the key built-in EMPs in LehrFEM++.
 
 | Equation                                                                                                                                                                        | Name (follow link for details)                                                  | Description                                                              |

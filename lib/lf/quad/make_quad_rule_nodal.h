@@ -18,6 +18,14 @@ namespace lf::quad {
  *        of the reference element
  * @param ref_el The reference element for which the quadrule is.
  * @return A quadrature rule of order 1.
+ *
+ * ### Usage example:
+ * ```{.cpp}
+ * auto ref_tria = lf::base::RefEl::kTria();
+ *
+ * lf::quad::QuadRule qr = lf::quad::make_QuadRuleNodal(ref_tria);
+ * ```
+ *
  */
 QuadRule make_QuadRuleNodal(base::RefEl ref_el);
 

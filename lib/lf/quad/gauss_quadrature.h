@@ -17,6 +17,10 @@ namespace lf::quad {
 /**
  * @brief Computes the quadrature points and weights for the interval [0,1]
  *  of a Gauss-Legendre quadrature rule using a newton algorithm.
+ *
+ * @note This function is not included by the `quad` namespace and used by
+ * LehrFEM++ internally only.
+ *
  * @param num_points The number of points/weights that should be used.
  * @return The nodes (first) and weights(second) of the quadrature rule.
  */
@@ -26,7 +30,11 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd> GaussLegendre(
 /**
  * @brief Computes the quadrature points and weights for the interval [-1,1]
  *  of a Gauss-Jacobi quadrature rule with weight function \f$ (1-x)^\alpha
- * (1+x)^\beta \f$
+ * (1+x)^\beta \f$.
+ *
+ * @note This function is not included by the `quad` namespace and used by
+ * LehrFEM++ internally only.
+ *
  * @param num_points The number of points/weights that should be used.
  * @param alpha  The exponent of the weight function
  * @param beta   The exponent of the weight function

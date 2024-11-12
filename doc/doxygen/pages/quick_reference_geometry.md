@@ -78,7 +78,7 @@ bool is_affine = geometry->IsAffine();
 
 ## Transformations and Mappings {#transformations}
 
-This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}.
+This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Usage of the following methods is discussed in the [Assembly Quick Reference](quick_reference_assembly.md).
 
 > [!note] 
 > The following methods accept a matrix of points in the local coordinate system as input. The points are stored in a matrix where each column represents a point. The number of rows corresponds to the dimension of the local coordinate system.
