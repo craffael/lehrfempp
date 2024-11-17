@@ -24,17 +24,17 @@ auto mesh_ptr = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
 
 ```cpp
 // create a pointer to the mesh
-auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
+const std::shared_ptr<const lf::mesh::Mesh> mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
 ```
 
 The mesh object can be accessed through the pointer `mesh_p` (will be used throughout this page). The mesh object provides access to the following information:
 
 ```cpp
 // Access number of cells
-auto num_entities = mesh_p->NumEntities(0);
+unsigned num_entities = mesh_p->NumEntities(0);
 
 // Access number of edges
-auto num_nodes = mesh_p->NumEntities(1);
+unsigned num_nodes = mesh_p->NumEntities(1);
 
 ```
 
@@ -51,10 +51,10 @@ A complete list can be found in the inheritance diagram of the lf::mesh::Entity 
 
 ```cpp
 // Get entity pointer by index from a mesh
-auto entity = mesh_p->EntityByIndex(0, 0);
+const lf::mesh::Entity* entity = mesh_p->EntityByIndex(0, 0);
 
 // Iterate over all entities of co-dimension 0 (cells)
-for (const auto* cell : mesh_p->Entities(0)) {
+for (const lf::mesh::Entity* cell : mesh_p->Entities(0)) {
     // Do something with entity e.g.: print index of cell
     std::cout << mesh_p->Index(*cell) << std::endl;
 }
@@ -64,14 +64,14 @@ Entities have a number of properties that can be accessed:
 
 ```cpp
 // Get the co-dimension of the entity
-auto codim = entity->Codim();
+unsigned codim = entity->Codim();
 
 // Get the geometry of the entity, more details can be found 
 // in the Geometry Quick reference
-auto geometry = entity->Geometry();
+const lf::geometry::Geometry* geometry = entity->Geometry();
 
 // Get the reference element of the entity (e.g. the unit triangle for a general triangle)
-auto ref_el = entity->RefEl();
+lf::base::RefEl ref_el = entity->RefEl();
 ```
 
 It is also possible to access sub-entities of an entity, see lf::mesh::Entity::SubEntities for details.
@@ -80,14 +80,26 @@ It is also possible to access sub-entities of an entity, see lf::mesh::Entity::S
 // Return all sub entities of this entity that have the given 
 // co-dimension (w.r.t. this entity!)
 // For example, for a cell, the sub-entities of co-dimension 1
-auto sub_entities = entity->SubEntities(1);
+std::span<const lf::mesh::Entity* const> sub_entities =
+      entity->SubEntities(1);
+
+// If you require a vector of sub-entities, you can use the following code snippet
+std::vector<const lf::mesh::Entity*> sub_entities_vec{
+    entity->SubEntities(1).begin(), entity->SubEntities(1).end()};
+
 ```
 
 A slightly more nuanced concept is the relative orientation of sub-entities of the next higher co-dimension. A detailed explanation can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{rem:ori}.
 
 ```cpp
 // return span of relative orientations of sub-entities of the next higher co-dimension.
-auto orientations = entity->RelativeOrientations();
+std::span<const lf::mesh::Orientation> orientations =
+      entity->RelativeOrientations();
+
+// If you require a vector of orientations, you can use the following code snippet
+std::vector<lf::mesh::Orientation> orientations_vec{
+      entity->RelativeOrientations().begin(),
+      entity->RelativeOrientations().end()};
 ```
 
 ## Mesh Data Sets {#mesh_data_sets}
@@ -99,17 +111,20 @@ Mesh data sets are used to store data with entities of the mesh. A common use ca
 
 ```cpp
 // Create a mesh data set storing boolean values for each entity
-auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p);
+lf::mesh::utils::AllCodimMeshDataSet<bool> mesh_data_set =
+      lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p);
 
 // Create a MDS storing boolean values for each entity of co-dimension 1 (edges)
-auto mesh_data_set_edges = lf::mesh::utils::CodimMeshDataSet<bool>(mesh_p, 1);
+lf::mesh::utils::CodimMeshDataSet<bool> mesh_data_set_edges =
+      lf::mesh::utils::CodimMeshDataSet<bool>(mesh_p, 1);
 
 // Mesh data sets can be initialized with a default value
-auto mesh_data_set = lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p, false);
+lf::mesh::utils::AllCodimMeshDataSet<bool> mesh_data_set_2 =
+      lf::mesh::utils::AllCodimMeshDataSet<bool>(mesh_p, false);
 
 // Access a (modifiable) value associated with an entity
-auto entity = mesh_p->EntityByIndex(0, 0);
-auto value = mesh_data_set(*entity);
+const lf::mesh::Entity* entity = mesh_p->EntityByIndex(0, 0);
+bool value = mesh_data_set(*entity);
 ```
 
 In this example, a mesh data set is created that stores boolean values for each entity/edge of the mesh.
@@ -119,7 +134,8 @@ To flag all entities on the boundary of the mesh, the following code snippet can
 
 ```cpp
 // Create MeshDataSet storing boolean values for each entity indicating if the entity is on the boundary
-auto bd_flags{lf::mesh::utils::flagEntitiesOnBoundary(mesh_p)};
+lf::mesh::utils::AllCodimMeshDataSet<bool> bd_flags{
+      lf::mesh::utils::flagEntitiesOnBoundary(mesh_p)};
 ```
 
 See also [Quick Reference - Boundary Conditions](quick_reference_bc.md) for more details on boundary conditions.
@@ -147,10 +163,11 @@ auto alpha = [](Eigen::Vector2d x) -> double {
 };
 
 // Wrap the lambda function in a MeshFunctionGlobal object
-auto mesh_function = lf::mesh::utils::MeshFunctionGlobal(alpha);
+// Type of mesh function template parameter is automatically deduced
+lf::mesh::utils::MeshFunctionGlobal mesh_function = lf::mesh::utils::MeshFunctionGlobal(alpha);
 
 // Evaluate the mesh function on a cell
-auto cell = mesh_p->EntityByIndex(0, 0);
+const lf::mesh::Entity* cell = mesh_p->EntityByIndex(0, 0);
 std::vector<double> values = mesh_function(*cell, Eigen::Vector2d{0.5, 0.5});
 
 // We only asked for one point, so the vector has only one entry
@@ -180,16 +197,20 @@ The standard ways to create a Mesh object are:
 
     ```cpp
     // Generate a simple test mesh
-    auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
+    std::shared_ptr<lf::mesh::Mesh> mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
     ```
 
 3. **Reading a mesh from file**: see lf::io::GmshReader, and invoking lf::io::GmshReader::mesh(). The following code snippet demonstrates how to read a mesh from a file:
 
     ```cpp
     // Read a mesh from a file
-    auto mesh_factory = std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
-    auto gmsh_reader = lf::io::GmshReader(std::move(mesh_factory), "path/to/mesh.msh");
-    auto mesh = gmsh_reader.mesh();
+    std::unique_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =
+      std::make_unique<lf::mesh::hybrid2d::MeshFactory>(2);
+    lf::io::GmshReader gmsh_reader =
+        lf::io::GmshReader(std::move(mesh_factory), "triangle.msh");
+    
+    // Get pointer to the mesh
+    std::shared_ptr<lf::mesh::Mesh> mesh = gmsh_reader.mesh();
     ```
 
 4. **Refining an existing mesh**, see lf::refinement::MeshHierarchy or the short example below.
@@ -201,19 +222,20 @@ LehrFEM++ provides a number of mesh refinement tools included in the lf::refinem
 Mesh refinement using LehrFEM++ is covered in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ss:ref} and heavily used in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{cha:cvg}.
 
 ```cpp
-auto mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
+std::shared_ptr<lf::mesh::Mesh> mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);
 // Generate mesh hierarchy by uniform refinement with 6 levels
-auto mesh_seq_p{
+
+std::shared_ptr<lf::refinement::MeshHierarchy> mesh_seq_p{
     lf::refinement::GenerateMeshHierarchyByUniformRefinemnt(mesh_p, 3)};
 
 // Access the mesh at level 3
-auto mesh_level_3 = mesh_seq_p->getMesh(3);
+std::shared_ptr<lf::mesh::Mesh> mesh_level_3 = mesh_seq_p->getMesh(3);
 
 // We can refine a mesh further by calling
 multi_mesh_p->RefineRegular();
 
 // Access the mesh at level 4
-auto mesh_level_3 = mesh_seq_p->getMesh(4);
+std::shared_ptr<lf::mesh::Mesh> mesh_level_4 = mesh_seq_p->getMesh(4);
 ```
 
 ### Mesh Builder {#mesh_builder}
@@ -222,13 +244,14 @@ Meshes can be built 'manually' using the lf::mesh::MeshFactory class. It follows
 
 ```cpp
 // builder for a hybrid mesh in a world of dimension 2
-auto mesh_factory_ptr = std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =
+    std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
 
 // Add a triangle
 // First set the coordinates of its nodes:
 Eigen::MatrixXd nodesOfTria(2, 3);
 nodesOfTria << 1, 1, 0.5, 0, 1, 1;
-mesh_factory_ptr->AddEntity(
+mesh_factory->AddEntity(
     lf::base::RefEl::kTria(),  // we want a triangle
     std::array<lf::mesh::Mesh::size_type, 3>{
         {1, 2, 4}},  // indices of the nodes
@@ -237,14 +260,14 @@ mesh_factory_ptr->AddEntity(
 // Add a quadrilateral
 Eigen::MatrixXd nodesOfQuad(2, 4);
 nodesOfQuad << 0, 1, 0.5, 0, 0, 0, 1, 1;
-mesh_factory_ptr->AddEntity(
+mesh_factory->AddEntity(
     lf::base::RefEl::kQuad(), // we want a quadrilateral
     std::array<lf::mesh::Mesh::size_type, 4>{
         {0, 1, 4, 3}}, // indices of the nodes
     std::make_unique<lf::geometry::QuadO1>(nodesOfQuad)); // node coords
 
 // Build the mesh
-auto mesh = mesh_factory_ptr->Build();
+std::shared_ptr<lf::mesh::Mesh> mesh = mesh_factory->Build();
 ```
 
 We can also use the mesh builder to create a tensor product mesh. LehrFEM++ provides a number of mesh builders for different types of meshes.
@@ -267,7 +290,7 @@ The following code snippet demonstrates how to create a 100x100 tensor product m
       .setNumXCells(100)
       .setNumYCells(100);
 
-  auto mesh_p = builder.Build();
+  std::shared_ptr<lf::mesh::Mesh> mesh_p = builder.Build();
 ```
 
 

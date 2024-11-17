@@ -6,7 +6,7 @@
 > The contents of this page is discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Please read before using quick reference.
 
 ## Overview
-In finite element methods (FEM), handling degrees of freedom (DOFs) is critical for constructing systems of equations. DOF handlers or DOF mappers are responsible for assigning local basis functions to global basis functions, which allows for the assembly of global matrices and vectors from element contributions.
+In finite element methods (FEM), handling degrees of freedom (DOFs) is critical for constructing systems of equations. DOF handlers are responsible for assigning local basis functions to global basis functions, which allows for the assembly of global matrices and vectors from element contributions.
 
 ### DOF Handler
 A DOF handler manages the relationship between the finite element space and the underlying mesh by mapping local shape functions to global shape functions. In **LehrFEM++**, this is done through objects of the type `lf::assemble::DofHandler`.

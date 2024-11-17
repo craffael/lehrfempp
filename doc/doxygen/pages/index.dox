@@ -17,7 +17,7 @@ give details about data structures and algorithms used in LehrFEM++.
 
 ## Quick References:
 
-The following pages give you a reference for some of the modules in LehrFEM++ in a very condensed format that is especially useful to recall the syntax of a particular feature, or to have a quick look at the API.
+The following pages give you a reference for some of the modules in LehrFEM++ in a very condensed format that is especially useful to recall the syntax of a particular feature, or to have a quick look at the API. For a complete overview of the features, please refer to the detailed documentation.
 
 - \ref quick_reference_mesh
 - \ref quick_reference_geometry
