@@ -182,7 +182,7 @@ void AssembleMatrixLocally(dim_t codim, const DofHandler &dof_handler_trial,
       SPDLOG_LOGGER_TRACE(AssembleMatrixLogger(), ss.str());
 
     }  // end if(isActive() )
-  }    // end main assembly loop
+  }  // end main assembly loop
 }  // end AssembleMatrixLocally
 
 /**
@@ -322,8 +322,8 @@ void AssembleVectorLocally(dim_t codim, const DofHandler &dof_handler,
       for (int i = 0; i < veclen; i++) {
         resultvector[dof_idx[i]] += elem_vec[i];
       }  // end assembly localloop
-    }    // end if(isActive() )
-  }      // end main assembly loop
+    }  // end if(isActive() )
+  }  // end main assembly loop
 }  // end AssembleVectorLocally
 
 /**

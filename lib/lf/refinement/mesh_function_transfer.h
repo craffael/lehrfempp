@@ -99,8 +99,8 @@ class MeshFunctionTransfer {
 
 template <typename MF>
 MeshFunctionTransfer(const lf::refinement::MeshHierarchy &, const MF &,
-                     lf::base::size_type, lf::base::size_type)
-    -> MeshFunctionTransfer<MF>;
+                     lf::base::size_type,
+                     lf::base::size_type) -> MeshFunctionTransfer<MF>;
 
 }  // namespace lf::refinement
 

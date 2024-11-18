@@ -106,8 +106,7 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
                       << "};\n";
             } else {
               outfile << "\\draw[red] (" << vertices(0, 0) << ","
-                      << vertices(1, 0) << ") "
-                      << "node[] {*};\n";
+                      << vertices(1, 0) << ") " << "node[] {*};\n";
             }  // if NodeNumOn
             break;
 
@@ -124,24 +123,22 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
               if (EdgeNumOn && NodeNumOn) {
                 outfile << "\\draw[->] (" << scaled_vertices(0, 0) << ","
                         << scaled_vertices(1, 0) << ") -- node[black] {"
-                        << obj_idx << "} "
-                        << "(" << scaled_vertices(0, 1) << ","
-                        << scaled_vertices(1, 1) << ");\n";
+                        << obj_idx << "} " << "(" << scaled_vertices(0, 1)
+                        << "," << scaled_vertices(1, 1) << ");\n";
               } else if (NodeNumOn && !EdgeNumOn) {
                 outfile << "\\draw[->] (" << scaled_vertices(0, 0) << ","
-                        << scaled_vertices(1, 0) << ") -- "
-                        << "(" << scaled_vertices(0, 1) << ","
-                        << scaled_vertices(1, 1) << ");\n";
+                        << scaled_vertices(1, 0) << ") -- " << "("
+                        << scaled_vertices(0, 1) << "," << scaled_vertices(1, 1)
+                        << ");\n";
               } else if (!NodeNumOn && EdgeNumOn) {
                 outfile << "\\draw[->] (" << semi_scaled_vertices(0, 0) << ","
                         << semi_scaled_vertices(1, 0) << ") -- node[black] {"
-                        << obj_idx << "} "
-                        << "(" << semi_scaled_vertices(0, 1) << ","
-                        << semi_scaled_vertices(1, 1) << ");\n";
+                        << obj_idx << "} " << "(" << semi_scaled_vertices(0, 1)
+                        << "," << semi_scaled_vertices(1, 1) << ");\n";
               } else if (!NodeNumOn && !EdgeNumOn) {
                 outfile << "\\draw[->] (" << semi_scaled_vertices(0, 0) << ","
-                        << semi_scaled_vertices(1, 0) << ") -- "
-                        << "(" << semi_scaled_vertices(0, 1) << ","
+                        << semi_scaled_vertices(1, 0) << ") -- " << "("
+                        << semi_scaled_vertices(0, 1) << ","
                         << semi_scaled_vertices(1, 1) << ");\n";
               } else {
                 std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
@@ -152,14 +149,12 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
               if (EdgeNumOn) {
                 outfile << "\\draw[] (" << vertices(0, 0) << ","
                         << vertices(1, 0) << ") -- node[black] {" << obj_idx
-                        << "} "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
+                        << "} " << "(" << vertices(0, 1) << ","
+                        << vertices(1, 1) << ");\n";
               } else if (!EdgeNumOn) {
                 outfile << "\\draw[] (" << vertices(0, 0) << ","
-                        << vertices(1, 0) << ") -- "
-                        << "(" << vertices(0, 1) << "," << vertices(1, 1)
-                        << ");\n";
+                        << vertices(1, 0) << ") -- " << "(" << vertices(0, 1)
+                        << "," << vertices(1, 1) << ");\n";
               } else {
                 std::cout << "Check EdgeNumOn and NodeNumOn for kSegment "
                           << obj_idx << '\n';
@@ -238,9 +233,9 @@ bool writeTikZ(const lf::mesh::Mesh &mesh, const std::string &filename,
             std::cout << "Object type: " << obj_refel << '\n';
             break;
           }  // default
-        }    // switch
-      }      // IF SELECTOR --------------------
-    }        // for entities
+        }  // switch
+      }  // IF SELECTOR --------------------
+    }  // for entities
 
     node_count++;
     // LF_VERIFY_MSG(node_count == no_of_nodes, "Node count mismatch");

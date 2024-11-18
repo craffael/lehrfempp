@@ -107,11 +107,10 @@ auto LocalIntegral(const mesh::Entity &e, const QR_SELECTOR &qr_selector,
 template <mesh::utils::MeshFunction MF, class QR_SELECTOR,
           class ENTITY_PREDICATE = base::PredicateTrue>
   requires std::is_invocable_v<QR_SELECTOR, const mesh::Entity &>
-auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
-                           const QR_SELECTOR &qr_selector,
-                           const ENTITY_PREDICATE &ep = base::PredicateTrue{},
-                           int codim = 0)
-    -> mesh::utils::MeshFunctionReturnType<MF> {
+auto IntegrateMeshFunction(
+    const lf::mesh::Mesh &mesh, const MF &mf, const QR_SELECTOR &qr_selector,
+    const ENTITY_PREDICATE &ep = base::PredicateTrue{},
+    int codim = 0) -> mesh::utils::MeshFunctionReturnType<MF> {
   using MfType = mesh::utils::MeshFunctionReturnType<MF>;
 
   auto entities = mesh.Entities(codim);
@@ -153,11 +152,10 @@ auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
  */
 template <mesh::utils::MeshFunction MF,
           class ENTITY_PREDICATE = base::PredicateTrue>
-auto IntegrateMeshFunction(const lf::mesh::Mesh &mesh, const MF &mf,
-                           int quad_degree,
-                           const ENTITY_PREDICATE &ep = base::PredicateTrue{},
-                           int codim = 0)
-    -> mesh::utils::MeshFunctionReturnType<MF> {
+auto IntegrateMeshFunction(
+    const lf::mesh::Mesh &mesh, const MF &mf, int quad_degree,
+    const ENTITY_PREDICATE &ep = base::PredicateTrue{},
+    int codim = 0) -> mesh::utils::MeshFunctionReturnType<MF> {
   std::array<quad::QuadRule, 5> qrs;
   for (auto ref_el :
        {base::RefEl::kSegment(), base::RefEl::kTria(), base::RefEl::kQuad()}) {

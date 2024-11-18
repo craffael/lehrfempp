@@ -71,10 +71,10 @@ concept EigenMatrix =
     std::is_same_v<decltype(internal::IsEigenMatrixTester::Test(
                        std::declval<T>(), 0)),
                    bool> &&
-    (std::same_as<SCALAR, void> || std::same_as<typename T::Scalar, SCALAR>)&&(
-        ROWS == -1 ||
-        std::remove_cvref_t<T>::RowsAtCompileTime == Eigen::Dynamic ||
-        std::remove_cvref_t<T>::RowsAtCompileTime == ROWS) &&
+    (std::same_as<SCALAR, void> || std::same_as<typename T::Scalar, SCALAR>) &&
+    (ROWS == -1 ||
+     std::remove_cvref_t<T>::RowsAtCompileTime == Eigen::Dynamic ||
+     std::remove_cvref_t<T>::RowsAtCompileTime == ROWS) &&
     (COLS == -1 ||
      std::remove_cvref_t<T>::ColsAtCompileTime == Eigen::Dynamic ||
      std::remove_cvref_t<T>::ColsAtCompileTime == COLS);

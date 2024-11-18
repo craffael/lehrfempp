@@ -117,8 +117,8 @@ struct EntityMatrixProviderAT {
       -> EntityMatrixProviderAT& = delete;
 
   /// Move assignment operator deleted because not part of the concept
-  auto operator=(EntityMatrixProviderAT&&) noexcept
-      -> EntityMatrixProviderAT& = delete;
+  auto operator=(EntityMatrixProviderAT&&) noexcept -> EntityMatrixProviderAT& =
+                                                           delete;
 
   /// Destructor
   ~EntityMatrixProviderAT() noexcept = delete;
@@ -232,8 +232,8 @@ struct EntityVectorProviderAT {
       -> EntityVectorProviderAT& = delete;
 
   /// Move assignment operator deleted because not part of the concept
-  auto operator=(EntityVectorProviderAT&&) noexcept
-      -> EntityVectorProviderAT& = delete;
+  auto operator=(EntityVectorProviderAT&&) noexcept -> EntityVectorProviderAT& =
+                                                           delete;
 
   /// Destructor
   ~EntityVectorProviderAT() noexcept = default;

@@ -289,7 +289,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
         child_poly.emplace_back(0, 1);
       }
       break;
-    }                                    // end case of a simple point
+    }  // end case of a simple point
     case lf::base::RefEl::kSegment(): {  // case of an edge
       switch (codim) {
         case 0: {  // child entities are segments as well
@@ -319,7 +319,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             }
           }  // end switch ref_pat
           break;
-        }          // case codim = 0
+        }  // case codim = 0
         case 1: {  // child entities are points
           if (ref_pat_ == RefPat::rp_split) {
             // child is the midpoint
@@ -528,7 +528,7 @@ Hybrid2DRefinementPattern::ChildPolygons(lf::base::dim_t codim) const {
             }
           }  // end switch ref_pat
           break;
-        }          // end case codim = 0
+        }  // end case codim = 0
         case 1: {  // codim == 1
           // Return the location of interior edges of the triangle
           // This location is defined by two lattice points given by the

@@ -66,8 +66,8 @@ void PrintInfo(std::ostream &o, const lf::mesh::Mesh &mesh, int ctrl) {
         }
         o << '\n';
       }  // end loop over entities
-    }    // end loop over co-dimensions
-  }      // end printinfo_ctrl > 10
+    }  // end loop over co-dimensions
+  }  // end printinfo_ctrl > 10
 }  // end function PrintInfo
 
 // Print function for Entity object
@@ -111,8 +111,8 @@ void PrintInfo(std::ostream &stream, const lf::mesh::Entity &e,
           sub_ent_num += 1;
 
         }  // loop sub-ent
-      }    // if output ctrl
-    }      // loop codim
+      }  // if output ctrl
+    }  // loop codim
 
     if (e_ref_el == lf::base::RefEl::kPoint() && output_ctrl > 90) {
       stream << e_geo_ptr->Global(ref_el_corners) << '\n';
