@@ -1,4 +1,6 @@
-[![Build Status](https://github.com/craffael/lehrfempp/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/craffael/lehrfempp/actions)
+<!-- [![Build Status](https://github.com/craffael/lehrfempp/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/craffael/lehrfempp/actions) -->
+
+[![Continuous Integration](/actions/workflows/ci.yml/badge.svg?branch=master)](/actions/workflows/ci.yml)
 
 # LehrFEM++
 Simple C++ Finite Element Framework for research and eduction optimzed for clarity and

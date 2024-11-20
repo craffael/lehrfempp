@@ -232,7 +232,7 @@ std::shared_ptr<lf::refinement::MeshHierarchy> mesh_seq_p{
 std::shared_ptr<lf::mesh::Mesh> mesh_level_3 = mesh_seq_p->getMesh(3);
 
 // We can refine a mesh further by calling
-multi_mesh_p->RefineRegular();
+mesh_seq_p->RefineRegular();
 
 // Access the mesh at level 4
 std::shared_ptr<lf::mesh::Mesh> mesh_level_4 = mesh_seq_p->getMesh(4);
@@ -246,6 +246,13 @@ Meshes can be built 'manually' using the lf::mesh::MeshFactory class. It follows
 // builder for a hybrid mesh in a world of dimension 2
 std::shared_ptr<lf::mesh::hybrid2d::MeshFactory> mesh_factory =
     std::make_shared<lf::mesh::hybrid2d::MeshFactory>(2);
+
+// Add points (needs to be done before adding entities)
+mesh_factory->AddPoint(Eigen::Vector2d{0, 0});    // (0)
+mesh_factory->AddPoint(Eigen::Vector2d{1, 0});    // (1)
+mesh_factory->AddPoint(Eigen::Vector2d{1, 1});    // (2)
+mesh_factory->AddPoint(Eigen::Vector2d{0, 1});    // (3)
+mesh_factory->AddPoint(Eigen::Vector2d{0.5, 1});  // (4)
 
 // Add a triangle
 // First set the coordinates of its nodes:
