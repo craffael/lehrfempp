@@ -10,7 +10,7 @@ notes](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) (work in progres
 discusses fundamental algorithms for finite element methods and Sections 2.7 and 2.8 even
 give details about data structures and algorithms used in LehrFEM++.
 
-Source code and documentation can be found in the [LehrFEM++](https://github.com/craffael/lehrfempp) Github repository.
+Source code and documentation can be found in the [LehrFEM++ Github](https://github.com/craffael/lehrfempp) repository.
 
 ## Content:
 - \ref getting_started

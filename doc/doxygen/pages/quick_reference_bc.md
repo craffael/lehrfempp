@@ -3,7 +3,7 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:essbdc}. Please read before using quick reference.
+> The contents of this page is discussed in @lref_link{sec:essbdc}. Please read before using quick reference.
 
 ## Overview
 
@@ -25,10 +25,12 @@ Let \f$g\f$ be a function defining the values on the boundary. To get the functi
 
 ```cpp
 auto mf_g = lf::mesh::utils::MeshFunctionGlobal(g);
-auto boundary_val = lf::fe::InitEssentialConditionFromFunction(*fe_space, bd_flags, mf_g);
+
+std::vector<std::pair<bool, scalar_t>> boundary_val = 
+    lf::fe::InitEssentialConditionFromFunction(*fe_space, bd_flags, mf_g);
 ```
 
-This gives a std::vector<std::pair<bool, scalar_t>>. To get our selector:
+This returns a `std::vector<std::pair<bool, scalar_t>>`. To get our selector:
 
 ```cpp
 auto selector = [&](unsigned int dof_idx) -> std::pair<bool, double> {
