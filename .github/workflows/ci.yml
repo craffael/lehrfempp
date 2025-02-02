@@ -1,7 +1,13 @@
 name: Continuous Integration
 
 # Run this workflow every time a new commit pushed to your repository
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 env:
     DEPS_DIR: ${{ github.workspace}}/deps

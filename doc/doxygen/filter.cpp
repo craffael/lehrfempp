@@ -7,11 +7,15 @@ This program replaces all the @lref{<label>} statements in a C++ files
 with a label-specific string and the corresponding number from .aux file. Here
 we assume the line corresponding to this label in .aux file looks like
 
-\newlabel{<label>@cref}{{[<Label>][x][xxx]<number>}{[x][xx][x]xxx}}
+\newlabel{<label>@cref}{{[<Label>][x][xxx]<number>}{[x][xx][x]<page_number>}}
 
 We would like to replace @lref{<label>} with <Label> <number>, which means that
 label is extracted from the first square brackets and the number comes from the
 content after two brackets of <Label>.
+
+If the tag is @lref_link{<label>}, then the output will be a hyperlink to the
+lecture document with the label as the anchor or alternatively the page number
+for parts of the document that are not labeled.
 
 This code is heavily optimized for speed. In particular it will create a cache
 file which contains a lookup-table of the .aux file so that we can map <label>
@@ -43,19 +47,35 @@ class Filter {
  private:
   std::unordered_map<std::string, std::string> label_map_;
   std::vector<std::pair<std::string, std::string>> aux_table_;
+  std::unordered_map<std::string, bool> link_with_page_num_;
+
+  const std::regex label_pattern_;
+  const std::string lecture_doc_url_;
 
   std::string aux_file_;
   std::string file_;
 
  public:
   Filter(std::string file, std::string aux_file)
-      : file_(std::move(file)), aux_file_(std::move(aux_file)) {
+      : file_(std::move(file)),
+        aux_file_(std::move(aux_file)),
+        label_pattern_(
+            R"(\\newlabel\{(.*)@cref\}\{\{\[([^,\]]*)\](\[[^\}]*\])*([0-9\.]*)\}(?:\{(?:\[[^\}]*\])([0-9\.]*)\})?)",
+            std::regex::optimize),
+        lecture_doc_url_(
+            "https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf") {
     label_map_ = {{"equation", "Equation"}, {"par", "Paragraph"},
                   {"chapter", "Chapter"},   {"sec", "Section"},
                   {"section", "Section"},   {"subsection", "Subsection"},
                   {"figure", "Figure"},     {"code", "Code"},
                   {"remark", "Remark"},     {"subsubsection", "Subsection"},
                   {"example", "Example"}};
+
+    link_with_page_num_ = {
+        {"equation", false},      {"par", true},      {"chapter", false},
+        {"sec", false},           {"section", false}, {"subsection", false},
+        {"figure", true},         {"code", true},     {"remark", true},
+        {"subsubsection", false}, {"example", false}};
   }
 
   /**
@@ -156,12 +176,9 @@ void Filter::LoadAuxTable() {
     // build cache:
     auto begin = aux_string.value().cbegin();
     std::smatch matches;
-    std::regex label_pattern(
-        R"(\\newlabel\{(.*)@cref\}\{\{\[([^,\]]*)\](\[[^\}]*\])*([0-9\.]*)\})",
-        std::regex::optimize);
 
     while (regex_search(begin, aux_string.value().cend(), matches,
-                        label_pattern)) {
+                        label_pattern_)) {
       if (matches.ready() && !matches.empty()) {
         std::string label = matches.str(1);
         // NOLINTNEXTLINE
@@ -170,7 +187,10 @@ void Filter::LoadAuxTable() {
                                 : matches.str(2);
 
         std::string number = matches.str(4);
-        std::string link = matches.str(2) + "." + number;
+        std::string page_num = matches.size() > 4 ? matches.str(5) : "";
+        std::string link = link_with_page_num_[matches.str(2)]
+                               ? "page=" + page_num
+                               : matches.str(2) + "." + number;
 
         if (!matches.str(1).empty()) {
           // convert the <Label> into human readable form:
@@ -245,8 +265,7 @@ void Filter::ReplaceLref() {
       boost::split(strs, sample, boost::is_any_of("#"));
 
       if (match[1].str() == "_link") {
-        result += "[Lecture Document " + strs[0] +
-                  "](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf";
+        result += "[Lecture Document " + strs[0] + "](" + lecture_doc_url_;
         if (strs.size() > 1) {
           result += "#" + strs[1];
         }
