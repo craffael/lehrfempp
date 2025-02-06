@@ -43,27 +43,41 @@ Doxygen parse the source file.
 #include <string_view>
 #include <unordered_map>
 
+struct Match {
+  std::string Label;
+  std::string title;
+  std::string number;
+  std::string page_number;
+  std::string reference_name;
+};
+
 class Filter {
  private:
   std::unordered_map<std::string, std::string> label_map_;
   std::vector<std::pair<std::string, std::string>> aux_table_;
   std::unordered_map<std::string, bool> link_with_page_num_;
 
-  const std::regex label_pattern_;
-  const std::string lecture_doc_url_;
+  // Matches
+  // \newlabel{<label>@cref}{{[<Label>][x][xxx]<number>}{[x][xx][x]<page_number>}}
+  const std::regex label_pattern_1_ = std::regex(
+      R"(\\newlabel\{(.*)@cref\}\{\{\[([^,\]]*)\](?:\[[^\}]*\])*([0-9a-zA-Z\.]*)\}(?:\{(?:\[[^\}]*\])([0-9\.]*)\})?\})",
+      std::regex::optimize);
+
+  // Matches
+  // \newlabel{<label>}{{<number>}{<page_number>}{<title>}{<reference_name>}{}}
+  const std::regex label_pattern_2_ = std::regex(
+      R"(\\newlabel\{(.*)(?!@cref)\}\{\{(.*)\}\{(.*)\}\{(.*)\}\{(.*)\}\{(?:.*)\}\})",
+      std::regex::optimize);
+
+  const std::string lecture_doc_url_ =
+      "https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf";
 
   std::string aux_file_;
   std::string file_;
 
  public:
   Filter(std::string file, std::string aux_file)
-      : file_(std::move(file)),
-        aux_file_(std::move(aux_file)),
-        label_pattern_(
-            R"(\\newlabel\{(.*)@cref\}\{\{\[([^,\]]*)\](\[[^\}]*\])*([0-9\.]*)\}(?:\{(?:\[[^\}]*\])([0-9\.]*)\})?)",
-            std::regex::optimize),
-        lecture_doc_url_(
-            "https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf") {
+      : file_(std::move(file)), aux_file_(std::move(aux_file)) {
     label_map_ = {{"equation", "Equation"}, {"par", "Paragraph"},
                   {"chapter", "Chapter"},   {"sec", "Section"},
                   {"section", "Section"},   {"subsection", "Subsection"},
@@ -175,33 +189,72 @@ void Filter::LoadAuxTable() {
   if (rebuild_cache) {
     // build cache:
     auto begin = aux_string.value().cbegin();
-    std::smatch matches;
 
-    while (regex_search(begin, aux_string.value().cend(), matches,
-                        label_pattern_)) {
-      if (matches.ready() && !matches.empty()) {
-        std::string label = matches.str(1);
-        // NOLINTNEXTLINE
-        std::string Label = label_map_.count(matches.str(2)) > 0U
-                                ? label_map_[matches.str(2)]
-                                : matches.str(2);
+    std::smatch base_match;
+    const std::regex pattern(R"(\\newlabel\{([^\@}]*)(?:@cref)?\}\{(.*)\}\n)",
+                             std::regex::optimize);
+    std::unordered_map<std::string, Match> match_map;
 
-        std::string number = matches.str(4);
-        std::string page_num = matches.size() > 4 ? matches.str(5) : "";
-        std::string link = link_with_page_num_[matches.str(2)]
-                               ? "page=" + page_num
-                               : matches.str(2) + "." + number;
+    // Find all lines that at labels
+    while (
+        regex_search(begin, aux_string.value().cend(), base_match, pattern)) {
+      if (base_match.ready() && !base_match.empty()) {
+        std::string label = base_match.str(1);
+        Match m;
 
-        if (!matches.str(1).empty()) {
-          // convert the <Label> into human readable form:
-          // aux_table_[matches.str(1)] = Label + " " + number;
-          // NOLINTNEXTLINE
-          aux_table_.emplace_back(matches.str(1),
-                                  Label + " " + number + "#" + link);
+        if (match_map.count(label) > 0) {
+          m = match_map[label];
         }
-        begin += matches.prefix().length() + matches[0].length();
+
+        // Check if label matched the first pattern
+        std::smatch sub_match;
+        std::string line = base_match.str(0);
+        // remove leading and trailing whitespaces
+        boost::algorithm::trim(line);
+
+        if (std::regex_match(line, sub_match, label_pattern_1_)) {
+          m.Label = label_map_.count(sub_match.str(2)) > 0
+                        ? label_map_[sub_match.str(2)]
+                        : sub_match.str(2);
+          m.number = sub_match.str(3);
+          m.page_number = sub_match.str(4);
+          match_map[label] = m;
+          // std::cerr << "Match1: " << label << ": " << m.Label << " " <<
+          // m.number
+          //           << " " << m.page_number << std::endl;
+        } else if (std::regex_match(line, sub_match, label_pattern_2_)) {
+          m.number = sub_match.str(2);
+          m.page_number = sub_match.str(3);
+          m.title = sub_match.str(4);
+          m.reference_name = sub_match.str(5);
+          match_map[label] = m;
+          // std::cerr << "Match2: " << label << ": " << m.number << " "
+          //           << m.page_number << " " << m.title << std::endl;
+        } else {
+          std::cerr << "filter.cpp : Cannot parse '" << line << "'"
+                    << std::endl;
+        }
+
+        begin += base_match.prefix().length() + base_match[0].length();
       }
     }
+
+    // Create aux table from match_map
+    for (const auto& [label, match] : match_map) {
+      if (match.Label.empty() || label.empty()) {
+        std::cerr << "filter.cpp : Label empty for " << match.reference_name
+                  << std::endl;
+        continue;
+      }
+      std::string s = match.Label;
+      s += ";" + (match.number.empty() ? "" : match.number);
+      s += ";" + (match.page_number.empty() ? "" : match.page_number);
+      s += ";" + (match.title.empty() ? "" : match.title);
+      s += ";" + (match.reference_name.empty() ? "" : match.reference_name);
+
+      aux_table_.emplace_back(label, s);
+    }
+
     std::sort(aux_table_.begin(), aux_table_.end(),
               [](auto& a, auto& b) { return a.first < b.first; });
 
@@ -262,16 +315,28 @@ void Filter::ReplaceLref() {
       //  Split search_result->second into two parts: Label and link (by #)
       std::string sample = search_result->second;
       std::vector<std::string> strs;
-      boost::split(strs, sample, boost::is_any_of("#"));
+      boost::split(strs, sample, boost::is_any_of(";"));
 
+      // std::cerr << "Match: " << match[0] << "(" << search_result->first <<
+      // ","
+      //           << sample << ")" << " -> " << strs.size() << ";";
+      // for (auto& str : strs) {
+      //   std::cerr << str;
+      // }
+      std::cerr << strs.size() << std::endl;
+
+      std::string text = strs[0] + " " + strs[1];
       if (match[1].str() == "_link") {
-        result += "[Lecture Document " + strs[0] + "](" + lecture_doc_url_;
-        if (strs.size() > 1) {
-          result += "#" + strs[1];
+        std::string url = lecture_doc_url_ + "#" + strs[4];
+        if (link_with_page_num_.count(strs[0]) > 0 &&
+            link_with_page_num_[strs[0]]) {
+          url = lecture_doc_url_ + "#page=" + strs[2];
         }
-        result += ")";
+
+        result += "<a href='" + url + "' title='" + strs[3] +
+                  "'>Lecture Document " + text + "</a>";
       } else {
-        result += strs[0];
+        result += text;
       }
     }
     begin += match.prefix().length() + match[0].length();
