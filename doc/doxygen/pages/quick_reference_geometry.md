@@ -17,7 +17,7 @@ Much more details and mathematical background can be found in the [Lecture Docum
 
 ## Geometry Interface {#geometry_interface}
 
-To get the geometry of an entity :
+To get the geometry of an entity:
 
 ```cpp
 for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {

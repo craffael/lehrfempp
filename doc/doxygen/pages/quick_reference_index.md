@@ -1,13 +1,16 @@
 # Quick Reference Pages {#quick_reference_index}
 
-This section contains a list of all the quick reference pages available in the documentation.
+> [!caution]
+> These pages are intended as a quick reference for users who are already familiar with the concepts discussed in @lref_link{cha:fem}. Please read the lecture notes before using the quick reference.
 
-- [Mesh](quick_reference_mesh)
-- [Geometry](quick_reference_geometry.md)
-- [Finite Element Spaces](quick_reference_fe_space.md)
-- [Quadrature](quick_reference_quad.md)
-- [Degrees of Freedom (DOF)](quick_reference_dofs.md)
-- [Boundary Conditions](quick_reference_bc.md)
-- [Assembly](quick_reference_assembly.md)
-- [Entity Matrix Providers](quick_reference_emp.md)
-- [Logging](quick_reference_logging.md)
+The following pages give you a reference for some of the modules in LehrFEM++ in a very condensed format that is should be useful to recall the syntax of a particular feature, or to have a quick look at the API. For a complete overview of the features, please refer to the detailed documentation in @lref_link{cha:fem}.
+
+- [Mesh](@ref quick_reference_mesh)
+- [Geometry](@ref quick_reference_geometry)
+- [Finite Element Spaces](@ref quick_reference_fe_space)
+- [Quadrature](@ref quick_reference_quad)
+- [Degrees of Freedom (DOF)](@ref quick_reference_dofs)
+- [Boundary Conditions](@ref quick_reference_bc)
+- [Assembly](@ref quick_reference_assembly)
+- [Entity Matrix Providers](@ref quick_reference_emp)
+- [Logging](@ref quick_reference_logging)
