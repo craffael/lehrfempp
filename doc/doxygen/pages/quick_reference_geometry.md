@@ -17,7 +17,7 @@ Much more details and mathematical background can be found in the [Lecture Docum
 
 ## Geometry Interface {#geometry_interface}
 
-To get the geometry of an entity :
+To get the geometry of an entity:
 
 ```cpp
 for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {
@@ -72,7 +72,7 @@ bool is_affine = geometry->isAffine();
 
 ## Transformations and Mappings {#transformations}
 
-This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Usage of the following methods is discussed in the [Assembly Quick Reference](quick_reference_assembly.md).
+This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Usage of the following methods is discussed in the [Assembly Quick Reference](@ref quick_reference_assembly).
 
 > [!note] 
 > The following methods accept a matrix of points in the local coordinate system as input. The points are stored in a matrix where each column represents a point. The number of rows corresponds to the dimension of the local coordinate system.
@@ -155,8 +155,8 @@ Eigen::MatrixXd jacobian_inv_n = jacobian_inv.block(0, n * dim_local, dim_global
 <!-- Next and previous buttons -->
 <div class="section_buttons">
  
-| Previous                        |                            Next |
-| :------------------------------ | ------------------------------: |
-| [Mesh](quick_reference_mesh.md) | [Dofs](quick_reference_dofs.md) |
+| Previous                          |                                     Next |
+| :-------------------------------- | ---------------------------------------: |
+| [Mesh](@ref quick_reference_mesh) | [DOFHandlers](@ref quick_reference_dofh) |
  
 </div>

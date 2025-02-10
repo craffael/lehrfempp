@@ -138,7 +138,7 @@ lf::mesh::utils::AllCodimMeshDataSet<bool> bd_flags{
       lf::mesh::utils::flagEntitiesOnBoundary(mesh_p)};
 ```
 
-See also [Quick Reference - Boundary Conditions](quick_reference_bc.md) for more details on boundary conditions.
+See also [Quick Reference - Boundary Conditions](@ref quick_reference_bc) for more details on boundary conditions.
 
 The interface is defined in the lf::mesh::MeshDataSet class. More details can be found in the documentation of the lf::mesh::MeshDataSet class.
 
@@ -304,8 +304,8 @@ The following code snippet demonstrates how to create a 100x100 tensor product m
 <!-- Next and previous buttons -->
 <div class="section_buttons">
 
-| Previous |                                    Next |
-| :------- | --------------------------------------: |
-|          | [Geometry](quick_reference_geometry.md) |
+| Previous |                                      Next |
+| :------- | ----------------------------------------: |
+|          | [Geometry](@ref quick_reference_geometry) |
 
 </div>

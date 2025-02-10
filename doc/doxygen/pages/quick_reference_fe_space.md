@@ -42,7 +42,7 @@ The lf::uscalfe (<strong>U</strong>niform <strong>Scal</strong>ar <strong>F</str
 
 A prominent example of a uniform finite element space are the n-th order Lagrangian finite element spaces. @lref_link{sec:LagrFEM} discusses these spaces and the mathematical background in detail.
 
-LehrFEM++ provides convince classes for constructing order 1-3 Lagrangian finite element spaces:
+LehrFEM++ provides convince classes for constructing order 1, 2 and 3 Lagrangian finite element spaces:
 
 - `lf::uscalfe::FeSpaceLagrangeO1` (Bi)Linear Lagrangian Finite Element space
 - `lf::uscalfe::FeSpaceLagrangeO2` Quadratic Lagrangian Finite Element space

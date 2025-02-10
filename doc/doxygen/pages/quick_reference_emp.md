@@ -7,14 +7,15 @@
 
 ## Overview
 
-LehrFEM++ provides some built-in lf::assemble::EntityMatrixProvider (EMPs) and entity lf::assemble::EntityVectorProvider (EVPs) for common PDEs. Users can also define custom EMPs and EVPs. EMPs/EVPs are used to compute local element matrices for finite element methods and are usually passed to the `lf::assemble::AssembleMatrixLocally` / `lf::assemble::AssembleVectorLocally` functions (see also [Quick Reference - Assembly](quick_reference_assembly.md)).
+LehrFEM++ provides some built-in lf::assemble::EntityMatrixProvider (EMPs) and entity lf::assemble::EntityVectorProvider (EVPs) for common PDEs. Users can also define custom EMPs and EVPs. EMPs/EVPs are used to compute local element matrices for finite element methods and are usually passed to the `lf::assemble::AssembleMatrixLocally` / `lf::assemble::AssembleVectorLocally` functions (see also [Quick Reference - Assembly](@ref quick_reference_assembly)).
 
 ## Custom Entity Vector Providers {#custom_entity_vector_providers}
 
-```cpp
-// Example implementation of a custom EntityVectorProvider
-...
-```
+A custom entity matrix provider has to implement the `lf::assemble::EntityMatrixProvider` concept. The following snippets offer minimal definitions for EMPs and EVPs:
+
+@snippet snippets/assembler.cc lflinfeelmat
+
+@snippet snippets/assembler.cc lflinfeelvec
 
 ## Built-in Entity Matrix Providers {#built_in_entity_matrix_providers}
 
