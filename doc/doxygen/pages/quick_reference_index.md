@@ -9,7 +9,7 @@ The following pages give you a reference for some of the modules in LehrFEM++ in
 - [Geometry](@ref quick_reference_geometry)
 - [Finite Element Spaces](@ref quick_reference_fe_space)
 - [Quadrature](@ref quick_reference_quad)
-- [Degrees of Freedom (DOF)](@ref quick_reference_dofs)
+- [Degrees of Freedom Handlers (DOFHandlers)](@ref quick_reference_dofh)
 - [Boundary Conditions](@ref quick_reference_bc)
 - [Assembly](@ref quick_reference_assembly)
 - [Entity Matrix Providers](@ref quick_reference_emp)

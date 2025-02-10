@@ -9,7 +9,7 @@
 
 LehrFEM++ provides a number of convenient functions to work with essential boundary conditions.
 
-To fix degrees of freedom on the boundary we can use the functions `lf::assemble::FixFlaggedSolutionComponents` or `lf::assemble::FixFlaggedSolutionCompAlt` (see also [Quick Reference Assembly](./quick_reference_assembly.md)). Both functions takes a function as an argument that returns a pair of a boolean and a double: `std::pair<bool, double> selector(unsigned int dof_idx)`. The selector function returns whether the dof is to be fixed and if so, the value it should be fixed to.
+To fix degrees of freedom (DoF) on the boundary we can use the functions `lf::assemble::FixFlaggedSolutionComponents` or `lf::assemble::FixFlaggedSolutionCompAlt` (see also [Quick Reference Assembly](@ref quick_reference_assembly)). Both functions takes a function as an argument that returns a pair of a boolean and a double: `std::pair<bool, double> selector(unsigned int dof_idx)`. The selector function returns whether the DoF is to be fixed and if so, the value it should be fixed to.
 
 We can get the boundary flags as a [MeshDataSet](./quick_reference_mesh.html#mesh_data_sets) using:
 
@@ -17,7 +17,7 @@ We can get the boundary flags as a [MeshDataSet](./quick_reference_mesh.html#mes
 auto bd_flags = lf::mesh::utils::flagEntitiesOnBoundary(dofh.Mesh(), 2);
 ```
 
-The second argument is the co-dimension of entities we are interested in. To fix all [dofs](./quick_reference_dofs.html) on the boundary (including those associated with edges and cells), give no second argument. 
+The second argument is the co-dimension of entities we are interested in. To fix all DoF on the boundary (including those associated with edges and cells), give no second argument. 
 
 ## One function on the whole boundary {#one_function}
 

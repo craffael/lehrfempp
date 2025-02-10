@@ -1,4 +1,4 @@
-# Quick Reference - Degrees of Freedom (DOF) Handlers and Indexing {#quick_reference_dofs}
+# Quick Reference - Degrees of Freedom (DOF) Handlers and Indexing {#quick_reference_dofh}
 
 [TOC]
 
@@ -7,7 +7,7 @@
 
 ## Overview
 
-Local computations are essential for efficient finite element methods (FEM). LehrFEM++ uses a local indexing scheme to map local shape functions to global degrees of freedom (DOFs). In **LehrFEM++**, this is done through objects of the type `lf::assemble::DofHandler`. This quick reference provides an overview of DOF handlers and indexing conventions in **LehrFEM++**. The [QR assembly](@ref quick_reference_assembly) page provides more information on (local) assembly using DOF handlers. 
+Local computations are essential for efficient finite element methods (FEM). LehrFEM++ uses a local indexing scheme to map local shape functions to global degrees of freedom (DOFs). In **LehrFEM++**, this is done through objects of the type `lf::assemble::DofHandler`. This quick reference provides an overview of DOF handlers and indexing conventions in **LehrFEM++**. The [assembly quick reference](@ref quick_reference_assembly) page provides more information on (local) assembly using DOF handlers. 
 <!-- In finite element methods (FEM), handling degrees of freedom (DOFs) is critical for constructing systems of equations. DOF handlers are responsible for assigning local basis functions to global basis functions, which allows for the assembly of global matrices and vectors from element contributions. -->
 
 ## Local to Global Index Mapping
