@@ -116,5 +116,5 @@ Entity Vector Providers (EVPs) in LehrFEM++ are used to compute local element ve
 ### lf::fe::ScalarLoadElementVectorProvider {#lfescalarloadelementvectorprovider}
 ### lf::fe::ScalarLoadEdgeVectorProvider {#lfescalarloadedgevectorprovider}
 ### lf::uscalfe::LinearFELocalLoadVector {#lfuscalfelelementvectorprovider}
-### lf::uscalfe::ScalarLoadElementVectorProvider {#lfuscalfelelementvectorprovider}
+### lf::uscalfe::ScalarLoadElementVectorProvider {#lfuscalfeelementvectorprovider}
 ### lf::uscalfe::ScalarLoadEdgeVectorProvider {#lfuscalfeedgevectorprovider}

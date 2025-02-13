@@ -86,10 +86,10 @@ class Filter {
                   {"example", "Example"}};
 
     link_with_page_num_ = {
-        {"equation", false},      {"par", true},      {"chapter", false},
-        {"sec", false},           {"section", false}, {"subsection", false},
-        {"figure", true},         {"code", true},     {"remark", true},
-        {"subsubsection", false}, {"example", false}};
+        {"Paragraph", true},
+        {"Code", true},
+        {"Remark", true},
+    };
   }
 
   /**
@@ -323,7 +323,7 @@ void Filter::ReplaceLref() {
       // for (auto& str : strs) {
       //   std::cerr << str;
       // }
-      std::cerr << strs.size() << std::endl;
+      // std::cerr << strs.size() << std::endl;
 
       std::string text = strs[0] + " " + strs[1];
       if (match[1].str() == "_link") {
