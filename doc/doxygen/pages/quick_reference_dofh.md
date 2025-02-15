@@ -71,29 +71,30 @@ LehrFEM++ follows the convention of numbering **global** DOFs according to the f
 
 1.  D.o.f. associated with lower-dimensional entities are numbered first:
 
-  $$
+  \f[
     \text{POINT} \rightarrow \text{SEGMENT} \rightarrow \text{TRIA/QUAD}
-  $$
+  \f]
 
 1. The indices of d.o.f. belonging to entities of the same co-dimension increase with increasing entity
 indices as returned by the `Index()` function.
 
 ## Key Methods
 The key methods provided by the `DofHandler` interface are:
-- `NumDofs()`: Returns the total number of global DOFs.
+
+- `NumDofs()`: Returns the total number of global DOFs. See also @lref_link{par:betldofmap}.
 
   ```cpp
   unsigned num_dofs = dofh.NumDofs();
   ```
 
-- `NumLocalDofs(const lf::mesh::Entity &)`: Provides the number of DOFs associated with a particular geometric entity.
+- `NumLocalDofs(const lf::mesh::Entity &)`: Provides the number of DOFs associated with a particular geometric entity.  See also @lref_link{par:betldofmap}.
   
   ```cpp
   const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);
 
   unsigned num_local_dofs = dofh.NumLocalDofs(*e);
   ```
-- `GlobalDofIndices(const lf::mesh::Entity &)`: Returns the global indices of DOFs associated with a given entity.
+- `GlobalDofIndices(const lf::mesh::Entity &)`: Returns the global indices of DOFs associated with a given entity.  See also @lref_link{par:betldofmap}.
 
   ```cpp
   const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);
@@ -106,7 +107,7 @@ The key methods provided by the `DofHandler` interface are:
 
   ```
 
-- `NumInteriorDofs(const lf::mesh::Entity &)`: Specifies how many DOFs are associated with an entity’s interior.
+- `NumInteriorDofs(const lf::mesh::Entity &)`: Specifies how many DOFs are associated with an entity’s interior.  See also @lref_link{par:betldofmap}.
 
   ```cpp
   const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);

@@ -12,5 +12,5 @@ The following pages give you a reference for some of the modules in LehrFEM++ in
 - [Degrees of Freedom Handlers (DOFHandlers)](@ref quick_reference_dofh)
 - [Boundary Conditions](@ref quick_reference_bc)
 - [Assembly](@ref quick_reference_assembly)
-- [WIP Entity Matrix Providers](@ref quick_reference_emp)
+- [Entity Matrix Providers](@ref quick_reference_emp)
 <!-- - [Logging](@ref quick_reference_logging) -->

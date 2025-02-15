@@ -19,8 +19,6 @@ A custom entity matrix provider has to implement the `lf::assemble::EntityMatrix
 
 ## Built-in Entity Matrix Providers {#built_in_entity_matrix_providers}
 
-<!-- TODO (barmstron): Write down quick specification of each EL/VE MP -->
-
 <!-- Editor Note: Turn off word wrap to display table properly in Editor -->
 
 Entity Matrix Providers (EMPs) in LehrFEM++ are used to compute local element matrices for finite element methods. Below is a table summarizing the key built-in EMPs in LehrFEM++.
@@ -38,11 +36,11 @@ Entity Matrix Providers (EMPs) in LehrFEM++ are used to compute local element ma
 
 lf::fe::DiffusionElementMatrixProvider
 
-$$
+\f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u
           \cdot\mathbf{grad}\,v\,\mathrm{d}\mathbf{x}
  \;
-$$
+\f]
 
 with diffusion coefficient \f$\mathbf{\alpha}\f$, see also Example @lref_link{ex:rdemp}
 
@@ -51,11 +49,11 @@ with diffusion coefficient \f$\mathbf{\alpha}\f$, see also Example @lref_link{ex
 lf::fe::MassElementMatrixProvider
 
 The element matrix corresponds to the (local) bilinear form
-$$
+\f[
     (u,v)
  \mapsto\int\limits_{K}\gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
-$$
+\f]
 
 with reaction coefficient \f$\gamma\f$, see also @lref_link{ex:rdemp}
 
@@ -65,9 +63,9 @@ lf::fe::MassEdgeMatrixProvider
 
 The edge matrix corresponds to the (local) bilinear form
 
-$$
+\f[
     (u,v) \mapsto \int\limits_e\gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
- $$
+\f]
 
 where @f$e@f$ is an edge of the mesh, and \f$\gamma\f$ a scalar-valued coefficient function. 
 
@@ -77,11 +75,11 @@ lf::uscalfe::LinearFELaplaceElementMatrix
 
 The element matrix corresponds to the (local) bilinear form
 
-$$
+\f[
     (u,v)
  \mapsto\int\limits_{K}\mathbf{grad}\,u\cdot\mathbf{grad}\,v\,\mathrm{d}\mathbf{x}
  \;,
-$$
+\f]
 
 
 ### lf::uscalfe::ReactionDiffusionElementMatrixProvider {#lfuscalferdemp}
@@ -89,11 +87,11 @@ $$
 lf::uscalfe::ReactionDiffusionElementMatrixProvider
 
 
-$$
+\f[
     (u,v) \mapsto\int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u\cdot\mathbf{grad}\,v +
     \gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x}
  \;,
-$$
+\f]
 
 with diffusion coefficient \f$\mathbf{\alpha}\f$ and reaction coefficient \f$\gamma\f$. See also @lref_link{ex:rdemp}.
 
@@ -101,9 +99,9 @@ with diffusion coefficient \f$\mathbf{\alpha}\f$ and reaction coefficient \f$\ga
 
 lf::uscalfe::MassEdgeMatrixProvider
 
-$$
+\f[
     (u,v) \mapsto \int\limits_e\gamma(x)u(x)\overline{v(x)}\,\mathrm{d}S(x)\;,
-$$
+\f]
 
 where @f$e@f$ is an edge of the mesh, and \f$\gamma\f$ a scalar-valued coefficient function. See @lref_link{ex:lfemp} for a similar example on assembly of boundary contributions.
 
@@ -123,10 +121,10 @@ Entity Vector Providers (EVPs) in LehrFEM++ are used to compute local element ve
 
 lf::fe::ScalarLoadElementVectorProvider computes the local element vector corresponding to the (local) linear form
 
-$$
+\f[
     v \mapsto\int\limits_{K}f(\mathbf{x})v\,\mathrm{d}\mathbf{x}
  \;,
-$$
+\f]
 
 where \f$f\f$ is a scalar-valued function.
 
@@ -134,10 +132,10 @@ where \f$f\f$ is a scalar-valued function.
 
 lf::fe::ScalarLoadEdgeVectorProvider computes the local edge contributions corresponding to the (local) linear form
 
-$$
+\f[
     v \mapsto\int\limits_{e}g(x)\overline{v(x)}\,\mathrm{d}S(x)
  \;,
-$$
+\f]
 
 where \f$e\f$ is an edge of the mesh, and \f$g\f$ a scalar-valued function.
 
@@ -145,10 +143,10 @@ where \f$e\f$ is an edge of the mesh, and \f$g\f$ a scalar-valued function.
 
 lf::uscalfe::ScalarLoadElementVectorProvider computes the local element vector corresponding to the (local) linear form
 
-$$
+\f[
     v \mapsto\int\limits_{K}f(\mathbf{x})\overline{v(x)}\,\mathrm{d}\mathbf{x}
  \;,
-$$
+\f]
 
 where \f$f\f$ is a scalar-valued function. **Note**: This provider only computes the volume contributions on \f$K\f$.
 
@@ -156,10 +154,10 @@ where \f$f\f$ is a scalar-valued function. **Note**: This provider only computes
 
 lf::uscalfe::ScalarLoadEdgeVectorProvider computes the local edge contributions corresponding to the (local) linear form
 
-$$
+\f[
     v \mapsto\int\limits_{e}g(x)\overline{v(x)}\,\mathrm{d}S(x)
  \;,
-$$
+\f]
 
 where \f$e\f$ is an edge of the mesh, and \f$g\f$ a scalar-valued function.
 
@@ -167,10 +165,9 @@ where \f$e\f$ is an edge of the mesh, and \f$g\f$ a scalar-valued function.
 
 lf::uscalfe::LinearFELocalLoadVector computes the local element vector for **linear** FE corresponding to the (local) linear form 
 
-$$
+\f[
     v \mapsto\int\limits_{K}f(\mathbf{x})\overline{v(x)}\,\mathrm{d}\mathbf{x}
  \;,
-
-$$
+\f]
 
 where \f$f\f$ is a scalar-valued function using edge midpoint quadrature.

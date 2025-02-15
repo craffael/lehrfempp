@@ -239,10 +239,10 @@ jobs:
                   sudo apt-get install expect
             - name: install doxygen
               run: |
-                  wget https://github.com/doxygen/doxygen/releases/download/Release_1_12_0/doxygen-1.12.0.linux.bin.tar.gz
-                  gunzip doxygen-1.12.0.linux.bin.tar.gz
-                  tar -xvf doxygen-1.12.0.linux.bin.tar
-                  cd doxygen-1.12.0
+                  wget https://github.com/doxygen/doxygen/releases/download/Release_1_13_2/doxygen-1.13.2.linux.bin.tar.gz
+                  gunzip doxygen-1.13.2.linux.bin.tar.gz
+                  tar -xvf doxygen-1.13.2.linux.bin.tar
+                  cd doxygen-1.13.2
                   sudo make install
                   cd ..
             # - name: Setup tmate session
@@ -265,7 +265,7 @@ jobs:
                   if grep -q "warning:" "output"; then
                     echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
                     grep "warning:" "output"
-                    # exit 1
+                    exit 1
                   fi
             - name: deploy
               uses: JamesIves/github-pages-deploy-action@v4

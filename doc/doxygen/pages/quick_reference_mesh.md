@@ -150,9 +150,9 @@ The most general representative of a mesh function is lf::mesh::utils::MeshFunct
 
 For efficiency reasons the evaluation points are passed to mesh functions as the columns of a  \f$d \times n \f$ - matrix (where \f$d\f$ agrees with the local dimension of the entity and \f$n\f$ is the number of points). This allows for the evaluation of multiple points at once. The following code snippet demonstrates how to define a mesh function that evaluates the function
 
-$$
-\alpha(x) = 0.5 \cdot \|x\|
-$$
+\f[
+    \alpha(x) = 0.5 \cdot \|x\|
+\f]
 
 on a cell.
 

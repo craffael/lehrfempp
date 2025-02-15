@@ -17,9 +17,9 @@ LehrFEM++ provides a number of helper functions for assembly detailed in @lref_l
 
 LehrFEM++ provides the `lf::assemble::AssembleMatrixLocally` function for assembling the stiffness matrix \f$\textbf{A}\f$. The following example shows how to assemble the stiffness Matrix for a poisson bi-linear form
 
-$$
+\f[
 a(u, v) = \int_{\Omega} \textbf{grad} u \cdot \textbf{grad} v \, dx
-$$
+\f]
 
 through the [entity matrix provider](@ref quick_reference_emp) `lf::uscalfe::LinearFELaplaceElementMatrix`.
 

@@ -973,7 +973,7 @@ class FeLagrangeO3Tria final
    * @brief One shape function attached to each node
    * and two to each edge of the triangle. There is one interior
    * shape function.
-   * @copydoc fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
+   * @copydoc lf::fe::ScalarReferenceFiniteElement::NumRefShapeFunctions(dim_t) const
    */
   // clang-format on
   [[nodiscard]] size_type NumRefShapeFunctions(dim_t codim) const override {

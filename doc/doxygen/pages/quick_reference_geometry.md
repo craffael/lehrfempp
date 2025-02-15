@@ -97,9 +97,9 @@ Eigen::MatrixXd global = geometry->Global(local_points);
 
 The method `lf::geometry::Geometry::IntegrationElement` computes the integration element 
 
-$$
+\f[
     g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
-$$
+\f]
 
 for each point in `points` as an `Eigen::VectorXd`.
 
