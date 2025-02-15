@@ -5,7 +5,7 @@
 > [!caution]
 > The contents of this page is discussed in @lref_link{sec:meshdata}. Please read before using quick reference.
 
-<!-- Mesh Information and Mesh Data Structures are discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:meshdata}. -->
+<!-- Mesh Information and Mesh Data Structures are discussed in detail in @lref_link{sec:meshdata}. -->
 
 ## Overview
 
@@ -89,7 +89,7 @@ std::vector<const lf::mesh::Entity*> sub_entities_vec{
 
 ```
 
-A slightly more nuanced concept is the relative orientation of sub-entities of the next higher co-dimension. A detailed explanation can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{rem:ori}.
+A slightly more nuanced concept is the relative orientation of sub-entities of the next higher co-dimension. A detailed explanation can be found in the @lref_link{rem:ori}.
 
 ```cpp
 // return span of relative orientations of sub-entities of the next higher co-dimension.
@@ -144,7 +144,7 @@ The interface is defined in the lf::mesh::MeshDataSet class. More details can be
 
 ## Mesh Functions {#mesh_functions}
 
-Mesh functions are wrappers around a functor that can be evaluated on the entire mesh. The interface is defined in lf::mesh::utils::MeshFunction. A more detailed definition can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{supp:mshfn}.
+Mesh functions are wrappers around a functor that can be evaluated on the entire mesh. The interface is defined in lf::mesh::utils::MeshFunction. A more detailed definition can be found in the @lref_link{supp:mshfn}.
 
 The most general representative of a mesh function is lf::mesh::utils::MeshFunctionGlobal. It takes a functor that can be evaluated on the entire mesh. The functor must provide an operator() a point within the entity reference Element and returns a value. Lambda functions are a common way to define such functors.
 
@@ -219,7 +219,7 @@ The standard ways to create a Mesh object are:
 
 LehrFEM++ provides a number of mesh refinement tools included in the lf::refinement namespace. 
 
-Mesh refinement using LehrFEM++ is covered in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{ss:ref} and heavily used in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{cha:cvg}.
+Mesh refinement using LehrFEM++ is covered in @lref_link{ss:ref} and heavily used in @lref_link{cha:cvg}.
 
 ```cpp
 std::shared_ptr<lf::mesh::Mesh> mesh_p = lf::mesh::test_utils::GenerateHybrid2DTestMesh(0);

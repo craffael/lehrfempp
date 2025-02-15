@@ -13,7 +13,7 @@ For any one element it is enough to store the mapping \f$ \Phi_K(\hat{x}) \f$ fr
 
 ![(Affine) Geometry Mapping for Triangles](manim/parametric_fe_geometry.gif)
 
-Much more details and mathematical background can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}.
+Much more details and mathematical background can be found in the @lref_link{sec:parmFE}.
 
 ## Geometry Interface {#geometry_interface}
 
@@ -72,7 +72,7 @@ bool is_affine = geometry->isAffine();
 
 ## Transformations and Mappings {#transformations}
 
-This part is discussed in detail in [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{sec:parmFE}. Usage of the following methods is discussed in the [Assembly Quick Reference](@ref quick_reference_assembly).
+This part is discussed in detail in @lref_link{sec:parmFE}. Usage of the following methods is discussed in the [Assembly Quick Reference](@ref quick_reference_assembly).
 
 > [!note] 
 > The following methods accept a matrix of points in the local coordinate system as input. The points are stored in a matrix where each column represents a point. The number of rows corresponds to the dimension of the local coordinate system.
@@ -142,7 +142,7 @@ Eigen::MatrixXd jacobian_2 = jacobian.block(0, 2, 2, 2);
 
 ### JacobianInverseGramian {#jacobian_inverse_gramian}
 
-The method `lf::geometry::Geometry::JacobianInverseGramian` computes the inverse of the JacobianInverseGramian matrix for each point in `points`. Details can be found in the [Lecture Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf) @lref{rem:jti} and the [method docs](@ref lf::geometry::Geometry::JacobianInverseGramian). Similarly to [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian) it also returns a horizontally stacked matrix. Individual matrices can be accessed using `Eigen` block. 
+The method `lf::geometry::Geometry::JacobianInverseGramian` computes the inverse of the JacobianInverseGramian matrix for each point in `points`. Details can be found in the @lref_link{rem:jti} and the [method docs](@ref lf::geometry::Geometry::JacobianInverseGramian). Similarly to [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian) it also returns a horizontally stacked matrix. Individual matrices can be accessed using `Eigen` block. 
 
 ```cpp
 // Compute the inverse of the Jacobian matrix for each point in points
