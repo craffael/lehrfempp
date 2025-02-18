@@ -1,4 +1,4 @@
-/** \mainpage Welcome to LehrFEM++
+# Welcome to LehrFEM++ {#mainpage}
 
 LehrFEM++ is a simple Finite Element Framework for research and education optimized for
 clarity and flexibility with some trade-off concerning performance.
@@ -29,5 +29,3 @@ The following pages give you a reference for some of the modules in LehrFEM++ in
 - \ref quick_reference_emp
 - \ref quick_reference_dofh
 - \ref quick_reference_quad
-
-*/

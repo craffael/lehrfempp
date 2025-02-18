@@ -1,8 +1,7 @@
-/**
- @page getting_started Getting Started
- 
- 
- 
+# Getting Started {#getting_started}
+
+@gh_edit
+
  
  This tutorial shows you how you can call LehrFEM++ from your own code in a few simple steps.
  We will make a very simple program that calls LehrFEM++ and prints the number of nodes of a triangle to the console.
@@ -154,7 +153,3 @@ HunterGate(
 
 4) build your project as before. Note that the commit that the build can fail depending on whether the commit you have selected built LehrFEM++ correctly.
 
- 
- 
-
-*/

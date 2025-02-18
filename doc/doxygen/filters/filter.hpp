@@ -1,3 +1,7 @@
+// Author: Benedict Armstrong
+// Date: February 2025
+// This is part of the LehrFEM++ code suite
+
 #pragma once
 
 #include <string>

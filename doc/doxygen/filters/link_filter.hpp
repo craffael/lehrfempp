@@ -1,4 +1,4 @@
-// Author: Huang Liaowang
+// Author: Benedict Armstrong (adapted from code by Huang Liaowang)
 // Date: January 2020
 // This is part of the LehrFEM++ code suite
 
