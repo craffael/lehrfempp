@@ -173,6 +173,6 @@ lf::uscalfe::LinearFELocalLoadVector computes the local element vector for **lin
 where \f$f\f$ is a scalar-valued function using edge midpoint quadrature.
 
 
-## Example
+<!-- ## Example
 
-@snippet examples/lecturedemos/lecturedemoassemble.cc 
+@snippet examples/lecturedemos/lecturedemoassemble.cc  -->

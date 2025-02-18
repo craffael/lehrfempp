@@ -290,7 +290,7 @@ TAB_SIZE               = 4
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                =
+ALIASES                = myedit="<a href=https://github.com/doxygen/doxygen/blob/master/> pencil.svg </a>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -1129,7 +1129,8 @@ IMAGE_PATH             = @CMAKE_CURRENT_SOURCE_DIR@/images
 # need to set EXTENSION_MAPPING for the extension otherwise the files are not
 # properly processed by Doxygen.
 
-INPUT_FILTER           = @doxygen_input_filter@
+INPUT_FILTER           = @DOXYGEN_FILTER@
+
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
