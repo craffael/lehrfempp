@@ -2,6 +2,8 @@
 
 [TOC]
 
+@gh_edit
+
 > [!caution]
 > The contents of this page are discussed in @lref_link{par:fespace} and @lref_link{sec:LagrFEM}. Please read before using quick reference.
 

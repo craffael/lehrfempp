@@ -28,7 +28,7 @@ if(DOXYGEN_FOUND)
   if(LF_DOX_ENABLE_FILTERS)
     add_subdirectory(filters)
     # Name of the file with LaTeX referencing information
-    set(DOXYGEN_FILTER "${CMAKE_CURRENT_BINARY_DIR}/filters/doxygen_filter${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_LIST_DIR}/NPDEFLrefs.aux")
+    set(DOXYGEN_FILTER "${CMAKE_CURRENT_BINARY_DIR}/filters/doxygen_filter${CMAKE_EXECUTABLE_SUFFIX} --project-root ${CMAKE_SOURCE_DIR} --aux ${CMAKE_CURRENT_LIST_DIR}/NPDEFLrefs.aux")
     message(STATUS "Doxygen filters enabled." ${DOXYGEN_FILTER})
   else()
     set(DOXYGEN_FILTER "")

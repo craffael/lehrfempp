@@ -1,5 +1,7 @@
 # Quick Reference Pages {#quick_reference_index}
 
+@gh_edit
+
 > [!caution]
 > These pages are intended as a quick reference for users who are already familiar with the concepts discussed in @lref_link{cha:fem}. Please read the lecture notes before using the quick reference.
 

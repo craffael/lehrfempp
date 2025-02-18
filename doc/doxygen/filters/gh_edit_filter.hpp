@@ -20,13 +20,14 @@
  */
 class GithubEditFilter : public Filter {
  private:
-  std::string file_name_;
+  std::string location_;
 
   const std::string repo_url =
       "https://github.com/benedict-armstrong/lehrfempp/blob/master/";
 
  public:
-  explicit GithubEditFilter(std::string file_name);
+  explicit GithubEditFilter(const std::string file_path,
+                            const std::string project_root);
 
   ~GithubEditFilter() override = default;
 

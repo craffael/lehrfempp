@@ -27,6 +27,9 @@
  * This module comprises classes and functions supporting the generation of
  * (Galerkin) finite element matrices and right-hand-side vectors from
  * local contributions of geometric entities.
+ *
+ * @gh_edit
+ *
  */
 namespace lf::assemble {}
 

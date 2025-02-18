@@ -12,7 +12,10 @@ set(SOURCES
 )
 
 add_executable(doxygen_filter ${SOURCES})
-target_link_libraries(doxygen_filter PUBLIC Boost::boost) 
+
+target_link_libraries(doxygen_filter PUBLIC Boost::boost)
+target_link_libraries(doxygen_filter PUBLIC Boost::program_options)
+
 set_target_properties(doxygen_filter PROPERTIES 
   FOLDER "doc"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}$<0:hello>"

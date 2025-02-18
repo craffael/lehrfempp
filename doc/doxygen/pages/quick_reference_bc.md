@@ -2,6 +2,8 @@
 
 [TOC]
 
+@gh_edit
+
 > [!caution]
 > The contents of this page are discussed in @lref_link{sec:essbdc}. Please read this section before using the quick reference.
 
