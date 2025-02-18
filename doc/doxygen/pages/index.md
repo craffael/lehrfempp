@@ -12,12 +12,12 @@ give details about data structures and algorithms used in LehrFEM++.
 
 Source code and documentation can be found in the [LehrFEM++ Github](https://github.com/craffael/lehrfempp) repository.
 
-## Content:
+## Content
 - \ref getting_started
 - \ref modules_
 - \ref loggers
 
-## Quick References:
+## Quick References
 
 The following pages give you a reference for some of the modules in LehrFEM++ in a very condensed format. They should be useful to recall the syntax of a particular feature, or to have a quick look at the API. For a complete overview of the features, please refer to the detailed documentation in @lref_link{cha:fem}.
 
