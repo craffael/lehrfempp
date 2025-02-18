@@ -23,7 +23,7 @@ class GithubEditFilter : public Filter {
   std::string location_;
 
   const std::string repo_url =
-      "https://github.com/benedict-armstrong/lehrfempp/blob/master/";
+      "https://github.com/craffael/lehrfempp/blob/master/";
 
  public:
   explicit GithubEditFilter(const std::string file_path,
