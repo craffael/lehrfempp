@@ -3,34 +3,33 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{sec:parmFE}. Please read before using quick reference.
-
+> The contents of this page is discussed in @lref_link{sec:parmFE}. Please read this section before using the quick reference.
 ## Overview
 
-Local computations are essential for efficient finite element methods (FEM). LehrFEM++ uses a local indexing scheme to map local shape functions to global degrees of freedom (DOFs). In **LehrFEM++**, this is done through objects of the type `lf::assemble::DofHandler`. This quick reference provides an overview of DOF handlers and indexing conventions in **LehrFEM++**. The [assembly quick reference](@ref quick_reference_assembly) page provides more information on (local) assembly using DOF handlers. 
+Local computations are essential for efficient finite element methods (FEM). LehrFEM++ uses a local indexing scheme to map local shape functions to global degrees of freedom (DOFs). In **LehrFEM++**, this is done through objects of the type `lf::assemble::DofHandler`. This quick reference provides an overview of DOF handlers and indexing conventions in **LehrFEM++**. The [assembly quick reference](@ref quick_reference_assembly) page provides more information on (local) assembly using DOF handlers.
 <!-- In finite element methods (FEM), handling degrees of freedom (DOFs) is critical for constructing systems of equations. DOF handlers are responsible for assigning local basis functions to global basis functions, which allows for the assembly of global matrices and vectors from element contributions. -->
 
 ## Local to Global Index Mapping
 
-The local shape functions of every cell (co-dimension-0 entity) are arranged according to increasing dimension of the geometric entities they are associated with:
+The local shape functions of every cell (co-dimension-0 entity) are arranged according to the increasing dimension of the geometric entities they are associated with:
 
 1. Points (Vertices)
 2. Edges
 3. Cells (Triangles or Quadrilaterals)
 
-DOFs associated with lower-dimensional entities (e.g., points and edges) are numbered first, followed by higher-dimensional ones (cells). Within each category, entities are numbered according to their intrinsic indexing as returned by the Index() function. this is also illustrated in @lref_link{quadnodes2} and @lref_link{lnlfe2}.
+DOFs associated with lower-dimensional entities (e.g., points and edges) are numbered first, followed by higher-dimensional ones (cells). Within each category, entities are numbered according to their intrinsic indexing as returned by the `Index()` function. This is also illustrated in @lref_link{quadnodes2} and @lref_link{lnlfe2}.
 
 ## DOF Handlers in LehrFEM++
 
 LehrFEM++ provides two implementations of DOF handlers:
 
 1. `lf::assemble::DynamicFEDofHandler`: Allows for a variable number of local DOFs for each entity (e.g. for hp-FEM, see @lref_link{par:dofhinit})
-2. `lf::assemble::UniformFEDofHandler`: Assigns a the same number of DOFs to each entity of a given type (uniform FE space).
+2. `lf::assemble::UniformFEDofHandler`: Assigns the same number of DOFs to each entity of a given type (uniform FE space).
 
 
 ### DynamicFEDofHandler
 
-The following code shows how a DynamicFEDofHandler can be initialized. More detail can also be found in @lref_link{par:dofhinit}.
+A `DynamicFEDofHandler` can be initialized with a function that returns the number of DOFs associated with a given entity.
 
 ```cpp
 const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
@@ -58,25 +57,24 @@ lf::assemble::UniformFEDofHandler dofh(mesh_p,
                                         {lf::base::RefEl::kTria(), 0},
                                         {lf::base::RefEl::kQuad(), 1}});
 ```
-For this example (2nd order Lagrange FE space):
+
+For example, in a second-order Lagrange FE space (as shown in the code above):
 
 - Each point carries 1 DOF.
-- Each edge carries 1 DOFs.
-- Each triangle has 0 DOF.
-- Each quadrilateral has 1 DOFs.
+- Each edge carries 1 DOF.
+- Each triangle has 0 DOFs.
+- Each quadrilateral has 1 DOF.
 
 ## Global Indexing convention
 
 LehrFEM++ follows the convention of numbering **global** DOFs according to the following rule:
 
-1.  D.o.f. associated with lower-dimensional entities are numbered first:
-
-  \f[
+1. DOFs associated with lower-dimensional entities are numbered first:
+   \f[
     \text{POINT} \rightarrow \text{SEGMENT} \rightarrow \text{TRIA/QUAD}
-  \f]
+   \f]
 
-1. The indices of d.o.f. belonging to entities of the same co-dimension increase with increasing entity
-indices as returned by the `Index()` function.
+2. The indices of DOFs belonging to entities of the same co-dimension increase with increasing entity indices as returned by the `Index()` function.
 
 ## Key Methods
 The key methods provided by the `DofHandler` interface are:
@@ -87,7 +85,7 @@ The key methods provided by the `DofHandler` interface are:
   unsigned num_dofs = dofh.NumDofs();
   ```
 
-- `NumLocalDofs(const lf::mesh::Entity &)`: Provides the number of DOFs associated with a particular geometric entity.  See also @lref_link{par:betldofmap}.
+- `NumLocalDofs(const lf::mesh::Entity &)`: Returns the number of DOFs associated with a particular geometric entity.  See also @lref_link{par:betldofmap}.
   
   ```cpp
   const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);

@@ -3,17 +3,17 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{sec:parmFE}. Please read before using quick reference.
+> The content of this page is discussed in @lref_link{sec:parmFE}. Please read before using quick reference.
 
 ## Overview
 
-LehrFEM++ provides an Interface for geometry data: lf::geometry::Geometry. Geometry data for entities is stored as a mapping \f$ \Phi_K(\hat{x}) \f$ from the reference element (unit triangle, square, unit segment) to any general element. \f$ \Phi_K^{*}(\hat{x}) \f$ represents the inverse mapping from the general element to the reference element.
+LehrFEM++ provides an interface for geometry data: `lf::geometry::Geometry`. Geometry data for entities is stored as a mapping \f$ \Phi_K(\hat{x}) \f$ from the reference element (unit triangle, square, unit segment) to any general element. \f$ \Phi_K^{*}(\hat{x}) \f$ represents the inverse mapping from the general element to the reference element.
 
-For any one element it is enough to store the mapping \f$ \Phi_K(\hat{x}) \f$ from the reference element and the type of the [reference Element](@ref lf::base::RefEl).
+For any one element, it is enough to store the mapping \f$ \Phi_K(\hat{x}) \f$ from the reference element and the type of the [reference element](@ref lf::base::RefEl).
 
 ![(Affine) Geometry Mapping for Triangles](manim/parametric_fe_geometry.gif)
 
-Much more details and mathematical background can be found in the @lref_link{sec:parmFE}.
+More details and mathematical background can be found in @lref_link{sec:parmFE}.
 
 ## Geometry Interface {#geometry_interface}
 
@@ -28,7 +28,7 @@ for (const lf::mesh::Entity* entity : mesh.Entities(codim)) {
 
 ### Utility Functions {#geometry_utility}
 
-A number of convenience functions are provided by the Geometry class.
+A number of convenience functions are provided by the `Geometry` class.
 
 ```cpp
 const lf::geometry::Geometry* geometry = entity->Geometry();
@@ -42,7 +42,7 @@ double v = lf::geometry::Volume(*geometry);
 Eigen::MatrixXd corners = lf::geometry::Corners(*geometry);
 ```
 
-In addition we can test for some properties of the geometry:
+In addition, we can test for some properties of the geometry:
 
 ```cpp
 // Test if geometry is a non-degenerate bilinear quadrilateral (corners matrix with 4 cols)
@@ -54,7 +54,7 @@ bool is_not_deg = lf::geometry::assertNonDegenerateTriangle(corners);
 
 ## Geometry Methods {#geometry_methods}
 
-Objects implementing the lf::geometry::Geometry interface provide the following methods:
+Objects implementing the `lf::geometry::Geometry` interface provide the following methods:
 
 ```cpp
 // Dimension of the local coordinate system
@@ -79,7 +79,7 @@ This part is discussed in detail in @lref_link{sec:parmFE}. Usage of the followi
 
 ### Global {#global}
 
-The lf::geometry::Geometry class provides the `lf::geometry::Geometry::Global` method to map points from local to global coordinates. In LehrFEM++ `local` points generally refer to point on the reference element.
+The `lf::geometry::Geometry` class provides the `lf::geometry::Geometry::Global` method to map points from local to global coordinates. In LehrFEM++, `local` points generally refer to points on the reference element.
 
 ```cpp
 // Define two point on the reference element (local).
@@ -109,11 +109,11 @@ Eigen::VectorXd integration_element = geometry->IntegrationElement(local_points)
 ```
 
 > [!note]
-> The following two methods return a matrix for each evaluated point. For efficiency reasons the returned matrices are horizontally stacked. The number of rows corresponds to the dimension of the global coordinate system.
+> The following two methods return a matrix for each evaluated point. For efficiency reasons, the returned matrices are horizontally stacked. The number of rows corresponds to the dimension of the global coordinate system.
 
 ### Jacobian {#jacobian}
 
-The method `lf::geometry::Geometry::Jacobian` computes the Jacobian matrix \f$ D\Phi(\hat{x}) \f$ for each point in `points`
+The method `lf::geometry::Geometry::Jacobian` computes the Jacobian matrix \f$ D\Phi(\hat{x}) \f$ for each point in `points`.
 
 ```cpp
 // Compute the Jacobian matrix for each point in points
@@ -129,11 +129,11 @@ unsigned dim_local = geometry->DimLocal();
 Eigen::MatrixXd jacobian_n = jacobian.block(0, n * dim_local, dim_global, dim_local);
 ```
 
-If `dim_local == dim_global == 2` and we pass three point for evaluation [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian) returns a \f$ 2 \times 6 \f$ matrix:
+If `dim_local == dim_global == 2` and we pass three points for evaluation, [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian) returns a \f$ 2 \times 6 \f$ matrix:
 
 ![Block matrix returned by Geometry::Jacobian](manim/jacobian_block_access.gif)
 
-To access the Jacobi for the second point we can use [Eigen block access](https://eigen.tuxfamily.org/dox/group__TutorialBlockOperations.html):
+To access the Jacobian for the second point, we can use [Eigen block access](https://eigen.tuxfamily.org/dox/group__TutorialBlockOperations.html):
 
 ```cpp
 // Access 2x2 Jacobian matrix starting at row 0 and column 2
@@ -142,7 +142,7 @@ Eigen::MatrixXd jacobian_2 = jacobian.block(0, 2, 2, 2);
 
 ### JacobianInverseGramian {#jacobian_inverse_gramian}
 
-The method `lf::geometry::Geometry::JacobianInverseGramian` computes the inverse of the JacobianInverseGramian matrix for each point in `points`. Details can be found in the @lref_link{rem:jti} and the [method docs](@ref lf::geometry::Geometry::JacobianInverseGramian). Similarly to [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian) it also returns a horizontally stacked matrix. Individual matrices can be accessed using `Eigen` block. 
+The method `lf::geometry::Geometry::JacobianInverseGramian` computes the inverse of the JacobianInverseGramian matrix for each point in `points`. Details can be found in @lref_link{rem:jti} and the [method docs](@ref lf::geometry::Geometry::JacobianInverseGramian). Similarly to [Geometry::Jacobian](@ref lf::geometry::Geometry::Jacobian), it also returns a horizontally stacked matrix. Individual matrices can be accessed using `Eigen` block. 
 
 ```cpp
 // Compute the inverse of the Jacobian matrix for each point in points

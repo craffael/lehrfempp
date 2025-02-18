@@ -3,7 +3,7 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{sec:meshdata}. Please read before using quick reference.
+> The contents of this page is discussed in @lref_link{sec:meshdata}. Please read this section before using the quick reference.
 
 <!-- Mesh Information and Mesh Data Structures are discussed in detail in @lref_link{sec:meshdata}. -->
 
@@ -104,7 +104,7 @@ std::vector<lf::mesh::Orientation> orientations_vec{
 
 ## Mesh Data Sets {#mesh_data_sets}
 
-Mesh data sets are used to store data with entities of the mesh. A common use cases are:
+Mesh data sets are used to store data with entities of the mesh. A fe common use cases are:
 
 - Flags that mark boundary entities.
 - Material parameters for mesh elements (codim=0)

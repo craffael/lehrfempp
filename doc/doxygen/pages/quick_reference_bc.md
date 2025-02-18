@@ -3,21 +3,21 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{sec:essbdc}. Please read before using quick reference.
+> The contents of this page are discussed in @lref_link{sec:essbdc}. Please read this section before using the quick reference.
 
 ## Overview
 
-LehrFEM++ provides a number of convenient functions to work with essential boundary conditions.
+LehrFEM++ provides a number of convenient functions for working with essential boundary conditions.
 
-To fix degrees of freedom (DoF) on the boundary we can use the functions `lf::assemble::FixFlaggedSolutionComponents` or `lf::assemble::FixFlaggedSolutionCompAlt` (see also [Quick Reference Assembly](@ref quick_reference_assembly)). Both functions takes a function as an argument that returns a pair of a boolean and a double: `std::pair<bool, double> selector(unsigned int dof_idx)`. The selector function returns whether the DoF is to be fixed and if so, the value it should be fixed to.
+To fix degrees of freedom (DoFs) on the boundary, we can use the functions `lf::assemble::FixFlaggedSolutionComponents` or `lf::assemble::FixFlaggedSolutionCompAlt` (see also [Quick Reference - Assembly](@ref quick_reference_assembly)). Both functions take a function as an argument that returns a pair of a boolean and a double: `std::pair<bool, double> selector(unsigned int dof_idx)`. The selector function returns whether the DoF is to be fixed and, if so, the value it should be fixed to.
 
-We can get the boundary flags as a [MeshDataSet](./quick_reference_mesh.html#mesh_data_sets) using:
+We can obtain the boundary flags as a [MeshDataSet](@ref mesh_data_sets) using:
 
 ```cpp
 auto bd_flags = lf::mesh::utils::flagEntitiesOnBoundary(dofh.Mesh(), 2);
 ```
 
-The second argument is the co-dimension of entities we are interested in. To fix all DoF on the boundary (including those associated with edges and cells), give no second argument. 
+The second argument is the co-dimension of the entities we are interested in. To fix all DoFs on the boundary (including those associated with edges and cells), omit the second argument.
 
 ## One function on the whole boundary {#one_function}
 
@@ -30,7 +30,7 @@ std::vector<std::pair<bool, scalar_t>> boundary_val =
     lf::fe::InitEssentialConditionFromFunction(*fe_space, bd_flags, mf_g);
 ```
 
-This returns a `std::vector<std::pair<bool, scalar_t>>`. To get our selector:
+This returns a `std::vector<std::pair<bool, scalar_t>>`. To create our selector:
 
 ```cpp
 auto selector = [&](unsigned int dof_idx) -> std::pair<bool, double> {
@@ -43,7 +43,8 @@ If \f$g\f$ has different definitions on different parts of the boundary (e.g., \
 
 ## Constant value on the boundary {#constant_value}
 
-The selector becomes
+The selector becomes:
+
 ```cpp
 auto selector = [&](unsigned int dof_idx) -> std::pair<bool, double> {
     if (bd_flags[dof_idx]) {
@@ -56,14 +57,13 @@ auto selector = [&](unsigned int dof_idx) -> std::pair<bool, double> {
 
 ## BC only on part of the boundary {#part_of_boundary}
 
-Wee need to create our own bd_flags. Initialize a MeshDataSet with default value `false`:
+We need to create our own `bd_flags`. Initialize a `MeshDataSet` with default value `false`:
 
 ```cpp
 lf::mesh::utils::AllCodimMeshDataSet<bool> bd_flags(mesh_p, false);
 ```
 
-Then loop over nodes and edges separately and set `bd_flags` to true for the nodes/edges where
-the BC should be applied.
+Then loop over nodes and edges separately and set `bd_flags` to true for the nodes/edges where the boundary condition should be applied.
 
 ```cpp
 for (const auto& edge : fe_space->Mesh()->Entities(1)) {

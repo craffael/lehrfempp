@@ -3,15 +3,15 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{rem:cppconcepts}. Please read before using quick reference.
+> The contents of this page is discussed in @lref_link{rem:cppconcepts}. Please read this section before using the quick reference.
 
 ## Overview
 
-LehrFEM++ provides some built-in lf::assemble::EntityMatrixProvider (EMPs) and entity lf::assemble::EntityVectorProvider (EVPs) for common PDEs. Users can also define custom EMPs and EVPs. EMPs/EVPs are used to compute local element matrices for finite element methods and are usually passed to the `lf::assemble::AssembleMatrixLocally` / `lf::assemble::AssembleVectorLocally` functions (see also [Quick Reference - Assembly](@ref quick_reference_assembly)).
+LehrFEM++ includes built-in `lf::assemble::EntityMatrixProvider` (EMPs) and `lf::assemble::EntityVectorProvider` (EVPs) for common PDEs. Custom EMPs/EVPs can also be defined. These providers compute local element matrices/vectors for finite element methods and are typically passed to `lf::assemble::AssembleMatrixLocally` or `lf::assemble::AssembleVectorLocally` (see [Assembly](@ref quick_reference_assembly)).
 
 ## Custom Entity Vector Providers {#custom_entity_vector_providers}
 
-A custom entity matrix provider has to implement the `lf::assemble::EntityMatrixProvider` concept. The following snippets offer minimal definitions for EMPs and EVPs:
+A custom EMP must implement the `lf::assemble::EntityMatrixProvider` concept. Minimal definitions:
 
 @snippet snippets/assembler.cc lflinfeelmat
 
@@ -21,9 +21,9 @@ A custom entity matrix provider has to implement the `lf::assemble::EntityMatrix
 
 <!-- Editor Note: Turn off word wrap to display table properly in Editor -->
 
-Entity Matrix Providers (EMPs) in LehrFEM++ are used to compute local element matrices for finite element methods. Below is a table summarizing the key built-in EMPs in LehrFEM++.
+Below is a summary of key built-in EMPs:
 
-| Equation                                                                                                                                                                                              | Name (follow link for details)                                                  | Equation                                              |
+| Equation                                                                                                                                                                                              | Name (follow link for details)                                                  | Description                                           |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | \f$ \int\limits_{K}\boldsymbol{\alpha}(\mathbf{x})\mathbf{grad}\,u \cdot\mathbf{grad}\,v\,\mathrm{d}\mathbf{x} \f$                                                                                    | [fe::DiffusionElementMatrixProvider](#lffediffusionelementmatrixprovider)       | stiffness matrix for the diffusion equation.          |
 | \f$ \int\limits_{K}\gamma(\mathbf{x})u\,\overline{v}\,\mathrm{d}\mathbf{x} \f$                                                                                                                        | [fe::MassElementMatrixProvider](#lfemasselementmatrixprovider)                  | mass matrix for the reaction-diffusion equation.      |
@@ -109,7 +109,7 @@ where @f$e@f$ is an edge of the mesh, and \f$\gamma\f$ a scalar-valued coefficie
 
 Entity Vector Providers (EVPs) in LehrFEM++ are used to compute local element vectors for finite element methods. Below is a table summarizing the key built-in EVPs in LehrFEM++.
 
-| Equation                                                                  | Name (follow link for details)                                                        | Equation                                                               |
+| Equation                                                                  | Name (follow link for details)                                                        | Description                                                            |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | \f$ \int\limits_{K}f(\mathbf{x})v\,\mathrm{d}\mathbf{x} \f$               | [fe::ScalarLoadElementVectorProvider](#lffeScalarLoadElementVectorProvider)           | load vector for the scalar load on an element.                         |
 | \f$ \int\limits_{e}g(x)\overline{v(x)}\,\mathrm{d}S(x) \f$                | [fe::ScalarLoadEdgeVectorProvider](#lffeScalarLoadEdgeVectorProvider)                 | load vector for the scalar load on an edge \f$e\f$.                    |

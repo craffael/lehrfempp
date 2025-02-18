@@ -3,14 +3,14 @@
 [TOC]
 
 > [!caution]
-> The contents of this page is discussed in @lref_link{par:lfquad}. Please read before using quick reference.
+> The contents of this page is discussed in @lref_link{par:lfquad}. Please read this section before using the quick reference.
 
 # Overview
 
 LehrFEM++ provides a number of quadrature rules for the numerical integration of functions over reference elements. General entities can be mapped to the reference element using the methods described in the [Geometry](@ref quick_reference_geometry) quick reference.
 
 # Working with Quadrature Rules
-The `quad` namespace has some useful function for instantiating quadrature rules for a given reference element. The following code snippet shows how to get a quadrature rule for a triangle of degree >= 3 using `lf::quad::make_QuadRule`.
+The `quad` namespace has some useful functions for instantiating quadrature rules for a given reference element. The following code snippet shows how to get a quadrature rule for a triangle of degree >= 3 using `lf::quad::make_QuadRule`.
 
 ```cpp
 auto ref_tria = lf::base::RefEl::kTria();
