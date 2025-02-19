@@ -1,5 +1,6 @@
-/**
- @page eigen_stacktrace_warning Eigen included before LehrFEM++
+# Eigen included before LehrFEM++ {#eigen_stacktrace_warning}
+
+@gh_edit
  
  You are here because you encountered the following warning during compilation:
  ```
@@ -64,5 +65,3 @@ In file included from /home/raffael/lehrfempp/lib/lf/base/eigen_tools.h:12:
     LOCAL # use cmake/Hunter/config.cmake
    )
    ```
- 
-*/

@@ -20,8 +20,17 @@
 namespace lf::mesh::utils {
 
 /**
- * @brief Assigns to every entity(all codims) in a mesh a value of type `T`
+ * @brief Assigns to every entity (all codims) in a mesh a value of type `T`
  * @tparam T The type of value to store with every entity
+ *
+ * ## Example
+ *
+ * @snippet mesh_utils.cc AllCodimMeshDataSet
+ *
+ * The MeshDataSet interface class provides more information on how to interact
+ * with a MeshDataSet.
+ *
+ * To set values only for a specific codimension, see CodimMeshDataSet.
  *
  * @sa MeshDataSet
  */

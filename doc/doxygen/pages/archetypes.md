@@ -1,6 +1,6 @@
-/**
+# Archetypes {#archetypes}
 
-@page archetypes Archetypes
+@gh_edit
 
 For every concept defined in LehrFEM++, we provide an archetype class that models the corresponding concept 
  in the most minimal way possible without providing extra functionality.
@@ -81,10 +81,3 @@ struct AnimalAT {
 @sa lf::assemble::EntityMatrixProviderAT
 @sa lf::assemble::EntityVectorProviderAT
 @sa lf::mesh::utils::MeshFunctionAT
-
-
-
-
-
-
-*/

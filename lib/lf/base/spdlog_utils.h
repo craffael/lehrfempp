@@ -43,6 +43,17 @@ namespace lf::base {
  *
  * @note So far a call to this method is essentially forwarded to
  * spdlog::stdout_color_mt() and the formatter is set to a LineFeedFormatter.
+ *
+ * ```{.cpp}
+ * auto logger = lf::base::InitLogger("logger_name");
+ * logger->info("Hello, World!");
+ * ```
+ *
+ * This will output:
+ * ```{.unparsed}
+ * [2024-10-07 18:07:21.081] [logger_name] [info] Hello, World!
+ * ```
+ *
  */
 std::shared_ptr<spdlog::logger> InitLogger(const std::string& name);
 

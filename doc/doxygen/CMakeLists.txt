@@ -10,7 +10,8 @@ if(DOXYGEN_FOUND)
   
   OPTION(LF_DOX_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile. Set this to On in order to also generate doxygen documentation of private members." ON)
   OPTION(LF_DOX_INCLUDE_PROJECTS "Set this to true to include all the projects in the ./projects folder in the doxygen documentation." OFF)
-  OPTION(LF_DOX_ENABLE_LREF "If this is set to false, @lref{} statements in doxygen documentation are not translated into formatted latex label." ON)
+  OPTION(LF_DOX_ENABLE_FILTERS "If this is set to false, @lref{} statements in doxygen documentation are not translated into formatted latex label." ON)
+
   
   if(LF_DOX_EXTRACT_PRIVATE)
     set(LF_DOX_EXTRACT_PRIVATE_ YES)
@@ -24,28 +25,15 @@ if(DOXYGEN_FOUND)
     set(LF_DOX_INCLUDE_PROJECTS_ "")
   endif()
   
-  if(LF_DOX_ENABLE_LREF)
-    # Setup filtering of doxygen source files so that we can turn Latex references 
-    # from NPDELrefs.aux into section numbers in the doxygen doc.
-    
-    # C++ script which is executed for every doxygen source file:
-    set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_RELEASE}) # compile in release mode, even if building debug (for efficiency)
-    set(CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_CXX_FLAGS_RELEASE})
-    add_executable(doxygen_filter filter.cpp)
-    target_link_libraries(doxygen_filter PUBLIC Boost::boost) 
-    set_target_properties(doxygen_filter PROPERTIES FOLDER "doc")
-    set_target_properties(doxygen_filter PROPERTIES 
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}$<0:hello>"
-      RUNTIME_OUTPUT_NAME "doxygen_filter"
-      CXX_STANDARD 17
-    )
+  if(LF_DOX_ENABLE_FILTERS)
+    add_subdirectory(filters)
     # Name of the file with LaTeX referencing information
-    set(doxygen_input_filter "${CMAKE_CURRENT_BINARY_DIR}/doxygen_filter${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_LIST_DIR}/NPDEFLrefs.aux")
+    set(DOXYGEN_FILTER "${CMAKE_CURRENT_BINARY_DIR}/filters/doxygen_filter${CMAKE_EXECUTABLE_SUFFIX} --project-root ${CMAKE_SOURCE_DIR} --aux ${CMAKE_CURRENT_LIST_DIR}/NPDEFLrefs.aux")
+    message(STATUS "Doxygen filters enabled." ${DOXYGEN_FILTER})
   else()
-    set(doxygen_input_filter "")
+    set(DOXYGEN_FILTER "")
   endif()
-  
-  
+    
   
   # request to configure the file
   configure_file(${DOXYGEN_INPUT} ${DOXYGEN_OUTPUT} @ONLY)
@@ -58,12 +46,14 @@ if(DOXYGEN_FOUND)
     VERBATIM
     )
   set_target_properties(doxygen PROPERTIES FOLDER "doc")
-  if(LF_DOX_ENABLE_LREF)
+
+  if(LF_DOX_ENABLE_FILTERS)
     add_dependencies(doxygen doxygen_filter)
   endif()
 
-  endif()
   
   if(LF_BUILD_DOC)
     add_subdirectory(snippets)
   endif()
+
+endif(DOXYGEN_FOUND)

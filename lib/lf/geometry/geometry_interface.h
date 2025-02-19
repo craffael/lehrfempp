@@ -122,7 +122,7 @@ class Geometry {
    * To retrieve the j-th inverse transposed Jacobian from the returned matrix,
    * use the `block` methdod of `Eigen` (case `(D = DimLocal()) == DimGlobal()`)
    * ~~~
-   * JacobianInverseGramian(local).block(0,i*D,D,D)
+   * JacobianInverseGramian(local).block(0,j*D,D,D)
    * ~~~
    * @image html jiglfpp.png
    *
@@ -149,7 +149,7 @@ class Geometry {
        g(\xi) := \sqrt{\mathrm{det}\left|D\Phi^T(\xi) D\Phi(\xi) \right|}
    * \f]
    *
-   * More information also related to the use of lovcal quadrature rules is
+   * More information also related to the use of local quadrature rules is
    * given in [Lecture
    * Document](https://www.sam.math.ethz.ch/~grsam/NUMPDEFL/NUMPDE.pdf)
    * @lref{par:tranquil}.
