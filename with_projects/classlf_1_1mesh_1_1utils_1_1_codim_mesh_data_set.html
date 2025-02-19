@@ -230,7 +230,7 @@ Example</h2>
 <div class="line">  mesh_data_set_cells(*cell) = <span class="keyword">false</span>;</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// check if the data set is defined on an entity</span></div>
-<div class="line">  mesh_data_set_cells.DefinedOn(*cell);  <span class="comment">// returns true</span></div>
+<div class="line">  <span class="keywordtype">bool</span> b = mesh_data_set_cells.DefinedOn(*cell);  <span class="comment">// returns true</span></div>
 </div><!-- fragment --><p>The <a class="el" href="classlf_1_1mesh_1_1utils_1_1_mesh_data_set.html" title="Interface that specifies how data is stored with an entity.">MeshDataSet</a> interface class provides more information on how to interact with a <a class="el" href="classlf_1_1mesh_1_1utils_1_1_mesh_data_set.html" title="Interface that specifies how data is stored with an entity.">MeshDataSet</a>.</p>
 <p>To set values for all codimension, see <a class="el" href="classlf_1_1mesh_1_1utils_1_1_all_codim_mesh_data_set.html" title="Assigns to every entity (all codims) in a mesh a value of type T">AllCodimMeshDataSet</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classlf_1_1mesh_1_1utils_1_1_mesh_data_set.html" title="Interface that specifies how data is stored with an entity.">MeshDataSet</a> </dd></dl>
