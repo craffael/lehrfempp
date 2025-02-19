@@ -1,0 +1,28 @@
+var classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element =
+[
+    [ "PrecomputedScalarReferenceFiniteElement", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a32878b8448926904d5e7cde6c83eaeaf", null ],
+    [ "PrecomputedScalarReferenceFiniteElement", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a48b0f63c2676556d1a7c3618bd9c9c0e", null ],
+    [ "PrecomputedScalarReferenceFiniteElement", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a32b5dd9df0fca69ad5823b2c05d950a3", null ],
+    [ "PrecomputedScalarReferenceFiniteElement", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a3b74344acd08f489f6c7f0168f1dbb77", null ],
+    [ "~PrecomputedScalarReferenceFiniteElement", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a56273745a88b0c470a3bd112ed46e148", null ],
+    [ "Degree", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#af181949083fadfdd64fba4d5416638c2", null ],
+    [ "EvalReferenceShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#ab448e736f7971cab69a2208fd4b0fd3b", null ],
+    [ "EvaluationNodes", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#ae6a99aa635187a586b897bee721e6bbc", null ],
+    [ "GradientsReferenceShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a654fd83495b89ccea84d9e9f72990d9d", null ],
+    [ "isInitialized", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a032481d73c3c50b5e014d57d1efd82fb", null ],
+    [ "NodalValuesToDofs", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a90e2f684f85c270080c7cdeacf551ef6", null ],
+    [ "NumEvaluationNodes", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a34a43b2cae917cc0e01323d6153c73c4", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a459d7ae8fff5e77d9b924668f8d6e643", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a5df71c4ac99d0b1a207f9a97e97587a6", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#afd2b28512a70ecfb903919dfe005e67b", null ],
+    [ "operator=", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a9a1f8c64192566f83994416a83fe43ac", null ],
+    [ "operator=", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a27ef6b1dfc5ebdd2dffe87d0b0388e4c", null ],
+    [ "PrecompGradientsReferenceShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#ad054dbfb57fe7847b3fbc24d3c0901b3", null ],
+    [ "PrecompReferenceShapeFunctions", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a60177709fd6f1ebfcac8d7a42be0ced2", null ],
+    [ "Qr", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a6e7e03e57d1a004c7aceb4f4ef48bfa7", null ],
+    [ "RefEl", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a598cc283cce850250029e60a42e60b68", null ],
+    [ "fe_", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a51494115fc9ddc11e2f3cd400e02e6a3", null ],
+    [ "grad_shape_fun_", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#ab3cb4231ef5f79b98d1bbc56d5035b37", null ],
+    [ "qr_", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#a6af296e46d765d2d1f9b93e862c897d6", null ],
+    [ "shap_fun_", "classlf_1_1uscalfe_1_1_precomputed_scalar_reference_finite_element.html#af0365b4aebb87cd6bd7a4db4ead40c2d", null ]
+];

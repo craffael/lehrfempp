@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['included_20before_20lehrfem_0',['Eigen included before LehrFEM++',['../eigen_stacktrace_warning.html',1,'']]]
+  ['finite_20element_20spaces_0',['Quick Reference - Finite Element Spaces',['../quick_reference_fe_space.html',1,'']]],
+  ['freedom_20dof_20handlers_20and_20indexing_1',['Quick Reference - Degrees of Freedom (DOF) Handlers and Indexing',['../quick_reference_dofh.html',1,'']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['a_0',['A',['../struct_problem_solution.html#a8338968f179e3becb3c43b49914508fe',1,'ProblemSolution']]],
-  ['a_5f_1',['A_',['../class_fisher_k_p_p_1_1_strang_split.html#a08ab1c382a00503e71f03ece02c2a2c2',1,'FisherKPP::StrangSplit']]],
+  ['a_5f_1',['A_',['../class_fisher_k_p_p_1_1_strang_split.html#a08ab1c382a00503e71f03ece02c2a2c2',1,'FisherKPP::StrangSplit::A_'],['../class_strang_split.html#a08ab1c382a00503e71f03ece02c2a2c2',1,'StrangSplit::A_']]],
   ['a_5f_2',['a_',['../classlf_1_1mesh_1_1utils_1_1_mesh_function_binary.html#a9a8c07097951ce7b351d77d1e42d795e',1,'lf::mesh::utils::MeshFunctionBinary']]],
   ['a_5fmodified_3',['A_modified',['../struct_problem_solution.html#a1bac4d7342f62cae43b2eff62b87cdca',1,'ProblemSolution']]],
   ['affine_5ftransform_4',['affine_transform',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_periodic_link.html#af35760fd30c5905ac643a10ba3dd5051',1,'lf::io::GMshFileV4::PeriodicLink']]],

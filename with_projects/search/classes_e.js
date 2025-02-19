@@ -9,7 +9,7 @@ var searchData=
   ['segment_6',['Segment',['../classlf_1_1mesh_1_1hybrid2d_1_1_segment.html',1,'lf::mesh::hybrid2d']]],
   ['segmento1_7',['SegmentO1',['../classlf_1_1geometry_1_1_segment_o1.html',1,'lf::geometry']]],
   ['segmento2_8',['SegmentO2',['../classlf_1_1geometry_1_1_segment_o2.html',1,'lf::geometry']]],
-  ['strangsplit_9',['StrangSplit',['../class_fisher_k_p_p_1_1_strang_split.html',1,'FisherKPP']]],
+  ['strangsplit_9',['StrangSplit',['../class_fisher_k_p_p_1_1_strang_split.html',1,'FisherKPP::StrangSplit'],['../class_strang_split.html',1,'StrangSplit']]],
   ['structuredmeshbuilder_10',['StructuredMeshBuilder',['../classlf_1_1mesh_1_1utils_1_1_structured_mesh_builder.html',1,'lf::mesh::utils']]],
   ['subelementmatrixprovider_11',['SubElementMatrixProvider',['../classprojects_1_1dpg_1_1_sub_element_matrix_provider.html',1,'projects::dpg']]],
   ['subelementvectorprovider_12',['SubElementVectorProvider',['../classprojects_1_1dpg_1_1_sub_element_vector_provider.html',1,'projects::dpg']]]

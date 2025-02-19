@@ -1,0 +1,27 @@
+var classlf_1_1fe_1_1_fe_hierarchic_tria =
+[
+    [ "FeHierarchicTria", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a691e612a85e50926001508886dd09bae", null ],
+    [ "FeHierarchicTria", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#ae2865fde150dcb1bad8d4870d40c96f2", null ],
+    [ "~FeHierarchicTria", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a83d8ac700e12a4ddf6d594178ed11fe5", null ],
+    [ "FeHierarchicTria", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#adaec1fe2d8a2a583d37fefcaa1f24719", null ],
+    [ "Degree", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#ad6c5f6480403cd802908c104a34db75e", null ],
+    [ "EvalReferenceShapeFunctions", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a08672216a6f348be8ac708d3e8456cf9", null ],
+    [ "EvaluationNodes", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a70039a41c500a8c432d97605e93b50ce", null ],
+    [ "GradientsReferenceShapeFunctions", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#acd1ba51fbec5a842c683b9374d994d10", null ],
+    [ "NodalValuesToDofs", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a78a00aa325eb4c2cc3acadf0cc9c3293", null ],
+    [ "NodalValuesToEdgeDofs", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a63610f0b34701939f66ff901ecdc2567", null ],
+    [ "NodalValuesToFaceDofs", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a7487a280d89a1c8742f8f99b747fe5af", null ],
+    [ "NodalValuesToVertexDofs", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#ad773f2765049878d073fa71097d3815b", null ],
+    [ "NumEvaluationNodes", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#af8d2d22a8a6bcf5d47fb1d39d47b45d8", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#aaf970e430af51970faeb31191f65a0eb", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#accf0ad725210d66b49994942e89e20aa", null ],
+    [ "NumRefShapeFunctions", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a8b563e1a9b4df79c58b209c1c9bcf045", null ],
+    [ "operator=", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a4237d517055d5d6ccde5b7cd0492a2bf", null ],
+    [ "operator=", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#aa76bbfc882f5c34e1e0da4df011e6044", null ],
+    [ "RefEl", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a0237dd161531f0c0195b26732ee8c6fe", null ],
+    [ "edge_degrees_", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#afd139ef391af77b5109964291a4b2eaf", null ],
+    [ "interior_degree_", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a166551c5fbaab603da266feaa6ea99e9", null ],
+    [ "qr_dual_edge_", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a5879dc6eedf4749de6623ff66f6bc2ce", null ],
+    [ "qr_dual_tria_", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a508cdd68b52dd8851cc0e27086fdb512", null ],
+    [ "rel_orient_", "classlf_1_1fe_1_1_fe_hierarchic_tria.html#a59f5ea7bc26f27a11b3dfa3ce5c63ef2", null ]
+];

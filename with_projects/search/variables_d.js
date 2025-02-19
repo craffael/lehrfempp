@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['name_0',['name',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_physical_name.html#ae5a5d16fd6e3c92636fe7c5d8a38d0e3',1,'lf::io::GMshFileV4::PhysicalName::name'],['../classlf_1_1io_1_1_vtk_file_1_1_field_data_array.html#a865f452e9470e4f622a806c2b8382ef8',1,'lf::io::VtkFile::FieldDataArray::name'],['../classlf_1_1io_1_1_vtk_file_1_1_scalar_data.html#ab3802f370501e095c7172eed685db884',1,'lf::io::VtkFile::ScalarData::name'],['../classlf_1_1io_1_1_vtk_file_1_1_vector_data.html#a23d548a6783e5165812b1d4dd85ce06c',1,'lf::io::VtkFile::VectorData::name']]],
-  ['name_1',['Name',['../structlf_1_1io_1_1_g_msh_file_v2_1_1_physical_entity.html#ababd1e8522708c41ef4cf35422ac626f',1,'lf::io::GMshFileV2::PhysicalEntity']]],
+  ['name_0',['Name',['../structlf_1_1io_1_1_g_msh_file_v2_1_1_physical_entity.html#ababd1e8522708c41ef4cf35422ac626f',1,'lf::io::GMshFileV2::PhysicalEntity']]],
+  ['name_1',['name',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_physical_name.html#ae5a5d16fd6e3c92636fe7c5d8a38d0e3',1,'lf::io::GMshFileV4::PhysicalName::name'],['../classlf_1_1io_1_1_vtk_file_1_1_field_data_array.html#a865f452e9470e4f622a806c2b8382ef8',1,'lf::io::VtkFile::FieldDataArray::name'],['../classlf_1_1io_1_1_vtk_file_1_1_scalar_data.html#ab3802f370501e095c7172eed685db884',1,'lf::io::VtkFile::ScalarData::name'],['../classlf_1_1io_1_1_vtk_file_1_1_vector_data.html#a23d548a6783e5165812b1d4dd85ce06c',1,'lf::io::VtkFile::VectorData::name']]],
   ['name_5f2_5fnr_5f_2',['name_2_nr_',['../classlf_1_1io_1_1_gmsh_reader.html#aaa96f9b87b28017dddefac334ec6aa37',1,'lf::io::GmshReader']]],
   ['ncoords_5fpoint_5fdynamic_5f_3',['ncoords_point_dynamic_',['../classlf_1_1base_1_1_ref_el.html#abf0fe6c70ca1b11a73ea69db4d523283',1,'lf::base::RefEl']]],
   ['ncoords_5fpoint_5fstatic_5f_4',['ncoords_point_static_',['../classlf_1_1base_1_1_ref_el.html#a1fc39237a8bbd3e8e8d6121ccb12cf87',1,'lf::base::RefEl']]],

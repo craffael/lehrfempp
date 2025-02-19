@@ -24,6 +24,16 @@
 */
 var menudata={children:[
 {text:"Main Page",url:"index.html"},
+{text:"Getting Started",url:"getting_started.html"},
+{text:"Quick Reference",url:"quick_reference_index.html",children:[
+{text:"Mesh",url:"quick_reference_mesh.html"},
+{text:"Geometry",url:"quick_reference_geometry.html"},
+{text:"Finite Element Spaces",url:"quick_reference_fe_space.html"},
+{text:"DOFHandlers",url:"quick_reference_dofh.html"},
+{text:"ENTIY_MATRIX_PROVIDER",url:"quick_reference_emp.html"},
+{text:"Assembly",url:"quick_reference_assembly.html"},
+{text:"Boundary Conditions",url:"quick_reference_bc.html"},
+{text:"Quadrature Rules",url:"quick_reference_quad.html"}]},
 {text:"Namespaces",url:"namespaces.html"},
 {text:"Concepts",url:"concepts.html"},
 {text:"Classes",url:"annotated.html",children:[

@@ -1,0 +1,35 @@
+var namespacelf_1_1base =
+[
+    [ "AutoTimer", "classlf_1_1base_1_1_auto_timer.html", "classlf_1_1base_1_1_auto_timer" ],
+    [ "InvalidTypeException", "classlf_1_1base_1_1_invalid_type_exception.html", "classlf_1_1base_1_1_invalid_type_exception" ],
+    [ "IsScalar", "structlf_1_1base_1_1_is_scalar.html", "structlf_1_1base_1_1_is_scalar" ],
+    [ "IsScalar< std::complex< T >, std::enable_if_t< std::is_arithmetic_v< T > > >", "structlf_1_1base_1_1_is_scalar_3_01std_1_1complex_3_01_t_01_4_00_01std_1_1enable__if__t_3_01std_425d8065ad36a2406f7195e4fc283c3a.html", "structlf_1_1base_1_1_is_scalar_3_01std_1_1complex_3_01_t_01_4_00_01std_1_1enable__if__t_3_01std_425d8065ad36a2406f7195e4fc283c3a" ],
+    [ "IsScalar< T, std::enable_if_t< std::is_arithmetic_v< T > > >", "structlf_1_1base_1_1_is_scalar_3_01_t_00_01std_1_1enable__if__t_3_01std_1_1is__arithmetic__v_3_01_t_01_4_01_4_01_4.html", "structlf_1_1base_1_1_is_scalar_3_01_t_00_01std_1_1enable__if__t_3_01std_1_1is__arithmetic__v_3_01_t_01_4_01_4_01_4" ],
+    [ "LehrFemInfo", "classlf_1_1base_1_1_lehr_fem_info.html", "classlf_1_1base_1_1_lehr_fem_info" ],
+    [ "LfException", "classlf_1_1base_1_1_lf_exception.html", "classlf_1_1base_1_1_lf_exception" ],
+    [ "LineFeedFormatter", "classlf_1_1base_1_1_line_feed_formatter.html", "classlf_1_1base_1_1_line_feed_formatter" ],
+    [ "PredicateTrue", "classlf_1_1base_1_1_predicate_true.html", "classlf_1_1base_1_1_predicate_true" ],
+    [ "RefEl", "classlf_1_1base_1_1_ref_el.html", "classlf_1_1base_1_1_ref_el" ],
+    [ "Timer", "classlf_1_1base_1_1_timer.html", "classlf_1_1base_1_1_timer" ],
+    [ "EigenMatrix", "conceptlf_1_1base_1_1_eigen_matrix.html", null ],
+    [ "EigenArray", "conceptlf_1_1base_1_1_eigen_array.html", null ],
+    [ "Scalar", "conceptlf_1_1base_1_1_scalar.html", null ],
+    [ "dim_t", "group__lftypes.html#gae3a29f90c063bb1bebe232ce17a155e6", null ],
+    [ "glb_idx_t", "group__lftypes.html#gafbd502418cb1765710483dda14ee0658", null ],
+    [ "size_type", "group__lftypes.html#gab3b24f59c5ab0cb8154dca499837561e", null ],
+    [ "sub_idx_t", "group__lftypes.html#gae32f2c419b5b9811929f0b2a6c8f6694", null ],
+    [ "RefElType", "namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21", [
+      [ "kPoint", "namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a20e722b15a1b587c30633f0a136b7009", null ],
+      [ "kSegment", "namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21a1e75742352f47497c49d2cc8d839684b", null ],
+      [ "kTria", "namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21ab218aadab40d1a5a4f2e7500b94da4fc", null ],
+      [ "kQuad", "namespacelf_1_1base.html#a2c68b938de56a5b67e3075dbcab4cb21acf7fd46dda0070fc1ac6150450f12f67", null ]
+    ] ],
+    [ "AssertionFailed", "namespacelf_1_1base.html#a107b5158c9389c01da99c4b9f2ef1fab", null ],
+    [ "InitLogger", "namespacelf_1_1base.html#ac2da71a920917aa8d751c9ea83945eb8", null ],
+    [ "narrow", "namespacelf_1_1base.html#a72a6f860c6fae3c61bbd876e6bf26c04", null ],
+    [ "operator<<", "namespacelf_1_1base.html#aed1547dcb04eb5a66b0f576b770d7ef7", null ],
+    [ "PrintInfo", "namespacelf_1_1base.html#a6c68c603794885ef72f2817b95065c56", null ],
+    [ "PrintInfo", "classlf_1_1base_1_1_ref_el.html#a866d9d0a558b292b5d8e94de55f3ade3", null ],
+    [ "kIdxNil", "group__lftypes.html#ga67c2c5c259138ba1832b2cfec128b547", null ],
+    [ "kPi", "namespacelf_1_1base.html#aed65332338dc78cedec897e74d1719bf", null ]
+];

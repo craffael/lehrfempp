@@ -22,6 +22,10 @@ var searchData=
   ['entity_5ftag_19',['entity_tag',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_node_block.html#a36d638ff17ef0569b5be27cf24b3cd08',1,'lf::io::GMshFileV4::NodeBlock::entity_tag'],['../structlf_1_1io_1_1_g_msh_file_v4_1_1_element_block.html#a58f962d476d035a625e3248432b4efbc',1,'lf::io::GMshFileV4::ElementBlock::entity_tag']]],
   ['entity_5ftag_5fmaster_20',['entity_tag_master',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_periodic_link.html#a4a9b7524b2046c0bdcf5ab26fc59a635',1,'lf::io::GMshFileV4::PeriodicLink']]],
   ['entity_5ftag_5fslave_21',['entity_tag_slave',['../structlf_1_1io_1_1_g_msh_file_v4_1_1_periodic_link.html#aec992efcc16444b8ce6d0f2e318fea01',1,'lf::io::GMshFileV4::PeriodicLink']]],
-  ['epsilon_5f_22',['epsilon_',['../classlf_1_1geometry_1_1_quad_o2.html#aad4bc63daced45ed93137a161cc838c9',1,'lf::geometry::QuadO2']]],
-  ['epsilon_5fx_5f2_5f_23',['epsilon_x_2_',['../classlf_1_1geometry_1_1_quad_o2.html#a155f7e9a6259609d44e641b23a5c73b7',1,'lf::geometry::QuadO2']]]
+  ['entitycenterpositionselector_3c_20pospred_20_3e_3a_3akedge_5fcenter_5f_22',['kedge_center_',['../namespacelf_1_1refinement.html#a4d4ce8c57b9a039706908ab300181a2d',1,'lf::refinement']]],
+  ['entitycenterpositionselector_3c_20pospred_20_3e_3a_3akpoint_5fcenter_5f_23',['kpoint_center_',['../namespacelf_1_1refinement.html#a800c221f0e9ef20df34ffe228da7acd4',1,'lf::refinement']]],
+  ['entitycenterpositionselector_3c_20pospred_20_3e_3a_3akquad_5fcenter_5f_24',['kquad_center_',['../namespacelf_1_1refinement.html#a58093a4dbcd7270e86319d918e864aa9',1,'lf::refinement']]],
+  ['entitycenterpositionselector_3c_20pospred_20_3e_3a_3aktria_5fcenter_5f_25',['ktria_center_',['../namespacelf_1_1refinement.html#a621bd1f69ec4454e36ab93e8c25398e4',1,'lf::refinement']]],
+  ['epsilon_5f_26',['epsilon_',['../classlf_1_1geometry_1_1_quad_o2.html#aad4bc63daced45ed93137a161cc838c9',1,'lf::geometry::QuadO2']]],
+  ['epsilon_5fx_5f2_5f_27',['epsilon_x_2_',['../classlf_1_1geometry_1_1_quad_o2.html#a155f7e9a6259609d44e641b23a5c73b7',1,'lf::geometry::QuadO2']]]
 ];
