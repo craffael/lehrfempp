@@ -51,7 +51,7 @@ void AllCodimMeshDataSet_Example() {
   mesh_data_set(*entity) = false;
 
   // check if the data set is defined on an entity
-  mesh_data_set.DefinedOn(*entity);  // returns true
+  bool b = mesh_data_set.DefinedOn(*entity);  // returns true
   //![AllCodimMeshDataSet]
 }
 
@@ -72,7 +72,7 @@ void CodimMeshDataSet_Example() {
   mesh_data_set_cells(*cell) = false;
 
   // check if the data set is defined on an entity
-  mesh_data_set_cells.DefinedOn(*cell);  // returns true
+  bool b = mesh_data_set_cells.DefinedOn(*cell);  // returns true
   //![CodimMeshDataSet]
 }
 
