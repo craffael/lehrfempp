@@ -10,7 +10,7 @@ if(DOXYGEN_FOUND)
   
   OPTION(LF_DOX_EXTRACT_PRIVATE "Equals the value value EXTRACT_PRIVATE of doc/doxygen/doxyfile. Set this to On in order to also generate doxygen documentation of private members." ON)
   OPTION(LF_DOX_INCLUDE_PROJECTS "Set this to true to include all the projects in the ./projects folder in the doxygen documentation." OFF)
-  OPTION(LF_DOX_ENABLE_FILTERS "If this is set to false, @lref{} statements in doxygen documentation are not translated into formatted latex label." ON)
+  OPTION(LF_DOX_ENABLE_FILTERS "If this is set to false, filters (see filters/ directory) are not run" ON)
 
   
   if(LF_DOX_EXTRACT_PRIVATE)
