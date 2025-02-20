@@ -169,18 +169,16 @@ Hierarchic Scalar Finite Element Space</h2>
 <p>A special case of the general scalar finite element space is a <b>Hierarchic Scalar Finite Element Space</b>, implemented by <code><a class="el" href="classlf_1_1fe_1_1_hierarchic_scalar_f_e_space.html" title="Finite Element Space that supports arbitrary, local degrees.">lf::fe::HierarchicScalarFESpace</a></code>. Hierarchic FE spaces assign a polynomial degree for the shape functions to each mesh entity. They can easily be constructed from a mesh and a function mapping mesh entities to polynomial degrees.</p>
 <div class="fragment"><div class="line"><span class="comment">// generate a simple test mesh</span></div>
 <div class="line">std::shared_ptr&lt;lf::mesh::Mesh&gt; mesh_p =</div>
-<div class="line">      <a class="code hl_function" href="namespacelf_1_1mesh_1_1test__utils.html#a4a99c0d4db0495121ff8ad0e63f889cb">lf::mesh::test_utils::GenerateHybrid2DTestMesh</a>(1);</div>
+<div class="line">    <a class="code hl_function" href="namespacelf_1_1mesh_1_1test__utils.html#a4a99c0d4db0495121ff8ad0e63f889cb">lf::mesh::test_utils::GenerateHybrid2DTestMesh</a>(1);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// define a polynomial degree function</span></div>
 <div class="line"><span class="keyword">auto</span> degree = [](<span class="keyword">const</span> <a class="code hl_class" href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a> &amp;entity) -&gt; <span class="keywordtype">unsigned</span> {</div>
-<div class="line">  <span class="keywordflow">return</span> 2; <span class="comment">// all entities have degree 2 -&gt; equivalent to O2 Lagrangian FESpace</span></div>
+<div class="line">  <span class="keywordflow">return</span> 2;  <span class="comment">// all entities have degree 2 -&gt; equivalent to O2 Lagrangian</span></div>
+<div class="line">             <span class="comment">// FESpace</span></div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// init HierarchicScalarFESpace on mesh_p</span></div>
 <div class="line"><a class="code hl_class" href="classlf_1_1fe_1_1_hierarchic_scalar_f_e_space.html">lf::fe::HierarchicScalarFESpace&lt;double&gt;</a> fe_space(mesh_p, degree);</div>
-<div class="ttc" id="aclasslf_1_1fe_1_1_hierarchic_scalar_f_e_space_html"><div class="ttname"><a href="classlf_1_1fe_1_1_hierarchic_scalar_f_e_space.html">lf::fe::HierarchicScalarFESpace</a></div><div class="ttdoc">Finite Element Space that supports arbitrary, local degrees.</div><div class="ttdef"><b>Definition</b> <a href="hierarchic__scalar__fe__space_8h_source.html#l00048">hierarchic_scalar_fe_space.h:48</a></div></div>
-<div class="ttc" id="aclasslf_1_1mesh_1_1_entity_html"><div class="ttname"><a href="classlf_1_1mesh_1_1_entity.html">lf::mesh::Entity</a></div><div class="ttdoc">Interface class representing a topological entity in a cellular complex</div><div class="ttdef"><b>Definition</b> <a href="entity_8h_source.html#l00042">entity.h:42</a></div></div>
-<div class="ttc" id="anamespacelf_1_1mesh_1_1test__utils_html_a4a99c0d4db0495121ff8ad0e63f889cb"><div class="ttname"><a href="namespacelf_1_1mesh_1_1test__utils.html#a4a99c0d4db0495121ff8ad0e63f889cb">lf::mesh::test_utils::GenerateHybrid2DTestMesh</a></div><div class="ttdeci">std::shared_ptr&lt; lf::mesh::Mesh &gt; GenerateHybrid2DTestMesh(int selector, double scale)</div><div class="ttdoc">Generates a simple 2D hybrid test mesh.</div><div class="ttdef"><b>Definition</b> <a href="test__meshes_8cc_source.html#l00014">test_meshes.cc:14</a></div></div>
 </div><!-- fragment --><h1><a class="anchor" id="uniform_finite_element_spaces"></a>
 Uniform Finite Element Space (lf::uscalfe)</h1>
 <p>The <code><a class="el" href="namespacelf_1_1uscalfe.html" title="Collects data structures and algorithms designed for scalar finite element methods primarily meant fo...">lf::uscalfe</a></code> (<b>U</b>niform <b>Scal</b>ar <b>F</b>inite <b>E</b>lements) namespace is a specialization of <code><a class="el" href="namespacelf_1_1fe.html" title="Collects data structures and algorithms designed for scalar finite element methods primarily meant fo...">lf::fe</a></code> for uniform scalar finite element spaces. Uniform in this context means that the approximation space has a uniform order of approximation over the whole mesh. In other words, the shape functions of a given approximation space depend only on the underlying reference element of a mesh entity.</p>
@@ -195,11 +193,10 @@ Lagrangian Finite Element Spaces</h2>
 </ul>
 <div class="fragment"><div class="line"><span class="comment">// generate a simple test mesh</span></div>
 <div class="line">std::shared_ptr&lt;lf::mesh::Mesh&gt; mesh_p =</div>
-<div class="line">      <a class="code hl_function" href="namespacelf_1_1mesh_1_1test__utils.html#a4a99c0d4db0495121ff8ad0e63f889cb">lf::mesh::test_utils::GenerateHybrid2DTestMesh</a>(1);</div>
+<div class="line">    <a class="code hl_function" href="namespacelf_1_1mesh_1_1test__utils.html#a4a99c0d4db0495121ff8ad0e63f889cb">lf::mesh::test_utils::GenerateHybrid2DTestMesh</a>(1);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// init O1 Lagrangian finite element space on mesh_p</span></div>
 <div class="line"><a class="code hl_class" href="classlf_1_1uscalfe_1_1_fe_space_lagrange_o1.html">lf::uscalfe::FeSpaceLagrangeO1&lt;double&gt;</a> fe_space(mesh_p);</div>
-<div class="ttc" id="aclasslf_1_1uscalfe_1_1_fe_space_lagrange_o1_html"><div class="ttname"><a href="classlf_1_1uscalfe_1_1_fe_space_lagrange_o1.html">lf::uscalfe::FeSpaceLagrangeO1</a></div><div class="ttdoc">(Bi)Linear Lagrangian Finite Element space</div><div class="ttdef"><b>Definition</b> <a href="fe__space__lagrange__o1_8h_source.html#l00029">fe_space_lagrange_o1.h:29</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
