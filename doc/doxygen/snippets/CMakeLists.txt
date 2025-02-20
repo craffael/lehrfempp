@@ -1,5 +1,7 @@
 # Here we want to compile all snippets to make sure that they stay up-to-date, even when the code is refactored.
 
+add_subdirectory(quick_reference)
+
 set(sources
   assembler.cc
   coomatrix.cpp

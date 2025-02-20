@@ -19,19 +19,7 @@ The `lf::fe` namespace provides a general interface for scalar finite element sp
 
 A special case of the general scalar finite element space is a **Hierarchic Scalar Finite Element Space**, implemented by `lf::fe::HierarchicScalarFESpace`. Hierarchic FE spaces assign a polynomial degree for the shape functions to each mesh entity. They can easily be constructed from a mesh and a function mapping mesh entities to polynomial degrees.
 
-```cpp
-// generate a simple test mesh
-std::shared_ptr<lf::mesh::Mesh> mesh_p =
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
-
-// define a polynomial degree function
-auto degree = [](const lf::mesh::Entity &entity) -> unsigned {
-  return 2; // all entities have degree 2 -> equivalent to O2 Lagrangian FESpace
-};
-
-// init HierarchicScalarFESpace on mesh_p
-lf::fe::HierarchicScalarFESpace<double> fe_space(mesh_p, degree);
-```
+@snippet{trimleft} quick_reference/qr_fe_space_snippets.cpp fe_space Hierarchic Scalar Finite Element Space
 
 ## Uniform Finite Element Space (lf::uscalfe) {#uniform_finite_element_spaces}
 
@@ -47,11 +35,4 @@ LehrFEM++ provides convenience classes for constructing order 1, 2, and 3 Lagran
 - `lf::uscalfe::FeSpaceLagrangeO2`: Quadratic Lagrangian Finite Element space.
 - `lf::uscalfe::FeSpaceLagrangeO3`: Cubic Lagrangian Finite Element space.
 
-```cpp
-// generate a simple test mesh
-std::shared_ptr<lf::mesh::Mesh> mesh_p =
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
-
-// init O1 Lagrangian finite element space on mesh_p
-lf::uscalfe::FeSpaceLagrangeO1<double> fe_space(mesh_p);
-```
+@snippet{trimleft} quick_reference/qr_fe_space_snippets.cpp fe_space Lagrangian Finite Element Spaces

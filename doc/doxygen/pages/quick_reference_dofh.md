@@ -33,32 +33,11 @@ LehrFEM++ provides two implementations of DOF handlers:
 
 A `DynamicFEDofHandler` can be initialized with a function that returns the number of DOFs associated with a given entity.
 
-```cpp
-const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
-      lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
-
-auto func = [](const lf::mesh::Entity& e) {
-  // return number of dofs associated with e
-  return 1;
-};
-
-lf::assemble::DynamicFEDofHandler dofh(mesh_p, func);
-```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh DynamicFEDofHandler
 
 ### UniformFEDofHandler
 
-```cpp
-// Generate a simple test mesh
-const std::shared_ptr<const lf::mesh::Mesh> mesh_p =
-    lf::mesh::test_utils::GenerateHybrid2DTestMesh(1);
-
-// Initialize a DofHandler for p=2 Lagrange FE
-lf::assemble::UniformFEDofHandler dofh(mesh_p,
-                                        {{lf::base::RefEl::kPoint(), 1},
-                                        {lf::base::RefEl::kSegment(), 1},
-                                        {lf::base::RefEl::kTria(), 0},
-                                        {lf::base::RefEl::kQuad(), 1}});
-```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh UniformFEDofHandler
 
 For example, in a second-order Lagrange FE space (as shown in the code above):
 
@@ -83,37 +62,18 @@ The key methods provided by the `DofHandler` interface are:
 
 - `NumDofs()`: Returns the total number of global DOFs. See also @lref_link{par:betldofmap}.
 
-  ```cpp
-  unsigned num_dofs = dofh.NumDofs();
-  ```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh Key Methods
 
 - `NumLocalDofs(const lf::mesh::Entity &)`: Returns the number of DOFs associated with a particular geometric entity.  See also @lref_link{par:betldofmap}.
   
-  ```cpp
-  const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);
-
-  unsigned num_local_dofs = dofh.NumLocalDofs(*e);
-  ```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh Key Methods 0
 - `GlobalDofIndices(const lf::mesh::Entity &)`: Returns the global indices of DOFs associated with a given entity.  See also @lref_link{par:betldofmap}.
 
-  ```cpp
-  const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);
-
-  std::span<const lf::assemble::gdof_idx_t> idx = dof2.GlobalDofIndices(*e);
-
-  for (auto i : idx) {
-    std::cout << i << " ";
-  } // -> prints the global indices of DOFs associated with the entity
-
-  ```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh Key Methods 1
 
 - `NumInteriorDofs(const lf::mesh::Entity &)`: Specifies how many DOFs are associated with an entity’s interior.  See also @lref_link{par:betldofmap}.
 
-  ```cpp
-  const lf::mesh::Entity* e = mesh_p->EntityByIndex(0, 0);
-
-  unsigned num_int_dofs = dofh.NumInteriorDofs(*e);
-  ```
+@snippet{trimleft} quick_reference/qr_dofh_snippets.cpp dofh Key Methods 2
 
 ## Example Code
 An example of using a DofHandler to print information about local-to-global mappings in LehrFEM++:
