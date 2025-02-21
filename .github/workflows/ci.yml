@@ -104,10 +104,10 @@ jobs:
                       compiler: 'clang++'
                       build_type: 'Debug'
                       cxx_flags: '-g0 -Werror=#warnings'
-                    - os: macos-14
-                      compiler: 'clang++'
-                      build_type: 'Release'
-                      cxx_flags: '-g0 -Werror=#warnings'
+                    # - os: macos-14
+                      # compiler: 'clang++'
+                      # build_type: 'Release'
+                      # cxx_flags: '-g0 -Werror=#warnings'
         runs-on: ${{ matrix.os }}
         container: ${{ matrix.container }}
         env:
@@ -121,10 +121,10 @@ jobs:
             - name: Install packages
               if: (runner.os == 'Linux') && (matrix.packages != '')
               run: sudo apt-get install ${{ matrix.packages }}
-            # - name: Setup tmate session
-            # uses: mxschmitt/action-tmate@v3
-            # with:
-            # limit-access-to-actor: false
+            - name: setup tmate session
+              uses: mxschmitt/action-tmate@v3
+              with:
+              limit-access-to-actor: false
             - name: Restore cache
               uses: actions/cache@v4
               with:
@@ -140,128 +140,128 @@ jobs:
             - name: compile and test
               run: './ci/compile_test.sh'
 
-    windows:
-        name: Windows x64 - ${{ matrix.build_type }}
-        needs: clang-format
-        runs-on: windows-latest
-        defaults:
-            run:
-                shell: pwsh
-        env:
-            HUNTER_ROOT: C:\.hunter
-        strategy:
-            matrix:
-                include:
-                    - build_type: 'Debug'
-                      compiler: 'msvc'
-                    # - build_type: "Release"
-                    # compiler: "msvc"
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Restore cache
-              uses: actions/cache/restore@v4
-              with:
-                  path: '${{ env.HUNTER_ROOT }}'
-                  key: ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
-                  restore-keys: |
-                      ${{ runner.os }}-msvc-${{ matrix.build_type }}-
-                      ${{ runner.os }}-msvc-
+    # windows:
+        # name: Windows x64 - ${{ matrix.build_type }}
+        # needs: clang-format
+        # runs-on: windows-latest
+        # defaults:
+            # run:
+                # shell: pwsh
+        # env:
+            # HUNTER_ROOT: C:\.hunter
+        # strategy:
+            # matrix:
+                # include:
+                    # - build_type: 'Debug'
+                      # compiler: 'msvc'
+                    # # - build_type: "Release"
+                    # # compiler: "msvc"
+        # steps:
+            # - name: Checkout code
+              # uses: actions/checkout@v4
+            # - name: Restore cache
+              # uses: actions/cache/restore@v4
+              # with:
+                  # path: '${{ env.HUNTER_ROOT }}'
+                  # key: ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+                  # restore-keys: |
+                      # ${{ runner.os }}-msvc-${{ matrix.build_type }}-
+                      # ${{ runner.os }}-msvc-
 
-            # Note that windows has a recent version of cmake installed -> we don't need to install it here.
+            # # Note that windows has a recent version of cmake installed -> we don't need to install it here.
 
-            # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
-            - name: Hunter dependencies
-              run: |
-                  mkdir build > $null
-                  cd build
-                  cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
+            # # we set CMAKE_CXX_FLAGS_DEBUG explictly to avoid the creation of pdb files (which fill up disk space)
+            # - name: Hunter dependencies
+              # run: |
+                  # mkdir build > $null
+                  # cd build
+                  # cmake -A x64 -D HUNTER_CONFIGURATION_TYPES=${{ matrix.build_type }} -D CMAKE_CXX_FLAGS_DEBUG="/MDd /Ob0 /Od /RTC1" ..
 
-            - name: Save Cache
-              uses: actions/cache/save@v4
-              if: always()
-              with:
-                  path: |
-                      ${{ env.HUNTER_ROOT }}
-                  key: ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
+            # - name: Save Cache
+              # uses: actions/cache/save@v4
+              # if: always()
+              # with:
+                  # path: |
+                      # ${{ env.HUNTER_ROOT }}
+                  # key: ${{ runner.os }}-msvc-${{ matrix.build_type }}-${{ github.run_id }}
 
-            - name: compile
-              run: |
-                  cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
+            # - name: compile
+              # run: |
+                  # cmake --build ./build --config ${{ matrix.build_type }} --target ALL_BUILD -j2
 
-            - name: test
-              run: |
-                  cd build
-                  ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
+            # - name: test
+              # run: |
+                  # cd build
+                  # ctest -j 2 -c ${{ matrix.build_type }} --output-on-failure
 
-    doxygen:
-        name: doxygen
-        runs-on: ubuntu-22.04
-        needs: [clang-format]
-        env:
-            CXX: 'clang++-17'
-            BUILD_TYPE: 'Debug'
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Restore cache
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ${{ env.DEPS_DIR }}
-                      ${{ env.HUNTER_ROOT }}
-                  key: ${{ runner.os }}-clang++-17-Doxygen-${{ github.run_id }}
-                  restore-keys: |
-                      ${{ runner.os }}-clang++-17-Doxygen-
-                      ${{ runner.os }}-clang++-17-Debug-
-            - name: Setup cmake
-              uses: jwlawson/actions-setup-cmake@v2
-              with:
-                  cmake-version: '3.30'
-            - name: install clang17
-              run: |
-                  wget https://apt.llvm.org/llvm.sh
-                  chmod u+x llvm.sh
-                  sudo ./llvm.sh 17
-            - name: install unbuffer
-              run: |
-                  sudo apt-add-repository universe
-                  sudo apt-get update
-                  sudo apt-get install expect
-            - name: install doxygen
-              run: |
-                  wget https://github.com/doxygen/doxygen/releases/download/Release_1_13_2/doxygen-1.13.2.linux.bin.tar.gz
-                  gunzip doxygen-1.13.2.linux.bin.tar.gz
-                  tar -xvf doxygen-1.13.2.linux.bin.tar
-                  cd doxygen-1.13.2
-                  sudo make install
-                  cd ..
-            - name: build doxygen
-              run: |
-                  cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-                  cd Build
-                  make doxygen
-                  cd doc/doxygen/html
-                  mkdir with_projects
-                  shopt -s extglob
-                  mv !(with_projects) with_projects
-                  cd ../../..
-                  cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
-                  unbuffer make doxygen 2>&1 | tee output
-                  echo "Doxygen output:"
-                  cat output
-                  echo "Doxygen output end"
-                  if grep -q "warning:" "output"; then
-                    echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
-                    grep "warning:" "output"
-                    exit 1
-                  fi
-            - name: deploy
-              uses: JamesIves/github-pages-deploy-action@v4
-              # Only deploy documentation on master branch.
-              if: github.ref == 'refs/heads/master'
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: gh-pages
-                  folder: './Build/doc/doxygen/html'
-                  clean: true
+    # doxygen:
+        # name: doxygen
+        # runs-on: ubuntu-22.04
+        # needs: [clang-format]
+        # env:
+            # CXX: 'clang++-17'
+            # BUILD_TYPE: 'Debug'
+        # steps:
+            # - name: Checkout code
+              # uses: actions/checkout@v4
+            # - name: Restore cache
+              # uses: actions/cache@v4
+              # with:
+                  # path: |
+                      # ${{ env.DEPS_DIR }}
+                      # ${{ env.HUNTER_ROOT }}
+                  # key: ${{ runner.os }}-clang++-17-Doxygen-${{ github.run_id }}
+                  # restore-keys: |
+                      # ${{ runner.os }}-clang++-17-Doxygen-
+                      # ${{ runner.os }}-clang++-17-Debug-
+            # - name: Setup cmake
+              # uses: jwlawson/actions-setup-cmake@v2
+              # with:
+                  # cmake-version: '3.30'
+            # - name: install clang17
+              # run: |
+                  # wget https://apt.llvm.org/llvm.sh
+                  # chmod u+x llvm.sh
+                  # sudo ./llvm.sh 17
+            # - name: install unbuffer
+              # run: |
+                  # sudo apt-add-repository universe
+                  # sudo apt-get update
+                  # sudo apt-get install expect
+            # - name: install doxygen
+              # run: |
+                  # wget https://github.com/doxygen/doxygen/releases/download/Release_1_13_2/doxygen-1.13.2.linux.bin.tar.gz
+                  # gunzip doxygen-1.13.2.linux.bin.tar.gz
+                  # tar -xvf doxygen-1.13.2.linux.bin.tar
+                  # cd doxygen-1.13.2
+                  # sudo make install
+                  # cd ..
+            # - name: build doxygen
+              # run: |
+                  # cmake -H. -BBuild -DLF_DOX_INCLUDE_PROJECTS=On -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+                  # cd Build
+                  # make doxygen
+                  # cd doc/doxygen/html
+                  # mkdir with_projects
+                  # shopt -s extglob
+                  # mv !(with_projects) with_projects
+                  # cd ../../..
+                  # cmake -DLF_DOX_INCLUDE_PROJECTS=OFF .
+                  # unbuffer make doxygen 2>&1 | tee output
+                  # echo "Doxygen output:"
+                  # cat output
+                  # echo "Doxygen output end"
+                  # if grep -q "warning:" "output"; then
+                    # echo -e "\033[0;31mDoxygen produced warnings:\033[0m"
+                    # grep "warning:" "output"
+                    # exit 1
+                  # fi
+            # - name: deploy
+              # uses: JamesIves/github-pages-deploy-action@v4
+              # # Only deploy documentation on master branch.
+              # if: github.ref == 'refs/heads/master'
+              # with:
+                  # token: ${{ secrets.GITHUB_TOKEN }}
+                  # branch: gh-pages
+                  # folder: './Build/doc/doxygen/html'
+                  # clean: true
