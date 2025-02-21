@@ -12,6 +12,7 @@ defaults:
     run:
         shell: bash
 
+
 jobs:
     clang-format:
         name: clang-format-18
