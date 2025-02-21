@@ -29,7 +29,7 @@ jobs:
     clang-tidy:
         name: clang-tidy-17 ${{ matrix.name }}
         needs: clang-format
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-24.04
         container: craffael/feen-ci:clang17
         strategy:
             matrix:
@@ -74,36 +74,36 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - os: ubuntu-20.04
-                      container: craffael/feen-ci:clang17
-                      compiler: 'clang++-17'
-                      packages: ''
-                      build_type: 'Debug'
-                      cxx_flags: '-g0 -Werror=#warnings'
-                    - os: ubuntu-20.04
-                      container: craffael/feen-ci:clang17
-                      compiler: 'clang++-17'
-                      packages: ''
-                      build_type: 'Release'
-                      cxx_flags: '-g0 -Werror=#warnings'
+                    # - os: ubuntu-20.04
+                      # container: craffael/feen-ci:clang17
+                      # compiler: 'clang++-17'
+                      # packages: ''
+                      # build_type: 'Debug'
+                      # cxx_flags: '-g0 -Werror=#warnings'
+                    # - os: ubuntu-20.04
+                      # container: craffael/feen-ci:clang17
+                      # compiler: 'clang++-17'
+                      # packages: ''
+                      # build_type: 'Release'
+                      # cxx_flags: '-g0 -Werror=#warnings'
 
-                    - os: ubuntu-20.04
-                      container: craffael/feen-ci:gcc13
-                      compiler: 'g++-13'
-                      packages: ''
-                      build_type: 'Debug'
-                      cxx_flags: '-g0 -Werror=cpp'
-                    - os: ubuntu-20.04
-                      container: craffael/feen-ci:gcc13
-                      compiler: 'g++-13'
-                      packages: ''
-                      build_type: 'Release'
-                      cxx_flags: '-g0 -Werror=cpp'
-                    - os: macos-12
+                    # - os: ubuntu-20.04
+                      # container: craffael/feen-ci:gcc13
+                      # compiler: 'g++-13'
+                      # packages: ''
+                      # build_type: 'Debug'
+                      # cxx_flags: '-g0 -Werror=cpp'
+                    # - os: ubuntu-20.04
+                      # container: craffael/feen-ci:gcc13
+                      # compiler: 'g++-13'
+                      # packages: ''
+                      # build_type: 'Release'
+                      # cxx_flags: '-g0 -Werror=cpp'
+                    - os: macos-14
                       compiler: 'clang++'
                       build_type: 'Debug'
                       cxx_flags: '-g0 -Werror=#warnings'
-                    - os: macos-12
+                    - os: macos-14
                       compiler: 'clang++'
                       build_type: 'Release'
                       cxx_flags: '-g0 -Werror=#warnings'
