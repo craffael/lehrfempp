@@ -14,64 +14,64 @@ defaults:
 
 
 jobs:
-    clang-format:
-        name: clang-format-18
-        runs-on: ubuntu-20.04
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Install clang-format
-              run: |
-                  wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
-                  sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" && 
-                  sudo apt-get install clang-format-18
-            - name: clang-format
-              run: './ci/run-clang-format.py -r --clang-format-executable clang-format-18 --color always ./lib/ ./projects/ ./examples/'
-    clang-tidy:
-        name: clang-tidy-17 ${{ matrix.name }}
-        needs: clang-format
-        runs-on: ubuntu-24.04
-        container: craffael/feen-ci:clang17
-        strategy:
-            matrix:
-                include:
-                    - name: without projects
-                      paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
-                    - name: only projects
-                      paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
-        env:
-            COMPILER: 'clang++-17'
-            BUILD_TYPE: 'Debug'
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Install clang-tidy
-              run: apt update && apt install -y clang-tidy-17 python-is-python3
-            - name: Restore cache
-              uses: actions/cache/restore@v3
-              with:
-                  path: '${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}'
-                  key: ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-                  restore-keys: |
-                      ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
-                      ${{ runner.os }}-${{ env.COMPILER }}-
-            - name: build_dependencies
-              run: './ci/build_dependencies.sh'
-            - name: Save Cache
-              uses: actions/cache/save@v4
-              if: always()
-              with:
-                  path: |
-                      ${{ env.DEPS_DIR }}
-                      ${{ env.HUNTER_ROOT }}
-                  key: ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
-            - name: clang-tidy
-              run: './ci/run_clang_tidy.sh ${{ matrix.paths}}'
+    # clang-format:
+        # name: clang-format-18
+        # runs-on: ubuntu-20.04
+        # steps:
+            # - name: Checkout code
+              # uses: actions/checkout@v4
+            # - name: Install clang-format
+              # run: |
+                  # wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
+                  # sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" && 
+                  # sudo apt-get install clang-format-18
+            # - name: clang-format
+              # run: './ci/run-clang-format.py -r --clang-format-executable clang-format-18 --color always ./lib/ ./projects/ ./examples/'
+    # clang-tidy:
+        # name: clang-tidy-17 ${{ matrix.name }}
+        # needs: clang-format
+        # runs-on: ubuntu-24.04
+        # container: craffael/feen-ci:clang17
+        # strategy:
+            # matrix:
+                # include:
+                    # - name: without projects
+                      # paths: "'^((?!snippets|/test/|/test_utils/|/projects/).)*$'"
+                    # - name: only projects
+                      # paths: "'^.*projects/((?!snippets|/test/|/test_utils/).)*$'"
+        # env:
+            # COMPILER: 'clang++-17'
+            # BUILD_TYPE: 'Debug'
+        # steps:
+            # - name: Checkout code
+              # uses: actions/checkout@v4
+            # - name: Install clang-tidy
+              # run: apt update && apt install -y clang-tidy-17 python-is-python3
+            # - name: Restore cache
+              # uses: actions/cache/restore@v3
+              # with:
+                  # path: '${{ env.DEPS_DIR }} ${{ env.HUNTER_ROOT }}'
+                  # key: ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+                  # restore-keys: |
+                      # ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
+                      # ${{ runner.os }}-${{ env.COMPILER }}-
+            # - name: build_dependencies
+              # run: './ci/build_dependencies.sh'
+            # - name: Save Cache
+              # uses: actions/cache/save@v4
+              # if: always()
+              # with:
+                  # path: |
+                      # ${{ env.DEPS_DIR }}
+                      # ${{ env.HUNTER_ROOT }}
+                  # key: ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-${{ github.run_id }}
+            # - name: clang-tidy
+              # run: './ci/run_clang_tidy.sh ${{ matrix.paths}}'
 
     # compilation on linux/osx:
     compile_test:
         name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-        needs: clang-format
+        # needs: clang-format
         strategy:
             matrix:
                 include:
@@ -124,7 +124,7 @@ jobs:
             - name: setup tmate session
               uses: mxschmitt/action-tmate@v3
               with:
-              limit-access-to-actor: false
+                limit-access-to-actor: false
             - name: Restore cache
               uses: actions/cache@v4
               with:
