@@ -195,8 +195,6 @@ jobs:
 
     doxygen:
         name: doxygen
-        # Only update documentation from master branch
-        if: github.ref == 'refs/heads/master' 
         runs-on: ubuntu-22.04
         needs: [clang-format]
         env:
@@ -259,6 +257,7 @@ jobs:
                   fi
             - name: deploy
               uses: JamesIves/github-pages-deploy-action@v4
+              # Only deploy documentation on master branch.
               if: github.ref == 'refs/heads/master'
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
