@@ -99,11 +99,11 @@ jobs:
                       packages: ''
                       build_type: 'Release'
                       cxx_flags: '-g0 -Werror=cpp'
-                    - os: macos-12
+                    - os: macos-15
                       compiler: 'clang++'
                       build_type: 'Debug'
                       cxx_flags: '-g0 -Werror=#warnings'
-                    - os: macos-12
+                    - os: macos-15
                       compiler: 'clang++'
                       build_type: 'Release'
                       cxx_flags: '-g0 -Werror=#warnings'
