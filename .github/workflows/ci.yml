@@ -15,14 +15,14 @@ defaults:
 jobs:
     clang-format:
         name: clang-format-18
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-24.04
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
             - name: Install clang-format
               run: |
                   wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&
-                  sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" && 
+                  sudo apt-add-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && 
                   sudo apt-get install clang-format-18
             - name: clang-format
               run: './ci/run-clang-format.py -r --clang-format-executable clang-format-18 --color always ./lib/ ./projects/ ./examples/'
