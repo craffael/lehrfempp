@@ -12,7 +12,6 @@ defaults:
     run:
         shell: bash
 
-
 jobs:
     clang-format:
         name: clang-format-18
@@ -71,7 +70,7 @@ jobs:
     # compilation on linux/osx:
     compile_test:
         name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
-        # needs: clang-format
+        needs: clang-format
         strategy:
             matrix:
                 include:
@@ -79,32 +78,32 @@ jobs:
                       container: craffael/feen-ci:clang17
                       compiler: 'clang++-17'
                       packages: ''
-                      build_type: 'debug'
-                      cxx_flags: '-g0 -werror=#warnings'
+                      build_type: 'Debug'
+                      cxx_flags: '-g0 -Werror=#warnings'
                     - os: ubuntu-20.04
                       container: craffael/feen-ci:clang17
                       compiler: 'clang++-17'
                       packages: ''
-                      build_type: 'release'
-                      cxx_flags: '-g0 -werror=#warnings'
+                      build_type: 'Release'
+                      cxx_flags: '-g0 -Werror=#warnings'
 
                     - os: ubuntu-20.04
                       container: craffael/feen-ci:gcc13
                       compiler: 'g++-13'
                       packages: ''
-                      build_type: 'debug'
-                      cxx_flags: '-g0 -werror=cpp'
+                      build_type: 'Debug'
+                      cxx_flags: '-g0 -Werror=cpp'
                     - os: ubuntu-20.04
                       container: craffael/feen-ci:gcc13
                       compiler: 'g++-13'
                       packages: ''
-                      build_type: 'release'
-                      cxx_flags: '-g0 -werror=cpp'
-                    - os: macos-15
+                      build_type: 'Release'
+                      cxx_flags: '-g0 -Werror=cpp'
+                    - os: macos-12
                       compiler: 'clang++'
                       build_type: 'Debug'
                       cxx_flags: '-g0 -Werror=#warnings'
-                    - os: macos-14
+                    - os: macos-12
                       compiler: 'clang++'
                       build_type: 'Release'
                       cxx_flags: '-g0 -Werror=#warnings'
@@ -121,10 +120,10 @@ jobs:
             - name: Install packages
               if: (runner.os == 'Linux') && (matrix.packages != '')
               run: sudo apt-get install ${{ matrix.packages }}
-            # - name: setup tmate session
-              # uses: mxschmitt/action-tmate@v3
-              # with:
-                # limit-access-to-actor: false
+            # - name: Setup tmate session
+            # uses: mxschmitt/action-tmate@v3
+            # with:
+            # limit-access-to-actor: false
             - name: Restore cache
               uses: actions/cache@v4
               with:
