@@ -141,7 +141,7 @@ jobs:
 
     windows:
         name: Windows x64 - ${{ matrix.build_type }}
-        needs: clang-format
+        # needs: clang-format
         runs-on: windows-latest
         defaults:
             run:
