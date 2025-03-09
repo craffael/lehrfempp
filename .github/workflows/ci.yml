@@ -130,10 +130,10 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-${{ env.COMPILER }}-${{ env.BUILD_TYPE }}-
                       ${{ runner.os }}-${{ env.COMPILER }}-
-            - name: Setup tmate session
-              uses: mxschmitt/action-tmate@v3
-              with:
-                limit-access-to-actor: false
+            # - name: Setup tmate session
+              # uses: mxschmitt/action-tmate@v3
+              # with:
+                # limit-access-to-actor: false
             - name: build_dependencies
               run: './ci/build_dependencies.sh'
             - name: compile and test
