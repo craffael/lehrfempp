@@ -18,4 +18,7 @@ hunter_config(Boost
 endif()
 
 hunter_config(Eigen VERSION 3.4.0)
-hunter_config(GTest VERSION 1.11.0)
+hunter_config(GTest 
+  VERSION 1.11.0
+  CMAKE_ARGS "CMAKE_OSX_ARCHITECTURES=${CMAKE_HOST_SYSTEM_PROCESSOR}" # Necessary for OSX on arm64
+)
