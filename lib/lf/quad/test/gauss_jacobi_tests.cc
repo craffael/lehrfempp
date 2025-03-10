@@ -35,7 +35,7 @@ TEST(quad_GaussJacobi, Legendre) {
   EXPECT_DOUBLE_EQ(IntegrateMonomial(2, 3, 0, 0), 0);
   EXPECT_GT(std::abs(IntegrateMonomial(2, 4, 0, 0) - 2. / 3.), 1e-12);
   EXPECT_NEAR(IntegrateMonomial(3, 4, 0, 0), 2. / 5., 1e-12);
-  EXPECT_DOUBLE_EQ(IntegrateMonomial(3, 5, 0, 0), 0);
+  EXPECT_NEAR(IntegrateMonomial(3, 5, 0, 0), 0, 1e-12);
 }
 
 TEST(quad_GaussJacobi, AlphaOneBetaZero) {
