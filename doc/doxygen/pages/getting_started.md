@@ -17,7 +17,7 @@
    - Clang Version >= 17 (tests run with clang-17)
    - GCC Version >= 13 (tests run with g++-13)
  - **OSX:**
-   - XCode >= 14.2, respectively macos 12.7.2 (tests run with XCode 14.2)
+   - XCode >= 15.4, respectively macos 14.7.2 (continuous integration runs with XCode 15.4 and 16.0)
  - **Windows:**
    - Visual Studio 2022 (Version 17.8) or later is required (tests run with VS2022), only x64 is supported!
  
