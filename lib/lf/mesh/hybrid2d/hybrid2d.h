@@ -2,11 +2,12 @@
 #define HYBRID2D_P_H_
 
 /**
- * @brief An alternative implementation of a hybrid2d mesh manager that uses
- *        Pointers to store sub-entity relations.
+ * @brief A namespace for managing 2D hybrid meshes using pointers to store
+ *        sub-entity relations.
  *
- * At the moment this mesh manager doesn't work yet completly but it is destined
- * to replace the `lf::mesh::hybrid2d` mesh manager.
+ * This namespace provides an implementation for handling 2D hybrid meshes,
+ * which include various types of elements such as points, segments, triangles,
+ * and quadrilaterals.
  */
 namespace lf::mesh::hybrid2d {}
 

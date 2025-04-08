@@ -71,6 +71,7 @@ class QuadRule {
    * This default constructor is needed when storing quadrature rules
    * in member variables of classes, whose initialization cannot be
    * done in an initialization section of a constructor.
+   *
    */
   QuadRule() : ref_el_(lf::base::RefEl::kPoint()), points_(0, 0), weights_(0) {}
 
@@ -86,6 +87,21 @@ class QuadRule {
    * `num_points`
    * @param degree The degree of exactness of the quadrature rule, see Degree()
    * for more info.
+   *
+   * ### Example Usage:
+   *
+   * ```{.cpp}
+   * auto ref_tria = lf::base::RefEl::kTria();
+   *
+   * Eigen::MatrixXd points(2, 3);
+   * points << 0.166667, 0.666667, 0.166667,
+   *           0.166667, 0.166667, 0.666667;
+   *
+   * Eigen::Vector3d weights;
+   * weights << 0.166667, 0.166667, 0.166667;
+   *
+   * auto qr = lf::quad::QuadRule(ref_tria, points, weights, 2);
+   * ```
    */
   explicit QuadRule(base::RefEl ref_el, Eigen::MatrixXd points,
                     Eigen::VectorXd weights, quadDegree_t degree)

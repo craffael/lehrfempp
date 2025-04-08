@@ -1,14 +1,15 @@
-/**
- @page getting_started Getting Started
- 
- 
- 
+# Getting Started {#getting_started}
+
+@gh_edit
+
  
  This tutorial shows you how you can call LehrFEM++ from your own code in a few simple steps.
  We will make a very simple program that calls LehrFEM++ and prints the number of nodes of a triangle to the console.
  
  \note Because LehrFEM++ relies on the [Hunter Package Manager](https://github.com/ruslo/hunter), there is no need to download LehrFEM++ itself!
- 
+
+ You can find a minimal working example here: [LehrFEM++ Project Scaffold Github](https://github.com/benedict-armstrong/lehrfempp_minimal_example).
+
  ### 1. Check Prerequisites
  
  You only need a recent version of [CMake](https://cmake.org/download/) (>= 3.10) and one of the supported compilers:
@@ -16,7 +17,7 @@
    - Clang Version >= 17 (tests run with clang-17)
    - GCC Version >= 13 (tests run with g++-13)
  - **OSX:**
-   - XCode >= 14.2, respectively macos 12.7.2 (tests run with XCode 14.2)
+   - XCode >= 15.4, respectively macos 14.7.2 (continuous integration runs with XCode 15.4 and 16.0)
  - **Windows:**
    - Visual Studio 2022 (Version 17.8) or later is required (tests run with VS2022), only x64 is supported!
  
@@ -152,7 +153,3 @@ HunterGate(
 
 4) build your project as before. Note that the commit that the build can fail depending on whether the commit you have selected built LehrFEM++ correctly.
 
- 
- 
-
-*/

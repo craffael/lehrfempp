@@ -14,9 +14,6 @@ HUNTER_ROOT=${GITHUB_WORKSPACE}/hunter
 # install new version of cmake:
 mkdir -p ${HUNTER_ROOT}
 
-# Install cmake
-source $(dirname $0)/install_cmake.sh
-
 # compile
 cd ${GITHUB_WORKSPACE}
 export CXX=${COMPILER}

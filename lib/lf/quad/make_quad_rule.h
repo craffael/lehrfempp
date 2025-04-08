@@ -25,6 +25,14 @@ namespace lf::quad {
  * 50, afterwards, the Duffy-Transform to map a tensor Gaussian Quadrature on a
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
+ *
+ * ### Usage example:
+ * ```{.cpp}
+ * auto ref_tria = lf::base::RefEl::kTria();
+ *
+ * lf::quad::QuadRule qr = lf::quad::make_QuadRule(ref_tria, 3);
+ * ```
+ *
  */
 QuadRule make_QuadRule(base::RefEl ref_el, unsigned degree);
 

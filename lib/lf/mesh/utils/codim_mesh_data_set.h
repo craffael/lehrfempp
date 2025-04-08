@@ -12,6 +12,16 @@ namespace lf::mesh::utils {
  * @brief A MeshDataSet that attaches data of type `T` to every entity of a mesh
  * that has a specified codimension.
  * @tparam T The type of data that should be stored with the entities.
+ *
+ * ## Example
+ *
+ * @snippet mesh_utils.cc CodimMeshDataSet
+ *
+ * The MeshDataSet interface class provides more information on how to interact
+ * with a MeshDataSet.
+ *
+ * To set values for all codimension, see AllCodimMeshDataSet.
+ *
  * @sa MeshDataSet
  */
 template <class T>

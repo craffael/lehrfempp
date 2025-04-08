@@ -6,7 +6,7 @@
 namespace lf::mesh::utils {
 
 /**
- * @ brief Builder interface for creating structured meshes on rectangular
+ * @brief Builder interface for creating structured meshes on rectangular
  * domains
  *
  * The design of the class complies with the builder pattern.
