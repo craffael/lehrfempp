@@ -2,7 +2,7 @@
 
 # LehrFEM++
 Simple C++ Finite Element Framework for research and eduction optimized for clarity and
-flexibility with some trade-off concerning performance. This library is used for the course _Numerical Methods for Partial Differential Equations_ taught by Prof. R. Hiptmair at ETH Zurich.
+flexibility with some trade-off concerning performance. This library is used for the course _Numerical Methods for Partial Differential Equations_ taught by Prof. R. Hiptmair at ETH Zurich. This is the [link](https://people.math.ethz.ch/~grsam/NUMPDEFL/) to a repository with all the course materials, including the lecture document referenced in the LehrFEM++ documentation.
 
 * LehrFEM++ follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html#Naming).
