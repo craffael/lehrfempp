@@ -27,7 +27,8 @@ namespace lf::quad {
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
  *
- * Note that the _order_ of a quadrature rule is equal to degree of exactness + 1!
+ * Note that the _order_ of a quadrature rule is equal to degree of exactness +
+ * 1!
  *
  * ### Usage example:
  * ```{.cpp}

@@ -16,6 +16,7 @@
 #include "lecturedemotwonorm.h"
 
 #include <lf/fe/fe.h>
+
 #include <ostream>
 
 namespace lecturedemo {
