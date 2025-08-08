@@ -386,7 +386,7 @@ class MassEdgeMatrixProvider {
    * a suitable 1D quadrature rule
    *
    * @param fe_space Describes the shapefunctions
-   * @param gamma coefficient function through functor object
+   * @param gamma coefficient function through MeshFunction object
    * @param edge_selector predicate object selecting active to be covered in
    * the assembly
    *
@@ -410,7 +410,7 @@ class MassEdgeMatrixProvider {
    * @brief Constructor performing cell-independent initializations
    *
    * @param fe_space Describes the shapefunctions
-   * @param gamma coefficient function through functor object
+   * @param gamma coefficient function through MeshFunction object
    * @param quadrule quadrature rule for EDGE entities
    * @param edge_selector predicate object selecting active to be covered in
    * the assembly
