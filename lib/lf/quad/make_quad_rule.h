@@ -15,9 +15,10 @@ namespace lf::quad {
 /**
  * @brief Returns a QuadRule object for the given Reference Element and Degree
  * @param ref_el The type of reference element
- * @param degree The minimum degree that the QuadRule object should have.
- * @return A QuadRule object for the given reference element and with a degree
- * >= `degree`
+ * @param degree The minimum degree of polynomials that should be integrated
+ * exactly by the created QuadRule object
+ * @return A QuadRule object for the given reference element and with a "degree
+ * of exactness" >= `degree`
  *
  * This method tries to return optimal quadrature rules when possible:
  * - For Segments it returns Gauss-Legendre quadrature rules
@@ -25,6 +26,9 @@ namespace lf::quad {
  * 50, afterwards, the Duffy-Transform to map a tensor Gaussian Quadrature on a
  * Square to the triangle.
  * - For Quadrilaterals it uses tensor products of Gauss-Legendre rules
+ *
+ * Note that the _order_ of a quadrature rule is equal to degree of exactness +
+ * 1!
  *
  * ### Usage example:
  * ```{.cpp}

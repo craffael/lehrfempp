@@ -17,6 +17,8 @@
 
 #include <lf/fe/fe.h>
 
+#include <ostream>
+
 namespace lecturedemo {
 
 class LinFEMassMatrixProvider {
